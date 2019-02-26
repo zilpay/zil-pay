@@ -1,0 +1,23 @@
+{
+  "name": "ZilPay",
+  "version": "0.0.1",
+  "description": "ZilPay Chrome Extension for zilliqa",
+  "author": "lich666dead",
+  "manifest_version": 2,
+  "icons": {
+    "16": "/img/icons/16x16.png",
+    "72": "/img/icons/72x72.png",
+    "180": "/img/icons/180x180.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "unlimitedStorage",
+    "storage"
+  ],
+  "browser_action": {
+    "default_title": "ZilPay",
+    "default_popup": "index.html"
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
