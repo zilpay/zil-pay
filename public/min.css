@@ -1,6 +1,7 @@
 body, html {
   min-height: 200px;
   min-width: 350px;
+  overflow:hidden;
   background: rgb(5, 15, 29);
   background: linear-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
   background: -webkit-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
@@ -8,4 +9,7 @@ body, html {
   background: -moz-linear-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
   background: -o-linear-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
   background: -ms-linear-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
+}
+::-webkit-scrollbar { 
+  display: none; 
 }

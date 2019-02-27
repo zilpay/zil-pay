@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <div class="row justify-content-center pt-3">
-      <div class="col-lg-12 text-center text-ightindigo pt-3">
-        <h1 class="display-2">ZilPay</h1>
+    <div class="row justify-content-center">
+      <div class="col-lg-12 text-center text-ightindigo">
+        <h1 class="display-3">ZilPay</h1>
         <h1 class="display-4">Welcome Back!</h1>
       </div>
 
-      <div class="form-group pt-5">
+      <div class="form-group pt-2">
         <label for="pass">Password</label>
         <input type="password"
                class="form-control bg-null text-pink"
@@ -21,7 +21,7 @@
         </button>
         
         <router-link :to="$router.options.routes[1].path">
-          <p class="text-center text-ightindigo p-5">Restore account</p>
+          <p class="text-center text-ightindigo p-2">Restore account</p>
         </router-link>
       </div>
     </div>

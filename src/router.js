@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home'
-import Create from './views/Create'
 import LockPage from './views/LockPage'
-import Settings from './views/Settings'
+
 
 Vue.use(Router)
 
@@ -19,17 +17,17 @@ export default new Router({
     {
       path: '/create',
       name: 'create',
-      component: Create
+      component: () => import('./views/Create')
     },
     {
       path: '/home',
       name: 'home',
-      component: Home
+      component: () => import('./views/Home')
     },
     {
       path: '/settings',
       name: 'settings',
-      component: Settings
+      component: () => import('./views/Settings')
     }
   ]
 })
