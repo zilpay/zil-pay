@@ -8,11 +8,11 @@
 
       <Dropdown :options="options"
                 :selected="options[0]"
-                :classBtn="'lightviolet text-pink'"/>
+                :classBtn="'dark text-pink'"/>
 
       <ul class="nav navbar-nav navbar-right">
         <li>
-          <router-link :to="$router.options.routes[1].path">
+          <router-link :to="$router.options.routes[3].path">
             <div id="jazzicon"/>
           </router-link>
         </li>
