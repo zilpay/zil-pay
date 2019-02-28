@@ -2,6 +2,18 @@ import crypto from 'crypto'
 
 export default class {
   encryptionAlgorithm = 'aes-256-ctr';
+  hashAlgorithm = 'sha256';
+
+  hash(string) {
+  /**
+   * @param {password} string
+   * @return hash string.
+   */
+    return crypto
+        .createHash(this.hashAlgorithm)
+        .update(string)
+        .digest('hex');
+  }
 
   encrypt(data, key) {
     const encoded = JSON.stringify(data);

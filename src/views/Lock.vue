@@ -34,9 +34,10 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import btn from '../directives/btn'
 import StorageMixin from '../mixins/storage'
-import CryptoMixin from '../mixins/mnemonic'
+import CryptoMixin from '../mixins/crypto'
 
 
 export default {
@@ -46,28 +47,30 @@ export default {
   data() {
     return {
       password: '',
-      wrongPassword: false
+      wrongPassword: false,
+      storeKey: 'PASSWORD'
     };
   },
   methods: {
+    ...mapMutations('wallet', [
+      'addAddress',
+      'selectAddress'
+    ]),
     async encryptingAccaunt() {
-      let { wallet } = await this.get('wallet');
+      let { selectAddress } = await this.get('selectAddress');
+      let { hash } = await this.get('hash');
+      let pwdHash = this.crypto.hash(this.password);
 
-      if (!wallet) {
+      if (!hash) {
         this.$router.push({ name: 'create' });
         return null;
-      }
-      
-      try {
-        wallet.map(el => 
-          this.crypto.decrypt(el, this.password)
-        );
-      } catch(err) {
+      } else if (pwdHash === hash) {
+        this.addAddress(selectAddress);
+        this.selectAddress(selectAddress.address);
+        this.$router.push({ name: 'home' });
+      } else {
         this.wrongPassword = true;
-        return null;
       }
-
-      this.$router.push({ name: 'home' });
     }
   }
 }

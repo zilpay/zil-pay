@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import zilConfig from './config/zil.json'
 import NavBar from './components/UI/NavBar'
 import StorageMixin from './mixins/storage'
 
@@ -19,12 +20,12 @@ export default {
   },
   methods: {
     async preStart() {
-      let wallet = await this.get('wallet');
-      let isNull = Object.keys(wallet).length > 0;
+      let { hash } = await this.get('hash');
 
-      if (isNull) {
+      if (hash) {
         this.$router.push({ name: 'lock' });
       } else {
+        this.set({ config: zilConfig });
         this.$router.push({ name: 'create' });
       }
     }

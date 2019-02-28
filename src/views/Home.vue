@@ -6,11 +6,11 @@
     <div class="text-center p-2 text-ightindigo display-4">
       <h1>
         4.4385 
-        <span class="text-warning">ZIL</span>
+        <span class="text-warning">{{currencyController.nativeCurrency}}</span>
       </h1>
       <h1>
          $605.67 
-         <span class="text-warning">USD</span>
+         <span class="text-warning">{{currencyController.currentCurrency}}</span>
       </h1>
     </div>
 
@@ -24,12 +24,26 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
 
 export default {
   name: 'home',
   directives: { btn },
-  components: { TxTracking }
+  components: { TxTracking },
+  computed: {
+     ...mapState([
+      'currencyController'
+    ])
+  },
+  methods: {
+    ...mapActions('wallet', [                  // Add this
+      'balanceUpdate'
+    ]),
+  },
+  mounted() {
+    this.balanceUpdate();
+  }
 }
 </script>

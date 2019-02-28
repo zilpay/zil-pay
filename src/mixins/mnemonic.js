@@ -1,12 +1,12 @@
 import Mnemonic from '../lib/mnemonic'
-import Crypto from '../lib/crypto'
+import CryptoMixin from './crypto'
 
 
 export default {
+  mixins: [CryptoMixin],
   data() {
     return {
-      mnemonic: new Mnemonic(),
-      crypto: new Crypto()
+      mnemonic: new Mnemonic()
     };
   },
   mounted() {
@@ -15,13 +15,17 @@ export default {
   methods: {
     async onEncrypt(phrase, password) {
       let index = 0;
+      let hash = this.crypto.hash(password);
       let wallet = await this.mnemonic.getAccountAtIndex(phrase, index);
-      let walletHash = await this.crypto.encrypt(wallet, password);
       let seedHash = await this.crypto.encrypt(phrase, password);
 
       return {
-        wallet: [walletHash],
-        mnemonic: seedHash
+        wallets: [{
+          address: wallet.address,
+          id: index
+        }],
+        mnemonic: seedHash,
+        hash: hash
       };
     }
   }

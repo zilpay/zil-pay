@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import btn from '../directives/btn'
 import MnemonicMixin from '../mixins/mnemonic'
 import StorageMixin from '../mixins/storage'
@@ -102,11 +103,21 @@ export default {
     this.mnemonicPhrase = this.mnemonic.generateMnemonic();
   },
   methods: {
+    ...mapMutations('wallet', [
+      'addAddress',
+      'selectAddress'
+    ]),
     async submit() {
       let wallet = await this.onEncrypt(this.phrase, this.password);
       
       await this.set(wallet);
-
+      
+      wallet.wallets.forEach(el => {
+        this.set({ selectAddress: el });
+        this.addAddress(el);
+        this.selectAddress(el.address);
+      });
+      
       this.$router.push({ name: 'home' });
     }
   }
