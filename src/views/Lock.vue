@@ -12,11 +12,16 @@
                class="form-control bg-null text-pink"
                id="pass"
                placeholder="Password"
-               v-model.lazy="pass"
-               :class="{involid:isValid}">
+               v-model="password"
+               @input="wrongPassword = false"
+               @change="encryptingAccaunt">
+        <div class="error text-danger" v-if="wrongPassword">
+          Incorrect password
+        </div>
         
         <button v-btn="'info btn-lg btn-block mt-4'"
-                @click="encrypting">
+                :disabled="!password"
+                @click="encryptingAccaunt">
           SIGN IN
         </button>
         
@@ -30,30 +35,44 @@
 
 <script>
 import btn from '../directives/btn'
+import StorageMixin from '../mixins/storage'
+import CryptoMixin from '../mixins/mnemonic'
 
 
 export default {
   name: 'LockPage',
+  mixins: [StorageMixin, CryptoMixin],
   directives: { btn },
   data() {
     return {
-      pass: '',
-      isValid: false
+      password: '',
+      wrongPassword: false
     };
   },
   methods: {
-    encrypting() {
-      if (this.pass == '123') {
-        let homePage = this.$router.options.routes[2].path;
-        this.$router.replace(homePage);
-      } else {
-        this.isValid = !this.isValid;
+    async encryptingAccaunt() {
+      let { wallet } = await this.get('wallet');
+
+      if (!wallet) {
+        this.$router.push({ name: 'create' });
+        return null;
       }
+      
+      try {
+        wallet.map(el => 
+          this.crypto.decrypt(el, this.password)
+        );
+      } catch(err) {
+        this.wrongPassword = true;
+        return null;
+      }
+
+      this.$router.push({ name: 'home' });
     }
   }
 }
 </script>
 
 <style lang="scss">
-@import '../styles/colors';
+// @import '../styles/colors';
 </style>

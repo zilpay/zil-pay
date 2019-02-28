@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import LockPage from './views/LockPage'
 
 
 Vue.use(Router)
@@ -12,7 +11,7 @@ export default new Router({
     {
       path: '/',
       name: 'lock',
-      component: LockPage
+      component: () => import('./views/Lock')
     },
     {
       path: '/create',
