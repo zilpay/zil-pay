@@ -2,8 +2,9 @@
   <div class="container">
     <div class="row justify-content-center pt-3">
       <div class="col-lg-12 text-center text-ightindigo pt-3">
-        <h3 class="text-pink text-left point"
-            @click="$router.go(-1)">&#60;back</h3>
+        <router-link :to="$router.options.routes[0].path">
+          <h3 class="text-warning text-left point">&#60;back</h3>
+        </router-link>
         <h3>Enter your secret twelve word
            phrase here to restore your vault.</h3>
         <h1></h1>
@@ -13,20 +14,39 @@
         <label for="seed">Wallet Seed</label>
         <textarea class="form-control bg-null"
                   id="seed"
-                  v-model.lazy="phrase">
+                  v-model="mnemonicPhrase">
         </textarea>
+        <div class="error text-danger" v-if="$v.mnemonicPhrase.sameAs">
+          Seed phrases is wrong.
+        </div>
 
-        <div class="pt-5">
+        <div class="pt-3">
           <label for="pass">Password</label>
           <input type="password"
-                class="form-control bg-null text-pink"
-                id="pass"
-                placeholder="Password"
-                v-model.lazy="pass"
-                :class="{involid:isValid}">
+                 class="form-control bg-null text-pink"
+                 id="pass"
+                 placeholder="Password"
+                 v-model="password">
+          <div class="error text-danger" v-if="!$v.password.minLength">
+            Password must have at least 
+            {{$v.password.$params.minLength.min}} letters.
+          </div>
+        </div>
+
+        <div class="pt-3">
+          <label for="confirm">Confirm Password</label>
+          <input type="password"
+                 class="form-control bg-null text-pink"
+                 id="confirm"
+                 placeholder="Confirm Password"
+                 v-model="confirm">
+          <div class="error text-danger" v-if="!$v.confirm.sameAs">
+            Passwords Don't Match
+          </div>
         </div>
 
         <button v-btn="'info btn-lg btn-block mt-4'"
+                :disabled="$v.submitForm.sameAs"
                 @click="submit">
           CREATE
         </button>
@@ -37,44 +57,54 @@
 
 <script>
 import btn from '../directives/btn'
-import Mnemonic from '../lib/mnemonic'
-import Crypto from '../lib/crypto'
-import chromep from 'chrome-promise'
+import MnemonicMixin from '../mixins/mnemonic'
+import StorageMixin from '../mixins/storage'
+import { validationMixin } from 'vuelidate'
+import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 
 
 export default {
   name: 'Create',
+  mixins: [MnemonicMixin, StorageMixin, validationMixin],
   directives: { btn },
   data() {
     return {
-      mnemonic: new Mnemonic(),
-      crypto: new Crypto(),
-      pass: '',
-      isValid: false,
-      phrase: ''
+      mnemonicPhrase: '',
+      password: '',
+      confirm: '',
+      submitForm: true
     };
   },
+  validations: {
+    password: {
+      required,
+      minLength: minLength(6)
+    },
+    confirm: {
+      required,
+      sameAs: sameAs('password')
+    },
+    mnemonicPhrase: {
+      sameAs: sameAs(vue => {
+        return vue.mnemonic.validateMnemonic(vue.phrase);
+      })
+    },
+    submitForm: {
+      sameAs: sameAs(vue => {
+        if (!vue.password || !vue.confirm || !vue.mnemonicPhrase) {
+          return true;
+        }
+        return !vue.$v.confirm.sameAs || !vue.$v.password.minLength;
+      })
+    }
+  },
   mounted() {
-    this.phrase = this.mnemonic.generateMnemonic();
+    this.mnemonicPhrase = this.mnemonic.generateMnemonic();
   },
   methods: {
     async submit() {
-      if (this.pass.length < 3) {
-        this.isValid = true;
-      } else {
-        this.isValid = false;
-        return null;
-      }
-
-      let wallet = await this.onEncrypt();
-      await chromep.storage.local.set(wallet);
-    },
-    async onEncrypt() {
-      let wallet = await this.mnemonic.getAccountAtIndex(this.phrase);
-      let walletHash = await this.crypto.encrypt(wallet, this.pass);
-      let seedHash = await this.crypto.encrypt(this.phrase, this.pass);
-
-      return { privKeys: [walletHash], seedHash };
+      let wallet = await this.onEncrypt(this.phrase, this.password);
+      return this.set(wallet);
     }
   }
 }

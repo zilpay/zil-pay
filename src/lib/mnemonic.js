@@ -2,15 +2,19 @@ import bip39 from 'bip39'
 import bip32 from 'bip32'
 import { getAddressFromPrivateKey } from '@zilliqa-js/crypto';
 
+
 export default class {
+
+  _name = 'Account';
+  _maxAccounts = 11;
 
   generateMnemonic() {
     return bip39.generateMnemonic(128);
   }
 
   getAccountAtIndex(mnemonic, index = 0) {
-    if (index > 10 || index < 0) {
-      throw new Error('index only be: 10 < index > 0');
+    if (index > this._maxAccounts || index < 0) {
+      throw new Error(`index only be: ${this._maxAccounts} < index > 0`);
     }
 
     let seed = bip39.mnemonicToSeed(mnemonic);
@@ -18,8 +22,9 @@ export default class {
     let child = node.derivePath(`m/44'/195'/${ index }'/0/0`);
     let privateKey = child.privateKey.toString('hex');
     let address = getAddressFromPrivateKey(privateKey);
+    let name = `${this._name} ${index + 1}`;
     
-    return { privateKey, address };
+    return { privateKey, address, name };
   }
 
   validateMnemonic(mnemonic) {

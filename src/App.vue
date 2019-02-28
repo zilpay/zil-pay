@@ -7,11 +7,13 @@
 
 <script>
 import NavBar from './components/UI/NavBar'
-import chromep from 'chrome-promise'
+import StorageMixin from './mixins/storage'
+
 
 export default {
   name: 'App',
   components: { NavBar },
+  mixins: [StorageMixin],
   mounted() {
     this.preStart();
   },
@@ -19,7 +21,7 @@ export default {
     async preStart() {
       let createPage = this.$router.options.routes[1];
       let lockPage = this.$router.options.routes[0];
-      let seed = await chromep.storage.local.get('seedHash');
+      let seed = await this.get(['seedHash']);
       
       seed = Object.keys(seed);
       
@@ -42,5 +44,8 @@ export default {
 }
 .point {
   cursor: pointer;
+}
+.error-input {
+  border-color: $red;
 }
 </style>

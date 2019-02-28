@@ -56,8 +56,4 @@ export default {
 
 <style lang="scss">
 @import '../styles/colors';
-
-.involid {
-  border-color: $red;
-}
 </style>
