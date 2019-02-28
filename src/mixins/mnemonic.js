@@ -19,7 +19,10 @@ export default {
       let walletHash = await this.crypto.encrypt(wallet, password);
       let seedHash = await this.crypto.encrypt(phrase, password);
 
-      return { privKeys: [walletHash], seedHash };
+      return {
+        wallet: [walletHash],
+        mnemonic: seedHash
+      };
     }
   }
 }

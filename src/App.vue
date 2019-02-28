@@ -21,11 +21,10 @@ export default {
     async preStart() {
       let createPage = this.$router.options.routes[1];
       let lockPage = this.$router.options.routes[0];
-      let seed = await this.get(['seedHash']);
-      
-      seed = Object.keys(seed);
-      
-      if (seed.length > 0) {
+      let wallet = await this.get('wallet');
+      let isNull = Object.keys(wallet).length > 0;
+      console.log(isNull);
+      if (isNull) {
         this.$router.push(lockPage.path);
       } else {
         this.$router.push(createPage.path);

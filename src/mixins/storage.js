@@ -5,11 +5,30 @@ if (process.env.NODE_ENV == 'development') {
     methods: {
       set(value) {
         Object.keys(value).forEach(key => {
-          window.localStorage.setItem(key, value[key]);
+          let item = value[key];
+          
+          if (typeof item != 'string') {
+            item = JSON.stringify(item);
+          }
+
+          window.localStorage.setItem(key, item);
         });
       },
-      get(keys) {
-        return keys.map(key => window.localStorage.getItem(key));
+      get(key) {
+        let result = {};
+        let item = window.localStorage.getItem(key);
+    
+        if (!item) {
+          return {};
+        }
+
+        try {
+          result[key] = JSON.parse(item);
+        } catch(err) {
+          result[key] = item;
+        }
+
+        return result;
       }
     }
   };
@@ -18,12 +37,12 @@ if (process.env.NODE_ENV == 'development') {
     methods: {
       set(value) {
         return new Promise(resolve => {
-          window.chrome.storage.sync.set(value, resolve);
+          window.chrome.storage.local.set(value, resolve);
         });
       },
       get(keys) {
         return new Promise(resolve => {
-          window.chrome.storage.sync.get(keys, resolve);
+          window.chrome.storage.local.get(keys, resolve);
         });
       }
     }
