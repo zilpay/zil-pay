@@ -11,7 +11,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'lockpage',
+      name: 'lock',
       component: LockPage
     },
     {

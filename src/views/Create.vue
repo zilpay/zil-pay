@@ -104,7 +104,10 @@ export default {
   methods: {
     async submit() {
       let wallet = await this.onEncrypt(this.phrase, this.password);
-      return this.set(wallet);
+      
+      await this.set(wallet);
+
+      this.$router.push({ name: 'home' });
     }
   }
 }

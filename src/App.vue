@@ -19,15 +19,13 @@ export default {
   },
   methods: {
     async preStart() {
-      let createPage = this.$router.options.routes[1];
-      let lockPage = this.$router.options.routes[0];
       let wallet = await this.get('wallet');
       let isNull = Object.keys(wallet).length > 0;
-      console.log(isNull);
+
       if (isNull) {
-        this.$router.push(lockPage.path);
+        this.$router.push({ name: 'lock' });
       } else {
-        this.$router.push(createPage.path);
+        this.$router.push({ name: 'create' });
       }
     }
   }
