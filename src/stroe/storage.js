@@ -6,7 +6,6 @@ import Crypto from '../lib/crypto'
 import BrowserStorage from '../lib/storage'
 
 
-
 export default {
   namespaced: true,
   state: {
@@ -20,7 +19,7 @@ export default {
     phash: '',
     pubKeyJWT: '',
     wallet: {
-      selectedAddress: null, // hex 0x...
+      selectedAddress: null, // index
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
     config: {
@@ -70,7 +69,7 @@ export default {
     async createJWT({ state, commit }, password) {
       state.pubKeyJWT = state.jwt.generateKey(password);
       state.vault = await state.jwt.tokenCreate(state.pubKeyJWT);
-
+      console.log(state);
       commit('vault', state.vault);
       commit('pubKeyJWT', state.pubKeyJWT);
       commit('ready', true);
@@ -130,14 +129,14 @@ export default {
       let { result } = await state.zilliqa.blockchain.getBalance(address);
 
       await state.zilliqa.wallet.addByPrivateKey(privateKey);
-
+ 
       if (!result) {
         result = 0;
       } else {
         result = result.balance;
       }
 
-      state.wallet.selectedAddress = address;
+      state.wallet.selectedAddress = index;
       state.wallet.identities[index] = {
         address,
         publicKey,
