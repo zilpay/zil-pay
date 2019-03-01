@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 import btn from '../directives/btn'
 import MnemonicMixin from '../mixins/mnemonic'
 import StorageMixin from '../mixins/storage'
@@ -103,21 +103,24 @@ export default {
     this.mnemonicPhrase = this.mnemonic.generateMnemonic();
   },
   methods: {
-    ...mapMutations('wallet', [
-      'addAddress',
-      'selectAddress'
+    ...mapActions('storage', [
+      'syncBrowser',
+      'bip39Encrypt',
+      'createJWT',
+      'walletUpdate'
     ]),
+    ...mapMutations('storage', ['bip39', 'wallet']),
+
     async submit() {
-      let wallet = await this.onEncrypt(this.phrase, this.password);
-      
-      await this.set(wallet);
-      
-      wallet.wallets.forEach(el => {
-        this.set({ selectAddress: el });
-        this.addAddress(el);
-        this.selectAddress(el.address);
-      });
-      
+      this.mnemonic.bip32Node(this.mnemonicPhrase);
+
+      let wallet = await this.mnemonic.getPrivateKeyAtIndex();
+
+      await this.walletUpdate(wallet);
+      await this.bip39(this.mnemonic.phrase);
+      await this.bip39Encrypt(this.password);
+      await this.createJWT(this.password);
+
       this.$router.push({ name: 'home' });
     }
   }

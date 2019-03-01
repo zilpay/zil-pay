@@ -17,10 +17,12 @@ export default {
       let index = 0;
       let hash = this.crypto.hash(password);
       let wallet = await this.mnemonic.getAccountAtIndex(phrase, index);
-      let seedHash = await this.crypto.encrypt(phrase, password);
-
+      let seedHash = await this.crypto.encrypt(phrase, hash);
+      let privateKey = await this.crypto.encrypt(wallet.privateKey, hash);
+      
       return {
         wallets: [{
+          privateKey,
           address: wallet.address,
           id: index
         }],

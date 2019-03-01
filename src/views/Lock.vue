@@ -13,8 +13,7 @@
                id="pass"
                placeholder="Password"
                v-model="password"
-               @input="wrongPassword = false"
-               @change="encryptingAccaunt">
+               @input="wrongPassword = false">
         <div class="error text-danger" v-if="wrongPassword">
           Incorrect password
         </div>
@@ -34,7 +33,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 import btn from '../directives/btn'
 import StorageMixin from '../mixins/storage'
 import CryptoMixin from '../mixins/crypto'
@@ -52,25 +51,17 @@ export default {
     };
   },
   methods: {
-    ...mapMutations('wallet', [
-      'addAddress',
-      'selectAddress'
+    ...mapActions('storage', [
+      'updateJWT'
     ]),
     async encryptingAccaunt() {
-      let { selectAddress } = await this.get('selectAddress');
-      let { hash } = await this.get('hash');
-      let pwdHash = this.crypto.hash(this.password);
+      let status = await this.updateJWT(this.password);
 
-      if (!hash) {
-        this.$router.push({ name: 'create' });
-        return null;
-      } else if (pwdHash === hash) {
-        this.addAddress(selectAddress);
-        this.selectAddress(selectAddress.address);
+      if (status) {
         this.$router.push({ name: 'home' });
-      } else {
-        this.wrongPassword = true;
       }
+
+      this.wrongPassword = !status;
     }
   }
 }

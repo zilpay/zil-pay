@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
 
@@ -38,12 +38,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions('wallet', [                  // Add this
-      'balanceUpdate'
-    ]),
   },
-  mounted() {
-    this.balanceUpdate();
-  }
+  mounted() {}
 }
 </script>

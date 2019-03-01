@@ -5,26 +5,40 @@ import { getAddressFromPrivateKey } from '@zilliqa-js/crypto';
 
 export default class {
 
-  _name = 'Account';
-  _maxAccounts = 11;
+  _bip39 = null;
+  _bip32 = null;
+
+  phrase = null;
 
   generateMnemonic() {
     return bip39.generateMnemonic(128);
   }
 
-  getAccountAtIndex(mnemonic, index = 0) {
-    if (index > this._maxAccounts || index < 0) {
-      throw new Error(`index only be: ${this._maxAccounts} < index > 0`);
-    }
+  bip32Node(mnemonic) {
+    /**
+     * @param mnemonic: Seed phrase.
+    */
+    this._bip39 = bip39.mnemonicToSeed(mnemonic);
+    this._bip32 = bip32.fromSeed(this._bip39);
+    this.phrase = mnemonic;
+    
+    return this._bip32;
+  }
 
-    let seed = bip39.mnemonicToSeed(mnemonic);
-    let node = bip32.fromSeed(seed);
+  getPrivateKeyAtIndex(index = 0) {
+    let child = this._bip32.derivePath(`m/44'/195'/${ index }'/0/0`);
+    let privateKey = child.privateKey.toString('hex');
+
+    return { privateKey, index };
+  }
+
+  getAccountAtIndex(mnemonic, index = 0) {
+    let node = this.bip32Node(mnemonic);
     let child = node.derivePath(`m/44'/195'/${ index }'/0/0`);
     let privateKey = child.privateKey.toString('hex');
     let address = getAddressFromPrivateKey(privateKey);
-    let name = `${this._name} ${index + 1}`;
     
-    return { privateKey, address, name };
+    return { privateKey, address };
   }
 
   validateMnemonic(mnemonic) {
