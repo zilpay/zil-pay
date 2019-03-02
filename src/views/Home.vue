@@ -1,11 +1,17 @@
 <template>
   <div class="container">
-    <input type="text">
     <div class="row justify-content-center">
       <img src="/img/logo.png">
     </div>
     <div class="text-center p-2 text-ightindigo display-4">
-      <h1>{{account['address']}}</h1>
+
+      <button v-btn="'success m-2'"
+            @click="copy(account['address'])">
+            {{account['address'] | trimAddress}}
+            <br/>
+            Account {{wallet.selectedAddress + 1}}
+      </button>
+
       <h1>
         {{account['balance'] | toZil}}
         <span class="text-warning">{{currencyController.nativeCurrency}}</span>
@@ -27,15 +33,18 @@
 
 <script>
 import { mapState } from 'vuex'
+import copy from 'clipboard-copy'
 import toZil from '../filters/toZil'
+import trimAddress from '../filters/trimAddress'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
+
 
 export default {
   name: 'home',
   directives: { btn },
   components: { TxTracking },
-  filters: { toZil },
+  filters: { toZil, trimAddress },
   computed: {
      ...mapState([
       'currencyController'
@@ -50,9 +59,8 @@ export default {
     }
   },
   methods: {
+    copy
   },
-  mounted() {
-    
-  }
+  mounted() { }
 }
 </script>

@@ -5,6 +5,7 @@ import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
 import Crypto from '../lib/crypto'
 import BrowserStorage from '../lib/storage'
+import Utils from '../lib/utils'
 
 
 export default {
@@ -151,7 +152,7 @@ export default {
       let ctx = window.document.querySelector('#' + id);
       let { wallet } = await state.storage.get('wallet');
       let account = wallet.identities[wallet.selectedAddress];
-      let el = jazzicon(45, `0x${account.address}`);
+      let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
 
       ctx.appendChild(el);
     }
