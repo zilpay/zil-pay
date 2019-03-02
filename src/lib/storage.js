@@ -38,9 +38,9 @@ export class LocalStorage {
 
     for(var i = 0; i < window.localStorage.length; i++) {
       let key = window.localStorage.key(i);
-      data[key] = this.get(key);
+      data = Object.assign(data, this.get(key));
     }
-    
+
     return data;
   }
 

@@ -56,12 +56,13 @@ export default {
     }
   },
   actions: {
-    async syncBrowser({ state, commit }) {
+    async syncBrowser({ state }) {
       let storage = await state.storage.getAll();
       let keys = Object.keys(storage);
 
       keys.forEach(key => {
-        commit(key, storage[key]);
+        state[key] = storage[key];
+        // commit(key, storage[key]);
       });
       
       return null;
@@ -69,7 +70,7 @@ export default {
     async createJWT({ state, commit }, password) {
       state.pubKeyJWT = state.jwt.generateKey(password);
       state.vault = await state.jwt.tokenCreate(state.pubKeyJWT);
-      console.log(state);
+
       commit('vault', state.vault);
       commit('pubKeyJWT', state.pubKeyJWT);
       commit('ready', true);
