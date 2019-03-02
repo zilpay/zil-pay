@@ -17,30 +17,32 @@ export default {
   mounted() {
     this.preStart();
   },
+  computed: {
+    ...mapState('storage', [
+      'vault',
+    ])
+  },
   methods: {
     ...mapActions('storage', [
       'syncBrowser',
-      'signVerifyJWT'
+      'signVerifyJWT',
+      'bip39Decrypt'
     ]),
     ...mapMutations('storage', [
       'config',
     ]),
-    ...mapState('storage', [
-      'vault',
-    ]),
-
     async preStart() {
       await this.syncBrowser();
 
-      if (!this.vault()) {
+      if (!this.vault) {
         this.config(zilConfig);
         this.$router.push({ name: 'create' });
         return null;
       }
-
-      
       let status = await this.signVerifyJWT();
-      
+
+      this.bip39Decrypt();
+
       if (status) {
         this.$router.push({ name: 'home' });
       } else {

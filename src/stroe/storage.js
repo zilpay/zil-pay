@@ -64,26 +64,27 @@ export default {
         state[key] = storage[key];
         // commit(key, storage[key]);
       });
-      
+
       return null;
     },
     async createJWT({ state, commit }, password) {
-      state.pubKeyJWT = state.jwt.generateKey(password);
-      state.vault = await state.jwt.tokenCreate(state.pubKeyJWT);
+      let pubKeyJWT = state.jwt.generateKey(password);
+      let { phash, token } = await state.jwt.tokenCreate(pubKeyJWT);
 
-      commit('vault', state.vault);
-      commit('pubKeyJWT', state.pubKeyJWT);
+      commit('vault', token);
+      commit('pubKeyJWT', pubKeyJWT);
       commit('ready', true);
+      commit('phash', phash);
     },
     async updateJWT({ state, commit }, password) {
       let key = state.jwt.generateKey(password);
-      
+
       if (key !== state.pubKeyJWT) {
         return false;
       }
 
       state.vault = await state.jwt.tokenCreate(state.pubKeyJWT);
-      
+
       commit('vault', state.vault);
       commit('ready', true);
 
@@ -108,43 +109,54 @@ export default {
         return status;
       }
     },
-    async bip39Decrypt({ state, commit }, password) {
-      let { phash } = await state.jwt.tokenVerify(state.vault, password);
-      let hashID = await state.crypto.hash(state.storage.EXT_ID);
-      let bip39 = await state.storage.get('bip39');
-      
-      bip39 = state.crypto.decrypt(bip39, phash + hashID);
+    bip39Decrypt({ state, commit }) {
+      let bip39 = state.bip39;
+      let phash = state.phash;
+
+      try {
+        bip39 = state.crypto.decrypt(bip39, phash);
+
+        commit('ready', true);
+        commit('bip39', bip39);
+
+        return true;
+      } catch(err) {
+        commit('ready', false);
+        commit('vault', '');
+        return false;
+      }
+    },
+    async bip39Encrypt({ state, commit }, bip39) {
+      let phash = state.phash;
 
       commit('bip39', bip39);
-    },
-    async bip39Encrypt({ state }, password) {
-      let phash = state.crypto.hash(password);
-      let hashID = await state.crypto.hash(state.storage.EXT_ID);
-      let bip39 = state.crypto.encrypt(state.bip39, phash + hashID);
-      
+
+      bip39 = state.crypto.encrypt(bip39, phash);
+
       state.storage.set({ bip39 });
     },
     async walletUpdate({ state, commit }, { index, privateKey }) {
+      let data = state.wallet;
       let publicKey = getPubKeyFromPrivateKey(privateKey);
       let address = getAddressFromPrivateKey(privateKey);
       let { result } = await state.zilliqa.blockchain.getBalance(address);
 
       state.zilliqa.wallet.addByPrivateKey(privateKey);
- 
+
       if (!result) {
         result = 0;
       } else {
         result = result.balance;
       }
 
-      state.wallet.selectedAddress = index;
-      state.wallet.identities[index] = {
+      data.selectedAddress = index;
+      data.identities[index] = {
         address,
         publicKey,
         balance: result
       };
-      
-      commit('wallet', state.wallet);
+
+      commit('wallet', data);
     },
     async jazzicon({ state }, id) {
       let ctx = window.document.querySelector('#' + id);

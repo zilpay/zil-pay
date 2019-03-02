@@ -17,7 +17,7 @@
         <span class="text-warning">{{currencyController.nativeCurrency}}</span>
       </h1>
       <h1>
-         $605.67 
+         $605.67
          <span class="text-warning">{{currencyController.currentCurrency}}</span>
       </h1>
     </div>
@@ -32,17 +32,19 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import copy from 'clipboard-copy'
 import toZil from '../filters/toZil'
 import trimAddress from '../filters/trimAddress'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
+import MnemonicMixin from '../mixins/mnemonic'
 
 
 export default {
   name: 'home',
   directives: { btn },
+  mixins: [MnemonicMixin],
   components: { TxTracking },
   filters: { toZil, trimAddress },
   computed: {
@@ -50,7 +52,8 @@ export default {
       'currencyController'
     ]),
     ...mapState('storage', [
-      'wallet'
+      'wallet',
+      'bip39'
     ]),
     account() {
       return this.wallet.identities[
@@ -59,8 +62,22 @@ export default {
     }
   },
   methods: {
-    copy
+    ...mapActions('storage', [
+      'walletUpdate'
+    ]),
+
+    copy,
+    preStart() {
+      this.mnemonic.bip32Node(this.bip39);
+      let { privateKey, index } = this.mnemonic.getPrivateKeyAtIndex(
+        this.wallet.selectedAddress
+      );
+
+      this.walletUpdate({ index, privateKey });
+    }
   },
-  mounted() { }
+  mounted() {
+    this.preStart();
+  }
 }
 </script>

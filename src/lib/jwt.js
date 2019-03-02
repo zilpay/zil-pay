@@ -21,14 +21,15 @@ export default class extends Crypto {
   }
 
   tokenCreate(key) {
-    let payload = {
-      phash: this.createPHash(key)
-    };
+    let phash = this.createPHash(key);
+    let payload = { phash };
 
     return new Promise((resolve, reject) => {
       sign(payload, key, this._params, (err, token) => {
         if (err) return reject(err);
-        return resolve(token);
+        return resolve({
+          token, phash
+        });
       });
     });
   }
