@@ -59,14 +59,13 @@
 import { mapMutations, mapActions } from 'vuex'
 import btn from '../directives/btn'
 import MnemonicMixin from '../mixins/mnemonic'
-import StorageMixin from '../mixins/storage'
 import { validationMixin } from 'vuelidate'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 
 
 export default {
   name: 'Create',
-  mixins: [MnemonicMixin, StorageMixin, validationMixin],
+  mixins: [MnemonicMixin, validationMixin],
   directives: { btn },
   data() {
     return {
@@ -98,9 +97,6 @@ export default {
         return !vue.$v.confirm.sameAs || !vue.$v.password.minLength;
       })
     }
-  },
-  mounted() {
-    this.mnemonicPhrase = this.mnemonic.generateMnemonic();
   },
   methods: {
     ...mapActions('storage', [

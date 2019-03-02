@@ -9,13 +9,11 @@
 import { mapActions, mapMutations, mapState } from 'vuex'
 import zilConfig from './config/zil.json'
 import NavBar from './components/UI/NavBar'
-import StorageMixin from './mixins/storage'
 
 
 export default {
   name: 'App',
   components: { NavBar },
-  mixins: [StorageMixin],
   mounted() {
     this.preStart();
   },

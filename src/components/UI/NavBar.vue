@@ -22,15 +22,15 @@
 </template>
 
 <script>
+import { mapActions} from 'vuex'
 import Dropdown from './Dropdown'
-import jazzicon from 'jazzicon'
 
 
 export default {
   name: 'NavBar',
   components: { Dropdown },
   mounted() {
-    this.onJazzicon();
+    this.jazzicon('jazzicon');
   },
   computed: {
     options() {
@@ -38,11 +38,9 @@ export default {
     }
   },
   methods: {
-    onJazzicon() {
-      let ctx = window.document.querySelector('#jazzicon');
-      let el = jazzicon(45, Math.round(Math.random() * 10000000));
-      ctx.appendChild(el);
-    }
+    ...mapActions('storage', [
+      'jazzicon'
+    ]),
   }
 }
 </script>

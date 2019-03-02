@@ -1,5 +1,6 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { getAddressFromPrivateKey, getPubKeyFromPrivateKey } from '@zilliqa-js/crypto'
+import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
 import Crypto from '../lib/crypto'
@@ -145,6 +146,14 @@ export default {
       };
       
       commit('wallet', state.wallet);
+    },
+    async jazzicon({ state }, id) {
+      let ctx = window.document.querySelector('#' + id);
+      let { wallet } = await state.storage.get('wallet');
+      let account = wallet.identities[wallet.selectedAddress];
+      let el = jazzicon(45, `0x${account.address}`);
+
+      ctx.appendChild(el);
     }
   },
   getters: { }

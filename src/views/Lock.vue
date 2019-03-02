@@ -35,13 +35,10 @@
 <script>
 import { mapActions } from 'vuex'
 import btn from '../directives/btn'
-import StorageMixin from '../mixins/storage'
-import CryptoMixin from '../mixins/crypto'
 
 
 export default {
   name: 'LockPage',
-  mixins: [StorageMixin, CryptoMixin],
   directives: { btn },
   data() {
     return {

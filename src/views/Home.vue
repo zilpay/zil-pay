@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <input type="text">
     <div class="row justify-content-center">
       <img src="/img/logo.png">
     </div>
