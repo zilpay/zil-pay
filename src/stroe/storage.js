@@ -11,7 +11,7 @@ import Utils from '../lib/utils'
 export default {
   namespaced: true,
   state: {
-    zilliqa: new Zilliqa(zilConf.PROVIDER),
+    zilliqa: new Zilliqa(zilConf.testnet.PROVIDER),
     storage: BrowserStorage(),
     jwt: new Jwt(),
     crypto: new Crypto(),
@@ -24,10 +24,8 @@ export default {
       selectedAddress: null, // index
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
-    config: {
-      PROVIDER: zilConf.PROVIDER,
-      CHAIN_ID: zilConf.CHAIN_ID
-    },
+    selectedAddress: 'testnet',
+    config: zilConf,
     bip39: ''
   },
   mutations: {
@@ -131,7 +129,7 @@ export default {
       let address = getAddressFromPrivateKey(privateKey);
       let { result } = await state.zilliqa.blockchain.getBalance(address);
 
-      await state.zilliqa.wallet.addByPrivateKey(privateKey);
+      state.zilliqa.wallet.addByPrivateKey(privateKey);
  
       if (!result) {
         result = 0;
@@ -151,6 +149,11 @@ export default {
     async jazzicon({ state }, id) {
       let ctx = window.document.querySelector('#' + id);
       let { wallet } = await state.storage.get('wallet');
+
+      if (!wallet) {
+        return null;
+      }
+
       let account = wallet.identities[wallet.selectedAddress];
       let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
 

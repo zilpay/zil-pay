@@ -7,9 +7,9 @@
 
       <button v-btn="'success m-2'"
             @click="copy(account['address'])">
-            {{account['address'] | trimAddress}}
-            <br/>
             Account {{wallet.selectedAddress + 1}}
+            <br/>
+            {{account['address'] | trimAddress}}
       </button>
 
       <h1>

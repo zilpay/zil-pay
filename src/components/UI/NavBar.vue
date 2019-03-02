@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapActions} from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import Dropdown from './Dropdown'
 
 
@@ -33,14 +33,16 @@ export default {
     this.jazzicon('jazzicon');
   },
   computed: {
+    ...mapState('storage', ['config']),
     options() {
-      return ['mainnet', 'testnet'];
+      console.log(Object.keys(this.config));
+      return Object.keys(this.config);
     }
   },
   methods: {
     ...mapActions('storage', [
       'jazzicon'
-    ]),
+    ])
   }
 }
 </script>
