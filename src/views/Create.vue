@@ -7,7 +7,6 @@
         </router-link>
         <h3>Enter your secret twelve word
            phrase here to restore your vault.</h3>
-        <h1></h1>
       </div>
 
       <div class="form-group p-5">

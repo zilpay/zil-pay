@@ -35,7 +35,6 @@ export default {
   computed: {
     ...mapState('storage', ['config']),
     options() {
-      console.log(Object.keys(this.config));
       return Object.keys(this.config);
     }
   },

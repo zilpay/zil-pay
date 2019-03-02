@@ -24,7 +24,8 @@
 
     <div class="row justify-content-center">
       <button v-btn="'success m-2'">DEPOSIT</button>
-      <button v-btn="'success m-2'">SEND</button>
+      <button v-btn="'success m-2'"
+              @click="$router.push({ name: 'send' })">SEND</button>
     </div>
 
     <TxTracking/>

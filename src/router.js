@@ -27,6 +27,11 @@ export default new Router({
       path: '/settings',
       name: 'settings',
       component: () => import('./views/Settings')
+    },
+    {
+      path: '/send',
+      name: 'send',
+      component: () => import('./views/Send')
     }
   ]
 })
