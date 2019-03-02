@@ -1,10 +1,6 @@
-import { units } from '@zilliqa-js/util'
+import { units, BN } from '@zilliqa-js/util'
 
 
 export default function (value) {
-  console.log(units.Units)
-
-  
-  return units.fromQa(value, units.Units.Li);
+  return units.fromQa(new BN(value), units.Units.Zil);
 }
-    
