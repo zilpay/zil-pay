@@ -29,12 +29,13 @@
           <input type="text"
                  class="form-control bg-null"
                  id="gas"
-                 v-model.lazy="gas">
+                 v-model="gas">
          <small class="form-text text-danger"
                 v-if="!$v.gas.sameAs">{{gasMsg}}</small>
         </div>
 
         <button v-btn="'success'"
+                :disabled="!$v.submitForm.sameAs"
                 @click="txFormSubmit">SEND</button>
         <button v-btn="'danger m-2'"
                 @click="$router.push({ name: 'home' })">REJECT</button>
@@ -66,30 +67,32 @@ export default {
     return {
       toAddress: '', addressMsg: null,
       amount: 0, amounMsg: null,
-      gas: 0, gasMsg: null
+      gas: 0, gasMsg: null,
+      submitForm: true
     };
   },
   validations: {
     amount: {
       required,
       sameAs: sameAs(vue => {
-        if (vue.amount < 0) {
+        if (+vue.amount < 0 || isNaN(+vue.amount)) {
           vue.amounMsg = ERRORCODE[0];
           return true;
-        } else if (vue.amount > vue.account.balance) {
+        } else if (+vue.amount > +fromZil(vue.account.balance)) {
           vue.amounMsg = ERRORCODE[1];
           return true;
-        } else {
-          vue.amounMsg = null;
-          return false;
         }
+
+        vue.amounMsg = null;
+
+        return false;
       })
     },
     toAddress: {
       sameAs: sameAs(vue => {
         let isAddress = validation.isAddress(vue.toAddress);
-
-        if (!isAddress && vue.toAddress.length > 0) {
+        
+        if (!isAddress || vue.toAddress.length < 40) {
           vue.addressMsg = ERRORCODE[2];
         } else {
           vue.addressMsg = null;
@@ -100,16 +103,24 @@ export default {
     },
     gas: {
       sameAs: sameAs(vue => {
-        if (vue.gas < 0) {
+        if (vue.gas <= 0 || isNaN(vue.gas) || vue.gas == '') {
           vue.gasMsg = ERRORCODE[0];
           return true;
-        } else if (vue.gas > vue.account.balance) {
+        } else if (vue.gas > +fromZil(vue.account.balance)) {
           vue.gasMsg = ERRORCODE[1];
           return true;
-        } else {
-          vue.gasMsg = null;
-          return false;
         }
+
+        vue.gasMsg = null;
+
+        return false;
+      })
+    },
+    submitForm: {
+      sameAs: sameAs(vue => {
+        return !vue.addressMsg &&
+               !vue.amounMsg &&
+               !vue.gasMsg;
       })
     }
   },

@@ -28,7 +28,7 @@
               @click="$router.push({ name: 'send' })">SEND</button>
     </div>
 
-    <TxTracking/>
+    <TxTracking :txs="txArray"/>
   </div>
 </template>
 
@@ -54,11 +54,18 @@ export default {
     ]),
     ...mapState('storage', [
       'wallet',
-      'bip39'
+      'bip39',
+      'transactions'
     ]),
+
     account() {
       return this.wallet.identities[
         this.wallet.selectedAddress
+      ];
+    },
+    txArray() {
+      return this.transactions[
+        this.account.address
       ];
     }
   },
