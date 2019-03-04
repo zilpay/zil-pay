@@ -34,6 +34,12 @@ export default {
     bip39: ''
   },
   mutations: {
+    selectedNet(state, payload) {
+      if (payload in zilConf) {
+        state.selectedNet = payload;
+        state.storage.set({ selectedNet: payload });
+      }
+    },
     vault(state, payload) {
       state.vault = payload;
       state.storage.set({ vault: payload });

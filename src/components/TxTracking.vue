@@ -11,7 +11,9 @@
           target="_blank"
           :href="exploreAddress(tx.toAddr)">To</a>
       ,
-        <b>Amount: {{tx.amount | fromZil}}</b>
+        <b>Amount: {{parseInt('0x'+tx.amount) | fromZil}}
+          <span class="text-warning">{{currencyController.nativeCurrency}}</span>
+        </b>
       ,
         <b>Statu: {{tx.status}}</b>
       </li>
@@ -20,6 +22,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { fromZil } from '../filters/zil'
 
 
@@ -34,6 +37,11 @@ export default {
       url: 'https://dev-explorer.zilliqa.com'
     };
   },
+  computed: {
+    ...mapState([
+     'currencyController'
+   ]),
+  },
   methods: {
     exploreTransactions(hash) {
       return `${this.url}/transactions/${hash}`;
@@ -41,6 +49,9 @@ export default {
     exploreAddress(address) {
       return `${this.url}/address/${address}`;
     }
+  },
+  mounted() {
+    // console.log(this.txs);
   }
 }
 </script>
