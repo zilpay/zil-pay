@@ -13,7 +13,7 @@
       </button>
 
       <h1>
-        {{account['balance'] | toZil}}
+        {{account['balance'] | fromZil}}
         <span class="text-warning">{{currencyController.nativeCurrency}}</span>
       </h1>
       <h1>
@@ -35,7 +35,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import copy from 'clipboard-copy'
-import toZil from '../filters/toZil'
+import { fromZil } from '../filters/zil'
 import trimAddress from '../filters/trimAddress'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
@@ -47,7 +47,7 @@ export default {
   directives: { btn },
   mixins: [MnemonicMixin],
   components: { TxTracking },
-  filters: { toZil, trimAddress },
+  filters: { fromZil, trimAddress },
   computed: {
      ...mapState([
       'currencyController'

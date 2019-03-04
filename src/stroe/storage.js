@@ -1,5 +1,9 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
-import { getAddressFromPrivateKey, getPubKeyFromPrivateKey } from '@zilliqa-js/crypto'
+import {
+  getAddressFromPrivateKey,
+  getPubKeyFromPrivateKey
+} from '@zilliqa-js/crypto'
+import { units, Long, BN } from '@zilliqa-js/util'
 import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
@@ -24,7 +28,7 @@ export default {
       selectedAddress: null, // index
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
-    selectedAddress: 'testnet',
+    selectedNet: 'testnet',
     config: zilConf,
     bip39: ''
   },
@@ -170,6 +174,30 @@ export default {
       let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
 
       ctx.appendChild(el);
+    },
+    async buildTransactions({ state }, { to, amount, gasPrice }) {
+      // let { CHAIN_ID, MSG_VERSION } = state.config[state.selectedNet];
+      // let VERSION = bytes.pack(CHAIN_ID, MSG_VERSION);
+      let { address, publicKey } = state.wallet.identities[state.wallet.selectedAddress];
+      let { result } = await state.zilliqa.blockchain.getBalance(address);
+      let zilTx = state.zilliqa.transactions.new({
+        version: 21823489,
+        toAddr: to,
+        pubKey: publicKey,
+        amount: new BN(units.toQa(amount, units.Units.Zil)),
+        gasPrice: units.toQa(gasPrice, units.Units.Zil),
+        gasLimit: Long.fromNumber(1),
+        nonce: result.nonce || 0
+      });
+      let tx = await state.zilliqa.blockchain.createTransaction(zilTx);
+      let txConfrim = {
+        from: address,
+        to: tx.toAddr,
+        amount: tx.payload.amount,
+        hash: tx.id
+      };
+
+      console.log(txConfrim);
     }
   },
   getters: { }

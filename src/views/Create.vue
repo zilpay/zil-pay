@@ -15,7 +15,8 @@
                   id="seed"
                   v-model="mnemonicPhrase">
         </textarea>
-        <div class="error text-danger" v-if="$v.mnemonicPhrase.sameAs">
+        <div class="error text-danger"
+             v-if="$v.mnemonicPhrase.sameAs">
           Seed phrases is wrong.
         </div>
 
@@ -26,7 +27,8 @@
                  id="pass"
                  placeholder="Password"
                  v-model="password">
-          <div class="error text-danger" v-if="!$v.password.minLength">
+          <div class="error text-danger"
+               v-if="!$v.password.minLength">
             Password must have at least
             {{$v.password.$params.minLength.min}} letters.
           </div>
@@ -55,11 +57,11 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 import { mapMutations, mapActions } from 'vuex'
 import btn from '../directives/btn'
 import MnemonicMixin from '../mixins/mnemonic'
-import { validationMixin } from 'vuelidate'
-import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 
 
 export default {

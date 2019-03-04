@@ -1,14 +1,17 @@
 {
   "mainnet": {
     "PROVIDER": "https://api.zilliqa.com",
-    "CHAIN_ID": 1
+    "CHAIN_ID": 0,
+    "MSG_VERSION": 10
   },
   "testnet": {
     "PROVIDER": "https://dev-api.zilliqa.com",
-    "CHAIN_ID": 2
+    "CHAIN_ID": 0,
+    "MSG_VERSION": 10
   },
   "private": {
     "PROVIDER": "http://localhost",
-    "CHAIN_ID": 3
+    "CHAIN_ID": 0,
+    "MSG_VERSION": 10
   }
 }

@@ -28,10 +28,12 @@ export default {
       'signVerifyJWT',
       'bip39Decrypt'
     ]),
+    ...mapActions(['getGas']),
     ...mapMutations('storage', [
       'config',
     ]),
     async preStart() {
+      this.getGas();
       await this.syncBrowser();
 
       if (!this.vault) {
