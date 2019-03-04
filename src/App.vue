@@ -35,9 +35,9 @@ export default {
     async preStart() {
       this.getGas();
       await this.syncBrowser();
+      this.config(zilConfig);
 
       if (!this.vault) {
-        this.config(zilConfig);
         this.$router.push({ name: 'create' });
         return null;
       }

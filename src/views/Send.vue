@@ -132,14 +132,14 @@ export default {
       'buildTransactions'
     ]),
 
-    txFormSubmit() {
+    async txFormSubmit() {
       let data = {
         to: this.toAddress,
         amount: this.amount,
         gasPrice: this.gas
       };
-
-      this.buildTransactions(data);
+      let tx = await this.buildTransactions(data);
+      console.log(tx);
     }
   },
   mounted() {
