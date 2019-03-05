@@ -91,7 +91,7 @@ export default {
     toAddress: {
       sameAs: sameAs(vue => {
         let isAddress = validation.isAddress(vue.toAddress);
-        
+
         if (!isAddress || vue.toAddress.length < 40) {
           vue.addressMsg = ERRORCODE[2];
         } else {
@@ -139,8 +139,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions('storage', [
-      'buildTransactions'
+    ...mapActions('zilliqa', [
+      'buildTransaction',
+      'balanceUpdate'
     ]),
 
     async txFormSubmit() {
@@ -149,7 +150,10 @@ export default {
         amount: this.amount,
         gasPrice: this.gas
       };
-      let tx = await this.buildTransactions(data);
+      let tx = await this.buildTransaction(data);
+
+      this.balanceUpdate();
+
       console.log(tx);
     }
   },

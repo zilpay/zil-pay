@@ -2,12 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import storage from './stroe/storage'
+import zilliqa from './stroe/zilliqa'
 
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: { storage },
+  modules: { storage, zilliqa },
   state: {
     currencyController: {
       nativeCurrency: 'ZIL',
@@ -23,7 +24,7 @@ export default new Vuex.Store({
   },
   actions: {
     async getGas({ state, commit }) {
-      let { blockchain } = state.storage.zilliqa;
+      let { blockchain } = state.zilliqa.zilliqa;
       let { result } = await blockchain.getMinimumGasPrice();
 
       commit('minGas', result);

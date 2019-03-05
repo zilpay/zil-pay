@@ -19,7 +19,8 @@ export default {
   },
   computed: {
     ...mapState('storage', [
-      'vault',
+      'pubKeyJWT',
+      'selectedNet'
     ])
   },
   methods: {
@@ -31,17 +32,25 @@ export default {
     ...mapActions(['getGas']),
     ...mapMutations('storage', [
       'config',
+      'setNet'
     ]),
+    ...mapMutations('zilliqa', [
+      'changeProvider'
+    ]),
+
     async preStart() {
       this.getGas();
       await this.syncBrowser();
 
-      if (!this.vault) {
+      if (!this.pubKeyJWT) {
         this.config(zilConfig);
+        this.setNet(Object.keys(zilConfig)[0]);
         this.$router.push({ name: 'create' });
         return null;
       }
       let status = await this.signVerifyJWT();
+
+      this.changeProvider(this.selectedNet);
 
       this.bip39Decrypt();
 

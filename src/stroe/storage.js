@@ -1,9 +1,3 @@
-import { Zilliqa } from '@zilliqa-js/zilliqa'
-import {
-  getAddressFromPrivateKey,
-  getPubKeyFromPrivateKey
-} from '@zilliqa-js/crypto'
-import { units, Long, BN, bytes } from '@zilliqa-js/util'
 import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
@@ -15,7 +9,6 @@ import Utils from '../lib/utils'
 export default {
   namespaced: true,
   state: {
-    zilliqa: new Zilliqa(zilConf.testnet.PROVIDER),
     storage: BrowserStorage(),
     jwt: new Jwt(),
     crypto: new Crypto(),
@@ -29,16 +22,14 @@ export default {
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
     transactions: {}, // {'0x..': [{to, amount, hash}] } //
-    selectedNet: 'testnet',
+    selectedNet: null,
     config: zilConf,
     bip39: ''
   },
   mutations: {
-    selectedNet(state, payload) {
-      if (payload in zilConf) {
-        state.selectedNet = payload;
-        state.storage.set({ selectedNet: payload });
-      }
+    setNet(state, payload) {
+      state.selectedNet = payload;
+      state.storage.set({ selectedNet: payload });
     },
     vault(state, payload) {
       state.vault = payload;
@@ -104,9 +95,9 @@ export default {
         return false;
       }
 
-      state.vault = await state.jwt.tokenCreate(state.pubKeyJWT);
+      let { token } = await state.jwt.tokenCreate(state.pubKeyJWT);
 
-      commit('vault', state.vault);
+      commit('vault', token);
       commit('ready', true);
 
       return true;
@@ -156,29 +147,6 @@ export default {
 
       state.storage.set({ bip39 });
     },
-    async walletUpdate({ state, commit }, { index, privateKey }) {
-      let data = state.wallet;
-      let publicKey = getPubKeyFromPrivateKey(privateKey);
-      let address = getAddressFromPrivateKey(privateKey);
-      let { result } = await state.zilliqa.blockchain.getBalance(address);
-
-      state.zilliqa.wallet.addByPrivateKey(privateKey);
-
-      if (!result) {
-        result = 0;
-      } else {
-        result = result.balance;
-      }
-
-      data.selectedAddress = index;
-      data.identities[index] = {
-        address,
-        publicKey,
-        balance: result
-      };
-
-      commit('wallet', data);
-    },
     async jazzicon({ state }, id) {
       let ctx = window.document.querySelector('#' + id);
       let { wallet } = await state.storage.get('wallet');
@@ -191,30 +159,9 @@ export default {
       let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
 
       ctx.appendChild(el);
-    },
-    async buildTransactions({ state, commit }, { to, amount, gasPrice }) {
-      let { CHAIN_ID, MSG_VERSION } = state.config[state.selectedNet];
-      let { address, publicKey } = state.wallet.identities[state.wallet.selectedAddress];
-      let { result } = await state.zilliqa.blockchain.getBalance(address);
-
-      let nonce = result ? result.nonce : 0;
-      let gasLimit = Long.fromNumber(1);
-      let version = bytes.pack(CHAIN_ID, MSG_VERSION);
-
-      gasPrice = units.toQa(gasPrice, units.Units.Zil);
-      amount = new BN(units.toQa(amount, units.Units.Zil));
-      nonce++;
-
-      let zilTx = state.zilliqa.transactions.new({
-        version, nonce, gasPrice, amount, gasLimit,
-        toAddr: to, pubKey: publicKey,
-      });
-      let tx = await state.zilliqa.blockchain.createTransaction(zilTx);
-
-      commit('transactions', { tx, address });
-
-      return tx;
     }
   },
-  getters: { }
+  getters: {
+    NET: state => state.selectedNet
+  }
 }

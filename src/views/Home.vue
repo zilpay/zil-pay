@@ -54,7 +54,6 @@ export default {
     ]),
     ...mapState('storage', [
       'wallet',
-      'bip39',
       'transactions'
     ]),
 
@@ -64,24 +63,18 @@ export default {
       ];
     },
     txArray() {
-      return this.transactions[
-        this.account.address
-      ];
+      let txs = this.transactions[this.account.address] || [];
+      return txs.reverse();
     }
   },
   methods: {
-    ...mapActions('storage', [
-      'walletUpdate'
+    ...mapActions('zilliqa', [
+      'balanceUpdate'
     ]),
 
     copy,
     preStart() {
-      this.mnemonic.bip32Node(this.bip39);
-      let { privateKey, index } = this.mnemonic.getPrivateKeyAtIndex(
-        this.wallet.selectedAddress
-      );
-
-      this.walletUpdate({ index, privateKey });
+      this.balanceUpdate();
     }
   },
   mounted() {

@@ -11,7 +11,7 @@
           target="_blank"
           :href="exploreAddress(tx.toAddr)">To</a>
       ,
-        <b>Amount: {{parseInt('0x'+tx.amount) | fromZil}}
+        <b>Amount: {{tx.amount | fromZil}}
           <span class="text-warning">{{currencyController.nativeCurrency}}</span>
         </b>
       ,
@@ -40,7 +40,7 @@ export default {
   computed: {
     ...mapState([
      'currencyController'
-   ]),
+   ])
   },
   methods: {
     exploreTransactions(hash) {

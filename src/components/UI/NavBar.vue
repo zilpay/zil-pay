@@ -6,9 +6,11 @@
            href="#">ZilPay</a>
       </div>
 
-      <Dropdown :options="options"
-                :selected="options[0]"
-                :classBtn="'dark text-pink'"/>
+      <Dropdown v-if="selectedNet"
+                :options="options"
+                :selected="selectedNet"
+                :classBtn="'dark text-pink'"
+                @updateOption="selectNet"/>
 
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -22,7 +24,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import Dropdown from './Dropdown'
 
 
@@ -33,7 +35,11 @@ export default {
     this.jazzicon('jazzicon');
   },
   computed: {
-    ...mapState('storage', ['config']),
+    ...mapState('storage', [
+      'config',
+      'selectedNet'
+    ]),
+
     options() {
       return Object.keys(this.config);
     }
@@ -41,7 +47,22 @@ export default {
   methods: {
     ...mapActions('storage', [
       'jazzicon'
-    ])
+    ]),
+    ...mapMutations('storage', [
+      'setNet'
+    ]),
+    ...mapActions('zilliqa', [
+      'balanceUpdate'
+    ]),
+    ...mapMutations('zilliqa', [
+      'changeProvider'
+    ]),
+
+    selectNet(net) {
+      this.setNet(net);
+      this.changeProvider(net);
+      this.balanceUpdate();
+    }
   }
 }
 </script>
