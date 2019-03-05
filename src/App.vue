@@ -24,6 +24,9 @@ export default {
     ])
   },
   methods: {
+    ...mapActions([
+      'updateRate'
+    ]),
     ...mapActions('storage', [
       'syncBrowser',
       'signVerifyJWT',
@@ -39,8 +42,9 @@ export default {
     ]),
 
     async preStart() {
-      this.getGas();
       await this.syncBrowser();
+      this.updateRate();
+      this.changeProvider(this.selectedNet);     
 
       if (!this.pubKeyJWT) {
         this.config(zilConfig);
@@ -48,9 +52,10 @@ export default {
         this.$router.push({ name: 'create' });
         return null;
       }
-      let status = await this.signVerifyJWT();
 
-      this.changeProvider(this.selectedNet);
+      this.getGas();
+
+      let status = await this.signVerifyJWT();
 
       this.bip39Decrypt();
 

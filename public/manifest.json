@@ -13,7 +13,10 @@
     "activeTab",
     "tabs",
     "unlimitedStorage",
-    "storage"
+    "storage",
+    "notifications",
+    "webRequest",
+    "https://api.coinmarketcap.com/v1/ticker/*"
   ],
   "browser_action": {
     "default_title": "ZilPay",

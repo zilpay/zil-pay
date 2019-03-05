@@ -104,18 +104,20 @@ export default {
       'syncBrowser',
       'bip39Encrypt',
       'createJWT',
-      'walletUpdate'
+      'jazzicon'
+    ]),
+    ...mapActions('zilliqa', [
+      'createWallet'
     ]),
     ...mapMutations('storage', ['bip39']),
 
     async submit() {
       this.mnemonic.bip32Node(this.mnemonicPhrase);
 
-      let wallet = await this.mnemonic.getPrivateKeyAtIndex();
-
-      await this.walletUpdate(wallet);
       await this.createJWT(this.password);
       await this.bip39Encrypt(this.mnemonic.phrase);
+      await this.createWallet(0);
+      await this.jazzicon('jazzicon');
 
       this.$router.push({ name: 'home' });
     }

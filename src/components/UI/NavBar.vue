@@ -58,10 +58,10 @@ export default {
       'changeProvider'
     ]),
 
-    selectNet(net) {
-      this.setNet(net);
-      this.changeProvider(net);
-      this.balanceUpdate();
+    async selectNet(net) {
+      await this.setNet(net);
+      await this.changeProvider(net);
+      await this.balanceUpdate();
     }
   }
 }

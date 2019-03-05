@@ -1,10 +1,10 @@
 import storage from './storage'
 
 import { Zilliqa } from '@zilliqa-js/zilliqa'
-// import {
-//   getAddressFromPrivateKey,
-//   getPubKeyFromPrivateKey
-// } from '@zilliqa-js/crypto'
+import {
+  getAddressFromPrivateKey,
+  getPubKeyFromPrivateKey
+} from '@zilliqa-js/crypto'
 import { units, Long, BN, bytes } from '@zilliqa-js/util'
 
 import Mnemonic from '../lib/mnemonic'
@@ -20,12 +20,13 @@ export default {
   },
   mutations: {
     changeProvider(state, key) {
-      state.zilliqa = new Zilliqa(zilConf[key].PROVIDER);
+      state.zilliqa = new Zilliqa(
+        zilConf[key || 'mainnet']['PROVIDER']
+      );
     }
   },
   actions: {
     async balanceUpdate({ state, getters }) {
-      console.log(state.zilliqa);
       let storageState = getters.STORAGE_STATE;
       let storageMutations = getters.STORAGE_MUTATIONS;
       let data = storageState.wallet;
@@ -44,6 +45,35 @@ export default {
       storageMutations.wallet(storageState, data);
 
       return result;
+    },
+    async createWallet({ state, getters }, index) {
+      let storageState = getters.STORAGE_STATE;
+      let storageMutations = getters.STORAGE_MUTATIONS;
+      let data = storageState.wallet;
+
+      if (!state.mnemonic._bip39) {
+        state.mnemonic.bip32Node(storageState.bip39);
+      }
+
+      let { privateKey } = state.mnemonic.getPrivateKeyAtIndex(index);
+      let publicKey = getPubKeyFromPrivateKey(privateKey);
+      let address = getAddressFromPrivateKey(privateKey);
+      let { result } = await state.zilliqa.blockchain.getBalance(address);
+
+      if (!result) {
+        result = 0;
+      } else {
+        result = result.balance;
+      }
+
+      data.selectedAddress = index;
+      data.identities[index] = {
+        address,
+        publicKey,
+        balance: result
+      };
+
+      storageMutations.wallet(storageState, data);
     },
 
     async buildTransaction({ state, getters }, { to, amount, gasPrice }) {

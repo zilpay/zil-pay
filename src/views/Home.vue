@@ -17,7 +17,7 @@
         <span class="text-warning">{{currencyController.nativeCurrency}}</span>
       </h1>
       <h1>
-         $605.67
+         {{account['balance'] | toUSD(currencyController.conversionRate)}}
          <span class="text-warning">{{currencyController.currentCurrency}}</span>
       </h1>
     </div>
@@ -35,7 +35,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import copy from 'clipboard-copy'
-import { fromZil } from '../filters/zil'
+import { fromZil, toUSD } from '../filters/zil'
 import trimAddress from '../filters/trimAddress'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
@@ -47,7 +47,7 @@ export default {
   directives: { btn },
   mixins: [MnemonicMixin],
   components: { TxTracking },
-  filters: { fromZil, trimAddress },
+  filters: { fromZil, trimAddress, toUSD },
   computed: {
      ...mapState([
       'currencyController'
