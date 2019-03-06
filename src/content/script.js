@@ -14,7 +14,7 @@ export default class {
   }
 
   init() {
-    logger.log('zil init');
+    logger.log('init');
 
     this.registerListeners();
     this.inject();
@@ -41,7 +41,7 @@ export default class {
     let injectionSite = (document.head || document.documentElement);
     let container = document.createElement('script');
 
-    container.src = extensionizer.extension.getURL('dist/pageHook.js');
+    container.src = extensionizer.extension.getURL('dist/hook.js');
     container.onload = function() {
         this.parentNode.removeChild(this);
     };

@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import randomUUID from 'uuid/v4';
 import extensionizer from 'extensionizer';
-import Logger from '../../lib/logger'
+import Logger from '../../../lib/logger'
 
 const logger = new Logger('ZilPay.Child');
 
