@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row justify-content-center pt-3">
-      <div class="col-lg-12 text-center text-ightindigo pt-3">
+      <div v-if="pubKeyJWT" class="col-lg-12 text-center text-ightindigo pt-3">
         <router-link :to="$router.options.routes[0].path">
           <h3 class="text-warning text-left point">&#60;back</h3>
         </router-link>
@@ -15,9 +15,15 @@
                   id="seed"
                   v-model="mnemonicPhrase">
         </textarea>
-        <div class="error text-danger"
-             v-if="$v.mnemonicPhrase.sameAs">
-          Seed phrases is wrong.
+        <div class="error text-danger">
+          <div v-if="$v.mnemonicPhrase.sameAs">
+            Seed phrases is wrong.
+          </div>
+          <div v-if="!$v.mnemonicPhrase.minLength">
+            Seed phrases are
+            {{$v.mnemonicPhrase.$params.minLength.min}}
+            words long
+          </div>
         </div>
 
         <div class="pt-3">
@@ -59,7 +65,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations, mapActions, mapState } from 'vuex'
 import btn from '../directives/btn'
 import MnemonicMixin from '../mixins/mnemonic'
 
@@ -76,6 +82,11 @@ export default {
       submitForm: true
     };
   },
+  computed: {
+    ...mapState('storage', [
+      'pubKeyJWT'
+    ])
+  },
   validations: {
     password: {
       required,
@@ -86,6 +97,7 @@ export default {
       sameAs: sameAs('password')
     },
     mnemonicPhrase: {
+      minLength: minLength(12),
       sameAs: sameAs(vue => {
         return vue.mnemonic.validateMnemonic(vue.phrase);
       })
@@ -100,6 +112,9 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'spiner'
+    ]),
     ...mapActions('storage', [
       'syncBrowser',
       'bip39Encrypt',
@@ -112,6 +127,7 @@ export default {
     ...mapMutations('storage', ['bip39']),
 
     async submit() {
+      this.spiner();
       this.mnemonic.bip32Node(this.mnemonicPhrase);
 
       await this.createJWT(this.password);
@@ -119,8 +135,12 @@ export default {
       await this.createWallet(0);
       await this.jazzicon('jazzicon');
 
+      this.spiner();
       this.$router.push({ name: 'home' });
     }
+  },
+  mounted() {
+    console.log(this.pubKeyJWT);
   }
 }
 </script>

@@ -80,30 +80,21 @@ export default {
     async buildTransaction({ state, getters }, { to, amount, gasPrice }) {
       let storageState = getters.STORAGE_STATE;
       let storageMutations = getters.STORAGE_MUTATIONS;
-      let addressIndex = storageState.wallet.selectedAddress;
-      let { CHAIN_ID, MSG_VERSION } = storageState.config[storageState.selectedNet];
-      let { address, publicKey } = storageState.wallet.identities[addressIndex];
+      let { address, publicKey } = getters.ACCOUNT_ACTIVATION;
 
       let { result } = await state.zilliqa.blockchain.getBalance(address);
-
-      if (!state.mnemonic._bip39) {
-        state.mnemonic.bip32Node(storageState.bip39);
-      }
-
       let nonce = result ? result.nonce : 0;
       let gasLimit = Long.fromNumber(1);
-      let version = bytes.pack(CHAIN_ID, MSG_VERSION);
-      let { privateKey } = state.mnemonic.getPrivateKeyAtIndex(addressIndex);
 
       gasPrice = units.toQa(gasPrice, units.Units.Zil);
       amount = new BN(units.toQa(amount, units.Units.Zil));
       nonce++;
 
-      state.zilliqa.wallet.addByPrivateKey(privateKey);
-
       let zilTxData = state.zilliqa.transactions.new({
-        version, nonce, gasPrice, amount, gasLimit,
-        toAddr: to, pubKey: publicKey,
+        nonce, gasPrice, amount, gasLimit,
+        toAddr: to,
+        pubKey: publicKey,
+        version: getters.VERSION
       });
 
       let { txParams } = await state.zilliqa.wallet.sign(zilTxData);
@@ -130,6 +121,25 @@ export default {
     },
     STORAGE_MUTATIONS() {
       return storage.mutations;
+    },
+    VERSION() {
+      let { CHAIN_ID, MSG_VERSION } = storage.state.config[
+        storage.state.selectedNet
+      ];
+      return bytes.pack(CHAIN_ID, MSG_VERSION);
+    },
+    ACCOUNT_ACTIVATION(state) {
+      if (!state.mnemonic._bip39) {
+        state.mnemonic.bip32Node(storage.state.bip39);
+      }
+
+      let index = storage.state.wallet.selectedAddress;
+      let { privateKey } = state.mnemonic.getPrivateKeyAtIndex(index);
+      let wallet = storage.state.wallet.identities[index];
+
+      state.zilliqa.wallet.addByPrivateKey(privateKey);
+
+      return wallet;
     }
   }
 }
