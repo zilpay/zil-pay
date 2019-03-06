@@ -43,7 +43,7 @@ export default {
 
       data.identities[addressIndex].balance = result;
 
-      storageMutations.wallet(storageState, data);
+      storageMutations.setWallet(storageState, data);
 
       return result;
     },
@@ -74,7 +74,7 @@ export default {
         balance: result
       };
 
-      storageMutations.wallet(storageState, data);
+      storageMutations.setWallet(storageState, data);
     },
 
     async buildTransaction({ state, getters }, { to, amount, gasPrice }) {

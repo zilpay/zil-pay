@@ -39,7 +39,7 @@ export default {
       state.pubKeyJWT = key;
       state.storage.set({ pubKeyJWT: key });
     },
-    wallet(state, object) {
+    setWallet(state, object) {
       state.wallet = object;
       state.storage.set({ wallet: object });
     },
