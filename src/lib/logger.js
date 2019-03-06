@@ -1,7 +1,5 @@
 export default class {
 
-  _name = '';
-
   constructor(name) {
     this._name = name;
   }

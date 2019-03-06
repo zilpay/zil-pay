@@ -1,8 +1,9 @@
 const webpack = require('webpack');
-const mode = process.env.NODE_ENV || 'development';
+const mode = process.env.NODE_ENV || 'production';
+
 
 module.exports = {
-    entry: './index.js',
+    entry: './src/content/index.js',
     devtool: 'source-map',
     target: 'web',
     module: {
@@ -13,15 +14,15 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: [ '@babel/preset-env' ],
-                        plugins: [ '@babel/plugin-transform-runtime' ]
+                        presets: ['@babel/preset-env'],
+                        plugins: ['@babel/plugin-transform-runtime']
                     }
                 }
             }
         ]
     },
     resolve: {
-        modules: [ '../../../node_modules' ]
+        modules: ['./node_modules']
     },
     plugins: [
         new webpack.optimize.ModuleConcatenationPlugin(),

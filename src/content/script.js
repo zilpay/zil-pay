@@ -8,14 +8,13 @@ const logger = new Logger('ZilPay');
 
 export default class {
 
-  duplex = null;
-  eventChannel = null;
-
   constructor(duplexTab, eventChannel) {
-    logger.log('zil init');
-
     this.duplex = duplexTab;
     this.eventChannel = eventChannel;
+  }
+
+  init() {
+    logger.log('zil init');
 
     this.registerListeners();
     this.inject();

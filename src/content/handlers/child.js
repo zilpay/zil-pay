@@ -144,7 +144,7 @@ export default class extends EventEmitter {
       return this.channel.postMessage({ action, data, noAck: true });
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       let messageID = randomUUID();
 
       this.outgoing.set(messageID, resolve);

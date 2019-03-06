@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "contentBuild": "webpack --config src/content/webpack.config.js --progress --colors -o ../../dist/contentScript.js",
+    "build": "vue-cli-service build && npm run contentBuild",
+    "contentBuild": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -35,6 +35,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "webpack-cli": "^3.2.3"
   }
 }
