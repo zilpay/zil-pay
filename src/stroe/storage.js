@@ -158,6 +158,10 @@ export default {
       let account = wallet.identities[wallet.selectedAddress];
       let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
 
+      if (ctx.children.length > 0) {
+        ctx.children[0].remove();
+      }
+
       ctx.appendChild(el);
     }
   },

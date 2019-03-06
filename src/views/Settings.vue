@@ -62,6 +62,9 @@ export default {
       'vault',
       'setWallet'
     ]),
+    ...mapActions('storage', [
+      'jazzicon'
+    ]),
     ...mapActions('zilliqa', [
       'createWallet',
       'balanceUpdate'
@@ -76,6 +79,7 @@ export default {
 
       wallet.selectedAddress = index;
 
+      this.jazzicon('jazzicon');
       await this.setWallet(wallet);
       await this.balanceUpdate();
     }
