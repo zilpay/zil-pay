@@ -90,6 +90,7 @@ export default {
       amount = new BN(units.toQa(amount, units.Units.Zil));
       nonce++;
 
+      let transactionCreated;
       let zilTxData = state.zilliqa.transactions.new({
         nonce, gasPrice, amount, gasLimit,
         toAddr: to,
@@ -97,18 +98,29 @@ export default {
         version: getters.VERSION
       });
 
-      let { txParams } = await state.zilliqa.wallet.sign(zilTxData);
-      let data = await state.zilliqa.provider.send(
-        RPCMethod.CreateTransaction, txParams
-      );
-      let transactionCreated = {
-        amount: amount.toString(),
-        id: data.result.TranID,
-        info: data.result.Info,
-        net: storageState.selectedNet,
-        toAddr: txParams.toAddr,
-        fromAddr: address
-      };
+      try {
+        let { txParams } = await state.zilliqa.wallet.sign(zilTxData);
+        let data = await state.zilliqa.provider.send(
+          RPCMethod.CreateTransaction, txParams
+        );
+        transactionCreated = {
+          amount: amount.toString(),
+          id: data.result.TranID,
+          info: data.result.Info,
+          net: storageState.selectedNet,
+          toAddr: txParams.toAddr,
+          fromAddr: address
+        };
+      } catch(err) {
+        transactionCreated = {
+          amount: amount.toString(),
+          id: null,
+          info: 'transaction fail',
+          net: storageState.selectedNet,
+          toAddr: to,
+          fromAddr: address
+        };
+      }
 
       storageMutations.transactions(storageState, transactionCreated);
 

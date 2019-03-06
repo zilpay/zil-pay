@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "contentBuild": "webpack --config src/content/webpack.config.js --progress --colors -o ../../dist/contentScript.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -15,8 +16,11 @@
     "bootstrap-scss": "^4.3.1",
     "clipboard-copy": "^3.0.0",
     "crypto": "^1.0.1",
+    "eventemitter3": "^3.1.0",
+    "extensionizer": "^1.0.1",
     "jazzicon": "^1.5.0",
     "jsonwebtoken": "^8.5.0",
+    "uuid": "^3.3.2",
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",
     "vuelidate": "^0.7.4",

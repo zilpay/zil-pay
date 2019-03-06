@@ -19,10 +19,15 @@
           </div>
           <div class="d-flex justify-content-end">
             <p class="mr-auto text-ightindigo">{{val.balance | fromZil}}
-              <span class="text-warning">{{currencyController.nativeCurrency}}</span>
+              <span class="text-warning">
+                {{currencyController.nativeCurrency}}
+              </span>
             </p>
-            <p class="text-ightindigo">{{val.balance | toUSD(currencyController.conversionRate)}}
-              <span class="text-warning">{{currencyController.currentCurrency}}</span>
+            <p class="text-ightindigo">
+              {{val.balance | toUSD(currencyController.conversionRate)}}
+              <span class="text-warning">
+                {{currencyController.currentCurrency}}
+              </span>
             </p>
           </div>
 
@@ -80,8 +85,9 @@ export default {
       wallet.selectedAddress = index;
 
       this.jazzicon('jazzicon');
-      await this.setWallet(wallet);
-      await this.balanceUpdate();
+      this.setWallet(wallet);
+      this.balanceUpdate();
+      this.$router.push({ name: 'home' });
     }
   }
 }
