@@ -27,6 +27,9 @@ export default {
     ...mapActions([
       'updateRate'
     ]),
+    ...mapMutations([
+      'spiner'
+    ]),
     ...mapActions('storage', [
       'syncBrowser',
       'signVerifyJWT',
@@ -44,7 +47,8 @@ export default {
     async preStart() {
       await this.syncBrowser();
       this.updateRate();
-      this.changeProvider(this.selectedNet);     
+      this.changeProvider(this.selectedNet);
+      this.spiner();
 
       if (!this.pubKeyJWT) {
         this.config(zilConfig);

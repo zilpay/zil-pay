@@ -1,21 +1,20 @@
 <template>
   <div class="container">
+    <p class="text-left">History</p>
     <ul class="list-group list-group-flush text-ightindigo">
       <li class="list-group-item text-ightindigo"
-          v-for="tx of txs" :key="tx.id">
-        <a class="text-ightindigo"
-           target="_blank"
-           :href="exploreTransactions(tx.id)">Explore</a>
-      ,
-       <a class="text-ightindigo"
-          target="_blank"
-          :href="exploreAddress(tx.toAddr)">To</a>
-      ,
-        <b>Amount: {{tx.amount | fromZil}}
-          <span class="text-warning">{{currencyController.nativeCurrency}}</span>
-        </b>
-      ,
-        <b>Statu: {{tx.status}}</b>
+          v-for="(tx, index) of txs" :key="index">
+          <div class="row">
+            <a class="col-2 text-truncate text-warning" target="_blank"
+               :href="exploreTransactions(tx.id)">#{{index + 1}}</a>
+            <div class="col text-break">
+              {{tx.info}}
+            </div>
+            <div class="col-">
+              {{tx.amount | fromZil}}
+              <span class="text-warning">{{currencyController.nativeCurrency}}</span>
+            </div>
+          </div>
       </li>
     </ul>
   </div>
@@ -45,9 +44,6 @@ export default {
   methods: {
     exploreTransactions(hash) {
       return `${this.url}/transactions/${hash}`;
-    },
-    exploreAddress(address) {
-      return `${this.url}/address/${address}`;
     }
   },
   mounted() {

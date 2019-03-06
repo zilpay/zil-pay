@@ -17,11 +17,26 @@ export default new Vuex.Store({
       currentCurrency: 'USD',
       conversionRate: 0.02
     },
-    minGas: 1000000000
+    minGas: 1000000000,
+    loading: true
   },
   mutations: {
     minGas(state, payload) {
       state.minGas = payload;
+    },
+    spiner(state) {
+      let spiner = window.document.querySelector('#spinner');
+      let app = window.document.querySelector('#app');
+
+      state.loading = !state.loading;
+
+      if (state.loading) {
+        spiner.style.display = 'block';
+        app.style.filter = 'blur(5px)';
+      } else {
+        app.style.filter = null;
+        spiner.style.display = 'none';
+      }
     }
   },
   actions: {

@@ -10,6 +10,7 @@
           <input type="text"
                  class="form-control bg-null"
                  id="to"
+                 autocomplete="off"
                  placeholder="To address"
                  v-model="toAddress">
           <small class="form-text text-danger"
@@ -45,7 +46,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import { validationMixin } from 'vuelidate'
 import { fromZil } from '../filters/zil'
@@ -139,22 +140,27 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'spiner'
+    ]),
     ...mapActions('zilliqa', [
       'buildTransaction',
       'balanceUpdate'
     ]),
 
     async txFormSubmit() {
+      this.spiner();
+
       let data = {
         to: this.toAddress,
         amount: this.amount,
         gasPrice: this.gas
       };
-      let tx = await this.buildTransaction(data);
 
-      this.balanceUpdate();
-
-      console.log(tx);
+      await this.buildTransaction(data);
+      await this.balanceUpdate();
+      this.spiner();
+      this.$router.push({ name: 'home' });
     }
   },
   mounted() {

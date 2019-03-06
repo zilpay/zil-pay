@@ -56,12 +56,12 @@ export default {
     phash(state, phash) {
       state.phash = phash;
     },
-    transactions(state, { tx, address }) {
+    transactions(state, data) {
       let txStorage = {};
-      let bookkeeper = state.transactions[address] || [];
+      let bookkeeper = state.transactions[data.fromAddr] || [];
 
-      bookkeeper.push(tx);
-      txStorage[address] = bookkeeper;
+      bookkeeper.push(data);
+      txStorage[data.fromAddr] = bookkeeper;
 
       state.transactions = Object.assign(txStorage, state.transactions);
       state.storage.set({ transactions: state.transactions });

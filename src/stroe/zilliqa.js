@@ -1,6 +1,7 @@
 import storage from './storage'
 
 import { Zilliqa } from '@zilliqa-js/zilliqa'
+import { RPCMethod } from '@zilliqa-js/core';
 import {
   getAddressFromPrivateKey,
   getPubKeyFromPrivateKey
@@ -82,6 +83,7 @@ export default {
       let addressIndex = storageState.wallet.selectedAddress;
       let { CHAIN_ID, MSG_VERSION } = storageState.config[storageState.selectedNet];
       let { address, publicKey } = storageState.wallet.identities[addressIndex];
+
       let { result } = await state.zilliqa.blockchain.getBalance(address);
 
       if (!state.mnemonic._bip39) {
@@ -104,13 +106,22 @@ export default {
         toAddr: to, pubKey: publicKey,
       });
 
-      let tx = await state.zilliqa.blockchain.createTransaction(zilTxData);
+      let { txParams } = await state.zilliqa.wallet.sign(zilTxData);
+      let data = await state.zilliqa.provider.send(
+        RPCMethod.CreateTransaction, txParams
+      );
+      let transactionCreated = {
+        amount: amount.toString(),
+        id: data.result.TranID,
+        info: data.result.Info,
+        net: storageState.selectedNet,
+        toAddr: txParams.toAddr,
+        fromAddr: address
+      };
 
-      tx.amount = amount.toString();
+      storageMutations.transactions(storageState, transactionCreated);
 
-      storageMutations.transactions(storageState, { tx, address });
-
-      return tx;
+      return transactionCreated;
     }
   },
   getters: {
@@ -119,6 +130,6 @@ export default {
     },
     STORAGE_MUTATIONS() {
       return storage.mutations;
-    },
+    }
   }
 }
