@@ -1,3 +1,4 @@
+import { LocalStream } from 'extension-streams'
 import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
@@ -71,6 +72,11 @@ export default {
     async syncBrowser({ state }) {
       let storage = await state.storage.getAll();
       let keys = Object.keys(storage);
+
+      LocalStream.watch((request, response) => {
+        console.log('request', request);
+        console.log('response', response);
+      });
 
       keys.forEach(key => {
         state[key] = storage[key];
