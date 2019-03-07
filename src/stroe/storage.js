@@ -1,10 +1,12 @@
-import { LocalStream } from 'extension-streams'
 import jazzicon from 'jazzicon'
+import { LocalStream } from 'extension-streams'
 import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
 import Crypto from '../lib/crypto'
 import BrowserStorage from '../lib/storage'
 import Utils from '../lib/utils'
+import InternalMessage from '../lib/messages/internalMessage'
+import * as InternalMessageTypes from '../lib/messages/internalMessageTypes'
 
 
 export default {
@@ -31,6 +33,15 @@ export default {
     setNet(state, payload) {
       state.selectedNet = payload;
       state.storage.set({ selectedNet: payload });
+      InternalMessage.widthPayload(
+        InternalMessageTypes.SETCURRENTNETWORK,
+        { network: state.selectedNet }
+      ).send();
+
+      LocalStream.watch((request, response) => {
+        console.log('request', request);
+        console.log('response', response);
+      });
     },
     vault(state, payload) {
       state.vault = payload;
@@ -72,11 +83,6 @@ export default {
     async syncBrowser({ state }) {
       let storage = await state.storage.getAll();
       let keys = Object.keys(storage);
-
-      LocalStream.watch((request, response) => {
-        console.log('request', request);
-        console.log('response', response);
-      });
 
       keys.forEach(key => {
         state[key] = storage[key];

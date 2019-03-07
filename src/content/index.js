@@ -1,6 +1,6 @@
 import { EncryptedStream, LocalStream } from 'extension-streams'
 import extensionizer from 'extensionizer'
-import randomUUID from 'uuid/v4';
+import IdGenerator from '../lib/idGenerator'
 import Message from '../lib/messages/message'
 import InternalMessage from '../lib/messages/internalMessage'
 import * as MessageTypes from '../lib/messages/messageTypes'
@@ -24,9 +24,11 @@ class Inject {
    * stream object is message fillter with content.js
    */
   _setEncryptedStream () {
-    stream = new EncryptedStream(MessageTypes.CONTENT, randomUUID());
+    stream = new EncryptedStream(MessageTypes.CONTENT, IdGenerator.text(64));
     stream.listenWith(msg => this._contentListener(msg));
-    stream.onSync(() => this.initZilPay());
+    stream.onSync(() => {
+      this.initZilPay();
+    });
   }
   /**
    * inject script file to document
@@ -87,7 +89,7 @@ class Inject {
           MessageTypes.INJECTED
         );
         if (message.payload.unlocked) {
-          this.initZilPay()
+          this.initZilPay();
         }
         break;
       case TabMessageTypes.ADDRESS_CHANGED: // TODO!
@@ -169,13 +171,9 @@ class Inject {
   }
   async initZilPay () {
     try {
-      let address = await this.getAddress();
-      let currentNetwork = await this.getNetwork();
-      let node = {
-        fullNode: currentNetwork.fullNodeUrl,
-        solidityNode: currentNetwork.solidityUrl,
-        eventServer: currentNetwork.eventGridUrl
-      }
+      let address = '6c6c52645ca4750a1a64f5a10a123e58449bffa9';//await this.getAddress();
+      // let currentNetwork = await this.getNetwork();
+      let node = 'https://dev-api.zilliqa.com';
 
       stream.send(
         Message.widthPayload(

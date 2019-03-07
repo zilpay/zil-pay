@@ -1,6 +1,6 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { EncryptedStream } from 'extension-streams'
-import randomUUID from 'uuid/v4';
+import IdGenerator from '../lib/idGenerator'
 import ExtensionHttpProvider from '../lib/extensionHttpProvider'
 import Message from '../lib/messages/message'
 import * as MessageTypes from '../lib/messages/messageTypes'
@@ -19,7 +19,7 @@ class DanglingResolver {
 }
 
 const zilliqa = new Zilliqa(
-  new ExtensionHttpProvider('http://placeholder.dev')
+  new ExtensionHttpProvider('https://dev-api.zilliqa.com')
 );
 
 let stream = new WeakMap();
@@ -28,7 +28,7 @@ let resolvers = [];
 const eventQueue = []
 
 const _sign = zilliqa.wallet.sign.bind(zilliqa);
-const _setAddress = zilliqa.wallet.defaultAccount;
+let _setAddress = zilliqa.wallet.defaultAccount;
 
 const _subscribe = () => {
   stream.listenWith(msg => {
@@ -49,7 +49,7 @@ const _subscribe = () => {
 
 const _send = (_type, _payload) => {
   return new Promise((resolve, reject) => {
-    let id = randomUUID;
+    let id = IdGenerator.numeric(24);
     let message = new Message(_type, _payload, id);
     
     resolvers.push(new DanglingResolver(id, resolve, reject));
@@ -102,10 +102,12 @@ zilPay.zilliqa = zilliqa;
 class Content {
   constructor () {
     // Injecting an encrypted stream into the web application
-    stream = new EncryptedStream(MessageTypes.INJECTED, randomUUID());
+    stream = new EncryptedStream(MessageTypes.INJECTED, IdGenerator.text(64));
+
     stream.listenWith(msg => this.contentListener(msg));
     // Syncing the streams between the extension and the web application
     stream.sync(MessageTypes.CONTENT, stream.key);
+
 
     if (window.zilPay !== undefined) {
       return console.warn('Failed to inject ZilPay, The global namespace is exists')
@@ -117,6 +119,7 @@ class Content {
     _subscribe();
   }
   contentListener (msg) {
+    console.log('inpage', msg);
     if (!msg) {
       return null;
     }
@@ -148,13 +151,13 @@ class Content {
     }
   }
   initZilliqa (message) {
-    console.log('ZilPay init tronWeb');
+    console.log('ZilPay init');
     let payload = message.payload;
-
     this.setNode(message);
 
     if (payload.address) {
-      _setAddress(payload.address);
+      console.log(payload);
+      _setAddress = payload.address;
       zilliqa.ready = true;
       zilliqa.ready = true;
     }
@@ -174,7 +177,7 @@ class Content {
   setAddress (message) {
     let payload = message.payload;
 
-    _setAddress(payload.address);
+    _setAddress = payload.address;
 
     zilliqa.ready = true;
     zilliqa.ready = true;

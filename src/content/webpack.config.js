@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const mode = process.env.NODE_ENV || 'production';
+const mode = process.env.NODE_ENV || 'development';
 
 
 module.exports = {
