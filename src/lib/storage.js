@@ -52,7 +52,7 @@ export class LocalStorage {
 
 export class BrowserStorage {
 
-  EXT_ID = chrome.runtime.id;
+  EXT_ID = window.chrome.runtime.id;
 
   set(value) {
     return new Promise(resolve => {
@@ -68,7 +68,7 @@ export class BrowserStorage {
 
   getAll() {
     return new Promise(resolve => {
-      chrome.storage.local.get(null, items => {
+      window.chrome.storage.local.get(null, items => {
         resolve(items);
       });
     });

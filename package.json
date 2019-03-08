@@ -7,6 +7,7 @@
     "build": "vue-cli-service build && npm run content && npm run inpage",
     "content": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
     "inpage": "webpack --config src/inpage/webpack.config.js --progress --colors -o ./dist/inpage.js",
+    "scripts": "npm run content && npm run inpage",    
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
