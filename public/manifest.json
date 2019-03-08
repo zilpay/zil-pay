@@ -32,6 +32,9 @@
         "all_frames": false
     }
   ],
+  "web_accessible_resources": [
+    "inpage.js"
+  ],
   "browser_action": {
     "default_title": "ZilPay",
     "default_popup": "index.html"

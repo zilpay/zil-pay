@@ -1,18 +1,20 @@
-export default class {
 
-  constructor(name) {
-    this._name = name;
+  
+export class Loger {
+
+  constructor(nameInit) {
+    this._name = nameInit;
   }
 
-  warn(text) {
-    console.warn(`${this._name}:`, text);
+  info(...args) {
+    console.log(`${this._name}:`, args);
   }
 
-  log(text) {
-    console.log(`${this._name}:`, text);
+  error(...args) {
+    console.error(`${this._name}:`, args);
   }
 
-  error(text) {
-    console.error(`${this._name}:`, text);
+  warn(...args) {
+    console.warn(`${this._name}:`, args);
   }
 }

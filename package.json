@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build && npm run content",
+    "build": "vue-cli-service build && npm run content && npm run inpage",
     "content": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
+    "inpage": "webpack --config src/inpage/webpack.config.js --progress --colors -o ./dist/inpage.js",
+    "scripts": "npm run content && npm run inpage",    
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -16,7 +18,7 @@
     "bootstrap-scss": "^4.3.1",
     "clipboard-copy": "^3.0.0",
     "crypto": "^1.0.1",
-    "eventemitter3": "^3.1.0",
+    "extension-streams": "^1.0.7",
     "extensionizer": "^1.0.1",
     "jazzicon": "^1.5.0",
     "jsonwebtoken": "^8.5.0",

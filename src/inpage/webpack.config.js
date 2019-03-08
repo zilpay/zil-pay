@@ -3,7 +3,7 @@ const mode = process.env.NODE_ENV || 'development';
 
 
 module.exports = {
-    entry: './src/content/index.js',
+    entry: './src/inpage/index.js',
     devtool: 'source-map',
     target: 'web',
     module: {

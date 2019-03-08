@@ -1,4 +1,5 @@
 import jazzicon from 'jazzicon'
+import { LocalStream } from 'extension-streams'
 import zilConf from '../config/zil'
 import Jwt from '../lib/jwt'
 import Crypto from '../lib/crypto'
@@ -30,6 +31,11 @@ export default {
     setNet(state, payload) {
       state.selectedNet = payload;
       state.storage.set({ selectedNet: payload });
+
+      LocalStream.watch((request, response) => {
+        console.log('request', request);
+        console.log('response', response);
+      });
     },
     vault(state, payload) {
       state.vault = payload;
