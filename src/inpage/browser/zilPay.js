@@ -25,6 +25,10 @@ export class ZilPay extends Zilliqa {
     this.wallet.defaultAccount = address;
   }
 
+  setProvider(provider) {
+    this.provider = new this.core.HTTPProvider(provider);
+  }
+
   async version() {
     let chainId = await this.network.GetNetworkId();
     let msgVerison = 1;

@@ -1,16 +1,16 @@
 import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
-import { Message } from '../../lib/messages/message'
-import { MTypesContent } from '../../content/messages/messageTypes'
-import { Loger } from '../../lib/logger'
+import { MTypesContent, DanglingResolver, Message } from '../../content/messages/messageTypes'
 import utils from '../../lib/utils'
+import { Loger } from '../../lib/logger'
+import Config from '../../config/api'
 
-const log = new Loger('ZilPay inpage');
 
-export class Stream extends Message {
+const log = new Loger(Config.PAY_NAME);
 
-  constructor() {
-    super();
+export class Stream {
+
+  constructor(provider) {
     this.stream = new WeakMap();
     this.resolvers = [];
   }
@@ -19,7 +19,7 @@ export class Stream extends Message {
     this.stream.listenWith(msg => {
       if (!msg || !msg.hasOwnProperty('type')) {
         return false;
-      }
+      }      
 
       for (let i = 0; i < this.resolvers.length; i++) {
         if (this.resolvers[i].id === msg.resolver) {
@@ -35,14 +35,12 @@ export class Stream extends Message {
     });
   }
 
-  _send(type, payload) {
+  _send(_type, _payload) {
     return new Promise((resolve, reject) => {
       const id = uuidv4();
-      const message = this.messageWidthPayload({
-        type, payload, id
-      });
+      const message = new Message(_type, _payload, id);
       
-      this.resolvers.push(this.messageWidthPayload({ id, resolve, reject }));
+      this.resolvers.push(new DanglingResolver(id, resolve, reject));
       this.stream.send(message, MTypesContent.CONTENT_INIT);
     });
   }
@@ -63,8 +61,22 @@ export class Stream extends Message {
 
     msg.domain = utils.strippedHost();
 
-    const nonSyncMessage = this.messageWidthPayload(msg);
-    log.info('nonSyncMessage', nonSyncMessage);
+    const nonSyncMessage = Message.fromJson(msg);
+
+    switch (msg.type) {
+      case MTypesContent.PAY_OBJECT_INIT:
+        this._initZilliqa(nonSyncMessage);
+        break;
+
+    }
+  }
+
+  _initZilliqa(message) {
+    log.warn('INIT');
+    let { payload } = message;
+    window.ZilPay.enable = true;
+    window.ZilPay.setDefaultAccount(payload.address);
+    window.ZilPay.setProvider(payload.node);
   }
 
 }
