@@ -10,6 +10,10 @@ export default class {
 
   phrase = null;
 
+  constructor() {
+    // console.log(bip39.entropyToMnemonic());
+  }
+
   generateMnemonic() {
     return bip39.generateMnemonic(128);
   }

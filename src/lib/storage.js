@@ -2,7 +2,9 @@
 
 export class LocalStorage {
 
-  EXT_ID = 'joclhplojgcocgecaioibgknjlbkmnff';
+  constructor() {
+    this.EXT_ID = 'joclhplojgcocgecaioibgknjlbkmnff';
+  }
 
   set(value) {
     Object.keys(value).forEach(key => {
@@ -52,7 +54,9 @@ export class LocalStorage {
 
 export class BrowserStorage {
 
-  EXT_ID = window.chrome.runtime.id;
+  constructor() {
+    this.EXT_ID = window.chrome.runtime.id;
+  }
 
   set(value) {
     return new Promise(resolve => {
