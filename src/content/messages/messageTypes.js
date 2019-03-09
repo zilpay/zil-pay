@@ -4,7 +4,7 @@ import { LocalStream } from 'extension-streams';
 export const MTypesContent = {
   SET_NODE:        'set_node',      // Chenge new provider.
   SET_ADDRESS:     'set_address',   // Chenge address.
-  INJECTED:        'inject_inpage', // Inpage script injected to page. 
+  INJECTED:        'inject_inpage', // Inpage script injected to page.
   PAY_OBJECT_INIT: 'init_obj',      // Init object for dapp.
   CONTENT_INIT:    'init_content',  // init content script to browser.
   SYNC:            'sync',
@@ -21,7 +21,8 @@ export const MTypesInternal = {
   INIT:                  'init',
   GET_DECRYPT_SEED:      'get_d_seed',
   SET_SEED_AND_PWD:      'set_seed_and_pwd',
-  
+  SET_NET:               'set_net',
+
   SET_ENCRYPT_SEED:      'set_seed',
   GET_ENCRYPT_SEED:      'get_seed',
   IS_UNLOCKED:           'is_unlocked',
@@ -83,7 +84,7 @@ export class InternalMessage {
 }
 
 export class DanglingResolver {
-  
+
   constructor (_id, _resolve, _reject) {
     this.id = _id
     this.resolve = _resolve

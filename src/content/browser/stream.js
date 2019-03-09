@@ -32,7 +32,6 @@ export class Stream {
      * waiting message from background or popup.
      */
     LocalStream.watch((request, response) => {
-      log.info(request, response);
       const message = InternalMessage.fromJson(request);
       this._dispenseMessage(response, message);
     });
@@ -45,7 +44,7 @@ export class Stream {
     try {
       const address = await this.getAddress();
       const node = await this.getNetwork();
-      
+
       this.stream.send(
         Message.widthPayload(
           MTypesContent.PAY_OBJECT_INIT,

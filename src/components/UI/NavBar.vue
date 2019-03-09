@@ -6,11 +6,10 @@
            href="#">ZilPay</a>
       </div>
 
-      <Dropdown v-if="selectedNet"
-                :options="options"
+      <Dropdown :options="options"
                 :selected="selectedNet"
                 :classBtn="'dark text-pink'"
-                @updateOption="selectNet"/>
+                @updateOption="setNet"/>
 
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -50,19 +49,7 @@ export default {
     ]),
     ...mapMutations('storage', [
       'setNet'
-    ]),
-    ...mapActions('zilliqa', [
-      'balanceUpdate'
-    ]),
-    ...mapMutations('zilliqa', [
-      'changeProvider'
-    ]),
-
-    async selectNet(net) {
-      await this.setNet(net);
-      await this.changeProvider(net);
-      await this.balanceUpdate();
-    }
+    ])
   }
 }
 </script>

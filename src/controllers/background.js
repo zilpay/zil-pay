@@ -30,10 +30,14 @@ export class Background  {
   _dispenseMessage (sendResponse, message) {
 
     switch (message.type) {
+
+      case MTypesInternal.SET_NET:
+        this.updateNode(message.payload);
+        break;
       case MTypesInternal.GET_NETWORK:
         sendResponse('https://dev-api.zilliqa.com');
         break;
-      
+
       case MTypesInternal.GET_ADDRESS:
         sendResponse('43f1297bfd415ecc5d0c365c091e332c822d9115');
         break;
@@ -61,8 +65,8 @@ export class Background  {
     const countKeys = Object.keys(fields).length - 1;
     const countKeysData = Object.keys(allData);
     const test = !allData.hasOwnProperty(fields.VAULT) || countKeysData < countKeys;
-    
-  
+
+
     if (!allData || test) {
       await this.updateConfig(config, selectednet);
 
@@ -85,7 +89,7 @@ export class Background  {
       } catch(err) {
         this.auth.isEnable = false;
       }
-      
+
       sendResponse({
         resolve: {
           data: allData,
@@ -105,11 +109,11 @@ export class Background  {
     const { seed, password } = payload;
     const wallet = new Wallet();
     const index = 0;
-    
+
     this.auth = new Auth(password);
     wallet.addByMnemonic(seed, index);
     balance = await blockChain.getBalance(wallet.defaultAccount.address);
-    
+
     const account = {
       selectedAddress: index,
       identities: [{
@@ -135,6 +139,17 @@ export class Background  {
   async updateConfig(config, net) {
     this.auth.setConfig(config);
     this.auth.setNet(net);
+  }
+
+  async updateNode(payload) {
+    const { config } = await this.auth.getConfig();
+    const { selectedNet } = payload;
+    const { PROVIDER } = config[selectednet];
+    this.auth.setNet(selectedNet);
+    InternalMessage.widthPayload(
+      MTypesContent.SET_NODE,
+      { PROVIDER }
+    ).send();
   }
 
 }

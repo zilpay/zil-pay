@@ -26,7 +26,8 @@ export default {
       'setWallet'
     ]),
     ...mapActions('storage', [
-      'initPopup'
+      'initPopup',
+      'jazzicon'
     ]),
 
     async preStart() {
@@ -61,10 +62,10 @@ export default {
         this.setNet(data.resolve.data.selectedNet);
         this.config(data.resolve.data.config);
         this.setWallet(data.resolve.data.wallet);
+        this.jazzicon('jazzicon');
         this.$router.push({ name: 'home' });
-        return null;
       }
-      
+
     }
   }
 }

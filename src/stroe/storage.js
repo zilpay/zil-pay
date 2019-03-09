@@ -21,11 +21,15 @@ export default {
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
     transactions: {}, // {'0x..': [{to, amount, hash}] } //
-    selectedNet: null,
+    selectedNet: Object.keys(zilConf)[0],
     config: zilConf
   },
   mutations: {
     setNet(state, payload) {
+      InternalMessage.widthPayload(
+        MTypesInternal.SET_NET,
+        { selectedNet: payload }
+      ).send();
       state.selectedNet = payload;
     },
     setWallet(state, object) {
@@ -72,7 +76,7 @@ export default {
         MTypesInternal.SET_SEED_AND_PWD,
         { seed, password }
       ).send();
-      
+
       commit('setWallet', wallet);
     },
     initPopup: () => InternalMessage.signal(MTypesInternal.INIT).send(),
