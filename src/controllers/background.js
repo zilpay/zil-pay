@@ -2,6 +2,7 @@ import { LocalStream } from 'extension-streams'
 import { Wallet } from '@zilliqa-js/account'
 import {
   InternalMessage,
+  MTypesContent,
   MTypesAuth,
   MTypesInternal
 } from '../content/messages/messageTypes'
@@ -142,9 +143,12 @@ export class Background  {
   }
 
   async updateNode(payload) {
+    if (!payload || Object.keys(payload).length < 1) {
+      return null;
+    }   
     const { config } = await this.auth.getConfig();
     const { selectedNet } = payload;
-    const { PROVIDER } = config[selectednet];
+    const { PROVIDER } = config[selectedNet];
     this.auth.setNet(selectedNet);
     InternalMessage.widthPayload(
       MTypesContent.SET_NODE,
