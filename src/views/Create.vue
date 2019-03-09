@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="row justify-content-center pt-3">
-      <div v-if="pubKeyJWT" class="col-lg-12 text-center text-ightindigo pt-3">
-        <router-link :to="$router.options.routes[0].path">
+      <div class="col-lg-12 text-center text-ightindigo pt-3">
+        <router-link v-if="isReady" :to="$router.options.routes[0].path">
           <h3 class="text-warning text-left point">&#60;back</h3>
         </router-link>
         <h3>Enter your secret twelve word
@@ -65,7 +65,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions, mapState } from 'vuex'
 import btn from '../directives/btn'
 
 
@@ -81,7 +81,11 @@ export default {
       submitForm: true
     };
   },
-  computed: { },
+  computed: {
+    ...mapState('storage', [
+      'isReady'
+    ]),
+  },
   validations: {
     password: {
       required,
@@ -92,10 +96,7 @@ export default {
       sameAs: sameAs('password')
     },
     mnemonicPhrase: {
-      minLength: minLength(12),
-      sameAs: sameAs(vue => {
-        return vue.mnemonic.validateMnemonic(vue.phrase);
-      })
+      minLength: minLength(12)
     },
     submitForm: {
       sameAs: sameAs(vue => {
@@ -110,10 +111,33 @@ export default {
     ...mapMutations([
       'spiner'
     ]),
+    ...mapMutations('storage', [
+      'setWallet'
+    ]),
+    ...mapActions('storage', [
+      'randomSeed',
+      'walletCreate'
+    ]),
     async submit() {
+      let wallet;
+
+      this.spiner();
+
+      try {
+        await this.walletCreate({
+          seed: this.mnemonicPhrase,
+          password: this.password
+        });
+        this.spiner();
+        this.$router.push({ name: 'home' });
+      } catch(err) {
+        console.error(err);
+        this.spiner();
+      }
     }
   },
   mounted() {
+    this.randomSeed().then(seed => this.mnemonicPhrase = seed.resolve);
   }
 }
 </script>

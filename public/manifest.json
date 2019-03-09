@@ -20,16 +20,16 @@
   ],
   "content_scripts": [
     {
-        "matches": [
-            "file://*/*",
-            "http://*/*",
-            "https://*/*"
-        ],
-        "js": [
-            "contentScript.js"
-        ],
-        "run_at": "document_start",
-        "all_frames": false
+      "matches": [
+          "file://*/*",
+          "http://*/*",
+          "https://*/*"
+      ],
+      "js": [
+          "contentScript.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [
@@ -38,6 +38,12 @@
   "browser_action": {
     "default_title": "ZilPay",
     "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": [
+        "background.js"
+    ],
+    "persistent": true
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

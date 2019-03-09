@@ -1,7 +1,7 @@
-import { LocalStorage } from '../../../lib/storage'
+import { BrowserStorage } from '../../../lib/storage'
 import fields from '../../../config/fields'
 
-export class StorageGuard extends LocalStorage {
+export class StorageGuard extends BrowserStorage {
   
   constructor() {
     super();    

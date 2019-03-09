@@ -8,10 +8,20 @@ export const MTypesContent = {
   PAY_OBJECT_INIT: 'init_obj',      // Init object for dapp.
   CONTENT_INIT:    'init_content',  // init content script to browser.
   SYNC:            'sync',
+  BACKGROUND:      'background',
   ERROR:           'error'
 };
 
+export const MTypesAuth = {
+  SET_PASSWORD: 'set_password',
+  IS_AUTH:      'is_auth'
+}
+
 export const MTypesInternal = {
+  INIT:                  'init',
+  GET_DECRYPT_SEED:      'get_d_seed',
+  SET_SEED_AND_PWD:      'set_seed_and_pwd',
+  
   SET_ENCRYPT_SEED:      'set_seed',
   GET_ENCRYPT_SEED:      'get_seed',
   IS_UNLOCKED:           'is_unlocked',

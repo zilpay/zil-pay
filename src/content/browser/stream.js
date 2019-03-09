@@ -6,21 +6,20 @@ import {
   MTypesContent,
   Message,
   InternalMessage,
-  MTypesInternal
+  MTypesInternal,
+  MTypesAuth
 } from '../messages/messageTypes'
 
 
-const log = new Loger(Config.PAY_NAME);
+const log = new Loger(Config.PAY_NAME + ' CONTENT');
 
 export class Stream {
 
   constructor() {
-    this.stream = new WeakMap();
-    this.isReady = false;
-    this._initStream();
+    this.setEncryptedStream();
   }
 
-  _initStream() {
+  setEncryptedStream() {
     let content = MTypesContent.CONTENT_INIT;
     this.stream = new EncryptedStream(content, uuidv4());
     this.stream.listenWith(msg => this._listener(msg));
@@ -32,35 +31,36 @@ export class Stream {
      * watch internal message (LocalStream);
      * waiting message from background or popup.
      */
-    try {
-      LocalStream.watch((req, res) => {
-        let message = InternalMessage.fromJson(req);
-        this.dispenseMessage(res, message);
-      });
-    } catch(err) {
-      log.error('Fail watch the LocalStream!', err);
-    }
+    LocalStream.watch((request, response) => {
+      log.info(request, response);
+      const message = InternalMessage.fromJson(request);
+      this._dispenseMessage(response, message);
+    });
   }
 
-  _onSyncAll() {
+  async _onSyncAll() {
     /**
      * Get state from wallet.
      */
-    const address = '6c6c52645ca4750a1a64f5a10a123e58449bffa9';
-    const node = 'https://dev-api.zilliqa.com';
-
-    this.stream.send(
-      Message.widthPayload(
-        MTypesContent.PAY_OBJECT_INIT,
-        { address, node }
-      ),
-      MTypesContent.INJECTED
-    );
-    this.isReady = true;
+    try {
+      const address = await this.getAddress();
+      const node = await this.getNetwork();
+      
+      this.stream.send(
+        Message.widthPayload(
+          MTypesContent.PAY_OBJECT_INIT,
+          { address, node }
+        ),
+        MTypesContent.INJECTED
+      );
+    } catch (err) {
+      log.error('impossible to get address and node');
+    }
   }
 
   _listener(msg) {
-    if (!this.isReady || !msg) {
+    log.info(msg);
+    if (!msg) {
       return null;
     } else if (!msg.hasOwnProperty('type') || msg.type !== 'sync') {
       log.warn(`type: ${msg.type}, resync`);
@@ -72,9 +72,9 @@ export class Stream {
       case MTypesContent.SYNC:
         this.sync(msg);
         break;
-      
+
       default:
-      stream.send(
+      this.stream.send(
         nonSyncMessage.error(
           Error.maliciousEvent()
         ),
@@ -83,30 +83,16 @@ export class Stream {
     }
   }
 
+  getNetwork () {
+    return InternalMessage.signal(MTypesInternal.GET_NETWORK).send();
+  }
+
+  getAddress() {
+    return InternalMessage.signal(MTypesInternal.GET_ADDRESS).send();
+  }
+
   _dispenseMessage(res, message) {
-    log.info('local stream', res, message);
-    if (!message) {
-      return null;
-    }
-
-    switch (message.type) {
-      case MTypesInternal.IS_UNLOCKED:
-        log.info(MTypesInternal.IS_UNLOCKED);
-        break;
-      
-      case MTypesInternal.SET_ENCRYPT_SEED:
-        log.info(MTypesInternal.SET_ENCRYPT_SEED);
-        break;
-
-      case MTypesInternal.GET_ENCRYPT_SEED:
-        log.info(MTypesInternal.GET_ENCRYPT_SEED);
-        break;
-
-      case MTypesInternal.GET_ADDRESS:
-        log.info(MTypesInternal.GET_ADDRESS);
-        break;
-
-    }
+    log.info(message);
   }
 
   sync(message) {

@@ -16,12 +16,3 @@ export class SecurityGuard extends StorageGuard {
   }
 
 }
-
-
-// let seed = 'section glue ankle scene unable humor concert fossil music diary kind scrap';
-// const securityGuard = new SecurityGuard('123');
-
-// securityGuard.createVault(seed);
-
-// console.log(securityGuard.guard.encryptedSeed);
-// console.log(securityGuard.guard.decryptSeed);

@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build && npm run content && npm run inpage",
+    "build": "vue-cli-service build && npm run scripts",
     "content": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
     "inpage": "webpack --config src/inpage/webpack.config.js --progress --colors -o ./dist/inpage.js",
-    "scripts": "npm run content && npm run inpage",
+    "background": "webpack --config src/controllers/webpack.config.js --progress --colors -o ./dist/background.js",
+    "scripts": "npm run content && npm run inpage && npm run background",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

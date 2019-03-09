@@ -1,8 +1,11 @@
 import crypto from 'crypto'
 
 export default class {
-  encryptionAlgorithm = 'aes-256-ctr';
-  hashAlgorithm = 'sha256';
+
+  constructor() {
+    this.encryptionAlgorithm = 'aes-256-ctr';
+    this.hashAlgorithm = 'sha256';
+  }
 
   hash(string) {
   /**

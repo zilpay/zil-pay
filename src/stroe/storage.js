@@ -1,55 +1,44 @@
 import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
-import BrowserStorage from '../lib/storage'
 import Utils from '../lib/utils'
+import {
+  // MTypesContent,
+  // Message,
+  InternalMessage,
+  // MTypesAuth,
+  MTypesInternal
+} from '../content/messages/messageTypes'
 
 
 export default {
   namespaced: true,
   state: {
-    storage: BrowserStorage(),
     vault: null,
-    ready: false,
-    phash: '',
-    pubKeyJWT: '',
+    isReady: false,
+    isEnable: false,
     wallet: {
       selectedAddress: null, // index
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
     transactions: {}, // {'0x..': [{to, amount, hash}] } //
     selectedNet: null,
-    config: zilConf,
-    bip39: ''
+    config: zilConf
   },
   mutations: {
     setNet(state, payload) {
       state.selectedNet = payload;
-      state.storage.set({ selectedNet: payload });
-    },
-    vault(state, payload) {
-      state.vault = payload;
-      state.storage.set({ vault: payload });
-    },
-    pubKeyJWT(state, key) {
-      state.pubKeyJWT = key;
-      state.storage.set({ pubKeyJWT: key });
     },
     setWallet(state, object) {
       state.wallet = object;
-      state.storage.set({ wallet: object });
     },
     config(state, object) {
       state.config = object;
-      state.storage.set({ config: object });
     },
-    bip39(state, bip39) {
-      state.bip39 = bip39;
-    },
-    ready(state, isReady) {
+    isReady(state, isReady) {
       state.ready = isReady;
     },
-    phash(state, phash) {
-      state.phash = phash;
+    isEnable(state, isEnable) {
+      state.isEnable = isEnable;
     },
     transactions(state, data) {
       let txStorage = {};
@@ -59,29 +48,16 @@ export default {
       txStorage[data.fromAddr] = bookkeeper;
 
       state.transactions = Object.assign(txStorage, state.transactions);
-      state.storage.set({ transactions: state.transactions });
     }
   },
   actions: {
-    async syncBrowser({ state }) {
-      let storage = await state.storage.getAll();
-      let keys = Object.keys(storage);
-
-      keys.forEach(key => {
-        state[key] = storage[key];
-      });
-
-      return null;
-    },
     async jazzicon({ state }, id) {
-      let ctx = window.document.querySelector('#' + id);
-      let { wallet } = await state.storage.get('wallet');
-
-      if (!wallet) {
+      if (state.wallet.identities.length < 1) {
         return null;
       }
 
-      let account = wallet.identities[wallet.selectedAddress];
+      let ctx = window.document.querySelector('#' + id);
+      let account = state.wallet.identities[state.wallet.selectedAddress];
       let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
 
       if (ctx.children.length > 0) {
@@ -89,7 +65,18 @@ export default {
       }
 
       ctx.appendChild(el);
-    }
+    },
+
+    async walletCreate({ commit }, { seed, password }) {
+      const wallet = await InternalMessage.widthPayload(
+        MTypesInternal.SET_SEED_AND_PWD,
+        { seed, password }
+      ).send();
+      
+      commit('setWallet', wallet);
+    },
+    initPopup: () => InternalMessage.signal(MTypesInternal.INIT).send(),
+    randomSeed: () => InternalMessage.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
   getters: {
     NET: state => state.selectedNet

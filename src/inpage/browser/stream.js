@@ -10,7 +10,7 @@ const log = new Loger(Config.PAY_NAME);
 
 export class Stream {
 
-  constructor(provider) {
+  constructor() {
     this.stream = new WeakMap();
     this.resolvers = [];
   }
@@ -67,7 +67,6 @@ export class Stream {
       case MTypesContent.PAY_OBJECT_INIT:
         this._initZilliqa(nonSyncMessage);
         break;
-
     }
   }
 

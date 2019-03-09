@@ -3,7 +3,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39'
 
 export class MnemonicSeed {
 
-  getSeed() {
+  get getRandomSeed() {
     this.seed = generateMnemonic(128);
     return this.seed;
   }
