@@ -33,19 +33,18 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 import copy from 'clipboard-copy'
 import { fromZil, toUSD } from '../filters/zil'
 import trimAddress from '../filters/trimAddress'
 import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
-import MnemonicMixin from '../mixins/mnemonic'
 
 
 export default {
   name: 'home',
   directives: { btn },
-  mixins: [MnemonicMixin],
+  mixins: [],
   components: { TxTracking },
   filters: { fromZil, trimAddress, toUSD },
   computed: {
@@ -68,14 +67,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('zilliqa', [
-      'balanceUpdate'
-    ]),
-
     copy,
-    preStart() {
-      this.balanceUpdate();
-    }
+    preStart() {}
   },
   mounted() {
     this.preStart();

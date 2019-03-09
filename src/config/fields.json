@@ -1,0 +1,7 @@
+{
+  "VAULT": "vault",
+  "CONFIG": "config",
+  "WALLET": "wallet",
+  "SELECTED_NET": "selectednet",
+  "TRANSACTIONS": "transactions"
+}

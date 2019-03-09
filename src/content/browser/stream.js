@@ -8,15 +8,13 @@ import {
   InternalMessage,
   MTypesInternal
 } from '../messages/messageTypes'
-import { BrowserStorage } from '../../lib/storage'
 
 
 const log = new Loger(Config.PAY_NAME);
 
-export class Stream extends BrowserStorage {
+export class Stream {
 
   constructor() {
-    super();
     this.stream = new WeakMap();
     this.isReady = false;
     this._initStream();

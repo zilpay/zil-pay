@@ -65,14 +65,13 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
-import { mapMutations, mapActions, mapState } from 'vuex'
+import { mapMutations } from 'vuex'
 import btn from '../directives/btn'
-import MnemonicMixin from '../mixins/mnemonic'
 
 
 export default {
   name: 'Create',
-  mixins: [MnemonicMixin, validationMixin],
+  mixins: [validationMixin],
   directives: { btn },
   data() {
     return {
@@ -82,11 +81,7 @@ export default {
       submitForm: true
     };
   },
-  computed: {
-    ...mapState('storage', [
-      'pubKeyJWT'
-    ])
-  },
+  computed: { },
   validations: {
     password: {
       required,
@@ -115,32 +110,10 @@ export default {
     ...mapMutations([
       'spiner'
     ]),
-    ...mapActions('storage', [
-      'syncBrowser',
-      'bip39Encrypt',
-      'createJWT',
-      'jazzicon'
-    ]),
-    ...mapActions('zilliqa', [
-      'createWallet'
-    ]),
-    ...mapMutations('storage', ['bip39']),
-
     async submit() {
-      this.spiner();
-      this.mnemonic.bip32Node(this.mnemonicPhrase);
-
-      await this.createJWT(this.password);
-      await this.bip39Encrypt(this.mnemonic.phrase);
-      await this.createWallet(0);
-      await this.jazzicon('jazzicon');
-
-      this.spiner();
-      this.$router.push({ name: 'home' });
     }
   },
   mounted() {
-    console.log(this.pubKeyJWT);
   }
 }
 </script>

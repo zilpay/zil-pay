@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import btn from '../directives/btn'
 
 
@@ -48,18 +47,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('storage', [
-      'updateJWT'
-    ]),
-    async encryptingAccaunt() {
-      let status = await this.updateJWT(this.password);
-
-      if (status) {
-        this.$router.push({ name: 'home' });
-      }
-
-      this.wrongPassword = !status;
-    }
+    async encryptingAccaunt() { }
   }
 }
 </script>

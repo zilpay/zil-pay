@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import { validationMixin } from 'vuelidate'
 import { fromZil } from '../filters/zil'
@@ -143,10 +143,6 @@ export default {
     ...mapMutations([
       'spiner'
     ]),
-    ...mapActions('zilliqa', [
-      'buildTransaction',
-      'balanceUpdate'
-    ]),
 
     async txFormSubmit() {
       this.spiner();
@@ -156,9 +152,7 @@ export default {
         amount: this.amount,
         gasPrice: this.gas
       };
-
-      await this.buildTransaction(data);
-      await this.balanceUpdate();
+      console.log(data);
       this.spiner();
       this.$router.push({ name: 'home' });
     }

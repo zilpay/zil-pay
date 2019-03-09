@@ -1,8 +1,5 @@
 import jazzicon from 'jazzicon'
-import { LocalStream } from 'extension-streams'
 import zilConf from '../config/zil'
-import Jwt from '../lib/jwt'
-import Crypto from '../lib/crypto'
 import BrowserStorage from '../lib/storage'
 import Utils from '../lib/utils'
 
@@ -11,9 +8,6 @@ export default {
   namespaced: true,
   state: {
     storage: BrowserStorage(),
-    jwt: new Jwt(),
-    crypto: new Crypto(),
-
     vault: null,
     ready: false,
     phash: '',
@@ -31,11 +25,6 @@ export default {
     setNet(state, payload) {
       state.selectedNet = payload;
       state.storage.set({ selectedNet: payload });
-
-      LocalStream.watch((request, response) => {
-        console.log('request', request);
-        console.log('response', response);
-      });
     },
     vault(state, payload) {
       state.vault = payload;
@@ -80,78 +69,9 @@ export default {
 
       keys.forEach(key => {
         state[key] = storage[key];
-        // commit(key, storage[key]);
       });
 
       return null;
-    },
-    async createJWT({ state, commit }, password) {
-      let pubKeyJWT = state.jwt.generateKey(password);
-      let { phash, token } = await state.jwt.tokenCreate(pubKeyJWT);
-
-      commit('vault', token);
-      commit('pubKeyJWT', pubKeyJWT);
-      commit('ready', true);
-      commit('phash', phash);
-    },
-    async updateJWT({ state, commit }, password) {
-      let key = state.jwt.generateKey(password);
-
-      if (key !== state.pubKeyJWT) {
-        return false;
-      }
-
-      let { token } = await state.jwt.tokenCreate(state.pubKeyJWT);
-
-      commit('vault', token);
-      commit('ready', true);
-
-      return true;
-    },
-    async signVerifyJWT({ state, commit }) {
-      let status = false;
-
-      try {
-        let { phash } = await state.jwt.tokenVerify(
-          state.vault, state.pubKeyJWT
-        );
-
-        status = true;
-
-        commit('phash', phash);
-        commit('ready', status);
-
-        return status;
-      } catch(err) {
-        commit('ready', status);
-        return status;
-      }
-    },
-    bip39Decrypt({ state, commit }) {
-      let bip39 = state.bip39;
-      let phash = state.phash;
-
-      try {
-        bip39 = state.crypto.decrypt(bip39, phash);
-
-        commit('ready', true);
-        commit('bip39', bip39);
-
-        return true;
-      } catch(err) {
-        commit('ready', false);
-        commit('vault', '');
-        return false;
-      }
-    },
-    async bip39Encrypt({ state, commit }, bip39) {
-      let phash = state.phash;
-
-      commit('bip39', bip39);
-
-      bip39 = state.crypto.encrypt(bip39, phash);
-
-      state.storage.set({ bip39 });
     },
     async jazzicon({ state }, id) {
       let ctx = window.document.querySelector('#' + id);

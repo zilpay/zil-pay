@@ -64,21 +64,13 @@ export default {
   },
   methods: {
     ...mapMutations('storage', [
-      'vault',
       'setWallet'
     ]),
     ...mapActions('storage', [
       'jazzicon'
     ]),
-    ...mapActions('zilliqa', [
-      'createWallet',
-      'balanceUpdate'
-    ]),
 
-    logOut() {
-      this.vault(null);
-      this.$router.push({ name: 'lock' });
-    },
+    logOut() { },
     async selectAccount(index) {
       let wallet = this.wallet;
 
@@ -86,7 +78,6 @@ export default {
 
       this.jazzicon('jazzicon');
       this.setWallet(wallet);
-      this.balanceUpdate();
       this.$router.push({ name: 'home' });
     }
   }

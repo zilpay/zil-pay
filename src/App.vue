@@ -6,8 +6,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
-import zilConfig from './config/zil.json'
+import { mapMutations } from 'vuex'
 import NavBar from './components/UI/NavBar'
 
 
@@ -17,57 +16,10 @@ export default {
   mounted() {
     this.preStart();
   },
-  computed: {
-    ...mapState('storage', [
-      'pubKeyJWT',
-      'selectedNet'
-    ])
-  },
   methods: {
-    ...mapActions([
-      'updateRate'
-    ]),
-    ...mapMutations([
-      'spiner'
-    ]),
-    ...mapActions('storage', [
-      'syncBrowser',
-      'signVerifyJWT',
-      'bip39Decrypt'
-    ]),
-    ...mapActions(['getGas']),
-    ...mapMutations('storage', [
-      'config',
-      'setNet'
-    ]),
-    ...mapMutations('zilliqa', [
-      'changeProvider'
-    ]),
-
+    ...mapMutations(['spiner']),
     async preStart() {
-      await this.syncBrowser();
-      this.updateRate();
-      this.changeProvider(this.selectedNet);
       this.spiner();
-
-      if (!this.pubKeyJWT) {
-        this.config(zilConfig);
-        this.setNet(Object.keys(zilConfig)[0]);
-        this.$router.push({ name: 'create' });
-        return null;
-      }
-
-      this.getGas();
-
-      let status = await this.signVerifyJWT();
-
-      this.bip39Decrypt();
-
-      if (status) {
-        this.$router.push({ name: 'home' });
-      } else {
-        this.$router.push({ name: 'lock' });
-      }
     }
   }
 }
