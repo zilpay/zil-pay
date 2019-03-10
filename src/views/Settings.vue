@@ -2,7 +2,7 @@
   <div class="container">
     <div class="d-flex justify-content-end text-warning point">
       <h3 class="mr-auto p-2" @click="$router.push({name:'home'})">&#60;BACK</h3>
-      <h3 class="p-2" @click="logOut">LOG OUT</h3>
+      <h3 class="p-2" @click="signOut">LOG OUT</h3>
     </div>
 
     <div class="row justify-content-center p-5">
@@ -67,10 +67,15 @@ export default {
       'setWallet'
     ]),
     ...mapActions('storage', [
-      'jazzicon'
+      'jazzicon',
+      'logOut',
+      'balanceUpdate'
     ]),
 
-    logOut() { },
+    signOut() {
+      this.logOut();
+      this.$router.push({ name: 'lock' });
+    },
     async selectAccount(index) {
       let wallet = this.wallet;
 
@@ -78,6 +83,7 @@ export default {
 
       this.jazzicon('jazzicon');
       this.setWallet(wallet);
+      this.balanceUpdate();
       this.$router.push({ name: 'home' });
     }
   }

@@ -6,13 +6,14 @@
            href="#">ZilPay</a>
       </div>
 
-      <Dropdown :options="options"
+      <Dropdown v-if="isEnable"
+                :options="options"
                 :selected="selectedNet"
                 :classBtn="'dark text-pink'"
-                @updateOption="setNet"/>
+                @updateOption="selectDefaultNet"/>
 
       <ul class="nav navbar-nav navbar-right">
-        <li>
+        <li v-show="isEnable">
           <router-link :to="$router.options.routes[3].path">
             <div id="jazzicon"/>
           </router-link>
@@ -23,20 +24,18 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import Dropdown from './Dropdown'
 
 
 export default {
   name: 'NavBar',
   components: { Dropdown },
-  mounted() {
-    this.jazzicon('jazzicon');
-  },
   computed: {
     ...mapState('storage', [
       'config',
-      'selectedNet'
+      'selectedNet',
+      'isEnable'
     ]),
 
     options() {
@@ -44,13 +43,32 @@ export default {
     }
   },
   methods: {
-    ...mapActions('storage', [
-      'jazzicon'
-    ]),
+    ...mapMutations(['spiner']),
     ...mapMutations('storage', [
       'setNet'
-    ])
-  }
+    ]),
+    ...mapActions('storage', [
+      'balanceUpdate'
+    ]),
+
+    async selectDefaultNet(value) {
+      if (!value) {
+        return null;
+      }
+
+      this.spiner();
+
+      try {
+        this.setNet(value);
+        await this.balanceUpdate();
+      } catch(err) {
+        console.error(err);
+      }
+
+      this.spiner();
+    }
+  },
+  mounted() { }
 }
 </script>
 

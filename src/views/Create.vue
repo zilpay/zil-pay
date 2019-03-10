@@ -5,11 +5,11 @@
         <router-link v-if="isReady" :to="$router.options.routes[0].path">
           <h3 class="text-warning text-left point">&#60;back</h3>
         </router-link>
-        <h3>Enter your secret twelve word
-           phrase here to restore your vault.</h3>
+        <h5>Enter your secret twelve word
+           phrase here to restore your vault.</h5>
       </div>
 
-      <div class="form-group p-5">
+      <div class="form-group p-2">
         <label for="seed">Wallet Seed</label>
         <textarea class="form-control bg-null"
                   id="seed"
@@ -112,7 +112,8 @@ export default {
       'spiner'
     ]),
     ...mapMutations('storage', [
-      'setWallet'
+      'setWallet',
+      'isEnable'
     ]),
     ...mapActions('storage', [
       'randomSeed',
@@ -127,6 +128,7 @@ export default {
           seed: this.mnemonicPhrase,
           password: this.password
         });
+        this.isEnable(true);
         this.jazzicon('jazzicon');
         this.spiner();
         this.$router.push({ name: 'home' });

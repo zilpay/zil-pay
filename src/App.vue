@@ -9,6 +9,7 @@
 import { mapMutations, mapActions } from 'vuex'
 import NavBar from './components/UI/NavBar'
 
+
 export default {
   name: 'App',
   components: { NavBar },
@@ -23,7 +24,8 @@ export default {
       'isEnable',
       'setNet',
       'config',
-      'setWallet'
+      'setWallet',
+      'transactions'
     ]),
     ...mapActions('storage', [
       'initPopup',
@@ -40,9 +42,15 @@ export default {
         this.spiner();
         return null;
       }
-
+      
       this.spiner();
+      console.log(data);
       if (data.reject) {
+        this.isReady(data.reject.isReady);
+        this.isEnable(data.reject.isEnable);
+        this.setNet(data.reject.selectednet);
+        this.config(data.reject.config);
+
         if (!data.reject.isEnable) {
           this.$router.push({ name: 'lock' });
         }
@@ -50,18 +58,14 @@ export default {
           this.$router.push({ name: 'create' });
         }
 
-        this.isReady(data.reject.isReady);
-        this.isEnable(data.reject.isEnable);
-        this.setNet(data.reject.selectedNet);
-        this.config(data.reject.config);
-
         return null;
       } else {
         this.isReady(data.resolve.isReady);
         this.isEnable(data.resolve.isEnable);
-        this.setNet(data.resolve.data.selectedNet);
+        this.setNet(data.resolve.data.selectednet);
         this.config(data.resolve.data.config);
         this.setWallet(data.resolve.data.wallet);
+        this.transactions(data.resolve.data.transactions);
         this.jazzicon('jazzicon');
 
         if (data.resolve.isEnable) {

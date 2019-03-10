@@ -1,17 +1,14 @@
 {
   "mainnet": {
     "PROVIDER": "https://api.zilliqa.com",
-    "CHAIN_ID": 333,
     "MSG_VERSION": 1
   },
   "testnet": {
     "PROVIDER": "https://dev-api.zilliqa.com",
-    "CHAIN_ID": 333,
     "MSG_VERSION": 1
   },
   "private": {
     "PROVIDER": "http://localhost",
-    "CHAIN_ID": 333,
     "MSG_VERSION": 1
   }
 }

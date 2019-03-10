@@ -32,8 +32,9 @@ export class Stream {
      */
     try {
       const address = await this.getAddress();
-      const node = await this.getNetwork();
-      
+      const network = await this.getNetwork();
+      const node = network.PROVIDER;
+
       log.info(address, node);
 
       if (!address || !node) {

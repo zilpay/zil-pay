@@ -13,7 +13,6 @@ import {
 export default {
   namespaced: true,
   state: {
-    vault: null,
     isReady: false,
     isEnable: false,
     wallet: {
@@ -32,8 +31,12 @@ export default {
       ).send();
       state.selectedNet = payload;
     },
-    setWallet(state, object) {
-      state.wallet = object;
+    setWallet(state, payload) {
+      InternalMessage.widthPayload(
+        MTypesInternal.CHANGE_ACCOUNT,
+        { wallet: payload }
+      ).send();
+      state.wallet = payload;
     },
     config(state, object) {
       state.config = object;
@@ -45,13 +48,7 @@ export default {
       state.isEnable = isEnable;
     },
     transactions(state, data) {
-      let txStorage = {};
-      let bookkeeper = state.transactions[data.fromAddr] || [];
-
-      bookkeeper.push(data);
-      txStorage[data.fromAddr] = bookkeeper;
-
-      state.transactions = Object.assign(txStorage, state.transactions);
+      state.transactions = data;
     }
   },
   actions: {
@@ -73,25 +70,51 @@ export default {
 
     async walletCreate({ commit }, { seed, password }) {
       const wallet = await InternalMessage.widthPayload(
-        MTypesInternal.SET_SEED_AND_PWD,
+        MTypesAuth.SET_SEED_AND_PWD,
         { seed, password }
       ).send();
 
       commit('setWallet', wallet);
     },
-    async unLock({ state }, password) {
+    
+    async unLock({ commit }, password) {
       const status = await InternalMessage.widthPayload(
         MTypesAuth.SET_PASSWORD,
         { password }
       ).send();
-      console.log(status);
+      commit('isEnable', status);
       return status;
+    },
+
+    logOut({ commit }) {
+      InternalMessage.signal(MTypesAuth.LOG_OUT).send();
+      commit('isEnable', false);
+    },
+
+    async balanceUpdate({ state }) {
+      const wallet = await InternalMessage.signal(MTypesInternal.UPDATE_BALANCE).send();
+      state.wallet = wallet;
+      return wallet;
+    },
+    async transactionsUpdate({ state }) {
+      const { transactions } = await InternalMessage.signal(MTypesInternal.GET_ALL_TX).send();
+      state.transactions = transactions;
+    },
+
+    async nonContractSendTransaction({ }, data) {
+      const tx = await InternalMessage.widthPayload(
+        MTypesInternal.SIGN_SEND_TRANSACTION,
+        { data }
+      ).send();
+
+      return tx;
     },
 
     initPopup: () => InternalMessage.signal(MTypesInternal.INIT).send(),
     randomSeed: () => InternalMessage.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
   getters: {
-    NET: state => state.selectedNet
+    ISREADY: state => state.isReady,
+    ISENABLE: state => state.isEnable
   }
 }

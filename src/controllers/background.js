@@ -38,17 +38,17 @@ export class Background  {
       case MTypesInternal.GET_NETWORK:
         this.getProvider(sendResponse);
         break;
+      
+      case MTypesInternal.GET_DECRYPT_SEED:
+        sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
+        break;
 
       case MTypesInternal.GET_ADDRESS:
         this.getAddress(sendResponse);
         break;
 
-      case MTypesInternal.SET_SEED_AND_PWD:
+      case MTypesAuth.SET_SEED_AND_PWD:
         this.createNewWallet(sendResponse, message.payload);
-        break;
-
-      case MTypesInternal.GET_DECRYPT_SEED:
-        sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
         break;
 
       case MTypesInternal.INIT:
@@ -58,9 +58,31 @@ export class Background  {
       case MTypesAuth.SET_PASSWORD:
         this.walletUnlock(sendResponse, message.payload);
         break;
+      
+      case MTypesAuth.LOG_OUT:
+        this.logOut(sendResponse);
+        break;
+
+      case MTypesInternal.UPDATE_BALANCE:
+        this.balanceUpdate(sendResponse);
+        break;
+
+      case MTypesInternal.CHANGE_ACCOUNT:
+        await this.auth.setWallet(message.payload.wallet);
+        sendResponse(true);
+        break;
+      
+      case MTypesInternal.SIGN_SEND_TRANSACTION:
+        this.signSendTransaction(sendResponse, message.payload);
+        break;
+      
+      case MTypesInternal.GET_ALL_TX:
+        sendResponse(await this.auth.getTxs());
+        break;
     }
 
   }
+
 
   async initPopup(sendResponse) {
     let isLcok;
@@ -73,6 +95,8 @@ export class Background  {
 
     if (!allData || test) {
       await this.updateConfig(config, selectednet);
+      this.auth.isEnable = false;
+      this.auth.isReady = false;
 
       sendResponse({
         reject: {
@@ -140,6 +164,33 @@ export class Background  {
     this.auth.isReady = true;
   }
 
+  async signSendTransaction(sendResponse, payload) {
+    let { wallet, config, selectednet, vault } = await this.auth.getAllData();
+    
+    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
+      sendResponse(null);
+    } else {
+      this.auth.guard.encryptedSeed = vault;
+    }
+    
+    const { PROVIDER, MSG_VERSION } = config[selectednet];
+    const blockChain = new BlockChainControll(PROVIDER);
+    
+    try {
+      const txSent = await blockChain.signSendTransaction(
+        payload.data,
+        this.auth.guard.decryptSeed,
+        wallet.selectedAddress,
+        MSG_VERSION
+      );
+      this.auth.setTx(txSent);
+      sendResponse({ resolve: txSent });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+      log.error(err.message);
+    }
+  }
+
   async updateConfig(config, net) {
     this.auth.setConfig(config);
     this.auth.setNet(net);
@@ -149,14 +200,27 @@ export class Background  {
     if (!payload || Object.keys(payload).length < 1) {
       return null;
     }   
-    const { config } = await this.auth.getConfig();
     const { selectedNet } = payload;
-    const { PROVIDER } = config[selectedNet];
     this.auth.setNet(selectedNet);
-    InternalMessage.widthPayload(
-      MTypesContent.SET_NODE,
-      { PROVIDER }
-    ).send();
+  }
+
+  async balanceUpdate(sendResponse) {
+    let { wallet, config, selectednet } = await this.auth.getAllData();
+    
+    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
+      sendResponse(null);
+    }
+
+    const { PROVIDER } = config[selectednet];
+    const blockChain = new BlockChainControll(PROVIDER);
+    const { address } = wallet.identities[wallet.selectedAddress];
+    const { result } = await blockChain.getBalance(address);
+
+    wallet.identities[wallet.selectedAddress].balance = result;
+
+    this.auth.setWallet(wallet);
+
+    sendResponse(wallet);
   }
 
   async getAddress(sendResponse) {
@@ -176,7 +240,9 @@ export class Background  {
     const { config } = await this.auth.getConfig();
     const { selectednet } = await this.auth.getNet();
     const { PROVIDER } = config[selectednet];
-    sendResponse(PROVIDER);
+
+    sendResponse({ config, selectednet, PROVIDER });
+    
     return PROVIDER;
   }
 
@@ -191,7 +257,13 @@ export class Background  {
     }
 
     sendResponse(status);
-  } 
+  }
+
+  logOut(sendResponse) {
+    this.auth = new Auth();
+    sendResponse(true);
+    window.chrome.runtime.reload();
+  }
 
 }
 

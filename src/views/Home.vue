@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import copy from 'clipboard-copy'
 import { fromZil, toUSD } from '../filters/zil'
 import trimAddress from '../filters/trimAddress'
@@ -62,16 +62,22 @@ export default {
       ];
     },
     txArray() {
-      let txs = this.transactions[this.account.address] || [];
+      const txs = this.transactions[this.account.address] || [];
       return txs.reverse();
     }
   },
   methods: {
     copy,
-    preStart() {}
+    ...mapActions('storage', [
+      'jazzicon',
+      'balanceUpdate',
+      'transactionsUpdate'
+    ])
   },
   mounted() {
-    this.preStart();
+    this.jazzicon('jazzicon');
+    this.balanceUpdate();
+    this.transactionsUpdate();
   }
 }
 </script>

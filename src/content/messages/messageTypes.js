@@ -13,24 +13,27 @@ export const MTypesContent = {
 };
 
 export const MTypesAuth = {
-  SET_PASSWORD: 'set_password',
-  IS_AUTH:      'is_auth'
+  SET_PASSWORD:     'set_password',
+  SET_SEED_AND_PWD: 'set_seed_and_pwd',
+  LOG_OUT:          'log_out'
 }
 
 export const MTypesInternal = {
   INIT:                  'init',
-  GET_DECRYPT_SEED:      'get_d_seed',
-  SET_SEED_AND_PWD:      'set_seed_and_pwd',
   SET_NET:               'set_net',
+  GET_NETWORK:           'get_network',
+  GET_ADDRESS:           'get_address',
+  GET_DECRYPT_SEED:      'get_d_seed',
+  GET_ALL_TX:            'get_all_tx',
+  UPDATE_BALANCE:        'update_balance',
+  CHANGE_ACCOUNT:        'c_account',
+  SIGN_SEND_TRANSACTION: 'sign_send_transaction',
 
   SET_ENCRYPT_SEED:      'set_seed',
   GET_ENCRYPT_SEED:      'get_seed',
   IS_UNLOCKED:           'is_unlocked',
   SET_PROMPT:            'set_prompt',
   GET_PROMPT:            'get_prompt',
-  GET_ADDRESS:           'get_address',
-  GET_NETWORK:           'get_network',
-  SIGN_SEND_TRANSACTION: 'sign_send_transaction',
   WAIT_SEND_TRANSACTION: 'wait_send_transaction',
   PASSWORD_HASH:         'password_hash'
 };

@@ -1,8 +1,19 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Storage from './stroe/storage'
 
 
-Vue.use(Router)
+Vue.use(Router);
+
+
+function guard(to, from, next) {
+  if (Storage.getters.ISENABLE && Storage.getters.ISREADY) {
+    next();
+  } else {
+    next(false);
+  }
+}
+
 
 export default new Router({
   mode: 'history',
@@ -21,16 +32,19 @@ export default new Router({
     {
       path: '/home',
       name: 'home',
+      beforeEnter: guard,
       component: () => import('./views/Home')
     },
     {
       path: '/settings',
       name: 'settings',
+      beforeEnter: guard,
       component: () => import('./views/Settings')
     },
     {
       path: '/send',
       name: 'send',
+      beforeEnter: guard,
       component: () => import('./views/Send')
     }
   ]

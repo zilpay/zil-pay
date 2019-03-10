@@ -1,10 +1,11 @@
 import { BrowserStorage } from '../../../lib/storage'
 import fields from '../../../config/fields'
 
+
 export class StorageGuard extends BrowserStorage {
   
   constructor() {
-    super();    
+    super();
   }
 
   async getEncryptedSeed() {
@@ -16,6 +17,9 @@ export class StorageGuard extends BrowserStorage {
     } else {
       return vault[keys[0]];
     }
+  }
+  getTxs() {
+    return this.get(fields.TRANSACTIONS);
   }
   getConfig() {
     return this.get(fields.CONFIG);
@@ -50,6 +54,25 @@ export class StorageGuard extends BrowserStorage {
     const object = {};
     object[fields.SELECTED_NET] = value;
     return this.set(object);
+  }
+  async setTx(data) {
+    // TODO: optimize!!!!!!!!!!!!!!!!!!!
+    let bookkeeper;
+    const object = {};
+    const txs = await this.getTxs();
+
+    if (!txs[fields.TRANSACTIONS]) {
+      bookkeeper = [];
+      bookkeeper.push(data);
+      txs[data.from] = bookkeeper;
+      object[fields.TRANSACTIONS] = txs;
+      return this.set(object);
+    } else {
+      bookkeeper = txs[fields.TRANSACTIONS][data.from];
+      bookkeeper.push(data);
+      txs[data.from] = bookkeeper;
+      return this.set(txs);
+    }
   }
   // data recording //
   
