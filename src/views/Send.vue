@@ -144,7 +144,8 @@ export default {
       'spiner'
     ]),
     ...mapActions('storage', [
-      'nonContractSendTransaction'
+      'nonContractSendTransaction',
+      'transactionsUpdate'
     ]),
 
     async txFormSubmit() {
@@ -157,6 +158,7 @@ export default {
       };
 
       await this.nonContractSendTransaction(data);
+      this.transactionsUpdate();
       this.spiner();
       this.$router.push({ name: 'home' });
     }

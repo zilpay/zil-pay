@@ -2,8 +2,6 @@ import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Utils from '../lib/utils'
 import {
-  // MTypesContent,
-  // Message,
   InternalMessage,
   MTypesAuth,
   MTypesInternal
@@ -19,7 +17,7 @@ export default {
       selectedAddress: null, // index
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
-    transactions: {}, // {'0x..': [{to, amount, hash}] } //
+    transactions: { },
     selectedNet: Object.keys(zilConf)[0],
     config: zilConf
   },
@@ -42,7 +40,7 @@ export default {
       state.config = object;
     },
     isReady(state, isReady) {
-      state.ready = isReady;
+      state.isReady = isReady;
     },
     isEnable(state, isEnable) {
       state.isEnable = isEnable;
@@ -106,8 +104,13 @@ export default {
         MTypesInternal.SIGN_SEND_TRANSACTION,
         { data }
       ).send();
-
+      
       return tx;
+    },
+
+    async createAccount({ state }) {
+      state.wallet = await InternalMessage.signal(MTypesInternal.CREATE_ACCOUNT).send();
+      return state.wallet;
     },
 
     initPopup: () => InternalMessage.signal(MTypesInternal.INIT).send(),

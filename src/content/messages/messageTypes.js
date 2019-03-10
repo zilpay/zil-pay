@@ -28,6 +28,7 @@ export const MTypesInternal = {
   UPDATE_BALANCE:        'update_balance',
   CHANGE_ACCOUNT:        'c_account',
   SIGN_SEND_TRANSACTION: 'sign_send_transaction',
+  CREATE_ACCOUNT:        'create_account',
 
   SET_ENCRYPT_SEED:      'set_seed',
   GET_ENCRYPT_SEED:      'get_seed',

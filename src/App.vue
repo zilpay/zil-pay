@@ -7,7 +7,8 @@
 
 <script>
 import { mapMutations, mapActions } from 'vuex'
-import NavBar from './components/UI/NavBar'
+
+const NavBar = () => import('./components/UI/NavBar')
 
 
 export default {
@@ -44,7 +45,7 @@ export default {
       }
       
       this.spiner();
-      console.log(data);
+
       if (data.reject) {
         this.isReady(data.reject.isReady);
         this.isEnable(data.reject.isEnable);
@@ -65,8 +66,11 @@ export default {
         this.setNet(data.resolve.data.selectednet);
         this.config(data.resolve.data.config);
         this.setWallet(data.resolve.data.wallet);
-        this.transactions(data.resolve.data.transactions);
         this.jazzicon('jazzicon');
+
+        if (data.resolve.data.transactions) {
+          this.transactions(data.resolve.data.transactions);
+        }
 
         if (data.resolve.isEnable) {
           this.$router.push({ name: 'home' });

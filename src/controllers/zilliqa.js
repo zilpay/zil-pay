@@ -58,4 +58,15 @@ export class BlockChainControll extends Zilliqa {
     return bytes.pack(result, msgVerison);
   }
 
+  async getAccountBySeed(seed, index) {
+    this.wallet.addByMnemonic(seed, index);
+    const { address, publicKey } = this.wallet.defaultAccount;
+    const { result } = await this.getBalance(address);
+
+    return {
+      index, publicKey, address,
+      balance: result
+    };
+  }
+
 }

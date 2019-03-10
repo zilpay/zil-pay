@@ -28,7 +28,7 @@
               @click="$router.push({ name: 'send' })">SEND</button>
     </div>
 
-    <TxTracking :txs="txArray"/>
+    <TxTracking v-if="txArray.length > 0" :txs="txArray"/>
   </div>
 </template>
 
@@ -37,8 +37,9 @@ import { mapState, mapActions } from 'vuex'
 import copy from 'clipboard-copy'
 import { fromZil, toUSD } from '../filters/zil'
 import trimAddress from '../filters/trimAddress'
-import TxTracking from '../components/TxTracking'
 import btn from '../directives/btn'
+
+const TxTracking = () => import('../components/TxTracking')
 
 
 export default {
@@ -62,7 +63,16 @@ export default {
       ];
     },
     txArray() {
-      const txs = this.transactions[this.account.address] || [];
+      if (!this.transactions) {
+        return [];
+      }
+      
+      const txs = this.transactions[this.account.address];
+
+      if (!txs) {
+        return [];
+      }
+      
       return txs.reverse();
     }
   },

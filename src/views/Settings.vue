@@ -34,7 +34,7 @@
         </li>
       </ul>
       <button v-btn="'warning col m-3'"
-              @click="createWallet(wallet.identities.length)">Create Account</button>
+              @click="createAccountBySeed">Create Account</button>
     </div>
   </div>
 </template>
@@ -63,27 +63,37 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'spiner'
+    ]),
     ...mapMutations('storage', [
       'setWallet'
     ]),
     ...mapActions('storage', [
       'jazzicon',
       'logOut',
-      'balanceUpdate'
+      'balanceUpdate',
+      'createAccount'
     ]),
 
     signOut() {
       this.logOut();
       this.$router.push({ name: 'lock' });
     },
+    async createAccountBySeed() {
+      this.spiner();
+      await this.createAccount();
+      this.spiner();
+      this.$router.push({ name: 'home' });
+    },
     async selectAccount(index) {
       let wallet = this.wallet;
-
+      
       wallet.selectedAddress = index;
 
-      this.jazzicon('jazzicon');
       this.setWallet(wallet);
       this.balanceUpdate();
+      this.jazzicon('jazzicon');
       this.$router.push({ name: 'home' });
     }
   }

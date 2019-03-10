@@ -60,7 +60,7 @@ export class Background  {
         break;
       
       case MTypesAuth.LOG_OUT:
-        this.logOut(sendResponse);
+        this.logOut();
         break;
 
       case MTypesInternal.UPDATE_BALANCE:
@@ -78,6 +78,10 @@ export class Background  {
       
       case MTypesInternal.GET_ALL_TX:
         sendResponse(await this.auth.getTxs());
+        break;
+      
+      case MTypesInternal.CREATE_ACCOUNT:
+        this.getAccountBySeedIndex(sendResponse);
         break;
     }
 
@@ -162,6 +166,33 @@ export class Background  {
 
     this.auth.isEnable = true;
     this.auth.isReady = true;
+  }
+
+  async getAccountBySeedIndex(sendResponse) {
+    let { wallet, config, selectednet, vault } = await this.auth.getAllData();
+
+    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
+      sendResponse(null);
+    } else {
+      this.auth.guard.encryptedSeed = vault;
+    }
+
+    const { PROVIDER } = config[selectednet];
+    const blockChain = new BlockChainControll(PROVIDER);
+    const index = wallet.identities.length;
+    
+    try {
+      const decryptSeed = this.auth.guard.decryptSeed;
+      const account = await blockChain.getAccountBySeed(decryptSeed, index);
+
+      wallet.identities.push(account);
+      wallet.selectedAddress = index;
+
+      this.auth.setWallet(wallet);
+      sendResponse(wallet);
+    } catch(err) {
+      this.logOut();
+    }
   }
 
   async signSendTransaction(sendResponse, payload) {
@@ -259,9 +290,8 @@ export class Background  {
     sendResponse(status);
   }
 
-  logOut(sendResponse) {
+  logOut() {
     this.auth = new Auth();
-    sendResponse(true);
     window.chrome.runtime.reload();
   }
 
