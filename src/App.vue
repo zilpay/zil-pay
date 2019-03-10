@@ -63,7 +63,12 @@ export default {
         this.config(data.resolve.data.config);
         this.setWallet(data.resolve.data.wallet);
         this.jazzicon('jazzicon');
-        this.$router.push({ name: 'home' });
+
+        if (data.resolve.isEnable) {
+          this.$router.push({ name: 'home' });
+        } else {
+          this.$router.push({ name: 'lock' });
+        }        
       }
 
     }

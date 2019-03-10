@@ -116,11 +116,10 @@ export default {
     ]),
     ...mapActions('storage', [
       'randomSeed',
-      'walletCreate'
+      'walletCreate',
+      'jazzicon'
     ]),
     async submit() {
-      let wallet;
-
       this.spiner();
 
       try {
@@ -128,6 +127,7 @@ export default {
           seed: this.mnemonicPhrase,
           password: this.password
         });
+        this.jazzicon('jazzicon');
         this.spiner();
         this.$router.push({ name: 'home' });
       } catch(err) {

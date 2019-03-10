@@ -5,7 +5,7 @@ import {
   // MTypesContent,
   // Message,
   InternalMessage,
-  // MTypesAuth,
+  MTypesAuth,
   MTypesInternal
 } from '../content/messages/messageTypes'
 
@@ -79,6 +79,15 @@ export default {
 
       commit('setWallet', wallet);
     },
+    async unLock({ state }, password) {
+      const status = await InternalMessage.widthPayload(
+        MTypesAuth.SET_PASSWORD,
+        { password }
+      ).send();
+      console.log(status);
+      return status;
+    },
+
     initPopup: () => InternalMessage.signal(MTypesInternal.INIT).send(),
     randomSeed: () => InternalMessage.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },

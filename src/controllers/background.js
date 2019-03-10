@@ -28,7 +28,7 @@ export class Background  {
     });
   }
 
-  _dispenseMessage (sendResponse, message) {
+  async _dispenseMessage (sendResponse, message) {
 
     switch (message.type) {
 
@@ -36,11 +36,11 @@ export class Background  {
         this.updateNode(message.payload);
         break;
       case MTypesInternal.GET_NETWORK:
-        sendResponse('https://dev-api.zilliqa.com');
+        this.getProvider(sendResponse);
         break;
 
       case MTypesInternal.GET_ADDRESS:
-        sendResponse('43f1297bfd415ecc5d0c365c091e332c822d9115');
+        this.getAddress(sendResponse);
         break;
 
       case MTypesInternal.SET_SEED_AND_PWD:
@@ -54,6 +54,10 @@ export class Background  {
       case MTypesInternal.INIT:
         this.initPopup(sendResponse);
         break;
+
+      case MTypesAuth.SET_PASSWORD:
+        this.walletUnlock(sendResponse, message.payload);
+        break;
     }
 
   }
@@ -66,7 +70,6 @@ export class Background  {
     const countKeys = Object.keys(fields).length - 1;
     const countKeysData = Object.keys(allData);
     const test = !allData.hasOwnProperty(fields.VAULT) || countKeysData < countKeys;
-
 
     if (!allData || test) {
       await this.updateConfig(config, selectednet);
@@ -82,10 +85,13 @@ export class Background  {
       this.auth.isReady = true;
 
       try {
+        this.auth.guard.encryptedSeed = allData.vault;
         isLcok = this.auth.guard.decryptSeed;
 
-        if (!isLcok || isLcok.length < 12) {
+        if (!isLcok || isLcok.length < 11) {
           this.auth.isEnable = false;
+        } else {
+          this.auth.isEnable = true;
         }
       } catch(err) {
         this.auth.isEnable = false;
@@ -128,10 +134,7 @@ export class Background  {
     sendResponse(account);
 
     await this.auth.setWallet(account);
-
-    await this.auth.setEncryptedSeed(
-      this.auth.guard.encryptSeed(seed)
-    );
+    await this.auth.createVault(seed);
 
     this.auth.isEnable = true;
     this.auth.isReady = true;
@@ -155,6 +158,40 @@ export class Background  {
       { PROVIDER }
     ).send();
   }
+
+  async getAddress(sendResponse) {
+    const { wallet } = await this.auth.getWallet();
+    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
+      sendResponse(null);
+    } else {
+      sendResponse(
+        wallet.identities[
+          wallet.selectedAddress
+        ]['address']
+      );
+    }
+  }
+
+  async getProvider(sendResponse) {
+    const { config } = await this.auth.getConfig();
+    const { selectednet } = await this.auth.getNet();
+    const { PROVIDER } = config[selectednet];
+    sendResponse(PROVIDER);
+    return PROVIDER;
+  }
+
+  async walletUnlock(sendResponse, payload) {
+    const { password } = payload;
+    const status = await this.auth.verificationPassword(password);
+
+    this.auth.isEnable = status;
+
+    if (status) {
+      this.auth = new Auth(password);
+    }
+
+    sendResponse(status);
+  } 
 
 }
 

@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import btn from '../directives/btn'
 
 
@@ -47,7 +48,17 @@ export default {
     };
   },
   methods: {
-    async encryptingAccaunt() { }
+    ...mapActions('storage', [
+      'unLock'
+    ]),
+
+    async encryptingAccaunt() {
+      const status = await this.unLock(this.password);
+      this.wrongPassword = !status;
+      if (!this.wrongPassword) {
+        this.$router.push({ name: 'home' });
+      }
+    }
   }
 }
 </script>

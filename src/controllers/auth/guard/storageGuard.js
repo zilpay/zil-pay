@@ -7,8 +7,15 @@ export class StorageGuard extends BrowserStorage {
     super();    
   }
 
-  getEncryptedSeed() {
-    return this.get(fields.VAULT);
+  async getEncryptedSeed() {
+    const vault = await this.get(fields.VAULT);
+    const keys = Object.keys(vault);
+    
+    if (keys.length < 1) {
+      return null;
+    } else {
+      return vault[keys[0]];
+    }
   }
   getConfig() {
     return this.get(fields.CONFIG);

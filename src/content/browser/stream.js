@@ -1,4 +1,4 @@
-import { EncryptedStream, LocalStream } from 'extension-streams'
+import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
 import { Loger } from '../../lib/logger'
 import Config from '../../config/api'
@@ -26,17 +26,6 @@ export class Stream {
     this.stream.onSync(() => this._onSyncAll());
   }
 
-  watchTabMessaging() {
-    /**
-     * watch internal message (LocalStream);
-     * waiting message from background or popup.
-     */
-    LocalStream.watch((request, response) => {
-      const message = InternalMessage.fromJson(request);
-      this._dispenseMessage(response, message);
-    });
-  }
-
   async _onSyncAll() {
     /**
      * Get state from wallet.
@@ -44,6 +33,16 @@ export class Stream {
     try {
       const address = await this.getAddress();
       const node = await this.getNetwork();
+      
+      log.info(address, node);
+
+      if (!address || !node) {
+        log.warn(
+          `params is not by null or undefined, 
+          address: ${address}, node: ${node}`
+        );
+        return null;
+      }
 
       this.stream.send(
         Message.widthPayload(
@@ -88,10 +87,6 @@ export class Stream {
 
   getAddress() {
     return InternalMessage.signal(MTypesInternal.GET_ADDRESS).send();
-  }
-
-  _dispenseMessage(res, message) {
-    log.info(message);
   }
 
   sync(message) {

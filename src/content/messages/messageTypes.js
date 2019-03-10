@@ -1,4 +1,4 @@
-import { LocalStream } from 'extension-streams';
+// import { LocalStream } from 'extension-streams';
 
 
 export const MTypesContent = {
@@ -79,7 +79,15 @@ export class InternalMessage {
     return new InternalMessage(type);
   }
   send () {
-    return LocalStream.send(this);
+    return new Promise((resolve, reject) => {
+      try {
+        window.chrome
+              .runtime
+              .sendMessage(this, (response) => resolve(response));
+      } catch(err) {
+        reject(err);
+      }      
+    });
   }
 }
 
