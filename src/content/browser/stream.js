@@ -106,6 +106,10 @@ export class Stream {
         this._broadcast(MTypesContent.STATUS_UPDATE, message.payload);
         break;
 
+      default:
+        log.info('unknown method');
+        break;
+
     }
   }
 

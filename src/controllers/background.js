@@ -26,7 +26,11 @@ export class Background  {
   _watchInternalMessaging() {
     LocalStream.watch((request, response) => {
       const message = InternalMessage.fromJson(request);
-      this._dispenseMessage(response, message);
+      try {
+        this._dispenseMessage(response, message);
+      } catch (err) {
+        log.info(`skip ${message.type} method`);
+      }
     });
   }
 
@@ -83,6 +87,10 @@ export class Background  {
       
       case MTypesInternal.CREATE_ACCOUNT:
         this.getAccountBySeedIndex(sendResponse);
+        break;
+
+      default:
+        log.info('unknown method');
         break;
     }
 
@@ -308,8 +316,8 @@ export class Background  {
     this._lockStatusUpdateTab();
   }
 
-  _lockStatusUpdateTab() {
-    TabsMessage.widthPayload(
+  async _lockStatusUpdateTab() {
+    return await TabsMessage.widthPayload(
       MTypesTabs.LOCK_STAUS, {
         isEnable: this.auth.isEnable,
         isReady: this.auth.isReady
@@ -320,8 +328,9 @@ export class Background  {
   logOut() {
     this.auth = new Auth();
     this.auth.isReady = true;
+    this.auth.isEnable = false;
     this._lockStatusUpdateTab();
-    window.chrome.runtime.reload();
+    // window.chrome.runtime.reload();
   }
 
 }

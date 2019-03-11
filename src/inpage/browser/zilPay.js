@@ -10,6 +10,7 @@ export class ZilPay extends Zilliqa {
     this.core = core;
     this.isEnable = false;
     this.isReady = false;
+    this.override();
   }
 
   setDefaultAccount(address) {
@@ -30,6 +31,24 @@ export class ZilPay extends Zilliqa {
     let chainId = await this.network.GetNetworkId();
     let msgVerison = 1;
     return this.utils.bytes.pack(chainId, msgVerison);
+  }
+
+  override() {
+    [
+      'addByKeystore',
+      'addByMnemonic',
+      'addByPrivateKey',
+      'create',
+      'export',
+      'remove',
+      'setDefault',
+      'sign',
+      'signWith'
+    ].forEach(method => {
+      this.wallet.__proto__[method] = (...args) => {
+        throw new Error(`${method} is disable in ZilPay`);
+      };
+    });
   }
 
 }

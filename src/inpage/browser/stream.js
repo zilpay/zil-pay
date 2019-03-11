@@ -66,8 +66,6 @@ export class Stream {
     switch (msg.type) {
       case MTypesContent.PAY_OBJECT_INIT:
         log.info('INIT');
-        window.ZilPay.isReady = false;
-        window.ZilPay.isEnable = false;
         break;
 
       case MTypesContent.SET_NODE:
