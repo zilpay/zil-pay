@@ -87,7 +87,7 @@ export class Stream {
     }
   }
 
-  _dispenseMessage(_, message) {
+  _dispenseMessage(sendResponse, message) {
     if (!message) {
       return null;
     }
@@ -111,6 +111,7 @@ export class Stream {
         break;
 
     }
+    sendResponse(null);
   }
 
   getNetwork () {
