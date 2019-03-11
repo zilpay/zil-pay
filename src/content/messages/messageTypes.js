@@ -19,6 +19,10 @@ export const MTypesAuth = {
   LOG_OUT:          'log_out'
 }
 
+export const MTypesPayCall = {
+  CALL_SIGN_TX: 'c_s_t'
+};
+
 export const MTypesInternal = {
   INIT:                  'init',
   SET_NET:               'set_net',
@@ -100,16 +104,6 @@ export class InternalMessage {
       }      
     });
   }
-}
-
-export class DanglingResolver {
-
-  constructor (_id, _resolve, _reject) {
-    this.id = _id
-    this.resolve = _resolve
-    this.reject = _reject
-  }
-
 }
 
 export class TabsMessage {

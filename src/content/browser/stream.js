@@ -7,6 +7,7 @@ import {
   Message,
   InternalMessage,
   MTypesInternal,
+  MTypesPayCall,
   MTypesTabs
 } from '../messages/messageTypes'
 
@@ -66,24 +67,20 @@ export class Stream {
   _listener(msg) {
     if (!msg) {
       return null;
-    } else if (!msg.hasOwnProperty('type') || msg.type !== 'sync') {
-      log.warn(`type: ${msg.type}, resync`);
     }
 
-    let nonSyncMessage = Message.fromJson(msg);
-
     switch (msg.type) {
+
+      case MTypesPayCall.CALL_SIGN_TX:
+        this.singTx(msg.payload);
+        break;
+
       case MTypesContent.SYNC:
         this.sync(msg);
         break;
 
       default:
-      this.stream.send(
-        nonSyncMessage.error(
-          Error.maliciousEvent()
-        ),
-        MTypesContent.INJECTED
-      );
+        break;
     }
   }
 
@@ -120,6 +117,13 @@ export class Stream {
 
   getAddress() {
     return InternalMessage.signal(MTypesInternal.GET_ADDRESS).send();
+  }
+
+  singTx(payload) {
+    return InternalMessage.widthPayload(
+      MTypesPayCall.CALL_SIGN_TX,
+      payload
+    ).send();
   }
 
   _broadcast(type, payload) {

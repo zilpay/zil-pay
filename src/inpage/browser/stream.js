@@ -1,57 +1,41 @@
 import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
-import { MTypesContent, DanglingResolver, Message } from '../../content/messages/messageTypes'
+import { MTypesContent, MTypesPayCall, Message } from '../../content/messages/messageTypes'
 import utils from '../../lib/utils'
 import { Loger } from '../../lib/logger'
 import Config from '../../config/api'
 
 
 const log = new Loger(Config.PAY_NAME);
+var stream = new WeakMap();
 
 export class Stream {
 
   constructor() {
-    this.stream = new WeakMap();
-    this.resolvers = [];
-  }
-
-  subscribe() {
-    this.stream.listenWith(msg => {
-      if (!msg || !msg.hasOwnProperty('type')) {
-        return false;
-      }      
-
-      for (let i = 0; i < this.resolvers.length; i++) {
-        if (this.resolvers[i].id === msg.resolver) {
-          if (msg.type === 'error') {
-            this.resolvers[i].reject(msg.payload);
-          } else {
-            this.resolvers[i].resolve(msg.payload);
-          }
-  
-          this.resolvers = this.resolvers.slice(i, 1);
-        }
-      }
-    });
+    this.onEncryptedStream();
   }
 
   _send(_type, _payload) {
-    return new Promise((resolve, reject) => {
-      const id = uuidv4();
-      const message = new Message(_type, _payload, id);
-      
-      this.resolvers.push(new DanglingResolver(id, resolve, reject));
-      this.stream.send(message, MTypesContent.CONTENT_INIT);
-    });
+    const id = uuidv4();
+    const message = new Message(_type, _payload, id);
+    
+    stream.send(message, MTypesContent.CONTENT_INIT);
+  }
+
+  signOverrided(...args) {
+    const id = uuidv4();
+    const message = new Message(MTypesPayCall.CALL_SIGN_TX, args[0].txParams, id);
+    stream.send(message, MTypesContent.CONTENT_INIT);
+    return null;
   }
 
   onEncryptedStream() {
     /**
      * Injecting an encrypted stream into the web application
      */
-    this.stream = new EncryptedStream(MTypesContent.INJECTED, uuidv4());
-    this.stream.listenWith(msg => this._listener(msg));
-    this.stream.sync(MTypesContent.CONTENT_INIT, this.stream.key);
+    stream = new EncryptedStream(MTypesContent.INJECTED, uuidv4());
+    stream.listenWith(msg => this._listener(msg));
+    stream.sync(MTypesContent.CONTENT_INIT, stream.key);
   }
 
   _listener(msg) {
@@ -65,6 +49,8 @@ export class Stream {
 
     switch (msg.type) {
       case MTypesContent.PAY_OBJECT_INIT:
+        window.ZilPay.setDefaultAccount(tabMSG.payload.address);
+        window.ZilPay.setProvider(tabMSG.payload.node);
         log.info('INIT');
         break;
 
@@ -79,6 +65,9 @@ export class Stream {
       case MTypesContent.STATUS_UPDATE:
         window.ZilPay.isReady = tabMSG.payload.isReady;
         window.ZilPay.isEnable = tabMSG.payload.isEnable;
+        break;
+
+      default:
         break;
     }
   }

@@ -5,7 +5,8 @@ import {
   TabsMessage,
   MTypesTabs,
   MTypesAuth,
-  MTypesInternal
+  MTypesInternal,
+  MTypesPayCall
 } from '../content/messages/messageTypes'
 import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
@@ -41,8 +42,13 @@ export class Background  {
       case MTypesInternal.SET_NET:
         this.updateNode(message.payload);
         break;
+
       case MTypesInternal.GET_NETWORK:
         this.getProvider(sendResponse);
+        break;
+      
+      case MTypesPayCall.CALL_SIGN_TX:
+        log.info(message.payload);
         break;
       
       case MTypesInternal.GET_DECRYPT_SEED:

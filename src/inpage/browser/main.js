@@ -8,8 +8,7 @@ export class InPage extends Stream {
   constructor(provider) {
     super();
     window.ZilPay = new ZilPay(provider);
-    this.onEncryptedStream();
-    this.subscribe(); // from stream
+    window.ZilPay.wallet.__proto__.sign = this.signOverrided;
   }
 
 }
