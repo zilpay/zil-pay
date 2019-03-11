@@ -24,7 +24,7 @@ export class Stream {
 
   signOverrided(...args) {
     const id = uuidv4();
-    const message = new Message(MTypesPayCall.CALL_SIGN_TX, args[0].txParams, id);
+    const message = new Message(MTypesPayCall.CALL_SIGN_TX, args[0], id);
     stream.send(message, MTypesContent.CONTENT_INIT);
     return null;
   }

@@ -53,6 +53,35 @@ export class BlockChainControll extends Zilliqa {
     };
   }
 
+  async singTringer(data, seed, index, msgId) {
+    this.wallet.addByMnemonic(seed, index);
+    const balance = await this.getBalance(
+      this.wallet.defaultAccount.address
+    );
+    const version = await this.version(msgId);
+    const nonce = balance.nonce + 1;
+    const contract = this.contracts.new(data.code, data.data);
+
+    data.nonce = nonce;
+    data.pubKey = this.wallet.defaultAccount.publicKey;
+    data.amount = new BN(data.amount);
+    data.gasPrice = new BN(data.gasPrice);
+    data.version = version;
+
+    const [deployTx, hello] = await contract.deploy({
+      version,
+      gasPrice: data.gasPrice,
+      gasLimit: data.gasLimit
+    });
+
+        // Introspect the state of the underlying transaction
+        console.log(`Deployment Transaction ID: ${deployTx.id}`);
+        console.log(`Deployment Transaction Receipt:`);
+        console.log(deployTx.txParams.receipt);
+
+    return txSent;
+  }
+
   async version(msgVerison=1) {
     const { result } = await this.network.GetNetworkId();
     return bytes.pack(result, msgVerison);

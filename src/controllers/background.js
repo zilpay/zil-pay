@@ -8,6 +8,7 @@ import {
   MTypesInternal,
   MTypesPayCall
 } from '../content/messages/messageTypes'
+import { Prompt, PromptService } from './services/popup'
 import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
 import { BlockChainControll } from './zilliqa'
@@ -49,6 +50,21 @@ export class Background  {
       
       case MTypesPayCall.CALL_SIGN_TX:
         log.info(message.payload);
+        PromptService.open(
+          new Prompt(
+            MTypesInternal.IS_UNLOCKED,
+            'dragoneth',
+            {
+              hostname: 'dragoneth.host',
+              signedTransaction: 'signedTransaction',
+              input: { amount: 0 , test: 1 }
+            },
+            (approval) => {
+              log.info(approval);
+            }
+          )
+        );
+        // this.signSendTransaction(sendResponse, message.payload);
         break;
       
       case MTypesInternal.GET_DECRYPT_SEED:
@@ -213,6 +229,10 @@ export class Background  {
   }
 
   async signSendTransaction(sendResponse, payload) {
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
+    }
+
     let { wallet, config, selectednet, vault } = await this.auth.getAllData();
     
     if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
