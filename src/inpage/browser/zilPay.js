@@ -8,15 +8,12 @@ export class ZilPay extends Zilliqa {
     super(provider);
     this.utils = zilUtils;
     this.core = core;
-    this.enable = false;
+    this.isEnable = false;
+    this.isReady = false;
   }
 
   setDefaultAccount(address) {
-    if (!this.enable) {
-      throw new Error('ZilPay is disable');
-    }
-
-    let isAddress = this.utils.validation.isAddress(address);
+    const isAddress = this.utils.validation.isAddress(address);
     
     if (!isAddress) {
       throw new Error('input param is not address type');

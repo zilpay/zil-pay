@@ -6,9 +6,14 @@ export class Auth extends SecurityGuard {
 
   constructor(password, encryptedSeed=null) {
     super(password, encryptedSeed);
-    this.isReady = false;
     this.isEnable = false;
     this.mnemonic = new MnemonicSeed();
+
+    if (password) {
+      this.isReady = true;
+    } else {
+      this.isReady = false;
+    }
   }
 
 

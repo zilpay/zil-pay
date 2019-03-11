@@ -64,7 +64,7 @@ export default {
     },
     txArray() {
       if (!this.transactions) {
-        return [];
+        return []; z
       }
       
       const txs = this.transactions[this.account.address];

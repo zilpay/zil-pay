@@ -2,7 +2,8 @@ import { LocalStream } from 'extension-streams'
 import { Wallet } from '@zilliqa-js/account'
 import {
   InternalMessage,
-  MTypesContent,
+  TabsMessage,
+  MTypesTabs,
   MTypesAuth,
   MTypesInternal
 } from '../content/messages/messageTypes'
@@ -11,6 +12,7 @@ import { Auth } from './auth/main'
 import { BlockChainControll } from './zilliqa'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
+
 
 const log = new Loger('Background');
 
@@ -68,8 +70,7 @@ export class Background  {
         break;
 
       case MTypesInternal.CHANGE_ACCOUNT:
-        await this.auth.setWallet(message.payload.wallet);
-        sendResponse(true);
+        this.walletUpdate(sendResponse, message.payload);
         break;
       
       case MTypesInternal.SIGN_SEND_TRANSACTION:
@@ -133,6 +134,7 @@ export class Background  {
         }
       });
     }
+    this._lockStatusUpdateTab();
   }
 
   async createNewWallet(sendResponse, payload) {
@@ -166,6 +168,7 @@ export class Background  {
 
     this.auth.isEnable = true;
     this.auth.isReady = true;
+    this._lockStatusUpdateTab();
   }
 
   async getAccountBySeedIndex(sendResponse) {
@@ -232,7 +235,24 @@ export class Background  {
       return null;
     }   
     const { selectedNet } = payload;
+    const { config } = await this.auth.getConfig();
+    const { PROVIDER } = config[selectedNet];
+
     this.auth.setNet(selectedNet);
+    TabsMessage.widthPayload(
+      MTypesTabs.NETWORK_CHANGED, { PROVIDER }
+    ).send();
+  }
+
+  async walletUpdate(sendResponse, payload) {
+    await this.auth.setWallet(payload.wallet);
+    sendResponse(true);
+    const { address } = payload.wallet.identities[
+      payload.wallet.selectedAddress
+    ];
+    TabsMessage.widthPayload(
+      MTypesTabs.ADDRESS_CHANGED, { address }
+    ).send();
   }
 
   async balanceUpdate(sendResponse) {
@@ -280,18 +300,27 @@ export class Background  {
   async walletUnlock(sendResponse, payload) {
     const { password } = payload;
     const status = await this.auth.verificationPassword(password);
-
-    this.auth.isEnable = status;
-
     if (status) {
       this.auth = new Auth(password);
     }
-
+    this.auth.isEnable = status;
     sendResponse(status);
+    this._lockStatusUpdateTab();
+  }
+
+  _lockStatusUpdateTab() {
+    TabsMessage.widthPayload(
+      MTypesTabs.LOCK_STAUS, {
+        isEnable: this.auth.isEnable,
+        isReady: this.auth.isReady
+      }
+    ).send();
   }
 
   logOut() {
     this.auth = new Auth();
+    this.auth.isReady = true;
+    this._lockStatusUpdateTab();
     window.chrome.runtime.reload();
   }
 

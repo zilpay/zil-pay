@@ -61,21 +61,28 @@ export class Stream {
 
     msg.domain = utils.strippedHost();
 
-    const nonSyncMessage = Message.fromJson(msg);
+    const tabMSG = Message.fromJson(msg);
 
     switch (msg.type) {
       case MTypesContent.PAY_OBJECT_INIT:
-        this._initZilliqa(nonSyncMessage);
+        log.info('INIT');
+        window.ZilPay.isReady = false;
+        window.ZilPay.isEnable = false;
+        break;
+
+      case MTypesContent.SET_NODE:
+        window.ZilPay.setProvider(tabMSG.payload.PROVIDER);
+        break;
+      
+      case MTypesContent.SET_ADDRESS:
+        window.ZilPay.setDefaultAccount(tabMSG.payload.address);
+        break;
+      
+      case MTypesContent.STATUS_UPDATE:
+        window.ZilPay.isReady = tabMSG.payload.isReady;
+        window.ZilPay.isEnable = tabMSG.payload.isEnable;
         break;
     }
-  }
-
-  _initZilliqa(message) {
-    log.warn('INIT');
-    let { payload } = message;
-    window.ZilPay.enable = true;
-    window.ZilPay.setDefaultAccount(payload.address);
-    window.ZilPay.setProvider(payload.node);
   }
 
 }
