@@ -2,6 +2,9 @@ import { Zilliqa } from '@zilliqa-js/zilliqa'
 import * as zilUtils from '@zilliqa-js/util'
 import * as core from '@zilliqa-js/core'
 
+var onAddressListing = window.document.createEvent('Event');
+onAddressListing.initEvent('addressListing');
+
 export class ZilPay extends Zilliqa {
 
   constructor(provider) {
@@ -21,6 +24,7 @@ export class ZilPay extends Zilliqa {
     }
 
     this.wallet.defaultAccount = address;
+    dispatchEvent(onAddressListing);
   }
 
   setProvider(provider) {
