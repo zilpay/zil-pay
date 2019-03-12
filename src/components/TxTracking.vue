@@ -23,28 +23,19 @@
 <script>
 import { mapState } from 'vuex'
 import { fromZil } from '../filters/zil'
-
+import explorer from '../mixins/explorer'
 
 export default {
   name: 'TxTracking',
   filters: { fromZil },
+  mixins: [explorer],
   props: {
     txs: Array
-  },
-  data() {
-    return {
-      url: 'https://dev-explorer.zilliqa.com'
-    };
   },
   computed: {
     ...mapState([
      'currencyController'
    ])
-  },
-  methods: {
-    exploreTransactions(hash) {
-      return `${this.url}/transactions/${hash}`;
-    }
   },
   mounted() {
     // console.log(this.txs);

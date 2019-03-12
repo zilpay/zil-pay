@@ -1,5 +1,6 @@
 {
   "COINMARKETCAP": "https://api.coinmarketcap.com/v1/ticker",
+  "EXPLORER": "https://dev-explorer.zilliqa.com",
   "PAY_NAME": "ZILPAY",
   "INPAGE_NAME": "inpage.js",
   "PROMT_PAGE": "index.html",
