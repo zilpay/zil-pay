@@ -1,11 +1,13 @@
 import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Utils from '../lib/utils'
-import {
-  InternalMessage,
-  MTypesAuth,
-  MTypesInternal
-} from '../content/messages/messageTypes'
+import { MTypesInternal, MTypesAuth } from '../lib/messages/messageTypes'
+import { Message } from '../lib/messages/messageCall'
+// import {
+//   InternalMessage,
+//   MTypesAuth,
+//   MTypesInternal
+// } from '../content/messages/messageTypes'
 
 
 export default {
@@ -22,19 +24,21 @@ export default {
     config: zilConf
   },
   mutations: {
-    setNet(state, payload) {
-      InternalMessage.widthPayload(
-        MTypesInternal.SET_NET,
-        { selectedNet: payload }
-      ).send();
-      state.selectedNet = payload;
+    setNet(state, net) {
+      const type = MTypesInternal.SET_NET;
+      const payload = { selectedNet: net };
+
+      new Message({ type, payload }).send();
+
+      state.selectedNet = net;
     },
-    setWallet(state, payload) {
-      InternalMessage.widthPayload(
-        MTypesInternal.CHANGE_ACCOUNT,
-        { wallet: payload }
-      ).send();
-      state.wallet = payload;
+    setWallet(state, wallet) {
+      const type = MTypesInternal.CHANGE_ACCOUNT;
+      const payload = { wallet };
+
+      new Message({ type, payload }).send();
+      
+      state.wallet = wallet;
     },
     config(state, object) {
       state.config = object;
@@ -67,54 +71,53 @@ export default {
     },
 
     async walletCreate({ commit }, { seed, password }) {
-      const wallet = await InternalMessage.widthPayload(
-        MTypesAuth.SET_SEED_AND_PWD,
-        { seed, password }
-      ).send();
+      const type = MTypesAuth.SET_SEED_AND_PWD;
+      const payload = { seed, password };
+      const wallet = await new Message({ type, payload }).send();
 
       commit('setWallet', wallet);
     },
     
     async unLock({ commit }, password) {
-      const status = await InternalMessage.widthPayload(
-        MTypesAuth.SET_PASSWORD,
-        { password }
-      ).send();
+      const type = MTypesAuth.SET_PASSWORD;
+      const payload = { password };
+      const status = await new Message({ type, payload }).send();
+
       commit('isEnable', status);
+
       return status;
     },
 
     logOut({ commit }) {
-      InternalMessage.signal(MTypesAuth.LOG_OUT).send();
+      Message.signal(MTypesAuth.LOG_OUT).send();
       commit('isEnable', false);
     },
 
     async balanceUpdate({ state }) {
-      const wallet = await InternalMessage.signal(MTypesInternal.UPDATE_BALANCE).send();
+      const wallet = await Message.signal(MTypesInternal.UPDATE_BALANCE).send();
       state.wallet = wallet;
       return wallet;
     },
     async transactionsUpdate({ state }) {
-      const { transactions } = await InternalMessage.signal(MTypesInternal.GET_ALL_TX).send();
+      const { transactions } = await Message.signal(MTypesInternal.GET_ALL_TX).send();
       state.transactions = transactions;
     },
 
-    async nonContractSendTransaction({ }, data) {
-      const tx = await InternalMessage.widthPayload(
-        MTypesInternal.SIGN_SEND_TRANSACTION,
-        { data }
-      ).send();
+    async nonContractSendTransaction(_, data) {
+      const type = MTypesInternal.SIGN_SEND_TRANSACTION;
+      const payload = { data };
+      const tx = await new Message({ type, payload }).send();
       
       return tx;
     },
 
     async createAccount({ state }) {
-      state.wallet = await InternalMessage.signal(MTypesInternal.CREATE_ACCOUNT).send();
+      state.wallet = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
       return state.wallet;
     },
 
-    initPopup: () => InternalMessage.signal(MTypesInternal.INIT).send(),
-    randomSeed: () => InternalMessage.signal(MTypesInternal.GET_DECRYPT_SEED).send()
+    initPopup: () => Message.signal(MTypesInternal.INIT).send(),
+    randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
   getters: {
     ISREADY: state => state.isReady,

@@ -1,5 +1,7 @@
 {
   "COINMARKETCAP": "https://api.coinmarketcap.com/v1/ticker",
   "PAY_NAME": "ZILPAY",
-  "INPAGE_NAME": "inpage.js"
+  "INPAGE_NAME": "inpage.js",
+  "PROMT_PAGE": "index.html",
+  "PROMT_TITLE": "ZilPay"
 }
