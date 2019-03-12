@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import btn from '../directives/btn'
 
 
@@ -47,15 +47,28 @@ export default {
       storeKey: 'PASSWORD'
     };
   },
+  computed: {
+    ...mapState('storage', [
+      'confirmationTx'
+    ]),
+  },
   methods: {
     ...mapActions('storage', [
       'unLock'
     ]),
-
+    
     async encryptingAccaunt() {
       const status = await this.unLock(this.password);
       this.wrongPassword = !status;
+
       if (!this.wrongPassword) {
+        if (this.confirmationTx.length > 0) {
+          this.$router.push({ name: 'confirmation' });
+          return null;
+        } else if (window.data) {
+          this.$router.push({ name: 'confirmation' });
+          return null;
+        }
         this.$router.push({ name: 'home' });
       }
     }

@@ -1,9 +1,8 @@
 <template>
   <div id="app">
     <NavBar/>
-    <!-- <router-view/> -->
-
-    <Confirmation/>
+    <router-view/>
+    <!-- <Confirmation/> -->
   </div>
 </template>
 
@@ -18,8 +17,7 @@ export default {
   name: 'App',
   components: { NavBar, Confirmation },
   mounted() {
-    this.spiner();
-    // this.preStart();
+    this.preStart();
   },
   methods: {
     ...mapMutations(['spiner']),
@@ -30,7 +28,8 @@ export default {
       'setNet',
       'config',
       'setWallet',
-      'transactions'
+      'transactions',
+      'confirmationTx'
     ]),
     ...mapActions('storage', [
       'initPopup',
@@ -70,6 +69,7 @@ export default {
         this.setNet(data.resolve.data.selectednet);
         this.config(data.resolve.data.config);
         this.setWallet(data.resolve.data.wallet);
+        this.confirmationTx(data.resolve.data.confirm || []);
         this.jazzicon('jazzicon');
 
         if (data.resolve.data.transactions) {
@@ -77,9 +77,19 @@ export default {
         }
 
         if (data.resolve.isEnable) {
+          if (data.resolve.data.confirm && data.resolve.data.confirm.length > 0) {
+            this.$router.push({ name: 'confirmation' });
+            return null;
+          } else if (window.data) {
+            this.$router.push({ name: 'confirmation' });
+            return null;
+          }
+
           this.$router.push({ name: 'home' });
+          return null;
         } else {
           this.$router.push({ name: 'lock' });
+          return null;
         }        
       }
 

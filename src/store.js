@@ -3,14 +3,13 @@ import Vuex from 'vuex'
 import axios from 'axios'
 
 import storage from './stroe/storage'
-import zilliqa from './stroe/zilliqa'
 import apiConfig from './config/api'
 
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: { storage, zilliqa },
+  modules: { storage },
   state: {
     currencyController: {
       nativeCurrency: 'ZIL',

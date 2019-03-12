@@ -30,6 +30,9 @@ export class StorageGuard extends BrowserStorage {
   getNet() {
     return this.get(fields.SELECTED_NET);
   }
+  getConfirm() {
+    return this.get(fields.CONFIRM_TX);
+  }
   getAllData() {
     return this.getAll();
   }
@@ -73,6 +76,19 @@ export class StorageGuard extends BrowserStorage {
       txs[data.from] = bookkeeper;
       return this.set(txs);
     }
+  }
+  async setConfirm(value) {
+    const object = {};
+    const confirmTxs = await this.getConfirm();
+    
+    if (Object.keys(confirmTxs).length < 1) {
+      object[fields.CONFIRM_TX] = [value];
+      return this.set(object);
+    } else {
+      confirmTxs[fields.CONFIRM_TX].push(value);
+      return this.set(confirmTxs);
+    }
+
   }
   // data recording //
   

@@ -1,7 +1,6 @@
 import { LocalStream } from 'extension-streams'
 import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../lib/messages/messageTypes'
 import { SecureMessage } from '../lib/messages/messageCall'
-import { PromptService } from './services/popup'
 import { Handler } from './handlers'
 import { Loger } from '../lib/logger'
 
@@ -66,6 +65,10 @@ export class Background extends Handler  {
         sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
         break;
 
+      case MTypesZilPay.GET_CONFIRM_TX:
+        this.auth.getConfirm().then(sendResponse);
+        break;
+
       case MTypesInternal.CHANGE_ACCOUNT:
         this.walletUpdate(sendResponse, message.payload);
         break;
@@ -91,7 +94,7 @@ export class Background extends Handler  {
     switch (message.type) {
       
       case MTypesZilPay.CALL_SIGN_TX:
-        new PromptService(message).open();
+        this.addConfirmTx(message.payload);
         break;
 
       case MTypesInternal.GET_NETWORK:

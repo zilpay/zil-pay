@@ -48,7 +48,7 @@ export default new Router({
       component: () => import('./views/Send')
     },
     {
-      path: '/confir',
+      path: '/confirm',
       name: 'confirmation',
       beforeEnter: guard,
       component: () => import('./views/Confirmation')

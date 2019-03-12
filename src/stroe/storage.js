@@ -1,13 +1,8 @@
 import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
 import Utils from '../lib/utils'
-import { MTypesInternal, MTypesAuth } from '../lib/messages/messageTypes'
+import { MTypesInternal, MTypesAuth, MTypesZilPay } from '../lib/messages/messageTypes'
 import { Message } from '../lib/messages/messageCall'
-// import {
-//   InternalMessage,
-//   MTypesAuth,
-//   MTypesInternal
-// } from '../content/messages/messageTypes'
 
 
 export default {
@@ -21,7 +16,8 @@ export default {
     },
     transactions: { },
     selectedNet: Object.keys(zilConf)[0],
-    config: zilConf
+    config: zilConf,
+    confirmationTx: []
   },
   mutations: {
     setNet(state, net) {
@@ -51,6 +47,16 @@ export default {
     },
     transactions(state, data) {
       state.transactions = data;
+    },
+    confirmationTx(state, data) {
+      if (typeof data !== 'object') {
+        return null;
+      }
+      if (!data || data.length < 1) {
+        return null;
+      }
+
+      state.confirmationTx = data;
     }
   },
   actions: {
@@ -69,7 +75,6 @@ export default {
 
       ctx.appendChild(el);
     },
-
     async walletCreate({ commit }, { seed, password }) {
       const type = MTypesAuth.SET_SEED_AND_PWD;
       const payload = { seed, password };
@@ -77,7 +82,6 @@ export default {
 
       commit('setWallet', wallet);
     },
-    
     async unLock({ commit }, password) {
       const type = MTypesAuth.SET_PASSWORD;
       const payload = { password };
@@ -87,12 +91,10 @@ export default {
 
       return status;
     },
-
     logOut({ commit }) {
       Message.signal(MTypesAuth.LOG_OUT).send();
       commit('isEnable', false);
     },
-
     async balanceUpdate({ state }) {
       const wallet = await Message.signal(MTypesInternal.UPDATE_BALANCE).send();
       state.wallet = wallet;
@@ -102,7 +104,6 @@ export default {
       const { transactions } = await Message.signal(MTypesInternal.GET_ALL_TX).send();
       state.transactions = transactions;
     },
-
     async nonContractSendTransaction(_, data) {
       const type = MTypesInternal.SIGN_SEND_TRANSACTION;
       const payload = { data };
@@ -110,7 +111,6 @@ export default {
       
       return tx;
     },
-
     async createAccount({ state }) {
       state.wallet = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
       return state.wallet;

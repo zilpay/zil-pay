@@ -17,7 +17,8 @@ export const MTypesAuth = {
 }
 
 export const MTypesZilPay = {
-  CALL_SIGN_TX: 'c_s_t'
+  CALL_SIGN_TX:   'c_s_t',
+  GET_CONFIRM_TX: 'g_c_t'
 };
 
 export const MTypesInternal = {

@@ -6,6 +6,8 @@ import { TabsMessage } from '../lib/messages/messageCall'
 import { MTypesTabs } from '../lib/messages/messageTypes'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
+import { BN, Long } from '@zilliqa-js/util'
+import { PromptService } from './services/popup'
 
 
 const log = new Loger('Background.Handler');
@@ -242,6 +244,22 @@ export class Handler {
     this.auth.isEnable = status;
     sendResponse(status);
     this._lockStatusUpdateTab();
+  }
+
+  async addConfirmTx(data) {
+    const tab = await TabsMessage.tabs();
+    const confirmData = {
+      amount: new BN(data.amount).toString(),
+      gasPrice: new BN(data.gasPrice).toString(),
+      code: data.code,
+      data: data.data,
+      gasLimit: Long.fromValue(data.gasLimit).toInt(),
+      toAddr: data.toAddr
+    };
+
+    await this.auth.setConfirm(confirmData);
+    
+    new PromptService(tab).open();
   }
 
   async _lockStatusUpdateTab() {

@@ -55,7 +55,7 @@ export class TabsMessage extends Message {
     super(msg);
   }
 
-  tabs() {
+  static tabs() {
     /**
      * @returns {Promise}:
      *  title
@@ -71,8 +71,6 @@ export class TabsMessage extends Message {
       window.chrome.tabs.query(params, function (tabs) {
         if (tabs[0] && re.test(tabs[0].url)) {
           resolve(tabs[0]);
-        } else {
-          throw new Error(errors.NOT_TABS);
         }
       });
     });
@@ -82,7 +80,7 @@ export class TabsMessage extends Message {
     const self = this;
 
     try {
-      const tabs = await this.tabs();
+      const tabs = await TabsMessage.tabs();
       window.chrome.tabs.sendMessage(tabs.id, self);
     } catch(err) {
       // If not tabs with ZilPay.

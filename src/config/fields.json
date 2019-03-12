@@ -3,5 +3,6 @@
   "CONFIG": "config",
   "WALLET": "wallet",
   "SELECTED_NET": "selectednet",
-  "TRANSACTIONS": "transactions"
+  "TRANSACTIONS": "transactions",
+  "CONFIRM_TX": "confirm"
 }
