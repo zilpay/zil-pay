@@ -93,6 +93,14 @@ export class Background extends Handler  {
         this.singCreateTransaction(sendResponse);
         break;
 
+      case MTypesZilPay.SET_GAS_LIMIT:
+        log.info(message.payload); //TODO: create tx filter
+        break;
+
+      case MTypesZilPay.SET_GAS_PRICE:
+        log.info(message.payload); //TODO: create tx filter
+        break;
+
       default:
         return null;
     }
@@ -111,12 +119,7 @@ export class Background extends Handler  {
       
       case MTypesInternal.GET_ADDRESS:
         this.getAddress(sendResponse);
-        break;
-      
-      case MTypesInternal.SIGN_SEND_TRANSACTION:
-        this.signSendTransaction(sendResponse, message.payload);
-        break;
-    
+        break;    
 
       default:
         return null;

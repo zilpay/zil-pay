@@ -5,6 +5,10 @@ export function fromZil(value) {
   return units.fromQa(new BN(value), units.Units.Zil);
 }
 
+export function toZil(value) {
+  return units.toQa(value, units.Units.Zil).toString();
+}
+
 export function toQa(value) {
   return units.toQa(value, units.Units.Zil);
 }

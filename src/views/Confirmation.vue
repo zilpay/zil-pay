@@ -60,14 +60,16 @@
             <input type="text"
                   class="form-control bg-null"
                   id="gas"
-                  :value="CONFIRM_TX.gasPrice | fromZil">
+                  :value="CONFIRM_TX.gasPrice | fromZil"
+                  @change="setGasPriceForConfirm">
           </div>
           <div class="form-group">
             <label for="gas">Gas Limit (ZILs)</label>
             <input type="text"
                   class="form-control bg-null"
                   id="gas"
-                  :value="CONFIRM_TX.gasLimit">
+                  :value="CONFIRM_TX.gasLimit"
+                  @change="setGasLimitForConfirm">
           </div>
 
           <div class="p-2">
@@ -137,6 +139,10 @@ export default {
   },
   methods: {
     ...mapMutations(['spiner']),
+    ...mapMutations('storage', [
+      'setGasPriceForConfirm',
+      'setGasLimitForConfirm'
+    ]),
     ...mapActions('storage', [
       'getConfirmationTx',
       'rejectConfirmTx',

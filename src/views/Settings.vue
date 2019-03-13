@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="d-flex justify-content-end text-warning point">
-      <h3 class="mr-auto p-2" @click="$router.push({name:'home'})">&#60;BACK</h3>
+      <h3 class="mr-auto p-2" @click="$router.go(-1)">&#60;BACK</h3>
       <h3 class="p-2" @click="signOut">LOG OUT</h3>
     </div>
 

@@ -20,7 +20,9 @@ export const MTypesZilPay = {
   CALL_SIGN_TX:      'c_s_t',
   GET_CONFIRM_TX:    'g_c_t',
   REJECT_CONFIRM_TX: 'r_c_t',
-  CONFIRM_TX:        'c_t'
+  CONFIRM_TX:        'c_t',
+  SET_GAS_PRICE:     's_g_p',
+  SET_GAS_LIMIT:     's_g_l'
 };
 
 export const MTypesInternal = {
@@ -32,7 +34,6 @@ export const MTypesInternal = {
   GET_ALL_TX:            'get_all_tx',
   UPDATE_BALANCE:        'update_balance',
   CHANGE_ACCOUNT:        'c_account',
-  SIGN_SEND_TRANSACTION: 'sign_send_transaction',
   CREATE_ACCOUNT:        'create_account'
 };
 

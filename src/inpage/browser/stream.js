@@ -19,8 +19,10 @@ export class Stream {
     log.info(nonSignatureTransaction);
     const type = MTypesZilPay.CALL_SIGN_TX;
     const recipient = MTypesSecure.CONTENT;
-    const { payload } = nonSignatureTransaction;
+    let { payload } = nonSignatureTransaction;
 
+    payload.uuid = uuidv4();
+    
     new SecureMessage({ type, payload }).send(stream, recipient);
 
     return nonSignatureTransaction;

@@ -125,37 +125,6 @@ export class Handler {
     }
   }
 
-  async signSendTransaction(sendResponse, payload) {
-    if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
-    }
-
-    let { wallet, config, selectednet, vault } = await this.auth.getAllData();
-    
-    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
-      sendResponse(null);
-    } else {
-      this.auth.guard.encryptedSeed = vault;
-    }
-    
-    const { PROVIDER, MSG_VERSION } = config[selectednet];
-    const blockChain = new BlockChainControll(PROVIDER);
-    
-    try {
-      const txSent = await blockChain.signSendTransaction(
-        payload.data,
-        this.auth.guard.decryptSeed,
-        wallet.selectedAddress,
-        MSG_VERSION
-      );
-      this.auth.setTx(txSent);
-      sendResponse({ resolve: txSent });
-    } catch(err) {
-      sendResponse({ reject: err.message });
-      log.error(err.message);
-    }
-  }
-
   async updateConfig(config, net) {
     this.auth.setConfig(config);
     this.auth.setNet(net);
@@ -271,8 +240,6 @@ export class Handler {
         wallet.selectedAddress,
         MSG_VERSION
       );
-
-      log.info(result, error);
 
       if (result) {
         let tx = Object.assign(result, req.payload.params[0]);
