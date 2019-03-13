@@ -1,6 +1,5 @@
 import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
-import { Long } from '@zilliqa-js/util'
 import { MTypesSecure, MTypesZilPay } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
 import { Loger } from '../../lib/logger'
@@ -17,13 +16,10 @@ export class Stream {
   }
 
   signOverrided(nonSignatureTransaction) {
+    log.info(nonSignatureTransaction);
     const type = MTypesZilPay.CALL_SIGN_TX;
     const recipient = MTypesSecure.CONTENT;
-    let payload = nonSignatureTransaction;
-
-    payload.amount = payload.amount.toString();
-    payload.gasPrice = payload.gasPrice.toString();
-    payload.gasLimit = Long.fromValue(payload.gasLimit).toInt();
+    const { payload } = nonSignatureTransaction;
 
     new SecureMessage({ type, payload }).send(stream, recipient);
 

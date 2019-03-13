@@ -6,7 +6,7 @@
           Confirmation! <b class="text-warning">{{CONFIRM_TX.length}}</b>
         </h5>
         <p class="text-indigo">
-          Type: <b class="text-ightindigo">contract triger!</b>
+          Type: <b class="text-ightindigo">{{CONFIRM_TX.type}}</b>
           <br>
           Amount: 
           <b class="text-ightindigo">
@@ -71,7 +71,8 @@
           </div>
 
           <div class="p-2">
-            <button v-btn="'success btn-lg mr-2'">CONFIRM</button>
+            <button v-btn="'success btn-lg mr-2'"
+                    @click="confirm">CONFIRM</button>
             <button v-btn="'danger btn-lg ml-2'"
                     @click="rejectConfirmTx">REJECT</button>
           </div>
@@ -101,6 +102,7 @@ export default {
       // from: 'eef22809b26479ce53f52a0849dbbdad630e0f35',
       // to: '31de24752489e04d06ad32a1095b86ce9310bf9b',
       // amount: '5783495734904'
+      //11d3cfe90a863245a00cff9d069ffc27585ee764
     };
   },
   computed: {
@@ -137,8 +139,15 @@ export default {
     ...mapMutations(['spiner']),
     ...mapActions('storage', [
       'getConfirmationTx',
-      'rejectConfirmTx'
-    ])
+      'rejectConfirmTx',
+      'confirmTx'
+    ]),
+
+    async confirm() {
+      this.spiner();
+      await this.confirmTx();
+      this.spiner();
+    }
   },
   mounted() { }
 }

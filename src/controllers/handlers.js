@@ -245,26 +245,62 @@ export class Handler {
     this._lockStatusUpdateTab();
   }
 
+  async singCreateTransaction(sendResponse) {
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
+    }
+
+    const { confirm } = await this.auth.getConfirm();
+    const { wallet, config, selectednet, vault } = await this.auth.getAllData();
+    
+    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
+      sendResponse(null);
+    } else {
+      this.auth.guard.encryptedSeed = vault;
+    }
+    
+    const { PROVIDER, MSG_VERSION } = config[selectednet];
+    const blockChain = new BlockChainControll(PROVIDER);
+
+    this.rmConfirmTx(null);
+
+    try {
+      const { result, req, error } = await blockChain.singCreateTransaction(
+        confirm.pop(),
+        this.auth.guard.decryptSeed,
+        wallet.selectedAddress,
+        MSG_VERSION
+      );
+
+      log.info(result, error);
+
+      if (result) {
+        let tx = Object.assign(result, req.payload.params[0]);
+        tx.from = blockChain.wallet.defaultAccount.address
+        this.auth.setTx(tx);
+        sendResponse({ resolve: tx });
+      } else {
+        sendResponse({ reject: error.message });
+      }
+      
+    } catch(err) {
+      sendResponse({ reject: err.message });
+      log.error(err.message);
+    }
+  }
+
   async addConfirmTx(data) {
     const tab = await TabsMessage.tabs();
-    const confirmData = {
-      amount: data.amount,
-      gasPrice: data.gasPrice,
-      code: data.code,
-      data: data.data,
-      gasLimit: data.gasLimit,
-      toAddr: data.toAddr
-    };
-
-    await this.auth.setConfirm(confirmData);
-    
+    await this.auth.setConfirm(data);    
     new PromptService(tab).open();
   }
   async rmConfirmTx(sendResponse) {
     const { confirm } = await this.auth.getConfirm();
     confirm.pop();
     await this.auth.setConfirm(confirm);
-    sendResponse(true);
+    if (typeof sendResponse == 'function') {
+      sendResponse(true);
+    }
   }
 
   async _lockStatusUpdateTab() {

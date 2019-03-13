@@ -53,33 +53,51 @@ export class BlockChainControll extends Zilliqa {
     };
   }
 
-  async singTringer(data, seed, index, msgId) {
+  async singCreateTransaction(txData, seed, index, msgId) {
     this.wallet.addByMnemonic(seed, index);
-    const balance = await this.getBalance(
-      this.wallet.defaultAccount.address
-    );
-    const version = await this.version(msgId);
-    const nonce = balance.nonce + 1;
-    const contract = this.contracts.new(data.code, data.data);
+    const pubKey = this.wallet.defaultAccount.publicKey;
+    let {
+      amount,
+      code,
+      data,
+      gasLimit,
+      gasPrice,
+      toAddr,
+      nonce,
+      version
+    } = txData;
 
-    data.nonce = nonce;
-    data.pubKey = this.wallet.defaultAccount.publicKey;
-    data.amount = new BN(data.amount);
-    data.gasPrice = new BN(data.gasPrice);
-    data.version = version;
+    if (!version) {
+      version = await this.version(msgId);
+    }
+    if (!nonce && nonce != 0) {
+      const balance = await this.getBalance(
+        this.wallet.defaultAccount.address
+      );
+      nonce = balance.nonce;
+    }
 
-    const [deployTx, hello] = await contract.deploy({
+    amount = new BN(amount);
+    gasPrice = new BN(gasPrice);
+    gasLimit = Long.fromNumber(gasLimit);
+    
+    nonce++;
+
+    const zilTxData = this.transactions.new({
+      nonce,
+      gasPrice,
+      amount,
+      gasLimit,
       version,
-      gasPrice: data.gasPrice,
-      gasLimit: data.gasLimit
+      toAddr,
+      pubKey,
+      code,
+      data
     });
-
-        // Introspect the state of the underlying transaction
-        console.log(`Deployment Transaction ID: ${deployTx.id}`);
-        console.log(`Deployment Transaction Receipt:`);
-        console.log(deployTx.txParams.receipt);
-
-    return txSent;
+    const { txParams } = await this.wallet.sign(zilTxData);
+    return await this.provider.send(
+      RPCMethod.CreateTransaction, txParams
+    );
   }
 
   async version(msgVerison=1) {

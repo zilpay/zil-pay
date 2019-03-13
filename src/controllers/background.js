@@ -89,6 +89,10 @@ export class Background extends Handler  {
         this.rmConfirmTx(sendResponse);
         break;
 
+      case MTypesZilPay.CONFIRM_TX:
+        this.singCreateTransaction(sendResponse);
+        break;
+
       default:
         return null;
     }

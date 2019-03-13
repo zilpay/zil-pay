@@ -116,6 +116,11 @@ export default {
       await Message.signal(MTypesZilPay.REJECT_CONFIRM_TX).send();
       state.confirmationTx.pop();
     },
+    async confirmTx({ state }) {
+      await Message.signal(MTypesZilPay.CONFIRM_TX).send();
+      state.confirmationTx.pop();
+    },
+    
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
@@ -128,10 +133,18 @@ export default {
       if (state.confirmationTx.length < 1) {
         return {};
       }
+      let type = 'Send Zil.';
       const txs = state.confirmationTx;
       const length = txs.length;
-      const { toAddr, gasPrice, gasLimit, amount } = txs[length - 1];
-      return { length, toAddr, gasPrice, gasLimit, amount };
+      const { toAddr, gasPrice, gasLimit, amount, code, data } = txs[length - 1];
+
+      if (code && data) {
+        type = 'Contract creation.';
+      } else if (data) {
+        type = 'Contract call state.';
+      }
+
+      return { length, toAddr, gasPrice, gasLimit, amount, type };
     }
   }
 }

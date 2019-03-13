@@ -6,9 +6,9 @@
           v-for="(tx, index) of txs" :key="index">
           <div class="row">
             <a class="col-2 text-truncate text-warning" target="_blank"
-               :href="exploreTransactions(tx.id)">#{{index + 1}}</a>
+               :href="exploreTransactions(tx.TranID)">#{{index + 1}}</a>
             <div class="col text-break">
-              {{tx.info}}
+              {{tx.Info}}
             </div>
             <div class="col-">
               {{tx.amount | fromZil}}
