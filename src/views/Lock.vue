@@ -11,6 +11,7 @@
         <input type="password"
                class="form-control bg-null text-pink"
                id="pass"
+               autofocus
                placeholder="Password"
                v-model="password"
                @input="wrongPassword = false">

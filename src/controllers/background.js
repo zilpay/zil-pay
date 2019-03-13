@@ -85,6 +85,10 @@ export class Background extends Handler  {
         this.balanceUpdate(sendResponse);
         break;
 
+      case MTypesZilPay.REJECT_CONFIRM_TX:
+        this.rmConfirmTx(sendResponse);
+        break;
+
       default:
         return null;
     }

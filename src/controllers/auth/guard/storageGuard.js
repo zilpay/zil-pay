@@ -80,9 +80,12 @@ export class StorageGuard extends BrowserStorage {
   async setConfirm(value) {
     const object = {};
     const confirmTxs = await this.getConfirm();
-    
+      
     if (Object.keys(confirmTxs).length < 1) {
       object[fields.CONFIRM_TX] = [value];
+      return this.set(object);
+    } else if (value.length >= 0) {
+      object[fields.CONFIRM_TX] = value;
       return this.set(object);
     } else {
       confirmTxs[fields.CONFIRM_TX].push(value);

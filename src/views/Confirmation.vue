@@ -1,21 +1,25 @@
 <template>
-  <div v-if="confirmationTx.length > 0" class="container">
+  <div v-if="isObject" class="container">
     <div class="row justify-content-center">
       <div class="jumbotron text-ightindigo text-left p-3">
         <h5 class="text-lightviolet">
-          Confirmation! <b class="text-warning">{{index + 1}}</b>
+          Confirmation! <b class="text-warning">{{CONFIRM_TX.length}}</b>
         </h5>
         <p class="text-indigo">
           Type: <b class="text-ightindigo">contract triger!</b>
           <br>
           Amount: 
-          <b class="text-ightindigo">{{amount | fromZil}}</b>
+          <b class="text-ightindigo">
+            {{CONFIRM_TX.amount | fromZil}}
+          </b>
           <span class="text-warning">
             {{currencyController.nativeCurrency}}
           </span>
           <br>
           Amount: 
-          <b class="text-ightindigo">{{amount | toUSD(currencyController.conversionRate)}}</b>
+          <b class="text-ightindigo">
+            {{CONFIRM_TX.amount | toUSD(currencyController.conversionRate)}}
+          </b>
           <span class="text-warning">
             {{currencyController.currentCurrency}}
           </span>
@@ -44,8 +48,8 @@
 
           <div class="ml-5">
             <a class="text-truncate text-warning"
-               :href="exploreAddress(to)" target="_blanck">
-              {{to | trimAddress}}
+               :href="exploreAddress(CONFIRM_TX.toAddr)" target="_blanck">
+              {{CONFIRM_TX.toAddr | trimAddress}}
             </a>
           </div>
         </div>
@@ -56,19 +60,20 @@
             <input type="text"
                   class="form-control bg-null"
                   id="gas"
-                  :value="gasPrice | fromZil">
+                  :value="CONFIRM_TX.gasPrice | fromZil">
           </div>
           <div class="form-group">
             <label for="gas">Gas Limit (ZILs)</label>
             <input type="text"
                   class="form-control bg-null"
                   id="gas"
-                  :value="gasLimit">
+                  :value="CONFIRM_TX.gasLimit">
           </div>
 
           <div class="p-2">
             <button v-btn="'success btn-lg mr-2'">CONFIRM</button>
-            <button v-btn="'danger btn-lg ml-2'">REJECT</button>
+            <button v-btn="'danger btn-lg ml-2'"
+                    @click="rejectConfirmTx">REJECT</button>
           </div>
       </form>
 
@@ -78,7 +83,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import trimAddress from '../filters/trimAddress'
 import { fromZil, toUSD } from '../filters/zil'
 import explorer from '../mixins/explorer'
@@ -106,42 +111,36 @@ export default {
       'wallet',
       'confirmationTx'
     ]),
+    ...mapGetters('storage', [
+      'CONFIRM_TX'
+    ]),
 
-    reverseConfirmationTx() {
-      return this.confirmationTx.reverse();
-    },
-    index() {
-      return this.confirmationTx.length;
-    },
-    to() {
-      return this.reverseConfirmationTx[0]['toAddr'];
-    },
     from() {
       return this.wallet.identities[
         this.wallet.selectedAddress
       ].address;
     },
-    gasPrice() {
-      return this.reverseConfirmationTx[0]['gasPrice'];
-    },
-    gasLimit() {
-      return this.reverseConfirmationTx[0]['gasLimit'];
-    },
-    amount() {
-      return this.reverseConfirmationTx[0]['amount'];
+    isObject() {
+      if (Object.keys(this.CONFIRM_TX).length > 0) {
+        return true;
+      } else {
+        if (window.data) {
+          window.close();
+        } else {
+          this.$router.push({ name: 'home' });
+        }        
+        return false;
+      }
     }
   },
   methods: {
     ...mapMutations(['spiner']),
     ...mapActions('storage', [
-      'getConfirmationTx'
+      'getConfirmationTx',
+      'rejectConfirmTx'
     ])
   },
-  mounted() {
-    // this.spiner();
-    // this.getConfirmationTx()
-    //     .then(() => this.spiner());
-  }
+  mounted() { }
 }
 </script>
 

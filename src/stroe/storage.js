@@ -49,14 +49,11 @@ export default {
       state.transactions = data;
     },
     confirmationTx(state, data) {
-      if (typeof data !== 'object') {
-        return null;
+      if ((typeof data !== 'object') || (!data || data.length < 1)) {
+        state.confirmationTx = [];
+      } else {
+        state.confirmationTx = data.filter(tx => Object.keys(tx).length > 0);
       }
-      if (!data || data.length < 1) {
-        return null;
-      }
-
-      state.confirmationTx = data;
     }
   },
   actions: {
@@ -115,12 +112,26 @@ export default {
       state.wallet = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
       return state.wallet;
     },
+    async rejectConfirmTx({ state }) {
+      await Message.signal(MTypesZilPay.REJECT_CONFIRM_TX).send();
+      state.confirmationTx.pop();
+    },
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
   getters: {
     ISREADY: state => state.isReady,
-    ISENABLE: state => state.isEnable
+    ISENABLE: state => state.isEnable,
+    
+    CONFIRM_TX(state) {
+      if (state.confirmationTx.length < 1) {
+        return {};
+      }
+      const txs = state.confirmationTx;
+      const length = txs.length;
+      const { toAddr, gasPrice, gasLimit, amount } = txs[length - 1];
+      return { length, toAddr, gasPrice, gasLimit, amount };
+    }
   }
 }
