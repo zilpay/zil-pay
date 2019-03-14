@@ -36,6 +36,10 @@ export class SecureStream {
 
     switch (msg.type) {
 
+      case MTypesSecure.PAY_OBJECT_INIT:
+        this.onSyncAll();
+        break;
+
       case MTypesZilPay.CALL_SIGN_TX:
         new Message(msg).send();
         break;
@@ -53,13 +57,11 @@ export class SecureStream {
     const recipient = MTypesSecure.INJECTED;
 
     try {
-      const address = await Message.signal(MTypesInternal.GET_ADDRESS).send();
-      const { PROVIDER } = await Message.signal(MTypesInternal.GET_NETWORK).send();
-
-      // log.info(stream, recipient, { address, PROVIDER });
+      const data = await Message.signal(MTypesZilPay.INIT_DATA).send();
+      
       new SecureMessage({
         type: MTypesSecure.PAY_OBJECT_INIT,
-        payload: { address, PROVIDER }
+        payload: data
       }).send(stream, recipient);
     } catch(err) {
       log.error(err.message, errors.ZILPAY_NOT_SYNC);

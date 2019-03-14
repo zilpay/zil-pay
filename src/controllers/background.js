@@ -39,6 +39,7 @@ export class Background extends Handler  {
       
       case MTypesAuth.LOG_OUT:
         this.logOut();
+        sendResponse(true);
         break;
 
       case MTypesAuth.SET_SEED_AND_PWD:
@@ -46,7 +47,7 @@ export class Background extends Handler  {
         break;
 
       default:
-        return null;
+        break;
     }
   }
 
@@ -59,6 +60,7 @@ export class Background extends Handler  {
 
       case MTypesInternal.SET_NET:
         this.updateNode(message.payload);
+        sendResponse(true);
         break;
 
       case MTypesInternal.GET_DECRYPT_SEED:
@@ -102,15 +104,20 @@ export class Background extends Handler  {
         break;
 
       default:
-        return null;
+        break;
     }
   }
 
   _contentDispenseMessage(sendResponse, message) {
     switch (message.type) {
       
+      case MTypesZilPay.INIT_DATA:
+        this.zilPayInit(sendResponse);
+        break;
+
       case MTypesZilPay.CALL_SIGN_TX:
         this.addConfirmTx(message.payload);
+        sendResponse(true);
         break;
 
       case MTypesInternal.GET_NETWORK:
@@ -119,10 +126,10 @@ export class Background extends Handler  {
       
       case MTypesInternal.GET_ADDRESS:
         this.getAddress(sendResponse);
-        break;    
+        break;
 
       default:
-        return null;
+        break;
     }
   }
 

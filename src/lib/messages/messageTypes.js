@@ -17,10 +17,13 @@ export const MTypesAuth = {
 }
 
 export const MTypesZilPay = {
+  INIT_DATA:         'init_data',
   CALL_SIGN_TX:      'c_s_t',
+  
   GET_CONFIRM_TX:    'g_c_t',
   REJECT_CONFIRM_TX: 'r_c_t',
   CONFIRM_TX:        'c_t',
+
   SET_GAS_PRICE:     's_g_p',
   SET_GAS_LIMIT:     's_g_l'
 };
@@ -40,5 +43,6 @@ export const MTypesInternal = {
 export const MTypesTabs = {
   ADDRESS_CHANGED: 'address_changed',
   NETWORK_CHANGED: 'network_changed',
-  LOCK_STAUS: 'lock_status'
+  LOCK_STAUS:      'lock_status',
+  TX_RESULT:       'tx_result'
 };

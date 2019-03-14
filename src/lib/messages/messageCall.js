@@ -69,9 +69,7 @@ export class TabsMessage extends Message {
 
     return new Promise(resolve => {
       window.chrome.tabs.query(params, function (tabs) {
-        if (tabs[0] && re.test(tabs[0].url)) {
-          resolve(tabs[0]);
-        }
+        resolve(tabs[0]);
       });
     });
   }

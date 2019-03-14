@@ -3,7 +3,7 @@ import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
 import { BlockChainControll } from './zilliqa'
 import { TabsMessage } from '../lib/messages/messageCall'
-import { MTypesTabs } from '../lib/messages/messageTypes'
+import { MTypesTabs, MTypesZilPay } from '../lib/messages/messageTypes'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
 import { PromptService } from './services/popup'
@@ -150,14 +150,14 @@ export class Handler {
   async walletUpdate(sendResponse, payload) {
     await this.auth.setWallet(payload.wallet);
     sendResponse(true);
-    const { address } = payload.wallet.identities[
+    const account = payload.wallet.identities[
       payload.wallet.selectedAddress
     ];
     const type = MTypesTabs.ADDRESS_CHANGED;
 
     new TabsMessage({
       type,
-      payload: { address }
+      payload: account
     }).send();
   }
 
@@ -182,15 +182,14 @@ export class Handler {
 
   async getAddress(sendResponse) {
     const { wallet } = await this.auth.getWallet();
-    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
-      sendResponse(null);
-    } else {
-      sendResponse(
-        wallet.identities[
-          wallet.selectedAddress
-        ]['address']
-      );
+    let account = wallet.identities[
+      wallet.selectedAddress
+    ];
+
+    if (typeof sendResponse == 'function') {
+      sendResponse(account);
     }
+    return account;
   }
 
   async getProvider(sendResponse) {
@@ -198,9 +197,21 @@ export class Handler {
     const { selectednet } = await this.auth.getNet();
     const { PROVIDER } = config[selectednet];
 
-    sendResponse({ config, selectednet, PROVIDER });
+    if (typeof sendResponse == 'function') {
+      sendResponse({ config, selectednet, PROVIDER });
+    }
     
     return PROVIDER;
+  }
+
+  async zilPayInit(sendResponse) {
+    const provider = await this.getProvider();
+    const account = await this.getAddress();
+    const data = {
+      account, provider,
+      isEnable: this.auth.isEnable
+    };
+    sendResponse(data);
   }
 
   async walletUnlock(sendResponse, payload) {
@@ -234,23 +245,25 @@ export class Handler {
     this.rmConfirmTx(null);
 
     try {
+      const txForConfirm = confirm.pop();
       const { result, req, error } = await blockChain.singCreateTransaction(
-        confirm.pop(),
+        txForConfirm,
         this.auth.guard.decryptSeed,
         wallet.selectedAddress,
         MSG_VERSION
       );
-
       if (result) {
         let tx = Object.assign(result, req.payload.params[0]);
         tx.from = blockChain.wallet.defaultAccount.address
         this.auth.setTx(tx);
+        this.returnTx({ resolve: tx }, txForConfirm.uuid);
         sendResponse({ resolve: tx });
       } else {
         sendResponse({ reject: error.message });
+        this.returnTx({ reject: error.message }, txForConfirm.uuid);
       }
-      
     } catch(err) {
+      this.returnTx({ reject: err.message }, txForConfirm.uuid);
       sendResponse({ reject: err.message });
       log.error(err.message);
     }
@@ -263,8 +276,15 @@ export class Handler {
   }
   async rmConfirmTx(sendResponse) {
     const { confirm } = await this.auth.getConfirm();
-    confirm.pop();
+    const txForConfirm = confirm.pop();
+    
     await this.auth.setConfirm(confirm);
+
+    this.returnTx(
+      { reject: 'User rejected' },
+      txForConfirm.uuid
+    );
+    
     if (typeof sendResponse == 'function') {
       sendResponse(true);
     }
@@ -282,6 +302,13 @@ export class Handler {
     }).send();
   }
 
+  returnTx(payload, uuid) {
+    const type = MTypesTabs.TX_RESULT;
+    
+    payload.uuid = uuid;    
+    return new TabsMessage({ type, payload: {} }).send();
+  }
+
   logOut() {
     this.auth = new Auth();
     this.auth.isReady = true;
@@ -289,6 +316,5 @@ export class Handler {
     this._lockStatusUpdateTab();
     // window.chrome.runtime.reload();
   }
-
 
 }

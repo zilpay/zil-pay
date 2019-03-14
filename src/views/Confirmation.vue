@@ -58,18 +58,19 @@
           <div class="form-group">
             <label for="gas">Gas Price (ZILs)</label>
             <input type="text"
-                  class="form-control bg-null"
-                  id="gas"
-                  :value="CONFIRM_TX.gasPrice | fromZil"
-                  @change="setGasPriceForConfirm">
+                   class="form-control bg-null"
+                   id="gas"
+                   :value="CONFIRM_TX.gasPrice | fromZil"
+                   @change="setGasPriceForConfirm">
           </div>
           <div class="form-group">
             <label for="gas">Gas Limit (ZILs)</label>
-            <input type="text"
-                  class="form-control bg-null"
-                  id="gas"
-                  :value="CONFIRM_TX.gasLimit"
-                  @change="setGasLimitForConfirm">
+            <input type="number"
+                   step="1"
+                   class="form-control bg-null"
+                   id="gas"
+                   :value="CONFIRM_TX.gasLimit"
+                   @change="setGasLimitForConfirm">
           </div>
 
           <div class="p-2">

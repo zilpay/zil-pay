@@ -1,5 +1,5 @@
 import { LocalStream } from 'extension-streams'
-import { MTypesSecure, MTypesTabs } from '../../lib/messages/messageTypes'
+import { MTypesSecure, MTypesTabs, MTypesZilPay } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
 import { Loger } from '../../lib/logger'
 import apiConfig from '../../config/api'
@@ -23,13 +23,13 @@ export class NonSecureStream {
 
 
   _dispenseMessage(sendResponse, message) {
+    log.info(message);
     if (!message) {
       return null;
     }
 
     this._broadcastToSecure(message);
-
-    sendResponse(null);
+    sendResponse(true);
   }
 
 
@@ -37,6 +37,10 @@ export class NonSecureStream {
     let toSecureMsg = null;
 
     switch (msg.type) {
+
+      case MTypesZilPay.CONFIRM_RESULT:
+        log.info(msg);
+        return null;
 
       case MTypesTabs.LOCK_STAUS:
         toSecureMsg = MTypesSecure.STATUS_UPDATE;
