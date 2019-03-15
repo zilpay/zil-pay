@@ -18,8 +18,16 @@ export class StorageGuard extends BrowserStorage {
       return vault[keys[0]];
     }
   }
-  getTxs() {
-    return this.get(fields.TRANSACTIONS);
+  async getTxs() {
+    const txs = await this.get(fields.TRANSACTIONS);
+
+    if (!txs) {
+      return {};
+    } else if (txs[fields.TRANSACTIONS]) {
+      return txs[fields.TRANSACTIONS];
+    } else {
+      return txs;
+    }
   }
   getConfig() {
     return this.get(fields.CONFIG);
@@ -59,23 +67,27 @@ export class StorageGuard extends BrowserStorage {
     return this.set(object);
   }
   async setTx(data) {
-    // TODO: optimize!!!!!!!!!!!!!!!!!!!
-    let bookkeeper;
-    const object = {};
-    const txs = await this.getTxs();
+    let txs = await this.getTxs();
+    const { from } = data;
 
-    if (!txs[fields.TRANSACTIONS]) {
-      bookkeeper = [];
-      bookkeeper.push(data);
-      txs[data.from] = bookkeeper;
-      object[fields.TRANSACTIONS] = txs;
-      return this.set(object);
-    } else {
-      bookkeeper = txs[fields.TRANSACTIONS][data.from];
-      bookkeeper.push(data);
-      txs[data.from] = bookkeeper;
-      return this.set(txs);
+    if (!txs[from]) {
+      txs[from] = [];
     }
+    if (txs[from].length > 5) {
+      txs[from].shift();
+    }
+
+    txs[from].push({
+      Info: data.Info,
+      TranID: data.TranID,
+      amount: data.amount,
+      toAddr: data.toAddr
+    });
+
+    let object = {};
+    object[fields.TRANSACTIONS] = txs;
+    
+    this.set(object);    
   }
   async setConfirm(value) {
     const object = {};

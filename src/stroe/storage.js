@@ -116,7 +116,7 @@ export default {
       return wallet;
     },
     async transactionsUpdate({ state }) {
-      const { transactions } = await Message.signal(MTypesInternal.GET_ALL_TX).send();
+      const transactions = await Message.signal(MTypesInternal.GET_ALL_TX).send();
       state.transactions = transactions;
     },
     async nonContractSendTransaction(_, data) {

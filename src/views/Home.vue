@@ -73,7 +73,7 @@ export default {
         return [];
       }
       
-      return txs.reverse();
+      return txs;
     }
   },
   methods: {
