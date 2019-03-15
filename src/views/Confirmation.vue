@@ -156,7 +156,8 @@ export default {
       this.spiner();
     }
   },
-  mounted() { }
+  mounted() {
+  }
 }
 </script>
 

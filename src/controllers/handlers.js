@@ -2,8 +2,8 @@ import { Wallet } from '@zilliqa-js/account'
 import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
 import { BlockChainControll } from './zilliqa'
-import { TabsMessage } from '../lib/messages/messageCall'
-import { MTypesTabs, MTypesZilPay } from '../lib/messages/messageTypes'
+import { TabsMessage, Message } from '../lib/messages/messageCall'
+import { MTypesTabs } from '../lib/messages/messageTypes'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
 import { PromptService } from './services/popup'
@@ -242,19 +242,22 @@ export class Handler {
     const { PROVIDER, MSG_VERSION } = config[selectednet];
     const blockChain = new BlockChainControll(PROVIDER);
 
-    this.rmConfirmTx(null);
-
     try {
       const txForConfirm = confirm.pop();
+      
+      await this.auth.setConfirm(confirm);
+
       const { result, req, error } = await blockChain.singCreateTransaction(
         txForConfirm,
         this.auth.guard.decryptSeed,
         wallet.selectedAddress,
         MSG_VERSION
       );
+
       if (result) {
         let tx = Object.assign(result, req.payload.params[0]);
-        tx.from = blockChain.wallet.defaultAccount.address
+        tx.from = blockChain.wallet.defaultAccount.address;
+
         this.auth.setTx(tx);
         this.returnTx({ resolve: tx }, txForConfirm.uuid);
         sendResponse({ resolve: tx });
@@ -304,9 +307,12 @@ export class Handler {
 
   returnTx(payload, uuid) {
     const type = MTypesTabs.TX_RESULT;
-    
-    payload.uuid = uuid;    
-    return new TabsMessage({ type, payload: {} }).send();
+
+    payload.uuid = uuid;
+     
+    new TabsMessage({
+      type, payload
+    }).send();
   }
 
   logOut() {

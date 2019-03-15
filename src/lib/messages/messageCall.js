@@ -63,13 +63,15 @@ export class TabsMessage extends Message {
      *  favIconUrl
      *  id
      */
-    const params = { active: true, currentWindow: true };
-    const strRegex = '^https?://';
-    const re = new RegExp(strRegex);
-
     return new Promise(resolve => {
-      window.chrome.tabs.query(params, function (tabs) {
-        resolve(tabs[0]);
+      chrome.windows.getAll({populate:true},function(windows){
+        if (windows.length < 1) {
+          throw new Error('Not active tabs');
+        }
+
+        resolve(
+          windows[0].tabs.map(tab => tab.id)
+        );
       });
     });
   }
@@ -79,7 +81,10 @@ export class TabsMessage extends Message {
 
     try {
       const tabs = await TabsMessage.tabs();
-      window.chrome.tabs.sendMessage(tabs.id, self);
+      tabs.forEach(
+        id => 
+        window.chrome.tabs.sendMessage(id, self)
+      );
     } catch(err) {
       // If not tabs with ZilPay.
     }

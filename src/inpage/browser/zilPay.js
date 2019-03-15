@@ -2,7 +2,7 @@ import { EncryptedStream } from 'extension-streams'
 import { Observable, Subject } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 import uuidv4 from 'uuid/v4'
-import { MTypesSecure, MTypesZilPay } from '../../lib/messages/messageTypes'
+import { MTypesSecure, MTypesZilPay, MTypesTabs } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
 
 import { Zilliqa } from '@zilliqa-js/zilliqa'
@@ -41,7 +41,6 @@ class Listen {
   }
 
   static onChangeAccount(msg) {
-    // subjectStream.next('work');
     if (window.zilPay) {
       window.zilPay.setDefaultAccount(msg.payload);
     }
@@ -78,8 +77,8 @@ function listener(msg) {
       Listen.onChangeStatus(msg);
       break;
     
-    case MTypesZilPay.CONFIRM_RESULT:
-      log.info(msg);
+    case MTypesTabs.TX_RESULT:
+      subjectStream.next(msg.payload);
       break;
 
     default:
@@ -126,9 +125,22 @@ export class RedefinedZilliqa extends Zilliqa {
         new SecureMessage({ type, payload }).send(stream, recipient);
 
         return new Promise((resolve, reject) => {
-          const result = subjectStream.subscribe(payload => {
-            result.unsubscribe();
-            resolve(payload);
+          const result = subjectStream.subscribe(resultTx => {
+            if (resultTx.uuid !== payload.uuid) {
+              return null;
+            } else if (resultTx.reject) {
+              result.unsubscribe();
+              reject(new Error(resultTx.reject));
+            } else if (resultTx.resolve) {
+              result.unsubscribe();
+              resolve(
+                Object.assign(tx, resultTx.resolve)
+              );
+            }
+            setTimeout(() => {
+              result.unsubscribe();
+              reject(new Error('waiting time may have problems ZilPay'));
+            }, 9000);
           });
         });
       }

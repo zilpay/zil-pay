@@ -23,7 +23,6 @@ export class NonSecureStream {
 
 
   _dispenseMessage(sendResponse, message) {
-    log.info(message);
     if (!message) {
       return null;
     }
@@ -38,9 +37,9 @@ export class NonSecureStream {
 
     switch (msg.type) {
 
-      case MTypesZilPay.CONFIRM_RESULT:
-        log.info(msg);
-        return null;
+      case MTypesTabs.TX_RESULT:
+        toSecureMsg = MTypesTabs.TX_RESULT;
+        break;
 
       case MTypesTabs.LOCK_STAUS:
         toSecureMsg = MTypesSecure.STATUS_UPDATE;
