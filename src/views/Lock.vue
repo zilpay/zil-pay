@@ -14,6 +14,7 @@
                autofocus
                placeholder="Password"
                v-model="password"
+               @blur="encryptingAccaunt"
                @input="wrongPassword = false">
         <div class="error text-danger" v-if="wrongPassword">
           Incorrect password

@@ -24,33 +24,26 @@ var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER'];
 
 class Listen {
   static onZilPayInit(msg) {
-    if (window.zilPay) {
-      window.zilPay.isEnable = msg.payload.isEnable;
-      window.zilPay.setDefaultAccount(msg.payload.account);
-      window.zilPay.setProvider(msg.payload.PROVIDER);
-    }
-    
+    window.zilPay.isEnable = msg.payload.isEnable;
+    window.zilPay.setProvider(msg.payload.PROVIDER);
+    window.zilPay.setDefaultAccount(msg.payload.account);
+
     ACCOUNT = msg.payload.account;
-    PROVIDER = msg.payload.PROVIDER;
+    PROVIDER = msg.payload.provider;
   }
 
   static onChangeNode(msg) {
-    if (window.zilPay) {
-      window.zilPay.setProvider(msg.payload.PROVIDER);
-    }
+    window.zilPay.setProvider(msg.payload.PROVIDER);
+    PROVIDER = msg.payload.PROVIDER;
   }
 
   static onChangeAccount(msg) {
-    if (window.zilPay) {
-      window.zilPay.setDefaultAccount(msg.payload);
-    }
+    window.zilPay.setDefaultAccount(msg.payload);
   }
 
   static onChangeStatus(msg) {
-    if (window.zilPay) {
-      window.zilPay.isEnable = msg.payload.isEnable;
-      window.zilPay.setDefaultAccount(ACCOUNT);
-    }
+    window.zilPay.isEnable = msg.payload.isEnable;
+    window.zilPay.setDefaultAccount(ACCOUNT);
   }
 }
 
@@ -158,13 +151,13 @@ export class RedefinedZilliqa extends Zilliqa {
 
 }
 
-export class ZilPay extends HTTPProvider {
+export class ZilPay {
 
-  constructor() {
-    super(PROVIDER);
+  constructor(provider) {
     this.isEnable = false;
     this.defaultAccount = null;
     this.utils = zilUtils;
+    this.nodeURL = provider || PROVIDER;
 
     const type = MTypesSecure.PAY_OBJECT_INIT;
     const recipient = MTypesSecure.CONTENT;
@@ -198,7 +191,10 @@ export class ZilPay extends HTTPProvider {
   }
 
   setProvider(provider) {
-    Object.assign(this, new HTTPProvider(provider))
+    if (!provider || typeof provider !== 'string') {
+      return null;
+    }
+    this.nodeURL = provider;
   }
 
 }
