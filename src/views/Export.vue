@@ -101,7 +101,6 @@ export default {
 
       try {
         this.text = await this.exportPrivKey(this.password);
-        console.log(this.text);
       } catch(err) {
         this.wrongPassword = true;
       }
