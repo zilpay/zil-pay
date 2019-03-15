@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "config": {
+      "title": "main network config",
+      "type": "object"
+    },
+    "confirm": {
+      "title": "transactions for confirmation",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "selectednet": {
+      "title": "current network name",
+      "type": "string"
+    },
+    "transactions": {
+      "title": "transaction execution",
+      "type": "object"
+    },
+    "vault": {
+      "title": "encrypted seed phrases",
+      "type": "string"
+    },
+    "wallet": {
+      "title": "active accounts",
+      "type": "object"
+    }
+  }
+}

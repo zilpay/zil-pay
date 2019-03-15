@@ -5,9 +5,10 @@
   "author": "lich666dead",
   "manifest_version": 2,
   "icons": {
-    "16": "/img/icons/16x16.png",
-    "72": "/img/icons/72x72.png",
-    "180": "/img/icons/180x180.png"
+    "180": "/favicon.ico"
+  },
+  "storage": {
+    "managed_schema": "schema.json"
   },
   "permissions": [
     "activeTab",
