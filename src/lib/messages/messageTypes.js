@@ -5,7 +5,6 @@ export const MTypesSecure = {
   PAY_OBJECT_INIT: 'init_obj',      // Init object for dapp.
   CONTENT:         'init_content',  // init content script to browser.
   SYNC:            'sync',
-  BACKGROUND:      'background',
   STATUS_UPDATE:   's_update',
   ERROR:           'error'
 };
@@ -22,10 +21,7 @@ export const MTypesZilPay = {
   
   GET_CONFIRM_TX:    'g_c_t',
   REJECT_CONFIRM_TX: 'r_c_t',
-  CONFIRM_TX:        'c_t',
-
-  SET_GAS_PRICE:     's_g_p',
-  SET_GAS_LIMIT:     's_g_l'
+  CONFIRM_TX:        'c_t'
 };
 
 export const MTypesInternal = {

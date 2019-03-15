@@ -2,7 +2,7 @@ import { Wallet } from '@zilliqa-js/account'
 import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
 import { BlockChainControll } from './zilliqa'
-import { TabsMessage, Message } from '../lib/messages/messageCall'
+import { TabsMessage } from '../lib/messages/messageCall'
 import { MTypesTabs } from '../lib/messages/messageTypes'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
@@ -225,7 +225,7 @@ export class Handler {
     this._lockStatusUpdateTab();
   }
 
-  async singCreateTransaction(sendResponse) {
+  async singCreateTransaction(sendResponse, payload) {
     if (!this.auth.isReady || !this.auth.isEnable) {
       throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
     }
@@ -243,8 +243,11 @@ export class Handler {
     const blockChain = new BlockChainControll(PROVIDER);
 
     try {
-      const txForConfirm = confirm.pop();
+      let txForConfirm = confirm.pop();
       
+      txForConfirm.gasLimit = payload.gasLimit;
+      txForConfirm.gasPrice = payload.gasPrice;
+
       await this.auth.setConfirm(confirm);
 
       const { result, req, error } = await blockChain.singCreateTransaction(
@@ -259,14 +262,23 @@ export class Handler {
         tx.from = blockChain.wallet.defaultAccount.address;
 
         this.auth.setTx(tx);
-        this.returnTx({ resolve: tx }, txForConfirm.uuid);
+
+        if (txForConfirm.uuid) {
+          this.returnTx({ resolve: tx }, txForConfirm.uuid);
+        }
+        
         sendResponse({ resolve: tx });
       } else {
+        if (txForConfirm.uuid) {
+          this.returnTx({ reject: error.message }, txForConfirm.uuid);
+        }
         sendResponse({ reject: error.message });
-        this.returnTx({ reject: error.message }, txForConfirm.uuid);
       }
     } catch(err) {
-      this.returnTx({ reject: err.message }, txForConfirm.uuid);
+      if (txForConfirm.uuid) {
+        this.returnTx({ reject: err.message }, txForConfirm.uuid);
+      }
+      
       sendResponse({ reject: err.message });
       log.error(err.message);
     }

@@ -1,5 +1,5 @@
 import { LocalStream } from 'extension-streams'
-import { MTypesSecure, MTypesTabs, MTypesZilPay } from '../../lib/messages/messageTypes'
+import { MTypesSecure, MTypesTabs } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
 import { Loger } from '../../lib/logger'
 import apiConfig from '../../config/api'

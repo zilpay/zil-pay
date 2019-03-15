@@ -49,15 +49,12 @@
 import { mapState, mapMutations, mapActions } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import { validationMixin } from 'vuelidate'
-import { fromZil } from '../filters/zil'
+import { fromZil, toZil } from '../filters/zil'
 import { required, sameAs } from 'vuelidate/lib/validators'
+import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
 
-const ERRORCODE = [
-  'This value cannot be less than 0!',
-  'Insufficient funds!',
-  'wrong zil address'
-];
+
 
 export default {
   directives: { btn },
@@ -152,12 +149,16 @@ export default {
       this.spiner();
 
       let data = {
-        to: this.toAddress,
-        amount: this.amount,
-        gasPrice: this.gas
+        toAddr: this.toAddress,
+        amount: toZil(this.amount),
+        gasPrice: toZil(this.gas),
+        gasLimit: 1,
+        code: '',
+        data: ''
       };
-
+      
       await this.nonContractSendTransaction(data);
+
       this.transactionsUpdate();
       this.spiner();
       this.$router.push({ name: 'home' });

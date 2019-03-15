@@ -15,6 +15,10 @@
           <span class="text-warning">
             {{currencyController.nativeCurrency}}
           </span>
+          <small v-if="amounMsg"
+                 class="form-text text-danger">
+            {{amounMsg}}
+          </small>
           <br>
           Amount: 
           <b class="text-ightindigo">
@@ -60,21 +64,24 @@
             <input type="text"
                    class="form-control bg-null"
                    id="gas"
-                   :value="CONFIRM_TX.gasPrice | fromZil"
-                   @change="setGasPriceForConfirm">
+                   v-model="gas"
+                   :value="CONFIRM_TX.gasPrice | fromZil">
+            <small class="form-text text-danger"
+                   v-if="!$v.gas.sameAs">{{gasMsg}}</small>
           </div>
           <div class="form-group">
             <label for="gas">Gas Limit (ZILs)</label>
             <input type="number"
                    step="1"
                    class="form-control bg-null"
-                   id="gas"
-                   :value="CONFIRM_TX.gasLimit"
-                   @change="setGasLimitForConfirm">
+                   min="1"
+                   v-model="gasLimit"
+                   :value="CONFIRM_TX.gasLimit">
           </div>
 
           <div class="p-2">
             <button v-btn="'success btn-lg mr-2'"
+                    :disabled="!!amounMsg || !!gasMsg || gasLimit < 1"
                     @click="confirm">CONFIRM</button>
             <button v-btn="'danger btn-lg ml-2'"
                     @click="rejectConfirmTx">REJECT</button>
@@ -89,24 +96,45 @@
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import trimAddress from '../filters/trimAddress'
-import { fromZil, toUSD } from '../filters/zil'
+import { validationMixin } from 'vuelidate'
+import { sameAs, required } from 'vuelidate/lib/validators'
+import { fromZil, toUSD, toZil } from '../filters/zil'
 import explorer from '../mixins/explorer'
+import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
 
 
 export default {
   name: 'Confirmation',
   filters: { trimAddress, fromZil, toUSD },
-   directives: { btn },
-  mixins: [explorer],
+  directives: { btn },
+  mixins: [explorer, validationMixin],
   data() {
     return {
       data: window.data,
-      // from: 'eef22809b26479ce53f52a0849dbbdad630e0f35',
-      // to: '31de24752489e04d06ad32a1095b86ce9310bf9b',
-      // amount: '5783495734904'
-      //11d3cfe90a863245a00cff9d069ffc27585ee764
+      gas: 0, gasMsg: null,
+      gasLimit: 1, gasLimitMsg: null
     };
+  },
+  validations: {
+    gas: {
+      sameAs: sameAs(vue => {
+        if (vue.gas <= 0 || isNaN(vue.gas) || vue.gas == '') {
+          vue.gasMsg = ERRORCODE[0];
+          return true;
+        } else if (vue.gas > +fromZil(vue.account.balance)) {
+          vue.gasMsg = ERRORCODE[1];
+          return true;
+        }
+
+        vue.gasMsg = null;
+
+        return false;
+      })
+    },
+    gasLimit: {
+      required
+    }
   },
   computed: {
     ...mapState([
@@ -121,9 +149,7 @@ export default {
     ]),
 
     from() {
-      return this.wallet.identities[
-        this.wallet.selectedAddress
-      ].address;
+      return this.account.address;
     },
     isObject() {
       if (Object.keys(this.CONFIRM_TX).length > 0) {
@@ -136,14 +162,22 @@ export default {
         }        
         return false;
       }
+    },
+    account() {
+      return this.wallet.identities[
+        this.wallet.selectedAddress
+      ];
+    },
+    amounMsg() {
+      if (+this.CONFIRM_TX.amount > +this.account.balance) {
+        return ERRORCODE[1];
+      }
+
+      return null;
     }
   },
   methods: {
     ...mapMutations(['spiner']),
-    ...mapMutations('storage', [
-      'setGasPriceForConfirm',
-      'setGasLimitForConfirm'
-    ]),
     ...mapActions('storage', [
       'getConfirmationTx',
       'rejectConfirmTx',
@@ -152,11 +186,16 @@ export default {
 
     async confirm() {
       this.spiner();
-      await this.confirmTx();
+      await this.confirmTx({
+        gasPrice: toZil(this.gas),
+        gasLimit: this.gasLimit
+      });
       this.spiner();
     }
   },
   mounted() {
+    this.gas = fromZil(this.CONFIRM_TX.gasPrice);
+    this.gasLimit = this.CONFIRM_TX.gasLimit;
   }
 }
 </script>

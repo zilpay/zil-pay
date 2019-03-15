@@ -56,23 +56,7 @@ export default {
       } else {
         state.confirmationTx = data.filter(tx => Object.keys(tx).length > 0);
       }
-    },
-    setGasPriceForConfirm(state, event) {
-      const payload = { value: toZil(event.target.value) };
-      const type = MTypesZilPay.SET_GAS_PRICE;
-      
-      new Message({ type, payload }).send();
-    },
-    setGasLimitForConfirm(state, event) {
-      const payload = { value: event.target.value.toString() };
-      const type = MTypesZilPay.SET_GAS_LIMIT;
-
-      if (isNaN(payload.value)) {
-        throw new Error('GasLimit is number');
-      }
-      
-      new Message({ type, payload }).send();
-    },
+    }
   },
   actions: {
     async jazzicon({ state }, id) {
@@ -120,10 +104,9 @@ export default {
       state.transactions = transactions;
     },
     async nonContractSendTransaction(_, data) {
-      const type = MTypesInternal.SIGN_SEND_TRANSACTION;
-      const payload = { data };
-      const tx = await new Message({ type, payload }).send();      
-      return tx;
+      const type = MTypesZilPay.CALL_SIGN_TX;
+      const payload = data;
+      await new Message({ type, payload }).send();  
     },
     async createAccount({ state }) {
       state.wallet = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
@@ -133,8 +116,11 @@ export default {
       await Message.signal(MTypesZilPay.REJECT_CONFIRM_TX).send();
       state.confirmationTx.pop();
     },
-    async confirmTx({ state }) {
-      await Message.signal(MTypesZilPay.CONFIRM_TX).send();
+    async confirmTx({ state }, payload) {
+      await new Message({
+        type: MTypesZilPay.CONFIRM_TX,
+        payload
+      }).send();
       state.confirmationTx.pop();
     },
 
@@ -159,7 +145,6 @@ export default {
       } else if (data) {
         type = 'Contract call state.';
       }
-
       return { length, toAddr, gasPrice, gasLimit, amount, type };
     }
   }

@@ -92,15 +92,7 @@ export class Background extends Handler  {
         break;
 
       case MTypesZilPay.CONFIRM_TX:
-        this.singCreateTransaction(sendResponse);
-        break;
-
-      case MTypesZilPay.SET_GAS_LIMIT:
-        log.info(message.payload); //TODO: create tx filter
-        break;
-
-      case MTypesZilPay.SET_GAS_PRICE:
-        log.info(message.payload); //TODO: create tx filter
+        this.singCreateTransaction(sendResponse, message.payload);
         break;
 
       default:

@@ -63,6 +63,7 @@ export class BlockChainControll extends Zilliqa {
       code,
       data
     });
+
     const { txParams } = await this.wallet.sign(zilTxData);
     return await this.provider.send(
       RPCMethod.CreateTransaction, txParams
