@@ -1,7 +1,7 @@
 {
   "name": "zil-pay",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.2",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
