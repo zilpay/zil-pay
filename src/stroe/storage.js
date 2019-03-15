@@ -86,6 +86,20 @@ export default {
 
       return null;
     },
+    async exportPrivKey(_, password) {
+      const result = await new Message({
+        type: MTypesAuth.EXPORT_PRIV_KEY,
+        payload: { password }
+      }).send();
+  
+      if (result.resolve) {
+        return result.resolve;
+      } else if (result.reject) {
+        throw new Error(result.reject);
+      }
+
+      return null;
+    },
     async walletCreate({ commit }, { seed, password }) {
       const type = MTypesAuth.SET_SEED_AND_PWD;
       const payload = { seed, password };

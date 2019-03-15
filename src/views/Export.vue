@@ -5,14 +5,14 @@
         Account export
       </h3>
       
-      <div v-if="seed">
+      <div v-if="text">
         <textarea class="form-control bg-null"
-                  v-model="seed"
+                  v-model="text"
                   id="mySeed"
                   disabled>
         </textarea>
         <button v-btn="'info btn-lg m-2'"
-                @click="copy(seed)">
+                @click="copy(text)">
           copy
         </button>
         <button v-btn="'warning btn-lg m-2'"
@@ -22,7 +22,7 @@
       </div>
 
 
-      <div v-if="!seed" class="form-group pt-2">
+      <div v-if="!text" class="form-group pt-2">
         <label for="pass">Enter password to continue</label>
         <input type="password"
                class="form-control bg-null text-pink"
@@ -57,7 +57,7 @@ export default {
   directives: { btn },
   data() {
     return {
-      seed: null,
+      text: null,
       password: null,
       wrongPassword: false
     };
@@ -79,7 +79,8 @@ export default {
   methods: {
     copy,
     ...mapActions('storage', [
-      'exportSeed'
+      'exportSeed',
+      'exportPrivKey'
     ]),
 
     async revealSeedWords() {
@@ -88,7 +89,19 @@ export default {
       }
 
       try {
-        this.seed = await this.exportSeed(this.password);
+        this.text = await this.exportSeed(this.password);
+      } catch(err) {
+        this.wrongPassword = true;
+      }
+    },
+    async revealPrivateKey() {
+      if (this.wrongPassword) {
+        return null;
+      }
+
+      try {
+        this.text = await this.exportPrivKey(this.password);
+        console.log(this.text);
       } catch(err) {
         this.wrongPassword = true;
       }
@@ -96,11 +109,12 @@ export default {
     onSubmit() {
       if (this.type === exportTypes.SEED) {
         this.revealSeedWords();
+      } else if (this.type === exportTypes.PRIVATE_KEY) {
+        this.revealPrivateKey();
       }
     }
   },
-  mounted() {
-  }
+  mounted() { }
 }
 </script>
 
