@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row justify-content-center pt-3">
       <div class="col-lg-12 text-center text-ightindigo pt-3">
-        <router-link v-if="isReady" :to="$router.options.routes[0].path">
+        <router-link v-if="isReady" :to="{name: 'lock'}">
           <h3 class="text-warning text-left point">&#60;back</h3>
         </router-link>
         <h5>Enter your secret twelve word

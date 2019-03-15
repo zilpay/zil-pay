@@ -64,8 +64,7 @@
             <input type="text"
                    class="form-control bg-null"
                    id="gas"
-                   v-model="gas"
-                   :value="CONFIRM_TX.gasPrice | fromZil">
+                   v-model="gas">
             <small class="form-text text-danger"
                    v-if="!$v.gas.sameAs">{{gasMsg}}</small>
           </div>
@@ -75,8 +74,7 @@
                    step="1"
                    class="form-control bg-null"
                    min="1"
-                   v-model="gasLimit"
-                   :value="CONFIRM_TX.gasLimit">
+                   v-model="gasLimit">
           </div>
 
           <div class="p-2">
@@ -158,6 +156,7 @@ export default {
         if (window.data) {
           window.close();
         } else {
+          // eslint-disable-next-line
           this.$router.push({ name: 'home' });
         }        
         return false;

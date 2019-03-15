@@ -1,12 +1,11 @@
-# zil-pay
+# ZilPay Browser Extension
 
-## Project setup
-```
-npm install
-```
+
 
 ### Compiles and minifies for production
 ```
+# Install and build all sources
+npm install
 npm run all
 ```
 

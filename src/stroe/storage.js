@@ -3,7 +3,6 @@ import zilConf from '../config/zil'
 import Utils from '../lib/utils'
 import { MTypesInternal, MTypesAuth, MTypesZilPay } from '../lib/messages/messageTypes'
 import { Message } from '../lib/messages/messageCall'
-import { toZil } from '../filters/zil'
 
 
 export default {
@@ -49,7 +48,6 @@ export default {
     transactions(state, data) {
       state.transactions = data;
     },
-
     confirmationTx(state, data) {
       if ((typeof data !== 'object') || (!data || data.length < 1)) {
         state.confirmationTx = [];
@@ -73,6 +71,20 @@ export default {
       }
 
       ctx.appendChild(el);
+    },
+    async exportSeed(_, password) {
+      const result = await new Message({
+        type: MTypesAuth.EXPORT_SEED,
+        payload: { password }
+      }).send();
+
+      if (result.resolve) {
+        return result.resolve;
+      } else if (result.reject) {
+        throw new Error(result.reject);
+      }
+
+      return null;
     },
     async walletCreate({ commit }, { seed, password }) {
       const type = MTypesAuth.SET_SEED_AND_PWD;

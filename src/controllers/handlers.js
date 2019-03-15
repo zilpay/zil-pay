@@ -98,6 +98,23 @@ export class Handler {
     this._lockStatusUpdateTab();
   }
 
+  async exportSeed(sendResponse, payload) {
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
+    }
+
+    try {
+      const vault = await this.auth.getEncryptedSeed();
+      const { password } = payload;
+      this.auth = new Auth(password, vault);
+      this.auth.isEnable = true;
+      const decryptSeed = this.auth.guard.decryptSeed;
+      sendResponse({ resolve: decryptSeed });
+    } catch(err) {
+      sendResponse({ reject: 'password wrong' });
+    }
+  }
+
   async getAccountBySeedIndex(sendResponse) {
     let { wallet, config, selectednet, vault } = await this.auth.getAllData();
 

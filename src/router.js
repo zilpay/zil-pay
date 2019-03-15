@@ -52,6 +52,12 @@ export default new Router({
       name: 'confirmation',
       beforeEnter: guard,
       component: () => import('./views/Confirmation')
+    },
+    {
+      path: '/export/:type',
+      name: 'export',
+      beforeEnter: guard,
+      component: () => import('./views/Export')
     }
   ]
 })

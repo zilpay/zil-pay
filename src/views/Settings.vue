@@ -33,8 +33,12 @@
 
         </li>
       </ul>
-      <button v-btn="'warning col m-3'"
+      <button v-btn="'warning col-12 m-3'"
               @click="createAccountBySeed">Create Account</button>
+      <button v-btn="'danger col-12 m-1'"
+              @click="exportPrivKey">Export PrivateKey</button>
+      <button v-btn="'danger col-12'"
+              @click="exportSeed">Export Seed</button>
     </div>
   </div>
 </template>
@@ -44,6 +48,7 @@ import { mapMutations, mapState, mapActions } from 'vuex'
 import btn from '../directives/btn'
 import trimAddress from '../filters/trimAddress'
 import { fromZil, toUSD } from '../filters/zil'
+import { exportTypes } from '../lib/messages/messageTypes'
 
 
 export default {
@@ -95,6 +100,19 @@ export default {
       this.balanceUpdate();
       this.jazzicon('jazzicon');
       this.$router.push({ name: 'home' });
+    },
+
+    exportPrivKey() {
+      this.$router.push({
+        name: 'export',
+        params: { type: exportTypes.PRIVATE_KEY }
+      });
+    },
+    exportSeed() {
+      this.$router.push({
+        name: 'export',
+        params: { type: exportTypes.SEED }
+      });
     }
   }
 }

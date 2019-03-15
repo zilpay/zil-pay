@@ -2,7 +2,6 @@
   <div id="app">
     <NavBar/>
     <router-view/>
-    <!-- <Confirmation/> -->
   </div>
 </template>
 
@@ -10,12 +9,11 @@
 import { mapMutations, mapActions } from 'vuex'
 
 const NavBar = () => import('./components/UI/NavBar')
-const Confirmation = () => import('./views/Confirmation')
 
 
 export default {
   name: 'App',
-  components: { NavBar, Confirmation },
+  components: { NavBar },
   mounted() {
     this.preStart();
   },

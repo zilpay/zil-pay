@@ -12,6 +12,7 @@ export const MTypesSecure = {
 export const MTypesAuth = {
   SET_PASSWORD:     'set_password',
   SET_SEED_AND_PWD: 'set_seed_and_pwd',
+  EXPORT_SEED:      'export_seed',
   LOG_OUT:          'log_out'
 }
 
@@ -41,4 +42,9 @@ export const MTypesTabs = {
   NETWORK_CHANGED: 'network_changed',
   LOCK_STAUS:      'lock_status',
   TX_RESULT:       'tx_result'
+};
+
+export const exportTypes = {
+  PRIVATE_KEY: 'privKey',
+  SEED:        'seed'
 };

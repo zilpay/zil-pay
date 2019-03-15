@@ -63,6 +63,10 @@ export class Background extends Handler  {
         sendResponse(true);
         break;
 
+      case MTypesAuth.EXPORT_SEED:
+        this.exportSeed(sendResponse, message.payload);
+        break;
+
       case MTypesInternal.GET_DECRYPT_SEED:
         sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
         break;

@@ -2,8 +2,11 @@
   <nav class="navbar navbar-inverse navbar-violet bg-violet">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand text-lightviolet"
-           href="#">ZilPay</a>
+        <router-link tag="a"
+                      :to="{name: 'home'}"
+                      class="navbar-brand text-lightviolet">
+          ZilPay
+        </router-link>
       </div>
 
       <Dropdown v-if="isEnable"
@@ -14,7 +17,7 @@
 
       <ul class="nav navbar-nav navbar-right">
         <li v-show="isEnable">
-          <router-link :to="$router.options.routes[3].path">
+          <router-link :to="{name: 'settings'}">
             <div id="jazzicon"/>
           </router-link>
         </li>
