@@ -1,11 +1,16 @@
+import { mapState } from 'vuex'
 import apiConfig from '../config/api'
 
 
 export default {
-  data() {
-    return {
-      url: apiConfig.EXPLORER
-    };
+  computed: {
+    ...mapState('storage', [
+      'selectedNet'
+    ]),
+
+    url() {
+      return apiConfig.EXPLORER[this.selectedNet];
+    }
   },
   methods: {
     exploreTransactions(hash) {

@@ -169,21 +169,22 @@ export class Handler {
     }
   }
 
-  async updateConfig(config, net) {
+  updateConfig(config, net) {
     this.auth.setConfig(config);
     this.auth.setNet(net);
   }
 
-  async updateNode(payload) {
+  async updateNode(sendResponse, payload) {
     if (!payload || Object.keys(payload).length < 1) {
       return null;
-    }   
+    }
     const { selectedNet } = payload;
     const { config } = await this.auth.getConfig();
     const { PROVIDER } = config[selectedNet];
     const type = MTypesTabs.NETWORK_CHANGED;
 
-    this.auth.setNet(selectedNet);
+    await this.auth.setNet(selectedNet);
+    sendResponse(true);
 
     new TabsMessage({
       type,

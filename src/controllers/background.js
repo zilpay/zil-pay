@@ -59,8 +59,7 @@ export class Background extends Handler  {
         break;
 
       case MTypesInternal.SET_NET:
-        this.updateNode(message.payload);
-        sendResponse(true);
+        this.updateNode(sendResponse, message.payload);
         break;
 
       case MTypesAuth.EXPORT_SEED:

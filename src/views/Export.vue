@@ -1,6 +1,8 @@
 <template>
   <div class="container">
     <div class="row justify-content-center text-center">
+      <h3 class="mr-auto p-2 point text-warning"
+          @click="$router.go(-1)">&#60;BACK</h3>
       <h3 class="col-lg-12 text-pink">
         Account export
       </h3>

@@ -3,8 +3,8 @@
     <div class="container-fluid">
       <div class="navbar-header">
         <router-link tag="a"
-                      :to="{name: 'home'}"
-                      class="navbar-brand text-lightviolet">
+                     :to="{name: 'home'}"
+                     class="navbar-brand text-lightviolet">
           ZilPay
         </router-link>
       </div>
@@ -17,9 +17,8 @@
 
       <ul class="nav navbar-nav navbar-right">
         <li v-show="isEnable">
-          <router-link :to="{name: 'settings'}">
-            <div id="jazzicon"/>
-          </router-link>
+          <div id="jazzicon"
+               @click="jazziconRoute"/>
         </li>
       </ul>
     </div>
@@ -47,11 +46,9 @@ export default {
   },
   methods: {
     ...mapMutations(['spiner']),
-    ...mapMutations('storage', [
-      'setNet'
-    ]),
     ...mapActions('storage', [
-      'balanceUpdate'
+      'balanceUpdate',
+      'updateNode'
     ]),
 
     async selectDefaultNet(value) {
@@ -62,13 +59,23 @@ export default {
       this.spiner();
 
       try {
-        this.setNet(value);
+        await this.updateNode(value);
         await this.balanceUpdate();
       } catch(err) {
         console.error(err);
       }
 
       this.spiner();
+    },
+    jazziconRoute() {
+      const current = this.$router.history.current.name;
+      const settings = this.$router.options.routes[3].name;
+
+      if (current == settings) {
+        this.$router.go(-1);
+      } else {
+        this.$router.push({ name: settings });
+      }      
     }
   },
   mounted() { }

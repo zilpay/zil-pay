@@ -1,8 +1,24 @@
-import jazzicon from 'jazzicon'
 import zilConf from '../config/zil'
-import Utils from '../lib/utils'
-import { MTypesInternal, MTypesAuth, MTypesZilPay } from '../lib/messages/messageTypes'
+
+import { MTypesInternal } from '../lib/messages/messageTypes'
 import { Message } from '../lib/messages/messageCall'
+
+import {
+  jazzicon,
+  walletCreate,
+  unLock,
+  logOut,
+  balanceUpdate,
+  createAccount,
+  updateNode
+} from './actions/walletStatus'
+import { exportSeed, exportPrivKey } from './actions/export'
+import {
+  transactionsUpdate,
+  nonContractSendTransaction,
+  rejectConfirmTx,
+  confirmTx
+} from './actions/transactions'
 
 
 export default {
@@ -20,13 +36,8 @@ export default {
     confirmationTx: []
   },
   mutations: {
-    setNet(state, net) {
-      const type = MTypesInternal.SET_NET;
-      const payload = { selectedNet: net };
-
-      new Message({ type, payload }).send();
-
-      state.selectedNet = net;
+    setNet(state, selectedNet) {
+      state.selectedNet = selectedNet;
     },
     setWallet(state, wallet) {
       const type = MTypesInternal.CHANGE_ACCOUNT;
@@ -57,98 +68,21 @@ export default {
     }
   },
   actions: {
-    async jazzicon({ state }, id) {
-      if (state.wallet.identities.length < 1) {
-        return null;
-      }
+    jazzicon,
+    walletCreate,
+    unLock,
+    logOut,
+    balanceUpdate,
+    createAccount,
+    updateNode,
 
-      let ctx = window.document.querySelector('#' + id);
-      let account = state.wallet.identities[state.wallet.selectedAddress];
-      let el = jazzicon(45, Utils.jsNumberForAddress(account.address));
+    exportSeed,
+    exportPrivKey,
 
-      if (ctx.children.length > 0) {
-        ctx.children[0].remove();
-      }
-
-      ctx.appendChild(el);
-    },
-    async exportSeed(_, password) {
-      const result = await new Message({
-        type: MTypesAuth.EXPORT_SEED,
-        payload: { password }
-      }).send();
-
-      if (result.resolve) {
-        return result.resolve;
-      } else if (result.reject) {
-        throw new Error(result.reject);
-      }
-
-      return null;
-    },
-    async exportPrivKey(_, password) {
-      const result = await new Message({
-        type: MTypesAuth.EXPORT_PRIV_KEY,
-        payload: { password }
-      }).send();
-  
-      if (result.resolve) {
-        return result.resolve;
-      } else if (result.reject) {
-        throw new Error(result.reject);
-      }
-
-      return null;
-    },
-    async walletCreate({ commit }, { seed, password }) {
-      const type = MTypesAuth.SET_SEED_AND_PWD;
-      const payload = { seed, password };
-      const wallet = await new Message({ type, payload }).send();
-
-      commit('setWallet', wallet);
-    },
-    async unLock({ commit }, password) {
-      const type = MTypesAuth.SET_PASSWORD;
-      const payload = { password };
-      const status = await new Message({ type, payload }).send();
-
-      commit('isEnable', status);
-
-      return status;
-    },
-    logOut({ commit }) {
-      Message.signal(MTypesAuth.LOG_OUT).send();
-      commit('isEnable', false);
-    },
-    async balanceUpdate({ state }) {
-      const wallet = await Message.signal(MTypesInternal.UPDATE_BALANCE).send();
-      state.wallet = wallet;
-      return wallet;
-    },
-    async transactionsUpdate({ state }) {
-      const transactions = await Message.signal(MTypesInternal.GET_ALL_TX).send();
-      state.transactions = transactions;
-    },
-    async nonContractSendTransaction(_, data) {
-      const type = MTypesZilPay.CALL_SIGN_TX;
-      const payload = data;
-      await new Message({ type, payload }).send();  
-    },
-    async createAccount({ state }) {
-      state.wallet = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
-      return state.wallet;
-    },
-    async rejectConfirmTx({ state }) {
-      await Message.signal(MTypesZilPay.REJECT_CONFIRM_TX).send();
-      state.confirmationTx.pop();
-    },
-    async confirmTx({ state }, payload) {
-      await new Message({
-        type: MTypesZilPay.CONFIRM_TX,
-        payload
-      }).send();
-      state.confirmationTx.pop();
-    },
+    transactionsUpdate,
+    nonContractSendTransaction,
+    rejectConfirmTx,
+    confirmTx,
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
