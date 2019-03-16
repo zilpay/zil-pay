@@ -25,7 +25,7 @@ var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER'];
 class Listen {
   static onZilPayInit(msg) {
     window.zilPay.isEnable = msg.payload.isEnable;
-    window.zilPay.setProvider(msg.payload.PROVIDER);
+    window.zilPay.setProvider(msg.payload.provider);
     window.zilPay.setDefaultAccount(msg.payload.account);
 
     ACCOUNT = msg.payload.account;

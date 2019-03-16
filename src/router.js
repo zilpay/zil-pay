@@ -7,7 +7,7 @@ Vue.use(Router);
 
 
 function guard(to, from, next) {
-  if (Storage.getters.ISENABLE && Storage.getters.ISREADY) {
+  if (Storage.state.isReady && Storage.state.isEnable) {
     next();
   } else {
     next(false);

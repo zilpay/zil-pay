@@ -54,7 +54,8 @@ export default {
     ]),
     ...mapState('storage', [
       'wallet',
-      'transactions'
+      'transactions',
+      'selectednet'
     ]),
 
     account() {
@@ -69,11 +70,11 @@ export default {
       
       const txs = this.transactions[this.account.address];
 
-      if (!txs) {
+      if (!txs[this.selectednet]) {
         return [];
       }
       
-      return txs;
+      return txs[this.selectednet];
     }
   },
   methods: {

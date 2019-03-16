@@ -66,18 +66,19 @@ export class StorageGuard extends BrowserStorage {
     object[fields.SELECTED_NET] = value;
     return this.set(object);
   }
-  async setTx(data) {
+  async setTx(data, net) {
     let txs = await this.getTxs();
     const { from } = data;
 
     if (!txs[from]) {
-      txs[from] = [];
+      txs[from] = {};
+      txs[from][net] = [];
     }
-    if (txs[from].length > 5) {
-      txs[from].shift();
+    if (txs[from][net].length > 5) {
+      txs[from][net].shift();
     }
 
-    txs[from].push({
+    txs[from][net].push({
       Info: data.Info,
       TranID: data.TranID,
       amount: data.amount,
@@ -87,7 +88,7 @@ export class StorageGuard extends BrowserStorage {
     let object = {};
     object[fields.TRANSACTIONS] = txs;
     
-    this.set(object);    
+    this.set(object);
   }
   async setConfirm(value) {
     const object = {};

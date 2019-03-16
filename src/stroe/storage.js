@@ -31,13 +31,13 @@ export default {
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
     transactions: { },
-    selectedNet: Object.keys(zilConf)[0],
+    selectednet: Object.keys(zilConf)[0],
     config: zilConf,
     confirmationTx: []
   },
   mutations: {
-    setNet(state, selectedNet) {
-      state.selectedNet = selectedNet;
+    setNet(state, selectednet) {
+      state.selectednet = selectednet;
     },
     setWallet(state, wallet) {
       const type = MTypesInternal.CHANGE_ACCOUNT;
@@ -87,10 +87,7 @@ export default {
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
-  getters: {
-    ISREADY: state => state.isReady,
-    ISENABLE: state => state.isEnable,
-    
+  getters: {    
     CONFIRM_TX(state) {
       if (state.confirmationTx.length < 1) {
         return {};

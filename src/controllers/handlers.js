@@ -178,12 +178,12 @@ export class Handler {
     if (!payload || Object.keys(payload).length < 1) {
       return null;
     }
-    const { selectedNet } = payload;
+    const { selectednet } = payload;
     const { config } = await this.auth.getConfig();
-    const { PROVIDER } = config[selectedNet];
+    const { PROVIDER } = config[selectednet];
     const type = MTypesTabs.NETWORK_CHANGED;
 
-    await this.auth.setNet(selectedNet);
+    await this.auth.setNet(selectednet);
     sendResponse(true);
 
     new TabsMessage({
@@ -306,7 +306,7 @@ export class Handler {
         let tx = Object.assign(result, req.payload.params[0]);
         tx.from = blockChain.wallet.defaultAccount.address;
 
-        this.auth.setTx(tx);
+        this.auth.setTx(tx, selectednet);
 
         if (txForConfirm.uuid) {
           this.returnTx({ resolve: tx }, txForConfirm.uuid);
@@ -334,6 +334,7 @@ export class Handler {
     await this.auth.setConfirm(data);    
     new PromptService(tab).open();
   }
+  
   async rmConfirmTx(sendResponse) {
     const { confirm } = await this.auth.getConfirm();
     const txForConfirm = confirm.pop();

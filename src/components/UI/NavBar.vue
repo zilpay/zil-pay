@@ -11,7 +11,7 @@
 
       <Dropdown v-if="isEnable"
                 :options="options"
-                :selected="selectedNet"
+                :selected="selectednet"
                 :classBtn="'dark text-pink'"
                 @updateOption="selectDefaultNet"/>
 
@@ -36,7 +36,7 @@ export default {
   computed: {
     ...mapState('storage', [
       'config',
-      'selectedNet',
+      'selectednet',
       'isEnable'
     ]),
 

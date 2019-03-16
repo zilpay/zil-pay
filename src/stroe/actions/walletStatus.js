@@ -54,11 +54,11 @@ export async function createAccount({ state }) {
   return state.wallet;
 }
 
-export async function updateNode({ state }, selectedNet) {
+export async function updateNode({ state }, selectednet) {
   const type = MTypesInternal.SET_NET;
-  const payload = { selectedNet };
+  const payload = { selectednet };
 
   await new Message({ type, payload }).send();
 
-  state.selectedNet = selectedNet;
+  state.selectednet = selectednet;
 }
