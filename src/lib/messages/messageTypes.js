@@ -14,6 +14,7 @@ export const MTypesAuth = {
   SET_SEED_AND_PWD: 'set_seed_and_pwd',
   EXPORT_SEED:      'export_seed',
   EXPORT_PRIV_KEY:  'export_priv_key',
+  IMPORT_PRIV_KEY:  'import_priv_key',
   LOG_OUT:          'log_out'
 }
 

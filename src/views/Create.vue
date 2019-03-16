@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="row justify-content-center pt-3">
-      <div class="col-lg-12 text-center text-ightindigo pt-3">
+    <div class="row justify-content-center display-10">
+      <div class="col-lg-12 text-center text-ightindigo">
         <router-link v-if="isReady" :to="{name: 'lock'}">
           <h3 class="text-warning text-left point">&#60;back</h3>
         </router-link>
@@ -11,8 +11,7 @@
 
       <div class="form-group p-2">
         <label for="seed">Wallet Seed</label>
-        <textarea class="form-control bg-null"
-                  id="seed"
+        <textarea class="form-control bg-null display-10 seed"
                   v-model="mnemonicPhrase">
         </textarea>
         <div class="error text-danger">
@@ -145,8 +144,5 @@ export default {
 </script>
 
 <style lang="scss">
-#seed {
-  height: 150px;
-  width: 250px;
-}
+
 </style>

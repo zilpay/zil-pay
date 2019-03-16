@@ -51,6 +51,11 @@ export class StorageGuard extends BrowserStorage {
     object[fields.VAULT] = value;
     return this.set(object);
   }
+  setImportedVault(value) {
+    let object = {};
+    object[fields.VAULT_IMPORTED] = value;
+    return this.set(object);
+  }
   setConfig(value) {
     const object = {};
     object[fields.CONFIG] = value;

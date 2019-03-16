@@ -35,6 +35,9 @@
       </ul>
       <button v-btn="'warning col-12 m-3'"
               @click="createAccountBySeed">Create Account</button>
+
+      <button v-btn="'info col-12 m-1'"
+              @click="$router.push({name: 'import'})">Import privateKey</button>
       <button v-btn="'danger col-12 m-1'"
               @click="exportPrivKey">Export PrivateKey</button>
       <button v-btn="'danger col-12'"

@@ -58,6 +58,12 @@ export default new Router({
       name: 'export',
       beforeEnter: guard,
       component: () => import('./views/Export')
+    },
+    {
+      path: '/import',
+      name: 'import',
+      beforeEnter: guard,
+      component: () => import('./views/Import')
     }
   ]
 })

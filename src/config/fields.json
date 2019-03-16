@@ -1,5 +1,6 @@
 {
   "VAULT": "vault",
+  "VAULT_IMPORTED": "importedvault",
   "CONFIG": "config",
   "WALLET": "wallet",
   "SELECTED_NET": "selectednet",

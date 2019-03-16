@@ -109,4 +109,16 @@ export default {
 .error-input {
   border-color: $red;
 }
+textarea {
+  cursor: pointer;
+  font-size: 20px !important;
+  height: 120px !important;
+}
+textarea:hover {
+  box-shadow: inset 0px 0px 40px $lightviolet;
+}
+.display-10 {
+  font-size: 15px !important;
+}
+
 </style>

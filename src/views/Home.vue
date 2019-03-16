@@ -70,6 +70,10 @@ export default {
       
       const txs = this.transactions[this.account.address];
 
+      if (!txs) {
+        return [];
+      }
+
       if (!txs[this.selectednet]) {
         return [];
       }

@@ -19,6 +19,7 @@ import {
   rejectConfirmTx,
   confirmTx
 } from './actions/transactions'
+import { importByPrivateKey } from './actions/import'
 
 
 export default {
@@ -28,7 +29,8 @@ export default {
     isEnable: false,
     wallet: {
       selectedAddress: null, // index
-      identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
+      identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/],
+      imported: []
     },
     transactions: { },
     selectednet: Object.keys(zilConf)[0],
@@ -75,6 +77,8 @@ export default {
     balanceUpdate,
     createAccount,
     updateNode,
+
+    importByPrivateKey,
 
     exportSeed,
     exportPrivKey,

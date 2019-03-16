@@ -70,6 +70,10 @@ export class Background extends Handler  {
         this.exportPrivKey(sendResponse, message.payload);
         break;
 
+      case MTypesAuth.IMPORT_PRIV_KEY:
+        this.addAccountByPrivateKey(sendResponse, message.payload);
+        break;
+
       case MTypesInternal.GET_DECRYPT_SEED:
         sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
         break;

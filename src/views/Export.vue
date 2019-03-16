@@ -10,7 +10,6 @@
       <div v-if="text">
         <textarea class="form-control bg-null"
                   v-model="text"
-                  id="mySeed"
                   disabled>
         </textarea>
         <button v-btn="'info btn-lg m-2'"
@@ -48,7 +47,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import copy from 'clipboard-copy'
 import btn from '../directives/btn'
 import { exportTypes } from '../lib/messages/messageTypes'
@@ -80,6 +79,7 @@ export default {
   },
   methods: {
     copy,
+    ...mapMutations(['spiner']),
     ...mapActions('storage', [
       'exportSeed',
       'exportPrivKey'
@@ -100,19 +100,23 @@ export default {
       if (this.wrongPassword) {
         return null;
       }
-
+      
       try {
         this.text = await this.exportPrivKey(this.password);
       } catch(err) {
         this.wrongPassword = true;
       }
     },
-    onSubmit() {
+    async onSubmit() {
+      this.spiner();
+
       if (this.type === exportTypes.SEED) {
-        this.revealSeedWords();
+        await this.revealSeedWords();
       } else if (this.type === exportTypes.PRIVATE_KEY) {
-        this.revealPrivateKey();
+        await this.revealPrivateKey();
       }
+
+      this.spiner();
     }
   },
   mounted() { }
@@ -120,13 +124,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../styles/colors';
-#mySeed {
-  cursor: pointer;
-  font-size: 30px;
-  height: 200px;
-}
-#mySeed:hover {
-  box-shadow: inset 0px 0px 40px $lightviolet;
-}
+// @import '../styles/colors';
+
 </style>

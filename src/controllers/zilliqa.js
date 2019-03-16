@@ -1,6 +1,6 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
-import { Long, BN, bytes } from '@zilliqa-js/util'
+import { Long, BN, bytes, validation } from '@zilliqa-js/util'
 
 export class BlockChainControll extends Zilliqa {
 
@@ -22,8 +22,12 @@ export class BlockChainControll extends Zilliqa {
     return { result, nonce };
   }
 
-  async singCreateTransaction(txData, seed, index, msgId) {
-    this.wallet.addByMnemonic(seed, index);
+  async singCreateTransaction(txData, seedOrPrivateKey, index, msgId) {
+    if (validation.isPrivateKey(seedOrPrivateKey)) {
+      this.wallet.addByPrivateKey(seedOrPrivateKey);
+    } else {
+      this.wallet.addByMnemonic(seedOrPrivateKey, index);
+    }
     const pubKey = this.wallet.defaultAccount.publicKey;
     let {
       amount,

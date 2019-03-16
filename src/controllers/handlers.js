@@ -1,3 +1,4 @@
+import { validation } from '@zilliqa-js/util'
 import { Wallet } from '@zilliqa-js/account'
 import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
@@ -169,6 +170,66 @@ export class Handler {
     }
   }
 
+  async addAccountByPrivateKey(sendResponse, payload) {
+    let account;
+    const { privKey } = payload;
+
+    if (!validation.isPrivateKey(privKey)) {
+      sendResponse({ reject: 'it is not privateKey' });
+      return null;
+    }
+    
+    let { config, selectednet, wallet, importedvault } = await this.auth.get([
+      fields.WALLET, fields.CONFIG, fields.SELECTED_NET, fields.VAULT_IMPORTED
+    ]);
+    const { PROVIDER } = config[selectednet];
+    const blockChain = new BlockChainControll(PROVIDER);
+    
+    try {
+      blockChain.wallet.addByPrivateKey(privKey);
+      account = blockChain.wallet.defaultAccount;
+      
+      const { result } = await blockChain.getBalance(account.address);
+      const index = wallet.identities.length;
+      const forEnryptData = {
+        index,
+        privateKey: blockChain.wallet.defaultAccount.privateKey
+      };
+      let deryptImportedvault = this.auth.guard.decryptObject(importedvault);
+      
+      account = {
+        index,
+        balance: result,
+        address: blockChain.wallet.defaultAccount.address,
+        publicKey: blockChain.wallet.defaultAccount.publicKey,
+        isImport: true
+      };
+      wallet.identities.push(account);
+      wallet.selectedAddress = index;
+
+      if (!deryptImportedvault) {
+        deryptImportedvault = [forEnryptData];
+      } else {
+        deryptImportedvault.forEach(el => {
+          if (el.privateKey == forEnryptData.privateKey) {
+            throw new Error('account must be unique');
+          }
+        });
+
+        deryptImportedvault.push(forEnryptData);
+      }
+             
+      await this.auth.setImportedVault(
+        this.auth.guard.encryptObject(deryptImportedvault)
+      );
+      await this.auth.setWallet(wallet);
+
+      sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
   updateConfig(config, net) {
     this.auth.setConfig(config);
     this.auth.setNet(net);
@@ -276,7 +337,13 @@ export class Handler {
     }
 
     const { confirm } = await this.auth.getConfirm();
-    const { wallet, config, selectednet, vault } = await this.auth.getAllData();
+    const {
+      wallet,
+      config,
+      selectednet,
+      vault,
+      importedvault
+    } = await this.auth.getAllData();
     
     if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
       sendResponse(null);
@@ -286,18 +353,30 @@ export class Handler {
     
     const { PROVIDER, MSG_VERSION } = config[selectednet];
     const blockChain = new BlockChainControll(PROVIDER);
+    let txForConfirm = confirm.pop();
+
+    txForConfirm.gasLimit = payload.gasLimit;
+    txForConfirm.gasPrice = payload.gasPrice;
 
     try {
-      let txForConfirm = confirm.pop();
-      
-      txForConfirm.gasLimit = payload.gasLimit;
-      txForConfirm.gasPrice = payload.gasPrice;
+      let seedOrPrivateKey;
+
+      if (wallet.identities[wallet.selectedAddress]['isImport']) {
+        const deryptImportedvault = this.auth.guard.decryptObject(importedvault);
+        const account = deryptImportedvault.filter(el => el.index === wallet.selectedAddress)[0];
+        if (!account) {
+          throw new Error('account fail');
+        }
+        seedOrPrivateKey = account.privateKey;
+      } else {
+        seedOrPrivateKey = this.auth.guard.decryptSeed;
+      }
 
       await this.auth.setConfirm(confirm);
 
       const { result, req, error } = await blockChain.singCreateTransaction(
         txForConfirm,
-        this.auth.guard.decryptSeed,
+        seedOrPrivateKey,
         wallet.selectedAddress,
         MSG_VERSION
       );

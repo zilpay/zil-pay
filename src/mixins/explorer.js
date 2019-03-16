@@ -5,11 +5,11 @@ import apiConfig from '../config/api'
 export default {
   computed: {
     ...mapState('storage', [
-      'selectedNet'
+      'selectednet'
     ]),
 
     url() {
-      return apiConfig.EXPLORER[this.selectedNet];
+      return apiConfig.EXPLORER[this.selectednet];
     }
   },
   methods: {

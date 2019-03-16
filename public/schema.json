@@ -24,6 +24,10 @@
       "title": "encrypted seed phrases",
       "type": "string"
     },
+    "importedvault": {
+      "title": "encrypted imported privateKeys",
+      "type": "string"
+    },
     "wallet": {
       "title": "active accounts",
       "type": "object"

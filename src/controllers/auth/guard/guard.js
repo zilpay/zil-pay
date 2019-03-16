@@ -32,4 +32,21 @@ export class AuthGuard {
     return this.encryptedSeed;
   }
 
+  encryptObject(object) {
+    if (typeof object !== 'object') {
+      throw new Error('param value must be object');
+    }
+    return this._crypto.encrypt(JSON.stringify(object), this.pwdHash);
+  }
+
+  decryptObject(encryptJson) {
+    if (!encryptJson) {
+      return null;
+    }
+    
+    return JSON.parse(
+      this._crypto.decrypt(encryptJson, this.pwdHash)
+    );
+  }
+
 }
