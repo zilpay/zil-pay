@@ -7,7 +7,7 @@
           <div class="row">
             <a class="col-2 text-truncate text-warning" target="_blank"
                :href="exploreTransactions(tx.TranID)">#{{index + 1}}</a>
-            <div class="col text-break">
+            <div class="col text-break little">
               {{tx.Info}}
             </div>
             <div class="col-">

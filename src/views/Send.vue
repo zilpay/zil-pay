@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row justify-content-center text-left">
-      <h1 class="col-lg-12 text-pink display-3">Send ZIL</h1>
+      <h3 class="col-lg-12 text-pink display-3">Send ZIL</h3>
       <p class="col-lg-12 text-warning">Only send ZIL to an Zilliqa address.</p>
 
       <form class="col">
@@ -156,7 +156,7 @@ export default {
         code: '',
         data: ''
       };
-      
+
       await this.nonContractSendTransaction(data);
 
       this.transactionsUpdate();

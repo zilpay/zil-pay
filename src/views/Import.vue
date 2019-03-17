@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <h3 class="mr-auto p-2 point text-warning"
-        @click="$router.go(-1)">&#60;BACK</h3>
+    <h5 class="mr-auto p-2 point text-warning"
+        @click="$router.go(-1)">&#60;BACK</h5>
     <h3 class="col-lg-12 text-pink">
       Import PrivateKey
     </h3>

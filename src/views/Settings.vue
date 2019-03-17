@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <div class="d-flex justify-content-end text-warning point">
-      <h3 class="mr-auto p-2" @click="$router.go(-1)">&#60;BACK</h3>
-      <h3 class="p-2" @click="signOut">LOG OUT</h3>
+      <h5 class="mr-auto p-2" @click="$router.go(-1)">&#60;BACK</h5>
+      <h5 class="p-2" @click="signOut">LOG OUT</h5>
     </div>
 
-    <div class="row justify-content-center p-5">
+    <div class="row justify-content-center p-1 display-10">
       <ul class="col-lg list-group list-group-flush">
-        <h2 class="text-center text-success">Accounts</h2>
+        <h5 class="text-center text-success">Accounts</h5>
         <li class="list-group-item acc"
             v-for="(val, index) of wallet.identities" :key="index"
             @click="selectAccount(index)"
@@ -96,7 +96,7 @@ export default {
     },
     async selectAccount(index) {
       let wallet = this.wallet;
-      
+
       wallet.selectedAddress = index;
 
       this.setWallet(wallet);

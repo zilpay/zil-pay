@@ -44,7 +44,7 @@ export default {
         this.spiner();
         return null;
       }
-      
+
       this.spiner();
 
       if (data.reject) {
@@ -88,7 +88,7 @@ export default {
         } else {
           this.$router.push({ name: 'lock' });
           return null;
-        }        
+        }
       }
 
     }
@@ -119,6 +119,9 @@ textarea:hover {
 }
 .display-10 {
   font-size: 15px !important;
+}
+.little {
+  font-size: 10px !important;
 }
 
 </style>

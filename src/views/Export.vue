@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <div class="row justify-content-center text-center">
-      <h3 class="mr-auto p-2 point text-warning"
-          @click="$router.go(-1)">&#60;BACK</h3>
-      <h3 class="col-lg-12 text-pink">
+      <h5 class="mr-auto p-2 point text-warning"
+          @click="$router.go(-1)">&#60;BACK</h5>
+      <h5 class="col-lg-12 text-pink">
         Account export
-      </h3>
-      
+      </h5>
+
       <div v-if="text">
         <textarea class="form-control bg-null"
                   v-model="text"
@@ -22,7 +22,6 @@
         </button>
       </div>
 
-
       <div v-if="!text" class="form-group pt-2">
         <label for="pass">Enter password to continue</label>
         <input type="password"
@@ -35,7 +34,7 @@
         <div class="error text-danger" v-if="wrongPassword">
           Incorrect password
         </div>
-        
+
         <button v-btn="'info btn-lg btn-block mt-4'"
                 :disabled="!password"
                 @click="onSubmit">
@@ -100,7 +99,7 @@ export default {
       if (this.wrongPassword) {
         return null;
       }
-      
+
       try {
         this.text = await this.exportPrivKey(this.password);
       } catch(err) {

@@ -3,7 +3,7 @@
     <div class="row justify-content-center display-10">
       <div class="col-lg-12 text-center text-ightindigo">
         <router-link v-if="isReady" :to="{name: 'lock'}">
-          <h3 class="text-warning text-left point">&#60;back</h3>
+          <h5 class="text-warning text-left point">&#60;back</h5>
         </router-link>
         <h5>Enter your secret twelve word
            phrase here to restore your vault.</h5>

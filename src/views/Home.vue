@@ -12,14 +12,14 @@
             {{account['address'] | trimAddress}}
       </button>
 
-      <h1>
+      <h5>
         {{account['balance'] | fromZil}}
         <span class="text-warning">{{currencyController.nativeCurrency}}</span>
-      </h1>
-      <h1>
+      </h5>
+      <h5>
          {{account['balance'] | toUSD(currencyController.conversionRate)}}
          <span class="text-warning">{{currencyController.currentCurrency}}</span>
-      </h1>
+      </h5>
     </div>
 
     <div class="row justify-content-center">
@@ -67,7 +67,7 @@ export default {
       if (!this.transactions) {
         return [];
       }
-      
+
       const txs = this.transactions[this.account.address];
 
       if (!txs) {
@@ -77,7 +77,7 @@ export default {
       if (!txs[this.selectednet]) {
         return [];
       }
-      
+
       return txs[this.selectednet];
     }
   },
