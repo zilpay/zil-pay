@@ -6,14 +6,10 @@ import { MTypesSecure, MTypesZilPay, MTypesTabs } from '../../lib/messages/messa
 import { SecureMessage } from '../../lib/messages/messageCall'
 
 import { Zilliqa } from '@zilliqa-js/zilliqa'
-import { HTTPProvider } from '@zilliqa-js/core'
 import * as zilUtils from '@zilliqa-js/util'
 import { validation } from '@zilliqa-js/util'
 import zilConf from '../../config/zil'
-import Config from '../../config/api'
-import { Loger } from '../../lib/logger'
 
-const log = new Loger(Config.PAY_NAME);
 
 var onAddressListing = window.document.createEvent('Event');
 var stream = new WeakMap();
@@ -146,7 +142,7 @@ export class RedefinedZilliqa extends Zilliqa {
     this.wallet.signWith = (tx) => {
       return tx;
     };
-    
+    console.log('Zilliqa: init');
   }
 
 }
