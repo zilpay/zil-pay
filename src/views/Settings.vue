@@ -14,7 +14,10 @@
             :class="{'active': index == wallet.selectedAddress}">
 
           <div class="d-flex justify-content-end">
-            <b class="mr-auto">Account {{index + 1}}</b>
+            <b class="mr-auto">
+              Account {{index + 1}}
+              <span  v-if="val.isImport" class="text-warning">I</span>
+            </b>
             <b>{{val.address | trimAddress}}</b>
           </div>
           <div class="d-flex justify-content-end">
@@ -33,6 +36,7 @@
 
         </li>
       </ul>
+
       <button v-btn="'warning col-12 m-3'"
               @click="createAccountBySeed">Create Account</button>
 
@@ -117,7 +121,8 @@ export default {
         params: { type: exportTypes.SEED }
       });
     }
-  }
+  },
+  mounted() { }
 }
 </script>
 

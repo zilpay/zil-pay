@@ -37,9 +37,7 @@ export default {
      'currencyController'
    ])
   },
-  mounted() {
-    // console.log(this.txs);
-  }
+  mounted() { }
 }
 </script>
 

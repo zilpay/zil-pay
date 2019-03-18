@@ -52,7 +52,7 @@ export default {
     config(state, object) {
       state.config = object;
     },
-    isReady(state, isReady) {
+    mutateIsReady(state, isReady) {
       state.isReady = isReady;
     },
     isEnable(state, isEnable) {

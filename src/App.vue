@@ -21,7 +21,7 @@ export default {
     ...mapMutations(['spiner']),
 
     ...mapMutations('storage', [
-      'isReady',
+      'mutateIsReady',
       'isEnable',
       'setNet',
       'config',
@@ -48,7 +48,7 @@ export default {
       this.spiner();
 
       if (data.reject) {
-        this.isReady(data.reject.isReady);
+        this.mutateIsReady(data.reject.isReady);
         this.isEnable(data.reject.isEnable);
         this.setNet(data.reject.selectednet);
         this.config(data.reject.config);
@@ -62,7 +62,7 @@ export default {
 
         return null;
       } else {
-        this.isReady(data.resolve.isReady);
+        this.mutateIsReady(data.resolve.isReady);
         this.isEnable(data.resolve.isEnable);
         this.setNet(data.resolve.data.selectednet);
         this.config(data.resolve.data.config);

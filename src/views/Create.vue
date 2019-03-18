@@ -112,7 +112,8 @@ export default {
     ]),
     ...mapMutations('storage', [
       'setWallet',
-      'isEnable'
+      'isEnable',
+      'mutateIsReady'
     ]),
     ...mapActions('storage', [
       'randomSeed',
@@ -127,11 +128,17 @@ export default {
           seed: this.mnemonicPhrase,
           password: this.password
         });
+
         this.isEnable(true);
+        this.mutateIsReady(true);
+
         this.jazzicon('jazzicon');
         this.spiner();
         this.$router.push({ name: 'home' });
       } catch(err) {
+        this.isEnable(false);
+        this.mutateIsReady(false);
+        
         console.error(err);
         this.spiner();
       }
