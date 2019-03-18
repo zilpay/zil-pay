@@ -3,10 +3,10 @@
     <div class="row justify-content-center">
       <div class="col-lg-12 text-center text-ightindigo">
         <h1 class="display-3">ZilPay</h1>
-        <h1 class="display-4">Welcome Back!</h1>
+        <h5>Welcome Back!</h5>
       </div>
 
-      <div class="form-group pt-2">
+      <div class="form-group pt-2" style="margin-top: 20%;">
         <label for="pass">Password</label>
         <input type="password"
                class="form-control bg-null text-pink"
