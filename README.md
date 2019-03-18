@@ -2,6 +2,9 @@
 
 ZilPay is a browser wallet for Zilliqa. Developers can integrate ZilPay into their website to create Decentralised Apps.
 
+<p align="center">
+  <a href=""><img src="" width="200" height="200"></a>
+</p>
 
 ## Installation
 
