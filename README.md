@@ -15,7 +15,7 @@ $ npm run all
 ```
 
 
-###ZilPay
+#### ZilPay
 + [ZilPay docs](https://github.com/lich666dead/zil-pay/blob/master/docs/ZILPAY.md)
 
 
