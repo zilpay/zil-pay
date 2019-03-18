@@ -12,21 +12,10 @@ $ npm run all
 ```
 
 
-
 ###ZilPay
-
-follow the change of account
-```javaScript
-addEventListener('addressListing', function (e) {
-  console.log('address change');
-}, false);
-```
-or
-```javaScript
-zilPay.observableAccount().subscribe(account => console.log(account));
-```
++ [ZilPay docs](https://github.com/lich666dead/zil-pay/tree/master/docs)
 
 
 
 ## Links
-+ [Support](https://t.me/zilpay)
++ [Telegram](https://t.me/zilpay)
