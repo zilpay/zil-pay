@@ -13,7 +13,7 @@ $ npm run all
 
 
 ###ZilPay
-+ [ZilPay docs](https://github.com/lich666dead/zil-pay/tree/master/docs)
++ [ZilPay docs](https://github.com/lich666dead/zil-pay/blob/master/docs/ZILPAY.md)
 
 
 
