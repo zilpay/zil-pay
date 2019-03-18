@@ -82,6 +82,9 @@ export class StorageGuard extends BrowserStorage {
     if (txs[from][net].length > 5) {
       txs[from][net].shift();
     }
+    if (!data.Info || !data.TranID || !data.toAddr) {
+      return null;
+    }
 
     txs[from][net].push({
       Info: data.Info,

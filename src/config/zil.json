@@ -6,5 +6,9 @@
   "testnet": {
     "PROVIDER": "https://dev-api.zilliqa.com",
     "MSG_VERSION": 1
+  },
+  "private": {
+    "PROVIDER": "http://localhost:4200",
+    "MSG_VERSION": 1
   }
 }
