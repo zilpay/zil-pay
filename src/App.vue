@@ -31,7 +31,8 @@ export default {
     ]),
     ...mapActions('storage', [
       'initPopup',
-      'jazzicon'
+      'jazzicon',
+      'netTest'
     ]),
 
     async preStart() {
@@ -39,6 +40,7 @@ export default {
 
       try {
         data = await this.initPopup();
+        this.netTest();
       } catch(err) {
         this.$router.push({ name: 'create' });
         this.spiner();

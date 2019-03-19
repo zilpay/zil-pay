@@ -79,7 +79,7 @@
 
           <div class="p-2">
             <button v-btn="'success btn-lg mr-2'"
-                    :disabled="!!amounMsg || !!gasMsg || gasLimit < 1"
+                    :disabled="!!amounMsg || !!gasMsg || gasLimit < 1 || !isConnected"
                     @click="confirm">CONFIRM</button>
             <button v-btn="'danger btn-lg ml-2'"
                     @click="rejectConfirmTx">REJECT</button>
@@ -140,7 +140,8 @@ export default {
     ]),
     ...mapState('storage', [
       'wallet',
-      'confirmationTx'
+      'confirmationTx',
+      'isConnected'
     ]),
     ...mapGetters('storage', [
       'CONFIRM_TX'

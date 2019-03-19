@@ -11,7 +11,8 @@ import {
   balanceUpdate,
   createAccount,
   updateNode,
-  configUpdate
+  configUpdate,
+  netTest
 } from './actions/walletStatus'
 import { exportSeed, exportPrivKey } from './actions/export'
 import {
@@ -80,6 +81,7 @@ export default {
     createAccount,
     updateNode,
     configUpdate,
+    netTest,
 
     importByPrivateKey,
 
