@@ -97,6 +97,10 @@ export class Background extends Handler  {
       case MTypesInternal.UPDATE_BALANCE:
         this.balanceUpdate(sendResponse);
         break;
+      
+      case MTypesInternal.CONFIG_UPDATE:
+        this.netConfigUpdate(sendResponse, message.payload);
+        break;
 
       case MTypesZilPay.REJECT_CONFIRM_TX:
         this.rmConfirmTx(sendResponse);

@@ -10,7 +10,8 @@ import {
   logOut,
   balanceUpdate,
   createAccount,
-  updateNode
+  updateNode,
+  configUpdate
 } from './actions/walletStatus'
 import { exportSeed, exportPrivKey } from './actions/export'
 import {
@@ -78,6 +79,7 @@ export default {
     balanceUpdate,
     createAccount,
     updateNode,
+    configUpdate,
 
     importByPrivateKey,
 

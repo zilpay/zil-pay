@@ -36,7 +36,8 @@ export const MTypesInternal = {
   GET_ALL_TX:            'get_all_tx',
   UPDATE_BALANCE:        'update_balance',
   CHANGE_ACCOUNT:        'c_account',
-  CREATE_ACCOUNT:        'create_account'
+  CREATE_ACCOUNT:        'create_account',
+  CONFIG_UPDATE:         'config_update'
 };
 
 export const MTypesTabs = {

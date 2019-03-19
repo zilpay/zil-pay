@@ -31,12 +31,20 @@ export default {
     // {class, text} //
     options: Array,
     classBtn: String,
-    selected: String
+    selected: String,
+    anException: {
+      type: String,
+      default: null
+    }
   },
   methods: {
     updateOption(option) {
       this.toggleMenu();
-      this.text = option;
+      
+      if (!option == this.anException) {
+        this.text = option;
+      }
+
       this.$emit('updateOption', option);
     },
     toggleMenu() {

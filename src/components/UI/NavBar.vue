@@ -14,6 +14,7 @@
       <Dropdown v-if="isEnable"
                 :options="options"
                 :selected="selectednet"
+                :anException="networkSettings"
                 :classBtn="'dark text-pink'"
                 @updateOption="selectDefaultNet"/>
 
@@ -35,6 +36,11 @@ import Dropdown from './Dropdown'
 export default {
   name: 'NavBar',
   components: { Dropdown },
+  data() {
+    return {
+      networkSettings: 'Settings'
+    };
+  },
   computed: {
     ...mapState('storage', [
       'config',
@@ -44,7 +50,9 @@ export default {
     ]),
 
     options() {
-      return Object.keys(this.config);
+      return Object.keys(this.config).concat(
+        [this.networkSettings]
+      );
     }
   },
   methods: {
@@ -59,14 +67,15 @@ export default {
         return null;
       }
 
+      if (value == this.networkSettings) {
+        this.$router.push({ name: 'net' });
+        return null;
+      }
+
       this.spiner();
 
-      try {
-        await this.updateNode(value);
-        await this.balanceUpdate();
-      } catch(err) {
-        console.error(err);
-      }
+      await this.updateNode(value);
+      await this.balanceUpdate();
 
       this.spiner();
     },

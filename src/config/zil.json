@@ -8,7 +8,7 @@
     "MSG_VERSION": 1
   },
   "private": {
-    "PROVIDER": "http://localhost:4200",
+    "PROVIDER": "http://127.0.0.1:4200",
     "MSG_VERSION": 1
   }
 }

@@ -64,6 +64,12 @@ export default new Router({
       name: 'import',
       beforeEnter: guard,
       component: () => import('./views/Import')
+    },
+    {
+      path: '/net',
+      name: 'net',
+      beforeEnter: guard,
+      component: () => import('./views/NetworkSettings')
     }
   ]
 })

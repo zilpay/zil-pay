@@ -70,6 +70,10 @@ export async function updateNode({ state }, selectednet) {
   const payload = { selectednet };
   const provider = state.config[selectednet].PROVIDER;
 
+  if (!provider) {
+    return null;
+  }
+  
   axios.request(provider)
        .then(() => state.isConnected = true)
        .catch(() => state.isConnected = false);
@@ -77,4 +81,13 @@ export async function updateNode({ state }, selectednet) {
   await new Message({ type, payload }).send();
 
   state.selectednet = selectednet;
+}
+
+export async function configUpdate({ state }, config) {
+  const type = MTypesInternal.CONFIG_UPDATE;
+  const payload = { config };
+
+  await new Message({ type, payload }).send();
+
+  state.config = config;
 }

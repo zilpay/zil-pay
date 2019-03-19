@@ -296,6 +296,12 @@ export class Handler {
     });
   }
 
+  async netConfigUpdate(sendResponse, payload) {
+    const { config } = payload;
+    await this.auth.setConfig(config);
+    sendResponse(true);
+  }
+
   async getAddress(sendResponse) {
     const { wallet } = await this.auth.getWallet();
     let account = wallet.identities[
