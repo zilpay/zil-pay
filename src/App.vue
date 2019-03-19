@@ -40,7 +40,6 @@ export default {
 
       try {
         data = await this.initPopup();
-        this.netTest();
       } catch(err) {
         this.$router.push({ name: 'create' });
         this.spiner();
@@ -75,6 +74,8 @@ export default {
         if (data.resolve.data.transactions) {
           this.transactions(data.resolve.data.transactions);
         }
+
+        this.netTest();
 
         if (data.resolve.isEnable) {
           if (data.resolve.data.confirm && data.resolve.data.confirm.length > 0) {

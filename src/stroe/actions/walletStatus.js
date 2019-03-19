@@ -94,11 +94,7 @@ export async function configUpdate({ state }, config) {
 
 export async function netTest({ state }) {
   const provider = state.config[state.selectednet].PROVIDER;
-
-  try {
-    await axios.request(provider);
-    state.isConnected = true
-  } catch(err) {
-    state.isConnected = false
-  }
+  axios.request(provider)
+       .then(() => state.isConnected = true)
+       .catch(() => state.isConnected = false);
 }
