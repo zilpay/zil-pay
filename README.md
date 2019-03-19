@@ -22,3 +22,16 @@ $ npm run all
 
 ## Links
 + [Telegram](https://t.me/zilpay)
+
+Donate
+------
+
+Maybe you want to help develop.
+
+- ZIL: 0x77E27C39ce572283b848E2cDF32ccE761e34Fa49
+- ETH: 0x246C5881E3F109B2aF170F5C773EF969d3da581B
+- BTC: 326zbJQmYY4yhKVoXHFaomshakt5av8KjP
+- ZEC: t1dZMw8FVWnGKC9cyXKaiKWmmAFmQoeNc5Y
+- LTC: LM3JwjTbboMkHdFEYnn4ycJB61r3fqvXPr
+- DASH: Xv2tpCMHPAztd4B5UMnaqwkqnSfiUs1P8B
+- XMR: 4DCx5E9pauZMF7BPPTnsP9iqVXTBV2qgTcc8pgR52GJfTkAFVLaMH8jXzkxSCjao4JbF5LAs1aUPN4tQNWXKAcY1c8GFvWxaiV16kSJSeX
