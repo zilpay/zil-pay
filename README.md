@@ -26,7 +26,7 @@ $ npm run all
 Donate
 ------
 
-Maybe you want to help develop.
+Maybe you want to help.
 
 - ZIL: 0x77E27C39ce572283b848E2cDF32ccE761e34Fa49
 - ETH: 0x246C5881E3F109B2aF170F5C773EF969d3da581B
