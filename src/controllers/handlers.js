@@ -117,13 +117,14 @@ export class Handler {
   }
 
   async exportPrivKey(sendResponse, payload) {
-    let { wallet, config, selectednet, vault } = await this.auth.getAllData();
+    let { wallet, config, selectednet, vault, importedvault } = await this.auth.getAllData();
 
     if (!this.auth.isReady || !this.auth.isEnable) {
       throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
     }
     if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
       sendResponse(null);
+      return null;
     } else {
       this.auth.guard.encryptedSeed = vault;
     }
@@ -132,6 +133,17 @@ export class Handler {
       const { PROVIDER } = config[selectednet];
       const index = wallet.identities.length;
       const { password } = payload;
+
+      if (wallet.identities[wallet.selectedAddress]['isImport']) {
+        const deryptImportedvault = this.auth.guard.decryptObject(importedvault);
+        const account = deryptImportedvault.filter(el => el.index === wallet.selectedAddress)[0];
+        if (!account) {
+          throw new Error('account fail');
+        }
+        sendResponse({ resolve:  account.privateKey });
+        return null;
+      }
+
       this.auth = new Auth(password, vault);
       this.auth.isEnable = true;
       const decryptSeed = this.auth.guard.decryptSeed;
