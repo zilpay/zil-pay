@@ -41,7 +41,7 @@ export default {
     updateOption(option) {
       this.toggleMenu();
       
-      if (!option == this.anException) {
+      if (!(option === this.anException)) {
         this.text = option;
       }
 
