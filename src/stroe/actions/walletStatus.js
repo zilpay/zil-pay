@@ -1,5 +1,6 @@
 import Jazzicon from 'jazzicon'
 import Utils from '../../lib/utils'
+import axios from 'axios'
 import { MTypesInternal, MTypesAuth } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
 
@@ -44,9 +45,19 @@ export function logOut({ commit }) {
 }
 
 export async function balanceUpdate({ state }) {
-  const wallet = await Message.signal(MTypesInternal.UPDATE_BALANCE).send();
-  state.wallet = wallet;
-  return wallet;
+  const result = await Message.signal(
+    MTypesInternal.UPDATE_BALANCE
+  ).send();
+  
+  state.wallet = result.resolve;
+
+  if (result.reject) {
+    state.isConnected = false;
+  } else {
+    state.isConnected = true;
+  }
+
+  return result.resolve;
 }
 
 export async function createAccount({ state }) {
@@ -57,6 +68,11 @@ export async function createAccount({ state }) {
 export async function updateNode({ state }, selectednet) {
   const type = MTypesInternal.SET_NET;
   const payload = { selectednet };
+  const provider = state.config[selectednet].PROVIDER;
+
+  axios.request(provider)
+       .then(() => state.isConnected = true)
+       .catch(() => state.isConnected = false);
 
   await new Message({ type, payload }).send();
 

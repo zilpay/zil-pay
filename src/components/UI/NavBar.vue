@@ -2,6 +2,8 @@
   <nav class="navbar navbar-inverse navbar-violet bg-violet">
     <div class="container-fluid">
       <div class="navbar-header">
+        <span class="network"
+              :class="{enable: isConnected, disable: !isConnected}"></span>
         <router-link tag="a"
                      :to="{name: 'home'}"
                      class="navbar-brand text-lightviolet">
@@ -37,7 +39,8 @@ export default {
     ...mapState('storage', [
       'config',
       'selectednet',
-      'isEnable'
+      'isEnable',
+      'isConnected'
     ]),
 
     options() {
@@ -83,5 +86,24 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../../styles/colors';
+
 #jazzicon, .to-back { cursor: pointer; }
+
+.network {
+    content: "";
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    
+    border-radius: 50%;
+    margin-right: 6px;
+}
+.enable {
+  background-color: $teal;
+}
+.disable {
+  background-color: $red;
+}
 </style>

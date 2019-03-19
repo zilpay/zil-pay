@@ -27,6 +27,7 @@ export default {
   state: {
     isReady: false,
     isEnable: false,
+    isConnected: true,
     wallet: {
       selectedAddress: null, // index
       identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/],

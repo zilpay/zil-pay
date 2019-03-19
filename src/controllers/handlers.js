@@ -243,7 +243,7 @@ export class Handler {
     const { config } = await this.auth.getConfig();
     const { PROVIDER } = config[selectednet];
     const type = MTypesTabs.NETWORK_CHANGED;
-
+   
     await this.auth.setNet(selectednet);
     sendResponse(true);
 
@@ -273,17 +273,27 @@ export class Handler {
     if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
       sendResponse(null);
     }
+    
+    try {
+      const { PROVIDER } = config[selectednet];
+      const blockChain = new BlockChainControll(PROVIDER);
+      const { address } = wallet.identities[wallet.selectedAddress];
+      const { result } = await blockChain.getBalance(address);
+  
+      wallet.identities[wallet.selectedAddress].balance = result;
+  
+      this.auth.setWallet(wallet);
+    } catch(err) {
+      sendResponse({
+        reject: 'nodeURL fail',
+        resolve: wallet
+      });
+      return null;
+    }
 
-    const { PROVIDER } = config[selectednet];
-    const blockChain = new BlockChainControll(PROVIDER);
-    const { address } = wallet.identities[wallet.selectedAddress];
-    const { result } = await blockChain.getBalance(address);
-
-    wallet.identities[wallet.selectedAddress].balance = result;
-
-    this.auth.setWallet(wallet);
-
-    sendResponse(wallet);
+    sendResponse({
+      resolve: wallet
+    });
   }
 
   async getAddress(sendResponse) {
