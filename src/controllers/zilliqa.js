@@ -9,6 +9,7 @@ export class BlockChainControll extends Zilliqa {
   }
 
   async getBalance(address) {
+    // Get the balance by address. // 
     let { result } = await this.blockchain.getBalance(address);
     let nonce = 0;
 
@@ -23,21 +24,30 @@ export class BlockChainControll extends Zilliqa {
   }
 
   async singCreateTransaction(txData, seedOrPrivateKey, index, msgId) {
+    /**
+     * @param {txData}: Object with data about transaction.
+     * @param seedOrPrivateKey: type String, seed phrase or private key.
+     * @param index: type Number, the index of address from seed phrase.
+     * @prarm msgId: Message version network.
+     */
+
+    // importing account from private key or seed phrase. //
     if (validation.isPrivateKey(seedOrPrivateKey)) {
       this.wallet.addByPrivateKey(seedOrPrivateKey);
     } else {
       this.wallet.addByMnemonic(seedOrPrivateKey, index);
     }
+
     const pubKey = this.wallet.defaultAccount.publicKey;
     let {
-      amount,
-      code,
-      data,
+      amount,   // Amount of zil. type Number.
+      code,     // Value contract code. type String.
+      data,     // Call contract transition. type Object.
       gasLimit,
       gasPrice,
-      toAddr,
+      toAddr,   // Recipient address. type String.
       nonce,
-      version
+      version   // Netowrk version. type Number.
     } = txData;
 
     if (!version) {
@@ -67,9 +77,10 @@ export class BlockChainControll extends Zilliqa {
       code,
       data
     });
-
+    // Sign transaction by current account. //
     const { txParams } = await this.wallet.sign(zilTxData);
-    return await this.provider.send(
+
+    return await this.provider.send( // Send to shard node.
       RPCMethod.CreateTransaction, txParams
     );
   }

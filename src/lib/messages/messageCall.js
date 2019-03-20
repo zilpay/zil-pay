@@ -4,6 +4,7 @@ import errors from '../../config/errors'
 
 
 export class Message {
+  // Message instance for send between scripts. //
   
   constructor(msg) {
     if (typeof msg.type !== 'string') {
@@ -23,9 +24,14 @@ export class Message {
 
   send() {
     return new Promise(resolve => {
-      window.chrome
-            .runtime
-            .sendMessage(this, res => resolve(res));
+      try {
+        window.chrome.runtime.sendMessage(
+          this,
+          res => resolve(res)
+        );
+      } catch(err) {
+        window.location.reload();
+      }
     });
   }
 }
@@ -44,6 +50,10 @@ export class SecureMessage extends Message {
   }
 
   send(stream, recipient) {
+    /**
+     * @param {stream}: Encrypted stream.
+     * @param recipient: String recipient (conten.js, inpage.js).
+     */
     return stream.send(this, recipient);
   }
 
@@ -80,8 +90,9 @@ export class TabsMessage extends Message {
     const self = this;
 
     try {
-      const tabs = await TabsMessage.tabs();
+      const tabs = await TabsMessage.tabs(); // All ids tabs.
       tabs.forEach(
+        // Sending to each tabs(pages) //
         id => 
         window.chrome.tabs.sendMessage(id, self)
       );

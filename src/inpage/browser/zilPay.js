@@ -11,15 +11,23 @@ import { validation } from '@zilliqa-js/util'
 import zilConf from '../../config/zil'
 
 
+// create event for listing changer address. //
 var onAddressListing = window.document.createEvent('Event');
-var stream = new WeakMap();
-var subjectStream = new Subject();
-var ACCOUNT = {};
-var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER'];
+var stream = new WeakMap(); // Setup background connection.
+var subjectStream = new Subject(); // Create event listing.
+var ACCOUNT = {}; // Account storage.
+var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER']; // Network storage.
 
 
 class Listen {
+  /**
+   * Listen for handlers events from background.
+   */
+
   static onZilPayInit(msg) {
+    /**
+     * when page was loaded, zilPay is injected.
+     */
     window.zilPay.isEnable = msg.payload.isEnable;
     window.zilPay.setProvider(msg.payload.provider);
     window.zilPay.setDefaultAccount(msg.payload.account);
@@ -29,21 +37,27 @@ class Listen {
   }
 
   static onChangeNode(msg) {
+    // Any change network.
     window.zilPay.setProvider(msg.payload.PROVIDER);
     PROVIDER = msg.payload.PROVIDER;
   }
 
   static onChangeAccount(msg) {
+    // Any change account.
     window.zilPay.setDefaultAccount(msg.payload);
   }
 
   static onChangeStatus(msg) {
+    // change status wallet.
     window.zilPay.isEnable = msg.payload.isEnable;
     window.zilPay.setDefaultAccount(ACCOUNT);
   }
 }
 
 function listener(msg) {
+  /**
+   * Distribute events by case.
+   */
   if (!msg) {
     return null;
   }
@@ -76,7 +90,9 @@ function listener(msg) {
 }
 
 function observableStream(name, syncWith) {
+  // Create Observable with encrypted stream. //
   return new Observable(subscriber => {
+    // Connetc to content.js //
     stream = new EncryptedStream(name, uuidv4());
     stream.listenWith(msg => subscriber.next(msg));
     stream.sync(syncWith, stream.key);
@@ -84,9 +100,15 @@ function observableStream(name, syncWith) {
 }
 
 export class RedefinedZilliqa extends Zilliqa {
+  /**
+   * Override Zilliqa object for work with background.js
+   * @param {provider}: String && url;
+   */
+
   constructor(provider) {
     super(provider || PROVIDER);
     
+    // Override some methods by Zilliqa. //
     [
       'addByKeystore',
       'addByMnemonic',
@@ -102,18 +124,21 @@ export class RedefinedZilliqa extends Zilliqa {
     });
 
     this.wallet.sign = (tx) => {
+      // Override sign transaction method //
       if (!window.zilPay.isEnable) {
         throw new Error('ZilPay is disabled.');
       }
 
       tx.confirm = () => {
+        // Create payload with random id(uuid). //        
         const type = MTypesZilPay.CALL_SIGN_TX;
         const recipient = MTypesSecure.CONTENT;
         let { payload } = tx;
-        payload.uuid = uuidv4();
+        payload.uuid = uuidv4(); // Each transaction will assigning random uuid.
         new SecureMessage({ type, payload }).send(stream, recipient);
 
         return new Promise((resolve, reject) => {
+          // Waiting response from background.js //
           const result = subjectStream.subscribe(resultTx => {
             if (resultTx.uuid !== payload.uuid) {
               return null;
@@ -134,6 +159,7 @@ export class RedefinedZilliqa extends Zilliqa {
         });
       }
       tx.provider.send = () => {
+        // Override send to jsonRPC node.
         return { error: null, result: {} };
       };
 
@@ -148,12 +174,16 @@ export class RedefinedZilliqa extends Zilliqa {
 }
 
 export class ZilPay {
+  /**
+   * This object connecting background.js with inpage.js.
+   * @param {provider}: String && url;
+   */
 
   constructor(provider) {
-    this.isEnable = false;
+    this.isEnable = false; // true: unblock or block.
     this.defaultAccount = null;
     this.utils = zilUtils;
-    this.nodeURL = provider || PROVIDER;
+    this.nodeURL = provider || PROVIDER; // default nodeURL.
 
     const type = MTypesSecure.PAY_OBJECT_INIT;
     const recipient = MTypesSecure.CONTENT;
@@ -197,10 +227,13 @@ export class ZilPay {
 
 
 export default function run() {
+  // Create instance in page. //
   window.Zilliqa = RedefinedZilliqa;
+
   observableStream(
     MTypesSecure.INJECTED,
     MTypesSecure.CONTENT
   ).subscribe(msg => listener(msg));
+
   window.zilPay = new ZilPay();
 }

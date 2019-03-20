@@ -1,15 +1,17 @@
 export const MTypesSecure = {
-  SET_NODE:        'set_node',      // Chenge new provider.
-  SET_ADDRESS:     'set_address',   // Chenge address.
-  INJECTED:        'inject_inpage', // Inpage script injected to page.
-  PAY_OBJECT_INIT: 'init_obj',      // Init object for dapp.
-  CONTENT:         'init_content',  // init content script to browser.
+  // Types message for sending between (content.js, in page.js) //
+  SET_NODE:        'set_node',
+  SET_ADDRESS:     'set_address',
+  INJECTED:        'inject_inpage',
+  PAY_OBJECT_INIT: 'init_obj',
+  CONTENT:         'init_content',
   SYNC:            'sync',
   STATUS_UPDATE:   's_update',
   ERROR:           'error'
 };
 
 export const MTypesAuth = {
+  // Types message for authentication methods. //
   SET_PASSWORD:     'set_password',
   SET_SEED_AND_PWD: 'set_seed_and_pwd',
   EXPORT_SEED:      'export_seed',
@@ -19,6 +21,7 @@ export const MTypesAuth = {
 }
 
 export const MTypesZilPay = {
+  // Types message for call methods from dapps. //
   INIT_DATA:         'init_data',
   CALL_SIGN_TX:      'c_s_t',
   

@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 
+
 export default class {
 
   constructor() {
@@ -19,6 +20,11 @@ export default class {
   }
 
   encrypt(data, key) {
+    /**
+     * @param data: type String.
+     * @param key: type String.
+     * @returns Encrypted String.
+     */
     const encoded = JSON.stringify(data);
     const cipher = crypto.createCipher(this.encryptionAlgorithm, key);
 
@@ -29,6 +35,11 @@ export default class {
   }
 
   decrypt(data, key) {
+    /**
+     * @param data: type String.
+     * @param key: type String.
+     * @returns Decrypted String.
+     */
     const decipher = crypto.createDecipher(this.encryptionAlgorithm, key);
 
     let decrypted = decipher.update(data, 'hex', 'utf8');
