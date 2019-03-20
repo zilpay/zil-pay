@@ -1,0 +1,256 @@
+(* sample contract *)
+scilla_version 0
+
+import ListUtils
+
+library ZRCLib
+
+(* service constants *)
+let symbol         = "ZRC"
+let name           = "Zil p3 token"
+let decimals       = Uint32 18
+let tokenPriceInit = Uint128 10
+
+let token_growth_rate0 = Uint128 4
+let token_growth_rate1 = Uint128 3
+
+let _100 = Uint128 100
+let _zero = Uint128 0
+
+(* for sending message *)
+let one_msg = 
+  fun (msg : Message) => 
+      let nil_msg = Nil {Message} in
+      Cons {Message} msg nil_msg
+
+
+let token_price = 
+    fun (balance     : Uint128) =>
+    fun (totalSupply : Uint128) =>
+    let val = builtin lt balance tokenPriceInit in
+        match val with
+        | True  => tokenPriceInit
+        | False => let is_zero = builtin eq totalSupply _zero in
+            match is_zero with
+                | True => tokenPriceInit
+                | False =>
+                    let ratio = builtin div balance totalSupply in
+                    let price = builtin mul ratio token_growth_rate0 in
+                    let tokenPrice = builtin div price token_growth_rate1 in
+                        tokenPrice
+            end
+        end
+        
+        
+
+let total_supply_add = 
+    fun (tokensAmount : Uint128) =>
+    fun (totalSupply  : Uint128) =>
+        let new_total_supply = 
+            builtin add totalSupply tokensAmount in
+                new_total_supply
+
+
+let return_excess_funds =
+    fun (zilAmount      : Uint128) =>
+    fun (tokensReceived : Uint128) =>
+    fun (tokenPrice     : Uint128) =>
+        let ratio = builtin mul tokensReceived tokenPrice in
+            let surplus_funds = builtin sub zilAmount ratio in
+                surplus_funds
+
+let zil_to_tokens = 
+    fun (zilAmount  : Uint128) =>
+    fun (tokenPrice : Uint128) =>
+        let isZil = builtin lt tokenPrice zilAmount in
+            match isZil with
+                | False => Uint128 0
+                | True =>
+                    let tokensReceived = 
+                        builtin div zilAmount tokenPrice in
+                            tokensReceived
+            end
+
+
+let customer_balance = 
+    fun (customer : ByStr20) =>
+    fun (balances : Map ByStr20 Uint128) =>
+        let tokensOwner = builtin get balances customer in
+            match tokensOwner with
+                | Some v => v
+                | None => Uint128 0
+            end
+
+let tokens_to_zil = 
+    fun (tokenPrice   : Uint128) =>
+    fun (tokensAmount : Uint128) =>
+    fun (selfBalance  : Uint128) =>
+        let zilReceived = builtin mul tokenPrice tokensAmount in
+        let ratio = builtin lt selfBalance zilReceived in
+        match ratio with
+            | True  => selfBalance
+            | False => zilReceived
+        end
+
+
+let tokens_for_withdraw = 
+    fun (customer     : ByStr20) =>
+    fun (tokensAmount : Uint128) =>
+    fun (balances     : Map ByStr20 Uint128) =>
+        let balanceOwner = customer_balance customer balances in
+        let is_exit = builtin lt balanceOwner tokensAmount in
+            match is_exit with
+                | True  => balanceOwner
+                | False => tokensAmount
+            end
+
+
+contract ZRCPaymed
+(owner: ByStr20)
+
+
+field totalSupply      : Uint128 = Uint128 0
+field forReferralCosts : Uint32  = Uint32 5
+field forWithdrawCosts : Uint32  = Uint32 10
+
+(* maping balance from address *)
+field balances : Map ByStr20 Uint128 =
+    let m = Emp ByStr20 Uint128 in m
+
+
+(***************************************************)
+(*    getting the value of the number of tokens    *)
+(***************************************************)
+transition BalanceOf (tokenOwner : ByStr20)
+    bl <- balances;
+    val = customer_balance tokenOwner bl;
+    msg = {
+        _tag       : "BalanceOf";
+        _recipient : _sender;
+        _amount    : Uint128 0;
+        balance    : val
+    };
+    msgs = one_msg msg;
+    send msgs
+end
+
+
+(***************************************************)
+(*       getting the value contract balance        *)
+(***************************************************)
+transition contracBalance()
+    bl_contract <- _balance;
+    msg = {
+        _tag       : "ContracBalance";
+        _recipient : _sender;
+        _amount    : Uint128 0;
+        balance    : bl_contract
+    };
+    msgs = one_msg msg;
+    send msgs
+end
+
+
+transition getTokenPrice()
+    contract_balance <- _balance;
+    total_supply <- totalSupply;
+    
+    _token_price = token_price contract_balance total_supply;
+
+    msg = {
+        _tag       : "TokenPrice";
+        _recipient : _sender;
+        _amount    : Uint128 0;
+        tokenPrice : _token_price
+    };
+    msgs = one_msg msg;
+    send msgs
+end
+
+
+transition Buy()
+    tokens_balances <- balances;
+    contract_balance <- _balance;
+    total_supply <- totalSupply;
+    zil_amount = _amount;
+    
+    _token_price = token_price contract_balance total_supply;
+    
+    tokensAmount = zil_to_tokens zil_amount _token_price;
+    new_balances = builtin put tokens_balances _sender tokensAmount;
+    
+    new_total_supply = total_supply_add tokensAmount total_supply;
+    
+    excess_funds = return_excess_funds zil_amount tokensAmount _token_price;
+    
+    accept;
+    
+    balances := new_balances;
+    totalSupply := new_total_supply;
+    
+    msg = {
+        _tag       : "Buy";
+        _recipient : _sender;
+        _amount    : excess_funds;
+        transfer   : tokensAmount
+    };
+    e = {
+        _eventname        : "PurchaseTokens"; 
+        customer          : _sender; 
+        amount            : _amount;
+        transfer          : tokensAmount;
+        returnExcessFunds : excess_funds
+    };
+    msgs = one_msg msg;
+    
+    
+    event e;
+    send msgs
+end
+
+
+transition Withdraw(tokensAmount : Uint128)
+    tokens_balances <- balances;
+    contract_balance <- _balance;
+    total_supply <- totalSupply;
+    
+    tokens_owner = customer_balance _sender tokens_balances;
+    
+    _token_price = token_price
+                 contract_balance
+                 total_supply;
+    
+    tokens = tokens_for_withdraw 
+                   _sender
+                   tokensAmount
+                   tokens_balances;
+    
+    zil_amount = tokens_to_zil
+                 _token_price
+                 tokens
+                 contract_balance;
+                 
+    tokens_owner = builtin sub tokens_owner tokens;
+    new_total_supply = builtin sub total_supply tokens;
+    new_balances = builtin put tokens_balances _sender tokens_owner;
+    
+    balances := new_balances;
+    totalSupply := new_total_supply;
+    
+    msg = {
+        _tag          : "WithdrawTokens";
+        _recipient    : _sender;
+        _amount       : zil_amount;
+        tokens        : tokens
+    };
+    e = {
+        _eventname    : "WithdrawTokens"; 
+        customer      : _sender; 
+        amount        : zil_amount;
+        tokens        : tokens
+    };
+    msgs = one_msg msg;
+
+    event e;
+    send msgs
+end
