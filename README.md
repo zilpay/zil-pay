@@ -22,6 +22,8 @@ $ npm run all
 
 ## Links
 + [Telegram](https://t.me/zilpay)
++ [Chrome stroe](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
+
 
 Donate
 ------
