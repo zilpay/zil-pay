@@ -80,7 +80,7 @@ export class TabsMessage extends Message {
         }
 
         resolve(
-          windows[0].tabs.map(tab => tab.id)
+          windows[0]
         );
       });
     });
@@ -90,7 +90,8 @@ export class TabsMessage extends Message {
     const self = this;
 
     try {
-      const tabs = await TabsMessage.tabs(); // All ids tabs.
+      let tabs = await TabsMessage.tabs(); // All ids tabs.
+      tabs = tabs.tabs.map(tab => tab.id);
       tabs.forEach(
         // Sending to each tabs(pages) //
         id => 
