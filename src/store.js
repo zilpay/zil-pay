@@ -63,12 +63,16 @@ export default new Vuex.Store({
     onExpand() {
       window.chrome
             .tabs
-            .create({ url: apiConfig.PROMT_PAGE });
+            .create({
+              url: apiConfig.PROMT_PAGE
+            });
     }
   },
   getters: {
     isExpand() {
-      if (window.innerWidth <= 350) {
+      if (window.location.pathname.includes('confirm')) {
+        return true;
+      } else if (window.innerWidth <= 350) {
         return false;
       }
 

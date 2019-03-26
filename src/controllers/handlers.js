@@ -7,7 +7,9 @@ import { TabsMessage } from '../lib/messages/messageCall'
 import { MTypesTabs } from '../lib/messages/messageTypes'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
+import zilApi from '../config/api'
 import { PromptService } from './services/popup'
+import { NotificationsControl } from './services/notifications'
 
 
 
@@ -421,6 +423,12 @@ export class Handler {
         }
         
         sendResponse({ resolve: tx });
+
+        this._transactionListing(
+          tx.TranID,
+          blockChain.blockchain,
+          selectednet
+        );
       } else {
         if (txForConfirm.uuid) {
           this.returnTx({ reject: error.message }, txForConfirm.uuid);
@@ -470,6 +478,43 @@ export class Handler {
         isReady: this.auth.isReady
       }
     }).send();
+  }
+
+  _transactionListing(txHash, blockChain, net) {
+    const timeInterval = 4000;
+
+    let k = 0;
+
+    const interval = setInterval(
+      async () => {
+        
+        try {
+          await blockChain.getTransaction(txHash);
+          
+          new NotificationsControl({
+            url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
+            title: 'Transactions',
+            message: 'Transactions send to shard done.'
+          }).create();
+
+          clearInterval(interval);
+        } catch(err) {
+          if (k > 10) {
+
+            new NotificationsControl({
+              url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
+              title: 'Transactions fail',
+              message: err.message
+            }).create();
+
+            clearInterval(interval);
+          }
+        }
+
+        k++;
+      },
+      timeInterval
+    );
   }
 
   returnTx(payload, uuid) {
