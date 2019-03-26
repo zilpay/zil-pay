@@ -10,6 +10,7 @@ import zilConfig from '../config/zil'
 import { PromptService } from './services/popup'
 
 
+
 const log = new Loger('Background.Handler');
 
 export class Handler {

@@ -4,7 +4,7 @@
       <img src="/img/logo.png">
     </div>
     <div class="text-center p-2 text-ightindigo display-4">
-
+      
       <button v-btn="'success m-2'"
             @click="copy(account['address'])">
             Account {{wallet.selectedAddress + 1}}

@@ -8,7 +8,7 @@
       </h5>
 
       <div v-for="net of Object.keys(config)"
-           :key="net" class="pt-3">
+           :key="net" class="col-sm pt-3">
         <label :for="net">{{net}}</label>
         <input type="text"
                class="form-control bg-null text-pink"

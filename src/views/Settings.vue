@@ -37,15 +37,17 @@
         </li>
       </ul>
 
-      <button v-btn="'warning col-12 m-3'"
-              @click="createAccountBySeed">Create Account</button>
+      <div class="mt-2" style="width: 200px;">
+        <button v-btn="'warning col-12 mt-1'"
+                @click="createAccountBySeed">Create Account</button>
 
-      <button v-btn="'info col-12 m-1'"
-              @click="$router.push({name: 'import'})">Import privateKey</button>
-      <button v-btn="'danger col-12 m-1'"
-              @click="exportPrivKey">Export PrivateKey</button>
-      <button v-btn="'danger col-12'"
-              @click="exportSeed">Export Seed</button>
+        <button v-btn="'info col-12 mt-1'"
+                @click="$router.push({name: 'import'})">Import privateKey</button>
+        <button v-btn="'danger col-12 mt-2'"
+                @click="exportPrivKey">Export PrivateKey</button>
+        <button v-btn="'danger col-12 mt-1'"
+                @click="exportSeed">Export Seed</button>
+      </div>
     </div>
   </div>
 </template>

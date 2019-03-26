@@ -138,8 +138,6 @@ export default {
       } catch(err) {
         this.isEnable(false);
         this.mutateIsReady(false);
-        
-        console.error(err);
         this.spiner();
       }
     }

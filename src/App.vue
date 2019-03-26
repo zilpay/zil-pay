@@ -126,5 +126,10 @@ textarea:hover {
 .little {
   font-size: 10px !important;
 }
-
+.expand-view {
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+  left: 0;
+}
 </style>

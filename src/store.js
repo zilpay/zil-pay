@@ -58,6 +58,21 @@ export default new Vuex.Store({
       }
 
       state.currencyController.conversionRate = rate;
+    },
+
+    onExpand() {
+      window.chrome
+            .tabs
+            .create({ url: apiConfig.PROMT_PAGE });
+    }
+  },
+  getters: {
+    isExpand() {
+      if (window.innerWidth <= 350) {
+        return false;
+      }
+
+      return true;
     }
   }
 })

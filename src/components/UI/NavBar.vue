@@ -23,13 +23,18 @@
           <div id="jazzicon"
                @click="jazziconRoute"/>
         </li>
+
+        <img v-if="!isExpand"
+             class="expand-view"
+             src="/img/expand.svg"
+             @click="onExpand">
       </ul>
     </div>
   </nav>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 import Dropdown from './Dropdown'
 
 
@@ -42,6 +47,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['isExpand']),
     ...mapState('storage', [
       'config',
       'selectednet',
@@ -57,6 +63,7 @@ export default {
   },
   methods: {
     ...mapMutations(['spiner']),
+    ...mapActions(['onExpand']),
     ...mapActions('storage', [
       'balanceUpdate',
       'updateNode'
