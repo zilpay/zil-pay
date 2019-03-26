@@ -482,7 +482,7 @@ export class Handler {
 
   _transactionListing(txHash, blockChain, net) {
     const timeInterval = 4000;
-
+    const title = 'ZilPay Transactions';
     let k = 0;
 
     const interval = setInterval(
@@ -493,7 +493,7 @@ export class Handler {
           
           new NotificationsControl({
             url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
-            title: 'Transactions',
+            title: title,
             message: 'Transactions send to shard done.'
           }).create();
 
@@ -503,12 +503,16 @@ export class Handler {
 
             new NotificationsControl({
               url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
-              title: 'Transactions fail',
+              title: title,
               message: err.message
             }).create();
 
             clearInterval(interval);
           }
+        }
+
+        if (k > 10) {
+          clearInterval(interval);
         }
 
         k++;
