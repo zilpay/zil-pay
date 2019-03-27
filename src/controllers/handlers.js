@@ -482,6 +482,7 @@ export class Handler {
 
   _transactionListing(txHash, blockChain, net) {
     const timeInterval = 4000;
+    const countIntervl = 50;
     const title = 'ZilPay Transactions';
     let k = 0;
 
@@ -499,7 +500,7 @@ export class Handler {
 
           clearInterval(interval);
         } catch(err) {
-          if (k > 10) {
+          if (k > countIntervl) {
 
             new NotificationsControl({
               url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
@@ -511,7 +512,7 @@ export class Handler {
           }
         }
 
-        if (k > 10) {
+        if (k > countIntervl) {
           clearInterval(interval);
         }
 
