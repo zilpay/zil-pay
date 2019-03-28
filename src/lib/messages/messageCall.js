@@ -23,12 +23,24 @@ export class Message {
   }
 
   send() {
-    return new Promise(resolve => {
+    return new Promise(resolve => {      
       try {
-        window.chrome.runtime.sendMessage(
-          this,
-          res => resolve(res)
-        );
+        if (window.chrome) {
+          // Chrome API.
+          window.chrome.runtime.sendMessage(
+            this,
+            res => resolve(res)
+          );
+        }
+
+        if (window.browser) {
+          // fireFox API.
+          window.browser.runtime.sendMessage(
+            this,
+            res => resolve(res)
+          );
+        }
+
       } catch(err) {
         window.location.reload();
       }
