@@ -1,24 +1,26 @@
+const browserDetect = window.browser || window.chrome;
+
 export class BrowserStorage {
 
   constructor() {
-    this.EXT_ID = window.chrome.runtime.id;
+    this.EXT_ID = browserDetect.runtime.id;
   }
 
   set(value) {
     return new Promise(resolve => {
-      window.chrome.storage.local.set(value, resolve);
+      browserDetect.storage.local.set(value, resolve);
     });
   }
 
   get(keys) {
     return new Promise(resolve => {
-      window.chrome.storage.local.get(keys, resolve);
+      browserDetect.storage.local.get(keys, resolve);
     });
   }
 
   getAll() {
     return new Promise(resolve => {
-      window.chrome.storage.local.get(null, items => {
+      browserDetect.storage.local.get(null, items => {
         resolve(items);
       });
     });
@@ -26,7 +28,7 @@ export class BrowserStorage {
 
   rm(key) {
     return new Promise(resolve => {
-      window.chrome.storage.local.remove(key, resolve);
+      browserDetect.storage.local.remove(key, resolve);
     });
   }
 

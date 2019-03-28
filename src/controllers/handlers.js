@@ -446,10 +446,9 @@ export class Handler {
   }
 
   async addConfirmTx(data) {
-    const { tabs } = await TabsMessage.tabs();
-    const tab = tabs.filter(tab => tab.active && tab.selected)[0];
+    const tabs = await TabsMessage.tabs();
     await this.auth.setConfirm(data);
-    new PromptService(tab).open();
+    new PromptService(tabs[0]).open();
   }
   
   async rmConfirmTx(sendResponse) {
