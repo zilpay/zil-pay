@@ -138,7 +138,11 @@ export class Handler {
       const index = wallet.identities[wallet.selectedAddress].index;
       const { password } = payload;
 
+      this.auth = new Auth(password, vault);
+      this.auth.isEnable = true;
+
       if (wallet.identities[wallet.selectedAddress]['isImport']) {
+        
         const deryptImportedvault = this.auth.guard.decryptObject(importedvault);
         const account = deryptImportedvault.filter(el => el.index === wallet.selectedAddress)[0];
         if (!account) {
@@ -148,8 +152,6 @@ export class Handler {
         return null;
       }
 
-      this.auth = new Auth(password, vault);
-      this.auth.isEnable = true;
       const decryptSeed = this.auth.guard.decryptSeed;
       const blockChain = new BlockChainControll(PROVIDER);
       await blockChain.getAccountBySeed(decryptSeed, index);
