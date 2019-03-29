@@ -1,3 +1,6 @@
+import extension from 'extensionizer'
+
+
 export class NotificationsControl {
 
   constructor({ url, title, message }) {
@@ -16,14 +19,19 @@ export class NotificationsControl {
   }
 
   create() {
-    window.chrome.notifications.create(
-      this.url,
-      {
-        'type': 'basic',
-        'title': this.title,
-        'iconUrl': window.chrome.extension.getURL('/icon.png'),
-        'message': this.message,
-      }
-    );
+    const data = {
+      'type': 'basic',
+      'title': this.title,
+      'iconUrl': extension.extension.getURL('/icon.png'),
+      'message': this.message,
+    };
+    extension.notifications.create(this.url, data);
+    this._notificationClicked();
+  }
+
+  _notificationClicked() {
+    extension.notifications.onClicked.addListener((onExplorerTx, _) => {
+      extension.tabs.create({ url: onExplorerTx });
+    });
   }
 }

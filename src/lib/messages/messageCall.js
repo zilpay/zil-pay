@@ -1,6 +1,7 @@
 import uuidv4 from 'uuid/v4'
 import utils from '../../lib/utils'
 import errors from '../../config/errors'
+import extension from 'extensionizer'
 
 
 export class Message {
@@ -25,10 +26,7 @@ export class Message {
   send() {
     return new Promise(resolve => {
       try {
-        window.chrome.runtime.sendMessage(
-          this,
-          res => resolve(res)
-        );
+        extension.runtime.sendMessage(this, resolve);
       } catch(err) {
         window.location.reload();
       }
@@ -74,28 +72,18 @@ export class TabsMessage extends Message {
      *  id
      */
     return new Promise(resolve => {
-      chrome.windows.getAll({populate:true},function(windows){
-        if (windows.length < 1) {
-          throw new Error('Not active tabs');
-        }
-
-        resolve(
-          windows[0]
-        );
-      });
+      extension.tabs.query({ active: true }, resolve);
     });
   }
 
   async send () {
     const self = this;
+    const tabs = await TabsMessage.tabs(); // get all active tabs.
 
-    try {
-      let tabs = await TabsMessage.tabs(); // All ids tabs.
-      tabs = tabs.tabs.map(tab => tab.id);
+    try {     
       tabs.forEach(
         // Sending to each tabs(pages) //
-        id => 
-        window.chrome.tabs.sendMessage(id, self)
+        tab => extension.tabs.sendMessage(tab.id, self)
       );
     } catch(err) {
       // If not tabs with ZilPay.

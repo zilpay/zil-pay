@@ -56,7 +56,6 @@ export class Handler {
       } catch(err) {
         this.auth.isEnable = false;
       }
-
       sendResponse({
         resolve: {
           data: allData,
@@ -446,10 +445,8 @@ export class Handler {
   }
 
   async addConfirmTx(data) {
-    const { tabs } = await TabsMessage.tabs();
-    const tab = tabs.filter(tab => tab.active && tab.selected)[0];
     await this.auth.setConfirm(data);
-    new PromptService(tab).open();
+    new PromptService().open();
   }
   
   async rmConfirmTx(sendResponse) {

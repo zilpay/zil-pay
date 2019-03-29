@@ -1,11 +1,11 @@
 <template>
   <div v-if="isObject" class="container">
     <div class="row justify-content-center">
-      <div class="jumbotron text-ightindigo text-left p-3">
-        <h5 class="text-lightviolet">
+      <div class="jumbotron text-ightindigo text-left p-1">
+        <h5 class="text-lightviolet ml-2">
           Confirmation! <b class="text-warning">{{CONFIRM_TX.length}}</b>
         </h5>
-        <p class="text-indigo">
+        <p class="text-indigo ml-2">
           Type: <b class="text-ightindigo">{{CONFIRM_TX.type}}</b>
           <br>
           Amount: 
@@ -40,7 +40,7 @@
           <img  :src="data.favIconUrl" height="50">
         </div>
 
-        <div class="row m-2 text-center justify-content-center">
+        <div class="row m-1 text-center justify-content-center">
           <div>
             <a class="text-truncate text-ightindigo"
                :href="exploreAddress(from)" target="_blanck">
@@ -78,13 +78,13 @@
           </div>
 
           <div class="p-2">
-            <button v-btn="'success btn-lg mr-2'"
+            <button v-btn="'success btn'"
                     :disabled="!!amounMsg || !!gasMsg || gasLimit < 1 || !isConnected"
                     @click="confirm">CONFIRM</button>
-            <button v-btn="'danger btn-lg ml-2'"
-                    @click="rejectConfirmTx">REJECT</button>
+            <button v-btn="'danger btn float-right'"
+                    @click="reject">REJECT</button>
           </div>
-      </form>
+        </form>
 
       </div>
     </div>
@@ -92,6 +92,7 @@
 </template>
 
 <script>
+import extension from 'extensionizer'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import trimAddress from '../filters/trimAddress'
 import { validationMixin } from 'vuelidate'
@@ -100,6 +101,7 @@ import { fromZil, toUSD, toZil } from '../filters/zil'
 import explorer from '../mixins/explorer'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
+import { TabsMessage } from '../lib/messages/messageCall' 
 
 
 export default {
@@ -109,7 +111,8 @@ export default {
   mixins: [explorer, validationMixin],
   data() {
     return {
-      data: window.data,
+      data: null,
+      popupId: null,
       gas: 0, gasMsg: null,
       gasLimit: 1, gasLimitMsg: null
     };
@@ -154,12 +157,6 @@ export default {
       if (Object.keys(this.CONFIRM_TX).length > 0) {
         return true;
       } else {
-        if (window.data) {
-          window.close();
-        } else {
-          // eslint-disable-next-line
-          this.$router.push({ name: 'home' });
-        }        
         return false;
       }
     },
@@ -192,9 +189,54 @@ export default {
         gasLimit: this.gasLimit
       });
       this.spiner();
+      this.popupClouse();
+    },
+    async reject() {
+      await this.rejectConfirmTx();
+      this.popupClouse();
+    },
+
+    popupClouse() {
+      if (this.popupId != null && !this.isObject) {
+        extension.windows.remove(this.popupId, console.error);
+      } else if (!this.isObject && this.popupId == null) {
+        this.$router.push({ name: 'home' });
+      }
+    },
+
+    getCurrentTab() {
+      try {
+        return extension.windows.getCurrent();
+      } catch(err) {
+        return new Promise(
+          // chrome use callback function.
+          resolve => extension.windows.getCurrent(resolve)
+        );
+      }
+    },
+
+    async appInfo() {
+      let currentPopup;
+      let tabs;
+      let appTab;
+
+      try {
+        currentPopup = await this.getCurrentTab();
+        tabs = await TabsMessage.tabs();
+        appTab = tabs.filter(tab => tab.id != currentPopup.id)[0];
+      } catch(err) {
+        return null;
+      }      
+      
+      if (currentPopup.type !== 'popup') {
+        return null;
+      }
+      this.popupId = currentPopup.id;
+      this.data = appTab;
     }
   },
   mounted() {
+    this.appInfo();
     this.netTest();
     this.gas = fromZil(this.CONFIRM_TX.gasPrice);
     this.gasLimit = this.CONFIRM_TX.gasLimit;

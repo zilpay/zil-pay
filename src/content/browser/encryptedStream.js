@@ -58,7 +58,7 @@ export class SecureStream {
 
     try {
       const data = await Message.signal(MTypesZilPay.INIT_DATA).send();
-      
+
       new SecureMessage({
         type: MTypesSecure.PAY_OBJECT_INIT,
         payload: data

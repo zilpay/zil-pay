@@ -3,7 +3,7 @@ import { Loger } from '../../lib/logger';
 import Config from '../../config/api'
 
 
-const log = new Loger(Config.PAY_NAME);
+const log = new Loger(Config.PAY_NAME + '.Inject');
 
 export class Inject {
 
