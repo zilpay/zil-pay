@@ -152,7 +152,6 @@ export class Handler {
       this.auth.isEnable = true;
       const decryptSeed = this.auth.guard.decryptSeed;
       const blockChain = new BlockChainControll(PROVIDER);
-      log.info(wallet.selectedAddress, wallet.identities[wallet.selectedAddress]);
       await blockChain.getAccountBySeed(decryptSeed, index);
       sendResponse({ resolve: blockChain.wallet.defaultAccount.privateKey });
     } catch(err) {
