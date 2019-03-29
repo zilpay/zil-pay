@@ -20,6 +20,7 @@
     "webRequest",
     "https://api.coinmarketcap.com/v1/ticker/*"
   ],
+  "default_locale": "en",
   "content_scripts": [
     {
       "matches": [
