@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import extension from 'extensionizer'
 
 import storage from './stroe/storage'
 import apiConfig from './config/api'
@@ -39,33 +40,18 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async getGas({ state, commit }) {
-      let { blockchain } = state.zilliqa.zilliqa;
-      let { result } = await blockchain.getMinimumGasPrice();
-
-      commit('minGas', result);
-    },
-
     async updateRate({ state }) {
       let url = `${apiConfig.COINMARKETCAP}/zilliqa`;
       let rate;
 
-      try {
-        rate = await axios.get(url);
-        rate = rate['data'][0]['price_usd'];
-      } catch(err) {
-        rate = '0.0164826657';
-      }
+      rate = await axios.get(url);
+      rate = rate['data'][0]['price_usd'];
 
       state.currencyController.conversionRate = rate;
     },
 
     onExpand() {
-      window.chrome
-            .tabs
-            .create({
-              url: apiConfig.PROMT_PAGE
-            });
+      extension.tabs.create({ url: apiConfig.PROMT_PAGE });
     }
   },
   getters: {

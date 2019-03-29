@@ -75,8 +75,6 @@ export default {
           this.transactions(data.resolve.data.transactions);
         }
 
-        this.netTest();
-
         if (data.resolve.isEnable) {
           if (data.resolve.data.confirm && data.resolve.data.confirm.length > 0) {
             this.$router.push({ name: 'confirmation' });

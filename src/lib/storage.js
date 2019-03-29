@@ -34,7 +34,7 @@ export class BrowserStorage {
   }
 
   clear() {
-    return new Promise(extension.storage.StorageArea.clear);
+    return extension.storage.StorageArea.clear();
   }
 
 }

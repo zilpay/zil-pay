@@ -96,8 +96,8 @@ export async function netTest({ state }) {
   const provider = state.config[state.selectednet].PROVIDER;
   try {
     await axios.post(provider);
-    state.isConnected = true
+    state.isConnected = true;
   } catch(err) {
-    state.isConnected = false
+    state.isConnected = false;
   }
 }
