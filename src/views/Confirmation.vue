@@ -79,7 +79,7 @@
 
           <div class="p-2">
             <button v-btn="'success btn'"
-                    :disabled="!!amounMsg || !!gasMsg || gasLimit < 1 || !isConnected"
+                    :disabled="!!amounMsg || !!gasMsg || gasLimit < 1"
                     @click="confirm">CONFIRM</button>
             <button v-btn="'danger btn float-right'"
                     @click="reject">REJECT</button>
