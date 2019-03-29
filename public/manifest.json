@@ -1,7 +1,7 @@
 {
   "name": "ZilPay",
   "short_name": "ZilPay Zilliqa wallet",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "ZilPay Chrome Extension for zilliqa blockchain",
   "author": "lich666dead",
   "manifest_version": 2,
