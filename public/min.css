@@ -1,7 +1,9 @@
 body, html {
   min-height: 600px;
   min-width: 350px;
-  overflow: hidden;
+  overflow: -moz-scrollbars-none;
+  overflow-x: hidden;
+  max-height: auto;
   background: rgb(5, 15, 29);
   background: linear-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
   background: -webkit-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
@@ -14,7 +16,7 @@ body, html {
   display: none;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 350px) {
   body, html {
     max-width: 350px;
   }
