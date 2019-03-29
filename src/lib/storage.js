@@ -1,26 +1,27 @@
-const browserDetect = window.browser || window.chrome;
+import extension from 'extensionizer'
+
 
 export class BrowserStorage {
 
   constructor() {
-    this.EXT_ID = browserDetect.runtime.id;
+    this.EXT_ID = extension.runtime.id;
   }
 
   set(value) {
     return new Promise(resolve => {
-      browserDetect.storage.local.set(value, resolve);
+      extension.storage.local.set(value, resolve);
     });
   }
 
   get(keys) {
     return new Promise(resolve => {
-      browserDetect.storage.local.get(keys, resolve);
+      extension.storage.local.get(keys, resolve);
     });
   }
 
   getAll() {
     return new Promise(resolve => {
-      browserDetect.storage.local.get(null, items => {
+      extension.storage.local.get(null, items => {
         resolve(items);
       });
     });
@@ -28,12 +29,12 @@ export class BrowserStorage {
 
   rm(key) {
     return new Promise(resolve => {
-      browserDetect.storage.local.remove(key, resolve);
+      extension.storage.local.remove(key, resolve);
     });
   }
 
   clear() {
-    return new Promise(StorageArea.clear);
+    return new Promise(extension.storage.StorageArea.clear);
   }
 
 }

@@ -30,7 +30,6 @@ export class PromptService {
     );
 
     try {
-      console.log(extension.windows);
       this._win_ = await extension.windows.create({
         url: config.PROMT_PAGE,
         type: 'popup',
