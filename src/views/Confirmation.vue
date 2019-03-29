@@ -1,11 +1,11 @@
 <template>
   <div v-if="isObject" class="container">
     <div class="row justify-content-center">
-      <div class="jumbotron text-ightindigo text-left p-3">
-        <h5 class="text-lightviolet">
+      <div class="jumbotron text-ightindigo text-left p-1">
+        <h5 class="text-lightviolet ml-2">
           Confirmation! <b class="text-warning">{{CONFIRM_TX.length}}</b>
         </h5>
-        <p class="text-indigo">
+        <p class="text-indigo ml-2">
           Type: <b class="text-ightindigo">{{CONFIRM_TX.type}}</b>
           <br>
           Amount: 
@@ -40,7 +40,7 @@
           <img  :src="data.favIconUrl" height="50">
         </div>
 
-        <div class="row m-2 text-center justify-content-center">
+        <div class="row m-1 text-center justify-content-center">
           <div>
             <a class="text-truncate text-ightindigo"
                :href="exploreAddress(from)" target="_blanck">
@@ -78,13 +78,13 @@
           </div>
 
           <div class="p-2">
-            <button v-btn="'success btn-lg mr-2'"
+            <button v-btn="'success btn'"
                     :disabled="!!amounMsg || !!gasMsg || gasLimit < 1 || !isConnected"
                     @click="confirm">CONFIRM</button>
-            <button v-btn="'danger btn-lg ml-2'"
+            <button v-btn="'danger btn float-right'"
                     @click="reject">REJECT</button>
           </div>
-      </form>
+        </form>
 
       </div>
     </div>

@@ -56,7 +56,6 @@ export class Handler {
       } catch(err) {
         this.auth.isEnable = false;
       }
-
       sendResponse({
         resolve: {
           data: allData,
