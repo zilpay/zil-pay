@@ -103,7 +103,8 @@ export class Handler {
 
   async exportSeed(sendResponse, payload) {
     if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
+      throw new Error(`isReady: ${this.auth.isReady},
+                       isEnable: ${this.auth.isEnable}`);
     }
 
     try {
@@ -122,7 +123,8 @@ export class Handler {
     let { wallet, config, selectednet, vault, importedvault } = await this.auth.getAllData();
 
     if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
+      throw new Error(`isReady: ${this.auth.isReady},
+                       isEnable: ${this.auth.isEnable}`);
     }
     if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
       sendResponse(null);
@@ -133,7 +135,7 @@ export class Handler {
 
     try {
       const { PROVIDER } = config[selectednet];
-      const index = wallet.identities.length;
+      const index = wallet.identities[wallet.selectedAddress].index;
       const { password } = payload;
 
       if (wallet.identities[wallet.selectedAddress]['isImport']) {
@@ -150,6 +152,7 @@ export class Handler {
       this.auth.isEnable = true;
       const decryptSeed = this.auth.guard.decryptSeed;
       const blockChain = new BlockChainControll(PROVIDER);
+      log.info(wallet.selectedAddress, wallet.identities[wallet.selectedAddress]);
       await blockChain.getAccountBySeed(decryptSeed, index);
       sendResponse({ resolve: blockChain.wallet.defaultAccount.privateKey });
     } catch(err) {
@@ -168,8 +171,8 @@ export class Handler {
 
     const { PROVIDER } = config[selectednet];
     const blockChain = new BlockChainControll(PROVIDER);
-    const index = wallet.identities.length;
-    
+    const index = wallet.identities.filter(el => !el.isImport).length;
+
     try {
       const decryptSeed = this.auth.guard.decryptSeed;
       const account = await blockChain.getAccountBySeed(decryptSeed, index);
