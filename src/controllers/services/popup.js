@@ -7,12 +7,11 @@ const log = new Loger('PROMT');
 
 export class PromptService {
 
-  constructor(tab) {
+  constructor() {
     this._height = 600;
     this._width = 350;
 
     this._titile = config.PROMT_TITLE;
-    this.data = tab;
   }
 
   async open() {
@@ -33,17 +32,13 @@ export class PromptService {
       this._win_ = await extension.windows.create({
         url: config.PROMT_PAGE,
         type: 'popup',
+        titlePreface: this._titile,
         width: this._width,
         height: this._height,
         top: Math.max(notificationTop, 0),
         left: Math.max(notificationLeft, 0),
         incognito: true
-      }, popup => {
-        console.log('popup', popup);
-
-        extension.windows.get(popup.id).then(console.log);
       });
-
     } catch(err) {
       log.error(err);
     }

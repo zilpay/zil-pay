@@ -82,7 +82,7 @@
                     :disabled="!!amounMsg || !!gasMsg || gasLimit < 1 || !isConnected"
                     @click="confirm">CONFIRM</button>
             <button v-btn="'danger btn-lg ml-2'"
-                    @click="rejectConfirmTx">REJECT</button>
+                    @click="reject">REJECT</button>
           </div>
       </form>
 
@@ -92,6 +92,7 @@
 </template>
 
 <script>
+import extension from 'extensionizer'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import trimAddress from '../filters/trimAddress'
 import { validationMixin } from 'vuelidate'
@@ -100,6 +101,7 @@ import { fromZil, toUSD, toZil } from '../filters/zil'
 import explorer from '../mixins/explorer'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
+import { TabsMessage } from '../lib/messages/messageCall' 
 
 
 export default {
@@ -109,7 +111,8 @@ export default {
   mixins: [explorer, validationMixin],
   data() {
     return {
-      data: window.data,
+      data: null,
+      popupId: null,
       gas: 0, gasMsg: null,
       gasLimit: 1, gasLimitMsg: null
     };
@@ -154,12 +157,6 @@ export default {
       if (Object.keys(this.CONFIRM_TX).length > 0) {
         return true;
       } else {
-        if (window.data) {
-          window.close();
-        } else {
-          // eslint-disable-next-line
-          this.$router.push({ name: 'home' });
-        }        
         return false;
       }
     },
@@ -192,9 +189,35 @@ export default {
         gasLimit: this.gasLimit
       });
       this.spiner();
+      this.popupClouse();
+    },
+    reject() {
+      this.rejectConfirmTx();
+      this.popupClouse();
+    },
+
+    popupClouse() {
+      if (this.popupId != null) {
+        extension.windows.remove(this.popupId, console.error);
+      } else {
+        this.$router.push({ name: 'home' });
+      }
+    },
+
+    async appInfo() {
+      const currentPopup = await extension.windows.getCurrent();
+      const tabs = await TabsMessage.tabs();
+      const appTab = tabs.filter(tab => tab.id != currentPopup.id)[0];
+      
+      if (currentPopup.type !== 'popup') {
+        return null;
+      }
+      this.popupId = currentPopup.id;
+      this.data = appTab;
     }
   },
   mounted() {
+    this.appInfo();
     this.netTest();
     this.gas = fromZil(this.CONFIRM_TX.gasPrice);
     this.gasLimit = this.CONFIRM_TX.gasLimit;
