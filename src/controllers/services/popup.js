@@ -10,8 +10,9 @@ export class PromptService {
   constructor() {
     this._height = 600;
     this._width = 350;
+    this._type = 'popup';
 
-    this._titile = config.PROMT_TITLE;
+    this.id;
   }
 
   async open() {
@@ -27,21 +28,37 @@ export class PromptService {
     const notificationLeft = Math.round(
       screenX + (outerWidth / 2) - (this._width / 2)
     );
+    const createData = {
+      type: this._type,
+      url: config.PROMT_PAGE,
+      width: this._width,
+      height: this._height,
+      top: Math.max(notificationTop, 0),
+      left: Math.max(notificationLeft, 0),
+    };
+    const lastPopups = await this._getPopup();
+
+    if (lastPopups && lastPopups.length > 0) {
+      lastPopups.forEach(popup => {
+        extension.windows.remove(popup.id, console.error);
+      });
+    }
 
     try {
-      this._win_ = await extension.windows.create({
-        url: config.PROMT_PAGE,
-        type: 'popup',
-        titlePreface: this._titile,
-        width: this._width,
-        height: this._height,
-        top: Math.max(notificationTop, 0),
-        left: Math.max(notificationLeft, 0),
-        incognito: true
-      });
+      extension.windows.create(createData, tab => this.id = tab.id);
     } catch(err) {
       log.error(err);
     }
+  }
+
+  _getPopup() {
+    return new Promise(resolve => {
+      extension.windows.getAll({}, tabs => {
+        resolve(
+          tabs.filter(tab => tab.type === this._type)
+        );
+      });
+    });
   }
   
 }

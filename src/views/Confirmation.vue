@@ -191,23 +191,42 @@ export default {
       this.spiner();
       this.popupClouse();
     },
-    reject() {
-      this.rejectConfirmTx();
+    async reject() {
+      await this.rejectConfirmTx();
       this.popupClouse();
     },
 
     popupClouse() {
-      if (this.popupId != null) {
+      if (this.popupId != null && !this.isObject) {
         extension.windows.remove(this.popupId, console.error);
-      } else {
+      } else if (!this.isObject && this.popupId == null) {
         this.$router.push({ name: 'home' });
       }
     },
 
+    getCurrentTab() {
+      try {
+        return extension.windows.getCurrent();
+      } catch(err) {
+        return new Promise(
+          // chrome use callback function.
+          resolve => extension.windows.getCurrent(resolve)
+        );
+      }
+    },
+
     async appInfo() {
-      const currentPopup = await extension.windows.getCurrent();
-      const tabs = await TabsMessage.tabs();
-      const appTab = tabs.filter(tab => tab.id != currentPopup.id)[0];
+      let currentPopup;
+      let tabs;
+      let appTab;
+
+      try {
+        currentPopup = await this.getCurrentTab();
+        tabs = await TabsMessage.tabs();
+        appTab = tabs.filter(tab => tab.id != currentPopup.id)[0];
+      } catch(err) {
+        return null;
+      }      
       
       if (currentPopup.type !== 'popup') {
         return null;
