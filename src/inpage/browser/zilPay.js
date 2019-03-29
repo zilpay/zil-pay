@@ -229,11 +229,9 @@ export class ZilPay {
 export default function run() {
   // Create instance in page. //
   window.Zilliqa = RedefinedZilliqa;
-
   observableStream(
     MTypesSecure.INJECTED,
     MTypesSecure.CONTENT
   ).subscribe(msg => listener(msg));
-
   window.zilPay = new ZilPay();
 }

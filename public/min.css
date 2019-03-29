@@ -1,7 +1,7 @@
 body, html {
   min-height: 600px;
   min-width: 350px;
-  overflow:hidden;
+  overflow: hidden;
   background: rgb(5, 15, 29);
   background: linear-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
   background: -webkit-gradient(45deg, rgb(5, 15, 29), rgba(6, 18, 34, 0.949) );
@@ -12,6 +12,13 @@ body, html {
 }
 ::-webkit-scrollbar {
   display: none;
+}
+
+@media screen and (max-width: 600px) {
+  body, html {
+    max-width: 350px;
+    max-height: 600px;
+  }
 }
 
 .cssload-thecube {
