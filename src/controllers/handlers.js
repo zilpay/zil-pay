@@ -1,5 +1,4 @@
 import { validation } from '@zilliqa-js/util'
-import { Wallet } from '@zilliqa-js/account'
 import { Loger } from '../lib/logger'
 import { Auth } from './auth/main'
 import { BlockChainControll } from './zilliqa'
@@ -27,7 +26,8 @@ export class Handler {
     const allData = await this.auth.getAllData();
     const countKeys = Object.keys(fields).length - 1;
     const countKeysData = Object.keys(allData);
-    const test = !allData.hasOwnProperty(fields.VAULT) || countKeysData < countKeys;
+    const test = !allData.hasOwnProperty(fields.VAULT)
+                 || countKeysData < countKeys;
 
     if (!allData || test) {
       await this.updateConfig(config, selectednet);
@@ -74,19 +74,20 @@ export class Handler {
     const { PROVIDER } = config[selectednet];
     const blockChain = new BlockChainControll(PROVIDER);
     const { seed, password } = payload;
-    const wallet = new Wallet();
     const index = 0;
 
     this.auth = new Auth(password);
-    wallet.addByMnemonic(seed, index);
-    balance = await blockChain.getBalance(wallet.defaultAccount.address);
+    blockChain.wallet.addByMnemonic(seed, index);
+    balance = await blockChain.getBalance(
+      blockChain.wallet.defaultAccount.address
+    );
 
     const account = {
       selectedAddress: index,
       identities: [{
         balance: balance.result,
-        address: wallet.defaultAccount.address,
-        publicKey: wallet.defaultAccount.publicKey,
+        address: blockChain.wallet.defaultAccount.address,
+        publicKey: blockChain.wallet.defaultAccount.publicKey,
         index: index
       }]
     };

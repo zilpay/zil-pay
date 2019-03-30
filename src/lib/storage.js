@@ -4,7 +4,11 @@ import extension from 'extensionizer'
 export class BrowserStorage {
 
   constructor() {
-    this.EXT_ID = extension.runtime.id;
+    try {
+      this.EXT_ID = extension.runtime.id;
+    } catch(err) {
+      this.EXT_ID = '';
+    }
   }
 
   set(value) {
@@ -37,4 +41,15 @@ export class BrowserStorage {
     return extension.storage.StorageArea.clear();
   }
 
+}
+
+export class BuildObject {
+
+  constructor(key, value) {
+    if (typeof key !== 'string') {
+      throw new Error('key most be string');
+    }
+
+    this[key] = value;
+  }
 }
