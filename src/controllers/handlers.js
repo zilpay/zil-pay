@@ -387,6 +387,7 @@ export class Handler {
     
     const { PROVIDER, MSG_VERSION } = config[selectednet];
     const blockChain = new BlockChainControll(PROVIDER);
+    const { index, isImport } = wallet.identities[wallet.selectedAddress];
     let txForConfirm = confirm.pop();
 
     txForConfirm.gasLimit = payload.gasLimit;
@@ -395,13 +396,15 @@ export class Handler {
     try {
       let seedOrPrivateKey;
 
-      if (wallet.identities[wallet.selectedAddress]['isImport']) {
+      if (isImport) {
         const deryptImportedvault = this.auth.guard.decryptObject(importedvault);
-        const account = deryptImportedvault.filter(el => el.index === wallet.selectedAddress)[0];
-        if (!account) {
-          throw new Error('account fail');
+        const account = deryptImportedvault.filter(
+          el => el.index === wallet.selectedAddress
+        );
+        if (!account[0]) {
+          throw new Error('Imported account is wrong');
         }
-        seedOrPrivateKey = account.privateKey;
+        seedOrPrivateKey = account[0].privateKey;
       } else {
         seedOrPrivateKey = this.auth.guard.decryptSeed;
       }
@@ -411,7 +414,7 @@ export class Handler {
       const { result, req, error } = await blockChain.singCreateTransaction(
         txForConfirm,
         seedOrPrivateKey,
-        wallet.selectedAddress,
+        index,
         MSG_VERSION
       );
 
