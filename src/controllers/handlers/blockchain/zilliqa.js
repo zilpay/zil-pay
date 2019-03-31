@@ -107,4 +107,16 @@ export class ZilliqaControll extends Zilliqa {
     };
   }
 
+  async getAccountByPrivateKey(key, index=0) {
+    this.wallet.addByPrivateKey(key);
+
+    const { address, publicKey, privateKey } = this.wallet.defaultAccount;
+    const { result } = await this.getBalance(address);
+
+    return {
+      index, publicKey, address, privateKey,
+      balance: result
+    };
+  }
+
 }

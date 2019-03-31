@@ -1,5 +1,4 @@
-import { MnemonicControl } from './mnemonic'
-import { AuthGuard } from '../crypto/guard'
+import { CryptoGuard } from '../crypto/guard'
 import errorsCode from './errors'
 import fields from '../../../config/fields'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
@@ -7,41 +6,49 @@ import { BrowserStorage, BuildObject } from '../../../lib/storage'
 
 export class Auth {
 
-  constructor() {
-    this.mnemonicControl = new MnemonicControl();
-    
+  constructor(encryptSeed=null, encryptImported=null) {    
     this.isEnable = false;
     this.isReady = false;
-    this.encryptImported = null;
-    this.encryptSeed = null;
+    this.encryptImported = encryptImported;
+    this.encryptSeed = encryptSeed;
 
     this._guard = null;
     this._storage = new BrowserStorage();
   }
 
   setPassword(password) {
-    this._guard = new AuthGuard(password);
-
-    const decryptSeed = this._guard.decrypt(this.encryptSeed);
-    const decryptImported = this._guard.decryptJson(this.encryptImported);
-
-    this.isEnable = true;
+    this._guard = new CryptoGuard(password);
     this.isReady = true;
 
-    return { decryptSeed, decryptImported };
+    try {
+      const decryptSeed = this._guard.decrypt(this.encryptSeed);
+      const decryptImported = this._guard.decryptJson(this.encryptImported);
+  
+      this.isEnable = true;
+      return { decryptSeed, decryptImported };
+    } catch(err) {
+      this.isEnable = false;
+    }
+
+    return null;
   }
 
   getWallet() {
-    if (!this._guard || !this.isEnable || !this.isReady) {
+    if (!this._guard || !this.isReady) {
       throw new Error(errorsCode.GuardWrong);
-    } else if (!this.encryptSeed || !this.encryptImported) {
+    } else if (!this.encryptSeed) {
       throw new Error(errorsCode.SyncWrong);
     }
 
+    let decryptImported = [];
     const decryptSeed = this._guard.decrypt(this.encryptSeed);
-    const decryptImported = this._guard.decryptJson(this.encryptImported);
 
-    return { decryptSeed, decryptImported };
+    try {
+      decryptImported = this._guard.decryptJson(this.encryptImported);
+      return { decryptSeed, decryptImported };
+    } catch(err) {
+      return { decryptSeed, decryptImported };
+    }
   }
 
   async vaultSync() {
@@ -52,7 +59,7 @@ export class Auth {
     this.encryptSeed = vault;
     this.encryptImported = importedvault;
 
-    if (this.encryptSeed && this.encryptImported) {
+    if (this.encryptSeed) {
       this.isReady = true;
     } else {
       this.isReady = false;
@@ -62,6 +69,34 @@ export class Auth {
       encryptSeed: this.encryptSeed,
       encryptImported: this.encryptImported
     };
+  }
+
+  async updateImported(decryptImported) {
+    if (typeof decryptImported !== 'object') {
+      throw new Error(errorsCode.WrongImported);
+    }
+    
+    const encryptImported = this._guard.encryptJson(decryptImported);
+
+    await this._storage.set(
+      new BuildObject(fields.VAULT_IMPORTED, encryptImported)
+    );
+    
+    return encryptImported;
+  }
+
+  static encryptWallet(decryptSeed, decryptImported, password) {
+    if (!decryptSeed || typeof decryptSeed !== 'string') {
+      throw new Error(errorsCode.WrongSeed);
+    } else if (typeof decryptImported !== 'object') {
+      throw new Error(errorsCode.WrongImported);
+    }
+
+    const guard = new CryptoGuard(password);
+    const encryptSeed = guard.encrypt(decryptSeed);
+    const encryptImported = guard.encryptJson(decryptImported);
+
+    return { encryptSeed, encryptImported };
   }
 
 }

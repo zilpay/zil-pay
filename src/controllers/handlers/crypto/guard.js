@@ -1,7 +1,8 @@
 import Crypto from '../../../lib/crypto'
 import errorsCode from './errors'
 
-export class AuthGuard {
+
+export class CryptoGuard {
 
   constructor(password) {
     if (typeof password !== 'string') {

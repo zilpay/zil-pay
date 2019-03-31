@@ -26,11 +26,21 @@ describe('Test zilliqa control', () => {
     const index = 0;
     const account = await zilliqa.getAccountBySeed(decryptSeed, index);
 
-    account.balance = null;
+    expect(account).toEqual({
+      index, publicKey, address, privateKey,
+      balance: account.balance
+    });
+  });
+
+  it('Test Zilliqa get account by privateKey', async () => {
+    networkControl.selected = Object.keys(ZilliqaConfig)[1];
+    const zilliqa = new ZilliqaControll(networkControl.provider);
+    const index = 0;
+    const account = await zilliqa.getAccountByPrivateKey(privateKey);
 
     expect(account).toEqual({
       index, publicKey, address, privateKey,
-      balance: null
+      balance: account.balance
     });
   });
 

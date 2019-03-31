@@ -1,4 +1,4 @@
-import { AuthGuard } from './guard'
+import { CryptoGuard } from './guard'
 import errorCodes from './errors'
 import Crypto from '../../../lib/crypto'
 
@@ -8,10 +8,10 @@ describe('Test guard control', () => {
 
   it('Init guard control', () => {
     const testPassword = '12345678';
-    const authGuard = new AuthGuard(testPassword);
+    const cryptoGuard = new CryptoGuard(testPassword);
 
     expect(
-      authGuard.pwdHash
+      cryptoGuard.pwdHash
     ).toBe(
       crypto.hash(testPassword)
     );
@@ -21,13 +21,13 @@ describe('Test guard control', () => {
     const testPassword = '12';
     
     try {
-      new AuthGuard(testPassword);
+      new CryptoGuard(testPassword);
     } catch(err) {
       expect(err.message).toBe(errorCodes.WrongPassword);
     }
 
     try {
-      new AuthGuard({});
+      new CryptoGuard({});
     } catch(err) {
       expect(err.message).toBe(errorCodes.WrongParam);
     }
@@ -36,22 +36,22 @@ describe('Test guard control', () => {
 
   it('Test encrypt and decrypt', () => {
     const testPassword = '12345678';
-    const authGuard = new AuthGuard(testPassword);
+    const cryptoGuard = new CryptoGuard(testPassword);
     const decryptString = 'i am enrypt string';
-    const encryptString = authGuard.encrypt(decryptString);
+    const encryptString = cryptoGuard.encrypt(decryptString);
 
     expect(decryptString).not.toBe(encryptString);
-    expect(decryptString).toBe(authGuard.decrypt(encryptString));
+    expect(decryptString).toBe(cryptoGuard.decrypt(encryptString));
   });
 
   it('Test json encrypt and decrypt', () => {
     const testPassword = '12345678';
-    const authGuard = new AuthGuard(testPassword);
+    const cryptoGuard = new CryptoGuard(testPassword);
     const decryptObject = { key: 'i am enrypt object' };
-    const encryptObject = authGuard.encryptJson(decryptObject);
+    const encryptObject = cryptoGuard.encryptJson(decryptObject);
 
     expect(decryptObject).not.toBe(encryptObject);
-    expect(decryptObject).toEqual(authGuard.decryptJson(encryptObject));
+    expect(decryptObject).toEqual(cryptoGuard.decryptJson(encryptObject));
   });
 
 });

@@ -1,6 +1,5 @@
 import { Auth } from './index'
-import { AuthGuard } from '../crypto/guard'
-import { MnemonicControl } from './mnemonic'
+import { CryptoGuard } from '../crypto/guard'
 
 
 const password = '123456';
@@ -15,16 +14,14 @@ describe('Test authentication control', () => {
 
   it('Test init Auth', () => {
     const auth = new Auth();
-    const mnemonicControl = new MnemonicControl();
 
     expect(auth.isEnable).toBe(false);
     expect(auth.isReady).toBe(false);
-    expect(auth.mnemonicControl).toEqual(mnemonicControl);
   });
 
   it('Test setPassword method', () => {
     const auth = new Auth();
-    const guard = new AuthGuard(password);
+    const guard = new CryptoGuard(password);
     
     auth.encryptSeed = guard.encrypt(decryptSeed);
     auth.encryptImported = guard.encryptJson(decryptImported);
@@ -38,7 +35,7 @@ describe('Test authentication control', () => {
 
   it('Test getWallet method', () => {
     const auth = new Auth();
-    const guard = new AuthGuard(password);
+    const guard = new CryptoGuard(password);
     
     auth.encryptSeed = guard.encrypt(decryptSeed);
     auth.encryptImported = guard.encryptJson(decryptImported);
@@ -51,15 +48,16 @@ describe('Test authentication control', () => {
 
   it('Test vaultSync method', async () => {
     const auth = new Auth();
-    const guard = new AuthGuard(password);
+    const guard = new CryptoGuard(password);
 
     const encryptSeed = guard.encrypt(decryptSeed);
     const encryptImported = guard.encryptJson(decryptImported);
 
     auth._storage.get = () => {
+      const encryptWallet = Auth.encryptWallet(decryptSeed, decryptImported, password);
       return {
-        importedvault: encryptImported,
-        vault: encryptSeed
+        importedvault: encryptWallet.encryptImported,
+        vault: encryptWallet.encryptSeed
       };
     };
     
