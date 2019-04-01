@@ -1,5 +1,5 @@
 import { AccountCreater } from './create'
-import { AccountExporter } from './export'
+import { AccountImporter } from './import'
 import fields from '../../../config/fields'
 import { BuildObject } from '../../../lib/storage'
 import { Auth } from '../auth/index'
@@ -115,9 +115,9 @@ describe('Test account control', () => {
   });
 
   it('Test add first account by privateKey', async () => {
-    const accountExporter = new AccountExporter(password);
+    const accountImporter = new AccountImporter(password);
 
-    accountExporter._auth._storage.get = ([key0, key1]) => {
+    accountImporter._auth._storage.get = ([key0, key1]) => {
       if (key0 !== fields.VAULT) {
         throw new Error('param key0 must be vault, key0: ' + key0);
       } else if (key1 !== fields.VAULT_IMPORTED) {
@@ -131,7 +131,7 @@ describe('Test account control', () => {
       };
     };
 
-    accountExporter._auth._storage.set = (inputObject) => {
+    accountImporter._auth._storage.set = (inputObject) => {
       const encryptImported = '21fbf70782dfd395de3e36922f84849562f74ec7230a3c83d0e21b78318a01ac58fc15cefe546ad5e27765c520a8b00c3b66a0d287c244fbddc4b8c5d34a741c23e9f6012f335dacc48f7da527c71f55bf3036434d75a857882910d9481f0f632e05e4de739279697db0c27057484d6718764c36420e2d84b29e8cb9c5439e4328ef68ec1bbbdf0cb31337840da0dd9eb992297085a8924c3de02118aee7cfb275b494bee408a2fd46832fb0';
       const object = new BuildObject(
         fields.VAULT_IMPORTED,
@@ -140,7 +140,7 @@ describe('Test account control', () => {
       expect(object).toEqual(inputObject);
     }
 
-    const account = await accountExporter.exportAccountByPrivateKey(privateKey);
+    const account = await accountImporter.importAccountByPrivateKey(privateKey);
   
     expect(account).toEqual({
       privateKey,
