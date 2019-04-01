@@ -73,9 +73,9 @@ export class AccountCreater {
       index: account.index
     });
 
-    await this._storage.set([
+    await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
-    ]);
+    );
     
     return account; 
   }

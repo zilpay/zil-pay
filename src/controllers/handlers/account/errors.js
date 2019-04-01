@@ -4,5 +4,6 @@ export default {
   ImportUniqueWrong: 'Each address is unique',
   IndexUniqueWrong: 'Each index is unique',
   WrongDecryptSeed: 'is not wallet seed',
-  DisableMethod: 'This method is disable'
+  DisableMethod: 'This method is disable',
+  WrongIndex: 'not found index'
 };

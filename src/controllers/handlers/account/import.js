@@ -1,5 +1,7 @@
 import { AccountCreater } from './create'
+import { BuildObject } from '../../../lib/storage'
 import errorsCode from './errors'
+import fields from '../../../config/fields'
 
 
 export class AccountImporter extends AccountCreater {
@@ -31,10 +33,18 @@ export class AccountImporter extends AccountCreater {
       );
     }
 
-    const index = decryptImported.length;
+    const { wallet } = await this._storage.get(fields.WALLET);
+    const index = wallet.identities.length;
     const account = await this._zilliqa.getAccountByPrivateKey(
       privateKey, index
     );
+
+    wallet.selectedAddress = account.index;
+    wallet.identities.push({
+      index,
+      address: account.address,
+      balance: account.balance
+    });
 
     decryptImported.forEach(el => {
       if (el.privateKey === privatekey) {
@@ -45,12 +55,13 @@ export class AccountImporter extends AccountCreater {
     });
  
     decryptImported.push({
-      index, privateKey,
-      balance: account.balance,
-      address: account.address
+      index, privateKey
     });
 
     await this._auth.updateImported(decryptImported);
+    await this._storage.set(
+      new BuildObject(fields.WALLET, wallet)
+    );
     
     return account;
   }

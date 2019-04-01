@@ -2,7 +2,7 @@ import { ZilliqaControll } from './zilliqa'
 import { NetworkControl } from '../network/index'
 import ZilliqaConfig from '../../../config/zil'
 
-
+const jestTimeOut = 20000;
 const networkControl = new NetworkControl();
 const decryptSeed = 'thumb face object present purse corn throw box anxiety seminar excess warfare';
 const publicKey = '0206268fbbbab0933d01292d8192911a27c09ec9c6d0c562eef48f7fd8b3615514';
@@ -30,7 +30,7 @@ describe('Test zilliqa control', () => {
       index, publicKey, address, privateKey,
       balance: account.balance
     });
-  });
+  }, jestTimeOut);
 
   it('Test Zilliqa get account by privateKey', async () => {
     networkControl.selected = Object.keys(ZilliqaConfig)[1];
@@ -42,7 +42,7 @@ describe('Test zilliqa control', () => {
       index, publicKey, address, privateKey,
       balance: account.balance
     });
-  });
+  }, jestTimeOut);
 
   it('Test Zilliqa get version network', async () => {
     networkControl.selected = Object.keys(ZilliqaConfig)[1];
@@ -53,7 +53,7 @@ describe('Test zilliqa control', () => {
     expect(version).toBe(current);
     expect(version).not.toBeNull();
     expect(version).not.toBeUndefined();
-  });
+  }, jestTimeOut);
 
   it('Test Zilliqa get balance and nonce from address', async () => {
     networkControl.selected = Object.keys(ZilliqaConfig)[1];
@@ -68,11 +68,9 @@ describe('Test zilliqa control', () => {
 
     expect(result).toBeDefined();
     expect(nonce).toBeDefined();
-  });
+  }, jestTimeOut);
 
-  it('Test Zilliqa singTransaction by privateKey', async () => {
-    return null;
-    
+  it('Test Zilliqa singTransaction by privateKey', async () => {   
     networkControl.selected = Object.keys(ZilliqaConfig)[1];
     const zilliqa = new ZilliqaControll(networkControl.provider);
     const { nonce } = await zilliqa.getBalance(address);
@@ -111,6 +109,6 @@ describe('Test zilliqa control', () => {
       console.log(resultSeed.result.TranID);
       console.log(resultSeed.result.Info);
     }
-  });
+  }, jestTimeOut);
   
 });

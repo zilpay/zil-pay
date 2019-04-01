@@ -5,7 +5,7 @@ import errorsCode from './errors'
 describe('Test network control', () => {
 
   it('Get default network object', () => {
-    const defaultSelected = Object.keys(ZilliqaConfig)[0];
+    const defaultSelected = Object.keys(ZilliqaConfig)[2];
     const netControll = new NetworkControl();
     expect(netControll.config).toBe(ZilliqaConfig);
     expect(netControll.selected).toBe(defaultSelected);

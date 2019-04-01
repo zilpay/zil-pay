@@ -1,5 +1,6 @@
 import { AccountCreater } from './create'
 import { AccountImporter } from './import'
+import { AccountExporter } from './export'
 import fields from '../../../config/fields'
 import { BuildObject } from '../../../lib/storage'
 import { Auth } from '../auth/index'
@@ -10,9 +11,7 @@ const privateKey = '2301b67bf6fdfd20d328249585a6626f271fcf0c22cbfc66834203fbb78b
 const decryptSeed = 'thumb face object present purse corn throw box anxiety seminar excess warfare';
 const address = '3145f480324811c8941d058fd6e95677aa6257e1';
 var encrypSeed = '21d4e42ecdd49d97da250f907ad6c2ac23f31cde270e3b83f5f3425466c22eeb4aac4a8df24229dff62e748124a3fa1c3e3bea83d08204ee9694b49a8b19305a74a6a4023f264db897cf78a633c10b';
-const decryptImported = [
-  { privateKey, index: 0 }
-];
+
 
 describe('Test account control', () => {
 
@@ -84,7 +83,7 @@ describe('Test account control', () => {
       return await object; 
     }
   
-    accountCreater._storage.set = ([objects]) => {
+    accountCreater._storage.set = (objects) => {
       const forTest = new BuildObject(fields.WALLET, {
         identities: [
         {
@@ -130,24 +129,180 @@ describe('Test account control', () => {
         vault: encryptWallet.encryptSeed
       };
     };
-
     accountImporter._auth._storage.set = (inputObject) => {
-      const encryptImported = '21fbf70782dfd395de3e36922f84849562f74ec7230a3c83d0e21b78318a01ac58fc15cefe546ad5e27765c520a8b00c3b66a0d287c244fbddc4b8c5d34a741c23e9f6012f335dacc48f7da527c71f55bf3036434d75a857882910d9481f0f632e05e4de739279697db0c27057484d6718764c36420e2d84b29e8cb9c5439e4328ef68ec1bbbdf0cb31337840da0dd9eb992297085a8924c3de02118aee7cfb275b494bee408a2fd46832fb0';
+      const encryptImported = '21fbf70782dfd395de3e36922f85849562f74ec7230a3c83d0e21b78318a01ac58fc15cefe546ad5e27765c520a8b00c3b66a0d287c244fbddc4b8c5d34a741c23e9f6012f335dacc48f7da527c71f55bf3036434d75a857882910d9481f0f632e05b5df73';
       const object = new BuildObject(
         fields.VAULT_IMPORTED,
         encryptImported
       );
       expect(object).toEqual(inputObject);
     }
+    accountImporter._storage.get = async (key0) => {
+      if (key0 !== fields.WALLET) {
+        throw new Error('param key0 must be wallet, key0: ' + key0);
+      }
+
+      let object = {};
+
+      object[fields.WALLET] = {
+        identities: [{
+          address,
+          balance: 0,
+          index: 0
+        }],
+        selectedAddress: 0
+      };
+
+      return await object; 
+    }
+    accountImporter._storage.set = (objects) => {
+      const forTest = new BuildObject(fields.WALLET, {
+        identities: [
+        {
+          address,
+          balance: 0,
+          index: 0
+        },
+        {
+          index: 1,
+          address: '31de24752489e04d06ad32a1095b86ce9310bf9b',
+          balance: objects[fields.WALLET].identities[1].balance
+        }
+        ],
+        selectedAddress: 1
+      });
+      expect(forTest).toEqual(objects);
+    };
 
     const account = await accountImporter.importAccountByPrivateKey(privateKey);
   
     expect(account).toEqual({
       privateKey,
-      index: 0,
+      index: 1,
       publicKey: '024e92663f20bf30bd9b7847a5327b97f0ef0579aefd2d210ee4e30239acb0f609',
       address: '31de24752489e04d06ad32a1095b86ce9310bf9b',
       balance: account.balance
+    });
+  });
+
+  it('Test export privateKey from store', async () => {
+    const accountExporter = new AccountExporter(password);
+    const selectedAddress = 1;
+
+    accountExporter._auth._storage.get = ([key0, key1]) => {
+      if (key0 !== fields.VAULT) {
+        throw new Error('param key0 must be vault, key0: ' + key0);
+      } else if (key1 !== fields.VAULT_IMPORTED) {
+        throw new Error('param key1 must be imported wallet, key1: ' + key1);
+      }
+
+      const encryptWallet = Auth.encryptWallet(decryptSeed, [], password);
+      return {
+        importedvault: '21fbf70782dfd395de3e36922f85849562f74ec7230a3c83d0e21b78318a01ac58fc15cefe546ad5e27765c520a8b00c3b66a0d287c244fbddc4b8c5d34a741c23e9f6012f335dacc48f7da527c71f55bf3036434d75a857882910d9481f0f632e05b5df73',
+        vault: encryptWallet.encryptSeed
+      };
+    };
+    accountExporter._storage.get = async (key0) => {
+      if (key0 !== fields.WALLET) {
+        throw new Error('param key0 must be wallet, key0: ' + key0);
+      }
+
+      let object = {};
+
+      object[fields.WALLET] = {
+        selectedAddress,
+        identities: [{
+          address,
+          balance: 0,
+          index: 0
+        }, {
+          address: '31de24752489e04d06ad32a1095b86ce9310bf9b',
+          balance: 0,
+          index: 1
+        }]
+      };
+
+      return await object; 
+    }
+
+    const account = await accountExporter.exportAccountFromStore();
+    
+    expect(account).toEqual({
+      index: selectedAddress,
+      privateKey: '2301b67bf6fdfd20d328249585a6626f271fcf0c22cbfc66834203fbb78b1d06'
+    });
+  });
+
+  it('Test export privateKey from seed', async () => {
+    const accountExporter = new AccountExporter(password);
+    const selectedAddress = 0;
+
+    accountExporter._auth._storage.get = ([key0, key1]) => {
+      if (key0 !== fields.VAULT) {
+        throw new Error('param key0 must be vault, key0: ' + key0);
+      } else if (key1 !== fields.VAULT_IMPORTED) {
+        throw new Error('param key1 must be imported wallet, key1: ' + key1);
+      }
+
+      const encryptWallet = Auth.encryptWallet(decryptSeed, [], password);
+      return {
+        importedvault: '21fbd179',
+        vault: encryptWallet.encryptSeed
+      };
+    };
+    accountExporter._storage.get = async (key0) => {
+      if (key0 !== fields.WALLET) {
+        throw new Error('param key0 must be wallet, key0: ' + key0);
+      }
+
+      let object = {};
+
+      object[fields.WALLET] = {
+        selectedAddress,
+        identities: [{
+          address,
+          balance: 0,
+          index: 0
+        }, {
+          address: '31de24752489e04d06ad32a1095b86ce9310bf9b',
+          balance: 0,
+          index: 1
+        }]
+      };
+
+      return await object; 
+    }
+
+    const account = await accountExporter.exportPrivateKeyFromSeed();
+
+    expect(account).toEqual({
+      index: selectedAddress,
+      privateKey: '7012c97b4e319bfff75fe775fe1ee212341e1b1f7c0eb91945a064ba2d972bff'
+    });
+  });
+
+  it('Test export seed', async () => {
+    const accountExporter = new AccountExporter(password);
+
+    accountExporter._auth._storage.get = ([key0, key1]) => {
+      if (key0 !== fields.VAULT) {
+        throw new Error('param key0 must be vault, key0: ' + key0);
+      } else if (key1 !== fields.VAULT_IMPORTED) {
+        throw new Error('param key1 must be imported wallet, key1: ' + key1);
+      }
+
+      const encryptWallet = Auth.encryptWallet(decryptSeed, [], password);
+      return {
+        importedvault: encryptWallet.encryptImported,
+        vault: encryptWallet.encryptSeed
+      };
+    };
+
+    const account = await accountExporter.exportSeed();
+
+    expect(account).toEqual({
+      decryptSeed,
+      decryptImported: []
     });
   });
 

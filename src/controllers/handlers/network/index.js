@@ -4,7 +4,7 @@ import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import fields from '../../../config/fields'
 
 
-const defaultSelected = Object.keys(ZilliqaConfig)[0];
+const defaultSelected = Object.keys(ZilliqaConfig)[2];
 
 export class NetworkControl {
 
