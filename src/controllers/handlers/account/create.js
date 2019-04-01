@@ -4,6 +4,7 @@ import { NetworkControl } from '../network/index'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import fields from '../../../config/fields'
 import errorsCode from './errors'
+import errors from '../auth/errors';
 
 
 export class AccountCreater {
@@ -17,85 +18,87 @@ export class AccountCreater {
     this._password = password;
   }
 
-  async newAccountBySeed(mnemonicSeed, startingIndex=0) {
-    const forStorage = [];
+  async initWallet(decryptSeed) {
+    if (typeof decryptSeed !== 'string' || decryptSeed.length < 12) {
+      throw new Error(errors.WrongDecryptSeed);
+    }
+
+    const selectedAddress = 0;
     const account = await this._zilliqa.getAccountBySeed(
-      mnemonicSeed, startingIndex
+      decryptSeed, selectedAddress
     );
-    const identitiesAccount = {
-      address: account.address,
-      balance: account.balance,
-      index: account.index
+    const encryptedWallet = this._auth._guard.encrypt(decryptSeed);
+    const importedWallet = this._auth._guard.encryptJson([]);
+    const wallet = {
+      selectedAddress,
+      identities: [{
+        address: account.address,
+        balance: account.balance,
+        index: account.index
+      }]
     };
-
-    let vault = await this._storage.get(fields.VAULT);
-    let wallet = await this._storage.get(fields.WALLET);
-
-    try {
-      wallet = wallet[fields.WALLET];
-      if (!wallet) throw new Error();
-      wallet.identities.push(identitiesAccount);
-    } catch(err) {
-      wallet = { identities: [identitiesAccount] };
-    }
-
-    wallet.selectedAddress = startingIndex;
-    forStorage.push(new BuildObject(fields.WALLET, wallet));
     
-    try {
-      vault = vault[fields.VAULT];
-      if (!vault) throw new Error();
-    } catch(err) {
-      vault = Auth.encryptWallet(
-        mnemonicSeed, [], this._password
-      ).encryptSeed;
-      forStorage.push(new BuildObject(fields.VAULT, vault));
-    }
-
-    await this._storage.set(forStorage);
+    await this._storage.set([
+      new BuildObject(fields.VAULT, encryptedWallet),
+      new BuildObject(fields.VAULT_IMPORTED, importedWallet),
+      new BuildObject(fields.WALLET, wallet)
+    ]);
 
     return account;
   }
 
-  async newAccountBySeed0(decryptSeed=null, startingIndex=0) {
+  async newAccountBySeed() {
     await this._auth.vaultSync();
+
+    const { decryptSeed } = await this._auth.getWallet();
 
     if (!this._auth.isReady) {
       throw new Error(
         errorsCode.WalletIsNotReady + this._auth.isReady
       );
+    } else if (!this._auth.isEnable) {
+      throw new Error(
+        errorsCode.WalletIsNotEnable + this._auth.isEnable
+      );
     }
 
-    if (!decryptSeed) {
-      const decryptWallet = await this._auth.getWallet();
-      decryptSeed = decryptWallet.decryptSeed;
-    }
-
+    let { wallet } = await this._storage.get(fields.WALLET);
     const account = await this._zilliqa.getAccountBySeed(
-      decryptSeed, startingIndex
+      decryptSeed, wallet.identities.length
     );
-    const identitiesAccount = {
+    wallet.selectedAddress = account.index;
+    wallet.identities.push({
       address: account.address,
       balance: account.balance,
       index: account.index
-    };
-    
+    });
 
+    await this._storage.set([
+      new BuildObject(fields.WALLET, wallet)
+    ]);
+    
+    return account; 
   }
 
-  async newAccountByPrivateKey(privatekey, index=0) {
-    const account = await this._zilliqa.getAccountByPrivateKey(
-      privatekey, index
-    );
+  async newAccountByPrivateKey(privatekey) {
     await this._auth.vaultSync();
+
+    const { decryptImported } = await this._auth.getWallet();
 
     if (!this._auth.isReady) {
       throw new Error(
         errorsCode.WalletIsNotReady + this._auth.isReady
       );
+    } else if (!this._auth.isEnable) {
+      throw new Error(
+        errorsCode.WalletIsNotEnable + this._auth.isEnable
+      );
     }
 
-    const { decryptImported } = await this._auth.getWallet();
+    const index = decryptImported.length;
+    const account = await this._zilliqa.getAccountByPrivateKey(
+      privatekey, index
+    );
 
     decryptImported.forEach(el => {
       if (el.privateKey === privatekey) {
@@ -106,7 +109,9 @@ export class AccountCreater {
     });
  
     decryptImported.push(account);
+
     await this._auth.updateImported(decryptImported);
+    
     return account;
   }
 

@@ -40,15 +40,13 @@ export class Auth {
       throw new Error(errorsCode.SyncWrong);
     }
 
-    let decryptImported = [];
     const decryptSeed = this._guard.decrypt(this.encryptSeed);
+    const decryptImported = this._guard.decryptJson(this.encryptImported);
+   
+    this.isEnable = true;
+    this.isReady = true;
 
-    try {
-      decryptImported = this._guard.decryptJson(this.encryptImported);
-      return { decryptSeed, decryptImported };
-    } catch(err) {
-      return { decryptSeed, decryptImported };
-    }
+    return { decryptSeed, decryptImported };
   }
 
   async vaultSync() {

@@ -1,4 +1,5 @@
 import { AccountCreater } from './create'
+import { AccountExporter } from './export'
 import fields from '../../../config/fields'
 import { BuildObject } from '../../../lib/storage'
 import { Auth } from '../auth/index'
@@ -13,148 +14,140 @@ const decryptImported = [
   { privateKey, index: 0 }
 ];
 
-
-var wallet = {
-	"identities": [
-		{
-			"address": "eef22809b26479ce53f52a0849dbbdad630e0f35",
-			"balance": "1263171089999999",
-			"index": 0
-		}
-	],
-	"selectedAddress": 0
-};
-
-function emulationStorageGet(key) {
-  switch (key) {
-    case fields.WALLET:
-      return wallet;
-
-    case fields.VAULT:
-      return encrypSeed;
-
-    default:
-      throw new Error('key fail');
-  }
-}
-
-function emulationStorageSet(buildObject) {
-  const object = [
-    new BuildObject(fields.WALLET, {
-      identities: [{
-        address,
-        balance: buildObject[0][fields.WALLET].identities[0].balance,
-        index: 0
-      }],
-      selectedAddress: 0
-    }),
-    new BuildObject(fields.VAULT, '21d4e42ecdd49d97da250f907ad6c2ac23f31cde270e3b83f5f3425466c22eeb4aac4a8df24229dff62e748124a3fa1c3e3bea83d08204ee9694b49a8b19305a74a6a4023f264db897cf78a633c10b')
-  ];
-
-  expect(buildObject).toEqual(object);
-}
-
-
 describe('Test account control', () => {
 
-  it('Test create account by seed and 0 index', async () => {
+  it('Test init new Wallet', async () => {
     const accountCreater = new AccountCreater(password);
 
-    accountCreater._storage.get = emulationStorageGet;
-    accountCreater._storage.set = emulationStorageSet;
-
-    const account = await accountCreater.newAccountBySeed(decryptSeed);
+    accountCreater._storage.set = (objects) => {  
+      const forTest = [
+        new BuildObject(fields.VAULT, encrypSeed),
+        new BuildObject(fields.VAULT_IMPORTED, '21fbd179'),
+        new BuildObject(fields.WALLET, {
+          identities: [{
+            index: 0,
+            address: '3145f480324811c8941d058fd6e95677aa6257e1',
+            balance: objects[2][fields.WALLET].identities[0].balance
+          }],
+          selectedAddress: 0
+        })
+      ];
+      expect(forTest).toEqual(objects);
+    };
+    
+    const account = await accountCreater.initWallet(decryptSeed);
 
     expect(account).toEqual({
-      address,
       index: 0,
-      balance: account.balance,
       publicKey: '0206268fbbbab0933d01292d8192911a27c09ec9c6d0c562eef48f7fd8b3615514',
-      privateKey: '7012c97b4e319bfff75fe775fe1ee212341e1b1f7c0eb91945a064ba2d972bff'
+      address: '3145f480324811c8941d058fd6e95677aa6257e1',
+      privateKey: '7012c97b4e319bfff75fe775fe1ee212341e1b1f7c0eb91945a064ba2d972bff',
+      balance: account.balance
     });
   });
 
-  it('Test create account by PrivateKey', async () => {
+  it('Test add new account by seed', async () => {
     const accountCreater = new AccountCreater(password);
-    const index = 1;
-    const privateKey = '1b6666c3b07a1d783553ebc2dfd8b657edf03110457442b02830539d7b62df0a';
-    
-    accountCreater._auth._storage.get = () => {
-      const encryptWallet = Auth.encryptWallet(decryptSeed, decryptImported, password);
+
+    accountCreater._auth.encryptSeed = encrypSeed;
+    accountCreater._auth.encryptImported = '21fbd179';
+
+    accountCreater._auth._storage.get = ([key0, key1]) => {
+      if (key0 !== fields.VAULT) {
+        throw new Error('param key0 must be vault, key0: ' + key0);
+      } else if (key1 !== fields.VAULT_IMPORTED) {
+        throw new Error('param key1 must be imported wallet, key1: ' + key1);
+      }
+
+      const encryptWallet = Auth.encryptWallet(decryptSeed, [], password);
       return {
         importedvault: encryptWallet.encryptImported,
         vault: encryptWallet.encryptSeed
       };
     };
-    accountCreater._auth._storage.set = (object) => {
-      if (!object.hasOwnProperty(fields.VAULT_IMPORTED)) {
-        throw new Error('key input fail');
+    accountCreater._storage.get = async (key0) => {
+      if (key0 !== fields.WALLET) {
+        throw new Error('param key0 must be wallet, key0: ' + key0);
       }
-    };
 
-    const account = await accountCreater.newAccountByPrivateKey(
-      privateKey,
-      index
-    );
+      let object = {};
+
+      object[fields.WALLET] = {
+        identities: [{
+          address,
+          balance: 0,
+          index: 0
+        }],
+        selectedAddress: 0
+      };
+
+      return await object; 
+    }
+  
+    accountCreater._storage.set = ([objects]) => {
+      const forTest = new BuildObject(fields.WALLET, {
+        identities: [
+        {
+          address,
+          balance: 0,
+          index: 0
+        },
+        {
+          index: 1,
+          address: 'e90e4a1bd06a9ecc9a3212faf9f777c1f5b4a2d9',
+          balance: objects[fields.WALLET].identities[1].balance
+        }
+        ],
+        selectedAddress: 1
+      });
+      expect(forTest).toEqual(objects);
+    };
+    
+    const account = await accountCreater.newAccountBySeed();
 
     expect(account).toEqual({
-      index,
-      publicKey: '03a391fa2fd0df667b59aa31049cfedb1186be9002c42fd5fafb3af5045b3ab17a',
-      address: '670467c41ca7bccb4cbbc0eb2e6a116952f9e063',
-      privateKey: privateKey,
+      index: 1,
+      publicKey: '02e24df038a673a9b0fd0d57767199c19d9245e5aee641fdbc70ce78f3fb32a3ab',
+      address: 'e90e4a1bd06a9ecc9a3212faf9f777c1f5b4a2d9',
+      privateKey: 'e5e1ea9de8c1baf59c4d5f36a08c115ea1b658a0d49c5df88d8959053a6fecc7',
       balance: account.balance
     });
   });
 
-  it('Test init account by PrivateKey', async () => {
-    const accountCreater = new AccountCreater(password);
-    const index = 1;
-    const privateKey = '1b6666c3b07a1d783553ebc2dfd8b657edf03110457442b02830539d7b62df0a';
-    
-    accountCreater._auth._storage.get = () => {
+  it('Test add first account by privateKey', async () => {
+    const accountExporter = new AccountExporter(password);
+
+    accountExporter._auth._storage.get = ([key0, key1]) => {
+      if (key0 !== fields.VAULT) {
+        throw new Error('param key0 must be vault, key0: ' + key0);
+      } else if (key1 !== fields.VAULT_IMPORTED) {
+        throw new Error('param key1 must be imported wallet, key1: ' + key1);
+      }
+
       const encryptWallet = Auth.encryptWallet(decryptSeed, [], password);
       return {
-        importedvault: undefined,
+        importedvault: encryptWallet.encryptImported,
         vault: encryptWallet.encryptSeed
       };
     };
-    accountCreater._auth._storage.set = (object) => {
-      if (!object.hasOwnProperty(fields.VAULT_IMPORTED)) {
-        throw new Error('key input fail');
-      }
-    };
 
-    const account = await accountCreater.newAccountByPrivateKey(
+    accountExporter._auth._storage.set = (inputObject) => {
+      const encryptImported = '21fbf70782dfd395de3e36922f84849562f74ec7230a3c83d0e21b78318a01ac58fc15cefe546ad5e27765c520a8b00c3b66a0d287c244fbddc4b8c5d34a741c23e9f6012f335dacc48f7da527c71f55bf3036434d75a857882910d9481f0f632e05e4de739279697db0c27057484d6718764c36420e2d84b29e8cb9c5439e4328ef68ec1bbbdf0cb31337840da0dd9eb992297085a8924c3de02118aee7cfb275b494bee408a2fd46832fb0';
+      const object = new BuildObject(
+        fields.VAULT_IMPORTED,
+        encryptImported
+      );
+      expect(object).toEqual(inputObject);
+    }
+
+    const account = await accountExporter.exportAccountByPrivateKey(privateKey);
+  
+    expect(account).toEqual({
       privateKey,
-      index
-    );
-
-    expect(account).toEqual({
-      index,
-      publicKey: '03a391fa2fd0df667b59aa31049cfedb1186be9002c42fd5fafb3af5045b3ab17a',
-      address: '670467c41ca7bccb4cbbc0eb2e6a116952f9e063',
-      privateKey: privateKey,
-      balance: account.balance
-    });
-  });
-
-  it('Test create account by seed and init wallet', async () => {
-    const accountCreater = new AccountCreater(password);
-
-    wallet = undefined;
-    encrypSeed = undefined;
-
-    accountCreater._storage.get = emulationStorageGet;
-    accountCreater._storage.set = emulationStorageSet;
-
-    const account = await accountCreater.newAccountBySeed(decryptSeed);
-
-    expect(account).toEqual({
-      address,
       index: 0,
-      balance: account.balance,
-      publicKey: '0206268fbbbab0933d01292d8192911a27c09ec9c6d0c562eef48f7fd8b3615514',
-      privateKey: '7012c97b4e319bfff75fe775fe1ee212341e1b1f7c0eb91945a064ba2d972bff'
+      publicKey: '024e92663f20bf30bd9b7847a5327b97f0ef0579aefd2d210ee4e30239acb0f609',
+      address: '31de24752489e04d06ad32a1095b86ce9310bf9b',
+      balance: account.balance
     });
   });
 
