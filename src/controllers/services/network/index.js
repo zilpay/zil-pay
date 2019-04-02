@@ -4,7 +4,7 @@ import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import fields from '../../../config/fields'
 
 
-const defaultSelected = Object.keys(ZilliqaConfig)[2];
+const defaultSelected = Object.keys(ZilliqaConfig)[0];
 
 export class NetworkControl {
 
@@ -61,9 +61,13 @@ export class NetworkControl {
     const { config, selectednet } = await this._storage.get(
       [fields.SELECTED_NET, fields.CONFIG]
     );
-
-    this.config = config;
-    this.selected = selectednet;
+    
+    if (config) {
+      this.config = config;
+    }
+    if (selectednet) {
+      this.selected = selectednet;
+    }
 
     return {
       config,

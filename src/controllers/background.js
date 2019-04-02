@@ -2,6 +2,7 @@ import { LocalStream } from 'extension-streams'
 import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../lib/messages/messageTypes'
 import { SecureMessage } from '../lib/messages/messageCall'
 import { Handler } from './handlers'
+import { WalletHandler } from './handlers_2.0'
 import { Loger } from '../lib/logger'
 
 
@@ -43,7 +44,7 @@ export class Background extends Handler  {
         break;
 
       case MTypesAuth.SET_SEED_AND_PWD:
-        this.createNewWallet(sendResponse, message.payload);
+        new WalletHandler(message.payload).createNewWallet(sendResponse);
         break;
 
       default:
@@ -55,7 +56,7 @@ export class Background extends Handler  {
     switch (message.type) {
 
       case MTypesInternal.INIT:
-        this.initPopup(sendResponse);
+        new WalletHandler().initPopup(sendResponse);
         break;
 
       case MTypesInternal.SET_NET:

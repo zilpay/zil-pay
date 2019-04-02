@@ -7,8 +7,8 @@ import { MTypesTabs } from '../lib/messages/messageTypes'
 import fields from '../config/fields'
 import zilConfig from '../config/zil'
 import zilApi from '../config/api'
-import { PromptService } from './services/popup'
-import { NotificationsControl } from './services/notifications'
+import { PromptService } from './services/browser/popup'
+import { NotificationsControl } from './services/browser/notifications'
 
 
 

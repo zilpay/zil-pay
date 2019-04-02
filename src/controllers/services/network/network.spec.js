@@ -5,7 +5,7 @@ import errorsCode from './errors'
 describe('Test network control', () => {
 
   it('Get default network object', () => {
-    const defaultSelected = Object.keys(ZilliqaConfig)[2];
+    const defaultSelected = Object.keys(ZilliqaConfig)[0];
     const netControll = new NetworkControl();
     expect(netControll.config).toBe(ZilliqaConfig);
     expect(netControll.selected).toBe(defaultSelected);
@@ -13,7 +13,7 @@ describe('Test network control', () => {
 
   it('Test change network method', async () => {
     const netControll = new NetworkControl();
-    const newSelected = Object.keys(ZilliqaConfig)[2];
+    const newSelected = Object.keys(ZilliqaConfig)[0];
 
     netControll._storage.set = () => true;
     
@@ -62,7 +62,7 @@ describe('Test network control', () => {
 
     netControll._storage.get = () => {
       return {
-        selectednet: Object.keys(ZilliqaConfig)[2],
+        selectednet: Object.keys(ZilliqaConfig)[0],
         config: ZilliqaConfig
       };
     };
@@ -70,7 +70,7 @@ describe('Test network control', () => {
     await netControll.netwrokSync();
 
     expect(netControll.config).toEqual(ZilliqaConfig);
-    expect(netControll.selected).toBe(Object.keys(ZilliqaConfig)[2]);
+    expect(netControll.selected).toBe(Object.keys(ZilliqaConfig)[0]);
   });
 
 });

@@ -13,7 +13,13 @@ export class BrowserStorage {
 
   set(value) {
     return new Promise(resolve => {
-      extension.storage.local.set(value, resolve);
+      if (value.length) {
+        value.forEach(val => {
+          extension.storage.local.set(val, resolve);
+        });
+      } else {
+        extension.storage.local.set(value, resolve);
+      }
     });
   }
 

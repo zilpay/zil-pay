@@ -80,39 +80,4 @@ export class AccountCreater {
     return account; 
   }
 
-  async newAccountByPrivateKey(privatekey) {
-    await this._auth.vaultSync();
-
-    const { decryptImported } = await this._auth.getWallet();
-
-    if (!this._auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this._auth.isReady
-      );
-    } else if (!this._auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this._auth.isEnable
-      );
-    }
-
-    const index = decryptImported.length;
-    const account = await this._zilliqa.getAccountByPrivateKey(
-      privatekey, index
-    );
-
-    decryptImported.forEach(el => {
-      if (el.privateKey === privatekey) {
-        throw new Error(errorsCode.ImportUniqueWrong);
-      } else if (el.index === index) {
-        throw new Error(errorsCode.IndexUniqueWrong);
-      }
-    });
- 
-    decryptImported.push(account);
-
-    await this._auth.updateImported(decryptImported);
-    
-    return account;
-  }
-
 }
