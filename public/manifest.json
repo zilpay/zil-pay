@@ -6,7 +6,7 @@
   "author": "lich666dead",
   "manifest_version": 2,
   "icons": {
-    "180": "/favicon.ico"
+    "180": "/icon.png"
   },
   "storage": {
     "managed_schema": "schema.json"
