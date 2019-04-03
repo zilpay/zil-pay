@@ -98,7 +98,11 @@ export class ZilliqaControll extends Zilliqa {
 
     this.wallet.addByMnemonic(seed, index);
 
-    const { address, publicKey, privateKey } = this.wallet.defaultAccount;
+    const {
+      address,
+      publicKey,
+      privateKey
+    } = this.wallet.defaultAccount;
     const { result } = await this.getBalance(address);
 
     return {
@@ -107,16 +111,13 @@ export class ZilliqaControll extends Zilliqa {
     };
   }
 
-  async getAccountByPrivateKey(key, index=0) {
-    this.wallet.addByPrivateKey(key);
+  async getAccountByPrivateKey(importPrivateKey, index=0) {
+    this.wallet.addByPrivateKey(importPrivateKey);
 
-    const { address, publicKey, privateKey } = this.wallet.defaultAccount;
-    const { result } = await this.getBalance(address);
+    const account = this.wallet.defaultAccount;
+    const { result } = await this.getBalance(account.address);
 
-    return {
-      index, publicKey, address, privateKey,
-      balance: result
-    };
+    return Object.assign(account, { index, balance: result });
   }
 
 }

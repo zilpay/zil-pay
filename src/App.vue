@@ -27,7 +27,8 @@ export default {
       'config',
       'setWallet',
       'transactions',
-      'confirmationTx'
+      'confirmationTx',
+      'mutateIsConnected'
     ]),
     ...mapActions('storage', [
       'initPopup',
@@ -53,6 +54,7 @@ export default {
         this.isEnable(data.reject.isEnable);
         this.setNet(data.reject.selectednet);
         this.config(data.reject.config);
+        this.mutateIsConnected(data.reject.networkStatus);
 
         if (!data.reject.isEnable) {
           this.$router.push({ name: 'lock' });
@@ -70,6 +72,7 @@ export default {
         this.setWallet(data.resolve.data.wallet);
         this.confirmationTx(data.resolve.data.confirm || []);
         this.jazzicon('jazzicon');
+        this.mutateIsConnected(data.resolve.networkStatus);
 
         if (data.resolve.data.transactions) {
           this.transactions(data.resolve.data.transactions);

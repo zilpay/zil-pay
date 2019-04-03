@@ -1,12 +1,13 @@
 import fields from '../../../config/fields'
-import { AccountCreater } from './create'
+import { AccountControl } from './create'
+import { ZilliqaControll } from '../blockchain/zilliqa'
 import errorsCode from './errors'
 
 
-export class AccountExporter extends AccountCreater {
+export class AccountExporter extends AccountControl {
   
-  constructor(password) {
-    super(password);
+  constructor() {
+    super();
   }
 
   initWallet() {
@@ -18,22 +19,24 @@ export class AccountExporter extends AccountCreater {
   }
 
   async exportPrivateKeyFromSeed() {
-    await this._auth.vaultSync();
+    await this.auth.vaultSync();
 
-    const { decryptSeed } = await this._auth.getWallet();
+    const { decryptSeed } = await this.auth.getWallet();
 
-    if (!this._auth.isReady) {
+    if (!this.auth.isReady) {
       throw new Error(
-        errorsCode.WalletIsNotReady + this._auth.isReady
+        errorsCode.WalletIsNotReady + this.auth.isReady
       );
-    } else if (!this._auth.isEnable) {
+    } else if (!this.auth.isEnable) {
       throw new Error(
-        errorsCode.WalletIsNotEnable + this._auth.isEnable
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
 
+    this.zilliqa = new ZilliqaControll(this.network.provider);
+
     const { wallet } = await this._storage.get(fields.WALLET);
-    const account = await this._zilliqa.getAccountBySeed(
+    const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, wallet.selectedAddress
     );
     
@@ -44,21 +47,26 @@ export class AccountExporter extends AccountCreater {
   }
 
   async exportAccountFromStore() {
-    await this._auth.vaultSync();
+    await this.auth.vaultSync();
 
-    const { decryptImported } = await this._auth.getWallet();
+    const { decryptImported } = await this.auth.getWallet();
 
-    if (!this._auth.isReady) {
+    if (!this.auth.isReady) {
       throw new Error(
-        errorsCode.WalletIsNotReady + this._auth.isReady
+        errorsCode.WalletIsNotReady + this.auth.isReady
       );
-    } else if (!this._auth.isEnable) {
+    } else if (!this.auth.isEnable) {
       throw new Error(
-        errorsCode.WalletIsNotEnable + this._auth.isEnable
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
 
-    const { wallet } = await this._storage.get(fields.WALLET);
+    this.zilliqa = new ZilliqaControll(this.network.provider);
+
+    let wallet = await this._storage.get(fields.WALLET);
+
+    wallet[fields.WALLET] = wallet;
+    
     const [account] = decryptImported.filter(
       el => el.index === wallet.selectedAddress
     );
@@ -71,8 +79,20 @@ export class AccountExporter extends AccountCreater {
   }
 
   async exportSeed() {
-    await this._auth.vaultSync();
+    await this.auth.vaultSync();
 
-    return await this._auth.getWallet();
+    return await this.auth.getWallet();
+  }
+
+  async isImported() {
+    const { decryptImported } = await this.auth.getWallet();
+    let wallet = await this._storage.get(fields.WALLET);
+
+    wallet[fields.WALLET] = wallet;
+    
+    const [account] = decryptImported.filter(
+      el => el.index === wallet.selectedAddress
+    );
+    return !!account;
   }
 }

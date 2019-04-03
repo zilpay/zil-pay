@@ -2,8 +2,12 @@ import { LocalStream } from 'extension-streams'
 import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../lib/messages/messageTypes'
 import { SecureMessage } from '../lib/messages/messageCall'
 import { Handler } from './handlers'
-import { WalletHandler } from './handlers_2.0'
 import { Loger } from '../lib/logger'
+import {
+  WalletHandler,
+  NetworkHandler,
+  AccountHandler
+} from './handlers_2.0'
 
 
 const log = new Loger('Background');
@@ -35,16 +39,15 @@ export class Background extends Handler  {
   _authDispenseMessage(sendResponse, message) {
     switch (message.type) {
       case MTypesAuth.SET_PASSWORD:
-        this.walletUnlock(sendResponse, message.payload);
+        new WalletHandler(message.payload).walletUnlock(sendResponse);
         break;
       
       case MTypesAuth.LOG_OUT:
-        this.logOut();
-        sendResponse(true);
+        WalletHandler.logOut(sendResponse);
         break;
 
       case MTypesAuth.SET_SEED_AND_PWD:
-        new WalletHandler(message.payload).createNewWallet(sendResponse);
+        new WalletHandler(message.payload).initWallet(sendResponse);
         break;
 
       default:
@@ -60,23 +63,23 @@ export class Background extends Handler  {
         break;
 
       case MTypesInternal.SET_NET:
-        this.updateNode(sendResponse, message.payload);
+        new NetworkHandler(message.payload).changeNetwork(sendResponse);
         break;
 
       case MTypesAuth.EXPORT_SEED:
-        this.exportSeed(sendResponse, message.payload);
+        new AccountHandler(message.payload).exportSeedPhrase(sendResponse);
         break;
 
       case MTypesAuth.EXPORT_PRIV_KEY:
-        this.exportPrivKey(sendResponse, message.payload);
+        new AccountHandler(message.payload).exportPrivateKey(sendResponse);
         break;
 
       case MTypesAuth.IMPORT_PRIV_KEY:
-        this.addAccountByPrivateKey(sendResponse, message.payload);
+        new AccountHandler(message.payload).importPrivateKey(sendResponse);
         break;
 
       case MTypesInternal.GET_DECRYPT_SEED:
-        sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
+        new WalletHandler().getRandomSeedPhrase(sendResponse);
         break;
 
       case MTypesZilPay.GET_CONFIRM_TX:
@@ -84,11 +87,11 @@ export class Background extends Handler  {
         break;
 
       case MTypesInternal.CHANGE_ACCOUNT:
-        this.walletUpdate(sendResponse, message.payload);
+        new AccountHandler(message.payload).changeAddress(sendResponse);
         break;
 
       case MTypesInternal.CREATE_ACCOUNT:
-        this.getAccountBySeedIndex(sendResponse);
+        new AccountHandler().createAccountBySeed(sendResponse);
         break;
 
       case MTypesInternal.GET_ALL_TX:

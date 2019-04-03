@@ -16,7 +16,8 @@ export class Auth {
     this._storage = new BrowserStorage();
   }
 
-  setPassword(password) {
+  async setPassword(password) {
+    await this.vaultSync();
     this._guard = new CryptoGuard(password);
     this.isReady = true;
 

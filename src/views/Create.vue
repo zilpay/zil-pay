@@ -23,6 +23,7 @@
             {{$v.mnemonicPhrase.$params.minLength.min}}
             words long
           </div>
+          <div v-if="seedErr">{{seedErr}}</div>
         </div>
 
         <div class="pt-3">
@@ -74,7 +75,7 @@ export default {
   directives: { btn },
   data() {
     return {
-      mnemonicPhrase: '',
+      mnemonicPhrase: '', seedErr: null,
       password: '',
       confirm: '',
       submitForm: true
@@ -136,8 +137,8 @@ export default {
         this.spiner();
         this.$router.push({ name: 'home' });
       } catch(err) {
+        this.seedErr = err.message.slice(0, 23);
         this.isEnable(false);
-        this.mutateIsReady(false);
         this.spiner();
       }
     }

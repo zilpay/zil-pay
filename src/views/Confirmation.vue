@@ -178,8 +178,7 @@ export default {
     ...mapActions('storage', [
       'getConfirmationTx',
       'rejectConfirmTx',
-      'confirmTx',
-      'netTest'
+      'confirmTx'
     ]),
 
     async confirm() {
@@ -237,7 +236,6 @@ export default {
   },
   mounted() {
     this.appInfo();
-    this.netTest();
     this.gas = fromZil(this.CONFIRM_TX.gasPrice);
     this.gasLimit = this.CONFIRM_TX.gasLimit;
   }

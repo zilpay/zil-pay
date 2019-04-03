@@ -7,15 +7,13 @@ import errorsCode from './errors'
 import errors from '../auth/errors';
 
 
-export class AccountCreater {
+export class AccountControl {
 
-  constructor(password) {
+  constructor() {
     this._storage = new BrowserStorage();
-    this._network = new NetworkControl();
-    this._zilliqa = new ZilliqaControll(this._network.provider);
-    this._auth = new Auth();
-    this._auth.setPassword(password);
-    this._password = password;
+    this.network = new NetworkControl();
+    this.zilliqa = new ZilliqaControll(this.network.provider);
+    this.auth = new Auth();
   }
 
   async initWallet(decryptSeed) {
@@ -23,12 +21,14 @@ export class AccountCreater {
       throw new Error(errors.WrongDecryptSeed);
     }
 
+    this.zilliqa = new ZilliqaControll(this.network.provider);
+
     const selectedAddress = 0;
-    const account = await this._zilliqa.getAccountBySeed(
+    const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, selectedAddress
     );
-    const encryptedWallet = this._auth._guard.encrypt(decryptSeed);
-    const importedWallet = this._auth._guard.encryptJson([]);
+    const encryptedWallet = this.auth._guard.encrypt(decryptSeed);
+    const importedWallet = this.auth._guard.encryptJson([]);
     const wallet = {
       selectedAddress,
       identities: [{
@@ -48,25 +48,30 @@ export class AccountCreater {
   }
 
   async newAccountBySeed() {
-    await this._auth.vaultSync();
+    await this.auth.vaultSync();
 
-    const { decryptSeed } = await this._auth.getWallet();
+    const { decryptSeed } = await this.auth.getWallet();
 
-    if (!this._auth.isReady) {
+    if (!this.auth.isReady) {
       throw new Error(
-        errorsCode.WalletIsNotReady + this._auth.isReady
+        errorsCode.WalletIsNotReady + this.auth.isReady
       );
-    } else if (!this._auth.isEnable) {
+    } else if (!this.auth.isEnable) {
       throw new Error(
-        errorsCode.WalletIsNotEnable + this._auth.isEnable
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
 
+    this.zilliqa = new ZilliqaControll(this.network.provider);
+
     let { wallet } = await this._storage.get(fields.WALLET);
-    const account = await this._zilliqa.getAccountBySeed(
-      decryptSeed, wallet.identities.length
+    const index = wallet.identities.filter(
+      el => !el.isImport
+    ).length;
+    const account = await this.zilliqa.getAccountBySeed(
+      decryptSeed, index
     );
-    wallet.selectedAddress = account.index;
+    wallet.selectedAddress = wallet.identities.length;
     wallet.identities.push({
       address: account.address,
       balance: account.balance,
@@ -77,7 +82,13 @@ export class AccountCreater {
       new BuildObject(fields.WALLET, wallet)
     );
     
-    return account; 
+    return wallet; 
+  }
+
+  async walletUpdate(wallet) {
+    await this._storage.set(
+      new BuildObject(fields.WALLET, wallet)
+    );
   }
 
 }

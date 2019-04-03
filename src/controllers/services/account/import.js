@@ -1,13 +1,15 @@
-import { AccountCreater } from './create'
+import { AccountControl } from './create'
 import { BuildObject } from '../../../lib/storage'
+import { ZilliqaControll } from '../blockchain/zilliqa'
 import errorsCode from './errors'
 import fields from '../../../config/fields'
 
 
-export class AccountImporter extends AccountCreater {
+export class AccountImporter extends AccountControl {
 
-  constructor(password) {
-    super(password);
+  constructor(accountControl) {
+    super();
+    this.auth = accountControl.auth;
   }
 
   initWallet() {
@@ -19,37 +21,40 @@ export class AccountImporter extends AccountCreater {
   }
 
   async importAccountByPrivateKey(privateKey) {
-    await this._auth.vaultSync();
+    await this.auth.vaultSync();
 
-    const { decryptImported } = await this._auth.getWallet();
+    const { decryptImported } = await this.auth.getWallet();
 
-    if (!this._auth.isReady) {
+    if (!this.auth.isReady) {
       throw new Error(
-        errorsCode.WalletIsNotReady + this._auth.isReady
+        errorsCode.WalletIsNotReady + this.auth.isReady
       );
-    } else if (!this._auth.isEnable) {
+    } else if (!this.auth.isEnable) {
       throw new Error(
-        errorsCode.WalletIsNotEnable + this._auth.isEnable
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
+    
+    this.zilliqa = new ZilliqaControll(this.network.provider);
 
     const { wallet } = await this._storage.get(fields.WALLET);
     const index = wallet.identities.length;
-    const account = await this._zilliqa.getAccountByPrivateKey(
+    const account = await this.zilliqa.getAccountByPrivateKey(
       privateKey, index
     );
 
-    wallet.selectedAddress = account.index;
+    wallet.selectedAddress = wallet.identities.length;
     wallet.identities.push({
       index,
       address: account.address,
-      balance: account.balance
+      balance: account.balance,
+      isImport: true
     });
 
     decryptImported.forEach(el => {
-      if (el.privateKey === privatekey) {
+      if (el.privateKey === account.privateKey) {
         throw new Error(errorsCode.ImportUniqueWrong);
-      } else if (el.index === index) {
+      } else if (el.index === account.index) {
         throw new Error(errorsCode.IndexUniqueWrong);
       }
     });
@@ -58,12 +63,12 @@ export class AccountImporter extends AccountCreater {
       index, privateKey
     });
 
-    await this._auth.updateImported(decryptImported);
+    await this.auth.updateImported(decryptImported);
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
     );
     
-    return account;
+    return wallet;
   }
   
 }

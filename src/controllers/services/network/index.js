@@ -1,3 +1,4 @@
+import axios from 'axios'
 import ZilliqaConfig from '../../../config/zil'
 import errorsCode from './errors'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
@@ -19,6 +20,7 @@ export class NetworkControl {
   constructor(config=ZilliqaConfig, selected=defaultSelected) {
     this.config = config;
     this.selected = selected;
+    this.status = null;
     this._storage = new BrowserStorage();
   }
 
@@ -34,6 +36,8 @@ export class NetworkControl {
       new BuildObject(fields.SELECTED_NET, selected)
     );
     this.selected = selected;
+
+    await this.checkProvider();
 
     return {
       selected,
@@ -54,6 +58,8 @@ export class NetworkControl {
     );
     this.config = config;
 
+    await this.checkProvider();
+
     return this.config;
   }
 
@@ -69,10 +75,23 @@ export class NetworkControl {
       this.selected = selectednet;
     }
 
+    await this.checkProvider();
+
     return {
       config,
       selected: this.selected
     };
+  }
+
+  async checkProvider() {
+    try {
+      await axios.post(this.provider);
+      this.status = true;
+    } catch(err) {
+      this.status = false;
+    }
+
+    return this.status;
   }
 
 }

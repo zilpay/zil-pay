@@ -54,7 +54,7 @@ export default {
   methods: {
     ...mapActions('storage', [
       'configUpdate',
-      'updateNode'
+      'changeNetwork'
     ]),
 
     changeNodeUrl(net, nodeURL) {
@@ -71,7 +71,7 @@ export default {
     },
     async changeNode() {
       await this.configUpdate(this.netConfig);
-      await this.updateNode(this.selectednet);
+      await this.changeNetwork(this.selectednet);
       this.$router.push({ name: 'home' });
     }
   },

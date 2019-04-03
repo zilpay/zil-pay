@@ -10,9 +10,8 @@ import {
   logOut,
   balanceUpdate,
   createAccount,
-  updateNode,
-  configUpdate,
-  netTest
+  changeNetwork,
+  configUpdate
 } from './actions/walletStatus'
 import { exportSeed, exportPrivKey } from './actions/export'
 import {
@@ -70,6 +69,9 @@ export default {
       } else {
         state.confirmationTx = data.filter(tx => Object.keys(tx).length > 0);
       }
+    },
+    mutateIsConnected(state, status) {
+      state.isConnected = status;
     }
   },
   actions: {
@@ -79,9 +81,8 @@ export default {
     logOut,
     balanceUpdate,
     createAccount,
-    updateNode,
+    changeNetwork,
     configUpdate,
-    netTest,
 
     importByPrivateKey,
 

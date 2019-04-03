@@ -66,7 +66,7 @@ export default {
     ...mapActions(['onExpand']),
     ...mapActions('storage', [
       'balanceUpdate',
-      'updateNode'
+      'changeNetwork'
     ]),
 
     async selectDefaultNet(value) {
@@ -81,7 +81,7 @@ export default {
 
       this.spiner();
 
-      await this.updateNode(value);
+      await this.changeNetwork(value);
       await this.balanceUpdate();
 
       this.spiner();
