@@ -23,7 +23,7 @@ export class BlockChainControll extends Zilliqa {
     return { result, nonce };
   }
 
-  async singCreateTransaction(txData, seedOrPrivateKey, index, msgId) {
+  async singCreateTransaction(txData, seedOrPrivateKey, index, currentNonce, msgId) {
     /**
      * @param {txData}: Object with data about transaction.
      * @param seedOrPrivateKey: type String, seed phrase or private key.
@@ -39,6 +39,9 @@ export class BlockChainControll extends Zilliqa {
     }
 
     const pubKey = this.wallet.defaultAccount.publicKey;
+    const balance = await this.getBalance(
+      this.wallet.defaultAccount.address
+    );
     let {
       amount,   // Amount of zil. type Number.
       code,     // Value contract code. type String.
@@ -53,11 +56,11 @@ export class BlockChainControll extends Zilliqa {
     if (!version) {
       version = await this.version(msgId);
     }
-    if (!nonce && nonce != 0) {
-      const balance = await this.getBalance(
-        this.wallet.defaultAccount.address
-      );
+    if (isNaN(nonce)) {
       nonce = balance.nonce;
+    }
+    if (currentNonce >= balance.nonce) {
+      nonce = currentNonce;
     }
 
     amount = new BN(amount);
@@ -92,11 +95,11 @@ export class BlockChainControll extends Zilliqa {
 
   async getAccountBySeed(seed, index) {
     this.wallet.addByMnemonic(seed, index);
-    const { address, publicKey } = this.wallet.defaultAccount;
+    const { address } = this.wallet.defaultAccount;
     const { result } = await this.getBalance(address);
 
     return {
-      index, publicKey, address,
+      index, address,
       balance: result
     };
   }

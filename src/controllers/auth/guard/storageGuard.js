@@ -77,9 +77,11 @@ export class StorageGuard extends BrowserStorage {
 
     if (!txs[from]) {
       txs[from] = {};
+    }
+    if (!txs[from][net]) {
       txs[from][net] = [];
     }
-    if (txs[from][net].length > 5) {
+    if (txs[from] && txs[from][net] && txs[from][net].length > 5) {
       txs[from][net].shift();
     }
     if (!data.Info || !data.TranID || !data.toAddr) {
@@ -90,7 +92,8 @@ export class StorageGuard extends BrowserStorage {
       Info: data.Info,
       TranID: data.TranID,
       amount: data.amount,
-      toAddr: data.toAddr
+      toAddr: data.toAddr,
+      nonce: data.nonce
     });
 
     let object = {};

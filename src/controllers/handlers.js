@@ -86,7 +86,6 @@ export class Handler {
       identities: [{
         balance: balance.result,
         address: wallet.defaultAccount.address,
-        publicKey: wallet.defaultAccount.publicKey,
         index: index
       }]
     };
@@ -207,7 +206,7 @@ export class Handler {
       blockChain.wallet.addByPrivateKey(privKey);
       account = blockChain.wallet.defaultAccount;
       
-      const { result } = await blockChain.getBalance(account.address);
+      const { result, nonce } = await blockChain.getBalance(account.address);
       const index = wallet.identities.length;
       const forEnryptData = {
         index,
@@ -216,10 +215,9 @@ export class Handler {
       let deryptImportedvault = this.auth.guard.decryptObject(importedvault);
       
       account = {
-        index,
+        index, nonce,
         balance: result,
         address: blockChain.wallet.defaultAccount.address,
-        publicKey: blockChain.wallet.defaultAccount.publicKey,
         isImport: true
       };
       wallet.identities.push(account);
@@ -297,9 +295,9 @@ export class Handler {
       const blockChain = new BlockChainControll(PROVIDER);
       const { address } = wallet.identities[wallet.selectedAddress];
       const { result } = await blockChain.getBalance(address);
-  
+
       wallet.identities[wallet.selectedAddress].balance = result;
-  
+
       this.auth.setWallet(wallet);
     } catch(err) {
       sendResponse({
@@ -367,7 +365,8 @@ export class Handler {
 
   async singCreateTransaction(sendResponse, payload) {
     if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
+      throw new Error(`isReady: ${this.auth.isReady},
+                       isEnable: ${this.auth.isEnable}`);
     }
 
     const { confirm } = await this.auth.getConfirm();
@@ -376,7 +375,8 @@ export class Handler {
       config,
       selectednet,
       vault,
-      importedvault
+      importedvault,
+      transactions
     } = await this.auth.getAllData();
     
     if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
@@ -387,8 +387,14 @@ export class Handler {
     
     const { PROVIDER, MSG_VERSION } = config[selectednet];
     const blockChain = new BlockChainControll(PROVIDER);
-    const { index, isImport } = wallet.identities[wallet.selectedAddress];
+    let { index, isImport, address } = wallet.identities[wallet.selectedAddress];
     let txForConfirm = confirm.pop();
+    let lastNonce;
+
+    if (transactions && transactions[address] && transactions[address][selectednet]) {
+      const lastTxs = transactions[address][selectednet];
+      lastNonce = lastTxs[lastTxs.length - 1].nonce;
+    }
 
     txForConfirm.gasLimit = payload.gasLimit;
     txForConfirm.gasPrice = payload.gasPrice;
@@ -415,13 +421,13 @@ export class Handler {
         txForConfirm,
         seedOrPrivateKey,
         index,
+        lastNonce,
         MSG_VERSION
       );
 
       if (result) {
         let tx = Object.assign(result, req.payload.params[0]);
         tx.from = blockChain.wallet.defaultAccount.address;
-
         this.auth.setTx(tx, selectednet);
 
         if (txForConfirm.uuid) {
