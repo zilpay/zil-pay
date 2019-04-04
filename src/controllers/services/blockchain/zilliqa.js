@@ -5,7 +5,7 @@ import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import fields from '../../../config/fields'
 import errorsCode from './errors'
 
-export class ZilliqaControll extends Zilliqa {
+export class ZilliqaControl extends Zilliqa {
 
   constructor(provider) {
     super(provider);
@@ -174,6 +174,19 @@ export class ZilliqaControll extends Zilliqa {
       toAddr: tx.toAddr,
       nonce: tx.nonce
     };
+
+    if (!net) {
+      throw new Error(
+        errorsCode.WrongRequiredparam + 'net'
+      );
+    }
+    Object.keys(data).forEach(key => {
+      if (!data[key]) {
+        throw new Error(
+          errorsCode.WrongRequiredparam + key
+        );
+      }
+    });
 
     try {
       txsList = txsList[fields.TRANSACTIONS];

@@ -6,7 +6,7 @@ import { AccountImporter } from './services/account/import'
 import { MnemonicControl } from './services/auth/mnemonic'
 import { NotificationsControl } from './services/browser/notifications'
 import { PromptService } from './services/browser/popup'
-import { ZilliqaControll } from './services/blockchain/zilliqa'
+import { ZilliqaControl } from './services/blockchain/zilliqa'
 import fields from '../config/fields'
 import zilApi from '../config/api'
 import { TabsMessage } from '../lib/messages/messageCall'
@@ -204,7 +204,7 @@ export class AccountHandler {
 
   async balanceUpdate(sendResponse) {
     const storage = new BrowserStorage();
-    const zilliqa = new ZilliqaControll(networkControl.provider);
+    const zilliqa = new ZilliqaControl(networkControl.provider);
 
     let wallet = await storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
@@ -346,12 +346,12 @@ export class TransactionHandler {
   }
 
   async callTransaction(sendResponse) {
-    const zilliqaControll = new ZilliqaControll(
+    const ZilliqaControl = new ZilliqaControl(
       networkControl.provider
     );
 
     try {
-      await zilliqaControll.addForSingTransaction(
+      await ZilliqaControl.addForSingTransaction(
         this.payload
       );
       new PromptService().open();
@@ -413,12 +413,12 @@ export class TransactionHandler {
     }
 
     try {
-      const zilliqaControll = new ZilliqaControll(
+      const ZilliqaControl = new ZilliqaControl(
         networkControl.provider
       );
       await accountControl.zilliqa.rmForSingTransaction();
 
-      resultTx = await zilliqaControll.singTransaction(
+      resultTx = await ZilliqaControl.singTransaction(
         transaction,
         seedOrKey,
         index,
@@ -458,7 +458,7 @@ export class TransactionHandler {
   }
 
   async _transactionListing(txHash) {
-    const zilliqaControl = new ZilliqaControll(
+    const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     );
     const net = networkControl.selected;

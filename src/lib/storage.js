@@ -6,11 +6,11 @@ if (process.env.NODE_ENV === 'test') {
   storage.local = {
     get(inputKeys, callback) {
       let data = {};
-      if (inputKeys.length) {
+      try {
         inputKeys.forEach(key => {
           data[key] = global.storage[key];
         });
-      } else {
+      } catch(err) {
         data[inputKeys] = global.storage[inputKeys];
       }
       callback(data);
