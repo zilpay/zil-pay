@@ -169,7 +169,6 @@ export class AccountHandler {
       wallet = await accountImporter.importAccountByPrivateKey(privKey);
       sendResponse({ resolve: wallet });
     } catch(err) {
-      console.log(err);
       sendResponse({ reject: err.message });
     }
   }
@@ -201,6 +200,25 @@ export class AccountHandler {
       sendResponse(true);
     }
   }
+
+  async balanceUpdate(sendResponse) {
+    const storage = new BrowserStorage();
+    const zilliqa = new ZilliqaControll(networkControl.provider);
+
+    let wallet = await storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
+    try {
+      const { address } = wallet.identities[wallet.selectedAddress];
+      const { result } = await zilliqa.getBalance(address);
+  
+      wallet.identities[wallet.selectedAddress].balance = result;
+      await accountControl.walletUpdate(wallet);
+      sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
 }
 
 export class ZilliqaHandler {
@@ -230,6 +248,17 @@ export class NetworkHandler {
 
     if (sendResponse && typeof sendResponse == 'function') {
       sendResponse(networkControl.status);
+    }
+  }
+
+  async changeConfig(sendResponse) {
+    const config = this.payload[fields.CONFIG];
+    
+    try {
+      await networkControl.changeConfig(config);
+      sendResponse({ resolve: true });
+    } catch(err) {
+      sendResponse({ reject: err.message });
     }
   }
 

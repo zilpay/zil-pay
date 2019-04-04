@@ -91,8 +91,14 @@ export default {
   },
   mounted() {
     this.jazzicon('jazzicon');
-    this.balanceUpdate();
-    this.transactionsUpdate();
+
+    this.balanceUpdate().then().catch(
+      err => console.log('home.balanceUpdate', err.message)
+    );
+
+    this.transactionsUpdate().then().catch(
+      err => console.log('home.transactionsUpdate', err.message)
+    );
   }
 }
 </script>

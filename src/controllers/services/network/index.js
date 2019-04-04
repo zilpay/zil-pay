@@ -84,8 +84,12 @@ export class NetworkControl {
   }
 
   async checkProvider() {
+    const httpClient = axios.create();
+
+    httpClient.defaults.timeout = 2000;
+
     try {
-      await axios.post(this.provider);
+      await httpClient.post(this.provider);
       this.status = true;
     } catch(err) {
       this.status = false;

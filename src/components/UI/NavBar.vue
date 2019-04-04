@@ -81,8 +81,12 @@ export default {
 
       this.spiner();
 
-      await this.changeNetwork(value);
-      await this.balanceUpdate();
+      try {
+        await this.changeNetwork(value);
+        await this.balanceUpdate();
+      } catch(err) {
+        console.log('navbar.balanceUpdate', err.message);
+      }
 
       this.spiner();
     },

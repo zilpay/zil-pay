@@ -86,7 +86,6 @@ export default {
     ...mapActions('storage', [
       'jazzicon',
       'logOut',
-      'balanceUpdate',
       'createAccount'
     ]),
 
@@ -106,7 +105,6 @@ export default {
       wallet.selectedAddress = index;
 
       this.setWallet(wallet);
-      this.balanceUpdate();
       this.jazzicon('jazzicon');
       this.$router.push({ name: 'home' });
     },

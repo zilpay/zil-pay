@@ -54,16 +54,13 @@ export async function balanceUpdate({ state }) {
   const result = await Message.signal(
     MTypesInternal.UPDATE_BALANCE
   ).send();
-  
-  state.wallet = result.resolve;
 
-  if (result.reject) {
-    state.isConnected = false;
+  if (result.resolve) {
+    state.wallet = result.resolve;
+    return result.resolve;
   } else {
-    state.isConnected = true;
+    throw new Error(result.reject);
   }
-
-  return result.resolve;
 }
 
 export async function createAccount({ state }) {
@@ -95,7 +92,11 @@ export async function configUpdate({ state }, config) {
   const type = MTypesInternal.CONFIG_UPDATE;
   const payload = { config };
 
-  await new Message({ type, payload }).send();
+  const status = await new Message({ type, payload }).send();
 
-  state.config = config;
+  if (status.resolve) {
+    state.config = config;
+  } else {
+    throw new Error(status.reject);
+  }
 }

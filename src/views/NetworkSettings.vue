@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import btn from '../directives/btn'
 import { validateURL } from '../lib/utils'
 
@@ -52,6 +52,8 @@ export default {
     ])
   },
   methods: {
+    ...mapMutations(['spiner']),
+
     ...mapActions('storage', [
       'configUpdate',
       'changeNetwork'
@@ -70,9 +72,18 @@ export default {
       }
     },
     async changeNode() {
-      await this.configUpdate(this.netConfig);
-      await this.changeNetwork(this.selectednet);
-      this.$router.push({ name: 'home' });
+      this.spiner();
+
+      try {
+        await this.configUpdate(this.netConfig);
+        await this.changeNetwork(this.selectednet);
+
+        this.$router.push({ name: 'home' });
+      } catch(err) {
+        this.errorMsg = err.message;
+      }
+
+      this.spiner();
     }
   },
   mounted() {
