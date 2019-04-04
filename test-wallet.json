@@ -1,0 +1,41 @@
+{
+  "config": {
+    "mainnet": {
+      "MSG_VERSION": 1,
+      "PROVIDER": "https://api.zilliqa.com"
+    },
+    "private": {
+      "MSG_VERSION": 1,
+      "PROVIDER": "http://127.0.0.1:4200"
+    },
+    "testnet": {
+      "MSG_VERSION": 1,
+      "PROVIDER": "https://dev-api.zilliqa.com"
+    }
+  },
+  "confirm": [],
+  "importedvault": "6c34ee5980e9ad51e3bdfe6f36331877f4ac060adc16100b353d2644d403feafb4e07d492efd64daaa847c320420a000b0ff41d5be276385f2d3b825bdc0ec4c752d1b1dfb1e54eb9ba3a225967b1f3e3157d0e41574182ee02e45ab170056c05269c5530d",
+  "selectednet": "testnet",
+  "vault": "6c1be76ccfa0a940e8a2ce282c67515cf6b9170cc61803175e31316c934bc7fef1a22e117ca7629abb94283b5430b74beda31280fb2372d8ecd0b23db183ad5b7f271144a64a45adc6e5fc6580",
+  "wallet": {
+    "identities": [
+      {
+        "address": "d755cbdb08888409653437f2c16c66a952afa059",
+        "balance": 0,
+        "index": 0
+      },
+      {
+        "address": "f840f27f1e7f819b4da6d01ac5af455fa76522f0",
+        "balance": 0,
+        "index": 1
+      },
+      {
+        "address": "670467c41ca7bccb4cbbc0eb2e6a116952f9e063",
+        "balance": "1009000000000",
+        "index": 2,
+        "isImport": true
+      }
+    ],
+    "selectedAddress": 2
+  }
+}

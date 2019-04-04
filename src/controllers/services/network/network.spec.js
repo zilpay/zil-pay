@@ -1,76 +1,53 @@
 import { NetworkControl } from './index'
 import ZilliqaConfig from '../../../config/zil'
-import errorsCode from './errors'
+import fields from '../../../config/fields'
+
 
 describe('Test network control', () => {
+  var networkControl;
 
-  it('Get default network object', () => {
-    const defaultSelected = Object.keys(ZilliqaConfig)[0];
-    const netControll = new NetworkControl();
-    expect(netControll.config).toBe(ZilliqaConfig);
-    expect(netControll.selected).toBe(defaultSelected);
+  test('init network control', () => {
+    networkControl = new NetworkControl();
   });
 
-  it('Test change network method', async () => {
-    const netControll = new NetworkControl();
-    const newSelected = Object.keys(ZilliqaConfig)[0];
 
-    netControll._storage.set = () => true;
+  test('change network', async () => {
+    networkControl = new NetworkControl();
+    const newSelected = 'testnet';
+    const newNet = await networkControl.changeNetwork(newSelected);
+
+    expect(newNet).toEqual({
+      selected: newSelected,
+      config: ZilliqaConfig,
+      provider: ZilliqaConfig[newSelected]['PROVIDER']
+    });
+  });
+
+  test('change config', async () => {
+    networkControl = new NetworkControl();
+    let forChangeConfig = ZilliqaConfig;
+
+    forChangeConfig.private.PROVIDER = 'http://127.0.0.1:3000';
+    forChangeConfig.private.MSG_VERSION = 3;
+
+    const newConfig = await networkControl.changeConfig(forChangeConfig);
+
+    expect(newConfig).toEqual(forChangeConfig);
+    expect(newConfig).toEqual(global.storage[fields.CONFIG]);
+  });
+
+  test('network sync', async () => {
+    networkControl = new NetworkControl();
+
+    networkControl.selected = Object.keys(ZilliqaConfig)[0];
+
+    const config = global.storage[fields.CONFIG];
+    const selected = global.storage[fields.SELECTED_NET];
+
+    await networkControl.netwrokSync();
     
-    await netControll.changeNetwork(newSelected);
-
-    expect(newSelected).toBe(netControll.selected);
-  });
-
-  it('Test change wrong network method', async () => {
-    const netControll = new NetworkControl();
-    const wrongSelected = 'wrongNetwork';
-    
-    try {
-      await netControll.changeNetwork(wrongSelected);
-    } catch(err) {
-      expect(err.message).toBe(
-        `${errorsCode.changeNetwork}
-         ${Object.keys(netControll.config)}`
-      );
-    }
-  });
-
-  it('Test change config method', async () => {
-    const netControll = new NetworkControl();
-
-    netControll._storage.set = () => true;
-
-    await netControll.changeConfig(ZilliqaConfig);
-
-    expect(ZilliqaConfig).toBe(netControll.config);
-  });
-
-  it('Test change wrong config method', async () => {
-    const netControll = new NetworkControl();
-    const param = 312321;
-    
-    try {
-      await netControll.changeConfig(param);
-    } catch(err) {
-      expect(err.message).toBe(errorsCode.changeNetwork + ' ' + typeof param);
-    }
-  });
-
-  it('Test sync config and selected method', async () => {
-    const netControll = new NetworkControl();
-
-    netControll._storage.get = () => {
-      return {
-        selectednet: Object.keys(ZilliqaConfig)[0],
-        config: ZilliqaConfig
-      };
-    };
-
-    await netControll.netwrokSync();
-
-    expect(netControll.config).toEqual(ZilliqaConfig);
-    expect(netControll.selected).toBe(Object.keys(ZilliqaConfig)[0]);
+    expect(networkControl.selected).toBe(selected);
+    expect(networkControl.config).toEqual(config);
   });
 
 });

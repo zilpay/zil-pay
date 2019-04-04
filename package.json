@@ -3,7 +3,7 @@
   "version": "0.0.7",
   "private": false,
   "scripts": {
-    "test": "export VUE_CLI_BABEL_TARGET_NODE=true && export VUE_CLI_BABEL_TRANSPILE_MODULES=true && jest",
+    "test": "export VUE_CLI_BABEL_TARGET_NODE=true && export VUE_CLI_BABEL_TRANSPILE_MODULES=true && jest --notify --config jest.config.js",
     "build": "vue-cli-service build",
     "all": "npm run build && npm run scripts",
     "content": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",

@@ -1,5 +1,27 @@
 import extension from 'extensionizer'
 
+var storage = extension.storage;
+
+if (process.env.NODE_ENV === 'test') {
+  storage.local = {
+    get(inputKeys, callback) {
+      let data = {};
+      if (inputKeys.length) {
+        inputKeys.forEach(key => {
+          data[key] = global.storage[key];
+        });
+      } else {
+        data[inputKeys] = global.storage[inputKeys];
+      }
+      callback(data);
+    },    
+    set(value, callback) {
+      global.storage = Object.assign(global.storage, value);
+      callback(global.storage);
+    }
+  };
+}
+
 
 export class BrowserStorage {
 
@@ -15,23 +37,23 @@ export class BrowserStorage {
     return new Promise(resolve => {
       if (value.length) {
         value.forEach(val => {
-          extension.storage.local.set(val, resolve);
+          storage.local.set(val, resolve);
         });
       } else {
-        extension.storage.local.set(value, resolve);
+        storage.local.set(value, resolve);
       }
     });
   }
 
   get(keys) {
     return new Promise(resolve => {
-      extension.storage.local.get(keys, resolve);
+      storage.local.get(keys, resolve);
     });
   }
 
   getAll() {
     return new Promise(resolve => {
-      extension.storage.local.get(null, items => {
+      storage.local.get(null, items => {
         resolve(items);
       });
     });
@@ -39,12 +61,12 @@ export class BrowserStorage {
 
   rm(key) {
     return new Promise(resolve => {
-      extension.storage.local.remove(key, resolve);
+      storage.local.remove(key, resolve);
     });
   }
 
   clear() {
-    return extension.storage.StorageArea.clear();
+    return storage.StorageArea.clear();
   }
 
 }

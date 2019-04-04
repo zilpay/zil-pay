@@ -1,13 +1,14 @@
-import { CryptoGuard } from './guard'
-import errorCodes from './errors'
-import Crypto from '../../../lib/crypto'
+import { CryptoGuard } from './guard';
+import uuidv4 from 'uuid/v4';
+import errorCodes from './errors';
+import Crypto from '../../../lib/crypto';
 
 
 describe('Test guard control', () => {
   const crypto = new Crypto();
 
   it('Init guard control', () => {
-    const testPassword = '12345678';
+    const testPassword = uuidv4();;
     const cryptoGuard = new CryptoGuard(testPassword);
 
     expect(
@@ -18,7 +19,7 @@ describe('Test guard control', () => {
   });
 
   it('Test wrong password', () => {
-    const testPassword = '12';
+    const testPassword = uuidv4();
     
     try {
       new CryptoGuard(testPassword);
@@ -35,7 +36,7 @@ describe('Test guard control', () => {
 
 
   it('Test encrypt and decrypt', () => {
-    const testPassword = '12345678';
+    const testPassword = uuidv4();
     const cryptoGuard = new CryptoGuard(testPassword);
     const decryptString = 'i am enrypt string';
     const encryptString = cryptoGuard.encrypt(decryptString);
@@ -45,7 +46,7 @@ describe('Test guard control', () => {
   });
 
   it('Test json encrypt and decrypt', () => {
-    const testPassword = '12345678';
+    const testPassword = uuidv4();
     const cryptoGuard = new CryptoGuard(testPassword);
     const decryptObject = { key: 'i am enrypt object' };
     const encryptObject = cryptoGuard.encryptJson(decryptObject);
