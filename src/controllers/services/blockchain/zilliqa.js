@@ -1,6 +1,8 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
 import { Long, BN, bytes, validation } from '@zilliqa-js/util'
+import { BrowserStorage, BuildObject } from '../../../lib/storage'
+import fields from '../../../config/fields'
 import errorsCode from './errors'
 
 export class ZilliqaControll extends Zilliqa {
@@ -24,7 +26,7 @@ export class ZilliqaControll extends Zilliqa {
     return { result, nonce };
   }
 
-  async singTransaction(txData, seedOrPrivateKey, index, msgId) {
+  async singTransaction(txData, seedOrPrivateKey, index, currentNonce, msgId) {
     /**
      * @param {txData}: Object with data about transaction.
      * @param seedOrPrivateKey: type String, seed phrase or private key.
@@ -40,6 +42,9 @@ export class ZilliqaControll extends Zilliqa {
     }
 
     const pubKey = this.wallet.defaultAccount.publicKey;
+    const balance = await this.getBalance(
+      this.wallet.defaultAccount.address
+    );
     let {
       amount,   // Amount of zil. type Number.
       code,     // Value contract code. type String.
@@ -54,17 +59,17 @@ export class ZilliqaControll extends Zilliqa {
     if (!version) {
       version = await this.version(msgId);
     }
-    if (!nonce && nonce != 0) {
-      const balance = await this.getBalance(
-        this.wallet.defaultAccount.address
-      );
+    if (isNaN(nonce)) {
       nonce = balance.nonce;
+    }
+    if (currentNonce > balance.nonce) {
+      nonce = currentNonce;
     }
 
     amount = new BN(amount);
     gasPrice = new BN(gasPrice);
     gasLimit = Long.fromNumber(gasLimit);
-    
+
     nonce++;
 
     const zilTxData = this.transactions.new({
@@ -80,7 +85,7 @@ export class ZilliqaControll extends Zilliqa {
     });
     // Sign transaction by current account. //
     const { txParams } = await this.wallet.sign(zilTxData);
-    
+
     return await this.provider.send( // Send to shard node.
       RPCMethod.CreateTransaction, txParams
     );
@@ -118,6 +123,75 @@ export class ZilliqaControll extends Zilliqa {
     const { result } = await this.getBalance(account.address);
 
     return Object.assign(account, { index, balance: result });
+  }
+
+  async addForSingTransaction(payload) {
+    [
+      'amount',
+      'toAddr'
+    ].forEach(key => {
+      if (!payload.hasOwnProperty(key)) {
+        throw new Error(
+          errorsCode.WrongRequiredparam + key
+        );
+      }
+    });
+
+    const storage = new BrowserStorage();
+    let forConfirm = await storage.get(fields.CONFIRM_TX);
+
+    try {
+      forConfirm = forConfirm[fields.CONFIRM_TX];
+      forConfirm.push(payload);
+    } catch(err) {
+      forConfirm = [payload];
+    }
+
+    await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm));
+  }
+
+  async rmForSingTransaction() {
+    const storage = new BrowserStorage();
+    let forConfirm = await storage.get(fields.CONFIRM_TX);
+
+    forConfirm = forConfirm[fields.CONFIRM_TX];
+
+    const removedConfirm = forConfirm.pop();
+    
+    await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm));
+
+    return removedConfirm;
+  }
+
+  async addTransactionList(tx, net) {
+    const storage = new BrowserStorage();
+    const { from } = tx;
+    let txsList = await storage.get(fields.TRANSACTIONS);
+    const data = {
+      Info: tx.Info,
+      TranID: tx.TranID,
+      amount: tx.amount,
+      toAddr: tx.toAddr,
+      nonce: tx.nonce
+    };
+
+    try {
+      txsList = txsList[fields.TRANSACTIONS];
+      txsList[from][net].push(data);
+    } catch(err) {
+      txsList = {};
+      txsList[from] = {};
+      txsList[from][net] = [];
+      txsList[from][net].push(data);
+    }
+
+    if (txsList[from][net].length > 5) {
+      txsList[from][net].shift();
+    }
+
+    await storage.set(
+      new BuildObject(fields.TRANSACTIONS, txsList)
+    );
   }
 
 }

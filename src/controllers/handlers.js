@@ -1,493 +1,469 @@
-import { validation } from '@zilliqa-js/util'
-import { Loger } from '../lib/logger'
-import { Auth } from './auth/main'
-import { BlockChainControll } from './zilliqa'
+import { BrowserStorage } from '../lib/storage'
+import { AccountControl } from './services/account/create'
+import { NetworkControl } from './services/network/index'
+import { AccountExporter } from './services/account/export'
+import { AccountImporter } from './services/account/import'
+import { MnemonicControl } from './services/auth/mnemonic'
+import { NotificationsControl } from './services/browser/notifications'
+import { PromptService } from './services/browser/popup'
+import { ZilliqaControll } from './services/blockchain/zilliqa'
+import fields from '../config/fields'
+import zilApi from '../config/api'
 import { TabsMessage } from '../lib/messages/messageCall'
 import { MTypesTabs } from '../lib/messages/messageTypes'
-import fields from '../config/fields'
-import zilConfig from '../config/zil'
-import zilApi from '../config/api'
-import { PromptService } from './services/browser/popup'
-import { NotificationsControl } from './services/browser/notifications'
 
 
+var accountControl = new AccountControl();
+var networkControl = new NetworkControl();
 
-const log = new Loger('Background.Handler');
+export class WalletHandler {
 
-export class Handler {
-  constructor() {
-    this.auth = new Auth();
+  static walletStatusUpdate() {
+    const type = MTypesTabs.LOCK_STAUS;
+      
+    return new TabsMessage({
+      type,
+      payload: {
+        isEnable: accountControl.auth.isEnable,
+        isReady: accountControl.auth.isReady
+      }
+    }).send();
+  }
+
+  static logOut(sendResponse) {
+    accountControl = new AccountControl();
+    WalletHandler.walletStatusUpdate();
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(true);
+    }
+  }
+
+  constructor(payload) {
+    this.payload = payload;
   }
 
   async initPopup(sendResponse) {
-    let isLcok;
-    let selectednet = Object.keys(zilConfig)[0];
-    let config = zilConfig;
-    const allData = await this.auth.getAllData();
-    const countKeys = Object.keys(fields).length - 1;
-    const countKeysData = Object.keys(allData);
-    const test = !allData.hasOwnProperty(fields.VAULT)
-                 || countKeysData < countKeys;
+    const storage = new BrowserStorage();
 
-    if (!allData || test) {
-      await this.updateConfig(config, selectednet);
-      this.auth.isEnable = false;
-      this.auth.isReady = false;
+    await accountControl.auth.vaultSync();
+    await networkControl.netwrokSync();
+    
+    if (!accountControl.auth.isReady) {
+      await networkControl.changeConfig();
+      await networkControl.changeNetwork(networkControl.selected);
 
       sendResponse({
         reject: {
-          isEnable: this.auth.isEnable,
-          isReady: this.auth.isReady,
-          config, selectednet
+          isEnable: accountControl.auth.isEnable,
+          isReady: accountControl.auth.isReady,
+          config: networkControl.config,
+          selectednet: networkControl.selected,
+          networkStatus: networkControl.status
         }
       });
-    } else {
-      this.auth.isReady = true;
-
-      try {
-        this.auth.guard.encryptedSeed = allData.vault;
-        isLcok = this.auth.guard.decryptSeed;
-
-        if (!isLcok || isLcok.length < 12) {
-          this.auth.isEnable = false;
-        } else {
-          this.auth.isEnable = true;
-        }
-      } catch(err) {
-        this.auth.isEnable = false;
-      }
-      sendResponse({
-        resolve: {
-          data: allData,
-          isEnable: this.auth.isEnable,
-          isReady: this.auth.isReady
-        }
-      });
-    }
-    this._lockStatusUpdateTab();
-  }
-
-  async createNewWallet(sendResponse, payload) {
-    let balance;
-    const { selectednet } = await this.auth.getNet();
-    const { config } = await this.auth.getConfig();
-    const { PROVIDER } = config[selectednet];
-    const blockChain = new BlockChainControll(PROVIDER);
-    const { seed, password } = payload;
-    const index = 0;
-
-    this.auth = new Auth(password);
-    blockChain.wallet.addByMnemonic(seed, index);
-    balance = await blockChain.getBalance(
-      blockChain.wallet.defaultAccount.address
-    );
-
-    const account = {
-      selectedAddress: index,
-      identities: [{
-        balance: balance.result,
-        address: blockChain.wallet.defaultAccount.address,
-        publicKey: blockChain.wallet.defaultAccount.publicKey,
-        index: index
-      }]
-    };
-
-    sendResponse(account);
-
-    await this.auth.setWallet(account);
-    await this.auth.createVault(seed);
-
-    this.auth.isEnable = true;
-    this.auth.isReady = true;
-    this._lockStatusUpdateTab();
-  }
-
-  async exportSeed(sendResponse, payload) {
-    if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady},
-                       isEnable: ${this.auth.isEnable}`);
-    }
-
-    try {
-      const vault = await this.auth.getEncryptedSeed();
-      const { password } = payload;
-      this.auth = new Auth(password, vault);
-      this.auth.isEnable = true;
-      const decryptSeed = this.auth.guard.decryptSeed;
-      sendResponse({ resolve: decryptSeed });
-    } catch(err) {
-      sendResponse({ reject: 'password wrong' });
-    }
-  }
-
-  async exportPrivKey(sendResponse, payload) {
-    let { wallet, config, selectednet, vault, importedvault } = await this.auth.getAllData();
-
-    if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady},
-                       isEnable: ${this.auth.isEnable}`);
-    }
-    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
-      sendResponse(null);
-      return null;
-    } else {
-      this.auth.guard.encryptedSeed = vault;
-    }
-
-    try {
-      const { PROVIDER } = config[selectednet];
-      const index = wallet.identities[wallet.selectedAddress].index;
-      const { password } = payload;
-
-      this.auth = new Auth(password, vault);
-      this.auth.isEnable = true;
-
-      if (wallet.identities[wallet.selectedAddress]['isImport']) {
-        
-        const deryptImportedvault = this.auth.guard.decryptObject(importedvault);
-        const account = deryptImportedvault.filter(el => el.index === wallet.selectedAddress)[0];
-        if (!account) {
-          throw new Error('account fail');
-        }
-        sendResponse({ resolve:  account.privateKey });
-        return null;
-      }
-
-      const decryptSeed = this.auth.guard.decryptSeed;
-      const blockChain = new BlockChainControll(PROVIDER);
-      await blockChain.getAccountBySeed(decryptSeed, index);
-      sendResponse({ resolve: blockChain.wallet.defaultAccount.privateKey });
-    } catch(err) {
-      sendResponse({ reject: 'password wrong' });
-    }
-  }
-
-  async getAccountBySeedIndex(sendResponse) {
-    let { wallet, config, selectednet, vault } = await this.auth.getAllData();
-
-    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
-      sendResponse(null);
-    } else {
-      this.auth.guard.encryptedSeed = vault;
-    }
-
-    const { PROVIDER } = config[selectednet];
-    const blockChain = new BlockChainControll(PROVIDER);
-    const index = wallet.identities.filter(el => !el.isImport).length;
-
-    try {
-      const decryptSeed = this.auth.guard.decryptSeed;
-      const account = await blockChain.getAccountBySeed(decryptSeed, index);
-
-      wallet.identities.push(account);
-      wallet.selectedAddress = index;
-
-      this.auth.setWallet(wallet);
-      sendResponse(wallet);
-    } catch(err) {
-      this.logOut();
-    }
-  }
-
-  async addAccountByPrivateKey(sendResponse, payload) {
-    let account;
-    const { privKey } = payload;
-
-    if (!validation.isPrivateKey(privKey)) {
-      sendResponse({ reject: 'it is not privateKey' });
       return null;
     }
-    
-    let { config, selectednet, wallet, importedvault } = await this.auth.get([
-      fields.WALLET, fields.CONFIG, fields.SELECTED_NET, fields.VAULT_IMPORTED
+
+    const data = await storage.get([
+      fields.CONFIG,
+      fields.WALLET,
+      fields.SELECTED_NET,
+      fields.TRANSACTIONS,
+      fields.CONFIRM_TX
     ]);
-    const { PROVIDER } = config[selectednet];
-    const blockChain = new BlockChainControll(PROVIDER);
+
+    try {
+      await accountControl.auth.getWallet();
+    } catch(err) { }
+
+    sendResponse({
+      resolve: {
+        data: data,
+        isEnable: accountControl.auth.isEnable,
+        isReady: accountControl.auth.isReady,
+        networkStatus: networkControl.status
+      }
+    });
+    WalletHandler.walletStatusUpdate();
+  }
+
+  async initWallet(sendResponse) {
+    const { seed, password } = this.payload;
+    const storage = new BrowserStorage();
+
+    try {
+      await accountControl.auth.setPassword(password);
+      await accountControl.initWallet(seed);
+      const wallet = await storage.get(fields.WALLET);
+      sendResponse({ resolve: wallet[fields.WALLET] });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+    WalletHandler.walletStatusUpdate();
+  }
+
+  async walletUnlock(sendResponse) {
+    const { password } = this.payload;
+
+    try {
+      await accountControl.auth.setPassword(password);
+      const status = accountControl.auth.isEnable;
+      sendResponse({ resolve: status });
+    } catch(err) {
+      sendResponse({ reject: false });
+    }
+    WalletHandler.walletStatusUpdate();
+  }
+
+  async getRandomSeedPhrase(sendResponse) {
+    const mnemonicControl = new MnemonicControl();
+    const randomSeed = mnemonicControl.getRandomSeed;
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse({ resolve: randomSeed });
+    }
+    return randomSeed;
+  }
+}
+
+export class AccountHandler {
+
+  constructor(payload) {
+    this.payload = payload;
+  }
+
+  async exportPrivateKey(sendResponse) {
+    let account;
+    const { password } = this.payload;
+    const accountExporter = new AccountExporter();
+    await accountExporter.auth.setPassword(password);
+    const isImported = await accountExporter.isImported();
+
+    if (isImported) {
+      account = await accountExporter.exportAccountFromStore();
+    } else {
+      account = await accountExporter.exportPrivateKeyFromSeed();
+    }
+
+    sendResponse({ resolve: account.privateKey });
+  }
+
+  async exportSeedPhrase(sendResponse) {
+    let seedPhrase;
+    const { password } = this.payload;
+    const accountExporter = new AccountExporter();
     
     try {
-      blockChain.wallet.addByPrivateKey(privKey);
-      account = blockChain.wallet.defaultAccount;
-      
-      const { result } = await blockChain.getBalance(account.address);
-      const index = wallet.identities.length;
-      const forEnryptData = {
-        index,
-        privateKey: blockChain.wallet.defaultAccount.privateKey
-      };
-      let deryptImportedvault = this.auth.guard.decryptObject(importedvault);
-      
-      account = {
-        index,
-        balance: result,
-        address: blockChain.wallet.defaultAccount.address,
-        publicKey: blockChain.wallet.defaultAccount.publicKey,
-        isImport: true
-      };
-      wallet.identities.push(account);
-      wallet.selectedAddress = index;
+      await accountExporter.auth.setPassword(password);
+      seedPhrase = await accountExporter.exportSeed();
+      sendResponse({ resolve: seedPhrase.decryptSeed });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
 
-      if (!deryptImportedvault) {
-        deryptImportedvault = [forEnryptData];
-      } else {
-        deryptImportedvault.forEach(el => {
-          if (el.privateKey == forEnryptData.privateKey) {
-            throw new Error('account must be unique');
-          }
-        });
+  async importPrivateKey(sendResponse) {
+    let wallet;
+    const { privKey } = this.payload;
+    const accountImporter = new AccountImporter(accountControl);
 
-        deryptImportedvault.push(forEnryptData);
-      }
-             
-      await this.auth.setImportedVault(
-        this.auth.guard.encryptObject(deryptImportedvault)
-      );
-      await this.auth.setWallet(wallet);
-
+    try {
+      wallet = await accountImporter.importAccountByPrivateKey(privKey);
       sendResponse({ resolve: wallet });
     } catch(err) {
       sendResponse({ reject: err.message });
     }
   }
 
-  updateConfig(config, net) {
-    this.auth.setConfig(config);
-    this.auth.setNet(net);
-  }
-
-  async updateNode(sendResponse, payload) {
-    if (!payload || Object.keys(payload).length < 1) {
-      return null;
+  async createAccountBySeed(sendResponse) {
+    try {
+      const wallet = await accountControl.newAccountBySeed();
+      sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
     }
-    const { selectednet } = payload;
-    const { config } = await this.auth.getConfig();
-    const { PROVIDER } = config[selectednet];
-    const type = MTypesTabs.NETWORK_CHANGED;
-   
-    await this.auth.setNet(selectednet);
-    sendResponse(true);
-
-    new TabsMessage({
-      type,
-      payload: { PROVIDER }
-    }).send();
   }
 
-  async walletUpdate(sendResponse, payload) {
-    await this.auth.setWallet(payload.wallet);
-    sendResponse(true);
-    const account = payload.wallet.identities[
-      payload.wallet.selectedAddress
+  async changeAddress(sendResponse) {
+    const wallet = this.payload[fields.WALLET];
+    const account = wallet.identities[
+      wallet.selectedAddress
     ];
     const type = MTypesTabs.ADDRESS_CHANGED;
+
+    await accountControl.walletUpdate(wallet);
 
     new TabsMessage({
       type,
       payload: account
     }).send();
-  }
 
-  async balanceUpdate(sendResponse) {
-    let { wallet, config, selectednet } = await this.auth.getAllData();
-    
-    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
-      sendResponse(null);
-    }
-    
-    try {
-      const { PROVIDER } = config[selectednet];
-      const blockChain = new BlockChainControll(PROVIDER);
-      const { address } = wallet.identities[wallet.selectedAddress];
-      const { result } = await blockChain.getBalance(address);
-  
-      wallet.identities[wallet.selectedAddress].balance = result;
-  
-      this.auth.setWallet(wallet);
-    } catch(err) {
-      sendResponse({
-        reject: 'nodeURL fail',
-        resolve: wallet
-      });
-      return null;
-    }
-
-    sendResponse({
-      resolve: wallet
-    });
-  }
-
-  async netConfigUpdate(sendResponse, payload) {
-    const { config } = payload;
-    await this.auth.setConfig(config);
-    sendResponse(true);
-  }
-
-  async getAddress(sendResponse) {
-    const { wallet } = await this.auth.getWallet();
-    let account = wallet.identities[
-      wallet.selectedAddress
-    ];
-
-    if (typeof sendResponse == 'function') {
-      sendResponse(account);
-    }
-    return account;
-  }
-
-  async getProvider(sendResponse) {
-    const { config } = await this.auth.getConfig();
-    const { selectednet } = await this.auth.getNet();
-    const { PROVIDER } = config[selectednet];
-
-    if (typeof sendResponse == 'function') {
-      sendResponse({ config, selectednet, PROVIDER });
-    }
-    
-    return PROVIDER;
-  }
-
-  async zilPayInit(sendResponse) {
-    const provider = await this.getProvider();
-    const account = await this.getAddress();
-    const data = {
-      account, provider,
-      isEnable: this.auth.isEnable
-    };
-    sendResponse(data);
-  }
-
-  async walletUnlock(sendResponse, payload) {
-    const { password } = payload;
-    const status = await this.auth.verificationPassword(password);
-    if (status) {
-      this.auth = new Auth(password);
-    }
-    this.auth.isEnable = status;
-    sendResponse(status);
-    this._lockStatusUpdateTab();
-  }
-
-  async singCreateTransaction(sendResponse, payload) {
-    if (!this.auth.isReady || !this.auth.isEnable) {
-      throw new Error(`isReady: ${this.auth.isReady}, isEnable: ${this.auth.isEnable}`);
-    }
-
-    const { confirm } = await this.auth.getConfirm();
-    const {
-      wallet,
-      config,
-      selectednet,
-      vault,
-      importedvault
-    } = await this.auth.getAllData();
-    
-    if (!wallet || !wallet.identities || isNaN(wallet.selectedAddress)) {
-      sendResponse(null);
-    } else {
-      this.auth.guard.encryptedSeed = vault;
-    }
-    
-    const { PROVIDER, MSG_VERSION } = config[selectednet];
-    const blockChain = new BlockChainControll(PROVIDER);
-    const { index, isImport } = wallet.identities[wallet.selectedAddress];
-    let txForConfirm = confirm.pop();
-
-    txForConfirm.gasLimit = payload.gasLimit;
-    txForConfirm.gasPrice = payload.gasPrice;
-
-    try {
-      let seedOrPrivateKey;
-
-      if (isImport) {
-        const deryptImportedvault = this.auth.guard.decryptObject(importedvault);
-        const account = deryptImportedvault.filter(
-          el => el.index === wallet.selectedAddress
-        );
-        if (!account[0]) {
-          throw new Error('Imported account is wrong');
-        }
-        seedOrPrivateKey = account[0].privateKey;
-      } else {
-        seedOrPrivateKey = this.auth.guard.decryptSeed;
-      }
-
-      await this.auth.setConfirm(confirm);
-
-      const { result, req, error } = await blockChain.singCreateTransaction(
-        txForConfirm,
-        seedOrPrivateKey,
-        index,
-        MSG_VERSION
-      );
-
-      if (result) {
-        let tx = Object.assign(result, req.payload.params[0]);
-        tx.from = blockChain.wallet.defaultAccount.address;
-
-        this.auth.setTx(tx, selectednet);
-
-        if (txForConfirm.uuid) {
-          this.returnTx({ resolve: tx }, txForConfirm.uuid);
-        }
-        
-        sendResponse({ resolve: tx });
-
-        this._transactionListing(
-          tx.TranID,
-          blockChain.blockchain,
-          selectednet
-        );
-      } else {
-        if (txForConfirm.uuid) {
-          this.returnTx({ reject: error.message }, txForConfirm.uuid);
-        }
-        sendResponse({ reject: error.message });
-      }
-    } catch(err) {
-      if (txForConfirm.uuid) {
-        this.returnTx({ reject: err.message }, txForConfirm.uuid);
-      }
-      
-      sendResponse({ reject: err.message });
-      log.error(err.message);
-    }
-  }
-
-  async addConfirmTx(data) {
-    await this.auth.setConfirm(data);
-    new PromptService().open();
-  }
-  
-  async rmConfirmTx(sendResponse) {
-    const { confirm } = await this.auth.getConfirm();
-    const txForConfirm = confirm.pop();
-    
-    await this.auth.setConfirm(confirm);
-
-    this.returnTx(
-      { reject: 'User rejected' },
-      txForConfirm.uuid
-    );
-    
-    if (typeof sendResponse == 'function') {
+    if (sendResponse && typeof sendResponse == 'function') {
       sendResponse(true);
     }
   }
 
-  async _lockStatusUpdateTab() {
-    const type = MTypesTabs.LOCK_STAUS;
+  async balanceUpdate(sendResponse) {
+    const storage = new BrowserStorage();
+    const zilliqa = new ZilliqaControll(networkControl.provider);
+
+    let wallet = await storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
+    try {
+      const { address } = wallet.identities[wallet.selectedAddress];
+      const { result } = await zilliqa.getBalance(address);
+  
+      wallet.identities[wallet.selectedAddress].balance = result;
+      await accountControl.walletUpdate(wallet);
+      sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+}
+
+export class ZilliqaHandler {
+
+  static async initZilPay(sendResponse) {
+    const storage = new BrowserStorage();
+    const provider = networkControl.provider;
+
+    let wallet = await storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
+    const account = wallet.identities[
+      wallet.selectedAddress
+    ];
+    const data = {
+      account, provider,
+      isEnable: accountControl.auth.isEnable
+    };
+    sendResponse(data);
+  }
+
+  constructor(payload) {
+    this.payload = payload;
+  }
+
+}
+
+export class NetworkHandler {
+
+  static getNetwork(sendResponse) {
+    const config = networkControl.config;
+    const provider = networkControl.provider;
+    const data = { config, selectednet, provider };
+
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(data);
+    }
     
-    return await new TabsMessage({
-      type,
-      payload: {
-        isEnable: this.auth.isEnable,
-        isReady: this.auth.isReady
-      }
+    return data;
+  }
+
+  constructor(payload) {
+    this.payload = payload;
+  }
+
+  async changeNetwork(sendResponse) {
+    let payload;
+    const { selectednet } = this.payload;
+    const type = MTypesTabs.NETWORK_CHANGED;
+    
+    try {
+      await networkControl.netwrokSync();
+      await networkControl.changeNetwork(selectednet);
+      payload = { provider: networkControl.provider };
+    } catch(err) {
+      payload = { reject: err.message };
+    }
+
+    new TabsMessage({ type, payload }).send();
+
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(networkControl.status);
+    }
+  }
+
+  async changeConfig(sendResponse) {
+    const config = this.payload[fields.CONFIG];
+    
+    try {
+      await networkControl.changeConfig(config);
+      sendResponse({ resolve: true });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
+}
+
+export class TransactionHandler {
+
+  static returnTx(payload, uuid) {
+    const type = MTypesTabs.TX_RESULT;
+
+    payload.uuid = uuid;
+  
+    new TabsMessage({
+      type, payload
     }).send();
   }
 
-  _transactionListing(txHash, blockChain, net) {
+  static async getTransactionsList(sendResponse) {
+    let transactions;
+    const storage = new BrowserStorage();
+
+    try {
+      transactions = await storage.get(fields.TRANSACTIONS);
+      transactions = transactions[fields.TRANSACTIONS];
+    } catch(err) {
+      transactions = {};
+    }
+
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(transactions);
+    }
+
+    return transactions;
+  }
+
+  static async rmTransactionsConfirm(sendResponse) {
+    const removed = await accountControl.zilliqa.rmForSingTransaction();
+
+    TransactionHandler.returnTx(
+      { reject: 'User rejected' },
+      removed.uuid
+    );
+
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(true);
+    }
+  }
+
+  constructor(payload) {
+    this.payload = payload;
+  }
+
+  async callTransaction(sendResponse) {
+    const zilliqaControll = new ZilliqaControll(
+      networkControl.provider
+    );
+
+    try {
+      await zilliqaControll.addForSingTransaction(
+        this.payload
+      );
+      new PromptService().open();
+      sendResponse({ resolve: true });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
+  async buildTransaction(sendResponse) {
+    let resultTx;
+    let seedOrKey;
+    let lastNonce;
+    const storage = new BrowserStorage();
+    const data = await storage.get([
+      fields.CONFIRM_TX,
+      fields.WALLET,
+      fields.TRANSACTIONS
+    ]);
+    const txList = data[fields.TRANSACTIONS];
+    const wallet = data[fields.WALLET];
+    const index = wallet.selectedAddress;
+    const accountSelected = wallet.identities[index];
+    const address = accountSelected.address;
+
+    let transaction = data[fields.CONFIRM_TX].pop();
+    transaction.gasLimit = this.payload.gasLimit;
+    transaction.gasPrice = this.payload.gasPrice;
+
+    try {
+      await accountControl.auth.vaultSync();
+
+      const {
+        decryptImported,
+        decryptSeed
+      } = accountControl.auth.getWallet();
+
+      if (accountSelected.isImport) {
+        const [{ privateKey }] = decryptImported.filter(
+          acc => acc.index === wallet.selectedAddress
+        );
+        seedOrKey = privateKey;
+      } else {
+        seedOrKey = decryptSeed;
+      }
+      
+    } catch(err) {
+      sendResponse({ reject: err.message });
+      return null;
+    }
+
+    const isTxList = txList
+      && txList[address]
+      && txList[address][networkControl.selected];
+
+    if (isTxList) {
+      const lastTx = txList[address][networkControl.selected];
+      lastNonce = lastTx[lastTx.length - 1].nonce;
+    }
+
+    try {
+      const zilliqaControll = new ZilliqaControll(
+        networkControl.provider
+      );
+      await accountControl.zilliqa.rmForSingTransaction();
+
+      resultTx = await zilliqaControll.singTransaction(
+        transaction,
+        seedOrKey,
+        index,
+        lastNonce,
+        networkControl.version
+      );
+    } catch(err) {
+      sendResponse({ reject: err.message });
+      return null;
+    }
+
+    const { result, req, error } = resultTx;
+    
+    if (result) {
+      let tx = Object.assign(result, req.payload.params[0]);
+      tx.from = accountSelected.address;
+
+      await accountControl.zilliqa.addTransactionList(
+        tx, networkControl.selected
+      );
+      
+      sendResponse({ resolve: tx });
+
+      if (transaction.uuid) {
+        TransactionHandler.returnTx(
+          { resolve: tx }, transaction.uuid
+        );
+      }
+      this._transactionListing(tx.TranID);
+    } else {
+      if (transaction.uuid) {
+        this.returnTx({ reject: error.message }, transaction.uuid);
+      }
+      sendResponse({ reject: error.message });
+    }
+
+  }
+
+  async _transactionListing(txHash) {
+    const zilliqaControl = new ZilliqaControll(
+      networkControl.provider
+    );
+    const net = networkControl.selected;
     const timeInterval = 4000;
-    const countIntervl = 50;
+    const countIntervl = 10;
     const title = 'ZilPay Transactions';
     let k = 0;
 
@@ -495,7 +471,9 @@ export class Handler {
       async () => {
         
         try {
-          await blockChain.getTransaction(txHash);
+          await zilliqaControl
+          .blockchain
+          .getTransaction(txHash);
           
           new NotificationsControl({
             url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
@@ -510,7 +488,7 @@ export class Handler {
             new NotificationsControl({
               url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
               title: title,
-              message: err.message
+              message: 'Transactions not completed'
             }).create();
 
             clearInterval(interval);
@@ -525,24 +503,6 @@ export class Handler {
       },
       timeInterval
     );
-  }
-
-  returnTx(payload, uuid) {
-    const type = MTypesTabs.TX_RESULT;
-
-    payload.uuid = uuid;
-     
-    new TabsMessage({
-      type, payload
-    }).send();
-  }
-
-  logOut() {
-    this.auth = new Auth();
-    this.auth.isReady = true;
-    this.auth.isEnable = false;
-    this._lockStatusUpdateTab();
-    // window.chrome.runtime.reload();
   }
 
 }

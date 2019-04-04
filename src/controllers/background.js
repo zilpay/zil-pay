@@ -1,21 +1,18 @@
 import { LocalStream } from 'extension-streams'
 import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../lib/messages/messageTypes'
 import { SecureMessage } from '../lib/messages/messageCall'
-import { Handler } from './handlers'
-import { Loger } from '../lib/logger'
 import {
   WalletHandler,
   NetworkHandler,
-  AccountHandler
-} from './handlers_2.0'
+  AccountHandler,
+  ZilliqaHandler,
+  TransactionHandler
+} from './handlers'
 
 
-const log = new Loger('Background');
-
-export class Background extends Handler  {
+export class Background {
 
   constructor() {
-    super();
     this._watchInternalMessaging();
   }
 
@@ -82,10 +79,6 @@ export class Background extends Handler  {
         new WalletHandler().getRandomSeedPhrase(sendResponse);
         break;
 
-      case MTypesZilPay.GET_CONFIRM_TX:
-        this.auth.getConfirm().then(sendResponse);
-        break;
-
       case MTypesInternal.CHANGE_ACCOUNT:
         new AccountHandler(message.payload).changeAddress(sendResponse);
         break;
@@ -95,7 +88,7 @@ export class Background extends Handler  {
         break;
 
       case MTypesInternal.GET_ALL_TX:
-        this.auth.getTxs().then(sendResponse);
+        TransactionHandler.getTransactionsList(sendResponse);
         break;
     
       case MTypesInternal.UPDATE_BALANCE:
@@ -107,11 +100,11 @@ export class Background extends Handler  {
         break;
 
       case MTypesZilPay.REJECT_CONFIRM_TX:
-        this.rmConfirmTx(sendResponse);
+        TransactionHandler.rmTransactionsConfirm(sendResponse);
         break;
 
       case MTypesZilPay.CONFIRM_TX:
-        this.singCreateTransaction(sendResponse, message.payload);
+        new TransactionHandler(message.payload).buildTransaction(sendResponse);
         break;
 
       default:
@@ -123,20 +116,11 @@ export class Background extends Handler  {
     switch (message.type) {
       
       case MTypesZilPay.INIT_DATA:
-        this.zilPayInit(sendResponse);
+        ZilliqaHandler.initZilPay(sendResponse);
         break;
 
       case MTypesZilPay.CALL_SIGN_TX:
-        this.addConfirmTx(message.payload);
-        sendResponse(true);
-        break;
-
-      case MTypesInternal.GET_NETWORK:
-        this.getProvider(sendResponse);
-        break;
-      
-      case MTypesInternal.GET_ADDRESS:
-        this.getAddress(sendResponse);
+        new TransactionHandler(message.payload).callTransaction(sendResponse);
         break;
 
       default:
