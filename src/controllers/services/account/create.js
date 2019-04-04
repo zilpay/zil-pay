@@ -1,5 +1,5 @@
 import { Auth } from '../auth/index'
-import { ZilliqaControll } from '../blockchain/zilliqa'
+import { ZilliqaControl } from '../blockchain/zilliqa'
 import { NetworkControl } from '../network/index'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import fields from '../../../config/fields'
@@ -12,7 +12,7 @@ export class AccountControl {
   constructor() {
     this._storage = new BrowserStorage();
     this.network = new NetworkControl();
-    this.zilliqa = new ZilliqaControll(this.network.provider);
+    this.zilliqa = new ZilliqaControl(this.network.provider);
     this.auth = new Auth();
   }
 
@@ -21,7 +21,7 @@ export class AccountControl {
       throw new Error(errors.WrongDecryptSeed);
     }
 
-    this.zilliqa = new ZilliqaControll(this.network.provider);
+    this.zilliqa = new ZilliqaControl(this.network.provider);
 
     const selectedAddress = 0;
     const account = await this.zilliqa.getAccountBySeed(
@@ -62,7 +62,7 @@ export class AccountControl {
       );
     }
 
-    this.zilliqa = new ZilliqaControll(this.network.provider);
+    this.zilliqa = new ZilliqaControl(this.network.provider);
 
     let { wallet } = await this._storage.get(fields.WALLET);
     const index = wallet.identities.filter(

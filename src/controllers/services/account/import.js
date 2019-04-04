@@ -1,6 +1,6 @@
 import { AccountControl } from './create'
 import { BuildObject } from '../../../lib/storage'
-import { ZilliqaControll } from '../blockchain/zilliqa'
+import { ZilliqaControl } from '../blockchain/zilliqa'
 import errorsCode from './errors'
 import fields from '../../../config/fields'
 
@@ -35,7 +35,7 @@ export class AccountImporter extends AccountControl {
       );
     }
     
-    this.zilliqa = new ZilliqaControll(this.network.provider);
+    this.zilliqa = new ZilliqaControl(this.network.provider);
 
     const { wallet } = await this._storage.get(fields.WALLET);
     const index = wallet.identities.length;
