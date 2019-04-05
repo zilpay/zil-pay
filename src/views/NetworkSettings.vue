@@ -11,6 +11,7 @@
            :key="net" class="col-sm pt-3">
         <label :for="net">{{net}}</label>
         <input type="text"
+               autocomplete="off"
                class="form-control bg-null text-pink"
                :id="net"
                :value="config[net].PROVIDER"

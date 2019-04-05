@@ -133,4 +133,7 @@ textarea:hover {
   cursor: pointer;
   left: 0;
 }
+.error {
+font-size: 12px !important;
+}
 </style>

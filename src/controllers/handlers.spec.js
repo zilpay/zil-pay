@@ -107,7 +107,6 @@ describe('handlers for background page', () => {
     await ZilliqaHandler.initZilPay(value => {
       expect(value.provider).toBe(zilConfig[defaultSelected]['PROVIDER']);
       expect(value.isEnable).toBe(true);
-      expect(value.account.index).toBe(0);
       expect(value.account.address).toEqual('a359105c9c8fda34278186c564ca2d3664e86821');
     });
   });
