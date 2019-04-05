@@ -1,6 +1,10 @@
 {
   "name": "zil-pay",
+<<<<<<< HEAD
   "version": "0.0.9",
+=======
+  "version": "0.0.8",
+>>>>>>> 12b6eda7bb50c6a1f0c575712d692c586d791aae
   "private": false,
   "scripts": {
     "test": "export VUE_CLI_BABEL_TARGET_NODE=true && export VUE_CLI_BABEL_TRANSPILE_MODULES=true && jest --notify --detectOpenHandles --config jest.config.js",
