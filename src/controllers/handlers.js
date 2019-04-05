@@ -234,9 +234,14 @@ export class ZilliqaHandler {
     const account = wallet.identities[
       wallet.selectedAddress
     ];
+    
     const data = {
-      account, provider,
-      isEnable: accountControl.auth.isEnable
+      provider,
+      isEnable: accountControl.auth.isEnable,
+      account: {
+        address: account.address,
+        balance: account.balance
+      }
     };
     sendResponse(data);
   }
@@ -447,7 +452,7 @@ export class TransactionHandler {
     );
     const net = networkControl.selected;
     const timeInterval = 4000;
-    const countIntervl = 10;
+    const countIntervl = 20;
     const title = 'ZilPay Transactions';
     let k = 0;
 

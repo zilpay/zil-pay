@@ -190,6 +190,10 @@ export class ZilliqaControl extends Zilliqa {
 
     try {
       txsList = txsList[fields.TRANSACTIONS];
+      if (!txsList[from]) {
+        txsList[from] = {};
+        txsList[from][net] = [];
+      }
       txsList[from][net].push(data);
     } catch(err) {
       txsList = {};
