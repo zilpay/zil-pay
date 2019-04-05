@@ -38,8 +38,9 @@ export class AccountExporter extends AccountControl {
     let wallet = await this._storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
 
+    const index = wallet.identities[wallet.selectedAddress].index;
     const account = await this.zilliqa.getAccountBySeed(
-      decryptSeed, wallet.selectedAddress
+      decryptSeed, index
     );
 
     if (wallet.identities[wallet.selectedAddress].isImport) {
@@ -47,7 +48,7 @@ export class AccountExporter extends AccountControl {
     }
     
     return {
-      index: wallet.selectedAddress,
+      index,
       privateKey: account.privateKey 
     };
   }
