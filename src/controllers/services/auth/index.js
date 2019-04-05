@@ -11,18 +11,19 @@ export class Auth {
     this.isReady = false;
     this.encryptImported = encryptImported;
     this.encryptSeed = encryptSeed;
+    this._guard = null;
 
     this._storage = new BrowserStorage();
   }
 
   async setPassword(password) {
     await this.vaultSync();
-    const guard = new CryptoGuard(password);
+    this._guard = new CryptoGuard(password);
     this.isReady = true;
 
     try {
-      const decryptSeed = guard.decrypt(this.encryptSeed);
-      const decryptImported = guard.decryptJson(this.encryptImported);
+      const decryptSeed = this._guard.decrypt(this.encryptSeed);
+      const decryptImported = this._guard.decryptJson(this.encryptImported);
   
       this.isEnable = true;
       return { decryptSeed, decryptImported };

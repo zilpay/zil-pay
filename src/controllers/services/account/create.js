@@ -4,7 +4,7 @@ import { NetworkControl } from '../network/index'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import fields from '../../../config/fields'
 import errorsCode from './errors'
-import errors from '../auth/errors';
+import errorsCodeGuard from '../auth/errors'
 
 
 export class AccountControl {
@@ -18,7 +18,9 @@ export class AccountControl {
 
   async initWallet(decryptSeed) {
     if (typeof decryptSeed !== 'string' || decryptSeed.length < 12) {
-      throw new Error(errors.WrongDecryptSeed);
+      throw new Error(errorsCodeGuard.WrongDecryptSeed);
+    } else if (!this.auth._guard) {
+      throw new Error(errorsCodeGuard.GuardWrong);
     }
 
     this.zilliqa = new ZilliqaControl(this.network.provider);

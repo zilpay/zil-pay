@@ -35,10 +35,16 @@ export class AccountExporter extends AccountControl {
 
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
-    const { wallet } = await this._storage.get(fields.WALLET);
+    let wallet = await this._storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, wallet.selectedAddress
     );
+
+    if (wallet.identities[wallet.selectedAddress].isImport) {
+      throw new Error(errorsCode.AccountIsImported);
+    }
     
     return {
       index: wallet.selectedAddress,
@@ -65,7 +71,7 @@ export class AccountExporter extends AccountControl {
 
     let wallet = await this._storage.get(fields.WALLET);
 
-    wallet[fields.WALLET] = wallet;
+    wallet = wallet[fields.WALLET];
     
     const [account] = decryptImported.filter(
       el => el.index === wallet.selectedAddress
@@ -87,8 +93,7 @@ export class AccountExporter extends AccountControl {
   async isImported() {
     const { decryptImported } = await this.auth.getWallet();
     let wallet = await this._storage.get(fields.WALLET);
-
-    wallet[fields.WALLET] = wallet;
+    wallet = wallet[fields.WALLET];
     
     const [account] = decryptImported.filter(
       el => el.index === wallet.selectedAddress

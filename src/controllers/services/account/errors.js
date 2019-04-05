@@ -5,5 +5,6 @@ export default {
   IndexUniqueWrong: 'Each index is unique',
   WrongDecryptSeed: 'is not wallet seed',
   DisableMethod: 'This method is disable',
-  WrongIndex: 'not found index'
+  WrongIndex: 'not found index',
+  AccountIsImported: 'this account imported'
 };
