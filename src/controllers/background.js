@@ -1,16 +1,18 @@
 import { LocalStream } from 'extension-streams'
 import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../lib/messages/messageTypes'
 import { SecureMessage } from '../lib/messages/messageCall'
-import { Handler } from './handlers'
-import { Loger } from '../lib/logger'
+import {
+  WalletHandler,
+  NetworkHandler,
+  AccountHandler,
+  ZilliqaHandler,
+  TransactionHandler
+} from './handlers'
 
 
-const log = new Loger('Background');
-
-export class Background extends Handler  {
+export class Background {
 
   constructor() {
-    super();
     this._watchInternalMessaging();
   }
 
@@ -34,16 +36,15 @@ export class Background extends Handler  {
   _authDispenseMessage(sendResponse, message) {
     switch (message.type) {
       case MTypesAuth.SET_PASSWORD:
-        this.walletUnlock(sendResponse, message.payload);
+        new WalletHandler(message.payload).walletUnlock(sendResponse);
         break;
       
       case MTypesAuth.LOG_OUT:
-        this.logOut();
-        sendResponse(true);
+        WalletHandler.logOut(sendResponse);
         break;
 
       case MTypesAuth.SET_SEED_AND_PWD:
-        this.createNewWallet(sendResponse, message.payload);
+        new WalletHandler(message.payload).initWallet(sendResponse);
         break;
 
       default:
@@ -55,59 +56,55 @@ export class Background extends Handler  {
     switch (message.type) {
 
       case MTypesInternal.INIT:
-        this.initPopup(sendResponse);
+        new WalletHandler().initPopup(sendResponse);
         break;
 
       case MTypesInternal.SET_NET:
-        this.updateNode(sendResponse, message.payload);
+        new NetworkHandler(message.payload).changeNetwork(sendResponse);
         break;
 
       case MTypesAuth.EXPORT_SEED:
-        this.exportSeed(sendResponse, message.payload);
+        new AccountHandler(message.payload).exportSeedPhrase(sendResponse);
         break;
 
       case MTypesAuth.EXPORT_PRIV_KEY:
-        this.exportPrivKey(sendResponse, message.payload);
+        new AccountHandler(message.payload).exportPrivateKey(sendResponse);
         break;
 
       case MTypesAuth.IMPORT_PRIV_KEY:
-        this.addAccountByPrivateKey(sendResponse, message.payload);
+        new AccountHandler(message.payload).importPrivateKey(sendResponse);
         break;
 
       case MTypesInternal.GET_DECRYPT_SEED:
-        sendResponse({ resolve: this.auth.mnemonic.getRandomSeed });
-        break;
-
-      case MTypesZilPay.GET_CONFIRM_TX:
-        this.auth.getConfirm().then(sendResponse);
+        new WalletHandler().getRandomSeedPhrase(sendResponse);
         break;
 
       case MTypesInternal.CHANGE_ACCOUNT:
-        this.walletUpdate(sendResponse, message.payload);
+        new AccountHandler(message.payload).changeAddress(sendResponse);
         break;
 
       case MTypesInternal.CREATE_ACCOUNT:
-        this.getAccountBySeedIndex(sendResponse);
+        new AccountHandler().createAccountBySeed(sendResponse);
         break;
 
       case MTypesInternal.GET_ALL_TX:
-        this.auth.getTxs().then(sendResponse);
+        TransactionHandler.getTransactionsList(sendResponse);
         break;
     
       case MTypesInternal.UPDATE_BALANCE:
-        this.balanceUpdate(sendResponse);
+        new AccountHandler().balanceUpdate(sendResponse);
         break;
       
       case MTypesInternal.CONFIG_UPDATE:
-        this.netConfigUpdate(sendResponse, message.payload);
+        new NetworkHandler(message.payload).changeConfig(sendResponse);
         break;
 
       case MTypesZilPay.REJECT_CONFIRM_TX:
-        this.rmConfirmTx(sendResponse);
+        TransactionHandler.rmTransactionsConfirm(sendResponse);
         break;
 
       case MTypesZilPay.CONFIRM_TX:
-        this.singCreateTransaction(sendResponse, message.payload);
+        new TransactionHandler(message.payload).buildTransaction(sendResponse);
         break;
 
       default:
@@ -119,20 +116,11 @@ export class Background extends Handler  {
     switch (message.type) {
       
       case MTypesZilPay.INIT_DATA:
-        this.zilPayInit(sendResponse);
+        ZilliqaHandler.initZilPay(sendResponse);
         break;
 
       case MTypesZilPay.CALL_SIGN_TX:
-        this.addConfirmTx(message.payload);
-        sendResponse(true);
-        break;
-
-      case MTypesInternal.GET_NETWORK:
-        this.getProvider(sendResponse);
-        break;
-      
-      case MTypesInternal.GET_ADDRESS:
-        this.getAddress(sendResponse);
+        new TransactionHandler(message.payload).callTransaction(sendResponse);
         break;
 
       default:

@@ -1,7 +1,7 @@
 import { generateMnemonic, validateMnemonic } from 'bip39'
 
 
-export class MnemonicSeed {
+export class MnemonicControl {
 
   get getRandomSeed() {
     this.seed = generateMnemonic(128);

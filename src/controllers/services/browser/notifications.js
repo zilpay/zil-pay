@@ -30,7 +30,9 @@ export class NotificationsControl {
   }
 
   _notificationClicked() {
-    extension.notifications.onClicked.addListener((onExplorerTx, _) => {
+    const onClicked = extension.notifications.onClicked;
+    
+    onClicked.addListener((onExplorerTx, _) => {
       extension.tabs.create({ url: onExplorerTx });
     });
   }

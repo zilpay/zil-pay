@@ -1,6 +1,5 @@
 import Jazzicon from 'jazzicon'
 import Utils from '../../lib/utils'
-import axios from 'axios'
 import { MTypesInternal, MTypesAuth } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
 
@@ -26,7 +25,11 @@ export async function walletCreate({ commit }, { seed, password }) {
   const payload = { seed, password };
   const wallet = await new Message({ type, payload }).send();
 
-  commit('setWallet', wallet);
+  if (wallet.resolve) {
+    commit('setWallet', wallet.resolve);
+  } else {
+    throw new Error(wallet.reject);
+  }
 }
 
 export async function unLock({ commit }, password) {
@@ -34,9 +37,12 @@ export async function unLock({ commit }, password) {
   const payload = { password };
   const status = await new Message({ type, payload }).send();
 
-  commit('isEnable', status);
-
-  return status;
+  if (status.resolve) {
+    commit('isEnable', status.resolve);
+    return status.resolve;
+  } else {
+    return status.reject;
+  }
 }
 
 export function logOut({ commit }) {
@@ -48,24 +54,28 @@ export async function balanceUpdate({ state }) {
   const result = await Message.signal(
     MTypesInternal.UPDATE_BALANCE
   ).send();
-  
-  state.wallet = result.resolve;
 
-  if (result.reject) {
-    state.isConnected = false;
+  if (result.resolve) {
+    state.wallet = result.resolve;
+    return result.resolve;
   } else {
-    state.isConnected = true;
+    throw new Error(result.reject);
   }
-
-  return result.resolve;
 }
 
 export async function createAccount({ state }) {
-  state.wallet = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
+  const result = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
+
+  if (result.resolve) {
+    state.wallet = result.resolve;
+  } else {
+    throw new Error(result.reject);
+  }
+  
   return state.wallet;
 }
 
-export async function updateNode({ state }, selectednet) {
+export async function changeNetwork({ state }, selectednet) {
   const type = MTypesInternal.SET_NET;
   const payload = { selectednet };
   const provider = state.config[selectednet].PROVIDER;
@@ -73,13 +83,8 @@ export async function updateNode({ state }, selectednet) {
   if (!provider) {
     return null;
   }
-  
-  axios.post(provider)
-       .then(() => state.isConnected = true)
-       .catch(() => state.isConnected = false);
 
-  await new Message({ type, payload }).send();
-
+  state.isConnected = await new Message({ type, payload }).send();
   state.selectednet = selectednet;
 }
 
@@ -87,17 +92,11 @@ export async function configUpdate({ state }, config) {
   const type = MTypesInternal.CONFIG_UPDATE;
   const payload = { config };
 
-  await new Message({ type, payload }).send();
+  const status = await new Message({ type, payload }).send();
 
-  state.config = config;
-}
-
-export async function netTest({ state }) {
-  const provider = state.config[state.selectednet].PROVIDER;
-  try {
-    await axios.post(provider);
-    state.isConnected = true;
-  } catch(err) {
-    state.isConnected = false;
+  if (status.resolve) {
+    state.config = config;
+  } else {
+    throw new Error(status.reject);
   }
 }

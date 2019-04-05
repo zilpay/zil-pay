@@ -61,6 +61,7 @@ export default {
     
     async encryptingAccaunt() {
       const status = await this.unLock(this.password);
+
       this.wrongPassword = !status;
 
       if (!this.wrongPassword) {
@@ -77,7 +78,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-// @import '../styles/colors';
-</style>

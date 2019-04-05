@@ -1,9 +1,9 @@
 {
   "name": "zil-pay",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "test": "export VUE_CLI_BABEL_TARGET_NODE=true && export VUE_CLI_BABEL_TRANSPILE_MODULES=true && jest --notify --detectOpenHandles --config jest.config.js",
     "build": "vue-cli-service build",
     "all": "npm run build && npm run scripts",
     "content": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
@@ -34,8 +34,10 @@
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-service": "^3.5.1",
     "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.5.0",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "jest": "^24.5.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.5.21",

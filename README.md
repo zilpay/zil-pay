@@ -10,8 +10,13 @@ ZilPay is a browser wallet for Zilliqa. Developers can integrate ZilPay into the
 
 #### Install dependencies
 ```sh
-$ npm install
-$ npm run all
+$ npm install        // install dependencies
+$ npm run test       // run testing
+$ npm run content    // build content.js
+$ npm run inpage     // build inpage.js
+$ npm run background // build background.js
+$ npm run scripts    // build content.js & inpage.js & background.js
+$ npm run all        // all scripts build.
 ```
 
 
