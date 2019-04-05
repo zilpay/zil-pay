@@ -37,7 +37,9 @@ export class AccountImporter extends AccountControl {
     
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
-    const { wallet } = await this._storage.get(fields.WALLET);
+    let wallet = await this._storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
     const index = wallet.identities.length;
     const account = await this.zilliqa.getAccountByPrivateKey(
       privateKey, index

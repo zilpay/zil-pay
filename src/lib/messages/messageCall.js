@@ -1,8 +1,21 @@
 import uuidv4 from 'uuid/v4'
 import utils from '../../lib/utils'
 import errors from '../../config/errors'
-import extension from 'extensionizer'
+import extensionAPI from 'extensionizer'
 
+var extension = extensionAPI;
+
+if (process.env.NODE_ENV === 'test') {
+  extension = {
+    runtime: {
+      sendMessage(...args) {} 
+    },
+    tabs: {
+      query(...args) {},
+      sendMessage(...args) {}
+    }
+  };
+}
 
 export class Message {
   // Message instance for send between scripts. //

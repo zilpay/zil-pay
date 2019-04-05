@@ -1,7 +1,18 @@
 import { Loger } from '../../../lib/logger'
 import config from '../../../config/api'
-import extension from 'extensionizer'
+import extensionAPI from 'extensionizer'
 
+var extension = extensionAPI;
+
+if (process.env.NODE_ENV === 'test') {
+  extension = {
+    windows: {
+      create() {},
+      getAll() {},
+      remove() {}
+    }
+  };
+}
 
 const log = new Loger('PROMT');
 

@@ -241,25 +241,9 @@ export class ZilliqaHandler {
     sendResponse(data);
   }
 
-  constructor(payload) {
-    this.payload = payload;
-  }
-
 }
 
 export class NetworkHandler {
-
-  static getNetwork(sendResponse) {
-    const config = networkControl.config;
-    const provider = networkControl.provider;
-    const data = { config, selectednet, provider };
-
-    if (sendResponse && typeof sendResponse == 'function') {
-      sendResponse(data);
-    }
-    
-    return data;
-  }
 
   constructor(payload) {
     this.payload = payload;
@@ -267,7 +251,7 @@ export class NetworkHandler {
 
   async changeNetwork(sendResponse) {
     let payload;
-    const { selectednet } = this.payload;
+    const selectednet = this.payload[fields.SELECTED_NET];
     const type = MTypesTabs.NETWORK_CHANGED;
     
     try {
@@ -346,12 +330,12 @@ export class TransactionHandler {
   }
 
   async callTransaction(sendResponse) {
-    const ZilliqaControl = new ZilliqaControl(
+    const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     );
 
     try {
-      await ZilliqaControl.addForSingTransaction(
+      await zilliqaControl.addForSingTransaction(
         this.payload
       );
       new PromptService().open();
@@ -378,8 +362,8 @@ export class TransactionHandler {
     const address = accountSelected.address;
 
     let transaction = data[fields.CONFIRM_TX].pop();
-    transaction.gasLimit = this.payload.gasLimit;
-    transaction.gasPrice = this.payload.gasPrice;
+    transaction.gasLimit = this.payload.gasLimit || transaction.gasLimit;
+    transaction.gasPrice = this.payload.gasPrice || transaction.gasPrice;
 
     try {
       await accountControl.auth.vaultSync();
@@ -413,12 +397,12 @@ export class TransactionHandler {
     }
 
     try {
-      const ZilliqaControl = new ZilliqaControl(
+      const zilliqaControl = new ZilliqaControl(
         networkControl.provider
       );
       await accountControl.zilliqa.rmForSingTransaction();
 
-      resultTx = await ZilliqaControl.singTransaction(
+      resultTx = await zilliqaControl.singTransaction(
         transaction,
         seedOrKey,
         index,
