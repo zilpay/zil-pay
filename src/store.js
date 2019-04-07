@@ -17,7 +17,7 @@ export default new Vuex.Store({
       currentCurrency: 'USD',
       conversionRate: 0.02
     },
-    minGas: 1000000000,
+    minGas: '1000000000',
     loading: true
   },
   mutations: {
@@ -32,9 +32,11 @@ export default new Vuex.Store({
 
       if (state.loading) {
         spiner.style.display = 'block';
+        spiner.className = 'isLoad';        
         app.style.filter = 'blur(5px)';
       } else {
         app.style.filter = null;
+        spiner.className = null;   
         spiner.style.display = 'none';
       }
     }

@@ -48,6 +48,10 @@ export class WalletHandler {
     await accountControl.auth.vaultSync();
     await networkControl.netwrokSync();
     
+    if (networkControl.status === null) {
+      await networkControl.checkProvider();
+    }
+    
     if (!accountControl.auth.isReady) {
       await networkControl.changeConfig();
       await networkControl.changeNetwork(networkControl.selected);
@@ -418,7 +422,7 @@ export class TransactionHandler {
       sendResponse({ reject: err.message });
       return null;
     }
-
+    console.log(resultTx);
     const { result, req, error } = resultTx;
     
     if (result) {

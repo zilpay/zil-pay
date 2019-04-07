@@ -104,7 +104,7 @@ export default {
 
       wallet.selectedAddress = index;
 
-      this.setWallet(wallet);
+      await this.setWallet(wallet);
       this.jazzicon('jazzicon');
       this.$router.push({ name: 'home' });
     },

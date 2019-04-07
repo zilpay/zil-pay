@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row justify-content-center text-left">
-      <h3 class="col-lg-12 text-pink display-3">Send ZIL</h3>
+      <h3 class="col-lg-12 text-ightindigo display-5">Send ZIL</h3>
       <p class="col-lg-12 text-warning">Only send ZIL to an Zilliqa address.</p>
 
       <form class="col">
@@ -17,7 +17,11 @@
                  v-if="!$v.toAddress.sameAs">{{addressMsg}}</small>
         </div>
         <div class="form-group">
-          <label for="amount">Amount</label>
+          <label for="amount">
+            Amount  <a v-show="amount !== maxAmount"
+                       class="point display-10 text-warning"
+                       @click="amount = maxAmount">max</a>
+          </label>
           <input type="number"
                  class="form-control bg-null"
                  id="amount"
@@ -49,11 +53,10 @@
 import { mapState, mapMutations, mapActions } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import { validationMixin } from 'vuelidate'
-import { fromZil, toZil } from '../filters/zil'
+import { fromZil, toZil, toBN } from '../filters/zil'
 import { required, sameAs } from 'vuelidate/lib/validators'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
-
 
 
 export default {
@@ -134,6 +137,11 @@ export default {
       return this.wallet.identities[
         this.wallet.selectedAddress
       ];
+    },
+    maxAmount() {
+      const amount = toBN(this.account.balance);
+      const gas = toBN(toZil(this.gas));
+      return fromZil(amount.sub(gas), false);
     }
   },
   methods: {
@@ -172,4 +180,5 @@ export default {
 
 <style lang="scss">
 // @import '../styles/colors';
+
 </style>

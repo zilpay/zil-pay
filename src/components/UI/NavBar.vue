@@ -11,12 +11,20 @@
         </router-link>
       </div>
 
-      <Dropdown v-if="isEnable"
-                :options="options"
-                :selected="selectednet"
-                :anException="networkSettings"
-                :classBtn="'dark text-pink'"
-                @updateOption="selectDefaultNet"/>
+      <b-dropdown v-if="isEnable"
+                  :text="selectednet"
+                  variant="primary"
+                  class="m-2">
+        <b-dropdown-item v-for="option of options"
+                         :key="option"
+                         :active="option == selectednet"
+                         @click="selectDefaultNet(option)">
+          {{option}}
+        </b-dropdown-item>
+        <b-dropdown-item @click="$router.push({ name: 'net' })">
+          {{networkSettings}}
+        </b-dropdown-item>
+      </b-dropdown>
 
       <ul class="nav navbar-nav navbar-right">
         <li v-show="isEnable">
@@ -35,12 +43,11 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
-import Dropdown from './Dropdown'
 
 
 export default {
   name: 'NavBar',
-  components: { Dropdown },
+  components: {  },
   data() {
     return {
       networkSettings: 'Settings'
@@ -56,9 +63,7 @@ export default {
     ]),
 
     options() {
-      return Object.keys(this.config).concat(
-        [this.networkSettings]
-      );
+      return Object.keys(this.config);
     }
   },
   methods: {
@@ -71,11 +76,6 @@ export default {
 
     async selectDefaultNet(value) {
       if (!value) {
-        return null;
-      }
-
-      if (value == this.networkSettings) {
-        this.$router.push({ name: 'net' });
         return null;
       }
 
@@ -125,5 +125,14 @@ export default {
 }
 .disable {
   background-color: $red;
+}
+.dropdown-menu {
+  top: 15px !important;
+}
+.dropdown-toggle {
+  color: $ightindigo;
+}
+.btn-primary:hover {
+  color: $ightindigo !important;
 }
 </style>

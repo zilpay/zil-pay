@@ -6,11 +6,19 @@
     <div class="text-center p-2 text-ightindigo display-4">
       
       <button v-btn="'success m-2'"
-            @click="copy('0x'+account['address'])">
+              id="btn-copy"
+              v-b-tooltip.hover
+              bottom
+              @click="copyAddress">
             Account {{wallet.selectedAddress + 1}}
             <br/>
             {{account['address'] | trimAddress}}
       </button>
+
+      <b-tooltip target="btn-copy"
+                 placement="bottom">
+        {{tooltipTitle}}
+      </b-tooltip>
 
       <h5>
         {{account['balance'] | fromZil}}
@@ -42,12 +50,19 @@ import btn from '../directives/btn'
 const TxTracking = () => import('../components/TxTracking')
 
 
+const copyToClipboard = 'copy to clipboard';
+
 export default {
   name: 'home',
   directives: { btn },
   mixins: [],
   components: { TxTracking },
   filters: { fromZil, trimAddress, toUSD },
+  data() {
+    return {
+      tooltipTitle: copyToClipboard
+    };
+  },
   computed: {
      ...mapState([
       'currencyController'
@@ -87,7 +102,15 @@ export default {
       'jazzicon',
       'balanceUpdate',
       'transactionsUpdate'
-    ])
+    ]),
+
+    copyAddress() {
+      copy('0x'+this.account.address);
+      this.tooltipTitle = 'copied';
+      setTimeout(() => {
+        this.tooltipTitle = copyToClipboard;
+      }, 2000);
+    }
   },
   mounted() {
     this.jazzicon('jazzicon');

@@ -1,9 +1,13 @@
 import { units, BN } from '@zilliqa-js/util'
 
 
-export function fromZil(value) {
+export function fromZil(value, isRound=false) {
   const amount = units.fromQa(new BN(value), units.Units.Zil);
-  return Math.round(+amount * 1000) / 1000;
+  if (isRound) {
+    return Math.round(+amount * 1000) / 1000;
+  } else {
+    return amount;
+  }
 }
 
 export function toZil(value) {
@@ -12,6 +16,10 @@ export function toZil(value) {
 
 export function toQa(value) {
   return units.toQa(value, units.Units.Zil);
+}
+
+export function toBN(value) {
+  return new BN(value);
 }
 
 export function toUSD(value, rate) {

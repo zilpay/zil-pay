@@ -83,7 +83,6 @@ export async function changeNetwork({ state }, selectednet) {
   if (!provider) {
     return null;
   }
-
   state.isConnected = await new Message({ type, payload }).send();
   state.selectednet = selectednet;
 }
