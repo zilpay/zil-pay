@@ -1,7 +1,7 @@
 import { units, BN } from '@zilliqa-js/util'
 
 
-export function fromZil(value, isRound=false) {
+export function fromZil(value, isRound=true) {
   const amount = units.fromQa(new BN(value), units.Units.Zil);
   if (isRound) {
     return Math.round(+amount * 1000) / 1000;

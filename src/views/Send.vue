@@ -139,9 +139,11 @@ export default {
       ];
     },
     maxAmount() {
-      const amount = toBN(this.account.balance);
+      const fullBalance = toBN(this.account.balance);
       const gas = toBN(toZil(this.gas));
-      return fromZil(amount.sub(gas), false);
+      const amount = fullBalance.sub(gas);
+
+      return fromZil(amount, false);
     }
   },
   methods: {
