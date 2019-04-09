@@ -43,8 +43,6 @@
 
         <button v-btn="'info col-12 mt-1'"
                 @click="$router.push({name: 'import'})">Import privateKey</button>
-        <button v-btn="'danger col-12 mt-2'"
-                @click="exportPrivKey">Export PrivateKey</button>
         <button v-btn="'danger col-12 mt-1'"
                 @click="exportSeed">Export Seed</button>
       </div>
@@ -109,12 +107,6 @@ export default {
       this.$router.push({ name: 'home' });
     },
 
-    exportPrivKey() {
-      this.$router.push({
-        name: 'export',
-        params: { type: exportTypes.PRIVATE_KEY }
-      });
-    },
     exportSeed() {
       this.$router.push({
         name: 'export',

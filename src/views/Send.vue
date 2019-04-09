@@ -158,6 +158,9 @@ export default {
       );
     },
     maxAmount() {
+      if (+this.account.balance == 0) {
+        return '0';
+      }
       const fullBalance = toBN(this.account.balance);
       const gas = toBN(toZil(this.gas));
       const amount = fullBalance.sub(gas);

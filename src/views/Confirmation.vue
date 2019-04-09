@@ -44,7 +44,7 @@
           <div>
             <a class="text-truncate text-ightindigo"
                :href="exploreAddress(from)" target="_blanck">
-              Account 1
+              Account {{account.index + 1}}
             </a>
           </div>
 
@@ -120,16 +120,14 @@ export default {
   validations: {
     gas: {
       sameAs: sameAs(vue => {
-        if (vue.gas <= 0 || isNaN(vue.gas) || vue.gas == '') {
+       if (vue.gas <= 0 || isNaN(vue.gas) || vue.gas == '') {
           vue.gasMsg = ERRORCODE[0];
           return true;
         } else if (vue.gas > +fromZil(vue.account.balance)) {
           vue.gasMsg = ERRORCODE[1];
           return true;
         }
-
         vue.gasMsg = null;
-
         return false;
       })
     },

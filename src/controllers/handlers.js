@@ -475,6 +475,7 @@ export class TransactionHandler {
           }).create();
 
           clearInterval(interval);
+          return null;
         } catch(err) {
           if (k > countIntervl) {
 
@@ -485,6 +486,7 @@ export class TransactionHandler {
             }).create();
 
             clearInterval(interval);
+            return null;
           }
         }
 
