@@ -12,7 +12,19 @@
                  id="to"
                  autocomplete="off"
                  placeholder="To address"
-                 v-model="toAddress">
+                 v-model="toAddress"
+                 @blur="blurMenu"
+                 @focus="isMenu = true && !toAddress"
+                 @click="isMenu = true && !toAddress">
+          <div class="dropdown-menu address-book"
+               :class="{show: isMenu}">
+            <a v-for="account of accounts" :key="account.index"
+               class="dropdown-item point"
+               @click="selectAddress(account.address)">
+               Account {{account.index + 1}}
+               {{account.address | trimAddress}}
+            </a>
+          </div>
           <small class="form-text text-danger"
                  v-if="!$v.toAddress.sameAs">{{addressMsg}}</small>
         </div>
@@ -54,6 +66,7 @@ import { mapState, mapMutations, mapActions } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import { validationMixin } from 'vuelidate'
 import { fromZil, toZil, toBN } from '../filters/zil'
+import trimAddress from '../filters/trimAddress'
 import { required, sameAs } from 'vuelidate/lib/validators'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
@@ -63,13 +76,14 @@ export default {
   directives: { btn },
   mixins: [validationMixin],
   name: 'Send',
-  filters: { fromZil },
+  filters: { fromZil, trimAddress },
   data() {
     return {
       toAddress: '', addressMsg: null,
       amount: 0, amounMsg: null,
       gas: 0, gasMsg: null,
-      submitForm: true
+      submitForm: true,
+      isMenu: false
     };
   },
   validations: {
@@ -138,6 +152,11 @@ export default {
         this.wallet.selectedAddress
       ];
     },
+    accounts() {
+      return this.wallet.identities.filter(
+        acc => acc.index !== this.account.index
+      );
+    },
     maxAmount() {
       const fullBalance = toBN(this.account.balance);
       const gas = toBN(toZil(this.gas));
@@ -172,6 +191,13 @@ export default {
       this.transactionsUpdate();
       this.spiner();
       this.$router.push({ name: 'home' });
+    },
+    selectAddress(address) {
+      this.toAddress = address;
+      this.isMenu = false;
+    },
+    blurMenu() {
+      setTimeout(() => this.isMenu = false, 500);
     }
   },
   mounted() {
@@ -182,5 +208,10 @@ export default {
 
 <style lang="scss">
 // @import '../styles/colors';
-
+.address-book {
+  margin-top: 56px;
+  margin-left: 15px;
+  right: 0;
+  margin-right: 15px;
+}
 </style>

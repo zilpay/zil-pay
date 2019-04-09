@@ -422,7 +422,7 @@ export class TransactionHandler {
       sendResponse({ reject: err.message });
       return null;
     }
-    console.log(resultTx);
+
     const { result, req, error } = resultTx;
     
     if (result) {

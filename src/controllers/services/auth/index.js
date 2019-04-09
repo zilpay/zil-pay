@@ -90,11 +90,9 @@ export class Auth {
     } else if (typeof decryptImported !== 'object') {
       throw new Error(errorsCode.WrongImported);
     }
-
     const guard = new CryptoGuard(password);
     const encryptSeed = guard.encrypt(decryptSeed);
     const encryptImported = guard.encryptJson(decryptImported);
-
     return { encryptSeed, encryptImported };
   }
 
