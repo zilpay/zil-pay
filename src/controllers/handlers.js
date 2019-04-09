@@ -44,6 +44,10 @@ export class WalletHandler {
 
   async initPopup(sendResponse) {
     const storage = new BrowserStorage();
+    
+    if (!accountControl.auth.verificationTime) {
+      WalletHandler.logOut();
+    }
 
     await accountControl.auth.vaultSync();
     await networkControl.netwrokSync();

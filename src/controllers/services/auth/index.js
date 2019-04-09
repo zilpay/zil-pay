@@ -1,10 +1,26 @@
 import { CryptoGuard } from '../crypto/guard'
 import errorsCode from './errors'
 import fields from '../../../config/fields'
+import api from '../../../config/api'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
 
 
+Date.prototype.addHours = function(h) {    
+  this.setTime(this.getTime() + (h*60*60*1000)); 
+  return this;   
+}
+
+
 export class Auth {
+
+  get verificationTime() {
+    if (!this._endSession) {
+      return null;
+    }
+    const now = new Date();
+    const timeDifference = this._endSession - now;
+    return timeDifference > 0;
+  }
 
   constructor(encryptSeed=null, encryptImported=null) {    
     this.isEnable = false;
@@ -12,6 +28,7 @@ export class Auth {
     this.encryptImported = encryptImported;
     this.encryptSeed = encryptSeed;
     this._guard = null;
+    this._endSession = null;
 
     this._storage = new BrowserStorage();
   }
@@ -24,7 +41,8 @@ export class Auth {
     try {
       const decryptSeed = this._guard.decrypt(this.encryptSeed);
       const decryptImported = this._guard.decryptJson(this.encryptImported);
-  
+      
+      this._endSession = new Date().addHours(api.TIME_BEFORE_LOCK);
       this.isEnable = true;
       return { decryptSeed, decryptImported };
     } catch(err) {
