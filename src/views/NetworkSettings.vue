@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <h5 class="mr-auto p-2 point text-warning"
           @click="$router.go(-1)">&#60;BACK</h5>
-      <h5 class="col-lg-12 text-pink">
+      <h5 class="col-lg-12 text-ightindigo">
         Network settings
       </h5>
 
