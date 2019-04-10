@@ -61,7 +61,7 @@
         <input class="bg-null changer text-ightindigo"
                type="text"
                :value="name"
-               @change="changeName">
+               @blur="changeName">
         <img src="/img/edit.svg" height="30">
         <br>
         <img v-if="!!qrcode"

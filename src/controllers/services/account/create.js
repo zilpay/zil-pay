@@ -106,7 +106,7 @@ export class AccountControl {
     wallet.identities[
       wallet.selectedAddress
     ]['name'] = name;
-    console.log(wallet);
+
     await this.walletUpdate(wallet);
   }
 

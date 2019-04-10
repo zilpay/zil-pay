@@ -472,7 +472,7 @@ export class TransactionHandler {
     );
     const net = networkControl.selected;
     const timeInterval = 4000;
-    const countIntervl = 20;
+    const countIntervl = 50;
     const title = 'ZilPay Transactions';
     let k = 0;
 

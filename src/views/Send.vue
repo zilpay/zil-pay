@@ -18,10 +18,10 @@
                  @click="isMenu = true && !toAddress">
           <div class="dropdown-menu address-book"
                :class="{show: isMenu}">
-            <a v-for="account of accounts" :key="account.index"
+            <a v-for="(account, index) of accounts" :key="account.index"
                class="dropdown-item point"
                @click="selectAddress(account.address)">
-              {{name}}
+              {{getName(index)}}
               {{account.address | trimAddress}}
             </a>
           </div>
@@ -154,9 +154,7 @@ export default {
       ];
     },
     accounts() {
-      return this.wallet.identities.filter(
-        acc => acc.index !== this.account.index
-      );
+      return this.wallet.identities;
     },
     maxAmount() {
       if (+this.account.balance == 0) {

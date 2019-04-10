@@ -21,7 +21,7 @@
         <div class="row justify-content-center little">
           <a class="text-left text-ightindigo"
             :href="exploreAddress(currentAccount.address)" target="_blanck">
-            Account {{currentAccount.index + 1}}
+            {{name}}
           </a>
 
           <b class="ml-3 mr-3 text-pink">&#62;</b>
@@ -41,12 +41,13 @@ import { mapState } from 'vuex'
 import { fromZil } from '../filters/zil'
 import explorer from '../mixins/explorer'
 import trimAddress from '../filters/trimAddress'
+import accName from '../mixins/accName'
 
 
 export default {
   name: 'TxTracking',
   filters: { fromZil, trimAddress },
-  mixins: [explorer],
+  mixins: [explorer, accName],
   props: {
     txs: Array,
     currentAccount: Object 

@@ -18,7 +18,7 @@
                @change="changeNodeUrl(net, $event.target.value)">
       </div>
 
-      <div class="error text-danger pl-3 p-2" v-if="errorMsg">
+      <div class="col-sm error text-danger pl-3 p-2" v-if="errorMsg">
         {{errorMsg}}
       </div>
 
