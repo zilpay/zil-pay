@@ -50,6 +50,14 @@ describe('handlers for background page', () => {
     });
   });
 
+  test('WalletHandler.changeAccountName', async () => {
+    const name = 'nix assasin';
+
+    await new WalletHandler({name}).changeAccountName(value => {
+      expect(value.resolve).toBe(true);
+    });
+  });
+
   test('AccountHandler.exportPrivateKey', async () => {
     await new AccountHandler({ password }).exportPrivateKey(value => {
       expect(value.resolve).toBe('2295606db2e8a1baa70e08a169155f94eb3e908ac205013de74dd35b999b96b3');

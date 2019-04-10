@@ -7,6 +7,8 @@ import errorsCode from './errors'
 import errorsCodeGuard from '../auth/errors'
 
 
+const MAX_LENGTH_NAME = 20;
+
 export class AccountControl {
 
   constructor() {
@@ -91,6 +93,21 @@ export class AccountControl {
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
     );
+  }
+
+  async changeAccountName(name) {
+    if (!name || typeof name !== 'string' || name.length > MAX_LENGTH_NAME) {
+      throw new Error(errorsCode.WrongName);
+    }
+
+    let wallet = await this._storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
+    wallet.identities[
+      wallet.selectedAddress
+    ]['name'] = name;
+    console.log(wallet);
+    await this.walletUpdate(wallet);
   }
 
 }

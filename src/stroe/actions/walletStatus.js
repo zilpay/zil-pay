@@ -99,3 +99,17 @@ export async function configUpdate({ state }, config) {
     throw new Error(status.reject);
   }
 }
+
+export async function changeAccountName({ state }, name) {
+  const type = MTypesInternal.ACC_CHANGE_NAME;
+  const payload = { name };
+  const status = await new Message({ type, payload }).send();
+
+  if (status.resolve) {
+    state.wallet.identities[
+      state.wallet.selectedAddress
+    ]['name'] = name;
+  } else {
+    throw new Error(status.reject);
+  }
+}

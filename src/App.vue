@@ -134,6 +134,9 @@ textarea:hover {
   left: 0;
 }
 .error {
-font-size: 12px !important;
+  font-size: 12px !important;
+}
+.changer {
+  border: rgba(33,37,41,.05);
 }
 </style>

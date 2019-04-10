@@ -21,8 +21,8 @@
             <a v-for="account of accounts" :key="account.index"
                class="dropdown-item point"
                @click="selectAddress(account.address)">
-               Account {{account.index + 1}}
-               {{account.address | trimAddress}}
+              {{name}}
+              {{account.address | trimAddress}}
             </a>
           </div>
           <small class="form-text text-danger"
@@ -70,11 +70,12 @@ import trimAddress from '../filters/trimAddress'
 import { required, sameAs } from 'vuelidate/lib/validators'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
+import accName from '../mixins/accName'
 
 
 export default {
   directives: { btn },
-  mixins: [validationMixin],
+  mixins: [validationMixin, accName],
   name: 'Send',
   filters: { fromZil, trimAddress },
   data() {

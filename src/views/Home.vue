@@ -9,14 +9,14 @@
           id="acc-name"
           v-b-tooltip.hover
           @click="showModal">
-        Account {{wallet.selectedAddress + 1}}
+        {{name}}
       </h5>
       <button v-btn="'success'"
               id="btn-copy"
               v-b-tooltip.hover
               bottom
               @click="copyAddress">
-            {{account['address'] | trimAddress}}
+            {{account.address | trimAddress}}
       </button>
 
       <b-tooltip target="btn-copy"
@@ -30,11 +30,11 @@
       </b-tooltip>
 
       <h5>
-        {{account['balance'] | fromZil}}
+        {{account.balance | fromZil}}
         <span class="text-warning">{{currencyController.nativeCurrency}}</span>
       </h5>
       <h5>
-         {{account['balance'] | toUSD(currencyController.conversionRate)}}
+         {{account.balance | toUSD(currencyController.conversionRate)}}
          <span class="text-warning">{{currencyController.currentCurrency}}</span>
       </h5>
     </div>
@@ -58,7 +58,11 @@
              :header-text-variant="headerTextVariant"
              :body-bg-variant="bodyBgVariant">
       <div class="d-block text-center">
-        Account {{wallet.selectedAddress + 1}}
+        <input class="bg-null changer text-ightindigo"
+               type="text"
+               :value="name"
+               @change="changeName">
+        <img src="/img/edit.svg" height="30">
         <br>
         <img v-if="!!qrcode"
              class="m-2"
@@ -86,6 +90,7 @@ import trimAddress from '../filters/trimAddress'
 import btn from '../directives/btn'
 import { exportTypes } from '../lib/messages/messageTypes'
 import explorer from '../mixins/explorer'
+import accName from '../mixins/accName'
 
 const TxTracking = () => import('../components/TxTracking')
 
@@ -95,7 +100,7 @@ const copyToClipboard = 'copy to clipboard';
 export default {
   name: 'home',
   directives: { btn },
-  mixins: [explorer],
+  mixins: [explorer, accName],
   components: { TxTracking },
   filters: { fromZil, trimAddress, toUSD },
   data() {

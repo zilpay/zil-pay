@@ -6,5 +6,6 @@ export default {
   WrongDecryptSeed: 'is not wallet seed',
   DisableMethod: 'This method is disable',
   WrongIndex: 'not found index',
-  AccountIsImported: 'this account imported'
+  AccountIsImported: 'this account imported',
+  WrongName: 'name is not valid'
 };

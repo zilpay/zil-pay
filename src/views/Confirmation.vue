@@ -44,7 +44,7 @@
           <div>
             <a class="text-truncate text-ightindigo"
                :href="exploreAddress(from)" target="_blanck">
-              Account {{account.index + 1}}
+              {{name}}
             </a>
           </div>
 
@@ -102,13 +102,14 @@ import explorer from '../mixins/explorer'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
 import { TabsMessage } from '../lib/messages/messageCall' 
+import accName from '../mixins/accName'
 
 
 export default {
   name: 'Confirmation',
   filters: { trimAddress, fromZil, toUSD },
   directives: { btn },
-  mixins: [explorer, validationMixin],
+  mixins: [explorer, validationMixin, accName],
   data() {
     return {
       data: null,

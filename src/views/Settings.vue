@@ -15,7 +15,7 @@
 
           <div class="d-flex justify-content-end">
             <b class="mr-auto">
-              Account {{index + 1}}
+              {{getName(index)}}
               <span  v-if="val.isImport" class="text-warning">I</span>
             </b>
             <b>{{val.address | trimAddress}}</b>
@@ -56,11 +56,13 @@ import btn from '../directives/btn'
 import trimAddress from '../filters/trimAddress'
 import { fromZil, toUSD } from '../filters/zil'
 import { exportTypes } from '../lib/messages/messageTypes'
+import accName from '../mixins/accName'
 
 
 export default {
   name: 'Settings',
   directives: { btn },
+  mixins: [accName],
   filters: { trimAddress, fromZil, toUSD },
   computed: {
     ...mapState([

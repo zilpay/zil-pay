@@ -44,8 +44,9 @@ export class WalletHandler {
 
   async initPopup(sendResponse) {
     const storage = new BrowserStorage();
+    const session = accountControl.auth.verificationTime;
     
-    if (!accountControl.auth.verificationTime) {
+    if (!session && session !== null) {
       WalletHandler.logOut();
     }
 
@@ -130,6 +131,17 @@ export class WalletHandler {
       sendResponse({ resolve: randomSeed });
     }
     return randomSeed;
+  }
+
+  async changeAccountName(sendResponse) {
+    const { name } = this.payload;
+
+    try {
+      await accountControl.changeAccountName(name);
+      sendResponse({ resolve: true });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
   }
 }
 
