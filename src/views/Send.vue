@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row justify-content-center text-left">
-      <h3 class="col-lg-12 text-pink display-3">Send ZIL</h3>
+      <h3 class="col-lg-12 text-ightindigo display-5">Send ZIL</h3>
       <p class="col-lg-12 text-warning">Only send ZIL to an Zilliqa address.</p>
 
       <form class="col">
@@ -12,12 +12,28 @@
                  id="to"
                  autocomplete="off"
                  placeholder="To address"
-                 v-model="toAddress">
+                 v-model="toAddress"
+                 @blur="blurMenu"
+                 @focus="isMenu = true && !toAddress"
+                 @click="isMenu = true && !toAddress">
+          <div class="dropdown-menu address-book"
+               :class="{show: isMenu}">
+            <a v-for="(account, index) of accounts" :key="account.index"
+               class="dropdown-item point"
+               @click="selectAddress(account.address)">
+              {{getName(index)}}
+              {{account.address | trimAddress}}
+            </a>
+          </div>
           <small class="form-text text-danger"
                  v-if="!$v.toAddress.sameAs">{{addressMsg}}</small>
         </div>
         <div class="form-group">
-          <label for="amount">Amount</label>
+          <label for="amount">
+            Amount  <a v-show="amount !== maxAmount"
+                       class="point display-10 text-warning"
+                       @click="amount = maxAmount">max</a>
+          </label>
           <input type="number"
                  class="form-control bg-null"
                  id="amount"
@@ -49,24 +65,26 @@
 import { mapState, mapMutations, mapActions } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import { validationMixin } from 'vuelidate'
-import { fromZil, toZil } from '../filters/zil'
+import { fromZil, toZil, toBN } from '../filters/zil'
+import trimAddress from '../filters/trimAddress'
 import { required, sameAs } from 'vuelidate/lib/validators'
 import { ERRORCODE } from '../lib/errors/code'
 import btn from '../directives/btn'
-
+import accName from '../mixins/accName'
 
 
 export default {
   directives: { btn },
-  mixins: [validationMixin],
+  mixins: [validationMixin, accName],
   name: 'Send',
-  filters: { fromZil },
+  filters: { fromZil, trimAddress },
   data() {
     return {
       toAddress: '', addressMsg: null,
       amount: 0, amounMsg: null,
       gas: 0, gasMsg: null,
-      submitForm: true
+      submitForm: true,
+      isMenu: false
     };
   },
   validations: {
@@ -134,6 +152,19 @@ export default {
       return this.wallet.identities[
         this.wallet.selectedAddress
       ];
+    },
+    accounts() {
+      return this.wallet.identities;
+    },
+    maxAmount() {
+      if (+this.account.balance == 0) {
+        return '0';
+      }
+      const fullBalance = toBN(this.account.balance);
+      const gas = toBN(toZil(this.gas));
+      const amount = fullBalance.sub(gas);
+
+      return fromZil(amount, false);
     }
   },
   methods: {
@@ -162,6 +193,13 @@ export default {
       this.transactionsUpdate();
       this.spiner();
       this.$router.push({ name: 'home' });
+    },
+    selectAddress(address) {
+      this.toAddress = address;
+      this.isMenu = false;
+    },
+    blurMenu() {
+      setTimeout(() => this.isMenu = false, 500);
     }
   },
   mounted() {
@@ -172,4 +210,10 @@ export default {
 
 <style lang="scss">
 // @import '../styles/colors';
+.address-book {
+  margin-top: 56px;
+  margin-left: 15px;
+  right: 0;
+  margin-right: 15px;
+}
 </style>

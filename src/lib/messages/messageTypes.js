@@ -40,7 +40,8 @@ export const MTypesInternal = {
   UPDATE_BALANCE:        'update_balance',
   CHANGE_ACCOUNT:        'c_account',
   CREATE_ACCOUNT:        'create_account',
-  CONFIG_UPDATE:         'config_update'
+  CONFIG_UPDATE:         'config_update',
+  ACC_CHANGE_NAME:       'change_account_name'
 };
 
 export const MTypesTabs = {

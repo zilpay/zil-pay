@@ -11,7 +11,8 @@ import {
   balanceUpdate,
   createAccount,
   changeNetwork,
-  configUpdate
+  configUpdate,
+  changeAccountName
 } from './actions/walletStatus'
 import { exportSeed, exportPrivKey } from './actions/export'
 import {
@@ -31,8 +32,7 @@ export default {
     isConnected: true,
     wallet: {
       selectedAddress: null, // index
-      identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/],
-      imported: []
+      identities: [/*{address: 0x..., index: 0, publicKey: 0x, balance: 30}*/]
     },
     transactions: { },
     selectednet: Object.keys(zilConf)[0],
@@ -83,6 +83,7 @@ export default {
     createAccount,
     changeNetwork,
     configUpdate,
+    changeAccountName,
 
     importByPrivateKey,
 

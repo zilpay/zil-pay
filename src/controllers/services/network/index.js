@@ -75,8 +75,6 @@ export class NetworkControl {
       this.selected = selectednet;
     }
 
-    await this.checkProvider();
-
     return {
       config,
       selected: this.selected

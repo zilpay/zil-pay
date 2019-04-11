@@ -72,6 +72,12 @@ body, html {
 .cssload-thecube .cssload-c4:before {
   animation-delay: 1.04s;
 }
+.isLoad {
+  position: fixed;
+  z-index: 9;
+  height: 100%;
+  width: 100%;
+}
 
 @keyframes cssload-fold-thecube {
   0%, 10% {

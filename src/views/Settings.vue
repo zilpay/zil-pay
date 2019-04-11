@@ -15,7 +15,7 @@
 
           <div class="d-flex justify-content-end">
             <b class="mr-auto">
-              Account {{index + 1}}
+              {{getName(index)}}
               <span  v-if="val.isImport" class="text-warning">I</span>
             </b>
             <b>{{val.address | trimAddress}}</b>
@@ -43,8 +43,6 @@
 
         <button v-btn="'info col-12 mt-1'"
                 @click="$router.push({name: 'import'})">Import privateKey</button>
-        <button v-btn="'danger col-12 mt-2'"
-                @click="exportPrivKey">Export PrivateKey</button>
         <button v-btn="'danger col-12 mt-1'"
                 @click="exportSeed">Export Seed</button>
       </div>
@@ -58,11 +56,13 @@ import btn from '../directives/btn'
 import trimAddress from '../filters/trimAddress'
 import { fromZil, toUSD } from '../filters/zil'
 import { exportTypes } from '../lib/messages/messageTypes'
+import accName from '../mixins/accName'
 
 
 export default {
   name: 'Settings',
   directives: { btn },
+  mixins: [accName],
   filters: { trimAddress, fromZil, toUSD },
   computed: {
     ...mapState([
@@ -104,17 +104,11 @@ export default {
 
       wallet.selectedAddress = index;
 
-      this.setWallet(wallet);
+      await this.setWallet(wallet);
       this.jazzicon('jazzicon');
       this.$router.push({ name: 'home' });
     },
 
-    exportPrivKey() {
-      this.$router.push({
-        name: 'export',
-        params: { type: exportTypes.PRIVATE_KEY }
-      });
-    },
     exportSeed() {
       this.$router.push({
         name: 'export',

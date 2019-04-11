@@ -44,9 +44,18 @@ export class WalletHandler {
 
   async initPopup(sendResponse) {
     const storage = new BrowserStorage();
+    const session = accountControl.auth.verificationTime;
+    
+    if (!session && session !== null) {
+      WalletHandler.logOut();
+    }
 
     await accountControl.auth.vaultSync();
     await networkControl.netwrokSync();
+    
+    if (networkControl.status === null) {
+      await networkControl.checkProvider();
+    }
     
     if (!accountControl.auth.isReady) {
       await networkControl.changeConfig();
@@ -122,6 +131,17 @@ export class WalletHandler {
       sendResponse({ resolve: randomSeed });
     }
     return randomSeed;
+  }
+
+  async changeAccountName(sendResponse) {
+    const { name } = this.payload;
+
+    try {
+      await accountControl.changeAccountName(name);
+      sendResponse({ resolve: true });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
   }
 }
 
@@ -452,7 +472,7 @@ export class TransactionHandler {
     );
     const net = networkControl.selected;
     const timeInterval = 4000;
-    const countIntervl = 20;
+    const countIntervl = 50;
     const title = 'ZilPay Transactions';
     let k = 0;
 
@@ -471,6 +491,7 @@ export class TransactionHandler {
           }).create();
 
           clearInterval(interval);
+          return null;
         } catch(err) {
           if (k > countIntervl) {
 
@@ -481,6 +502,7 @@ export class TransactionHandler {
             }).create();
 
             clearInterval(interval);
+            return null;
           }
         }
 
