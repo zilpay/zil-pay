@@ -3,6 +3,12 @@ import extension from 'extensionizer'
 
 export class NotificationsControl {
 
+  static counter(number) {
+    extension.browserAction.setBadgeText({
+      text: `${number}`
+    });
+  }
+
   constructor({ url, title, message }) {
     if (typeof url !== 'string' || typeof title !== 'string' || typeof message !== 'string') {
       throw new Error(
@@ -36,4 +42,5 @@ export class NotificationsControl {
       extension.tabs.create({ url: onExplorerTx });
     });
   }
+
 }

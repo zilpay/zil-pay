@@ -2,6 +2,7 @@ import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
 import { Long, BN, bytes, validation } from '@zilliqa-js/util'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
+import { NotificationsControl } from '../browser/notifications'
 import fields from '../../../config/fields'
 import errorsCode from './errors'
 
@@ -148,6 +149,7 @@ export class ZilliqaControl extends Zilliqa {
     }
 
     await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm));
+    NotificationsControl.counter(forConfirm.length);
   }
 
   async rmForSingTransaction() {
@@ -159,6 +161,12 @@ export class ZilliqaControl extends Zilliqa {
     const removedConfirm = forConfirm.pop();
     
     await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm));
+
+    if (forConfirm.length == 0) {
+      NotificationsControl.counter('');
+    } else {
+      NotificationsControl.counter(forConfirm.length);
+    }
 
     return removedConfirm;
   }
