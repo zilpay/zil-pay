@@ -15,7 +15,6 @@ import { MTypesTabs } from '../lib/messages/messageTypes'
 
 var accountControl = new AccountControl();
 var networkControl = new NetworkControl();
-var countAction = 0;
 
 export class WalletHandler {
 
@@ -84,7 +83,11 @@ export class WalletHandler {
 
     try {
       await accountControl.auth.getWallet();
-    } catch(err) { }
+    } catch(err) {
+      /* */
+    }
+
+    await accountControl.zilliqa.notificationsCounter();
 
     sendResponse({
       resolve: {

@@ -149,7 +149,7 @@ export class ZilliqaControl extends Zilliqa {
     }
 
     await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm));
-    NotificationsControl.counter(forConfirm.length);
+    this.notificationsCounter(forConfirm);
   }
 
   async rmForSingTransaction() {
@@ -161,13 +161,7 @@ export class ZilliqaControl extends Zilliqa {
     const removedConfirm = forConfirm.pop();
     
     await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm));
-
-    if (forConfirm.length == 0) {
-      NotificationsControl.counter('');
-    } else {
-      NotificationsControl.counter(forConfirm.length);
-    }
-
+    this.notificationsCounter(forConfirm);
     return removedConfirm;
   }
 
@@ -217,6 +211,24 @@ export class ZilliqaControl extends Zilliqa {
     await storage.set(
       new BuildObject(fields.TRANSACTIONS, txsList)
     );
+  }
+
+  async notificationsCounter(value) {
+    let forConfirm;
+
+    if (!value) {
+      const storage = new BrowserStorage();
+      forConfirm = await storage.get(fields.CONFIRM_TX);
+      forConfirm = forConfirm[fields.CONFIRM_TX];
+    } else {
+      forConfirm = value;
+    }
+
+    if (forConfirm.length == 0) {
+      NotificationsControl.counter('');
+    } else {
+      NotificationsControl.counter(forConfirm.length);
+    }    
   }
 
 }
