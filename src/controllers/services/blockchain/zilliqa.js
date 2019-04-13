@@ -224,7 +224,7 @@ export class ZilliqaControl extends Zilliqa {
       forConfirm = value;
     }
 
-    if (forConfirm.length == 0) {
+    if (!forConfirm || forConfirm.length == 0) {
       NotificationsControl.counter('');
     } else {
       NotificationsControl.counter(forConfirm.length);

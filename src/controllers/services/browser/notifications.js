@@ -1,4 +1,23 @@
-import extension from 'extensionizer'
+import extensionAPI from 'extensionizer'
+
+var extension = extensionAPI;
+
+if (process.env.NODE_ENV === 'test') {
+  extension = {
+    extension: {
+      getURL(...args) {} 
+    },
+    browserAction: {
+      setBadgeText(...args) {}
+    },
+    tabs: {
+      create(...args) {}
+    },
+    notifications: {
+      create(...args) {}
+    }
+  };
+}
 
 
 export class NotificationsControl {
