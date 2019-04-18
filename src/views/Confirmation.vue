@@ -1,12 +1,19 @@
 <template>
-  <div v-if="isObject" class="container">
+  <div v-if="isObject" class="container litte">
     <div class="row justify-content-center">
       <div class="jumbotron text-ightindigo text-left p-1">
         <h5 class="text-lightviolet ml-2">
           Confirmation! <b class="text-warning">{{CONFIRM_TX.length}}</b>
         </h5>
         <p class="text-indigo ml-2">
-          Type: <b class="text-ightindigo">{{CONFIRM_TX.type}}</b>
+          Type: 
+          <b class="text-ightindigo">
+            {{CONFIRM_TX.type}} 
+            <span v-if="CONFIRM_TX.method"
+                  class="text-warning little">
+              {{CONFIRM_TX.method}}
+            </span>
+          </b>
           <br>
           Amount: 
           <b class="text-ightindigo">
@@ -62,7 +69,7 @@
           <div class="form-group">
             <label for="gas">Gas Price (ZILs)</label>
             <input type="text"
-                   class="form-control bg-null"
+                   class="form-control bg-null display-10"
                    id="gas"
                    v-model="gas">
             <small class="form-text text-danger"
@@ -72,7 +79,7 @@
             <label for="gas">Gas Limit (ZILs)</label>
             <input type="number"
                    step="1"
-                   class="form-control bg-null"
+                   class="form-control bg-null display-10"
                    min="1"
                    v-model="gasLimit">
           </div>
@@ -237,6 +244,7 @@ export default {
     this.appInfo();
     this.gas = fromZil(this.CONFIRM_TX.gasPrice);
     this.gasLimit = this.CONFIRM_TX.gasLimit;
+    console.log(this.CONFIRM_TX);
   }
 }
 </script>

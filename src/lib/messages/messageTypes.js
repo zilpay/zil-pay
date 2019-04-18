@@ -6,8 +6,7 @@ export const MTypesSecure = {
   PAY_OBJECT_INIT: 'init_obj',
   CONTENT:         'init_content',
   SYNC:            'sync',
-  STATUS_UPDATE:   's_update',
-  ERROR:           'error'
+  STATUS_UPDATE:   's_update'
 };
 
 export const MTypesAuth = {

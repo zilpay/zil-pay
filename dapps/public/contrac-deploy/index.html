@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Contract deployer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-md-center">
+      <div class="jumbotron">
+        <h1 class="display-4">Contract Deployer</h1>
+        <textarea id="code" cols="80" rows="25">
+  scilla_version 0
+
+  (* HelloWorld contract *)
+
+  import ListUtils
+
+  (***************************************************)
+  (*               Associated library                *)
+  (***************************************************)
+  library HelloWorld
+
+  let not_owner_code = Int32 1
+  let set_hello_code = Int32 2
+
+  (***************************************************)
+  (*             The contract definition             *)
+  (***************************************************)
+
+  contract HelloWorld
+  (owner: ByStr20)
+
+  field welcome_msg : String = ""
+
+  transition setHello (msg : String)
+    is_owner = builtin eq owner _sender;
+    match is_owner with
+    | False =>
+      e = {_eventname : "setHello()"; code : not_owner_code};
+      event e
+    | True =>
+      welcome_msg := msg;
+      e = {_eventname : "setHello()"; code : set_hello_code};
+      event e
+    end
+  end
+
+
+  transition getHello ()
+      r <- welcome_msg;
+      e = {_eventname: "getHello()"; msg: r};
+      event e
+  end
+        </textarea>
+        <hr class="my-4">
+        <textarea id="init" cols="80" rows="10"></textarea>
+        <br>
+        <a class="btn btn-primary btn-lg"
+           onclick="deploy()">Deploy this contract</a>
+        <br>
+        <br>
+        <p id="address"></p>
+      </div>
+      
+      <pre id="tx"></pre>
+    </div>
+  </div>
+
+  <script>
+    async function deploy() {
+      const code = $('#code')[0].textContent;
+      const init = $('#init')[0].textContent;
+      const zilliqa = new window.Zilliqa();
+      const { units, Long } = zilliqa.utils;
+      const contract = zilliqa.contracts.new(code, init);
+      const myGasPrice = units.toQa('1000', units.Units.Li);
+      const [deployTx, newContract] = await contract.deploy({
+        gasPrice: myGasPrice,
+        gasLimit: Long.fromNumber(10000)
+      });
+
+      $('#tx').html(JSON.stringify(deployTx, null, 4));
+      $('#address').html(`contract address: ${newContract.address}`);
+      alert('contract address: ' + newContract.address);
+    }
+
+
+    window.addEventListener("load", () => {
+      const address = zilPay.defaultAccount.address;
+      const init = [
+        {
+          vname: "_scilla_version",
+          type: "Uint32",
+          value: "0"
+        },
+        {
+          vname: "owner",
+          type: "ByStr20",
+          value: `0x${address}`
+        }
+      ];
+      $('#init')[0].textContent = JSON.stringify(init, null, 4);      
+    });   
+    
+  </script>
+</body>
+</html>

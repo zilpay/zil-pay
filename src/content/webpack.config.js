@@ -24,6 +24,9 @@ module.exports = {
     resolve: {
         modules: ['./node_modules']
     },
+    node: {
+        fs: 'empty'
+    },
     plugins: [
         new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.DefinePlugin({

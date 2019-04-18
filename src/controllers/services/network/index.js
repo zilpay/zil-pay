@@ -84,7 +84,7 @@ export class NetworkControl {
   async checkProvider() {
     const httpClient = axios.create();
 
-    httpClient.defaults.timeout = 2000;
+    httpClient.defaults.timeout = 9000;
 
     try {
       await httpClient.post(this.provider);

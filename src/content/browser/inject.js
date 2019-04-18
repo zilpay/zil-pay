@@ -13,16 +13,13 @@ export class Inject {
   }
 
   _injectscript () {
-    let injectionSite = (document.head || document.documentElement);
-    let container = document.createElement('script');
+    const container = (document.head || document.documentElement);
+    const scriptTag = document.createElement('script');
     const src = this._getUrlExtension();
-
-    container.setAttribute('async', false);
-    container.src = src;
-    container.onload = function() {
-      this.parentNode.removeChild(this);
-    };
-    this._injectToHtml(container, injectionSite);
+    scriptTag.setAttribute('async', false);
+    scriptTag.src = src;
+    container.insertBefore(scriptTag, container.children[0]);
+    container.removeChild(scriptTag);
   }
 
   _getUrlExtension() {

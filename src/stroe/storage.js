@@ -104,16 +104,17 @@ export default {
         return {};
       }
       let type = 'Send Zil.';
+      let method = '';
       const txs = state.confirmationTx;
       const length = txs.length;
       const { toAddr, gasPrice, gasLimit, amount, code, data } = txs[length - 1];
-
       if (code && data) {
         type = 'Contract creation.';
       } else if (data) {
-        type = 'Contract call state.';
+        method = JSON.parse(data)._tag;
+        type = 'Contract call method: ';
       }
-      return { length, toAddr, gasPrice, gasLimit, amount, type };
+      return { length, toAddr, gasPrice, gasLimit, amount, type, method };
     }
   }
 }

@@ -4,12 +4,12 @@
 init Zilliqa object
 ```javaScript
 var zilliqa = new Zilliqa(zilPay.nodeURL);
-var utils = zilPay.utils;
+var utils = zilliqa.utils;
 ```
 
 get defaultAccount
 ```javaScript
-var {address, balance, publicKey} = zilPay.defaultAccount;
+var {address, balance} = zilPay.defaultAccount;
 ```
 
 

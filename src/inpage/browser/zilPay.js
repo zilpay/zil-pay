@@ -5,7 +5,9 @@ import uuidv4 from 'uuid/v4'
 import { MTypesSecure, MTypesZilPay, MTypesTabs } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
 
-import { Zilliqa } from '@zilliqa-js/zilliqa'
+import { Blockchain } from '@zilliqa-js/blockchain'
+import { Contracts } from '@zilliqa-js/contract';
+import { HTTPProvider } from '@zilliqa-js/core';
 import * as zilUtils from '@zilliqa-js/util'
 import { validation } from '@zilliqa-js/util'
 import zilConf from '../../config/zil'
@@ -17,7 +19,6 @@ var stream = new WeakMap(); // Setup background connection.
 var subjectStream = new Subject(); // Create event listing.
 var ACCOUNT = {}; // Account storage.
 var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER']; // Network storage.
-
 
 class Listen {
   /**
@@ -99,78 +100,47 @@ function observableStream(name, syncWith) {
   }).pipe(catchError(console.log));
 }
 
-export class RedefinedZilliqa extends Zilliqa {
-  /**
-   * Override Zilliqa object for work with background.js
-   * @param {provider}: String && url;
-   */
+function confirm(tx) {
+  // Create payload with random id(uuid). //        
+  const type = MTypesZilPay.CALL_SIGN_TX;
+  const recipient = MTypesSecure.CONTENT;
+  let { payload } = tx;
+  payload.uuid = uuidv4(); // Each transaction will assigning random uuid.
+  new SecureMessage({ type, payload }).send(stream, recipient);
 
-  constructor(provider) {
-    super(provider || PROVIDER);
-    
-    // Override some methods by Zilliqa. //
-    [
-      'addByKeystore',
-      'addByMnemonic',
-      'addByPrivateKey',
-      'create',
-      'export',
-      'remove',
-      'setDefault'
-    ].forEach(method => {
-      this.wallet.__proto__[method] = () => {
-        throw new Error(`${method} is disable in ZilPay`);
-      };
+  return new Promise((resolve, reject) => {
+    // Waiting response from background.js //
+    const result = subjectStream.subscribe(resultTx => {
+
+      if (resultTx.uuid !== payload.uuid) {
+        return null;
+      } else if (resultTx.reject) {
+        result.unsubscribe();
+        reject(new Error(resultTx.reject));
+      } else if (resultTx.resolve) {
+        result.unsubscribe();
+        resolve(
+          Object.assign(tx, resultTx.resolve)
+        );
+      }
+
+      // Close stream by time.
+      setTimeout(() => {
+        result.unsubscribe();
+        reject(new Error('waiting time may have problems ZilPay'));
+      }, 9000);
     });
+  });
+}
 
-    this.wallet.sign = (tx) => {
-      // Override sign transaction method //
-      if (!window.zilPay.isEnable) {
-        throw new Error('ZilPay is disabled.');
-      }
-
-      tx.confirm = () => {
-        // Create payload with random id(uuid). //        
-        const type = MTypesZilPay.CALL_SIGN_TX;
-        const recipient = MTypesSecure.CONTENT;
-        let { payload } = tx;
-        payload.uuid = uuidv4(); // Each transaction will assigning random uuid.
-        new SecureMessage({ type, payload }).send(stream, recipient);
-
-        return new Promise((resolve, reject) => {
-          // Waiting response from background.js //
-          const result = subjectStream.subscribe(resultTx => {
-            if (resultTx.uuid !== payload.uuid) {
-              return null;
-            } else if (resultTx.reject) {
-              result.unsubscribe();
-              reject(new Error(resultTx.reject));
-            } else if (resultTx.resolve) {
-              result.unsubscribe();
-              resolve(
-                Object.assign(tx, resultTx.resolve)
-              );
-            }
-            setTimeout(() => {
-              result.unsubscribe();
-              reject(new Error('waiting time may have problems ZilPay'));
-            }, 9000);
-          });
-        });
-      }
-      tx.provider.send = () => {
-        // Override send to jsonRPC node.
-        return { error: null, result: {} };
-      };
-
-      return tx;
-    };
-    this.wallet.signWith = (tx) => {
-      return tx;
-    };
-    console.log('Zilliqa: init');
+export class Zilliqa {
+  constructor(node=PROVIDER, provider=new HTTPProvider(PROVIDER)) {
+    this.provider = provider || new HTTPProvider(node);
+    this.wallet = window.zilPay;
+    this.blockchain = new Blockchain(this.provider, this.wallet);
+    this.contracts = new Contracts(this.provider, this.wallet);
+    this.utils = zilUtils;
   }
-
 }
 
 export class ZilPay {
@@ -182,14 +152,9 @@ export class ZilPay {
   constructor(provider) {
     this.isEnable = false; // true: unblock or block.
     this.defaultAccount = null;
-    this.utils = zilUtils;
-    this.nodeURL = provider || PROVIDER; // default nodeURL.
-
-    const type = MTypesSecure.PAY_OBJECT_INIT;
-    const recipient = MTypesSecure.CONTENT;
+    this.provider = provider;
 
     onAddressListing.initEvent('addressListing');
-    new SecureMessage({ type, payload: {} }).send(stream, recipient);
   }
 
   observableAccount() {
@@ -220,18 +185,36 @@ export class ZilPay {
     if (!provider || typeof provider !== 'string') {
       return null;
     }
-    this.nodeURL = provider;
+    this.provider = new HTTPProvider(provider);
+  }
+
+  sign(tx) {
+    if (!window.zilPay.isEnable) {
+      throw new Error('ZilPay is disabled.');
+    }
+    tx.confirm = () => confirm(tx);
+    tx.provider.send = () => {
+      return { error: null, result: {} };
+    };
+    return tx;
   }
 
 }
 
 
+window.zilPay = new ZilPay(new HTTPProvider(PROVIDER));
+window.Zilliqa = Zilliqa;
+
 export default function run() {
   // Create instance in page. //
-  window.Zilliqa = RedefinedZilliqa;
+  
+  const type = MTypesSecure.PAY_OBJECT_INIT;
+  const recipient = MTypesSecure.CONTENT;
+
   observableStream(
     MTypesSecure.INJECTED,
     MTypesSecure.CONTENT
   ).subscribe(msg => listener(msg));
-  window.zilPay = new ZilPay();
+
+  new SecureMessage({ type, payload: {} }).send(stream, recipient);
 }

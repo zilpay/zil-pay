@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ZRC token</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row justify-content-md-center">
+        <div class="jumbotron">
+          <h1 class="display-4">This dapp ZRC token</h1>
+          <p class="lead">
+            <b id="contract" class="text-primary"></b>
+            <br>
+            <b id="balance" class="text-primary"></b>
+            <br>
+            <b id="totalSupply" class="text-primary"></b>
+          </p>
+          <hr class="my-4">
+
+          <div class="input-group mb-3">
+            <a class="btn btn-primary btn" href="#" onclick="Withdraw()">Withdraw</a>
+            <input id="forWisdraw" type="number" class="form-control">
+          </div>
+
+          <div class="input-group mb-3">
+            <a class="btn btn-primary btn" href="#" onclick="Buy()">Buy</a>
+            <input id="forBuy" type="number" class="form-control" value="1">
+          </div>
+        </div>
+
+        <pre id="tx"></pre>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      const contractAddress = '1b9bee83a721b6e63ba4819d0c9ce2d16c521bd3';
+
+      $('#contract').html(`
+      contract: <a href="https://dev-explorer.zilliqa.com/address/${contractAddress}"
+                            target="_blank"
+                            class="text-warning">${contractAddress}</a>
+      `);
+
+      async function getState() {
+        const zilliqa = new window.Zilliqa();
+        const utils = zilliqa.utils;
+        const zrc = zilliqa.contracts.at(contractAddress);
+        const state = await zrc.getState();
+
+        const totalSupply = state[0].value;
+        const balances = utils.units.fromQa(new utils.BN(state[4].value), 'zil');
+        const tokenAmount = state[1].value.filter(
+          el => el.key == `0x${zilPay.defaultAccount.address}`
+        )[0].val;
+
+        $('#totalSupply').html(`totalSupply: ${totalSupply} <span class="text-warning">ZRC</span>`);
+        $('#balance').html(`Contract balance: ${balances} <span class="text-warning">ZIL</span>`);
+        $('#forWisdraw')[0].value = tokenAmount;
+      }
+
+      async function Buy() {
+        const amount = $('#forBuy')[0].value;
+        const zilliqa = new window.Zilliqa();
+        const address = window.zilPay.defaultAccount.address;
+        const utils = zilliqa.utils;
+        const ZRC = zilliqa.contracts.at(contractAddress);
+        const gasPrice = utils.units.toQa(
+          '1000', utils.units.Units.Li
+        );
+        const zilAmount = utils.units.toQa(
+          amount,
+          utils.units.Units.Zil
+        );
+        const callTx = await ZRC.call(
+          "Buy", [],
+          {
+            amount: zilAmount,
+            gasPrice: gasPrice,
+            gasLimit: utils.Long.fromNumber(8000)
+          }
+        );
+
+        $('#tx').html(JSON.stringify(callTx, null, 4));
+        console.log(callTx);
+      }
+
+      async function Withdraw() {
+        const amount = $('#forWisdraw')[0].value;
+        const zilliqa = new window.Zilliqa();
+        const address = window.zilPay.defaultAccount.address;
+        const utils = zilliqa.utils;
+        const ZRC = zilliqa.contracts.at(contractAddress);
+        const gasPrice = utils.units.toQa(
+          '1000', utils.units.Units.Li
+        );
+        const callTx = await ZRC.call(
+          "Withdraw", [{
+            vname: "tokensAmount",
+            type: "Uint128",
+            value: amount
+          }],
+          {
+            amount: new utils.BN(0),
+            gasPrice: gasPrice,
+            gasLimit: utils.Long.fromNumber(8000)
+          }
+        );
+        $('#tx').html(JSON.stringify(callTx, null, 4));
+        console.log(callTx, amount);
+      }
+
+      window.addEventListener("load", () => getState());
+    </script>
+  </body>
+</html>

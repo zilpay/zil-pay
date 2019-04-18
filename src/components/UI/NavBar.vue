@@ -14,7 +14,7 @@
       <b-dropdown v-if="isEnable"
                   :text="selectednet"
                   variant="primary"
-                  class="m-2">
+                  class="mr-4">
         <b-dropdown-item v-for="option of options"
                          :key="option"
                          :active="option == selectednet"
