@@ -17,6 +17,9 @@ $ npm run inpage     # build inpage.js
 $ npm run background # build background.js
 $ npm run scripts    # build content.js & inpage.js & background.js
 $ npm run all        # all scripts build.
+
+$ cd dapps
+$ npm start          # run dapps on 3000 port
 ```
 
 
