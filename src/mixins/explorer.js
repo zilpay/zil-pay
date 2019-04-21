@@ -7,17 +7,19 @@ export default {
     ...mapState('storage', [
       'selectednet'
     ]),
-
+    net() {
+      return `network=${this.selectednet}`;
+    },
     url() {
-      return apiConfig.EXPLORER[this.selectednet];
+      return apiConfig.EXPLORER;
     }
   },
   methods: {
     exploreTransactions(hash) {
-      return `${this.url}/transactions/${hash}`;
+      return `${this.url}/tx/${hash}?${this.net}`;
     },
     exploreAddress(address) {
-      return `${this.url}/address/${address}`;
+      return `${this.url}/address/${address}?${this.net}`;
     },
   }
 }

@@ -1,5 +1,6 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
+import { toChecksumAddress } from '@zilliqa-js/crypto'
 import { Long, BN, bytes, validation } from '@zilliqa-js/util'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
 import { NotificationsControl } from '../browser/notifications'
@@ -14,7 +15,9 @@ export class ZilliqaControl extends Zilliqa {
 
   async getBalance(address) {
     // Get the balance by address. // 
-    let { result } = await this.blockchain.getBalance(address);
+    let { result, error } = await this.blockchain.getBalance(
+      address.replace('0x', '')
+    );
     let nonce = 0;
 
     if (!result) {
@@ -112,8 +115,9 @@ export class ZilliqaControl extends Zilliqa {
     const { result } = await this.getBalance(address);
 
     return {
-      index, publicKey, address, privateKey,
-      balance: result
+      index, publicKey, privateKey,
+      balance: result,
+      address: toChecksumAddress(address)
     };
   }
 
@@ -122,6 +126,8 @@ export class ZilliqaControl extends Zilliqa {
 
     const account = this.wallet.defaultAccount;
     const { result } = await this.getBalance(account.address);
+
+    account.address = toChecksumAddress(account.address);
 
     return Object.assign(account, { index, balance: result });
   }

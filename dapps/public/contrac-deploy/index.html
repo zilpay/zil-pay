@@ -78,7 +78,7 @@
       const code = $('#code')[0].textContent;
       const init = $('#init')[0].textContent;
       const zilliqa = new window.Zilliqa();
-      const { units, Long } = zilliqa.utils;
+      const { units, Long, toChecksumAddress } = zilliqa.utils;
       const contract = zilliqa.contracts.new(code, init);
       const myGasPrice = units.toQa('1000', units.Units.Li);
       const [deployTx, newContract] = await contract.deploy({
@@ -87,8 +87,8 @@
       });
 
       $('#tx').html(JSON.stringify(deployTx, null, 4));
-      $('#address').html(`contract address: ${newContract.address}`);
-      alert('contract address: ' + newContract.address);
+      $('#address').html(`contract address: ${toChecksumAddress(newContract.address)}`);
+      alert('contract address: ' + toChecksumAddress(newContract.address));
     }
 
 
@@ -103,7 +103,7 @@
         {
           vname: "owner",
           type: "ByStr20",
-          value: `0x${address}`
+          value: address
         }
       ];
       $('#init')[0].textContent = JSON.stringify(init, null, 4);      

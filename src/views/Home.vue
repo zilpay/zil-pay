@@ -155,7 +155,7 @@ export default {
     ]),
 
     copyAddress() {
-      copy('0x'+this.account.address);
+      copy(this.account.address);
       this.tooltipTitle = 'copied';
       setTimeout(() => {
         this.tooltipTitle = copyToClipboard;
@@ -182,7 +182,7 @@ export default {
       err => console.log('home.transactionsUpdate', err.message)
     );
 
-    QRCode.toDataURL(`zilliqa:0x${this.account.address}`, {
+    QRCode.toDataURL(`zilliqa:${this.account.address}`, {
       color: {
         light: '#c5bfed' // Transparent background
       }

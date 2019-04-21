@@ -474,7 +474,7 @@ export class TransactionHandler {
     const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     );
-    const net = networkControl.selected;
+    const net = `network=${networkControl.selected}`;
     const timeInterval = 4000;
     const countIntervl = 50;
     const title = 'ZilPay Transactions';
@@ -489,7 +489,7 @@ export class TransactionHandler {
           .getTransaction(txHash);
           
           new NotificationsControl({
-            url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
+            url: `${zilApi.EXPLORER}/tx/${txHash}?${net}`,
             title: title,
             message: 'Transactions send to shard done.'
           }).create();
@@ -500,7 +500,7 @@ export class TransactionHandler {
           if (k > countIntervl) {
 
             new NotificationsControl({
-              url: `${zilApi.EXPLORER[net]}/transactions/${txHash}`,
+              url: `${zilApi.EXPLORER}/tx/${txHash}?${net}`,
               title: title,
               message: 'Transactions not completed'
             }).create();

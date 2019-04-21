@@ -8,6 +8,7 @@ import { SecureMessage } from '../../lib/messages/messageCall'
 import { Blockchain } from '@zilliqa-js/blockchain'
 import { Contracts } from '@zilliqa-js/contract';
 import { HTTPProvider } from '@zilliqa-js/core';
+import { toChecksumAddress } from '@zilliqa-js/crypto';
 import * as zilUtils from '@zilliqa-js/util'
 import { validation } from '@zilliqa-js/util'
 import zilConf from '../../config/zil'
@@ -139,7 +140,7 @@ export class Zilliqa {
     this.wallet = window.zilPay;
     this.blockchain = new Blockchain(this.provider, this.wallet);
     this.contracts = new Contracts(this.provider, this.wallet);
-    this.utils = zilUtils;
+    this.utils = Object.assign(zilUtils, { toChecksumAddress });
   }
 }
 
@@ -171,13 +172,15 @@ export class ZilPay {
     if (!this.isEnable || !account) {
       return null;
     }
+
     const isAddress = validation.isAddress(account.address);
     
     if (!isAddress) {
       throw new Error('input param is not address type');
     }
-
-    this.defaultAccount = account;
+    this.defaultAccount = {
+      address: account.address
+    }
     dispatchEvent(onAddressListing);
   }
 

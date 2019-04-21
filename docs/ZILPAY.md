@@ -3,13 +3,13 @@
 
 init Zilliqa object
 ```javaScript
-var zilliqa = new Zilliqa(zilPay.nodeURL);
+var zilliqa = new Zilliqa();
 var utils = zilliqa.utils;
 ```
 
 get defaultAccount
 ```javaScript
-var {address, balance} = zilPay.defaultAccount;
+var {address} = zilPay.defaultAccount;
 ```
 
 

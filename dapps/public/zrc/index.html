@@ -56,12 +56,17 @@
         const totalSupply = state[0].value;
         const balances = utils.units.fromQa(new utils.BN(state[4].value), 'zil');
         const tokenAmount = state[1].value.filter(
-          el => el.key == `0x${zilPay.defaultAccount.address}`
-        )[0].val;
+          el => utils.toChecksumAddress(el.key) == zilPay.defaultAccount.address
+        );
+        let { val } = tokenAmount[0];
+
+        if (!tokenAmount[0]) {
+          val = 0;
+        }
 
         $('#totalSupply').html(`totalSupply: ${totalSupply} <span class="text-warning">ZRC</span>`);
         $('#balance').html(`Contract balance: ${balances} <span class="text-warning">ZIL</span>`);
-        $('#forWisdraw')[0].value = tokenAmount;
+        $('#forWisdraw')[0].value = val;
       }
 
       async function Buy() {
