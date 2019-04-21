@@ -3,7 +3,7 @@
 ZilPay is a browser wallet for Zilliqa. Developers can integrate ZilPay into their website to create Decentralised Apps.
 
 <p align="center">
-  <a href="https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## Installation
