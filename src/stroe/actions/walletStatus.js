@@ -13,11 +13,14 @@ export function jazzicon({ state }, id) {
   let account = state.wallet.identities[state.wallet.selectedAddress];
   let el = Jazzicon(45, Utils.jsNumberForAddress(account.address));
 
-  if (ctx.children.length > 0) {
-    ctx.children[0].remove();
+  try {
+    if (ctx && ctx.children && ctx.children.length > 0) {
+      ctx.children[0].remove();
+    }
+    ctx.appendChild(el);
+  } catch(err) {
+    // * //
   }
-
-  ctx.appendChild(el);
 }
 
 export async function walletCreate({ commit }, { seed, password }) {
