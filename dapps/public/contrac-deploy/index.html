@@ -76,7 +76,7 @@
   <script>
     async function deploy() {
       const code = $('#code')[0].textContent;
-      const init = $('#init')[0].textContent;
+      const init = JSON.parse($('#init')[0].textContent);
       const zilliqa = new window.Zilliqa();
       const { units, Long, toChecksumAddress } = zilliqa.utils;
       const contract = zilliqa.contracts.new(code, init);
@@ -104,6 +104,11 @@
           vname: "owner",
           type: "ByStr20",
           value: address
+        },
+        {
+          vname: '_creation_block',
+          type: 'BNum',
+          value: '100',
         }
       ];
       $('#init')[0].textContent = JSON.stringify(init, null, 4);      

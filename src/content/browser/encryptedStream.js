@@ -1,6 +1,7 @@
 import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
-import { MTypesSecure, MTypesZilPay, MTypesInternal } from '../../lib/messages/messageTypes'
+import { HTTPProvider } from '@zilliqa-js/core';
+import { MTypesSecure, MTypesZilPay } from '../../lib/messages/messageTypes'
 import { SecureMessage, Message } from '../../lib/messages/messageCall'
 import { Loger } from '../../lib/logger'
 import apiConfig from '../../config/api'
@@ -9,6 +10,7 @@ import errors from '../../config/errors'
 
 const log = new Loger(`${apiConfig.PAY_NAME}.SecureStream`);
 var stream = new WeakMap();
+var nodeURL;
 
 export class SecureStream {
 
@@ -47,6 +49,10 @@ export class SecureStream {
       case MTypesSecure.SYNC:
         this._sync(msg);
         break;
+        
+      case MTypesZilPay.PROXY_MEHTOD:
+        this.proxyMethod(msg.payload);
+        break;
 
       default:
         break;
@@ -58,7 +64,7 @@ export class SecureStream {
 
     try {
       const data = await Message.signal(MTypesZilPay.INIT_DATA).send();
-
+      nodeURL = data.provider;
       new SecureMessage({
         type: MTypesSecure.PAY_OBJECT_INIT,
         payload: data
@@ -66,6 +72,20 @@ export class SecureStream {
     } catch(err) {
       log.error(err.message, errors.ZILPAY_NOT_SYNC);
     }
+  }
+
+  async proxyMethod(payload) {
+    const { params, method, uuid } = payload;
+    const recipient = MTypesSecure.INJECTED;
+    const provider = new HTTPProvider(nodeURL);
+    const result = await provider.send(method, params);
+
+    result.uuid = uuid;
+
+    new SecureMessage({
+      type: MTypesZilPay.PROXY_RESULT,
+      payload: result
+    }).send(stream, recipient);
   }
 
 }

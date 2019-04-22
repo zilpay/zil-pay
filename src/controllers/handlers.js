@@ -463,7 +463,7 @@ export class TransactionHandler {
       this._transactionListing(tx.TranID);
     } else {
       if (transaction.uuid) {
-        this.returnTx({ reject: error.message }, transaction.uuid);
+        TransactionHandler.returnTx({ reject: error.message }, transaction.uuid);
       }
       sendResponse({ reject: error.message });
     }

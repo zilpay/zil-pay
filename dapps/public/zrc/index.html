@@ -52,16 +52,17 @@
         const utils = zilliqa.utils;
         const zrc = zilliqa.contracts.at(contractAddress);
         const state = await zrc.getState();
-
         const totalSupply = state[0].value;
         const balances = utils.units.fromQa(new utils.BN(state[4].value), 'zil');
         const tokenAmount = state[1].value.filter(
           el => utils.toChecksumAddress(el.key) == zilPay.defaultAccount.address
         );
-        let { val } = tokenAmount[0];
+        let val;
 
         if (!tokenAmount[0]) {
           val = 0;
+        } else {
+          val = tokenAmount[0].val;
         }
 
         $('#totalSupply').html(`totalSupply: ${totalSupply} <span class="text-warning">ZRC</span>`);

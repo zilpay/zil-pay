@@ -21,40 +21,6 @@ var subjectStream = new Subject(); // Create event listing.
 var ACCOUNT = {}; // Account storage.
 var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER']; // Network storage.
 
-class Listen {
-  /**
-   * Listen for handlers events from background.
-   */
-
-  static onZilPayInit(msg) {
-    /**
-     * when page was loaded, zilPay is injected.
-     */
-    window.zilPay.isEnable = msg.payload.isEnable;
-    window.zilPay.setProvider(msg.payload.provider);
-    window.zilPay.setDefaultAccount(msg.payload.account);
-
-    ACCOUNT = msg.payload.account;
-    PROVIDER = msg.payload.provider;
-  }
-
-  static onChangeNode(msg) {
-    // Any change network.
-    window.zilPay.setProvider(msg.payload.PROVIDER);
-    PROVIDER = msg.payload.PROVIDER;
-  }
-
-  static onChangeAccount(msg) {
-    // Any change account.
-    window.zilPay.setDefaultAccount(msg.payload);
-  }
-
-  static onChangeStatus(msg) {
-    // change status wallet.
-    window.zilPay.isEnable = msg.payload.isEnable;
-    window.zilPay.setDefaultAccount(ACCOUNT);
-  }
-}
 
 function listener(msg) {
   /**
@@ -83,6 +49,10 @@ function listener(msg) {
       break;
     
     case MTypesTabs.TX_RESULT:
+      subjectStream.next(msg.payload);
+      break;
+
+    case MTypesZilPay.PROXY_RESULT:
       subjectStream.next(msg.payload);
       break;
 
@@ -117,7 +87,7 @@ function confirm(tx) {
         return null;
       } else if (resultTx.reject) {
         result.unsubscribe();
-        reject(new Error(resultTx.reject));
+        reject(resultTx.reject);
       } else if (resultTx.resolve) {
         result.unsubscribe();
         resolve(
@@ -134,7 +104,67 @@ function confirm(tx) {
   });
 }
 
-export class Zilliqa {
+HTTPProvider.prototype.send = (method, params) => {
+  const type = MTypesZilPay.PROXY_MEHTOD;
+  const recipient = MTypesSecure.CONTENT;
+  const uuid = uuidv4();
+  
+  new SecureMessage({
+    type, payload: { params, method, uuid }
+  }).send(stream, recipient);
+
+  return new Promise((resolve, reject) => {
+    const proxy = subjectStream.subscribe(result => {
+
+      if (!result.uuid || result.uuid !== uuid) {
+        return null;
+      } else if (result.error) {
+        reject(result.error);
+      } else {
+        resolve(result);
+      }
+      
+      proxy.unsubscribe();
+    });
+  });
+}
+
+class Listen {
+  /**
+   * Listen for handlers events from background.
+   */
+
+  static onZilPayInit(msg) {
+    /**
+     * when page was loaded, zilPay is injected.
+     */
+    window.zilPay.isEnable = msg.payload.isEnable;
+    window.zilPay.setProvider(msg.payload.provider);
+    window.zilPay.setDefaultAccount(msg.payload.account);
+
+    ACCOUNT = msg.payload.account;
+    PROVIDER = msg.payload.provider;
+  }
+
+  static onChangeNode(msg) {
+    // Any change network.
+    window.zilPay.setProvider(msg.payload.provider);
+    PROVIDER = msg.payload.provider;
+  }
+
+  static onChangeAccount(msg) {
+    // Any change account.
+    window.zilPay.setDefaultAccount(msg.payload);
+  }
+
+  static onChangeStatus(msg) {
+    // change status wallet.
+    window.zilPay.isEnable = msg.payload.isEnable;
+    window.zilPay.setDefaultAccount(ACCOUNT);
+  }
+}
+
+class Zilliqa {
   constructor(node=PROVIDER, provider=new HTTPProvider(PROVIDER)) {
     this.provider = provider || new HTTPProvider(node);
     this.wallet = window.zilPay;
@@ -144,7 +174,7 @@ export class Zilliqa {
   }
 }
 
-export class ZilPay {
+class ZilPay {
   /**
    * This object connecting background.js with inpage.js.
    * @param {provider}: String && url;
@@ -207,6 +237,7 @@ export class ZilPay {
 
 window.zilPay = new ZilPay(new HTTPProvider(PROVIDER));
 window.Zilliqa = Zilliqa;
+
 
 export default function run() {
   // Create instance in page. //

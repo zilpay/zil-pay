@@ -189,10 +189,14 @@ export default {
 
     async confirm() {
       this.spiner();
-      await this.confirmTx({
-        gasPrice: toZil(this.gas),
-        gasLimit: this.gasLimit
-      });
+      try {
+        await this.confirmTx({
+          gasPrice: toZil(this.gas),
+          gasLimit: this.gasLimit
+        });
+      } catch(err) {
+        // ** //
+      }
       this.spiner();
       this.popupClouse();
     },

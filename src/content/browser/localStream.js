@@ -1,11 +1,7 @@
 import { LocalStream } from 'extension-streams'
 import { MTypesSecure, MTypesTabs } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
-import { Loger } from '../../lib/logger'
-import apiConfig from '../../config/api'
 
-
-const log = new Loger(`${apiConfig.PAY_NAME}.NonSecureStream`);
 
 export class NonSecureStream {
 

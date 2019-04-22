@@ -26,7 +26,9 @@ export const MTypesZilPay = {
   
   GET_CONFIRM_TX:    'g_c_t',
   REJECT_CONFIRM_TX: 'r_c_t',
-  CONFIRM_TX:        'c_t'
+  CONFIRM_TX:        'c_t',
+  PROXY_MEHTOD:      'proxy_provider',
+  PROXY_RESULT:      'result_proxy'
 };
 
 export const MTypesInternal = {

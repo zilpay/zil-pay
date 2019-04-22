@@ -19,9 +19,14 @@ export async function rejectConfirmTx({ state }) {
 }
 
 export async function confirmTx({ state }, payload) {
-  await new Message({
+  const result = await new Message({
     type: MTypesZilPay.CONFIRM_TX,
     payload
   }).send();
+  
   state.confirmationTx.pop();
+
+  if (result.reject) {
+    throw new Error(result.reject);
+  }
 }
