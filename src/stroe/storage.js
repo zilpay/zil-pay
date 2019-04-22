@@ -19,7 +19,8 @@ import {
   transactionsUpdate,
   nonContractSendTransaction,
   rejectConfirmTx,
-  confirmTx
+  confirmTx,
+  clearHistory
 } from './actions/transactions'
 import { importByPrivateKey } from './actions/import'
 
@@ -94,6 +95,7 @@ export default {
     nonContractSendTransaction,
     rejectConfirmTx,
     confirmTx,
+    clearHistory,
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()

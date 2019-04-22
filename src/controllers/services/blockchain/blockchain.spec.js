@@ -1,5 +1,6 @@
 import { ZilliqaControl } from './zilliqa'
 import { NetworkControl } from '../network'
+import { toChecksumAddress } from '@zilliqa-js/crypto';
 import fields from '../../../config/fields'
 
 
@@ -24,7 +25,7 @@ describe('Test zilliqa control', () => {
       decryptSeed, index
     );
 
-    expect(account.address).toBe('a359105c9c8fda34278186c564ca2d3664e86821');
+    expect(account.address).toBe(toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'));
     expect(account.index).toBe(index);
     expect(account.privateKey).toBe('2295606db2e8a1baa70e08a169155f94eb3e908ac205013de74dd35b999b96b3');
   });
@@ -40,7 +41,7 @@ describe('Test zilliqa control', () => {
       privkey, index
     );
 
-    expect(account.address).toBe(address);
+    expect(account.address).toBe(toChecksumAddress(address));
     expect(account.index).toBe(index);
     expect(account.privateKey).toBe(privkey);
   });

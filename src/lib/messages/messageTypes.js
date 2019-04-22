@@ -42,7 +42,8 @@ export const MTypesInternal = {
   CHANGE_ACCOUNT:        'c_account',
   CREATE_ACCOUNT:        'create_account',
   CONFIG_UPDATE:         'config_update',
-  ACC_CHANGE_NAME:       'change_account_name'
+  ACC_CHANGE_NAME:       'change_account_name',
+  CLEAR_HISTORY_TX:      'clear_history'
 };
 
 export const MTypesTabs = {

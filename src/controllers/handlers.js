@@ -270,6 +270,13 @@ export class ZilliqaHandler {
     sendResponse(data);
   }
 
+  static async rmAllTransactionList(sendResponse) {
+    await accountControl.zilliqa.rmAllTransactionList();
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(true);
+    }
+  }
+
 }
 
 export class NetworkHandler {

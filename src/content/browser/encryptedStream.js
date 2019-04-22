@@ -10,7 +10,7 @@ import errors from '../../config/errors'
 
 const log = new Loger(`${apiConfig.PAY_NAME}.SecureStream`);
 var stream = new WeakMap();
-var nodeURL;
+
 
 export class SecureStream {
 
@@ -64,7 +64,7 @@ export class SecureStream {
 
     try {
       const data = await Message.signal(MTypesZilPay.INIT_DATA).send();
-      nodeURL = data.provider;
+
       new SecureMessage({
         type: MTypesSecure.PAY_OBJECT_INIT,
         payload: data
@@ -75,12 +75,19 @@ export class SecureStream {
   }
 
   async proxyMethod(payload) {
+    let result;
     const { params, method, uuid } = payload;
     const recipient = MTypesSecure.INJECTED;
-    const provider = new HTTPProvider(nodeURL);
-    const result = await provider.send(method, params);
 
-    result.uuid = uuid;
+    try {
+      const { provider } = await Message.signal(MTypesZilPay.INIT_DATA).send();    
+      const httpProvider = new HTTPProvider(provider);
+      
+      result = await httpProvider.send(method, params);
+      result.uuid = uuid;
+    } catch(err) {
+      result.error = err.message;
+    }
 
     new SecureMessage({
       type: MTypesZilPay.PROXY_RESULT,

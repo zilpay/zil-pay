@@ -1,3 +1,4 @@
+import { toChecksumAddress } from '@zilliqa-js/crypto';
 import { AccountControl } from './create'
 import { AccountImporter } from './import'
 import { AccountExporter } from './export'
@@ -25,7 +26,7 @@ describe('Test Account control', () => {
     expect(account).toEqual({
       index: 0,
       publicKey: '03d2298c106651c9a2070df250342d90e717a68660fab34082d212d5d3a7133f88',
-      address: 'a359105c9c8fda34278186c564ca2d3664e86821',
+      address: toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'),
       privateKey: '2295606db2e8a1baa70e08a169155f94eb3e908ac205013de74dd35b999b96b3',
       balance: account.balance
     });
@@ -38,15 +39,15 @@ describe('Test Account control', () => {
 
     expect(wallet).toEqual(global.storage[fields.WALLET]);
     expect(wallet.selectedAddress).toBe(1);
-    expect(wallet.identities[0].address).toBe('a359105c9c8fda34278186c564ca2d3664e86821');
-    expect(wallet.identities[1].address).toBe('9ed19dd4c5d011eb458bbfda6d06d2db7ef9244f');
+    expect(wallet.identities[0].address).toBe(toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'));
+    expect(wallet.identities[1].address).toBe(toChecksumAddress('9ed19dd4c5d011eb458bbfda6d06d2db7ef9244f'));
   });
 
   test('Account control walletUpdate', async () => {
     const walletForChange = {
       selectedAddress: 0,
       identities: [{
-        address: 'a359105c9c8fda34278186c564ca2d3664e86821',
+        address: toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'),
         balance: 0,
         index: 0 
       }]
@@ -89,7 +90,7 @@ describe('Test Account control', () => {
     expect(wallet.selectedAddress).toBe(1);
     expect(wallet.identities[1].index).toBe(1);
     expect(wallet.identities[1].isImport).toBe(true);
-    expect(wallet.identities[1].address).toBe('31de24752489e04d06ad32a1095b86ce9310bf9b');
+    expect(wallet.identities[1].address).toBe(toChecksumAddress('31de24752489e04d06ad32a1095b86ce9310bf9b'));
   });
 
   var accountExporter;

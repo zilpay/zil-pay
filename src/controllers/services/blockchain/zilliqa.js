@@ -219,6 +219,13 @@ export class ZilliqaControl extends Zilliqa {
     );
   }
 
+  async rmAllTransactionList() {
+    const storage = new BrowserStorage();
+    await storage.set(
+      new BuildObject(fields.TRANSACTIONS, {})
+    );
+  }
+
   async notificationsCounter(value) {
     let forConfirm;
 

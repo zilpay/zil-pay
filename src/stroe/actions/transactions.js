@@ -7,6 +7,14 @@ export async function transactionsUpdate({ state }) {
   state.transactions = transactions;
 }
 
+export async function clearHistory({ state }) {
+  await Message.signal(
+    MTypesInternal.CLEAR_HISTORY_TX
+  ).send();
+
+  state.transactions = { };
+}
+
 export async function nonContractSendTransaction(_, data) {
   const type = MTypesZilPay.CALL_SIGN_TX;
   const payload = data;

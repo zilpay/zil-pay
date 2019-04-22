@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <p class="text-left">History</p>
+    <div class="row">
+      <p class="col text-left">History</p>
+      <a class="col text-right point text-danger"
+         @click="clearHistory">Clear</a>
+    </div>
+
     <ul class="list-group list-group-flush text-ightindigo">
       <li class="list-group-item text-ightindigo"
           v-for="(tx, index) of txs" :key="index">
@@ -20,7 +25,7 @@
 
         <div class="row justify-content-center little">
           <a class="text-left text-ightindigo"
-            :href="exploreAddress(currentAccount.address)" target="_blanck">
+             :href="exploreAddress(currentAccount.address)" target="_blanck">
             {{name}}
           </a>
 
@@ -37,7 +42,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { fromZil } from '../filters/zil'
 import explorer from '../mixins/explorer'
 import trimAddress from '../filters/trimAddress'
@@ -56,6 +61,11 @@ export default {
     ...mapState([
      'currencyController'
    ])
+  },
+  methods: {
+    ...mapActions('storage', [
+      'clearHistory'
+    ])
   },
   mounted() { }
 }

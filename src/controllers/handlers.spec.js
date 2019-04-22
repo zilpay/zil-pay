@@ -1,4 +1,5 @@
 import uuidv4 from 'uuid/v4'
+import { toChecksumAddress } from '@zilliqa-js/crypto';
 import {
   WalletHandler,
   AccountHandler,
@@ -27,7 +28,7 @@ describe('handlers for background page', () => {
   test('WalletHandler.initWallet first run', async () => {
     await new WalletHandler({ password, seed }).initWallet(value => {
       expect(value.resolve.selectedAddress).toBe(0);
-      expect(value.resolve.identities[0].address).toBe('a359105c9c8fda34278186c564ca2d3664e86821');
+      expect(value.resolve.identities[0].address).toBe(toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'));
       expect(value.resolve.identities[0].index).toBe(0);
     });
   });
@@ -79,7 +80,7 @@ describe('handlers for background page', () => {
       ).toEqual(
         value.resolve.identities[1].index
       );
-      expect(value.resolve.identities[1].address).toEqual('8254b2c9acdf181d5d6796d63320fbb20d4edd12');
+      expect(value.resolve.identities[1].address).toEqual(toChecksumAddress('8254b2c9acdf181d5d6796d63320fbb20d4edd12'));
       expect(value.resolve.identities[1].isImport).toBe(true);
     });
   });
@@ -88,7 +89,7 @@ describe('handlers for background page', () => {
     await new AccountHandler().createAccountBySeed(value => {
       expect(value.resolve.selectedAddress).toEqual(2);
       expect(value.resolve.identities[2].index).toEqual(1);
-      expect(value.resolve.identities[2].address).toEqual('9ed19dd4c5d011eb458bbfda6d06d2db7ef9244f');
+      expect(value.resolve.identities[2].address).toEqual(toChecksumAddress('9ed19dd4c5d011eb458bbfda6d06d2db7ef9244f'));
     });
   });
 
@@ -115,7 +116,7 @@ describe('handlers for background page', () => {
     await ZilliqaHandler.initZilPay(value => {
       expect(value.provider).toBe(zilConfig[defaultSelected]['PROVIDER']);
       expect(value.isEnable).toBe(true);
-      expect(value.account.address).toEqual('a359105c9c8fda34278186c564ca2d3664e86821');
+      expect(value.account.address).toEqual(toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'));
     });
   });
 
@@ -199,4 +200,10 @@ describe('handlers for background page', () => {
       expect(value.resolve.nonce).toBe(nonceForTest + 1);
     });
   }, 20000);
+
+
+  test('ZilliqaHandler.rmAllTransactionList', async () => {
+    await ZilliqaHandler.rmAllTransactionList();
+  });
+
 });

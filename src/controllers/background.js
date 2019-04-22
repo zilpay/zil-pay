@@ -111,6 +111,10 @@ export class Background {
         new WalletHandler(message.payload).changeAccountName(sendResponse);
         break;
 
+      case MTypesInternal.CLEAR_HISTORY_TX:
+        ZilliqaHandler.rmAllTransactionList(sendResponse);
+        break;
+
       default:
         break;
     }
