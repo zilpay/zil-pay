@@ -6,6 +6,7 @@ import { MTypesSecure, MTypesZilPay, MTypesTabs } from '../../lib/messages/messa
 import { SecureMessage } from '../../lib/messages/messageCall'
 
 import { Blockchain } from '@zilliqa-js/blockchain'
+import { TransactionFactory } from '@zilliqa-js/account'
 import { Contracts } from '@zilliqa-js/contract';
 import { HTTPProvider } from '@zilliqa-js/core';
 import { toChecksumAddress } from '@zilliqa-js/crypto';
@@ -170,6 +171,7 @@ class Zilliqa {
     this.wallet = window.zilPay;
     this.blockchain = new Blockchain(this.provider, this.wallet);
     this.contracts = new Contracts(this.provider, this.wallet);
+    this.transactions = new TransactionFactory(this.provider, this.wallet);
     this.utils = Object.assign(zilUtils, { toChecksumAddress });
   }
 }

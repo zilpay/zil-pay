@@ -57,9 +57,9 @@ export class NotificationsControl {
   _notificationClicked() {
     const onClicked = extension.notifications.onClicked;
     
-    onClicked.addListener((onExplorerTx, _) => {
-      extension.tabs.create({ url: onExplorerTx });
-    });
+    // onClicked.addListener((onExplorerTx, _) => {
+    //   extension.tabs.create({ url: onExplorerTx });
+    // });
   }
 
 }
