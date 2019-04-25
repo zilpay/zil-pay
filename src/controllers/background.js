@@ -128,6 +128,7 @@ export class Background {
         break;
 
       case MTypesZilPay.CALL_SIGN_TX:
+        message.payload.domain = message.domain;
         new TransactionHandler(message.payload).callTransaction(sendResponse);
         break;
 

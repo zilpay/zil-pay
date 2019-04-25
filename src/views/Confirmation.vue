@@ -214,14 +214,9 @@ export default {
     },
 
     getCurrentTab() {
-      try {
-        return extension.windows.getCurrent();
-      } catch(err) {
-        return new Promise(
-          // chrome use callback function.
-          resolve => extension.windows.getCurrent(resolve)
-        );
-      }
+      return new Promise(
+        resolve => extension.windows.getCurrent(resolve)
+      );
     },
 
     async appInfo() {
@@ -232,7 +227,10 @@ export default {
       try {
         currentPopup = await this.getCurrentTab();
         tabs = await TabsMessage.tabs();
-        appTab = tabs.filter(tab => tab.id != currentPopup.id)[0];
+        appTab = tabs.filter(
+          tab => tab.url.includes(this.CONFIRM_TX.domain)
+        );
+        appTab = appTab[0];
       } catch(err) {
         return null;
       }      
@@ -248,7 +246,6 @@ export default {
     this.appInfo();
     this.gas = fromZil(this.CONFIRM_TX.gasPrice);
     this.gasLimit = this.CONFIRM_TX.gasLimit;
-    console.log(this.CONFIRM_TX);
   }
 }
 </script>

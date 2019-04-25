@@ -124,9 +124,12 @@ HTTPProvider.prototype.send = (method, params) => {
       } else {
         resolve(result);
       }
-      
+
       proxy.unsubscribe();
     });
+
+    // we save our memory RAM.
+    setTimeout(() => proxy.unsubscribe(), 9000);
   });
 }
 

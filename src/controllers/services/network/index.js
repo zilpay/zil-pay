@@ -1,4 +1,4 @@
-import axios from 'axios'
+import fetch from 'cross-fetch'
 import ZilliqaConfig from '../../../config/zil'
 import errorsCode from './errors'
 import { BrowserStorage, BuildObject } from '../../../lib/storage'
@@ -82,12 +82,8 @@ export class NetworkControl {
   }
 
   async checkProvider() {
-    const httpClient = axios.create();
-
-    httpClient.defaults.timeout = 9000;
-
     try {
-      await httpClient.post(this.provider);
+      await fetch(this.provider);
       this.status = true;
     } catch(err) {
       this.status = false;

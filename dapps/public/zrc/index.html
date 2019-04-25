@@ -66,6 +66,7 @@
         const utils = zilliqa.utils;
         const zrc = zilliqa.contracts.at(contractAddress);
         const state = await zrc.getState();
+        console.log(state);
         const totalSupply = state[0].value;
         const balances = utils.units.fromQa(new utils.BN(state[4].value), 'zil');
         const tokenAmount = state[1].value.filter(
@@ -150,7 +151,7 @@
 					<h5>Contacts</h5>
 					<ul class="nav-list">
 						<li><a target="_blanck" href="https://t.me/zilpay">Telegram</a></li>
-						<li><a target="_blanck" href="https://github.com/lich666dead/zil-pay">GitHub</a></li>
+						<li><a target="_blanck" href="https://github.com/lich666dead/zil-pay/tree/master/dapps/public/zrc">GitHub</a></li>
 						<li><a target="_blanck" href="https://zilpay.xyz/">webSite</a></li>
 						<li><a target="_blanck" href="https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd">chrome</a></li>
 						<li><a target="_blanck" href="https://addons.mozilla.org/en-GB/firefox/addon/zilpay/">firefox</a></li>

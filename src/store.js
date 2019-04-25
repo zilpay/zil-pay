@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
+import fetch from 'cross-fetch'
 import extension from 'extensionizer'
 
 import storage from './stroe/storage'
@@ -15,7 +15,7 @@ export default new Vuex.Store({
     currencyController: {
       nativeCurrency: 'ZIL',
       currentCurrency: 'USD',
-      conversionRate: 0.02
+      conversionRate: 0
     },
     minGas: '1000000000',
     loading: true
@@ -43,11 +43,17 @@ export default new Vuex.Store({
   },
   actions: {
     async updateRate({ state }) {
-      let url = `${apiConfig.COINMARKETCAP}/zilliqa`;
       let rate;
+      const url = `${apiConfig.COINMARKETCAP}/zilliqa`;
 
-      rate = await axios.get(url);
-      rate = rate['data'][0]['price_usd'];
+      try {
+        const response = await fetch(url, { method: 'GET' });
+
+        rate = await response.json();
+        rate = rate[0]['price_usd'] || 0;
+      } catch(err) {
+        rate = 0;
+      }
 
       state.currencyController.conversionRate = rate;
     },

@@ -19,6 +19,7 @@ export default {
   },
   methods: {
     ...mapMutations(['spiner']),
+    ...mapActions(['updateRate']),
 
     ...mapMutations('storage', [
       'mutateIsReady',
@@ -46,7 +47,7 @@ export default {
         this.spiner();
         return null;
       }
-
+      this.updateRate();
       this.spiner();
 
       if (data.reject) {

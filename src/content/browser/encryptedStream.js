@@ -75,19 +75,20 @@ export class SecureStream {
   }
 
   async proxyMethod(payload) {
-    let result;
+    let result = {};
     const { params, method, uuid } = payload;
     const recipient = MTypesSecure.INJECTED;
 
     try {
       const { provider } = await Message.signal(MTypesZilPay.INIT_DATA).send();    
       const httpProvider = new HTTPProvider(provider);
-      
+
       result = await httpProvider.send(method, params);
-      result.uuid = uuid;
     } catch(err) {
-      result.error = err.message;
+      result['error'] = err.message;
     }
+    
+    result.uuid = uuid;
 
     new SecureMessage({
       type: MTypesZilPay.PROXY_RESULT,
