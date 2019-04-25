@@ -13,8 +13,8 @@
     "inpage": "webpack --config src/inpage/webpack.config.js --progress --colors -o ./dist/inpage.js",
     "background": "webpack --config src/controllers/webpack.config.js --progress --colors -o ./dist/background.js",
     "scripts": "npm run content && npm run inpage && npm run background",
-    "build:prod:firefox": "export NODE_ENV=production && export PLATFORM=firefox && npm run all",
-    "build:prod:chrome": "export NODE_ENV=production && export PLATFORM=chrome && npm run all",
+    "build:prod:firefox": "export NODE_ENV=production && npm run all:firefox",
+    "build:prod:chrome": "export NODE_ENV=production && npm run all:chrome",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
