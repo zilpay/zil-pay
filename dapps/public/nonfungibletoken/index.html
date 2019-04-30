@@ -13,7 +13,7 @@
 </head>
 <body class="bg-secondary">
   <nav class="navbar navbar-light" style="background: #2d3246;">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand text-warning" href="/">
       NonfungibleToken
     </a>
   </nav>
@@ -74,10 +74,31 @@
   var address = '';
 
   window.addEventListener("load", () => {
-    if (window.zilPay.isEnable) {
-      address = window.zilPay.defaultAccount.address;
-      $('#contractOwner')[0].value = address;
+    if (!window.zilPay) {
+      $('.modal-body').html(`
+      <div class="row justify-content-md-center">
+        <img src="https://zilpay.xyz/img/icon.svg" height="300">
+        <h1 class="text-center">please install <a href="https://zilpay.xyz/">ZilPay</a></h1>
+      </div>
+        <pre id="tx" class="text-left"></pre>
+      `);
+      $('#txModal').modal();
+      return null;
+    } else if (!window.zilPay.isEnable) {
+      $('.modal-body').html(`
+      <div class="row justify-content-md-center">
+        <img src="https://zilpay.xyz/img/icon.svg" height="300">
+        <h1 class="text-center">please unlock zilPay</h1>
+      </div>
+        <pre id="tx" class="text-left"></pre>
+      `);
+      $('#txModal').modal();
     }
+
+    window.zilPay.observableAccount().subscribe(account => {
+      $('#contractOwner')[0].value = window.zilPay.defaultAccount.address;
+    });
+
   });
 
   window.deploy = async () => {
