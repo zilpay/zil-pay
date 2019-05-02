@@ -252,6 +252,7 @@ export class ZilliqaHandler {
     const storage = new BrowserStorage();
     const provider = networkControl.provider;
 
+    await networkControl.netwrokSync();
     let wallet = await storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
 
@@ -265,7 +266,8 @@ export class ZilliqaHandler {
       account: {
         address: account.address,
         balance: account.balance
-      }
+      },
+      net: networkControl.selected
     };
     sendResponse(data);
   }
@@ -293,7 +295,10 @@ export class NetworkHandler {
     try {
       await networkControl.netwrokSync();
       await networkControl.changeNetwork(selectednet);
-      payload = { provider: networkControl.provider };
+      payload = {
+        provider: networkControl.provider,
+        net: networkControl.selected
+      };
     } catch(err) {
       payload = { reject: err.message };
     }

@@ -21,6 +21,7 @@ var stream = new WeakMap(); // Setup background connection.
 var subjectStream = new Subject(); // Create event listing.
 var ACCOUNT = {}; // Account storage.
 var PROVIDER = zilConf[Object.keys(zilConf)[0]]['PROVIDER']; // Network storage.
+var NET = Object.keys(zilConf)[0];
 
 
 function listener(msg) {
@@ -145,6 +146,7 @@ class Listen {
     window.zilPay.isEnable = msg.payload.isEnable;
     window.zilPay.setProvider(msg.payload.provider);
     window.zilPay.setDefaultAccount(msg.payload.account);
+    window.zilPay.net = msg.payload.net;
 
     ACCOUNT = msg.payload.account;
     PROVIDER = msg.payload.provider;
@@ -153,6 +155,7 @@ class Listen {
   static onChangeNode(msg) {
     // Any change network.
     window.zilPay.setProvider(msg.payload.provider);
+    window.zilPay.net = msg.payload.net;
     PROVIDER = msg.payload.provider;
   }
 
@@ -185,10 +188,11 @@ class ZilPay {
    * @param {provider}: String && url;
    */
 
-  constructor(provider) {
+  constructor(provider, net=NET) {
     this.isEnable = false; // true: unblock or block.
     this.defaultAccount = null;
     this.provider = provider;
+    this.net = net;
 
     onAddressListing.initEvent('addressListing');
   }
