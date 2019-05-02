@@ -496,7 +496,7 @@ export class TransactionHandler {
           .getTransaction(txHash);
           
           new NotificationsControl({
-            url: `${zilApi.EXPLORER}/tx/${txHash}?${net}`,
+            url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
             title: title,
             message: 'Transactions send to shard done.'
           }).create();
@@ -507,7 +507,7 @@ export class TransactionHandler {
           if (k > countIntervl) {
 
             new NotificationsControl({
-              url: `${zilApi.EXPLORER}/tx/${txHash}?${net}`,
+              url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
               title: title,
               message: 'Transactions not completed'
             }).create();

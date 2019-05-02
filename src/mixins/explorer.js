@@ -16,10 +16,10 @@ export default {
   },
   methods: {
     exploreTransactions(hash) {
-      return `${this.url}/tx/${hash}?${this.net}`;
+      return `${this.url}/tx/0x${hash}?${this.net}`;
     },
     exploreAddress(address) {
-      return `${this.url}/address/${address}?${this.net}`;
+      return `${this.url}/address/0x${address}?${this.net}`;
     },
   }
 }
