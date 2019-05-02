@@ -173,13 +173,13 @@ export class ZilliqaControl extends Zilliqa {
 
   async addTransactionList(tx, net) {
     const storage = new BrowserStorage();
-    const { from } = tx;
+    const from = toChecksumAddress(tx.from);
     let txsList = await storage.get(fields.TRANSACTIONS);
     const data = {
       Info: tx.Info,
       TranID: tx.TranID,
       amount: tx.amount,
-      toAddr: tx.toAddr,
+      toAddr: toChecksumAddress(tx.toAddr),
       nonce: tx.nonce
     };
 

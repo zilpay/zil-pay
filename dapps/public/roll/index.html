@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ZRC token</title>
+    <link rel="icon" href="https://zilpay.xyz/img/favicon.ico">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body class="bg-secondary">
+
+    <nav class="navbar navbar-light" style="background: #2d3246;">
+      <a class="navbar-brand text-warning" href="/">
+        ZRC token
+      </a>
+
+      <div id="myaddress" class="text-warning"></div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="row justify-content-md-center">
+        <div class="jumbotron rounded shadow-lg">
+          <div class="alert alert-danger" role="alert">
+            This contract is deployed on the dev-testnet. Don't send mainnet ZILs to this address!
+          </div>
+          <h1 class="display-4">ZRC token dApp</h1>
+          <p class="lead">
+            <b id="contract" class="text-primary"></b>
+            <br>
+            <b id="balance" class="text-primary"></b>
+            <br>
+            <b id="totalSupply" class="text-primary"></b>
+          </p>
+          <hr class="my-4">
+
+          <div class="input-group mb-3">
+            <a class="btn btn-primary btn" href="#" onclick="Withdraw()">Withdraw</a>
+            <input id="forWisdraw" type="number" class="form-control">
+          </div>
+
+          <div class="input-group mb-3">
+            <a class="btn btn-primary btn" href="#" onclick="Buy()">Buy</a>
+            <input id="forBuy" type="number" class="form-control" value="1">
+          </div>
+        </div>
+      </div>
+      <div class="jumbotron rounded shadow-lg">
+        <h1 class="display-4">ZRC token</h1>
+        <p class="lead">This contract works on the principle that whoever that buys the ZRC tokens first can withdraw more ZILs.</p>
+        <p class="lead">This ZRC token is designed exclusively for testing purposes only.</p>
+      </div>
+    </div>
+
+  <footer class="section footer-classic context-dark mt-5" style="background: #2d3246;">
+		<div class="container">
+			<div class="row row-30">
+				<div class="col-md-4 col-xl-5">
+				</div>
+				<div class="col-md-4 col-xl-3 p-3">
+					<h5>Contacts</h5>
+					<ul class="nav-list">
+						<li><a target="_blanck" href="https://t.me/zilpay">Telegram</a></li>
+						<li><a target="_blanck" href="https://github.com/lich666dead/zil-pay/tree/master/dapps/public/zrc">GitHub</a></li>
+						<li><a target="_blanck" href="https://zilpay.xyz/">webSite</a></li>
+						<li><a target="_blanck" href="https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd">chrome</a></li>
+						<li><a target="_blanck" href="https://addons.mozilla.org/en-GB/firefox/addon/zilpay/">firefox</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+  </footer>
+  
+
+  <div class="modal fade bd-example-modal-xl" id="txModal" tabindex="-1" role="dialog" aria-labelledby="txModal" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="contractAddress">Transaction</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <pre id="tx" class="text-left"></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>
