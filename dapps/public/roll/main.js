@@ -6,7 +6,7 @@ var contract;
 var currentHash;
 
 var rollValue = 51;
-var contractAddress = 'DCC90004A87DABFC1DD9AAF332936C97E0155838';
+var contractAddress = '5DB560CbeD6a57760a7AB58d40376C1a2E4CeA6C';
 
 var winAmount = 20;
 var amountZil = 10;
@@ -137,7 +137,7 @@ async function roll() {
               const winAmount = params.filter(el => el.vname == 'winAmount')[0].value;
               const rol = params.filter(el => el.vname == 'rol')[0].value;
               const entropy = params.filter(el => el.vname == 'entropy')[0].value;
-              const isWin = +rol > +entropy ? 'lose' : 'win';
+              const isWin = +rol > +entropy ? 'win' : 'lose';
               const amount = utils.units.fromQa(
                 new utils.BN(winAmount), 'zil'
               );
@@ -153,8 +153,32 @@ async function roll() {
               </div>
               `);
               $('#zilpayModal').modal();
+              getState();
               clearInterval(int);
            })
            .catch(err => console.log(err));
   }, 4000);
+}
+
+async function retrunFond() {
+  const test = testZilPay();
+
+  if (!test) {
+    return null;
+  } else if (test == 'lock') {
+    return null;
+  }
+
+  const gasPrice = utils.units.toQa(
+    '3000', utils.units.Units.Li
+  );
+  const tx = await contract.call(
+    'ReturnFund', [],
+    {
+      amount: new utils.BN(0),
+      gasPrice: gasPrice,
+      gasLimit: utils.Long.fromNumber(8000)
+    }
+  );
+  console.log(tx);
 }

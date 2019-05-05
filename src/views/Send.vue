@@ -63,7 +63,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { validation } from '@zilliqa-js/util'
+import { isValidChecksumAddress } from '@zilliqa-js/crypto'
 import { validationMixin } from 'vuelidate'
 import { fromZil, toZil, toBN } from '../filters/zil'
 import trimAddress from '../filters/trimAddress'
@@ -106,9 +106,9 @@ export default {
     },
     toAddress: {
       sameAs: sameAs(vue => {
-        let isAddress = validation.isAddress(vue.toAddress);
+        let isAddress = isValidChecksumAddress(vue.toAddress);
 
-        if (!isAddress || vue.toAddress.length < 40) {
+        if (!isAddress) {
           vue.addressMsg = ERRORCODE[2];
         } else {
           vue.addressMsg = null;
