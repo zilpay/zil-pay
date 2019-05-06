@@ -147,6 +147,8 @@ export class ZilliqaControl extends Zilliqa {
     const storage = new BrowserStorage();
     let forConfirm = await storage.get(fields.CONFIRM_TX);
 
+    payload.toAddr = toChecksumAddress(payload.toAddr);
+
     try {
       forConfirm = forConfirm[fields.CONFIRM_TX];
       forConfirm.push(payload);

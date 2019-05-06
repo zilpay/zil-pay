@@ -6,10 +6,10 @@ var contract;
 var currentHash;
 
 var rollValue = 51;
-var contractAddress = '5DB560CbeD6a57760a7AB58d40376C1a2E4CeA6C';
+var contractAddress = 'e8a997e359ac2a1e891dbdf7fc7558623bb0ead2';
 
-var winAmount = 20;
-var amountZil = 10;
+var winAmount = 200;
+var amountZil = 100;
 
 
 $('input[type=range]').on('input', function () {
@@ -102,7 +102,7 @@ async function roll() {
     utils.units.Units.Zil
   );
   const gasPrice = utils.units.toQa(
-    '3000', utils.units.Units.Li
+    '5000', utils.units.Units.Li
   );
   const tx = await contract.call(
     'Roll', [{
@@ -113,7 +113,7 @@ async function roll() {
     {
       amount: amount,
       gasPrice: gasPrice,
-      gasLimit: utils.Long.fromNumber(8000)
+      gasLimit: utils.Long.fromNumber(9000)
     }
   );
   
