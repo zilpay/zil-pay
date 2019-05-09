@@ -2,11 +2,11 @@
   <div class="container">
     <h5 class="mr-auto p-2 point text-warning"
         @click="$router.go(-1)">&#60;BACK</h5>
-    <h3 class="col-lg-12 text-pink">
-      Import PrivateKey
+    <h3 class="col-lg-12 text-ightindigo">
+      PrivateKey
     </h3>
 
-    <div>
+    <div class="row justify-content-center">
       <textarea class="form-control bg-null"
                 v-model="text"
                 @input="errMsg = null">
@@ -20,6 +20,10 @@
         close
       </button>
       <small class="form-text text-danger">{{errMsg}}</small>
+
+      <button v-btn="'info btn-lg mt-5'" disabled>
+        hardware wallet ledger
+      </button>
     </div>
   </div>
 </template>

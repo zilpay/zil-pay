@@ -50,6 +50,16 @@
     "vue-template-compiler": "^2.6.10",
     "webpack-cli": "^3.3.1"
   },
+  "keywords": [
+    "blockchain",
+    "zilliqa",
+    "ZilPay",
+    "dapp",
+    "metamask"
+  ],
+  "license": "MIT",
+  "homepage": "https://zilpay.xyz/",
+  "author": "lich666black",
   "engines": {
     "node": "^11.14.0",
     "npm": "^6.9.0"

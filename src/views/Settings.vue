@@ -42,7 +42,7 @@
                 @click="createAccountBySeed">Create Account</button>
 
         <button v-btn="'info col-12 mt-1'"
-                @click="$router.push({name: 'import'})">Import privateKey</button>
+                @click="$router.push({name: 'import'})">Import</button>
         <button v-btn="'danger col-12 mt-1'"
                 @click="exportSeed">Export Seed</button>
       </div>

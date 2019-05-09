@@ -133,6 +133,10 @@ export class ZilliqaControl extends Zilliqa {
   }
 
   async addForSingTransaction(payload) {
+    /**
+     * @method: This method call add to storage some payload data.
+     * @param {payload}: It is transaction params "amount, gas, data"...
+     */
     [
       'amount',
       'toAddr'
@@ -161,6 +165,9 @@ export class ZilliqaControl extends Zilliqa {
   }
 
   async rmForSingTransaction() {
+    /**
+     * @method: This method remove payload data from storage.
+     */
     const storage = new BrowserStorage();
     let forConfirm = await storage.get(fields.CONFIRM_TX);
 
@@ -174,6 +181,11 @@ export class ZilliqaControl extends Zilliqa {
   }
 
   async addTransactionList(tx, net) {
+    /**
+     * @method: Add to storage payload data of completed transaction.
+     * @param {tx}: Payload data.
+     * @param net: It is network wthi which call transaction.
+     */
     const storage = new BrowserStorage();
     const from = toChecksumAddress(tx.from);
     let txsList = await storage.get(fields.TRANSACTIONS);
@@ -222,6 +234,9 @@ export class ZilliqaControl extends Zilliqa {
   }
 
   async rmAllTransactionList() {
+    /**
+     * @method: clear all completed transaction from storage.
+     */
     const storage = new BrowserStorage();
     await storage.set(
       new BuildObject(fields.TRANSACTIONS, {})
@@ -229,6 +244,10 @@ export class ZilliqaControl extends Zilliqa {
   }
 
   async notificationsCounter(value) {
+    /**
+     * @method: Set "BadgeText" for show number of actions.
+     * @param value: Number of action.
+     */
     let forConfirm;
 
     if (!value) {

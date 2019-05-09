@@ -23,6 +23,9 @@ if (process.env.NODE_ENV === 'test') {
 export class NotificationsControl {
 
   static counter(number) {
+    /**
+     * @method: Create text on icon bar-extensions of browser.
+     */
     extension.browserAction.setBadgeText({
       text: `${number}`
     });
@@ -44,6 +47,9 @@ export class NotificationsControl {
   }
 
   create() {
+    /**
+     * @method: Create popUp window for confirm transaction.
+     */
     const data = {
       'type': 'basic',
       'title': this.title,
@@ -55,7 +61,7 @@ export class NotificationsControl {
   }
 
   _notificationClicked() {
-    const onClicked = extension.notifications.onClicked;
+    // const onClicked = extension.notifications.onClicked;
     
     // onClicked.addListener((onExplorerTx, _) => {
     //   extension.tabs.create({ url: onExplorerTx });
