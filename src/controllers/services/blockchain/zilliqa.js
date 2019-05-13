@@ -89,7 +89,6 @@ export class ZilliqaControl extends Zilliqa {
     });
     // Sign transaction by current account. //
     const { txParams } = await this.wallet.sign(zilTxData);
-
     return await this.provider.send( // Send to shard node.
       RPCMethod.CreateTransaction, txParams
     );

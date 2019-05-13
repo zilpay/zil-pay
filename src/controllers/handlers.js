@@ -401,8 +401,10 @@ export class TransactionHandler {
     const index = wallet.selectedAddress;
     const accountSelected = wallet.identities[index];
     const address = accountSelected.address;
+    const accountID = accountSelected.index;
 
     let transaction = data[fields.CONFIRM_TX].pop();
+    
     transaction.gasLimit = this.payload.gasLimit || transaction.gasLimit;
     transaction.gasPrice = this.payload.gasPrice || transaction.gasPrice;
 
@@ -446,7 +448,7 @@ export class TransactionHandler {
       resultTx = await zilliqaControl.singTransaction(
         transaction,
         seedOrKey,
-        index,
+        accountID,
         lastNonce,
         networkControl.version
       );
