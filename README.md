@@ -18,14 +18,12 @@ $ npm run background  # build background.js
 $ npm run scripts     # build content.js & inpage.js & background.js
 $ npm run all:firefox # all scripts build for firefox platform.
 $ npm run all:chrome  # all scripts build for chrome platform.
-
-$ cd dapps
-$ npm start          # run dapps on 3000 port
 ```
 
 
 #### ZilPay
 + [ZilPay docs](https://github.com/lich666dead/zil-pay/blob/master/docs/ZILPAY.md)
++ [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
 
 
 
