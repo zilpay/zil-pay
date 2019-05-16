@@ -1,6 +1,19 @@
 .jumbotron {
   height: 300px;
   width: $nav-max-width;
-  background: #412222;
+  margin-top: 5%;
+
+  background: url(/img/bg.svg), linear-gradient(225deg,#012347,#02172d);
+  background-size: cover;
+  background-repeat: no-repeat,no-repeat,repeat;
+  
+  border-radius: .25rem;
   @include shadow();
+}
+
+@media screen and (max-width: $nav-max-width) {
+  .jumbotron {
+    margin-top: 0;
+    border-radius: 0;
+  }
 }
