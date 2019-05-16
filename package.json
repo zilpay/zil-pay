@@ -20,8 +20,6 @@
   "dependencies": {
     "@zilliqa-js/zilliqa": "^0.5.3",
     "bip39": "^2.6.0",
-    "bootstrap-scss": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.19",
     "clipboard-copy": "^3.0.0",
     "cross-fetch": "^3.0.2",
     "crypto": "^1.0.1",

@@ -1,0 +1,6 @@
+.jumbotron {
+  height: 300px;
+  width: $nav-max-width;
+  background: #412222;
+  @include shadow();
+}
