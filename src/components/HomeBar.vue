@@ -1,12 +1,14 @@
 <template>
   <div class="nav-container">
     <nav>
-      <div class="left text-white">
-        ZilPay
+      <div class="left">
+        <img src="/icons/home.svg" height="30">
+        <img src="/icons/qr-code.svg" height="30">
+        <img src="/icons/expand.svg" height="30">
       </div>
 
-      <div class="center">
-        
+      <div class="center text-black">
+        ZilPay
       </div>
 
       <div class="right">
@@ -26,13 +28,18 @@ export default {
 </script>
 
 <style lang="scss">
-.left {
-  padding: 5%;
+nav > .center {
   font-size: 25px;
   font-weight: bold;
 }
-.right > img {
+.right > *, .left > * {
   margin-top: 24px;
-  padding: 1%;
+  padding: 2%;
+  cursor: pointer;
+  
+  &:hover {
+    transition: all ease 0.3s;
+  }
 }
+
 </style>

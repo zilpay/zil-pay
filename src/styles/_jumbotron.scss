@@ -1,6 +1,7 @@
 .jumbotron {
   height: 300px;
   width: $nav-max-width;
+  min-width: $nav-min-width;
   margin-top: 5%;
 
   background: url(/img/bg.svg), linear-gradient(225deg,#012347,#02172d);
@@ -11,9 +12,62 @@
   @include shadow();
 }
 
+.top {
+  padding: 10px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: minmax(50px, auto);
+}
+
+.top > div > span  {
+  margin-left: 8px;
+  font-size: 19px;
+}
+.top > img {
+  grid-column: 3;
+}
+.top > img, .top > div > * {
+  cursor: pointer;
+}
+
+.center {
+  display: grid;
+  grid-template-columns: 75% 10%;
+  justify-content: center;
+  grid-gap: 3px;
+  align-items: center;
+  height: 40px;
+}
+.currency > span {
+  color: $color-primary;
+}
+.center > img {
+  cursor: pointer;
+}
+
+.btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+}
+
+.btns {
+  border-top: 1px solid $color-tertiary;
+}
+
+.btns > span:nth-child(1) {
+  border-right: 1px solid $color-tertiary;
+}
+.btns > span {
+  margin-top: 5px;
+  cursor: pointer;
+}
+
 @media screen and (max-width: $nav-max-width) {
   .jumbotron {
     margin-top: 0;
     border-radius: 0;
+    width: $nav-min-width;
   }
 }
