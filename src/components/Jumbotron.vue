@@ -71,10 +71,7 @@ export default {
     }
   },
   methods: {
-    copy,
-    test() {
-      console.log('wok');
-    }
+    copy
   }
 }
 </script>
