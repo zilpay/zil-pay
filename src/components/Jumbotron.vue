@@ -28,7 +28,7 @@
       </div>
 
       <div class="btns text-white">
-        <span>
+        <span @click="$router.push({name: 'Receive'})">
           <img src="/icons/qr-code-white.svg" height="18">
           Receive
         </span>

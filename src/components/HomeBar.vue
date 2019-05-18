@@ -14,7 +14,8 @@
       <div class="right">
         <img src="/icons/locked.svg" height="30">
         <img src="/icons/refresh.svg" height="30">
-        <img src="/icons/settings.svg" height="30">
+        <img src="/icons/settings.svg" height="30"
+             @click="$router.push({name: 'Setting'})">
       </div>
 
     </nav>

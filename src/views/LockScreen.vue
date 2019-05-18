@@ -30,7 +30,7 @@ export default {
   methods: {
     auth() {
       if (this.password == '123') {
-        this.$router.push({ name: 'home' });
+        this.$router.push({ name: 'Home' });
       }
     }
   }

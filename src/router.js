@@ -10,13 +10,23 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'lock',
+      name: 'Lock',
       component: () => import('./views/LockScreen')
     },
     {
       path: '/home',
-      name: 'home',
+      name: 'Home',
       component: () => import('./views/Home')
+    },
+    {
+      path: '/setting',
+      name: 'Setting',
+      component: () => import('./views/Setting')
+    },
+    {
+      path: '/receive',
+      name: 'Receive',
+      component: () => import('./views/Receive')
     }
   ]
 })
