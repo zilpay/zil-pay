@@ -18,12 +18,12 @@
       </div>
 
       <div class="bottom text-center">
-        <h5 class="text-white currency">
+        <h5 class="text-white">
           {{account.balance}}
-          <span>ZIL</span>
+          <span class="currency">ZIL</span>
           <br>
           ≈ 1000
-          <span>USD</span>
+          <span class="currency">USD</span>
         </h5>
       </div>
 
@@ -75,7 +75,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-
-</style>

@@ -1,5 +1,5 @@
 .jumbotron {
-  height: 300px;
+  padding: 5px;
   width: $nav-max-width;
   min-width: $nav-min-width;
   margin-top: 5%;
@@ -39,7 +39,7 @@
   align-items: center;
   height: 40px;
 }
-.currency > span {
+.currency {
   color: $color-primary;
 }
 .center > img {
