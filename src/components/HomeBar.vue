@@ -2,7 +2,6 @@
   <div class="nav-container">
     <nav>
       <div class="left">
-        <img src="/icons/home.svg" height="30">
         <img src="/icons/qr-code.svg" height="30">
         <img src="/icons/expand.svg" height="30">
       </div>
