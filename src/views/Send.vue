@@ -36,7 +36,9 @@
         </div>
 
         <div class="text-primary text-right advance"
-             @click="isAdvance = !isAdvance">+ Advance</div>
+             @click="isAdvance = !isAdvance">
+          {{isAdvance ? '-': '+'}} Advance
+        </div>
 
         <div class="gas" v-show="isAdvance">
           <div class="text-left">

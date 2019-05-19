@@ -29,5 +29,6 @@ body, html, #app {
 	user-select: none;
 	margin: 0;
 	padding: 0;
+	overflow: -moz-scrollbars-none;
 	overflow: hidden;
 }

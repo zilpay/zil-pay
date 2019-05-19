@@ -1,52 +1,87 @@
 <template>
-  <div class="optionsWrap">
-    <div class="option">
-      <div class="txt">
-        <div class="span">
-          <span>Switch node</span>
-          <div class="unit">Shasta Testnet</div>
-        </div>
-        <div class="settingWrap" style="height: 0px;">
-          <div class="nodeWrap">
-            <div class="nodeItem">
-              <div class="title">Mainnet</div>
-              <div class="cell">
-                <span>Full node</span>
-                <span>https://api.trongrid.io</span>
-              </div>
-              <div class="cell">
-                <span>Solidity node</span>
-                <span>https://api.trongrid.io</span>
-              </div>
-              <div class="cell">
-                <span>Event server</span>
-                <span>https://api.trongrid.io</span>
-              </div>
-            </div>
-            <div class="nodeItem selected">
-              <div class="title">Shasta Testnet</div>
-              <div class="cell">
-                <span>Full node</span>
-                <span>https://api.shasta.trongrid.io</span>
-              </div>
-              <div class="cell">
-                <span>Solidity node</span>
-                <span>https://api.shasta.trongrid.io</span>
-                </div>
-              <div class="cell">
-                <span>Event server</span>
-                <span>https://api.shasta.trongrid.io</span>
-              </div>
-            </div>
-          </div>
+  <div>
+     <BackBar/>
+     <main class="tab-bar">
+      <div class="tab-item">
+        <h3>General</h3>
+        <img src="/icons/caret-right.svg" height="40">
+        <br>
+        <div class="tab-content">
+          <p>Currency conversion, primary currency</p>
         </div>
       </div>
-    </div>
+
+      <div class="tab-item">
+        <h3>Networks</h3>
+        <img src="/icons/caret-right.svg" height="40">
+        <br>
+        <div class="tab-content">
+          <p>Add and edit custom RPC networks</p>
+        </div>
+      </div>
+
+      <div class="tab-item">
+        <h3>Advanced</h3>
+        <img src="/icons/caret-right.svg" height="40">
+        <br>
+        <div class="tab-content">
+          <p>custom gas price and gas limit</p>
+        </div>
+       </div>
+
+      <div class="tab-item">
+        <h3>Security & Privacy</h3>
+        <img src="/icons/caret-right.svg" height="40">
+        <br>
+        <div class="tab-content">
+          <p>Privacy settings and wallet seed phrase</p>
+        </div>
+      </div>
+
+      <div class="tab-item">
+        <h3>About</h3>
+        <img src="/icons/caret-right.svg" height="40">
+        <br>
+        <div class="tab-content">
+          <p>Version, support center, and contact info.</p>
+        </div>
+      </div>
+     </main>
   </div>
 </template>
 
 <script>
+import BackBar from '../components/BackBar'
+
 export default {
-  name: 'Setting'
+  name: 'Setting',
+  components: { BackBar }
 }
 </script>
+
+<style lang="scss">
+.tab-bar {
+  margin: 10px;
+  overflow: auto;
+}
+.tab-item {
+  cursor: pointer;
+}
+.tab-item {
+  padding: 10px;
+
+  display: grid;
+  grid-template-columns: 90% 1fr 1fr;
+
+  border-top: 1px solid rgb(179, 179, 179);
+  width: 100%;
+
+  img {
+    opacity: 0.5;
+    margin-top: 50px;
+  }
+}
+.tab-content {
+  p {font-size: 15px;}
+}
+</style>
