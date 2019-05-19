@@ -31,12 +31,3 @@ body, html, #app {
 	padding: 0;
 	overflow: hidden;
 }
-
-.hided {
-	display: none;
-	transition: max-height 700ms ease-out;
-}
-.show {
-	display: block;
-	transition: max-height 700ms ease-out;
-}

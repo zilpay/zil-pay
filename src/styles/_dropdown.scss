@@ -1,0 +1,22 @@
+.dropdown-input {
+  font-size: 15px;
+  padding: 5px;
+
+  border: 0.1rem solid $color-quaternary;
+  border-radius: .4rem;
+
+  & > .item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    cursor: pointer;
+  }
+  & > .item > div {
+    padding: 5px;
+  }
+  & > .item > div.name {
+    text-align: left;
+  }
+  & > .item > div.address {
+    text-align: right;
+  }
+}

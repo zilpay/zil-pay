@@ -32,7 +32,7 @@
           <img src="/icons/qr-code-white.svg" height="18">
           Receive
         </span>
-        <span>
+        <span @click="$router.push({name: 'Send'})">
           <img src="/icons/send.svg" height="21">
           Send
         </span>

@@ -9,7 +9,7 @@
 
     <div>
       <input class="text-center"
-             type="text"
+             type="password"
              placeholder="Password"
              v-model="password">
       <button @click="auth">Continue</button>

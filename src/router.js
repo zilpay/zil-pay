@@ -27,6 +27,11 @@ export default new Router({
       path: '/receive',
       name: 'Receive',
       component: () => import('./views/Receive')
+    },
+    {
+      path: '/send',
+      name: 'Send',
+      component: () => import('./views/Send')
     }
   ]
 })
