@@ -32,6 +32,11 @@ export default new Router({
       path: '/send',
       name: 'Send',
       component: () => import('./views/Send')
+    },
+    {
+      path: '/accounts',
+      name: 'Accounts',
+      component: () => import('./views/Accounts')
     }
   ]
 })

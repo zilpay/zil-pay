@@ -4,8 +4,12 @@
 
       <div class="top">
         <div>
-          <img src="/icons/wallet.svg" height="30">
-          <span class="text-white">{{account.name}}</span>
+          <img src="/icons/wallet.svg" height="30"
+               @click="$router.push({name: 'Accounts'})">
+          <span class="text-white"
+                @click="$router.push({name: 'Accounts'})">
+            {{account.name}}
+          </span>
         </div>
 
         <img src="/icons/menu-burger.svg" height="30">

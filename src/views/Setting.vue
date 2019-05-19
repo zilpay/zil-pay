@@ -3,7 +3,7 @@
      <BackBar/>
      <main class="tab-bar">
       <div class="tab-item">
-        <h3>General</h3>
+        <div class="title">General</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -12,7 +12,7 @@
       </div>
 
       <div class="tab-item">
-        <h3>Networks</h3>
+        <div class="title">Networks</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -21,7 +21,7 @@
       </div>
 
       <div class="tab-item">
-        <h3>Advanced</h3>
+        <div class="title">Advanced</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -30,7 +30,7 @@
        </div>
 
       <div class="tab-item">
-        <h3>Security & Privacy</h3>
+        <div class="title">Security & Privacy</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -39,7 +39,7 @@
       </div>
 
       <div class="tab-item">
-        <h3>About</h3>
+        <div class="title">About</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -62,7 +62,7 @@ export default {
 <style lang="scss">
 .tab-bar {
   margin: 10px;
-  overflow: auto;
+  // overflow: auto;
 }
 .tab-item {
   cursor: pointer;
@@ -80,8 +80,12 @@ export default {
     opacity: 0.5;
     margin-top: 50px;
   }
+  div.title {
+    font-weight: 600;
+  }
 }
 .tab-content {
   p {font-size: 15px;}
 }
+
 </style>
