@@ -1,3 +1,5 @@
+
+
 .top-bar {
   padding: 1px;
   height: 100%;
@@ -13,7 +15,7 @@
   }
 
   span:nth-child(1) {
-    border-right: 1px solid #fff;
+    border-right: 1px solid $color-initial;
   }
 }
 .cards {
@@ -24,7 +26,7 @@
   justify-content: center;
 }
 .card {
-  background: rgb(9, 123, 143);
+  background: $color-primary;
 
   width: 350px;
 
@@ -66,5 +68,6 @@
   }
   &:hover {
     @include shadow();
+    transform: translate(-1px,-1px);
   }  
 }

@@ -85,10 +85,10 @@ export default {
         name: 'warden'
       },
       itesms: [
-        {name: 'test', address: '0x90C3269c3...7B88E74e1C7c'},
-        {name: 'test', address: '0x90C3269c3...7B88E74e1C7c'},
-        {name: 'test', address: '0x90C3269c3...7B88E74e1C7c'},
-        {name: 'test', address: '0x90C3269c3...7B88E74e1C7c'},
+        {name: 'test', address: '0x9C3269c3...7B88E74e1C7c'},
+        {name: 'test', address: '0x90C3269c3...7B88E7e1C7c'},
+        {name: 'test', address: '0x90C329c3...7B88E74e1Cc'},
+        {name: 'test', address: '0x90C329c3...7B88E74e17c'},
       ]
     };
   },

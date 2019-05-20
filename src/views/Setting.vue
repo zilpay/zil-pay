@@ -2,7 +2,8 @@
   <div>
      <BackBar/>
      <main class="tab-bar">
-      <div class="tab-item">
+      <div class="tab-item"
+           @click="$router.push('/setting/general')">
         <div class="title">General</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
