@@ -8,6 +8,23 @@
         <span>Restore Account</span>
       </div>
 
+      <div class="cards">
+        <div class="card text-white">
+          <div class="header">
+            <div>warden</div>
+            <img src="/icons/selected.svg" height="25">
+          </div>
+          <div class="body">
+            <div>1000 <span>ZIL</span></div>
+            <div>≈ 30 <span>USD</span></div>
+          </div>
+          <div class="footer">
+            <div>{{account.address}}</div>
+            <img src="/icons/copy.svg" height="17">
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </template>
@@ -18,27 +35,15 @@ import  BackBar from '../components/BackBar'
 
 export default {
   name: 'Accounts',
-  components: { BackBar }
+  components: { BackBar },
+  data() {
+    return {
+      account: {
+        address: '0x90C3269c32e328fC26C91Fb3cD107B88E74e1C7c',
+        balance: '312.3',
+        name: 'warden'
+      },
+    };
+  }
 }
 </script>
-
-<style lang="scss">
-.top-bar {
-  padding: 1px;
-  height: 100%;
-  width: 360px;
-  background-color: rgba(0, 0, 0, 0.144);
-  border-radius: 5px;
-  text-align: center;
-
-  * {
-    padding: 5px;
-    cursor: pointer;
-    font-size: 15px;
-  }
-
-  span:nth-child(1) {
-    border-right: 1px solid #fff;
-  }
-}
-</style>

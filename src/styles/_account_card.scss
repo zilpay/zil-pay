@@ -1,0 +1,70 @@
+.top-bar {
+  padding: 1px;
+  height: 100%;
+  width: 360px;
+  background-color: rgba(0, 0, 0, 0.144);
+  border-radius: 5px;
+  text-align: center;
+
+  * {
+    padding: 5px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  span:nth-child(1) {
+    border-right: 1px solid #fff;
+  }
+}
+.cards {
+  margin-top: 30px;
+  font-size: 15px;
+
+  display: grid;
+  justify-content: center;
+}
+.card {
+  background: rgb(9, 123, 143);
+
+  width: 350px;
+
+  border-radius: 0.2em;
+
+  & > * {
+    padding: 6px;
+  }
+
+  .header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    img {
+      grid-column: 3;
+    }
+  }
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    & > div:nth-child(2) {
+       grid-column: 3;
+    }
+  }
+  .footer {
+    border-bottom-right-radius: 0.2em;
+    border-bottom-left-radius: 0.2em;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    background-color: rgb(6, 79, 92);
+
+    img {
+      cursor: pointer;
+      grid-column: 3;
+    }
+  }
+  &:hover {
+    @include shadow();
+  }  
+}
