@@ -57,6 +57,11 @@ export default new Router({
       path: '/setting/security',
       name: 'Security',
       component: () => import('./views/Security')
+    },
+    {
+      path: '/setting/about',
+      name: 'About',
+      component: () => import('./views/About')
     }
   ]
 })

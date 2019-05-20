@@ -42,7 +42,8 @@
         </div>
       </div>
 
-      <div class="tab-item">
+      <div class="tab-item"
+           @click="$router.push({name: 'About'})">
         <div class="title">About</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
