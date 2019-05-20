@@ -12,7 +12,8 @@
         </div>
       </div>
 
-      <div class="tab-item">
+      <div class="tab-item"
+           @click="$router.push('/setting/networks')">
         <div class="title">Networks</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>

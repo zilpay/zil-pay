@@ -29,6 +29,11 @@ export default new Router({
       component: () => import('./views/General')
     },
     {
+      path: '/setting/networks',
+      name: 'Networks',
+      component: () => import('./views/Networks')
+    },
+    {
       path: '/receive',
       name: 'Receive',
       component: () => import('./views/Receive')
