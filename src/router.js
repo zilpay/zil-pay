@@ -52,6 +52,11 @@ export default new Router({
       path: '/setting/advanced',
       name: 'Advanced',
       component: () => import('./views/Advanced')
+    },
+    {
+      path: '/setting/security',
+      name: 'Security',
+      component: () => import('./views/Security')
     }
   ]
 })

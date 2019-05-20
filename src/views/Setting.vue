@@ -32,7 +32,8 @@
         </div>
        </div>
 
-      <div class="tab-item">
+      <div class="tab-item"
+           @click="$router.push({name: 'Security'})">
         <div class="title">Security & Privacy</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
