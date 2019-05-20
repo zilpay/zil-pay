@@ -19,6 +19,21 @@ export default new Router({
       component: () => import('./views/Home')
     },
     {
+      path: '/receive',
+      name: 'Receive',
+      component: () => import('./views/Receive')
+    },
+    {
+      path: '/send',
+      name: 'Send',
+      component: () => import('./views/Send')
+    },
+    {
+      path: '/accounts',
+      name: 'Accounts',
+      component: () => import('./views/Accounts')
+    },
+    {
       path: '/setting',
       name: 'Setting',
       component: () => import('./views/Setting')
@@ -34,19 +49,9 @@ export default new Router({
       component: () => import('./views/Networks')
     },
     {
-      path: '/receive',
-      name: 'Receive',
-      component: () => import('./views/Receive')
-    },
-    {
-      path: '/send',
-      name: 'Send',
-      component: () => import('./views/Send')
-    },
-    {
-      path: '/accounts',
-      name: 'Accounts',
-      component: () => import('./views/Accounts')
+      path: '/setting/advanced',
+      name: 'Advanced',
+      component: () => import('./views/Advanced')
     }
   ]
 })

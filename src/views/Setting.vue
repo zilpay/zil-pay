@@ -3,7 +3,7 @@
      <BackBar/>
      <main class="tab-bar">
       <div class="tab-item"
-           @click="$router.push('/setting/general')">
+           @click="$router.push({name: 'General'})">
         <div class="title">General</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
@@ -13,7 +13,7 @@
       </div>
 
       <div class="tab-item"
-           @click="$router.push('/setting/networks')">
+           @click="$router.push({name: 'Networks'})">
         <div class="title">Networks</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
@@ -22,7 +22,8 @@
         </div>
       </div>
 
-      <div class="tab-item">
+      <div class="tab-item"
+           @click="$router.push({name: 'Advanced'})">
         <div class="title">Advanced</div>
         <img src="/icons/caret-right.svg" height="40">
         <br>
