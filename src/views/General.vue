@@ -46,23 +46,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.dropdown-el {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  
-  height: 40px;
-  width: 100%;
-  border: 1px solid #dedede;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 6px;
-
-  img {
-    opacity: 0.5;
-    grid-column: 3;
-  }
-}
-</style>

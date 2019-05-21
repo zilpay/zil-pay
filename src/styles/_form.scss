@@ -22,3 +22,8 @@ select {
 		outline: 0;
   }
 }
+
+.form-border {
+  border: 1px solid $color-quaternary;
+  border-radius: 4px;
+}

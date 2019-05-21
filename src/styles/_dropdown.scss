@@ -26,3 +26,22 @@
     text-align: right;
   }
 }
+
+.dropdown-el {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  
+  height: 40px;
+  width: 100%;
+  border: 1px solid $color-quaternary;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+
+  img {
+    opacity: 0.5;
+    grid-column: 3;
+    margin-top: 5px;
+  }
+}
