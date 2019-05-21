@@ -5,6 +5,7 @@
         <img src="/icons/qr-code.svg" height="30"
              @click="$router.push({name: 'Receive'})">
         <img src="/icons/expand.svg" height="30">
+        <img src="/icons/networking.svg" height="30">
       </div>
 
       <div class="center text-black">

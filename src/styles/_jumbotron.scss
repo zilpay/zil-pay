@@ -45,7 +45,6 @@
 .center > img {
   cursor: pointer;
 }
-
 .btns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -64,7 +63,9 @@
   margin-top: 5px;
   cursor: pointer;
 }
-
+#acc > div {
+  @include shadow(1px, 1px, 5px, 6px, $color-tertiary);
+}
 @media screen and (max-width: $nav-max-width) {
   .jumbotron {
     margin-top: 0;

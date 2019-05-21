@@ -3,16 +3,14 @@
     <div class="jumbotron">
 
       <div class="top">
-        <div>
-          <img src="/icons/wallet.svg" height="30"
-               @click="$router.push({name: 'Accounts'})">
-          <span class="text-white"
-                @click="$router.push({name: 'Accounts'})">
-            {{account.name}}
-          </span>
-        </div>
+        <div id="acc" class="text-white"
+              @click="$router.push({name: 'Accounts'})"></div>
 
         <img src="/icons/menu-burger.svg" height="30">
+      </div>
+
+      <div class="text-center text-white">
+        {{account.name}}
       </div>
 
       <div class="center text-center">
@@ -49,11 +47,12 @@
 <script>
 import copy from 'clipboard-copy'
 import AccountMixin from '../mixins/account'
+import Jazzicon from '../mixins/jazzicon'
 
 
 export default {
   name: 'Jumbotron',
-  mixins: [AccountMixin],
+  mixins: [AccountMixin, Jazzicon],
   data() {
     return {
       account: {
@@ -76,6 +75,9 @@ export default {
   },
   methods: {
     copy
+  },
+  mounted() {
+    this.jazziconMake(this.account.address, 'acc');
   }
 }
 </script>
