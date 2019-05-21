@@ -34,6 +34,11 @@ export default new Router({
       component: () => import('./views/Accounts')
     },
     {
+      path: '/dapps',
+      name: 'DAPP',
+      component: () => import('./views/Dapp')
+    },
+    {
       path: '/setting',
       name: 'Setting',
       component: () => import('./views/Setting')

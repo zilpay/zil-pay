@@ -4,3 +4,19 @@ main, .row {
 	align-items: center;
 	grid-row-gap: 1%;
 }
+
+.dapp-item {
+	margin: 30px;
+	padding: 10px;
+	font-size: 20px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 70px;
+  justify-content: center;
+	justify-items: center;
+	
+	border: 1px solid $color-quaternary;
+	border-radius: 4px;
+	@include shadow();
+}
