@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <button>default</button>
+      <button class="def">default</button>
     </main>
   </div>
 </template>

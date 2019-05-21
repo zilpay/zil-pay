@@ -8,7 +8,7 @@
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
-          <p>Currency conversion, primary currency</p>
+          <p>Currency conversion</p>
         </div>
       </div>
 
@@ -18,7 +18,7 @@
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
-          <p>Add and edit custom RPC networks</p>
+          <p>Change and edit custom RPC networks</p>
         </div>
       </div>
 
@@ -48,7 +48,7 @@
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
-          <p>Version, support center, and contact info.</p>
+          <p>Version, contact info.</p>
         </div>
       </div>
      </main>

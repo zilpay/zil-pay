@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <button>default</button>
+      <button class="def">default</button>
     </main>
   </div>
 </template>
@@ -68,4 +68,5 @@ export default {
   padding: 30px;
   margin-top: 30px;
 }
+
 </style>
