@@ -1,6 +1,7 @@
 .dropdown-input {
   font-size: 15px;
   padding: 5px;
+  margin-top: 5px;
 
   border: 0.1rem solid $color-quaternary;
   border-radius: .4rem;
@@ -9,6 +10,11 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     cursor: pointer;
+    
+    &:hover {
+      background-color: rgba(143, 143, 143, 0.39);
+      border-radius: 0.3em;
+    }
   }
   & > .item > div {
     padding: 5px;

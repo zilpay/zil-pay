@@ -19,7 +19,7 @@
                  v-model="to">
           <div class="dropdown-input text-black" v-show="isInput">
             <div class="item"
-                 v-for="item of itesms"
+                 v-for="item of items"
                  :key="item.address"
                  @click="to = item.address">
               <div class="name">{{item.name}}</div>
@@ -84,7 +84,7 @@ export default {
         balance: '312.3',
         name: 'warden'
       },
-      itesms: [
+      items: [
         {name: 'test', address: '0x9C3269c3...7B88E74e1C7c'},
         {name: 'test', address: '0x90C3269c3...7B88E7e1C7c'},
         {name: 'test', address: '0x90C329c3...7B88E74e1Cc'},
