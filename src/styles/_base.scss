@@ -32,3 +32,26 @@ body, html, #app {
 	// overflow: -moz-scrollbars-none;
 	// overflow: hidden;
 }
+ul {
+	padding-left: 0;
+	li {
+		list-style: none;
+	}
+}
+a {
+	color: $color-quinary;
+	&:link {
+		text-decoration: none;
+	}
+	&:visited {
+		text-decoration: none;
+	}
+	&:hover {
+		text-decoration: underline;
+		text-decoration: none;
+	}
+	&:active {
+		text-decoration: none;
+		text-decoration: underline;
+	}
+}
