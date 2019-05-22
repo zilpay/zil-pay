@@ -44,9 +44,9 @@ export default new Router({
       component: () => import('./views/Popup')
     },
     {
-      path: '/create',
-      name: 'Create',
-      component: () => import('./views/Create')
+      path: '/restore',
+      name: 'Restore',
+      component: () => import('./views/Restore')
     },
     {
       path: '/connect',
