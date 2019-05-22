@@ -44,9 +44,7 @@
         </div>
       </div>
 
-      <div>
-      </div>
-
+  
       <hr>
     </main>
   </div>
