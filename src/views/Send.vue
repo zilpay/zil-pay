@@ -99,31 +99,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.send-page {
-  justify-items: center;
-}
-.input-group {
-  width: 360px;
-
-  padding-left: 10%;
-  padding-right: 10%;
-}
-label[for=amount] > span, .advance {
-  cursor: pointer;
-}
-.advance {
-  font-size: 15px;
-  margin-top: 10px;
-}
-.gas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  
-  & > * {
-    margin: 2%;
-  }
-}
-
-</style>

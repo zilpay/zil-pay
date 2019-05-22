@@ -21,7 +21,8 @@ input[type='submit'] {
 	text-decoration: none;
 	text-transform: uppercase;
   white-space: nowrap;
-  @include shadow();
+	@include shadow();
+	transition: border-color .3s ease, background-color .3s ease;
 
   &:hover {
     background-color: $color-secondary;
@@ -57,4 +58,10 @@ input[type='submit'] {
 		&[disabled] {
       &:hover { color: $color-primary; }
     }
+}
+.btn-outline {
+	background: $color-initial;
+	border-color: $color-quinary;
+	color: $color-dark-shadow;
+	color: $color-quinary;	
 }
