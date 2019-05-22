@@ -47,3 +47,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.cards {
+  padding: 10px;
+}
+.top-bar {
+  justify-self: center;
+}
+</style>

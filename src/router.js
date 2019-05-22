@@ -44,6 +44,11 @@ export default new Router({
       component: () => import('./views/Popup')
     },
     {
+      path: '/connect',
+      name: 'Connect',
+      component: () => import('./views/Connect')
+    },
+    {
       path: '/setting',
       name: 'Setting',
       component: () => import('./views/Setting')

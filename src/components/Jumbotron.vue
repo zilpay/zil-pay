@@ -66,7 +66,7 @@ export default {
     address() {
       const width = window.screen.width;
 
-      if (width > 360) {
+      if (width > 390) {
         return this.account.address;
       }
 
