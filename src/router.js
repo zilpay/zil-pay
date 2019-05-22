@@ -39,6 +39,11 @@ export default new Router({
       component: () => import('./views/Dapp')
     },
     {
+      path: '/popup',
+      name: 'Popup',
+      component: () => import('./views/Popup')
+    },
+    {
       path: '/setting',
       name: 'Setting',
       component: () => import('./views/Setting')
