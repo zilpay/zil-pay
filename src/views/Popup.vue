@@ -1,17 +1,15 @@
 <template>
   <div>
-    
+    <div class="send-recipient">
+      <a href="">warden</a>
+      <img src="/icons/caret-right.svg" height="30">
+      <a href="">0xe8a99...0ead2</a>
+    </div>    
     <main class="text-center popup">
 
       <img src="https://zilpay.xyz/img/favicon.ico">
 
       <h5>Transaction 1</h5>
-
-      <div class="form-border send-recipient">
-        <a href="">warden</a>
-        <img src="/icons/caret-right.svg" height="30">
-        <a href="">0xe8a99...0ead2</a>
-      </div>
 
       <div class="input-group">
         <div class="form-border text-left details">
@@ -89,6 +87,7 @@ export default {
   img {
     border: 1px solid #d2d8dd;
     border-radius: 20px;
+    margin-left: 20px;
   }
 }
 .btn-group > button {
