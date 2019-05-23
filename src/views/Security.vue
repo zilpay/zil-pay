@@ -11,6 +11,7 @@
 
       <div class="form">
         <h5>Reveal Seed Words</h5>
+        <label>Do not share this data with anyone.</label>
         <button @click="ExportSeed">Reveal Seed Words</button>
       </div>
 
@@ -54,7 +55,7 @@ export default {
   grid-template-columns: 1fr;
 
   button {
-    justify-self: center;
+    justify-self: left;
   }
 }
 .dis {

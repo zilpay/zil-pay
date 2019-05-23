@@ -3,13 +3,13 @@
     <BackBar/>
 
     <main class="export">
-      <div class="header">
-        <label>Your mnemonic word phrase.</label>
+      <div class="header" v-show="textarea">
+        <label>{{label}}</label>
         <br>
         <textarea class="seed" cols="30"></textarea>
       </div>
 
-      <div class="input-group">
+      <div class="input-group" v-show="!textarea">
          <div class="text-left">
           <label>Password</label>
           <input type="password">
@@ -25,7 +25,25 @@ import BackBar from '../components/BackBar'
 
 export default {
   name: 'Export',
-  components: { BackBar }
+  components: { BackBar },
+  data() {
+    return {
+      textarea: null
+    };
+  },
+  computed: {
+    label() {
+      const type = this.$router.currentRoute.params.type;
+
+      if (type == 'key') {
+        return 'Your PrivateKey.';
+      }
+      if (type == 'seed') {
+        return 'Your mnemonic word phrase.';
+      }
+      return null;
+    }
+  }
 }
 </script>
 

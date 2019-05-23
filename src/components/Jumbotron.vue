@@ -12,7 +12,7 @@
           <ul v-show="isDropdown" @mouseleave="isDropdown = false"
               class="dropdown dropdown-input text-black">
             <li @click="$router.push({name: 'Networks'})">Change network</li>
-            <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export account</li>
+            <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export PrivateKey</li>
             <li>Delete account</li>
             <li>Log out</li>
           </ul>
