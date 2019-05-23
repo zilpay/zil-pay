@@ -37,6 +37,7 @@
 
         <div class="text-primary text-right advance"
              @click="isAdvance = !isAdvance">
+          <div class="text-left">fee: {{fee}}</div>
           {{isAdvance ? '-': '+'}} Advance
         </div>
 
@@ -64,10 +65,12 @@
 
 <script>
 import BackBar from '../components/BackBar'
+import GasFee from '../mixins/gas-fee'
 
 
 export default {
   name: 'Send',
+  mixins: [GasFee],
   components: { BackBar },
   data() {
     return {
@@ -75,8 +78,6 @@ export default {
       isInput: false,
 
       amount: 0,
-      gasLimit: 1,
-      gasPrice: 1000,
       to: null,
 
       account: {
@@ -91,11 +92,6 @@ export default {
         {name: 'test', address: '0x90C329c3...7B88E74e17c'},
       ]
     };
-  },
-  methods: {
-    inputShow() {
-
-    }
   }
 }
 </script>

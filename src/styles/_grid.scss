@@ -41,6 +41,8 @@ label[for=amount] > span, .advance {
   cursor: pointer;
 }
 .advance {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   font-size: 15px;
   margin-top: 10px;
 }

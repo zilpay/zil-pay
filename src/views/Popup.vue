@@ -24,6 +24,7 @@
 
         <div class="text-primary text-right advance"
              @click="isAdvance = !isAdvance">
+          <div class="text-left">fee: {{fee}}</div>
           {{isAdvance ? '-': '+'}} Advance
         </div>
 
@@ -51,15 +52,16 @@
 </template>
 
 <script>
+import GasFee from '../mixins/gas-fee'
+
+
 export default {
   name: 'Send',
+  mixins: [GasFee],
   data() {
     return {
       isAdvance: false,
-      isInput: false,
-
-      gasLimit: 1,
-      gasPrice: 1000
+      isInput: false
     };
   }
 }
