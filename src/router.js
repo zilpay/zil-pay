@@ -34,6 +34,11 @@ export default new Router({
       component: () => import('./views/Accounts')
     },
     {
+      path: '/export/:type',
+      name: 'Export',
+      component: () => import('./views/Export')
+    },
+    {
       path: '/dapps',
       name: 'DAPP',
       component: () => import('./views/Dapp')
