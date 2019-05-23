@@ -12,7 +12,7 @@
                 cols="30" v-model="seed"></textarea>
       <button @click="printSeed">Print</button>
 
-      <h5 class="warning text-primary">
+      <h5 class="text-center text-primary">
         Before you continue save your mnemonic Seed Phrase
       </h5>
 
@@ -164,9 +164,5 @@ export default {
 .create-acc {
   justify-content: center;
   justify-items: center;
-}
-.warning {
-  margin-top: 30px;
-  font-size: 20px;
 }
 </style>
