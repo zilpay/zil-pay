@@ -3,9 +3,9 @@
     <BackBar/>
 
     <main>
-      <div class="top-bar text-black">
-        <span>Create Account</span>
-        <span>Restore Account</span>
+      <div class="top-bar">
+        <button class="btn-outline">Create</button>
+        <button class="btn-outline">Import</button>
       </div>
 
       <div class="cards">
@@ -62,5 +62,8 @@ export default {
 }
 .top-bar {
   justify-self: center;
+  button {
+    margin: 10px;
+  }
 }
 </style>
