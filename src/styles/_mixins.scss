@@ -2,4 +2,5 @@
   box-shadow: $offset-x $offset-y $blur-radius $spread-radius $color;
   -moz-box-shadow: $offset-x $offset-y $blur-radius $spread-radius $color;
   -webkit-box-shadow: $offset-x $offset-y $blur-radius $spread-radius $color;
+  transition: box-shadow 0.3s ease-in-out;
 }

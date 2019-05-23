@@ -1,40 +1,34 @@
 <template>
   <div class="row">
-    <div class="tx-list">
-      <div class="text-center text-white">
-        History
-      </div>
-      
-      <ul class="list text-white">
-        <li class="item">
 
-          <img src="/icons/contract.svg" height="30">
+    <div class="text-left title">History</div>
 
-          <span class="text-center">
-            -100 <span class="currency">ZIL</span>
-            ≈ 10 <span class="currency">USD</span>
-          </span>
-
-          <span class="text-right">May 13th, 1:44 pm</span>
-
-          <div class="hided detail">
-            <span>hash: 0x3b78e6dec6e90f663ea783b04ad56bd5faadf87f0b763e7da994dc342b984091</span>
-          </div>
-
-        </li>
-        <li class="item">
-
-          <img src="/icons/send.svg" height="30">
-
-          <span class="text-center">
-            -34 <span class="currency">ZIL</span>
-            ≈ 13 <span class="currency">USD</span>
-          </span>
-
-          <span class="text-right">May 13th, 1:44 pm</span>
-        </li>
-      </ul>
-    </div>
+    <ul class="list text-black">
+      <li>
+        <a href=""><img src="/icons/contract.svg" height="20"></a>
+        <div class="info">
+          <a href="" class="text-black">warden</a>
+          <img src="/icons/caret-right.svg" height="20"
+              class="img-border">
+          <a href="" class="text-black">0xE8A...0eaD2</a>
+        </div>
+        <div class="text-right">
+          -992.2 <span class="text-primary">ZIL</span>
+        </div>
+      </li>
+      <li>
+        <a href=""><img src="/icons/send-dark.svg" height="20"></a>
+        <div class="info">
+          <a href="" class="text-black">warden</a>
+          <img src="/icons/caret-right.svg" height="20"
+              class="img-border">
+          <a href="" class="text-black">0xE8A...0eaD2</a>
+        </div>
+        <div class="text-right">
+          -992.2 <span class="text-primary">ZIL</span>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -43,3 +37,52 @@ export default {
   name: 'TxList'
 }
 </script>
+
+<style lang="scss">
+@import "../styles/color";
+@import "../styles/dimensions";
+
+
+.title {
+  margin-top: 20px;
+  font-size: 15px;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: $nav-max-width;
+  min-width: $nav-min-width;
+  font-size: 15px;
+  
+  li {
+    padding: 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid $color-dark-shadow;
+
+    .info {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      justify-items: center;
+      grid-gap: 10px;
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &:hover {
+      transition: background-color .3s ease;
+      background-color: $color-translucent;
+    }
+  }
+}
+@media screen and (max-width: $nav-max-width) {
+  .list {
+    margin-top: 0;
+    border-radius: 0;
+    width: $nav-min-width;
+  }
+}
+</style>

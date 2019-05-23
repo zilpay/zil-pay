@@ -3,9 +3,11 @@
     <nav>
       <div class="left">
         <img src="/icons/qr-code.svg" height="30"
+             class="point"
              @click="$router.push({name: 'Receive'})">
-        <img src="/icons/expand.svg" height="30">
+        <img src="/icons/expand.svg" height="30" class="point">
         <img src="/icons/networking.svg" height="30"
+             class="point"
              @click="$router.push({name: 'DAPP'})">
       </div>
 
@@ -14,9 +16,12 @@
       </div>
 
       <div class="right">
-        <img src="/icons/locked.svg" height="30">
-        <img src="/icons/refresh.svg" height="30">
+        <img src="/icons/locked.svg" height="30"
+             class="point"
+             @click="$router.push({name: 'Lock'})">
+        <img src="/icons/refresh.svg" height="30" class="point">
         <img src="/icons/settings.svg" height="30"
+             class="point"
              @click="$router.push({name: 'Setting'})">
       </div>
 

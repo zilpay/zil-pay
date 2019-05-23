@@ -6,12 +6,14 @@
       <div class="form-border change-gas">
         <div>
           <label for="gasPrice">Gas Price (Li)</label>
-          <input type="number" id="gasPrice" value="1000">
+          <input type="number" id="gasPrice" v-model="gasPrice">
         </div>
         <div>
           <label for="gasLimit">Gas Limit</label>
-          <input type="number" id="gasLimit" value="1">
+          <input type="number" id="gasLimit" v-model="gasLimit">
         </div>
+
+        <small>fee: {{fee}}</small>
       </div>
 
       <button class="def">default</button>
@@ -21,11 +23,13 @@
 
 <script>
 import BackBar from '../components/BackBar'
+import GasFee from '../mixins/gas-fee'
 
 
 export default {
   name: 'Advanced',
-  components: { BackBar }
+  components: { BackBar },
+  mixins: [GasFee]
 }
 </script>
 

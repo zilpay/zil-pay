@@ -2,7 +2,8 @@
   <div>
     <div class="send-recipient">
       <a href="">warden</a>
-      <img src="/icons/caret-right.svg" height="30">
+      <img src="/icons/caret-right.svg"
+           height="30" class="img-border">
       <a href="">0xe8a99...0ead2</a>
     </div>    
     <main class="text-center popup">
@@ -85,8 +86,6 @@ export default {
   justify-items: center;
 
   img {
-    border: 1px solid #d2d8dd;
-    border-radius: 20px;
     margin-left: 20px;
   }
 }

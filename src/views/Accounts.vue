@@ -22,7 +22,7 @@
           <div class="footer">
             <div>{{account.address}}</div>
             <img src="/icons/copy.svg"
-                 height="17" v-tooltip="'copy'"
+                 height="17" v-tooltip="'Copy'"
                  @click="copy(account.address)">
           </div>
         </div>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       account: {
-        address: '0x90C3269c32e328fC26C91Fb3cD107B88E74e1C7c',
+        address: 'bc1qngw83fg8dz0k749cg7k3emc7v98wy0c74dlrkd',
         balance: '312.3',
         name: 'warden'
       }

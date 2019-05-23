@@ -64,7 +64,11 @@
   cursor: pointer;
 }
 #acc > div {
-  @include shadow(1px, 1px, 5px, 3px, $color-tertiary);
+  border: 2px solid $color-tertiary;
+
+  &:hover {
+    @include shadow(1px, 1px, 5px, 3px, $color-tertiary);
+  }
 }
 @media screen and (max-width: $nav-max-width) {
   .jumbotron {

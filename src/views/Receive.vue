@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       account: {
-        address: '0x90C3269c32e328fC26C91Fb3cD107B88E74e1C7c',
+        address: 'bc1qngw83fg8dz0k749cg7k3emc7v98wy0c74dlrkd',
         balance: '312.3',
         name: 'warden'
       },

@@ -14,7 +14,7 @@
             <li @click="$router.push({name: 'Networks'})">Change network</li>
             <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export PrivateKey</li>
             <li>Delete account</li>
-            <li>Log out</li>
+            <li @click="$router.push({name: 'Lock'})">Log out</li>
           </ul>
         </div>
       </div>
@@ -25,7 +25,7 @@
 
       <div class="center text-center">
         <h5 class="text-white">{{address}}</h5>
-        <img src="/icons/copy.svg" v-tooltip="'copy'"
+        <img src="/icons/copy.svg" v-tooltip="'Copy'"
              height="30" @click="copy(account.address)">
       </div>
 
@@ -69,7 +69,7 @@ export default {
     return {
       isDropdown: false,
       account: {
-        address: '0x90C3269c32e328fC26C91Fb3cD107B88E74e1C7c',
+        address: 'bc1qngw83fg8dz0k749cg7k3emc7v98wy0c74dlrkd',
         balance: '312.3',
         name: 'warden'
       }
