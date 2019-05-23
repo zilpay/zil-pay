@@ -24,40 +24,16 @@ input[type='submit'] {
 	@include shadow();
 	transition: border-color .3s ease, background-color .3s ease;
 
-  &:hover {
-    background-color: $color-secondary;
+	&:hover:enabled {
+		background-color: $color-quinary;
 		border-color: $color-secondary;
-		color: $color-initial;
-		outline: 0;
-  }
+		color: $color-secondary;
+	}
 
 	&[disabled] {
-    cursor: default;
-		opacity: .5;
-  }
-
-		&:hover {
-      background-color: $color-primary;
-			border-color: $color-primary;
-    }
-
-		&:hover {
-      background-color: $color-quinary;
-			border-color: $color-secondary;
-			color: $color-secondary;
-    }
-
-		&[disabled] {
-
-    &:hover {
-        border-color: inherit;
-				color: $color-primary;
-      }
-    }
-
-		&[disabled] {
-      &:hover { color: $color-primary; }
-    }
+		cursor: not-allowed;
+		opacity: .3;
+	}
 }
 .btn-outline {
 	background: $color-initial;
