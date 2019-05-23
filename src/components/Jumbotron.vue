@@ -6,7 +6,17 @@
         <div id="acc" class="text-white"
               @click="$router.push({name: 'Accounts'})"></div>
 
-        <img src="/icons/menu-burger.svg" height="30">
+        <div class="burger dropdown-btn">
+          <img src="/icons/menu-burger.svg" height="30"
+               @click="isDropdown = !isDropdown">
+          <ul v-show="isDropdown" @mouseleave="isDropdown = false"
+              class="dropdown dropdown-input text-black">
+            <li @click="$router.push({name: 'Networks'})">Change network</li>
+            <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export account</li>
+            <li>Delete account</li>
+            <li>Log out</li>
+          </ul>
+        </div>
       </div>
 
       <div class="text-center text-white">
@@ -57,6 +67,7 @@ export default {
   directives: { tooltip },
   data() {
     return {
+      isDropdown: false,
       account: {
         address: '0x90C3269c32e328fC26C91Fb3cD107B88E74e1C7c',
         balance: '312.3',
