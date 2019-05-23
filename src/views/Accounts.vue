@@ -20,7 +20,9 @@
           </div>
           <div class="footer">
             <div>{{account.address}}</div>
-            <img src="/icons/copy.svg" height="17">
+            <img src="/icons/copy.svg"
+                 height="17" v-tooltip="'copy'"
+                 @click="copy(account.address)">
           </div>
         </div>
       </div>
@@ -30,20 +32,26 @@
 </template>
 
 <script>
-import  BackBar from '../components/BackBar'
+import BackBar from '../components/BackBar'
+import tooltip from '../directives/tooltip'
+import copy from 'clipboard-copy'
 
 
 export default {
   name: 'Accounts',
   components: { BackBar },
+  directives: { tooltip },
   data() {
     return {
       account: {
         address: '0x90C3269c32e328fC26C91Fb3cD107B88E74e1C7c',
         balance: '312.3',
         name: 'warden'
-      },
+      }
     };
+  },
+  methods: {
+    copy
   }
 }
 </script>

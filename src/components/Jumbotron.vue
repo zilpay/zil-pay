@@ -15,7 +15,7 @@
 
       <div class="center text-center">
         <h5 class="text-white">{{address}}</h5>
-        <img src="/icons/copy.svg"
+        <img src="/icons/copy.svg" v-tooltip="'copy'"
              height="30" @click="copy(account.address)">
       </div>
 
@@ -48,11 +48,13 @@
 import copy from 'clipboard-copy'
 import AccountMixin from '../mixins/account'
 import Jazzicon from '../mixins/jazzicon'
+import tooltip from '../directives/tooltip'
 
 
 export default {
   name: 'Jumbotron',
   mixins: [AccountMixin, Jazzicon],
+  directives: { tooltip },
   data() {
     return {
       account: {
