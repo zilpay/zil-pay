@@ -4,7 +4,7 @@
      <main class="tab-bar">
       <div class="tab-item"
            @click="$router.push({name: 'General'})">
-        <div class="title">General</div>
+        <h5 class="title">General</h5>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -14,7 +14,7 @@
 
       <div class="tab-item"
            @click="$router.push({name: 'Networks'})">
-        <div class="title">Networks</div>
+        <h5 class="title">Networks</h5>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -24,7 +24,7 @@
 
       <div class="tab-item"
            @click="$router.push({name: 'Advanced'})">
-        <div class="title">Advanced</div>
+        <h5 class="title">Advanced</h5>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -34,7 +34,7 @@
 
       <div class="tab-item"
            @click="$router.push({name: 'Security'})">
-        <div class="title">Security & Privacy</div>
+        <h5 class="title">Security & Privacy</h5>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -44,7 +44,7 @@
 
       <div class="tab-item"
            @click="$router.push({name: 'About'})">
-        <div class="title">About</div>
+        <h5 class="title">About</h5>
         <img src="/icons/caret-right.svg" height="40">
         <br>
         <div class="tab-content">
@@ -67,13 +67,13 @@ export default {
 <style lang="scss">
 .tab-bar {
   margin: 10px;
-  // overflow: auto;
+  grid-template-columns: minmax(50%, 500px);
 }
 .tab-item {
   cursor: pointer;
 }
 .tab-item {
-  padding: 10px;
+  padding: 10px;  
 
   display: grid;
   grid-template-columns: 90% 1fr 1fr;
@@ -87,6 +87,7 @@ export default {
   }
   div.title {
     font-weight: 600;
+    font-size: 30px;
   }
 }
 .tab-content {
