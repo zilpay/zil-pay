@@ -10,6 +10,11 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'First',
+      component: () => import('./views/FirstStart')
+    },
+    {
+      path: '/lock',
       name: 'Lock',
       component: () => import('./views/LockScreen')
     },
