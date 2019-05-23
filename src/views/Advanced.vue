@@ -22,8 +22,9 @@
 </template>
 
 <script>
-import BackBar from '../components/BackBar'
 import GasFee from '../mixins/gas-fee'
+
+const BackBar = () => import('../components/BackBar');
 
 
 export default {

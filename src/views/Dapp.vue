@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import BackBar from '../components/BackBar'
+const BackBar = () => import('../components/BackBar');
 
 export default {
   name: 'Dapp',

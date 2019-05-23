@@ -24,9 +24,9 @@
       </div>
 
       <div class="center text-center">
-        <h5 class="text-white">{{address}}</h5>
+        <h5 class="text-white">{{address | toBech32}}</h5>
         <img src="/icons/copy.svg" v-tooltip="'Copy'"
-             height="30" @click="copy(account.address)">
+             height="30" @click="copy(toBech32(account.address))">
       </div>
 
       <div class="bottom text-center">
@@ -59,17 +59,19 @@ import copy from 'clipboard-copy'
 import AccountMixin from '../mixins/account'
 import Jazzicon from '../mixins/jazzicon'
 import tooltip from '../directives/tooltip'
+import toBech32 from '../filters/to-bech32'
 
 
 export default {
   name: 'Jumbotron',
   mixins: [AccountMixin, Jazzicon],
   directives: { tooltip },
+  filters: { toBech32 },
   data() {
     return {
       isDropdown: false,
       account: {
-        address: 'bc1qngw83fg8dz0k749cg7k3emc7v98wy0c74dlrkd',
+        address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
         balance: '312.3',
         name: 'warden'
       }
@@ -87,7 +89,8 @@ export default {
     }
   },
   methods: {
-    copy
+    copy,
+    toBech32
   },
   mounted() {
     this.jazziconMake(this.account.address, 'acc');

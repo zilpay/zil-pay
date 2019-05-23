@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import HomeBar from '../components/HomeBar'
-import Jumbotron from '../components/Jumbotron'
-import TxList from '../components/TxList'
+const HomeBar = () => import('../components/HomeBar');
+const Jumbotron = () => import('../components/Jumbotron');
+const TxList = () => import('../components/TxList');
 
 
 export default {

@@ -10,7 +10,7 @@
       <div>
         <img v-if="qrcode" :src="qrcode">
         <br>
-        <span class="full-address">{{account.address}}</span>
+        <span class="full-address">{{account.address | toBech32}}</span>
         <br>
         <button @click="copy(account.address)">Copy address</button>
       </div>
@@ -23,16 +23,19 @@
 <script>
 import QRCode from 'qrcode'
 import copy from 'clipboard-copy'
-import BackBar from '../components/BackBar'
+import toBech32 from '../filters/to-bech32'
+
+const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'receive',
   components: { BackBar },
+  filters: { toBech32 },
   data() {
     return {
       account: {
-        address: 'bc1qngw83fg8dz0k749cg7k3emc7v98wy0c74dlrkd',
+        address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
         balance: '312.3',
         name: 'warden'
       },
@@ -40,7 +43,10 @@ export default {
     };
   },
   methods: {
-    copy,
+    copy(hex) {
+      const bech32Address = toBech32(hex);
+      copy(bech32Address);
+    },
 
     async qrcodeGenerate() {
       this.qrcode = await QRCode.toDataURL(

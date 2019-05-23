@@ -10,7 +10,7 @@
           <a href="" class="text-black">warden</a>
           <img src="/icons/caret-right.svg" height="20"
               class="img-border">
-          <a href="" class="text-black">0xE8A...0eaD2</a>
+          <a href="" class="text-black">zil1xq...80trpf</a>
         </div>
         <div class="text-right">
           -992.2 <span class="text-primary">ZIL</span>
@@ -22,7 +22,7 @@
           <a href="" class="text-black">warden</a>
           <img src="/icons/caret-right.svg" height="20"
               class="img-border">
-          <a href="" class="text-black">0xE8A...0eaD2</a>
+          <a href="" class="text-black">zil1t...h639c2</a>
         </div>
         <div class="text-right">
           -992.2 <span class="text-primary">ZIL</span>

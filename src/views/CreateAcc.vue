@@ -38,8 +38,9 @@
 </template>
 
 <script>
-import BackBar from '../components/BackBar'
 import PasswordValidator from '../mixins/password-validator'
+
+const BackBar = () => import('../components/BackBar');
 
 
 // this method was copied from zillet wallet "https://zillet.io";

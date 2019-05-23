@@ -56,7 +56,8 @@
 </template>
 
 <script>
-import BackBar from '../components/BackBar'
+const BackBar = () => import('../components/BackBar');
+
 
 export default {
   name: 'Setting',
@@ -85,7 +86,7 @@ export default {
     opacity: 0.5;
     margin-top: 50px;
   }
-  div.title {
+  .title {
     font-weight: 600;
     font-size: 30px;
   }

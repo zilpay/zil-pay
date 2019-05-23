@@ -33,9 +33,10 @@
 </template>
 
 <script>
-import BackBar from '../components/BackBar'
 import tooltip from '../directives/tooltip'
 import copy from 'clipboard-copy'
+
+const BackBar = () => import('../components/BackBar');
 
 
 export default {

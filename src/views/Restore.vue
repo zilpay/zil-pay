@@ -39,8 +39,9 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
-import BackBar from '../components/BackBar'
 import PasswordValidator from '../mixins/password-validator'
+
+const BackBar = () => import('../components/BackBar');
 
 
 export default {
