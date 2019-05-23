@@ -3,7 +3,6 @@
     <BackBar/>
 
     <main class="create-acc">
-      <h5>do not lose this phrases!</h5>
       <label>Your mnemonic Seed Phrase.
         <img src="/icons/refresh.svg" height="15"
              class="update-seed">
@@ -12,21 +11,25 @@
                 cols="30" v-model="seed"></textarea>
       <button @click="printSeed">Print</button>
 
-      <h5 class="text-center text-primary">
-        Before you continue save your mnemonic Seed Phrase
-      </h5>
+      <div class="text-center text-primary">
+        Save your mnemonic Seed Phrase!
+      </div>
 
       <div class="input-group">
          <div class="text-left">
           <label>Password (min 6 chars)</label>
-          <input type="password">
+          <input type="password" v-model.lazy="password">
+          <small v-show="isValidPassword"
+                 class="text-danger">{{isValidPassword}}</small>
         </div>
         <div class="text-left">
           <label>Confirm Password</label>
-          <input type="password">
+          <input type="password" v-model="confirmPassword">
+          <small v-show="isConfirmPassword"
+                 class="text-danger">{{isConfirmPassword}}</small>
         </div>
 
-        <button :disabled="!isKeyDownloaded">
+        <button :disabled="isContinue">
           continue
         </button>
       </div>
@@ -36,6 +39,7 @@
 
 <script>
 import BackBar from '../components/BackBar'
+import PasswordValidator from '../mixins/password-validator'
 
 
 // this method was copied from zillet wallet "https://zillet.io";
@@ -132,9 +136,9 @@ const printMnemonic = phrase => {
 export default {
   name: 'CreateAcc',
   components: { BackBar },
+  mixins: [PasswordValidator],
   data() {
-    return {
-      isKeyDownloaded: false,
+    return {      
       seed: 'sdasgh own rail mimic dsad amazing das maze dasd smile leader deposit'
     };
   },

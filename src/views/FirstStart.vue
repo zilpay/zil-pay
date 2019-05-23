@@ -6,12 +6,12 @@
       
       <div class="panels">
         <div class="form-border">
-          <img src="/icons/download.svg" height="90">
+          <img src="/icons/download.svg" height="70">
           <h5>I have mnemonic word phrase.</h5>
           <button @click="$router.push({name: 'Restore'})">Restore</button>
         </div>
         <div class="form-border">
-          <img src="/icons/plus.svg" height="90">
+          <img src="/icons/plus.svg" height="70">
           <h5>let's create new Account.</h5>
           <button @click="$router.push({name: 'Create'})">Create</button>
         </div>
