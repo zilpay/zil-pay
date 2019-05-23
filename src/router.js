@@ -64,7 +64,7 @@ export default new Router({
       component: () => import('./views/Restore')
     },
     {
-      path: '/import',
+      path: '/accounts/import',
       name: 'Import',
       component: () => import('./views/Import')
     },

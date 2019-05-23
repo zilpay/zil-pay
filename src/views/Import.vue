@@ -73,6 +73,7 @@ export default {
 .by-key {
   display: grid;
   grid-template-columns: 1fr;
+  justify-items: center;
 
   button {
     margin: 10px;
