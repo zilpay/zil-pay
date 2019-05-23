@@ -3,7 +3,11 @@
     <BackBar/>
 
     <main class="restore">
-      <textarea cols="30"></textarea>
+      <label>Your mnemonic Seed Phrase.
+        <img src="/icons/refresh.svg" height="15"
+             class="update-seed">
+      </label>
+      <textarea class="mnemonic" cols="30"></textarea>
 
       <div class="input-group">
          <div class="text-left">
@@ -36,5 +40,10 @@ export default {
 </script>
 
 <style lang="scss">
-
+.mnemonic {
+  margin: 0px; height: 216px; width: 403px;
+}
+.update-seed {
+  cursor: pointer;
+}
 </style>

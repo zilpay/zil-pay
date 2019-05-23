@@ -13,7 +13,7 @@
         <div class="form-border">
           <img src="/icons/plus.svg" height="90">
           <h5>let's create new Account.</h5>
-          <button>Create</button>
+          <button @click="$router.push({name: 'Create'})">Create</button>
         </div>
       </div>
     </main>

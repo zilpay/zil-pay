@@ -14,6 +14,11 @@ export default new Router({
       component: () => import('./views/FirstStart')
     },
     {
+      path: '/create',
+      name: 'Create',
+      component: () => import('./views/CreateAcc')
+    },
+    {
       path: '/lock',
       name: 'Lock',
       component: () => import('./views/LockScreen')
