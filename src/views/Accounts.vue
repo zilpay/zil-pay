@@ -5,7 +5,8 @@
     <main>
       <div class="top-bar">
         <button class="btn-outline">Create</button>
-        <button class="btn-outline">Import</button>
+        <button class="btn-outline"
+                @click="$router.push({name: 'Import'})">Import</button>
       </div>
 
       <div class="cards">

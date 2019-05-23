@@ -64,6 +64,11 @@ export default new Router({
       component: () => import('./views/Restore')
     },
     {
+      path: '/import',
+      name: 'Import',
+      component: () => import('./views/Import')
+    },
+    {
       path: '/connect',
       name: 'Connect',
       component: () => import('./views/Connect')
