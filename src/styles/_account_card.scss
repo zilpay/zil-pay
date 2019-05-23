@@ -47,6 +47,6 @@
   }
   &:hover {
     @include shadow();
-    transform: translate(-1px,-1px);
-  }  
+    border: 1px solid $color-dark-shadow;
+  }
 }

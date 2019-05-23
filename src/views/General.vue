@@ -19,6 +19,11 @@
           </div>
         </div>
       </div>
+
+      <div>
+        <h5>Clear history transaction.</h5>
+        <button>Clear</button>
+      </div>
     </main>
   </div>
 </template>
