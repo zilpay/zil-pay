@@ -6,9 +6,9 @@
         <div id="acc" class="text-white"
               @click="$router.push({name: 'Accounts'})"></div>
         
-        <div class="text-center text-white">
-          {{account.name}}
-        </div>
+        <input type="text"
+               class="text-center text-white account-name"
+               v-model="account.name">
 
         <div class="burger dropdown-btn">
           <img src="/icons/menu-burger.svg" height="30"
@@ -69,7 +69,7 @@ export default {
   data() {
     return {
       isDropdown: false,
-      open: true,
+      
       account: {
         address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
         balance: '312.3',
