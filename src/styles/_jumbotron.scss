@@ -3,7 +3,7 @@
   width: $nav-max-width;
   min-width: $nav-min-width;
   margin-top: 5%;
-
+  
   background: url(/img/bg.svg), linear-gradient(225deg,#012347,#02172d);
   background-size: cover;
   background-repeat: no-repeat,no-repeat,repeat;
@@ -47,7 +47,7 @@
 
 .btns {
   border-top: 1px solid $color-tertiary;
-  font-size: 21px;
+  font-size: 20px;
 }
 
 .btns > span:nth-child(1) {
@@ -59,6 +59,7 @@
 }
 .bottom {
   font-size: 20px;
+  font-weight: 400;
   margin: 10px;
 }
 #acc > div {

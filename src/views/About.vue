@@ -1,7 +1,6 @@
 <template>
   <div>
     <BackBar/>
-
     <main class="about">
       <img src="/icon128.png">
       <div class="text-center">

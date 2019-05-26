@@ -1,7 +1,7 @@
 <template>
   <div>
     <BackBar/>
-
+    
     <main>
       <div class="top-bar">
         <button class="btn-outline">Create</button>

@@ -16,7 +16,10 @@ html {
 }
 body, html {
 	min-height: 600px;
-  min-width: $nav-min-width;
+	min-width: $nav-min-width;
+	background-color: #f7f7f7;
+	// overflow: -moz-scrollbars-none;
+	// overflow: hidden;
 }
 
 // Default body styles
@@ -27,15 +30,12 @@ body, #app {
 	font-weight: 300;
 	letter-spacing: .01em;
 	line-height: 1.6;
-	
 }
 
 body, html, #app {
 	user-select: none;
 	margin: 0;
 	padding: 0;
-	// overflow: -moz-scrollbars-none;
-	// overflow: hidden;
 }
 ul {
 	padding-left: 0;

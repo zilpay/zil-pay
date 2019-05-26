@@ -1,7 +1,7 @@
 <template>
   <div>
     <BackBar/>
-
+    
     <main>
       <div class="form-border change-gas">
         <div>

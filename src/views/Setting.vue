@@ -67,28 +67,28 @@ export default {
 
 <style lang="scss">
 .tab-bar {
-  margin: 10px;
+  margin-top: 50px;
   grid-template-columns: minmax(50%, 500px);
 }
 .tab-item {
   cursor: pointer;
-}
-.tab-item {
   padding: 10px;  
 
   display: grid;
   grid-template-columns: 90% 1fr 1fr;
 
   border-top: 1px solid rgb(179, 179, 179);
-  width: 100%;
+  height: 150px;
 
   img {
     opacity: 0.5;
     margin-top: 50px;
   }
   .title {
-    font-weight: 600;
-    font-size: 30px;
+    font-weight: 400;
+    font-size: 18px;
+    color: #4d4d4d;
+    
   }
 }
 .tab-content {
