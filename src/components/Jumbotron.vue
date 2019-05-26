@@ -34,7 +34,7 @@
         <span class="currency">ZIL</span>
         <br>
         ≈ 1000
-        <span class="currency">USD</span>
+        <span class="currency">{{currency}}</span>
       </div>
 
       <div class="btns text-white">
@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import AccountMixin from '../mixins/account'
 import Jazzicon from '../mixins/jazzicon'
 import tooltip from '../directives/tooltip'
@@ -73,6 +74,11 @@ export default {
         name: 'warden'
       }
     };
+  },
+  computed: {
+    ...mapState('Static', [
+      'currency'
+    ])
   },
   mounted() {
     this.jazziconMake(this.account.address, 'acc');

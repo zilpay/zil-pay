@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import fetch from 'cross-fetch'
 import Static from './stores/static'
+
+import apiConfig from '../config/api.json'
 
 
 Vue.use(Vuex)
@@ -9,7 +12,8 @@ export default new Vuex.Store({
   modules: { Static },
   state: {
     loading: true,
-    isConnect: true
+    isConnect: true,
+    conversionRate: 0
   },
   mutations: {
     spiner(state) {
@@ -30,6 +34,24 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async updateRate({ state }) {
+      let rate;
+      const url = `${apiConfig.COINMARKETCAP}/zilliqa`;
+      const currency = state.Static.currency;
 
+      try {
+        const response = await fetch(url, { method: 'GET' });
+        rate = await response.json();
+        if (currency === 'USD') {
+          rate = rate[0]['price_usd'];
+        } else if (currency === 'BTC') {
+          rate = rate[0]['price_btc'];
+        }
+      } catch(err) {
+        rate = 0;
+      }
+
+      state.conversionRate = rate;
+    }
   }
 })

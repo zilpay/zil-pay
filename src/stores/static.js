@@ -5,7 +5,7 @@ export default {
   namespaced: true,
   state: {
     currency: 'USD',
-    currencyItems: ['BTC', 'ETH', 'TRX'],
+    currencyItems: ['BTC', 'USD'],
 
     addressFormat: 'Bech32',
     addressFormatItems: ['Bech32', 'Base58', 'Hex'],
