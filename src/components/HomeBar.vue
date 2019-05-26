@@ -2,6 +2,7 @@
   <div class="nav-container">
     <nav>
       <div class="left">
+        <img :src="connectURL" height="30">
         <img src="/icons/qr-code.svg" height="30"
              class="point"
              @click="$router.push({name: 'Receive'})">
@@ -30,8 +31,20 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  name: 'HomeBar'
+  name: 'HomeBar',
+  computed: {
+    ...mapState(['isConnect']),
+
+    connectURL() {
+      if (this.isConnect) {
+        return '/icons/connection.svg';
+      }
+      return '/icons/none-connection.svg';
+    }
+  }
 }
 </script>
 

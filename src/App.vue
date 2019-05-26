@@ -6,9 +6,15 @@
 
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   name: 'App',
+  methods: {
+    ...mapMutations(['spiner'])
+  },
   mounted() {
+    this.spiner();
     this.$router.push({ name: 'Home' });
   }
 }
