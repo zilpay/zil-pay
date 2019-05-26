@@ -4,7 +4,7 @@
 
     <main class="text-center send-page">
 
-      <h5>Only send ZIL native to an Zilliqa address.</h5>
+      <h6>Only send ZIL native to an Zilliqa address.</h6>
 
       <div class="input-group">
         <div class="to text-left" @mouseleave="isInput = false">

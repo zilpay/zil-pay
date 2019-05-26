@@ -3,18 +3,35 @@
     <BackBar/>
 
     <main>
-      <div class="text-left" @mouseleave="isInput = false">
+      <div class="text-left" @mouseleave="isCurrencyInput = false">
         <span>Currency Conversion</span>
-        <div class="dropdown-el" @click="isInput = !isInput">
+        <div class="dropdown-el" @click="isCurrencyInput = !isCurrencyInput">
           {{currency}}
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
         
-        <div class="dropdown-input text-black" v-show="isInput">
+        <div class="dropdown-input text-black" v-show="isCurrencyInput">
           <div class="item"
                 v-for="item of items"
                 :key="item"
-                @click="selected(item)">
+                @click="selectedCurrency(item)">
+            <div class="name">{{item}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="format text-left" @mouseleave="isFormatAddress = false">
+        <span>Address format</span>
+        <div class="dropdown-el" @click="isFormatAddress = !isFormatAddress">
+          {{addressFormat}}
+          <img src="/icons/drop-down-arrow.svg" height="15">
+        </div>
+        
+        <div class="dropdown-input text-black" v-show="isFormatAddress">
+          <div class="item"
+                v-for="item of Formats"
+                :key="item"
+                @click="selectedFormat(item)">
             <div class="name">{{item}}</div>
           </div>
         </div>
@@ -37,17 +54,31 @@ export default {
   components: { BackBar },
   data() {
     return {
-      isInput: false,
+      isCurrencyInput: false,
+      isFormatAddress: false,
 
       currency: 'USD',
-      items: ['BTC', 'ETH', 'TRX']
+      items: ['BTC', 'ETH', 'TRX'],
+
+      addressFormat: 'Bech32',
+      Formats: ['Bech32', 'Base58', 'Hex']
     };
   },
   methods: {
-    selected(item) {
+    selectedCurrency(item) {
       this.currency = item;
-      this.isInput = false;
-    }
+      this.isCurrencyInput = false;
+    },
+    selectedFormat(item) {
+      this.addressFormat = item;
+      this.isFormatAddress = false;
+    },
   }
 }
 </script>
+
+<style lang="scss">
+.format {
+  margin-top: 50px;
+}
+</style>

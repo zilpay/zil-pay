@@ -36,6 +36,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../styles/dimensions";
+
 nav > .center {
   font-size: 25px;
   font-weight: bold;
@@ -49,5 +51,12 @@ nav > .center {
     transition: all ease 0.3s;
   }
 }
-
+@media screen and (max-width: $nav-max-width) {
+  .right > img {
+    height: 25px;
+  }
+  .left > img {
+    height: 25px;
+  }
+}
 </style>

@@ -5,6 +5,10 @@
       <div class="top">
         <div id="acc" class="text-white"
               @click="$router.push({name: 'Accounts'})"></div>
+        
+        <div class="text-center text-white">
+          {{account.name}}
+        </div>
 
         <div class="burger dropdown-btn">
           <img src="/icons/menu-burger.svg" height="30"
@@ -20,23 +24,17 @@
       </div>
 
       <div class="text-center text-white">
-        {{account.name}}
+        {{address}}
+        <img src="/icons/copy.svg" v-tooltip="'Copy'" class="pointer"
+             height="30" @click="copy(account.address)">
       </div>
 
-      <div class="center text-center">
-        <h5 class="text-white">{{address | toBech32}}</h5>
-        <img src="/icons/copy.svg" v-tooltip="'Copy'"
-             height="30" @click="copy(toBech32(account.address))">
-      </div>
-
-      <div class="bottom text-center">
-        <h5 class="text-white">
-          {{account.balance}}
-          <span class="currency">ZIL</span>
-          <br>
-          ≈ 1000
-          <span class="currency">USD</span>
-        </h5>
+      <div class="bottom text-center text-white">
+        {{account.balance}}
+        <span class="currency">ZIL</span>
+        <br>
+        ≈ 1000
+        <span class="currency">USD</span>
       </div>
 
       <div class="btns text-white">
@@ -64,12 +62,14 @@ import toBech32 from '../filters/to-bech32'
 
 export default {
   name: 'Jumbotron',
+  components: { },
   mixins: [AccountMixin, Jazzicon],
   directives: { tooltip },
   filters: { toBech32 },
   data() {
     return {
       isDropdown: false,
+      open: true,
       account: {
         address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
         balance: '312.3',
@@ -79,13 +79,8 @@ export default {
   },
   computed: {
     address() {
-      const width = window.screen.width;
-
-      if (width > 390) {
-        return this.account.address;
-      }
-
-      return this.split(this.account.address);
+      const addressBech32 = this.toBech32(this.account.address);
+      return this.split(addressBech32);
     }
   },
   methods: {

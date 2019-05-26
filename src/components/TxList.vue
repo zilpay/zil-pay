@@ -44,11 +44,13 @@ export default {
 
 
 .title {
+  margin: 10px;
   margin-top: 20px;
   font-size: 15px;
 }
 
 .list {
+  padding: 20px;
   display: grid;
   grid-template-columns: 1fr;
   width: $nav-max-width;

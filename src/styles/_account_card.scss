@@ -47,6 +47,5 @@
   }
   &:hover {
     @include shadow();
-    border: 1px solid $color-dark-shadow;
   }
 }

@@ -25,10 +25,10 @@
 
         <div class="type-select">
           <button class="form-border" @click="hardWareType = 'ledger'">
-            <img src="/icons/ledger-logo.svg" height="35">
+            <img src="/icons/ledger-logo.svg" height="30">
           </button>
           <button class="form-border" @click="hardWareType = 'trezor'">
-            <img src="/icons/trezor-logo.svg" height="35">
+            <img src="/icons/trezor-logo.svg" height="30">
           </button>
         </div>
 
@@ -81,9 +81,10 @@ export default {
 }
 .type-select {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 50% 50%;
   grid-gap: 10px;
   justify-content: center;
+  justify-items: center;
   
   button {
     display: grid;
