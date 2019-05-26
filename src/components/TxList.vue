@@ -33,8 +33,12 @@
 </template>
 
 <script>
+import clipboardMixin from '../mixins/clipboard'
+
+
 export default {
-  name: 'TxList'
+  name: 'TxList',
+  mixins: [clipboardMixin]
 }
 </script>
 

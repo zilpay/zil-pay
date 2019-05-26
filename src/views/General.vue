@@ -12,7 +12,7 @@
         
         <div class="dropdown-input text-black" v-show="isCurrencyInput">
           <div class="item"
-                v-for="item of items"
+                v-for="item of currencyItems"
                 :key="item"
                 @click="selectedCurrency(item)">
             <div class="name">{{item}}</div>
@@ -29,7 +29,7 @@
         
         <div class="dropdown-input text-black" v-show="isFormatAddress">
           <div class="item"
-                v-for="item of Formats"
+                v-for="item of addressFormatItems"
                 :key="item"
                 @click="selectedFormat(item)">
             <div class="name">{{item}}</div>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 const BackBar = () => import('../components/BackBar');
 
 
@@ -55,22 +56,30 @@ export default {
   data() {
     return {
       isCurrencyInput: false,
-      isFormatAddress: false,
-
-      currency: 'USD',
-      items: ['BTC', 'ETH', 'TRX'],
-
-      addressFormat: 'Bech32',
-      Formats: ['Bech32', 'Base58', 'Hex']
+      isFormatAddress: false
     };
   },
+  computed: {
+    ...mapState('Static', [
+      'currency',
+      'currencyItems',
+
+      'addressFormat',
+      'addressFormatItems'
+    ])
+  },
   methods: {
+    ...mapMutations('Static', [
+      'mutateCurrency',
+      'mutateAddressFormat'
+    ]),
+
     selectedCurrency(item) {
-      this.currency = item;
+      this.mutateCurrency(item);
       this.isCurrencyInput = false;
     },
     selectedFormat(item) {
-      this.addressFormat = item;
+      this.mutateAddressFormat(item);
       this.isFormatAddress = false;
     },
   }

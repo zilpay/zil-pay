@@ -20,10 +20,10 @@
             <div>≈ 30 <span>USD</span></div>
           </div>
           <div class="footer">
-            <div>{{account.address}}</div>
+            <div>{{account.address | toAddress(addressFormat, false)}}</div>
             <img src="/icons/copy.svg"
                  height="17" v-tooltip="'Copy'"
-                 @click="copy(account.address)">
+                 @click="copy">
           </div>
         </div>
       </div>
@@ -34,26 +34,24 @@
 
 <script>
 import tooltip from '../directives/tooltip'
-import copy from 'clipboard-copy'
+import clipboardMixin from '../mixins/clipboard'
 
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'Accounts',
+  mixins: [clipboardMixin],
   components: { BackBar },
   directives: { tooltip },
   data() {
     return {
       account: {
-        address: 'bc1qngw83fg8dz0k749cg7k3emc7v98wy0c74dlrkd',
+        address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
         balance: '312.3',
         name: 'warden'
       }
     };
-  },
-  methods: {
-    copy
   }
 }
 </script>

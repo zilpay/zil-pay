@@ -24,9 +24,9 @@
       </div>
 
       <div class="text-center text-white">
-        {{address}}
+        {{account.address | toAddress(addressFormat)}}
         <img src="/icons/copy.svg" v-tooltip="'Copy'" class="pointer"
-             height="30" @click="copy(account.address)">
+             height="30" @click="copy">
       </div>
 
       <div class="bottom text-center text-white">
@@ -46,26 +46,23 @@
           <img src="/icons/send.svg" height="21">
           Send
         </span>
-      </div>
-      
+      </div>     
     </div>
   </div>
 </template>
 
 <script>
-import copy from 'clipboard-copy'
 import AccountMixin from '../mixins/account'
 import Jazzicon from '../mixins/jazzicon'
 import tooltip from '../directives/tooltip'
-import toBech32 from '../filters/to-bech32'
+import clipboardMixin from '../mixins/clipboard'
 
 
 export default {
   name: 'Jumbotron',
   components: { },
-  mixins: [AccountMixin, Jazzicon],
+  mixins: [AccountMixin, Jazzicon, clipboardMixin],
   directives: { tooltip },
-  filters: { toBech32 },
   data() {
     return {
       isDropdown: false,
@@ -76,16 +73,6 @@ export default {
         name: 'warden'
       }
     };
-  },
-  computed: {
-    address() {
-      const addressBech32 = this.toBech32(this.account.address);
-      return this.split(addressBech32);
-    }
-  },
-  methods: {
-    copy,
-    toBech32
   },
   mounted() {
     this.jazziconMake(this.account.address, 'acc');

@@ -30,7 +30,10 @@ const BackBar = () => import('../components/BackBar');
 export default {
   name: 'Advanced',
   components: { BackBar },
-  mixins: [GasFee]
+  mixins: [GasFee],
+  mounted() {
+    this.gasMutate = true;
+  }
 }
 </script>
 

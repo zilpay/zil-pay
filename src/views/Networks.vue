@@ -5,37 +5,46 @@
     <main>
       <div class="change-net text-left" @mouseleave="isInput = false">
         <div class="dropdown-el text-black" @click="isInput = !isInput">
-          {{selectedNet}}
+          {{network}}
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
         
         <div class="dropdown-input text-black" v-show="isInput">
           <div class="item"
-                v-for="item of items"
+                v-for="item of networkItems"
                 :key="item"
-                @click="selected(item)">
+                @click="selectedNetwork(item)">
             <div class="name">{{item}}</div>
           </div>
         </div>
       </div>
 
-      <div class="form-border net-form">
+      <div class="form-border net-form"
+           v-for="item of networkItems" :key=item>
         <div>
-          <label for="node">MainNet</label>
-          <input type="number" id="node">
+          <label>{{item}}</label>
+          <input type="text"
+                 :disabled="item === 'mainnet'"
+                 :value="networkConfig[item].PROVIDER"
+                 @change="changeNetworkConfig(item, 'PROVIDER', $event.target.value)">
         </div>
         <div>
-          <label for="msg">MSG ID</label>
-          <input type="number" id="msg">
+          <label>MSG ID</label>
+          <input type="number"
+                 :disabled="item === 'mainnet'"
+                 :value="networkConfig[item].MSG_VERSION"
+                 @change="changeNetworkConfig(item, 'MSG_VERSION', $event.target.value)">
         </div>
       </div>
 
-      <button class="def">default</button>
+      <button class="def" @click="toDefaultNetworkConfig">default</button>
     </main>
   </div>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
+
 const BackBar = () => import('../components/BackBar');
 
 
@@ -44,16 +53,34 @@ export default {
   components: { BackBar },
   data() {
     return {
-      isInput: false,
-      selectedNet: 'mainnet',
-
-      items: ['mainnet', 'testnet', 'localnet']
+      isInput: false
     };
   },
+  computed: {
+    ...mapState('Static', [
+      'network',
+      'networkConfig'
+    ]),
+
+    networkItems() {
+      return Object.keys(this.networkConfig);
+    }
+  },
   methods: {
-    selected(item) {
-      this.selectedNet = item;
+    ...mapMutations('Static', [
+      'mutateNetwork',
+      'mutateNetworkConfig',
+      'toDefaultNetworkConfig'
+    ]),
+
+    selectedNetwork(item) {
+      this.mutateNetwork(item);
       this.isInput = false;
+    },
+    changeNetworkConfig(el, key, value) {
+      let config = this.networkConfig;
+      config[el][key] = value;
+      this.mutateNetworkConfig(config);
     }
   }
 }
@@ -64,9 +91,7 @@ export default {
   padding: 30px;
 }
 .net-form {
-  margin: 30px;
   padding: 30px;
-  margin-top: 30px;
 }
 
 </style>

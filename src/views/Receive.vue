@@ -10,9 +10,9 @@
       <div>
         <img v-if="qrcode" :src="qrcode">
         <br>
-        <span class="full-address">{{account.address | toBech32}}</span>
+        <span class="full-address">{{account.address | toAddress(addressFormat, false)}}</span>
         <br>
-        <button @click="copy(account.address)">Copy address</button>
+        <button @click="copy">Copy address</button>
       </div>
 
       <hr>
@@ -22,16 +22,15 @@
 
 <script>
 import QRCode from 'qrcode'
-import copy from 'clipboard-copy'
-import toBech32 from '../filters/to-bech32'
+import clipboardMixin from '../mixins/clipboard'
 
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'receive',
+  mixins: [clipboardMixin],
   components: { BackBar },
-  filters: { toBech32 },
   data() {
     return {
       account: {
@@ -43,14 +42,14 @@ export default {
     };
   },
   methods: {
-    copy(hex) {
-      const bech32Address = toBech32(hex);
-      copy(bech32Address);
-    },
-
     async qrcodeGenerate() {
+      const address = this.toAddress(
+        this.account.address,
+        this.addressFormat,
+        false
+      );
       this.qrcode = await QRCode.toDataURL(
-        `zilliqa:${this.account.address}`
+        `zilliqa:${address}`
       );
     }
   },

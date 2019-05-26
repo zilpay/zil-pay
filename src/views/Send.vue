@@ -8,9 +8,9 @@
 
       <div class="input-group">
         <div class="to text-left" @mouseleave="isInput = false">
-          <label for="to">To address</label>
+          <label>To address</label>
           <input type="text"
-                 id="to"
+                 autocomplete="false"
                  placeholder="To address"
                  @focus="isInput = true"
                  @click="isInput = true"
@@ -20,12 +20,12 @@
             <div class="item"
                  v-for="item of items"
                  :key="item.address"
-                 @click="to = item.address">
+                 @click="to = toAddress(item.address, addressFormat, false)">
               <div class="name">{{item.name}}</div>
-              <div class="address">{{item.address | trimHex}}</div>
+              <div class="address">{{item.address | toAddress(addressFormat)}}</div>
             </div>
           </div>
-          <small class="text-danger">{{isAddress}}</small>
+          <small class="text-danger" v-show="isAddress">{{isAddress}}</small>
         </div>
 
         <div class="amount text-left">
@@ -33,7 +33,7 @@
             <span class="text-primary">MAX</span>
           </label>
           <input type="number" v-model="amount" min="0">
-          <small class="text-danger">{{isAmount}}</small>
+          <small class="text-danger" v-show="isAmount">{{isAmount}}</small>
         </div>
 
         <div class="text-primary text-right advance"
@@ -53,7 +53,7 @@
           </div>
         </div>
 
-        <button>Send Transaction</button>
+        <button class="send" :disabled="isValidTx">Send Transaction</button>
       </div>
 
       <div>
@@ -65,19 +65,17 @@
 </template>
 
 <script>
-import { fromBech32Address } from '@zilliqa-js/crypto'
+import { validation } from '@zilliqa-js/util'
 import GasFee from '../mixins/gas-fee'
-import toBech32 from '../filters/to-bech32'
-import trimHex from '../filters/trim-hex'
+import clipboardMixin from '../mixins/clipboard'
 
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'Send',
-  mixins: [GasFee],
+  mixins: [GasFee, clipboardMixin],
   components: { BackBar },
-  filters: { toBech32, trimHex },
   data() {
     return {
       isAdvance: false,
@@ -92,34 +90,43 @@ export default {
         name: 'warden'
       },
       items: [
-        {name: 'warden', address: 'zil1tg7j734280gzwc8emgamgr9yf85gr5uwh639c2'},
-        {name: 'account 1', address: 'zil1xq6mh35lgr646hux0ys96q0f0hqv3hex80trpf'},
-        {name: 'account 2', address: 'zil1q9z7ldt4jj2wwg545z3uecx40vchufput5r0mt'},
-        {name: 'account 3', address: 'zil1cznkkuwq0sk38uavsvr3dd2cfcpq6lt8042rgw'},
+        {name: 'warden', address: '0x63b92f2128d12781cb8a1edd729b5a6bcdec4ceb'},
+        {name: 'account 1', address: '0xD8C19c01E156fca9f6970BE733C9Fec52897f75B'},
+        {name: 'account 2', address: '0x582aB16Ffb89fB0607a6b6ABfD47Db8306a83B84'},
+        {name: 'account 3', address: '0x21FE9889b71eB1caeCe5B94354163D11e1062272'},
       ]
     };
   },
   computed: {
     isAddress() {
       if (this.to === null) {
-        return '';
+        return null;
+      }
+      
+      const isBech32 = validation.isBech32(this.to);
+      const isHex = validation.isAddress(this.to);
+      const isBase58 = validation.isBase58(this.to);
+
+      if (isBech32 || isHex || isBase58) {
+        return false;
       }
 
-      try {
-        fromBech32Address(this.to);
-      } catch (err) {
-        return 'Wrong Zilliqa address';
-      }
-
-      return '';
+      return 'Wrong Zilliqa address';
     },
     isAmount() {
       if (this.amount === 0) {
-        return '';
+        return null;
       } else if (this.amount < 0) {
         return 'Wrong amount';
       }
-      return '';
+      return false;
+    },
+    isValidTx() {
+      if (this.isAddress == null) {
+        return true;
+      }
+
+      return !!this.isAmount || !!this.isAddress;
     }
   }
 }
@@ -132,5 +139,10 @@ export default {
 }
 .amount > label > span {
   cursor: pointer;
+}
+.input-group {
+  .send {
+    margin-top: 30px;
+  }
 }
 </style>
