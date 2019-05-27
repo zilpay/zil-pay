@@ -1,5 +1,5 @@
-import { Loger } from '../../../lib/logger'
-import config from '../../../config/api'
+import { Loger } from '../../../../lib/logger'
+import config from '../../../../config/api'
 import extensionAPI from 'extensionizer'
 
 var extension = extensionAPI;

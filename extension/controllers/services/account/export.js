@@ -1,4 +1,4 @@
-import fields from '../../../config/fields'
+import fields from '../../../../config/fields'
 import { AccountControl } from './create'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 import errorsCode from './errors'

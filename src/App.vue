@@ -6,15 +6,25 @@
 
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'App',
   methods: {
-    ...mapMutations(['spiner'])
+    ...mapMutations(['spiner']),
+    ...mapActions('Walllet', [
+      'initPopup',
+      'randomSeed'
+    ]),
+
+    async initPopUp() {
+      const data = await this.randomSeed();
+      console.log(data);
+      this.spiner();
+    }
   },
   mounted() {
-    this.spiner();
+    this.initPopUp();
     this.$router.push({ name: 'Home' });
   }
 }

@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import fetch from 'cross-fetch'
 import Static from './stores/static'
+import Wallet from './stores/wallet'
+import Transactions from './stores/transactions'
 
 import apiConfig from '../config/api.json'
 
@@ -9,7 +11,7 @@ import apiConfig from '../config/api.json'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: { Static },
+  modules: { Static, Wallet, Transactions },
   state: {
     loading: true,
     isConnect: true,

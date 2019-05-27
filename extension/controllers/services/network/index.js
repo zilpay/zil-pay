@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch'
-import ZilliqaConfig from '../../../config/zil'
+import ZilliqaConfig from '../../../../config/zil'
 import errorsCode from './errors'
-import { BrowserStorage, BuildObject } from '../../../lib/storage'
-import fields from '../../../config/fields'
+import { BrowserStorage, BuildObject } from '../../../../lib/storage'
+import fields from '../../../../config/fields'
 
 
 const defaultSelected = Object.keys(ZilliqaConfig)[0];

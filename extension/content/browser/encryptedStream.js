@@ -1,11 +1,11 @@
 import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
 import { HTTPProvider } from '@zilliqa-js/core';
-import { MTypesSecure, MTypesZilPay } from '../../lib/messages/messageTypes'
-import { SecureMessage, Message } from '../../lib/messages/messageCall'
-import { Loger } from '../../lib/logger'
-import apiConfig from '../../config/api'
-import errors from '../../config/errors'
+import { MTypesSecure, MTypesZilPay } from '../../../lib/messages/messageTypes'
+import { SecureMessage, Message } from '../../../lib/messages/messageCall'
+import { Loger } from '../../../lib/logger'
+import apiConfig from '../../../config/api'
+import errors from '../../../config/errors'
 
 
 const log = new Loger(`${apiConfig.PAY_NAME}.SecureStream`);

@@ -5,7 +5,10 @@
 
     <ul class="list text-black">
       <li>
-        <a href=""><img src="/icons/contract.svg" height="20"></a>
+        <a href="">
+          <img src="/icons/contract.svg" height="20">
+          <span>Call</span>
+        </a>
         <div class="info">
           <a href="" class="text-black">warden</a>
           <img src="/icons/caret-right.svg" height="20"
@@ -17,7 +20,7 @@
         </div>
       </li>
       <li>
-        <a href=""><img src="/icons/send-dark.svg" height="20"></a>
+        <a href="" class="text-primary"><img src="/icons/send-dark.svg" height="20"></a>
         <div class="info">
           <a href="" class="text-black">warden</a>
           <img src="/icons/caret-right.svg" height="20"
@@ -54,7 +57,7 @@ export default {
 }
 
 .list {
-  padding: 20px;
+  // padding: 20px;
   display: grid;
   grid-template-columns: 1fr;
   width: $nav-max-width;
@@ -65,7 +68,14 @@ export default {
     padding: 5px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    border-top: 1px solid $color-dark-shadow;
+    border-top: 1px solid $color-primary;
+    font-weight: 500;
+
+    a {
+      span {
+        padding: 5px;
+      }
+    }
 
     .info {
       display: grid;

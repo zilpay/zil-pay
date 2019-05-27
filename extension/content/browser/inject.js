@@ -1,6 +1,6 @@
 import { extension } from 'extensionizer';
-import { Loger } from '../../lib/logger';
-import Config from '../../config/api'
+import { Loger } from '../../../lib/logger';
+import Config from '../../../config/api'
 
 
 const log = new Loger(Config.PAY_NAME + '.Inject');

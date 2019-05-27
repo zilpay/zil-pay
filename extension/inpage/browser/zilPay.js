@@ -2,8 +2,8 @@ import { EncryptedStream } from 'extension-streams'
 import { Observable, Subject } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 import uuidv4 from 'uuid/v4'
-import { MTypesSecure, MTypesZilPay, MTypesTabs } from '../../lib/messages/messageTypes'
-import { SecureMessage } from '../../lib/messages/messageCall'
+import { MTypesSecure, MTypesZilPay, MTypesTabs } from '../../../lib/messages/messageTypes'
+import { SecureMessage } from '../../../lib/messages/messageCall'
 
 import { Blockchain } from '@zilliqa-js/blockchain'
 import { TransactionFactory } from '@zilliqa-js/account'
@@ -12,7 +12,7 @@ import { HTTPProvider } from '@zilliqa-js/core';
 import { toChecksumAddress } from '@zilliqa-js/crypto';
 import * as zilUtils from '@zilliqa-js/util'
 import { validation } from '@zilliqa-js/util'
-import zilConf from '../../config/zil'
+import zilConf from '../../../config/zil'
 
 
 // create event for listing changer address. //

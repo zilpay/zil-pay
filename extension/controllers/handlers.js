@@ -1,4 +1,4 @@
-import { BrowserStorage } from '../lib/storage'
+import { BrowserStorage } from '../../lib/storage'
 import { AccountControl } from './services/account/create'
 import { NetworkControl } from './services/network/index'
 import { AccountExporter } from './services/account/export'
@@ -7,10 +7,10 @@ import { MnemonicControl } from './services/auth/mnemonic'
 import { NotificationsControl } from './services/browser/notifications'
 import { PromptService } from './services/browser/popup'
 import { ZilliqaControl } from './services/blockchain/zilliqa'
-import fields from '../config/fields'
-import zilApi from '../config/api'
-import { TabsMessage } from '../lib/messages/messageCall'
-import { MTypesTabs } from '../lib/messages/messageTypes'
+import fields from '../../config/fields'
+import zilApi from '../../config/api'
+import { TabsMessage } from '../../lib/messages/messageCall'
+import { MTypesTabs } from '../../lib/messages/messageTypes'
 
 
 var accountControl = new AccountControl();

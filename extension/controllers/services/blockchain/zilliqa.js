@@ -2,9 +2,9 @@ import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
 import { toChecksumAddress } from '@zilliqa-js/crypto'
 import { Long, BN, bytes, validation } from '@zilliqa-js/util'
-import { BrowserStorage, BuildObject } from '../../../lib/storage'
+import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 import { NotificationsControl } from '../browser/notifications'
-import fields from '../../../config/fields'
+import fields from '../../../../config/fields'
 import errorsCode from './errors'
 
 export class ZilliqaControl extends Zilliqa {

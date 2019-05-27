@@ -1,8 +1,8 @@
 import { AccountControl } from './create'
-import { BuildObject } from '../../../lib/storage'
+import { BuildObject } from '../../../../lib/storage'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 import errorsCode from './errors'
-import fields from '../../../config/fields'
+import fields from '../../../../config/fields'
 
 
 export class AccountImporter extends AccountControl {

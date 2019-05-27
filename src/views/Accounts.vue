@@ -10,10 +10,27 @@
       </div>
 
       <div class="cards">
-        <div class="card text-white">
+        <div class="card text-white"
+             :style="{backgroundColor: addressToColor(account.address)}">
           <div class="header">
             <div>warden</div>
             <img src="/icons/selected.svg" height="25">
+          </div>
+          <div class="body">
+            <div>1000 <span>ZIL</span></div>
+            <div>≈ 30 <span>USD</span></div>
+          </div>
+          <div class="footer">
+            <div>{{account.address | toAddress(addressFormat, false)}}</div>
+            <img src="/icons/copy.svg"
+                 height="17" v-tooltip="'Copy'"
+                 @click="copy">
+          </div>
+        </div>
+        <div class="card text-white"
+             :style="{backgroundColor: addressToColor('0x31dE24752489e04D06ad32A1095b86ce9310bf9B')}">
+          <div class="header">
+            <div>warden</div>
           </div>
           <div class="body">
             <div>1000 <span>ZIL</span></div>
@@ -52,6 +69,12 @@ export default {
         name: 'warden'
       }
     };
+  },
+  methods: {
+    addressToColor(hex) {
+      hex = hex.replace('0x', '');
+      return '#'+hex.slice(-6);
+    }
   }
 }
 </script>
@@ -59,6 +82,9 @@ export default {
 <style lang="scss">
 .cards {
   padding: 10px;
+  .card {
+    margin: 10px;
+  }
 }
 .top-bar {
   justify-self: center;

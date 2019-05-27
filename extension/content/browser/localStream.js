@@ -1,6 +1,6 @@
 import { LocalStream } from 'extension-streams'
-import { MTypesSecure, MTypesTabs } from '../../lib/messages/messageTypes'
-import { SecureMessage } from '../../lib/messages/messageCall'
+import { MTypesSecure, MTypesTabs } from '../../../lib/messages/messageTypes'
+import { SecureMessage } from '../../../lib/messages/messageCall'
 
 
 export class NonSecureStream {

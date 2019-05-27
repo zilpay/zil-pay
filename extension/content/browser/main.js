@@ -1,6 +1,6 @@
 import { Inject } from './inject'
 import { Stream } from './stream'
-import Config from '../../config/api'
+import Config from '../../../config/api'
 
 
 export class BrowserContent extends Stream {

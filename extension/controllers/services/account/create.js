@@ -1,8 +1,8 @@
 import { Auth } from '../auth/index'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 import { NetworkControl } from '../network/index'
-import { BrowserStorage, BuildObject } from '../../../lib/storage'
-import fields from '../../../config/fields'
+import { BrowserStorage, BuildObject } from '../../../../lib/storage'
+import fields from '../../../../config/fields'
 import errorsCode from './errors'
 import errorsCodeGuard from '../auth/errors'
 

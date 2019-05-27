@@ -1,6 +1,6 @@
 import { LocalStream } from 'extension-streams'
-import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../lib/messages/messageTypes'
-import { SecureMessage } from '../lib/messages/messageCall'
+import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../../lib/messages/messageTypes'
+import { SecureMessage } from '../../lib/messages/messageCall'
 import {
   WalletHandler,
   NetworkHandler,

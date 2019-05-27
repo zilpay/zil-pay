@@ -1,8 +1,8 @@
 import { CryptoGuard } from '../crypto/guard'
 import errorsCode from './errors'
-import fields from '../../../config/fields'
-import api from '../../../config/api'
-import { BrowserStorage, BuildObject } from '../../../lib/storage'
+import fields from '../../../../config/fields'
+import api from '../../../../config/api'
+import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 
 
 Date.prototype.addHours = function(h) {    

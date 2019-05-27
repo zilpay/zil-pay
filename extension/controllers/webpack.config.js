@@ -3,7 +3,7 @@ const mode = process.env.NODE_ENV || 'development';
 
 
 module.exports = {
-    entry: './src/controllers/background.js',
+    entry: './extension/controllers/background.js',
     devtool: 'source-map',
     target: 'web',
     module: {
