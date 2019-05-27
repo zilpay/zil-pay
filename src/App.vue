@@ -11,21 +11,57 @@ import { mapMutations, mapActions } from 'vuex'
 export default {
   name: 'App',
   methods: {
-    ...mapMutations(['spiner']),
-    ...mapActions('Walllet', [
+    ...mapMutations([
+      'spiner',
+      'mutateIsConnect'
+    ]),
+    ...mapMutations('Wallet', [
+      'mutateIsReady',
+      'mutateIsEnable'
+    ]),
+    ...mapMutations('Static', [
+      'mutateNetwork',
+      'mutateNetworkConfig'
+    ]),
+
+    ...mapActions('Wallet', [
       'initPopup',
       'randomSeed'
     ]),
 
-    async initPopUp() {
-      const data = await this.randomSeed();
-      console.log(data);
+    async init() {
+      let state;
+      const data = await this.initPopup();
+      
+      if (data.reject) {
+        state = data.reject;
+      } else {
+        state = data.resolve;
+      }
+
+      this.commonStateUpdate(state);
+      this.routePush(state);
       this.spiner();
+    },
+    commonStateUpdate(state) {
+      this.mutateIsReady(state.isEnable);
+      this.mutateIsEnable(state.isReady);
+      this.mutateNetwork(state.selectednet);
+      this.mutateNetworkConfig(state.config);
+      this.mutateIsConnect(state.networkStatus);
+    },
+    routePush(state) {
+      if (!state.isReady) {
+        this.$router.push({ name: 'First' });
+      } else if (!state.isEnable) {
+        this.$router.push({ name: 'Lock' });
+      } else {
+        this.$router.push({ name: 'Home' });
+      }
     }
   },
   mounted() {
-    this.initPopUp();
-    this.$router.push({ name: 'Home' });
+    this.init();
   }
 }
 </script>

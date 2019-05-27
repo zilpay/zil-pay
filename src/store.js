@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import fetch from 'cross-fetch'
+import extension from 'extensionizer'
 import Static from './stores/static'
 import Wallet from './stores/wallet'
 import Transactions from './stores/transactions'
@@ -33,10 +34,13 @@ export default new Vuex.Store({
         spiner.className = null;   
         spiner.style.display = 'none';
       }
+    },
+    mutateIsConnect(state, isConnect) {
+      state.isConnect = isConnect;
     }
   },
   actions: {
-    async updateRate({ state }) {
+    async updateRate({ state, getters }) {
       let rate;
       const url = `${apiConfig.COINMARKETCAP}/zilliqa`;
       const currency = state.Static.currency;
@@ -54,6 +58,23 @@ export default new Vuex.Store({
       }
 
       state.conversionRate = rate;
+    },
+    onExpand({ getters }) {
+      if (getters.isExpand) {
+        return null;
+      }
+      extension.tabs.create({ url: apiConfig.PROMT_PAGE });
+    }
+  },
+  getters: {
+    isExpand() {
+      if (window.location.pathname.includes('confirm')) {
+        return true;
+      } else if (window.innerWidth <= 375) {
+        return false;
+      }
+
+      return true;
     }
   }
 })

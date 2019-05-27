@@ -1,5 +1,6 @@
 
 export default {
+  namespaced: true,
   state: {
     transactions: { },
     confirmationTx: []

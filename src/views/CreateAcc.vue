@@ -161,7 +161,7 @@ export default {
 
 <style lang="scss">
 .mnemonic {
-  margin: 0px; width: 352px; height: 204px;
+  margin: 0px; height: 157px; width: 332px;
 }
 .update-seed {
   cursor: pointer;

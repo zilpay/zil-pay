@@ -3,6 +3,7 @@ import { Message } from '../../lib/messages/messageCall'
 
 
 export default {
+  namespaced: true,
   state: {
     isReady: true,
     isEnable: true,
@@ -12,7 +13,12 @@ export default {
     }
   },
   mutations: {
-
+    mutateIsReady(state, isReady) {
+      state.isReady = isReady;
+    },
+    mutateIsEnable(state, isEnable) {
+      state.isEnable = isEnable;
+    }
   },
   actions: {
 

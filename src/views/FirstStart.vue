@@ -21,8 +21,16 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
-  name: 'FirstStart'
+  name: 'FirstStart',
+  methods: {
+    ...mapActions(['onExpand'])
+  },
+  mounted() {
+    this.onExpand();
+  }
 }
 </script>
 

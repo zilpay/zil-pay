@@ -27,7 +27,7 @@ export class Background {
     if (!message) {
       return null;
     }
-
+    console.log(message);
     this._authDispenseMessage(sendResponse, message);
     this._popupDispenseMessage(sendResponse, message);
     this._contentDispenseMessage(sendResponse, message);
