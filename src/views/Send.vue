@@ -17,12 +17,16 @@
                  @input="isInput = false"
                  v-model="to">
           <div class="dropdown-input text-black" v-show="isInput">
-            <div class="item"
-                 v-for="item of items"
-                 :key="item.address"
-                 @click="to = toAddress(item.address, addressFormat, false)">
-              <div class="name">{{item.name}}</div>
-              <div class="address">{{item.address | toAddress(addressFormat)}}</div>
+            <div v-for="acc of wallet.identities"
+                 :key="acc.address"
+                 class="item"
+                 @click="to = toAddress(acc.address, addressFormat, false)">
+              <div class="name">
+                {{acc.name || (`Account ${acc.index + 1}`)}}
+              </div>
+              <div class="address">
+                {{acc.address | toAddress(addressFormat)}}
+              </div>
             </div>
           </div>
           <small class="text-danger" v-show="isAddress">{{isAddress}}</small>
@@ -68,13 +72,14 @@
 import { validation } from '@zilliqa-js/util'
 import GasFee from '../mixins/gas-fee'
 import clipboardMixin from '../mixins/clipboard'
+import AccountListing from '../mixins/account-listing'
 
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'Send',
-  mixins: [GasFee, clipboardMixin],
+  mixins: [GasFee, clipboardMixin, AccountListing],
   components: { BackBar },
   data() {
     return {
@@ -82,19 +87,7 @@ export default {
       isInput: false,
 
       amount: 0,
-      to: null,
-
-      account: {
-        address: '0x63b92f2128d12781cb8a1edd729b5a6bcdec4ceb',
-        balance: '312.3',
-        name: 'warden'
-      },
-      items: [
-        {name: 'warden', address: '0x63b92f2128d12781cb8a1edd729b5a6bcdec4ceb'},
-        {name: 'account 1', address: '0xD8C19c01E156fca9f6970BE733C9Fec52897f75B'},
-        {name: 'account 2', address: '0x582aB16Ffb89fB0607a6b6ABfD47Db8306a83B84'},
-        {name: 'account 3', address: '0x21FE9889b71eB1caeCe5B94354163D11e1062272'},
-      ]
+      to: null
     };
   },
   computed: {

@@ -57,6 +57,11 @@ export default {
       }
 
       this.changeAccountName(newName);
+    },
+    
+    addressToColor(hex) {
+      hex = hex.replace('0x', '');
+      return '#'+hex.slice(-6);
     }
   }
 };

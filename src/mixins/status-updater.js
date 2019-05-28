@@ -15,7 +15,8 @@ export default {
 
     upadteAllState() {
       this.updateRate();
-      this.balanceUpdate();
+
+      this.balanceUpdate().catch(console.log);
       this.stateUpdate();
     }
   }

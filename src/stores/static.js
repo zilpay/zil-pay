@@ -1,3 +1,5 @@
+import { MTypesInternal } from '../../lib/messages/messageTypes'
+import { Message } from '../../lib/messages/messageCall'
 import networkConfig from '../../config/zil.json'
 
 
@@ -44,6 +46,19 @@ export default {
   actions: {
     stateUpdate({ state }) {
       console.log(state);
+    },
+    async changeNetwork({ commit, rootState }, selectednet) {
+      const type = MTypesInternal.SET_NET;
+      const payload = { selectednet };
+      const provider = networkConfig[selectednet].PROVIDER;
+    
+      if (!provider) {
+        return null;
+      }
+      
+      rootState.isConnect = await new Message({ type, payload }).send();
+
+      commit('mutateNetwork', selectednet);
     }
   }
 }

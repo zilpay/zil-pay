@@ -11,6 +11,11 @@ export default function(el, binding) {
   });
   el.addEventListener('mouseleave', function () {
     const elemToRemove = document.getElementById('id_Tooltip');
+    
+    if (!elemToRemove) {
+      return null;
+    }
+
     elemToRemove.parentNode.removeChild(elemToRemove);
   });
 }

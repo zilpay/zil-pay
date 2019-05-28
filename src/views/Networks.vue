@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 const BackBar = () => import('../components/BackBar');
 
@@ -67,14 +67,16 @@ export default {
     }
   },
   methods: {
+    ...mapActions('Static', [
+      'changeNetwork'
+    ]),
     ...mapMutations('Static', [
-      'mutateNetwork',
       'mutateNetworkConfig',
       'toDefaultNetworkConfig'
     ]),
 
     selectedNetwork(item) {
-      this.mutateNetwork(item);
+      this.changeNetwork(item);
       this.isInput = false;
     },
     changeNetworkConfig(el, key, value) {
