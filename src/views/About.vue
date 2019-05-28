@@ -5,7 +5,7 @@
       <img src="/icon128.png">
       <div class="text-center">
         <h5>ZilPay Version</h5>
-        <span>0.1.7</span>
+        <span>{{version}}</span>
 
         <h5 class="text-left">Links:</h5>
 
@@ -23,12 +23,19 @@
 </template>
 
 <script>
+import extension from 'extensionizer'
+
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'About',
-  components: { BackBar }
+  components: { BackBar },
+  computed: {
+    version() {
+      return extension.runtime.getManifest()['version'];
+    }
+  }
 }
 </script>
 
