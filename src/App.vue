@@ -39,9 +39,9 @@ export default {
         state = data.resolve;
       }
 
+      this.spiner();
       this.commonStateUpdate(state);
       this.routePush(state);
-      this.spiner();
     },
     commonStateUpdate(state) {
       this.mutateIsReady(state.isEnable);

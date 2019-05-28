@@ -5,7 +5,8 @@
     <main class="create-acc">
       <label>Your mnemonic Seed Phrase.
         <img src="/icons/refresh.svg" height="15"
-             class="update-seed">
+             class="update-seed"
+             @click="randomMnemonic">
       </label>
       <textarea class="mnemonic" disabled
                 cols="30" v-model="seed"></textarea>
@@ -38,6 +39,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import PasswordValidator from '../mixins/password-validator'
 
 const BackBar = () => import('../components/BackBar');
@@ -144,6 +146,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions('Wallet', [
+      'randomSeed'
+    ]),
+
     printSeed() {
       const paperWallet = printMnemonic(this.seed);
       let paperBody = document.createElement('BODY');
@@ -154,7 +160,14 @@ export default {
       setTimeout(() => {
         win.print();
       }, 500);
+    },
+    async randomMnemonic() {
+      const { resolve } = await this.randomSeed();
+      this.seed = resolve;
     }
+  },
+  mounted() {
+    this.randomMnemonic();
   }
 }
 </script>
