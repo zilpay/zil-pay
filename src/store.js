@@ -40,7 +40,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async updateRate({ state, getters }) {
+    async updateRate({ state }) {
       let rate;
       const url = `${apiConfig.COINMARKETCAP}/zilliqa`;
       const currency = state.Static.currency;

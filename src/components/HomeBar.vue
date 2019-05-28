@@ -20,7 +20,8 @@
         <img src="/icons/locked.svg" height="30"
              class="point"
              @click="$router.push({name: 'Lock'})">
-        <img src="/icons/refresh.svg" height="30" class="point">
+        <img src="/icons/refresh.svg" height="30"
+             @click="statusUpdate" class="point">
         <img src="/icons/settings.svg" height="30"
              class="point"
              @click="$router.push({name: 'Setting'})">
@@ -31,10 +32,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
+import StateStatusUpdater from '../mixins/status-updater'
+
 
 export default {
   name: 'HomeBar',
+  mixins: [StateStatusUpdater],
   computed: {
     ...mapState(['isConnect']),
 
@@ -44,6 +48,18 @@ export default {
       }
       return '/icons/none-connection.svg';
     }
+  },
+  methods: {
+    ...mapMutations(['spiner']),
+
+    async statusUpdate() {
+      this.spiner();
+      this.upadteAllState();
+      setTimeout(() => this.spiner(), 500);
+    }
+  },
+  mounted() {
+    this.upadteAllState();
   }
 }
 </script>

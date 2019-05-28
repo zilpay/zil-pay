@@ -11,10 +11,11 @@
       <input class="text-center"
              type="password"
              placeholder="Password"
+             @input="wrong = false"
              v-model="password">   
       <br>          
       <div class="warn text-danger" v-show="wrong">Wrong password</div>
-      <button @click="auth">Continue</button>
+      <button @click="unlock">Continue</button>
       <hr>
     </div>
 
@@ -22,6 +23,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'LockScreen',
   data() {
@@ -31,9 +34,16 @@ export default {
     };
   },
   methods: {
-    auth() {
-      if (this.password == '123') {
+    ...mapActions('Wallet', [
+      'unlockWallet'
+    ]),
+
+    async unlock() {
+      try {
+        await this.unlockWallet(this.password);
         this.$router.push({ name: 'Home' });
+      } catch(err) {
+        this.wrong = true;
       }
     }
   }

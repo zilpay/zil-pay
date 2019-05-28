@@ -44,8 +44,8 @@ export default {
       this.routePush(state);
     },
     commonStateUpdate(state) {
-      this.mutateIsReady(state.isEnable);
-      this.mutateIsEnable(state.isReady);
+      this.mutateIsReady(state.isReady);
+      this.mutateIsEnable(state.isEnable);
       this.mutateNetwork(state.selectednet);
       this.mutateNetworkConfig(state.config);
       this.mutateIsConnect(state.networkStatus);
