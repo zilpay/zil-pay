@@ -23,21 +23,17 @@
 <script>
 import QRCode from 'qrcode'
 import clipboardMixin from '../mixins/clipboard'
+import AccountListing from '../mixins/account-listing'
 
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'receive',
-  mixins: [clipboardMixin],
+  mixins: [clipboardMixin, AccountListing],
   components: { BackBar },
   data() {
     return {
-      account: {
-        address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
-        balance: '312.3',
-        name: 'warden'
-      },
       qrcode: null
     };
   },

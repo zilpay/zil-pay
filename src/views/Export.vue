@@ -12,7 +12,7 @@
       <div class="input-group" v-show="!textarea">
          <div class="text-left">
           <label>Password</label>
-          <input type="password">
+          <input type="password" autofocus>
         </div>
         <button>Export</button>
       </div>

@@ -17,7 +17,8 @@ export default {
     ]),
     ...mapMutations('Wallet', [
       'mutateIsReady',
-      'mutateIsEnable'
+      'mutateIsEnable',
+      'mutateWallet'
     ]),
     ...mapMutations('Static', [
       'mutateNetwork',
@@ -26,8 +27,7 @@ export default {
 
     ...mapActions('Wallet', [
       'initPopup',
-      'randomSeed',
-      'mutateWallet'
+      'randomSeed'
     ]),
 
     async init() {

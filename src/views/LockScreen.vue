@@ -10,6 +10,7 @@
     <div class="password-form">
       <input class="text-center"
              type="password"
+             autofocus
              placeholder="Password"
              @input="wrong = false"
              v-model="password">   

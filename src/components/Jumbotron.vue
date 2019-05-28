@@ -30,10 +30,10 @@
       </div>
 
       <div class="bottom text-center text-white">
-        {{account.balance}}
+        {{account.balance | fromZil}}
         <span class="currency">ZIL</span>
         <br>
-        ≈ 1000
+        ≈ {{account.balance | toConversion(conversionRate)}}
         <span class="currency">{{currency}}</span>
       </div>
 
@@ -53,29 +53,31 @@
 
 <script>
 import { mapState } from 'vuex'
-import AccountMixin from '../mixins/account'
 import Jazzicon from '../mixins/jazzicon'
 import tooltip from '../directives/tooltip'
 import clipboardMixin from '../mixins/clipboard'
+import AccountListing from '../mixins/account-listing'
+import toConversion from '../filters/to-conversion'
+import fromZil from '../filters/from-zil'
 
 
 export default {
   name: 'Jumbotron',
   components: { },
-  mixins: [AccountMixin, Jazzicon, clipboardMixin],
+  mixins: [
+    Jazzicon,
+    clipboardMixin,
+    AccountListing
+  ],
+  filters: { toConversion, fromZil },
   directives: { tooltip },
   data() {
     return {
-      isDropdown: false,
-      
-      account: {
-        address: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35',
-        balance: '312.3',
-        name: 'warden'
-      }
+      isDropdown: false
     };
   },
   computed: {
+    ...mapState(['conversionRate']),
     ...mapState('Static', [
       'currency'
     ])
