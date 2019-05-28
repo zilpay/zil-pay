@@ -1,27 +1,44 @@
 <template>
-  <div class="row">
+  <div class="row" v-if="transactionsList">
 
     <div class="text-left title">History</div>
 
     <ul class="list text-black">
-      <li class="pointer">
-        <img src="/icons/contract.svg" height="20">
+      <li v-for="tx of transactionsList"
+          :key="tx.nonce"
+          class="pointer">
+
+        <img v-if="tx.Info == call || tx.Info == deploy"
+             src="/icons/contract.svg" height="20">
+        <img v-if="tx.Info == send"
+             src="/icons/send-dark.svg"
+             height="20">
 
         <div class="info">
-          <a href="" class="text-black underline">warden</a>
+          <a :href="exploreAddress(account.address)"
+             target="_blacnk"
+             class="text-black underline">
+            {{account.address | toAddress(addressFormat)}}
+          </a>
           <img src="/icons/caret-right.svg" height="20"
               class="img-border">
-          <a href="" class="text-black underline">zil1xq...80trpf</a>
+          <a :href="exploreAddress(tx.toAddr)"
+             class="text-black underline"
+             target="_blacnk">
+            {{tx.toAddr | toAddress(addressFormat)}}
+          </a>
         </div>
 
         <div class="text-right">
-          -992.2 <span class="text-primary">ZIL</span>
+          -{{tx.amount | fromZil}} 
+          <span class="text-primary">ZIL</span>
         </div>
 
-        <span class="text-left">Deploy</span>
+        <span class="text-left">{{tx.Info}}</span>
         <span class="text-center">view on viewblock</span>
         <div class="text-right">
-          ≈10 <span class="text-primary">USD</span>
+          ≈ {{tx.amount | toConversion(conversionRate[currency])}} 
+          <span class="text-primary">{{currency}}</span>
         </div>
       </li>
     </ul>
@@ -29,13 +46,65 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import clipboardMixin from '../mixins/clipboard'
 import AccountListing from '../mixins/account-listing'
+import ExplorerMixin from '../mixins/explorer'
+import toConversion from '../filters/to-conversion'
+import fromZil from '../filters/from-zil'
 
 
 export default {
   name: 'TxList',
-  mixins: [clipboardMixin, AccountListing]
+  mixins: [clipboardMixin, AccountListing, ExplorerMixin],
+  filters: { toConversion, fromZil },
+  data() {
+    return {
+      deploy: 'Deploy',
+      call: 'Call',
+      send: 'Send ZIL'
+    };
+  },
+  computed: {
+    ...mapState(['conversionRate']),
+    ...mapState('Static', [
+      'currency'
+    ]),
+    ...mapState('Transactions', [
+      'transactions'
+    ]),
+
+    transactionsList() {
+      if (!this.transactions || Object.keys(this.transactions).length < 1) {
+        return null;
+      }
+
+      const ownList = this.transactions[this.account.address];
+
+      if (!ownList) {
+        return null;
+      }
+
+      const ownNetList = ownList[this.network];
+
+      if (!ownNetList) {
+        return null;
+      }
+
+      return ownNetList.map(tx => {
+        if (tx.Info.includes('Contract Txn')) {
+          tx.Info = this.call;
+          return tx;
+        } else if (tx.Info.includes('Contract Creation')) {
+          tx.Info = this.deploy;
+          return tx;
+        } else if (tx.Info.includes('Non-contract')) {
+          tx.Info = this.send;
+        }
+        return tx;
+      });
+    }
+  }
 }
 </script>
 
@@ -58,7 +127,7 @@ export default {
   font-size: 12px;
   
   li {
-    padding: 5px;
+    padding: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     border-top: 1px solid $color-primary;
@@ -69,6 +138,7 @@ export default {
       grid-template-columns: 1fr 1fr 1fr;
       justify-items: center;
       grid-gap: 10px;
+      font-size: 10px;
     }
 
     &:hover {

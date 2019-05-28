@@ -34,7 +34,7 @@
         {{account.balance | fromZil}}
         <span class="currency">ZIL</span>
         <br>
-        ≈ {{account.balance | toConversion(conversionRate)}}
+        ≈ {{account.balance | toConversion(conversionRate[currency])}}
         <span class="currency">{{currency}}</span>
       </div>
 

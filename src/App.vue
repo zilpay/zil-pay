@@ -24,6 +24,9 @@ export default {
       'mutateNetwork',
       'mutateNetworkConfig'
     ]),
+    ...mapMutations('Transactions', [
+      'mutateTransactions'
+    ]),
 
     ...mapActions('Wallet', [
       'initPopup',
@@ -59,6 +62,7 @@ export default {
       }
 
       this.mutateWallet(state.wallet);
+      this.mutateTransactions(state.transactions);
     },
     routePush(state) {
       if (!state.isReady) {

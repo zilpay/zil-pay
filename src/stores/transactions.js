@@ -6,7 +6,9 @@ export default {
     confirmationTx: []
   },
   mutations: {
-
+    mutateTransactions(state, transactions) {
+      state.transactions = transactions;
+    }
   },
   actions: {
 

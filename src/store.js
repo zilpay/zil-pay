@@ -16,7 +16,10 @@ export default new Vuex.Store({
   state: {
     loading: true,
     isConnect: true,
-    conversionRate: 0
+    conversionRate: {
+      BTC: 0,
+      USD: 0
+    }
   },
   mutations: {
     spiner(state) {
@@ -43,18 +46,19 @@ export default new Vuex.Store({
     async updateRate({ state }) {
       let rate;
       const url = `${apiConfig.COINMARKETCAP}/zilliqa`;
-      const currency = state.Static.currency;
 
       try {
         const response = await fetch(url, { method: 'GET' });
         rate = await response.json();
-        if (currency === 'USD') {
-          rate = rate[0]['price_usd'];
-        } else if (currency === 'BTC') {
-          rate = rate[0]['price_btc'];
-        }
+        rate = {
+          USD: rate[0]['price_usd'],
+          BTC: rate[0]['price_btc']
+        };
       } catch(err) {
-        rate = 0;
+        rate = {
+          BTC: 0,
+          USD: 0
+        };
       }
 
       state.conversionRate = rate;

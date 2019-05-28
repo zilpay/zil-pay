@@ -6,6 +6,6 @@ export default function(value, rate) {
   }
   if (value == 0) return 0;
   let zilAmount = +fromZil(value);
-  let usdAmount = zilAmount * rate;
+  let usdAmount = zilAmount * +rate;
   return usdAmount.toFixed(4);
 }

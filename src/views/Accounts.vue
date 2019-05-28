@@ -26,7 +26,7 @@
               {{acc.balance | fromZil}} <span>ZIL</span>
             </div>
             <div>
-              ≈ {{acc.balance | toConversion(conversionRate)}} 
+              ≈ {{acc.balance | toConversion(conversionRate[currency])}} 
               <span>{{currency}}</span>
             </div>
           </div>
