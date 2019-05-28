@@ -1,7 +1,7 @@
 <template>
   <div>
      <BackBar/>
-     <main class="tab-bar">
+     <main class="tab-bar is-mini">
       <div class="tab-item"
            @click="$router.push({name: 'General'})">
         <h5 class="title">General</h5>
@@ -67,7 +67,7 @@ export default {
 
 <style lang="scss">
 .tab-bar {
-  margin-top: 50px;
+  margin-top: 70px;
   grid-template-columns: minmax(50%, 500px);
 }
 .tab-item {

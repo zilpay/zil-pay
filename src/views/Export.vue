@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="export">
+    <main class="export is-mini">
       <div class="header" v-show="textarea">
         <label>{{label}}</label>
         <br>

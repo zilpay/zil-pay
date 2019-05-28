@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main>
+    <main class="is-mini">
       <div class="form">
         <h5>Privacy Data</h5>
         <div class="dis">Clear all allowed accesses to dApp.</div>
@@ -50,7 +50,6 @@ export default {
 <style lang="scss">
 
 .form {
-  margin-top: 30px;
   margin-left: 30px;
   display: grid;
   grid-template-columns: 1fr;

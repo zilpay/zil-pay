@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="create-acc">
+    <main class="create-acc is-mini">
       <label>Your mnemonic Seed Phrase.
         <img src="/icons/refresh.svg" height="15"
              class="update-seed"

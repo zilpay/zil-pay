@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main>
+    <main class="is-mini">
       <div class="change-net text-left" @mouseleave="isInput = false">
         <div class="dropdown-el text-black" @click="isInput = !isInput">
           {{network}}

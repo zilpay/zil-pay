@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="restore">
+    <main class="restore is-mini">
       <div>
         <h5>Restore by mnemonic Seed Phrase</h5>
         <label>Enter your secret mnemonic word phrase here.</label>

@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main>
+    <main class="is-mini">
       <h5 class="text-center">
         You can import account by private key or hardware wallet
       </h5>

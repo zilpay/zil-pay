@@ -22,7 +22,7 @@ export class Auth {
     return timeDifference > 0;
   }
 
-  constructor(encryptSeed=null, encryptImported=null) {    
+  constructor(encryptSeed=null, encryptImported=null) {
     this.isEnable = false;
     this.isReady = false;
     this.encryptImported = encryptImported;

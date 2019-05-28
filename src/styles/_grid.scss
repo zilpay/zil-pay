@@ -2,7 +2,7 @@ main, .row {
 	display: grid;
 	justify-content: center;
 	align-items: center;
-	grid-row-gap: 1%;
+  grid-row-gap: 1%;
 }
 
 .dapp-item {
@@ -45,4 +45,18 @@ label[for=amount] > span, .advance {
   grid-template-columns: 1fr 1fr;
   font-size: 15px;
   margin-top: 10px;
+}
+.is-mini {
+  margin-top: 0;
+}
+@media screen and (max-width: $nav-max-width) {
+  .is-mini {
+    margin-top: 100px;
+  }
+  .back-bar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 99;
+  }
 }

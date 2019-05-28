@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main>
+    <main class="is-mini">
       <div class="dapp text-center">
         <img src="https://kovan.dragoneth.com/favicon.ico">
         <div class="title">DragonETH</div>

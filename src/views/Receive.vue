@@ -3,7 +3,7 @@
     
     <BackBar/>
 
-    <main class="text-center">
+    <main class="text-center is-mini">
 
       <h1 class="text-black">{{account.name}}</h1>
 

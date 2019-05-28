@@ -1,7 +1,7 @@
 <template>
   <div>
     <BackBar/>
-    <main class="about">
+    <main class="about is-mini">
       <img src="/icon128.png">
       <div class="text-center">
         <h5>ZilPay Version</h5>
@@ -41,7 +41,6 @@ export default {
 
 <style lang="scss">
 .about {
-  margin-top: 30px;
   justify-items: center;
 }
 </style>

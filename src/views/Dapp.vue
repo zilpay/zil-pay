@@ -1,7 +1,7 @@
 <template>
   <div>
     <BackBar/>
-    <main>
+    <main class="is-mini">
 
       <div class="dapp-item">
         <img src="https://www.gameabc.io/favicon.ico">

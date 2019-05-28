@@ -3,7 +3,7 @@ import { Message } from '../../lib/messages/messageCall'
 import networkConfig from '../../config/zil.json'
 import { BrowserStorage, BuildObject } from '../../lib/storage'
 import fields from '../../config/fields'
-
+import API from '../../config/api.json'
 
 async function updateStatic(object, isOverwrite=false) {
   const storage = new BrowserStorage();
@@ -14,7 +14,8 @@ async function updateStatic(object, isOverwrite=false) {
     await storage.set(new BuildObject(fields.STATIC, {
       currency: object.currency,
       addressFormat: object.addressFormat,
-      defaultGas: object.defaultGas
+      defaultGas: object.defaultGas,
+      lockTime: object.lockTime
     }));
     return null;
   }
@@ -25,6 +26,7 @@ async function updateStatic(object, isOverwrite=false) {
 export default {
   namespaced: true,
   state: {
+    lockTime: API.TIME_BEFORE_LOCK, // in hours.
     currency: 'USD',
     currencyItems: ['BTC', 'USD'],
 
@@ -40,6 +42,10 @@ export default {
     }
   },
   mutations: {
+    mutateLockTime(state, newTime) {
+      state.lockTime = newTime;
+      updateStatic(state, true);
+    },
     mutateGasLimit(state, newGasLimit) {
       state.defaultGas.gasLimit = newGasLimit;
       updateStatic(state, true);

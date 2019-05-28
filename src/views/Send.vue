@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="text-center send-page">
+    <main class="text-center send-page is-mini">
 
       <h6>Only send ZIL native to an Zilliqa address.</h6>
 

@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
     
-    <main>
+    <main class="is-mini">
       <div class="top-bar">
         <button class="btn-outline"
                 @click="createAccountBySeed">Create</button>

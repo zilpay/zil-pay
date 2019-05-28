@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="general">
+    <main class="is-mini">
       <div class="text-left" @mouseleave="isCurrencyInput = false">
         <span>Currency Conversion</span>
         <div class="dropdown-el" @click="isCurrencyInput = !isCurrencyInput">
@@ -88,9 +88,6 @@ export default {
 
 <style lang="scss">
 .format {
-  margin-top: 50px;
-}
-.general {
   margin-top: 50px;
 }
 </style>

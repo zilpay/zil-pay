@@ -5,8 +5,8 @@ import { Message } from '../../lib/messages/messageCall'
 export default {
   namespaced: true,
   state: {
-    isReady: true,
-    isEnable: true,
+    isReady: false,
+    isEnable: false,
     wallet: {
       selectedAddress: null,
       identities: []
