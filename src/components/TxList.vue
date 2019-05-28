@@ -4,31 +4,24 @@
     <div class="text-left title">History</div>
 
     <ul class="list text-black">
-      <li>
-        <a href="">
-          <img src="/icons/contract.svg" height="20">
-          <span>Call</span>
-        </a>
+      <li class="pointer">
+        <img src="/icons/contract.svg" height="20">
+
         <div class="info">
-          <a href="" class="text-black">warden</a>
+          <a href="" class="text-black underline">warden</a>
           <img src="/icons/caret-right.svg" height="20"
               class="img-border">
-          <a href="" class="text-black">zil1xq...80trpf</a>
+          <a href="" class="text-black underline">zil1xq...80trpf</a>
         </div>
+
         <div class="text-right">
           -992.2 <span class="text-primary">ZIL</span>
         </div>
-      </li>
-      <li>
-        <a href="" class="text-primary"><img src="/icons/send-dark.svg" height="20"></a>
-        <div class="info">
-          <a href="" class="text-black">warden</a>
-          <img src="/icons/caret-right.svg" height="20"
-              class="img-border">
-          <a href="" class="text-black">zil1t...h639c2</a>
-        </div>
+
+        <span class="text-left">Deploy</span>
+        <span class="text-center">view on viewblock</span>
         <div class="text-right">
-          -992.2 <span class="text-primary">ZIL</span>
+          ≈10 <span class="text-primary">USD</span>
         </div>
       </li>
     </ul>
@@ -37,11 +30,12 @@
 
 <script>
 import clipboardMixin from '../mixins/clipboard'
+import AccountListing from '../mixins/account-listing'
 
 
 export default {
   name: 'TxList',
-  mixins: [clipboardMixin]
+  mixins: [clipboardMixin, AccountListing]
 }
 </script>
 
@@ -57,12 +51,11 @@ export default {
 }
 
 .list {
-  // padding: 20px;
   display: grid;
   grid-template-columns: 1fr;
   width: $nav-max-width;
   min-width: $nav-min-width;
-  font-size: 15px;
+  font-size: 12px;
   
   li {
     padding: 5px;
@@ -71,27 +64,28 @@ export default {
     border-top: 1px solid $color-primary;
     font-weight: 500;
 
-    a {
-      span {
-        padding: 5px;
-      }
-    }
-
     .info {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       justify-items: center;
       grid-gap: 10px;
-
-      a:hover {
-        text-decoration: underline;
-      }
     }
 
     &:hover {
       transition: background-color .3s ease;
       background-color: $color-translucent;
     }
+  }
+}
+a.underline {
+  border-radius: 10px;
+  background: #2d4b56;
+  height: 30px;
+  padding: 5px;
+  color: $color-initial;
+  
+  &:hover {
+    background-color: $color-primary;
   }
 }
 @media screen and (max-width: $nav-max-width) {
