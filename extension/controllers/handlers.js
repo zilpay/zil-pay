@@ -159,16 +159,21 @@ export class AccountHandler {
     let account;
     const { password } = this.payload;
     const accountExporter = new AccountExporter();
-    await accountExporter.auth.setPassword(password);
-    const isImported = await accountExporter.isImported();
 
-    if (isImported) {
-      account = await accountExporter.exportAccountFromStore();
-    } else {
-      account = await accountExporter.exportPrivateKeyFromSeed();
+    try {
+      await accountExporter.auth.setPassword(password);
+      const isImported = await accountExporter.isImported();
+  
+      if (isImported) {
+        account = await accountExporter.exportAccountFromStore();
+      } else {
+        account = await accountExporter.exportPrivateKeyFromSeed();
+      }
+  
+      sendResponse({ resolve: account.privateKey });
+    } catch(err) {
+      sendResponse({ reject: err.message });
     }
-
-    sendResponse({ resolve: account.privateKey });
   }
 
   async exportSeedPhrase(sendResponse) {
