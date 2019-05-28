@@ -10,6 +10,7 @@
       </label>
       <textarea class="mnemonic" disabled
                 cols="30" v-model="seed"></textarea>
+      <small class="text-danger">{{seedErr}}</small>
       <button @click="printSeed">Print</button>
 
       <div class="text-center text-primary">
@@ -30,7 +31,7 @@
                  class="text-danger">{{isConfirmPassword}}</small>
         </div>
 
-        <button :disabled="isContinue">
+        <button :disabled="isContinue" @click="createWallet">
           continue
         </button>
       </div>
@@ -39,7 +40,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import PasswordValidator from '../mixins/password-validator'
 
 const BackBar = () => import('../components/BackBar');
@@ -142,12 +143,18 @@ export default {
   mixins: [PasswordValidator],
   data() {
     return {      
-      seed: 'sdasgh own rail mimic dsad amazing das maze dasd smile leader deposit'
+      seed: null, seedErr: null
     };
   },
   methods: {
+    ...mapMutations(['spiner']),
+    ...mapMutations('Wallet', [
+      'mutateIsReady',
+      'mutateIsEnable'
+    ]),
     ...mapActions('Wallet', [
-      'randomSeed'
+      'randomSeed',
+      'newWallet'
     ]),
 
     printSeed() {
@@ -164,6 +171,23 @@ export default {
     async randomMnemonic() {
       const { resolve } = await this.randomSeed();
       this.seed = resolve;
+    },
+    async createWallet() {
+      this.spiner();
+
+      try {
+        await this.newWallet({
+          seed: this.seed,
+          password: this.password
+        });
+        this.mutateIsReady(true);
+        this.mutateIsEnable(true);
+        this.spiner();
+        this.$router.push({ name: 'Home' });
+      } catch(err) {
+        this.seedErr = err.message;
+        this.spiner();
+      }
     }
   },
   mounted() {
