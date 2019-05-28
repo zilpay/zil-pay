@@ -2,12 +2,17 @@
   <div>
     <BackBar/>
     <main class="about is-mini">
-      <img src="/icon128.png">
+      <img src="/icon48.png">
       <div class="text-center">
-        <h5>ZilPay Version</h5>
-        <span>{{version}}</span>
+        <span>ZilPay Version {{version}}</span>
 
-        <h5 class="text-left">Links:</h5>
+        <div class="donate">
+          <span>Maybe you want to help.</span>
+          <br>
+          <span>{{donate | toAddress(addressFormat, false)}}</span>
+          <br>
+          <button @click="copy(donate)">Copy</button>
+        </div>
 
         <ul class="text-left">
           <li><a href="https://github.com/lich666dead/zil-pay">GitHub</a></li>
@@ -24,13 +29,20 @@
 
 <script>
 import extension from 'extensionizer'
+import clipboardMixin from '../mixins/clipboard'
 
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'About',
+  mixins: [clipboardMixin],
   components: { BackBar },
+  data() {
+    return {
+      donate: '0x77E27C39ce572283b848E2cDF32ccE761e34Fa49'
+    };
+  },
   computed: {
     version() {
       return extension.runtime.getManifest()['version'];
@@ -42,5 +54,9 @@ export default {
 <style lang="scss">
 .about {
   justify-items: center;
+}
+.donate {
+  font-size: 15px;
+  margin-top: 50px;
 }
 </style>

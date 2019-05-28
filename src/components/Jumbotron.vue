@@ -16,6 +16,7 @@
                @click="isDropdown = !isDropdown">
           <ul v-show="isDropdown" @mouseleave="isDropdown = false"
               class="dropdown dropdown-input text-black">
+            <li><a :href="exploreAddress(account.address)" target="_blanck">Account details</a></li>
             <li @click="$router.push({name: 'Networks'})">Change network</li>
             <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export PrivateKey</li>
             <li>Delete account</li>
@@ -58,6 +59,7 @@ import Jazzicon from '../mixins/jazzicon'
 import tooltip from '../directives/tooltip'
 import clipboardMixin from '../mixins/clipboard'
 import AccountListing from '../mixins/account-listing'
+import explorer from '../mixins/explorer'
 import toConversion from '../filters/to-conversion'
 import fromZil from '../filters/from-zil'
 
@@ -68,7 +70,8 @@ export default {
   mixins: [
     Jazzicon,
     clipboardMixin,
-    AccountListing
+    AccountListing,
+    explorer
   ],
   filters: { toConversion, fromZil },
   directives: { tooltip },

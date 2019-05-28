@@ -12,9 +12,9 @@ export default {
   },
   methods: {
     toAddress,
-    copy() {
+    copy(hex) {
       const address = toAddress(
-        this.account.address,
+        hex || this.account.address,
         this.addressFormat,
         false
       );

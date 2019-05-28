@@ -18,7 +18,6 @@
       <br>          
       <div class="warn text-danger" v-show="wrong">Wrong password</div>
       <button @click="unlock">Continue</button>
-      <hr>
     </div>
 
   </main>

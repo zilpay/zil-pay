@@ -65,8 +65,6 @@
 
       <div>
       </div>
-
-      <hr>
     </main>
   </div>
 </template>

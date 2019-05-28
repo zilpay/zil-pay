@@ -1,7 +1,9 @@
 import { mapState, mapMutations, mapActions } from 'vuex'
+import StateStatusUpdater from './status-updater'
 
 
 export default {
+  mixins: [StateStatusUpdater],
   computed: {
     ...mapState('Wallet', [
       'wallet'
@@ -43,6 +45,7 @@ export default {
     async createAccountBySeed() {
       this.spiner();
       await this.createAccount();
+      await this.balanceUpdate();
       this.spiner();
     },
     async selectAccount(index) {
