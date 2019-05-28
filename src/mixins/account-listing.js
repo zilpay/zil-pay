@@ -1,4 +1,4 @@
-import { mapState } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 
 export default {
@@ -24,11 +24,29 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['spiner']),
+    ...mapMutations('Wallet', [
+      'mutateWallet'
+    ]),
+    ...mapActions('Wallet', [
+      'createAccount',
+    ]),
+
     split(hex, length=10) {
       const part0 = hex.slice(0, length);
       const part1 = hex.slice(hex.length - length);
 
       return `${part0}...${part1}`;
-    }
+    },
+    async createAccountBySeed() {
+      this.spiner();
+      await this.createAccount();
+      this.spiner();
+    },
+    async selectAccount(index) {
+      let wallet = this.wallet;
+      wallet.selectedAddress = index;
+      this.mutateWallet(wallet);
+    },
   }
 };

@@ -46,7 +46,7 @@ export default {
       ).send();
     
       if (result.resolve) {
-        commit('setWallet', result.resolve);
+        commit('mutateWallet', result.resolve);
         return result.resolve;
       } else {
         throw new Error(result.reject);
@@ -63,6 +63,17 @@ export default {
       } else {
         throw new Error(status.reject);
       }
+    },
+    async createAccount({ commit }) {
+      const result = await Message.signal(MTypesInternal.CREATE_ACCOUNT).send();
+    
+      if (result.resolve) {
+        commit('mutateWallet', result.resolve);
+      } else {
+        throw new Error(result.reject);
+      }
+      
+      return result.resolve;
     },
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
