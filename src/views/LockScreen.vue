@@ -52,7 +52,7 @@ export default {
 
 <style lang="scss">
 .lock {
-  padding-top: 100px;
+  padding-top: 20px;
 }
 .warn {
   text-align: left;
@@ -64,7 +64,7 @@ export default {
     width: 300px;
   }
   button {
-    margin-top: 50px;
+    margin-top: 30px;
   }
 }
 </style>

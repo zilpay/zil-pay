@@ -6,7 +6,10 @@
         <img src="/icons/qr-code.svg" height="30"
              class="point"
              @click="$router.push({name: 'Receive'})">
-        <img src="/icons/expand.svg" height="30" class="point">
+        <img v-show="!isExpand"
+             height="30" class="point"
+             src="/icons/expand.svg"
+             @click="onExpand">
         <img src="/icons/networking.svg" height="30"
              class="point"
              @click="$router.push({name: 'DAPP'})">
@@ -32,7 +35,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 import StateStatusUpdater from '../mixins/status-updater'
 
 
@@ -41,6 +44,7 @@ export default {
   mixins: [StateStatusUpdater],
   computed: {
     ...mapState(['isConnect']),
+    ...mapGetters(['isExpand']),
 
     connectURL() {
       if (this.isConnect) {
@@ -51,6 +55,7 @@ export default {
   },
   methods: {
     ...mapMutations(['spiner']),
+    ...mapActions(['onExpand']),
 
     async statusUpdate() {
       this.spiner();

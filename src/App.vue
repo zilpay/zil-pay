@@ -26,10 +26,13 @@ export default {
 
     ...mapActions('Wallet', [
       'initPopup',
-      'randomSeed'
+      'randomSeed',
+      'mutateWallet'
     ]),
 
     async init() {
+      this.spiner();
+      
       let state;
       const data = await this.initPopup();
       
@@ -37,18 +40,25 @@ export default {
         state = data.reject;
       } else {
         state = data.resolve;
+        this.dataStateUpdate(state.data);
       }
-
-      this.spiner();
+      
       this.commonStateUpdate(state);
       this.routePush(state);
     },
     commonStateUpdate(state) {
       this.mutateIsReady(state.isReady);
       this.mutateIsEnable(state.isEnable);
-      this.mutateNetwork(state.selectednet);
-      this.mutateNetworkConfig(state.config);
+      this.mutateNetwork(state.selectednet || state.data.selectednet);
+      this.mutateNetworkConfig(state.config || state.data.config);
       this.mutateIsConnect(state.networkStatus);
+    },
+    dataStateUpdate(state) {
+      if (!state) {
+        return null;
+      }
+
+      this.mutateWallet(state.wallet);
     },
     routePush(state) {
       if (!state.isReady) {

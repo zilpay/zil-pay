@@ -68,9 +68,7 @@ export default new Vuex.Store({
   },
   getters: {
     isExpand() {
-      if (window.location.pathname.includes('confirm')) {
-        return true;
-      } else if (window.innerWidth <= 375) {
+      if (window.innerWidth <= 375) {
         return false;
       }
 
