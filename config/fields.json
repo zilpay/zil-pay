@@ -5,5 +5,6 @@
   "WALLET": "wallet",
   "SELECTED_NET": "selectednet",
   "TRANSACTIONS": "transactions",
-  "CONFIRM_TX": "confirm"
+  "CONFIRM_TX": "confirm",
+  "STATIC": "static"
 }

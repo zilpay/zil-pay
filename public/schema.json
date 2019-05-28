@@ -20,6 +20,10 @@
       "title": "transaction execution",
       "type": "object"
     },
+    "static": {
+      "title": "static data `BTC, USD`, address format...",
+      "type": "object"
+    },
     "vault": {
       "title": "encrypted seed phrases",
       "type": "string"

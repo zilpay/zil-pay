@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-
+import { mapState, mapActions } from 'vuex'
+import defaultConfig from '../../config/zil.json'
 const BackBar = () => import('../components/BackBar');
 
 
@@ -68,11 +68,8 @@ export default {
   },
   methods: {
     ...mapActions('Static', [
-      'changeNetwork'
-    ]),
-    ...mapMutations('Static', [
-      'mutateNetworkConfig',
-      'toDefaultNetworkConfig'
+      'changeNetwork',
+      'configUpdate'
     ]),
 
     selectedNetwork(item) {
@@ -82,7 +79,10 @@ export default {
     changeNetworkConfig(el, key, value) {
       let config = this.networkConfig;
       config[el][key] = value;
-      this.mutateNetworkConfig(config);
+      this.configUpdate(config);
+    },
+    toDefaultNetworkConfig() {
+      this.configUpdate(defaultConfig);
     }
   }
 }
