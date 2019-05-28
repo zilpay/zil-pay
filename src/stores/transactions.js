@@ -1,3 +1,6 @@
+import { MTypesInternal } from '../../lib/messages/messageTypes'
+import { Message } from '../../lib/messages/messageCall'
+
 
 export default {
   namespaced: true,
@@ -11,7 +14,13 @@ export default {
     }
   },
   actions: {
-
+    async clearTransactions({ commit }) {
+      await Message.signal(
+        MTypesInternal.CLEAR_HISTORY_TX
+      ).send();
+    
+      commit('mutateTransactions', {});
+    }
   },
   getters: {
     CONFIRM_TX(state) {

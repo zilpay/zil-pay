@@ -39,14 +39,14 @@
 
       <div>
         <h5>Clear history transaction.</h5>
-        <button>Clear</button>
+        <button @click="clearTx">Clear</button>
       </div>
     </main>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 const BackBar = () => import('../components/BackBar');
 
 
@@ -73,6 +73,9 @@ export default {
       'mutateCurrency',
       'mutateAddressFormat'
     ]),
+    ...mapActions('Transactions', [
+      'clearTransactions'
+    ]),
 
     selectedCurrency(item) {
       this.mutateCurrency(item);
@@ -82,6 +85,10 @@ export default {
       this.mutateAddressFormat(item);
       this.isFormatAddress = false;
     },
+    clearTx() {
+      this.clearTransactions();
+      this.$router.push({ name: 'Home' });
+    }
   }
 }
 </script>
