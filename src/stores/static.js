@@ -11,9 +11,11 @@ async function updateStatic(object, isOverwrite=false) {
   stateData = stateData[fields.STATIC];
 
   if (!stateData || Object.keys(stateData).length < 3 || isOverwrite) {
-    delete object.network;
-    delete object.networkConfig;
-    await storage.set(new BuildObject(fields.STATIC, object));
+    await storage.set(new BuildObject(fields.STATIC, {
+      currency: object.currency,
+      addressFormat: object.addressFormat,
+      defaultGas: object.defaultGas
+    }));
     return null;
   }
 
@@ -27,7 +29,7 @@ export default {
     currencyItems: ['BTC', 'USD'],
 
     addressFormat: 'Bech32',
-    addressFormatItems: ['Bech32', 'Base58', 'Hex'],
+    addressFormatItems: ['Bech32', 'Base58', 'Base16'],
 
     network: 'mainnet',
     networkConfig,

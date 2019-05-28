@@ -15,7 +15,7 @@ function trim(string, length=6) {
 export default function (hex, format, isTrim=true) {
   let address;
 
-  if (format === 'Hex') {
+  if (format === 'Base16') {
     address = toChecksumAddress(hex);
   } else if (format === 'Base58') {
     address = encodeBase58(hex);
