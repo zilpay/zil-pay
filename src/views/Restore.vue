@@ -29,7 +29,7 @@
                  class="text-danger">{{isConfirmPassword}}</small>
         </div>
 
-        <button :disabled="isContinue">
+        <button :disabled="isContinue" @click="createWallet">
           continue
         </button>
       </div>
@@ -40,6 +40,7 @@
 <script>
 import { validateMnemonic } from 'bip39'
 import PasswordValidator from '../mixins/password-validator'
+import AccountCreater from '../mixins/account-creater'
 
 const BackBar = () => import('../components/BackBar');
 
@@ -47,12 +48,7 @@ const BackBar = () => import('../components/BackBar');
 export default {
   name: 'Restore',
   components: { BackBar },
-  mixins: [PasswordValidator],
-  data() {
-    return {
-      seed: null
-    };
-  },
+  mixins: [PasswordValidator, AccountCreater],
   computed: {
     isMnemonic() {
       const isSeed = validateMnemonic(this.seed);
