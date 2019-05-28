@@ -2,9 +2,12 @@
   <div>
     <BackBar/>
 
-    <main class="text-center send-page is-mini">
+    <main class="text-center is-mini">
 
-      <h6>Only send ZIL native to an Zilliqa address.</h6>
+      <small class="warning-msg text-black"
+             v-show="isWarning">
+        This ZIL in {{network}} (It does not cost)!
+      </small>
 
       <div class="input-group">
         <div class="to text-left" @mouseleave="isInput = false">
@@ -73,6 +76,7 @@ import { validation } from '@zilliqa-js/util'
 import GasFee from '../mixins/gas-fee'
 import clipboardMixin from '../mixins/clipboard'
 import AccountListing from '../mixins/account-listing'
+import { mapState } from 'vuex';
 
 const BackBar = () => import('../components/BackBar');
 
@@ -91,6 +95,12 @@ export default {
     };
   },
   computed: {
+    ...mapState('Static', [
+      'network'
+    ]),
+    isWarning() {
+      return this.network == 'testnet' || this.network == 'private';
+    },
     isAddress() {
       if (this.to === null) {
         return null;

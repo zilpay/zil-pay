@@ -75,3 +75,10 @@ small {
 .pointer {
 	cursor: pointer;
 }
+.warning-msg {
+	border-radius: 10px;
+	background-color: $color-warning;
+	padding: 10px;
+	height: auto;
+	justify-self: center;
+}
