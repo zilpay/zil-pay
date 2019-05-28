@@ -30,7 +30,8 @@ export default {
     ]),
     ...mapActions('Wallet', [
       'createAccount',
-      'changeAccountName'
+      'changeAccountName',
+      'logOut'
     ]),
 
     split(hex, length=10) {

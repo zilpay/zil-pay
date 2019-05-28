@@ -22,7 +22,7 @@
       <div class="right">
         <img src="/icons/locked.svg" height="30"
              class="point"
-             @click="$router.push({name: 'Lock'})">
+             @click="logOut">
         <img src="/icons/refresh.svg" height="30"
              @click="statusUpdate" class="point">
         <img src="/icons/settings.svg" height="30"
@@ -56,6 +56,9 @@ export default {
   methods: {
     ...mapMutations(['spiner']),
     ...mapActions(['onExpand']),
+    ...mapActions('Wallet', [
+      'logOut'
+    ]),
 
     async statusUpdate() {
       this.spiner();

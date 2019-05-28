@@ -88,6 +88,11 @@ export default {
         throw new Error(status.reject);
       }
     },
+    logOut({ commit }) {
+      Message.signal(MTypesAuth.LOG_OUT).send();
+      commit('mutateIsEnable', false);
+      window.close();
+    },
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
