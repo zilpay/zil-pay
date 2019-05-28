@@ -8,7 +8,8 @@
         
         <input type="text"
                class="text-center text-white account-name"
-               v-model="account.name">
+               :value="account.name"
+               @blur="changeName">
 
         <div class="burger dropdown-btn">
           <img src="/icons/menu-burger.svg" height="30"

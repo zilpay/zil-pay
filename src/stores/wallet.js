@@ -75,6 +75,19 @@ export default {
       
       return result.resolve;
     },
+    async changeAccountName({ state }, name) {
+      const type = MTypesInternal.ACC_CHANGE_NAME;
+      const payload = { name };
+      const status = await new Message({ type, payload }).send();
+    
+      if (status.resolve) {
+        state.wallet.identities[
+          state.wallet.selectedAddress
+        ]['name'] = name;
+      } else {
+        throw new Error(status.reject);
+      }
+    },
 
     initPopup: () => Message.signal(MTypesInternal.INIT).send(),
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()

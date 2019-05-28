@@ -30,6 +30,7 @@ export default {
     ]),
     ...mapActions('Wallet', [
       'createAccount',
+      'changeAccountName'
     ]),
 
     split(hex, length=10) {
@@ -48,5 +49,14 @@ export default {
       wallet.selectedAddress = index;
       this.mutateWallet(wallet);
     },
+    async changeName(event) {
+      const newName = event.target.value;
+      
+      if (newName > 20) {
+        return null;
+      }
+
+      this.changeAccountName(newName);
+    }
   }
 };
