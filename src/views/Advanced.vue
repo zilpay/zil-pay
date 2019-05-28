@@ -16,7 +16,8 @@
         <small>fee: {{fee}}</small>
       </div>
 
-      <button class="def">default</button>
+      <button class="def"
+              @click="toDefaultGas">default</button>
     </main>
   </div>
 </template>

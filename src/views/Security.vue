@@ -51,6 +51,7 @@ export default {
 
 .form {
   margin-top: 30px;
+  margin-left: 30px;
   display: grid;
   grid-template-columns: 1fr;
 

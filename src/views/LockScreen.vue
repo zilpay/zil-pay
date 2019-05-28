@@ -13,7 +13,8 @@
              autofocus
              placeholder="Password"
              @input="wrong = false"
-             v-model="password">   
+             v-model="password"
+             @blur="unlock">
       <br>          
       <div class="warn text-danger" v-show="wrong">Wrong password</div>
       <button @click="unlock">Continue</button>

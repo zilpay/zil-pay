@@ -22,7 +22,12 @@ export default {
     ...mapMutations('Static', [
       'mutateGasLimit',
       'mutateGasPrice'
-    ])
+    ]),
+
+    toDefaultGas() {
+      this.gasLimit = 1;
+      this.gasPrice = 1000;
+    }
   },
   watch: {
     gasLimit(newGasLimit) {
