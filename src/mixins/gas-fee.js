@@ -15,7 +15,8 @@ export default {
     ]),
 
     fee() {
-      return this.gasLimit * this.gasPrice * Math.pow(10, -6);
+      const amount = this.gasLimit * this.gasPrice * Math.pow(10, -6);
+      return amount.toFixed(3);
     }
   },
   methods: {

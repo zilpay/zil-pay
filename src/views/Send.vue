@@ -37,7 +37,7 @@
 
         <div class="amount text-left">
           <label>Transfer Amount ZIL.
-            <span class="text-primary">MAX</span>
+            <span @click="amount = maxAmount" class="text-primary">max</span>
           </label>
           <input type="number" v-model="amount" min="0">
           <small class="text-danger" v-show="isAmount">{{isAmount}}</small>
@@ -60,7 +60,9 @@
           </div>
         </div>
 
-        <button class="send" :disabled="isValidTx">Send Transaction</button>
+        <button class="send"
+                :disabled="isValidTx"
+                @click="send">Send Transaction</button>
       </div>
 
       <div>
@@ -70,14 +72,26 @@
 </template>
 
 <script>
+import { MTypesZilPay } from '../../lib/messages/messageTypes'
+import { Message } from '../../lib/messages/messageCall'
+import { BN } from '@zilliqa-js/util'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import GasFee from '../mixins/gas-fee'
+import toZIL from '../filters/to-zil'
+import fromZil from '../filters/from-zil'
 import clipboardMixin from '../mixins/clipboard'
 import AccountListing from '../mixins/account-listing'
-import { mapState } from 'vuex';
+import { ERRORCODE } from '../../lib/errors/code'
 
 const BackBar = () => import('../components/BackBar');
 
+
+async function nonContractSendTransaction(data) {
+  const type = MTypesZilPay.CALL_SIGN_TX;
+  const payload = data;
+  await new Message({ type, payload }).send();  
+}
 
 export default {
   name: 'Send',
@@ -112,13 +126,21 @@ export default {
         return false;
       }
 
-      return 'Wrong Zilliqa address';
+      return ERRORCODE[2];
     },
     isAmount() {
-      if (this.amount === 0) {
-        return null;
-      } else if (this.amount < 0) {
-        return 'Wrong amount';
+      try {
+        const amountBN = new BN(toZIL(this.amount));
+        const balanceBN = new BN(this.account.balance);
+        const feeBN = new BN(toZIL(this.fee));
+        const txAmountBN = feeBN.add(amountBN);
+        const isInsufficientFunds = balanceBN.lt(txAmountBN);
+
+        if (isInsufficientFunds) {
+          return ERRORCODE[1];
+        }
+      } catch(err) {
+        return ERRORCODE[3];
       }
       return false;
     },
@@ -128,6 +150,40 @@ export default {
       }
 
       return !!this.isAmount || !!this.isAddress;
+    },
+    maxAmount() {
+       if (+this.account.balance == 0) {
+        return 0;
+      }
+
+      const fullBalance = new BN(this.account.balance);
+      const feeBN = new BN(toZIL(this.fee));
+      const amount = fullBalance.sub(feeBN);
+
+      return fromZil(amount, false);
+    }
+  },
+  methods: {
+    ...mapMutations(['spiner']),
+    ...mapActions('Transactions', [
+      'transactionsUpdate'
+    ]),
+
+    async send() {
+      this.spiner();
+      
+      let data = {
+        toAddr: this.to,
+        amount: toZIL(this.amount),
+        gasPrice: this.gasPrice,
+        gasLimit: this.gasLimit,
+        code: '',
+        data: ''
+      };
+
+       await nonContractSendTransaction(data);
+       this.transactionsUpdate();
+       this.spiner();
     }
   }
 }

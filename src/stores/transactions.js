@@ -20,6 +20,10 @@ export default {
       ).send();
     
       commit('mutateTransactions', {});
+    },
+    async transactionsUpdate({ commit }) {
+      const transactions = await Message.signal(MTypesInternal.GET_ALL_TX).send();
+      commit('mutateTransactions', transactions);
     }
   },
   getters: {
