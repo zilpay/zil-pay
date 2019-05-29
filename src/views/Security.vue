@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 const BackBar = () => import('../components/BackBar');
 
 
@@ -31,6 +32,10 @@ export default {
   name: 'Security',
   components: { BackBar },
   methods: {
+    ...mapActions('Static', [
+      'clearDappList'
+    ]),
+
     restore() {
       this.$router.push({name: 'Restore'});
     },
@@ -40,8 +45,9 @@ export default {
         params: {type: 'seed'}
       });
     },
-    clearData() {
-      console.log('clear dapp data');
+    async clearData() {
+      await this.clearDappList();
+      this.$router.push({ name: 'Home' });
     }
   }
 }

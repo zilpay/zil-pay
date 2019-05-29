@@ -6,19 +6,19 @@ main, .row {
 }
 
 .dapp-item {
-	margin: 30px;
-	padding: 10px;
-	font-size: 20px;
-
+  padding: 20px;
+  font-size: 12px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 70px;
-  justify-content: center;
-	justify-items: center;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+  justify-items: center;
 	
 	border: 1px solid $color-quaternary;
 	border-radius: 4px;
-	@include shadow();
+  
+  &:hover {
+    @include shadow();
+  }
 }
 .gas {
   display: grid;

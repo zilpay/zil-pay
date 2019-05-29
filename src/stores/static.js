@@ -112,6 +112,10 @@ export default {
       } else {
         throw new Error(status.reject);
       }
+    },
+    async clearDappList({ state }) {
+      state.dappsList = [];
+      await updateStatic(state, true);
     }
   }
 }
