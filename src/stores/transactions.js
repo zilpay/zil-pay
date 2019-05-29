@@ -1,4 +1,4 @@
-import { MTypesInternal } from '../../lib/messages/messageTypes'
+import { MTypesInternal, MTypesZilPay } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
 
 
@@ -11,6 +11,9 @@ export default {
   mutations: {
     mutateTransactions(state, transactions) {
       state.transactions = transactions;
+    },
+    mutateConfirmationTx(state, transactions) {
+      state.confirmationTx = transactions;
     }
   },
   actions: {
@@ -24,6 +27,22 @@ export default {
     async transactionsUpdate({ commit }) {
       const transactions = await Message.signal(MTypesInternal.GET_ALL_TX).send();
       commit('mutateTransactions', transactions);
+    },
+    async rejectConfirmTx({ state }) {
+      await Message.signal(MTypesZilPay.REJECT_CONFIRM_TX).send();
+      state.confirmationTx.pop();
+    },
+    async confirmTx({ state }, payload) {
+      const result = await new Message({
+        type: MTypesZilPay.CONFIRM_TX,
+        payload
+      }).send();
+      
+      state.confirmationTx.pop();
+    
+      if (result.reject) {
+        throw new Error(result.reject);
+      }
     }
   },
   getters: {

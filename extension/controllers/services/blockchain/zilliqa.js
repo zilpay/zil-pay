@@ -1,7 +1,7 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
-import { toChecksumAddress } from '@zilliqa-js/crypto'
-import { Long, BN, bytes, validation } from '@zilliqa-js/util'
+import { toChecksumAddress, decodeBase58, fromBech32Address } from '@zilliqa-js/crypto'
+import { Long, BN, bytes, validation, units } from '@zilliqa-js/util'
 import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 import { NotificationsControl } from '../browser/notifications'
 import fields from '../../../../config/fields'
@@ -71,7 +71,7 @@ export class ZilliqaControl extends Zilliqa {
     }
 
     amount = new BN(amount);
-    gasPrice = new BN(gasPrice);
+    gasPrice = units.toQa(gasPrice, units.Units.Li);
     gasLimit = Long.fromNumber(gasLimit);
 
     nonce++;
@@ -149,6 +149,12 @@ export class ZilliqaControl extends Zilliqa {
 
     const storage = new BrowserStorage();
     let forConfirm = await storage.get(fields.CONFIRM_TX);
+
+    if (validation.isBase58(payload.toAddr)) {
+      payload.toAddr = decodeBase58(payload.toAddr);
+    } else if (validation.isBech32(payload.toAddr)) {
+      payload.toAddr = fromBech32Address(payload.toAddr);
+    }
 
     payload.toAddr = toChecksumAddress(payload.toAddr);
 

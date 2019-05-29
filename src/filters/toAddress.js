@@ -15,12 +15,16 @@ function trim(string, length=6) {
 export default function (hex, format, isTrim=true) {
   let address;
 
-  if (format === 'Base16') {
-    address = toChecksumAddress(hex);
-  } else if (format === 'Base58') {
-    address = encodeBase58(hex);
-  } else if (format === 'Bech32') {
-    address = toBech32Address(hex);
+  try {
+    if (format === 'Base16') {
+      address = toChecksumAddress(hex);
+    } else if (format === 'Base58') {
+      address = encodeBase58(hex);
+    } else if (format === 'Bech32') {
+      address = toBech32Address(hex);
+    }
+  } catch(err) {
+    return null;
   }
 
   if (isTrim) {

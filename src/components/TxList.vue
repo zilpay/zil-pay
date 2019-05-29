@@ -6,6 +6,7 @@
     <ul class="list text-black">
       <li v-for="tx of transactionsList"
           :key="tx.nonce"
+          @click="toView(tx.TranID)"
           class="pointer">
 
         <img v-if="tx.Info == call || tx.Info == deploy"

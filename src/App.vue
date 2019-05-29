@@ -25,7 +25,8 @@ export default {
       'mutateNetworkConfig'
     ]),
     ...mapMutations('Transactions', [
-      'mutateTransactions'
+      'mutateTransactions',
+      'mutateConfirmationTx'
     ]),
 
     ...mapActions('Wallet', [
@@ -63,12 +64,15 @@ export default {
 
       this.mutateWallet(state.wallet);
       this.mutateTransactions(state.transactions);
+      this.mutateConfirmationTx(state.confirm);
     },
     routePush(state) {
       if (!state.isReady) {
         this.$router.push({ name: 'First' });
       } else if (!state.isEnable) {
         this.$router.push({ name: 'Lock' });
+      } else if (state.data.confirm && state.data.confirm.length > 0) {
+        this.$router.push({ name: 'Popup' });
       } else {
         this.$router.push({ name: 'Home' });
       }

@@ -20,7 +20,7 @@ export class PromptService {
 
   constructor() {
     this._height = 600;
-    this._width = 350;
+    this._width = 360;
     this._type = 'popup';
 
     this.id;

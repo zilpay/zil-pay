@@ -1,4 +1,5 @@
 
+import extension from 'extensionizer'
 import { mapState } from 'vuex'
 import apiConfig from '../../config/api.json'
 import toAddress from '../filters/toAddress'
@@ -30,6 +31,11 @@ export default {
         false
       );
       return `${this.url}/address/${address}?${this.net}`;
+    },
+    toView(hash) {
+      extension.tabs.create({
+        url: this.exploreTransactions(hash)
+      });
     }
   }
 }

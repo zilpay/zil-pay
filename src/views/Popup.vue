@@ -1,10 +1,16 @@
 <template>
   <div>
     <div class="send-recipient">
-      <a href="">warden</a>
+      <a :href="exploreAddress(account.address)"
+         target="_blacnk">
+        {{account.name}}
+      </a>
       <img src="/icons/caret-right.svg"
            height="30" class="img-border">
-      <a href="">0xe8a99...0ead2</a>
+      <a :href="exploreAddress(CONFIRM_TX.toAddr)"
+         target="_blacnk">
+        {{CONFIRM_TX.toAddr | toAddress(addressFormat)}}
+      </a>
     </div>    
     <main class="text-center popup">
 
@@ -15,9 +21,16 @@
       <div class="input-group">
         <div class="form-border text-left details">
           <div>
-            method: <span class="text-black">Roll</span>
+            type: <span class="text-black">{{CONFIRM_TX.type}}</span>
             <br>
-            amount: <span class="text-black">10 ZIL</span>
+            method: <span class="text-black">{{CONFIRM_TX.method}}</span>
+            <br>
+            amount: <span class="text-black">
+              {{CONFIRM_TX.amount | fromZil}} 
+              <span class="text-primary">ZIL</span>
+              ≈ {{CONFIRM_TX.amount | toConversion(conversionRate[currency])}} 
+              <span class="text-primary">{{currency}}</span>
+            </span>
             <br>
             DApp: <span class="text-black">Roll game</span>
           </div>
@@ -41,29 +54,91 @@
         </div>
 
         <div class="btn-group">
-          <button>confirm</button>
-          <button class="btn-outline">reject</button>
+          <button @click="confirm">confirm</button>
+          <button class="btn-outline" @click="reject">reject</button>
         </div>
       </div>
-
-  
       <hr>
     </main>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import GasFee from '../mixins/gas-fee'
+import ExplorerMixin from '../mixins/explorer'
+import clipboardMixin from '../mixins/clipboard'
+import AccountListing from '../mixins/account-listing'
+import StateUpdater from '../mixins/status-updater'
+import toConversion from '../filters/to-conversion'
+import fromZil from '../filters/from-zil'
+import toZIL from '../filters/to-zil'
 
 
 export default {
   name: 'Send',
-  mixins: [GasFee],
+  mixins: [
+    GasFee,
+    ExplorerMixin,
+    AccountListing,
+    clipboardMixin,
+    StateUpdater
+  ],
+  filters: { toConversion, fromZil },
   data() {
     return {
       isAdvance: false,
-      isInput: false
+      isInput: false,
+
+      data: null,
+      popupId: null
     };
+  },
+  computed: {
+    ...mapState(['conversionRate']),
+    ...mapState('Static', [
+      'currency'
+    ]),
+    ...mapState('Transactions', [
+      'confirmationTx'
+    ]),
+    ...mapGetters('Transactions', [
+      'CONFIRM_TX'
+    ])
+  },
+  methods: {
+    ...mapMutations(['spiner']),
+    ...mapActions('Transactions', [
+      'rejectConfirmTx',
+      'confirmTx'
+    ]),
+
+    async reject() {
+      await this.rejectConfirmTx();
+      this.popupClouse();
+    },
+    async confirm() {
+      this.spiner();
+      try {
+        await this.confirmTx({
+          gasPrice: this.gasPrice,
+          gasLimit: this.gasLimit
+        });
+      } catch(err) {
+        // ** //
+      }
+      this.spiner();
+      this.popupClouse();
+    },
+
+    popupClouse() {
+      if (!this.confirmationTx || this.confirmationTx.length < 1) {
+        // window.window.close();
+      }      
+    }
+  },
+  mounted() {
+    this.upadteAllState();
   }
 }
 </script>
