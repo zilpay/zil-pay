@@ -73,12 +73,16 @@ export default {
 .tab-item {
   cursor: pointer;
   padding: 10px;  
+  max-width: 360px;
+  justify-self: center;
+  width: 360px;
 
   display: grid;
   grid-template-columns: 90% 1fr 1fr;
 
   border-top: 1px solid rgb(179, 179, 179);
   height: 150px;
+  max-width: 360px;
 
   img {
     opacity: 0.5;

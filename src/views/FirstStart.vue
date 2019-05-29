@@ -30,6 +30,7 @@ export default {
   },
   mounted() {
     this.onExpand();
+    window.window.close();
   }
 }
 </script>
