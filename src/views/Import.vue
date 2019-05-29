@@ -80,7 +80,7 @@ export default {
       }
       this.spiner();
       if (!this.privKeyErrMsg) {
-        this.$router.push({ name: 'Accounts' });
+        this.$router.push({ name: 'Home' });
       }
     }
   }

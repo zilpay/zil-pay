@@ -17,7 +17,10 @@
         <div class="card text-white"
              :style="{backgroundColor: addressToColor(acc.address)}">
           <div class="header">
-            <div>{{acc.name || (`Account ${acc.index + 1}`)}}</div>
+            <div>
+              {{acc.name || (`Account ${acc.index + 1}`)}}
+              <span v-show="acc.isImport" class="imported">Imported</span>
+            </div>
             <img v-show="index == wallet.selectedAddress"
                  src="/icons/selected.svg" height="25">
           </div>
@@ -79,5 +82,8 @@ export default {
   button {
     margin: 7px;
   }
+}
+.imported {
+  font-weight: 600;
 }
 </style>
