@@ -38,11 +38,22 @@ export class Auth {
     this._guard = new CryptoGuard(password);
     this.isReady = true;
 
+    let hours;
+    const storage = new BrowserStorage();
+    let stateData = await storage.get(fields.STATIC);
+    stateData = stateData[fields.STATIC];
+
+    if (!stateData) {
+      hours = api.TIME_BEFORE_LOCK; 
+    } else {
+      hours = stateData.lockTime || api.TIME_BEFORE_LOCK;
+    }
+
     try {
       const decryptSeed = this._guard.decrypt(this.encryptSeed);
       const decryptImported = this._guard.decryptJson(this.encryptImported);
       
-      this._endSession = new Date().addHours(api.TIME_BEFORE_LOCK);
+      this._endSession = new Date().addHours(hours);
       this.isEnable = true;
       return { decryptSeed, decryptImported };
     } catch(err) {
