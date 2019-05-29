@@ -41,6 +41,10 @@ export class SecureStream {
       case MTypesSecure.PAY_OBJECT_INIT:
         this.onSyncAll();
         break;
+      
+      case MTypesSecure.CONNECT:
+        new Message(msg).send();
+        break;
 
       case MTypesZilPay.CALL_SIGN_TX:
         new Message(msg).send();

@@ -269,6 +269,18 @@ class ZilPay {
     return tx;
   }
 
+  connect() {
+    const type = MTypesSecure.CONNECT;
+    const recipient = MTypesSecure.CONTENT;
+    const payload = {
+      title: window.document.title,
+      icon: getFavicon(),
+      domain: window.document.domain
+    };
+  
+    new SecureMessage({ type, payload }).send(stream, recipient);
+  }
+
 }
 
 

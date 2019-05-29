@@ -1,5 +1,5 @@
 import { LocalStream } from 'extension-streams'
-import { MTypesInternal, MTypesZilPay, MTypesAuth } from '../../lib/messages/messageTypes'
+import { MTypesInternal, MTypesZilPay, MTypesAuth, MTypesSecure } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
 import {
   WalletHandler,
@@ -125,6 +125,10 @@ export class Background {
       
       case MTypesZilPay.INIT_DATA:
         ZilliqaHandler.initZilPay(sendResponse);
+        break;
+
+      case MTypesSecure.CONNECT:
+        new AccountHandler(message.payload).connectToDapp(sendResponse);
         break;
 
       case MTypesZilPay.CALL_SIGN_TX:

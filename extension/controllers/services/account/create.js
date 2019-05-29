@@ -110,4 +110,9 @@ export class AccountControl {
     await this.walletUpdate(wallet);
   }
 
+  async addForConnectDapp(payload) {
+    const storage = new BrowserStorage();
+    await storage.set(new BuildObject(fields.CONNECT_DAPP, payload));
+  }
+
 }

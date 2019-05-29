@@ -41,7 +41,8 @@ export default {
       gasPrice: 1000, // in LI
       gasLimit: 1
     },
-    dappsList: []
+    dappsList: [],
+    connect: {}
   },
   mutations: {
     mutateLockTime(state, newTime) {
@@ -62,6 +63,18 @@ export default {
     },
     mutateAddressFormat(state, newAddressFormat) {
       state.addressFormat = newAddressFormat;
+      updateStatic(state, true);
+    },
+    mutateConnect(state, connect) {
+      state.connect = connect;
+    },
+    mutateDappsList(state, newDapp) {
+      for (let index = 0; index < state.dappsList.length; index++) {
+        if (state.dappsList[index].domain == newDapp.domain) {
+          return null;
+        }
+      }
+      state.dappsList.push(newDapp);
       updateStatic(state, true);
     },
     mutateNetwork(state, newNetwork) {

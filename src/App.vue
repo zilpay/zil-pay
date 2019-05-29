@@ -22,7 +22,8 @@ export default {
     ]),
     ...mapMutations('Static', [
       'mutateNetwork',
-      'mutateNetworkConfig'
+      'mutateNetworkConfig',
+      'mutateConnect'
     ]),
     ...mapMutations('Transactions', [
       'mutateTransactions',
@@ -65,6 +66,7 @@ export default {
       this.mutateWallet(state.wallet);
       this.mutateTransactions(state.transactions);
       this.mutateConfirmationTx(state.confirm);
+      this.mutateConnect(state.connect || {});
     },
     routePush(state) {
       if (!state.isReady) {
@@ -73,6 +75,8 @@ export default {
         this.$router.push({ name: 'Lock' });
       } else if (state.data.confirm && state.data.confirm.length > 0) {
         this.$router.push({ name: 'Popup' });
+      } else if (state.data.connect && Object.keys(state.data.connect).length > 0) {
+        this.$router.push({ name: 'Connect' });
       } else {
         this.$router.push({ name: 'Home' });
       }

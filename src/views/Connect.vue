@@ -2,9 +2,9 @@
   <div>
     <main class="is-mini">
       <div class="dapp text-center">
-        <img src="https://kovan.dragoneth.com/favicon.ico">
-        <div class="title">DragonETH</div>
-        <label>kovan.dragoneth.com</label>
+        <img :src="connect.icon">
+        <div class="title">{{connect.title}}</div>
+        <label>{{connect.domain}}</label>
       </div>
 
       <p class="text-center">This site is requesting access
@@ -12,8 +12,8 @@
       </p>
 
       <div class="btns-access">
-        <button class="btn-outline">Cancel</button>
-        <button>connect</button>
+        <button class="btn-outline" @click="reject">Cancel</button>
+        <button @click="confirm">connect</button>
       </div>
       
     </main>
@@ -21,8 +21,38 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
+import { BrowserStorage, BuildObject } from '../../lib/storage'
+import fields from '../../config/fields'
+
+
+async function removeConnection() {
+  const storage = new BrowserStorage();
+  storage.set(new BuildObject(fields.CONNECT_DAPP, {}));
+}
+
 export default {
-  name: 'Connect'
+  name: 'Connect',
+  computed: {
+    ...mapState('Static', [
+      'connect'
+    ])
+  },
+  methods: {
+    ...mapMutations('Static', [
+      'mutateDappsList'
+    ]),
+
+    async reject() {
+      await removeConnection();
+      window.window.close();
+    },
+    async confirm() {
+      this.mutateDappsList(this.connect);
+      await removeConnection();
+      window.window.close();
+    }
+  }
 }
 </script>
 

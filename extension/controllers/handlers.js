@@ -78,7 +78,8 @@ export class WalletHandler {
       fields.WALLET,
       fields.SELECTED_NET,
       fields.TRANSACTIONS,
-      fields.CONFIRM_TX
+      fields.CONFIRM_TX,
+      fields.CONNECT_DAPP
     ]);
 
     try {
@@ -245,6 +246,16 @@ export class AccountHandler {
       wallet.identities[wallet.selectedAddress].balance = result;
       await accountControl.walletUpdate(wallet);
       sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
+  async connectToDapp(sendResponse) {
+    try {
+      await accountControl.addForConnectDapp(this.payload);
+      new PromptService().open();
+      sendResponse({ resolve: true });
     } catch(err) {
       sendResponse({ reject: err.message });
     }
