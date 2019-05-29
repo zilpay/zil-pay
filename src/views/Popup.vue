@@ -36,6 +36,8 @@
           </div>
         </div>
 
+        <small class="text-danger">{{isMaxAmount}}</small>
+
         <div class="text-primary text-right advance"
              @click="isAdvance = !isAdvance">
           <div class="text-left">fee: {{fee}}</div>
@@ -64,6 +66,7 @@
 </template>
 
 <script>
+import { BN } from '@zilliqa-js/util'
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import GasFee from '../mixins/gas-fee'
 import ExplorerMixin from '../mixins/explorer'
@@ -73,6 +76,7 @@ import StateUpdater from '../mixins/status-updater'
 import toConversion from '../filters/to-conversion'
 import fromZil from '../filters/from-zil'
 import toZIL from '../filters/to-zil'
+import { ERRORCODE } from '../../lib/errors/code'
 
 
 export default {
@@ -104,7 +108,25 @@ export default {
     ]),
     ...mapGetters('Transactions', [
       'CONFIRM_TX'
-    ])
+    ]),
+
+    isMaxAmount() {
+      try {
+        const amountBN = new BN(this.CONFIRM_TX.amount);
+        const balanceBN = new BN(this.account.balance);
+        const feeBN = new BN(toZIL(this.fee));
+        const txAmountBN = feeBN.add(amountBN);
+        const isInsufficientFunds = balanceBN.lt(txAmountBN);
+
+        if (isInsufficientFunds) {
+          return ERRORCODE[1];
+        }
+      } catch(err) {
+        return ERRORCODE[3];
+      }
+
+      return null;
+    }
   },
   methods: {
     ...mapMutations(['spiner']),
