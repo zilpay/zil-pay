@@ -61,7 +61,9 @@ export default {
         amount,
         code,
         data,
-        domain
+        domain,
+        title,
+        icon
       } = txs[length - 1];
       if (code && data) {
         type = 'Contract creation.';
@@ -77,7 +79,9 @@ export default {
         amount,
         type,
         method,
-        domain
+        domain,
+        title,
+        icon
       };
     }
 

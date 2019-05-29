@@ -14,7 +14,7 @@
     </div>    
     <main class="text-center popup">
 
-      <img src="https://zilpay.xyz/img/favicon.ico">
+      <img :src="CONFIRM_TX.icon || '/favicon.ico'">
 
       <h5>Transaction 1</h5>
 
@@ -32,7 +32,7 @@
               <span class="text-primary">{{currency}}</span>
             </span>
             <br>
-            DApp: <span class="text-black">Roll game</span>
+            DApp: <span class="text-black">{{CONFIRM_TX.title || 'ZilPay'}}</span>
           </div>
         </div>
 
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { BN } from '@zilliqa-js/util'
+import { BN, units } from '@zilliqa-js/util'
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import GasFee from '../mixins/gas-fee'
 import ExplorerMixin from '../mixins/explorer'
@@ -143,7 +143,7 @@ export default {
       this.spiner();
       try {
         await this.confirmTx({
-          gasPrice: this.gasPrice,
+          gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
           gasLimit: this.gasLimit
         });
       } catch(err) {
@@ -161,7 +161,10 @@ export default {
   },
   mounted() {
     this.upadteAllState();
-    this.gasPrice = this.CONFIRM_TX.gasPrice;
+    this.gasPrice = units.fromQa(
+      new BN(this.CONFIRM_TX.gasPrice),
+      units.Units.Li
+    ).toString();
     this.gasLimit = this.CONFIRM_TX.gasLimit;
   }
 }

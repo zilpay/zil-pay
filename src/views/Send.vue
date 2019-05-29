@@ -74,7 +74,7 @@
 <script>
 import { MTypesZilPay } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
-import { BN } from '@zilliqa-js/util'
+import { BN, units } from '@zilliqa-js/util'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import { validation } from '@zilliqa-js/util'
 import GasFee from '../mixins/gas-fee'
@@ -175,7 +175,7 @@ export default {
       let data = {
         toAddr: this.to,
         amount: toZIL(this.amount),
-        gasPrice: this.gasPrice,
+        gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
         gasLimit: this.gasLimit,
         code: '',
         data: ''

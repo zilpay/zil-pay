@@ -71,7 +71,7 @@ export class ZilliqaControl extends Zilliqa {
     }
 
     amount = new BN(amount);
-    gasPrice = units.toQa(gasPrice, units.Units.Li);
+    gasPrice = new BN(gasPrice);
     gasLimit = Long.fromNumber(gasLimit);
 
     nonce++;

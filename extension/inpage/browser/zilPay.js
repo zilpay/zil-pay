@@ -19,6 +19,19 @@ import { validation } from '@zilliqa-js/util'
 import zilConf from '../../../config/zil'
 
 
+function getFavicon(){
+  let favicon = undefined;
+  let nodeList = document.getElementsByTagName('link');
+  for (let i = 0; i < nodeList.length; i++)
+  {
+      if((nodeList[i].getAttribute('rel') == 'icon') || (nodeList[i].getAttribute('rel') == 'shortcut icon'))
+      {
+          favicon = nodeList[i].getAttribute('href');
+      }
+  }
+  return favicon;        
+}
+
 // create event for listing changer address. //
 var onAddressListing = window.document.createEvent('Event');
 var stream = new WeakMap(); // Setup background connection.
@@ -82,7 +95,11 @@ function confirm(tx) {
   const type = MTypesZilPay.CALL_SIGN_TX;
   const recipient = MTypesSecure.CONTENT;
   let { payload } = tx;
+
   payload.uuid = uuidv4(); // Each transaction will assigning random uuid.
+  payload.title = window.document.title;
+  payload.icon = getFavicon();
+
   new SecureMessage({ type, payload }).send(stream, recipient);
 
   return new Promise((resolve, reject) => {
