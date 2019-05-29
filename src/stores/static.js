@@ -15,7 +15,8 @@ async function updateStatic(object, isOverwrite=false) {
       currency: object.currency,
       addressFormat: object.addressFormat,
       defaultGas: object.defaultGas,
-      lockTime: object.lockTime
+      lockTime: object.lockTime,
+      dappsList: object.dappsList
     }));
     return null;
   }
@@ -39,7 +40,8 @@ export default {
     defaultGas: {
       gasPrice: 1000, // in LI
       gasLimit: 1
-    }
+    },
+    dappsList: []
   },
   mutations: {
     mutateLockTime(state, newTime) {

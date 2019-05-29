@@ -9,7 +9,11 @@ import { Blockchain } from '@zilliqa-js/blockchain'
 import { TransactionFactory } from '@zilliqa-js/account'
 import { Contracts } from '@zilliqa-js/contract';
 import { HTTPProvider } from '@zilliqa-js/core';
-import { toChecksumAddress } from '@zilliqa-js/crypto';
+import {
+  decodeBase58, encodeBase58,
+  fromBech32Address, toBech32Address,
+  isValidChecksumAddress, toChecksumAddress
+} from '@zilliqa-js/crypto';
 import * as zilUtils from '@zilliqa-js/util'
 import { validation } from '@zilliqa-js/util'
 import zilConf from '../../../config/zil'
@@ -178,7 +182,12 @@ class Zilliqa {
     this.blockchain = new Blockchain(this.provider, this.wallet);
     this.contracts = new Contracts(this.provider, this.wallet);
     this.transactions = new TransactionFactory(this.provider, this.wallet);
-    this.utils = Object.assign(zilUtils, { toChecksumAddress });
+    this.utils = zilUtils;
+    this.crypto = {
+      decodeBase58, encodeBase58,
+      fromBech32Address, toBech32Address,
+      isValidChecksumAddress, toChecksumAddress
+    }
   }
 }
 
@@ -218,8 +227,10 @@ class ZilPay {
       throw new Error('input param is not address type');
     }
     this.defaultAccount = {
-      address: account.address
-    }
+      base16: toChecksumAddress(account.address),
+      base58: encodeBase58(account.address),
+      bech32: toBech32Address(account.address)
+    };
     dispatchEvent(onAddressListing);
   }
 

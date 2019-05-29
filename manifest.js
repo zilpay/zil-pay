@@ -19,13 +19,11 @@ const manifest = {
     "managed_schema": "schema.json"
   },
   "permissions": [
-    "clipboardWrite",
     "storage",
-    "notifications",
-    "activeTab",
-    "webRequest",
-    "tabs",
-    "<all_urls>"
+    "clipboardWrite",
+    "https://api.coinmarketcap.com/v1/ticker/*",
+    "https://api.zilliqa.com/",
+    "https://dev-api.zilliqa.com/"
   ],
   "content_scripts": [
     {
@@ -52,8 +50,7 @@ const manifest = {
     "scripts": [
         "background.js"
     ]
-  },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  }
 }
 
 if (process.env.PLATFORM == 'firefox') {
