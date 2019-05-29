@@ -88,6 +88,21 @@ export default {
         throw new Error(status.reject);
       }
     },
+    async importByPrivateKey({ state }, privKey) {
+      const result = await new Message({
+        type: MTypesAuth.IMPORT_PRIV_KEY,
+        payload: { privKey }
+      }).send();
+    
+      if (result.resolve) {
+        state.wallet = result.resolve;
+        return result.resolve;
+      } else if (result.reject) {
+        throw new Error(result.reject);
+      }
+    
+      return null;
+    },
     logOut({ commit }) {
       Message.signal(MTypesAuth.LOG_OUT).send();
       commit('mutateIsEnable', false);

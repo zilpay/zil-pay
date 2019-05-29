@@ -15,8 +15,14 @@
 
       <div v-if="type == 'key'" class="by-key">
         <label>Pass your private key.</label>
-        <textarea class="private-key" cols="30"></textarea>
-        <button>import account</button>
+        <textarea class="private-key"
+                  cols="30"
+                  v-model="privKey"
+                  @input="privKeyErrMsg = null"></textarea>
+        <small class="text-danger">
+          {{privKeyErrMsg}}
+        </small>
+        <button @click="importThis">import account</button>
       </div>
 
       <div v-if="type == 'hardware'" class="by-hardware text-center">
@@ -43,6 +49,8 @@
 </template>
 
 <script>
+import { mapActions, mapMutations } from 'vuex'
+
 const BackBar = () => import('../components/BackBar');
 
 
@@ -52,9 +60,29 @@ export default {
   data() {
     return {
       type: null,
+      hardWareType: null,
 
-      hardWareType: null
+      privKey: null, privKeyErrMsg: null,
     };
+  },
+  methods: {
+    ...mapMutations(['spiner']),
+    ...mapActions('Wallet', [
+      'importByPrivateKey'
+    ]),
+
+    async importThis() {
+      this.spiner();
+      try {
+        await this.importByPrivateKey(this.privKey);
+      } catch(err) {
+        this.privKeyErrMsg = err.message;
+      }
+      this.spiner();
+      if (!this.privKeyErrMsg) {
+        this.$router.push({ name: 'Accounts' });
+      }
+    }
   }
 }
 </script>

@@ -133,12 +133,14 @@ export default {
 
     popupClouse() {
       if (!this.confirmationTx || this.confirmationTx.length < 1) {
-        // window.window.close();
+        window.window.close();
       }      
     }
   },
   mounted() {
     this.upadteAllState();
+    this.gasPrice = this.CONFIRM_TX.gasPrice;
+    this.gasLimit = this.CONFIRM_TX.gasLimit;
   }
 }
 </script>
