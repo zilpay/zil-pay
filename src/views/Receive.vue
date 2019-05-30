@@ -12,7 +12,7 @@
         <br>
         <span class="full-address">{{account.address | toAddress(addressFormat, false)}}</span>
         <br>
-        <button @click="copy">Copy address</button>
+        <button @click="copy(account.address)">Copy address</button>
       </div>
 
       <hr>

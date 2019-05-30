@@ -36,6 +36,10 @@ export class NonSecureStream {
       case MTypesTabs.TX_RESULT:
         toSecureMsg = MTypesTabs.TX_RESULT;
         break;
+      
+      case MTypesTabs.CONNECT_TO_DAPP:
+        toSecureMsg = MTypesTabs.CONNECT_TO_DAPP;
+        break;
 
       case MTypesTabs.LOCK_STAUS:
         toSecureMsg = MTypesSecure.STATUS_UPDATE;

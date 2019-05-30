@@ -36,6 +36,8 @@ export class SecureStream {
       return null;
     }
 
+    msg.domain = window.document.domain;
+
     switch (msg.type) {
 
       case MTypesSecure.PAY_OBJECT_INIT:

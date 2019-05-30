@@ -1,5 +1,11 @@
 import Jazzicon from 'jazzicon'
-import Utils from '../../lib/utils'
+
+
+function jsNumberForAddress(address) {
+  const addr = address.slice(2, 10);
+  const seed = parseInt(addr, 16);
+  return seed;
+}
 
 export default {
   methods: {
@@ -9,7 +15,7 @@ export default {
       }
 
       let ctx = window.document.querySelector('#' + id);
-      let el = Jazzicon(45, Utils.jsNumberForAddress(address));
+      let el = Jazzicon(45, jsNumberForAddress(address));
     
       try {
         if (ctx && ctx.children && ctx.children.length > 0) {

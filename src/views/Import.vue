@@ -27,6 +27,7 @@
 
       <div v-if="type == 'hardware'" class="by-hardware text-center">
         <h5>Connect a hardware wallet</h5>
+        <span>{{appVersion}}</span>
         <label>Select a hardware wallet to use with ZilPay</label>
 
         <div class="type-select">

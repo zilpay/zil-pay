@@ -85,7 +85,7 @@ export default new Router({
     {
       path: '/accounts/import',
       name: 'Import',
-      beforeEnter: guard,
+      // beforeEnter: guard,
       component: () => import('./views/Import')
     },
     {

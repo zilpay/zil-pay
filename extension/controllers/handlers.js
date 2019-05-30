@@ -221,7 +221,7 @@ export class AccountHandler {
     const type = MTypesTabs.ADDRESS_CHANGED;
 
     await accountControl.walletUpdate(wallet);
-
+    
     new TabsMessage({
       type,
       payload: account
@@ -264,25 +264,26 @@ export class AccountHandler {
 
 export class ZilliqaHandler {
 
-  static async initZilPay(sendResponse) {
+  static async initZilPay(sendResponse, domain) {
     const storage = new BrowserStorage();
     const provider = networkControl.provider;
+    const isConnect = await accountControl.auth.isConnect(domain);
 
     await networkControl.netwrokSync();
     let wallet = await storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
 
-    const account = wallet.identities[
+    let account = wallet.identities[
       wallet.selectedAddress
     ];
+
+    if (!isConnect) {
+      account = null;
+    }
     
     const data = {
-      provider,
+      provider, account, isConnect,
       isEnable: accountControl.auth.isEnable,
-      account: {
-        address: account.address,
-        balance: account.balance
-      },
       net: networkControl.selected
     };
     sendResponse(data);
@@ -290,6 +291,32 @@ export class ZilliqaHandler {
 
   static async rmAllTransactionList(sendResponse) {
     await accountControl.zilliqa.rmAllTransactionList();
+    if (sendResponse && typeof sendResponse == 'function') {
+      sendResponse(true);
+    }
+  }
+
+  constructor(payload) {
+    this.payload = payload;
+  }
+
+  async connectionToDapp(sendResponse) {
+    let account = null;
+    const storage = new BrowserStorage();
+    const type = MTypesTabs.CONNECT_TO_DAPP;
+
+    if (this.payload.isConfirm) {
+      let wallet = await storage.get(fields.WALLET);
+      wallet = wallet[fields.WALLET];
+      account = wallet.identities[
+        wallet.selectedAddress
+      ];
+    }
+
+    const payload = Object.assign(this.payload, { account });
+
+    new TabsMessage({ type, payload }).send();
+
     if (sendResponse && typeof sendResponse == 'function') {
       sendResponse(true);
     }
@@ -501,53 +528,53 @@ export class TransactionHandler {
   }
 
   async _transactionListing(txHash) {
-    const zilliqaControl = new ZilliqaControl(
-      networkControl.provider
-    );
-    const net = `network=${networkControl.selected}`;
-    const timeInterval = 4000;
-    const countIntervl = 50;
-    const title = 'ZilPay Transactions';
-    let k = 0;
+    // const zilliqaControl = new ZilliqaControl(
+    //   networkControl.provider
+    // );
+    // const net = `network=${networkControl.selected}`;
+    // const timeInterval = 4000;
+    // const countIntervl = 50;
+    // const title = 'ZilPay Transactions';
+    // let k = 0;
 
-    const interval = setInterval(
-      async () => {
+    // const interval = setInterval(
+    //   async () => {
         
-        try {
-          await zilliqaControl
-          .blockchain
-          .getTransaction(txHash);
+    //     try {
+    //       await zilliqaControl
+    //       .blockchain
+    //       .getTransaction(txHash);
           
-          new NotificationsControl({
-            url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
-            title: title,
-            message: 'Transactions send to shard done.'
-          }).create();
+    //       new NotificationsControl({
+    //         url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
+    //         title: title,
+    //         message: 'Transactions send to shard done.'
+    //       }).create();
 
-          clearInterval(interval);
-          return null;
-        } catch(err) {
-          if (k > countIntervl) {
+    //       clearInterval(interval);
+    //       return null;
+    //     } catch(err) {
+    //       if (k > countIntervl) {
 
-            new NotificationsControl({
-              url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
-              title: title,
-              message: 'Transactions not completed'
-            }).create();
+    //         new NotificationsControl({
+    //           url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
+    //           title: title,
+    //           message: 'Transactions not completed'
+    //         }).create();
 
-            clearInterval(interval);
-            return null;
-          }
-        }
+    //         clearInterval(interval);
+    //         return null;
+    //       }
+    //     }
 
-        if (k > countIntervl) {
-          clearInterval(interval);
-        }
+    //     if (k > countIntervl) {
+    //       clearInterval(interval);
+    //     }
 
-        k++;
-      },
-      timeInterval
-    );
+    //     k++;
+    //   },
+    //   timeInterval
+    // );
   }
 
 }

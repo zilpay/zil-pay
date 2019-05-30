@@ -37,7 +37,7 @@
             <div>{{acc.address | toAddress(addressFormat, false)}}</div>
             <img src="/icons/copy.svg"
                  height="17" v-tooltip="'Copy'"
-                 @click="copy">
+                 @click="copy(acc.address)">
           </div>
         </div>
       </div>

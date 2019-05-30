@@ -73,7 +73,6 @@ export default {
   justify-self: center;
 }
 .input-group > button {
-  margin-top: 30px;
   width: 100%;
 }
 .restore {

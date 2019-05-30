@@ -1,4 +1,4 @@
-import { MTypesInternal } from '../../lib/messages/messageTypes'
+import { MTypesInternal, MTypesZilPay } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
 import networkConfig from '../../config/zil.json'
 import { BrowserStorage, BuildObject } from '../../lib/storage'
@@ -116,6 +116,15 @@ export default {
     async clearDappList({ state }) {
       state.dappsList = [];
       await updateStatic(state, true);
+    },
+    async confirmDapp({ state }, isConfirm) {
+      await new Message({
+        type: MTypesZilPay.CONFIRM_DAPP,
+        payload: {
+          isConfirm,
+          domain: state.connect.domain
+        }
+      }).send();
     }
   }
 }

@@ -12,6 +12,7 @@ main, .row {
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 10px;
   justify-items: center;
+  width: 330px;
 	
 	border: 1px solid $color-quaternary;
 	border-radius: 4px;

@@ -103,6 +103,10 @@ export class Background {
         TransactionHandler.rmTransactionsConfirm(sendResponse);
         break;
 
+      case MTypesZilPay.CONFIRM_DAPP:
+        new ZilliqaHandler(message.payload).connectionToDapp(sendResponse);
+        break;
+
       case MTypesZilPay.CONFIRM_TX:
         new TransactionHandler(message.payload).buildTransaction(sendResponse);
         break;
@@ -124,7 +128,7 @@ export class Background {
     switch (message.type) {
       
       case MTypesZilPay.INIT_DATA:
-        ZilliqaHandler.initZilPay(sendResponse);
+        ZilliqaHandler.initZilPay(sendResponse, message.domain);
         break;
 
       case MTypesSecure.CONNECT:

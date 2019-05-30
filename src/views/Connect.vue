@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import { BrowserStorage, BuildObject } from '../../lib/storage'
 import fields from '../../config/fields'
 
@@ -42,14 +42,19 @@ export default {
     ...mapMutations('Static', [
       'mutateDappsList'
     ]),
+    ...mapActions('Static', [
+      'confirmDapp'
+    ]),
 
     async reject() {
       await removeConnection();
+      await this.confirmDapp(false);
       window.window.close();
     },
     async confirm() {
       this.mutateDappsList(this.connect);
       await removeConnection();
+      await this.confirmDapp(true);
       window.window.close();
     }
   }

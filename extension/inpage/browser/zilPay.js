@@ -29,6 +29,14 @@ function getFavicon(){
           favicon = nodeList[i].getAttribute('href');
       }
   }
+
+  if (!favicon.includes(window.document.domain)) {
+    if (favicon[0] !== '/') {
+      favicon = window.location.origin + '/' + favicon;
+    } else {
+      favicon = window.location.origin + favicon;
+    }
+  }
   return favicon;        
 }
 
@@ -68,6 +76,11 @@ function listener(msg) {
       break;
     
     case MTypesTabs.TX_RESULT:
+      subjectStream.next(msg.payload);
+      break;
+    
+    case MTypesTabs.CONNECT_TO_DAPP:
+      Listen.onConnection(msg);
       subjectStream.next(msg.payload);
       break;
 
@@ -168,6 +181,7 @@ class Listen {
     window.zilPay.setProvider(msg.payload.provider);
     window.zilPay.setDefaultAccount(msg.payload.account);
     window.zilPay.net = msg.payload.net;
+    window.zilPay.isConnect = msg.payload.isConnect;
 
     ACCOUNT = msg.payload.account;
     PROVIDER = msg.payload.provider;
@@ -182,13 +196,27 @@ class Listen {
 
   static onChangeAccount(msg) {
     // Any change account.
-    window.zilPay.setDefaultAccount(msg.payload);
+
+    ACCOUNT = msg.payload;
+    window.zilPay.setDefaultAccount(ACCOUNT);
   }
 
   static onChangeStatus(msg) {
     // change status wallet.
     window.zilPay.isEnable = msg.payload.isEnable;
     window.zilPay.setDefaultAccount(ACCOUNT);
+  }
+
+  static onConnection(msg) {
+    if (!msg.payload.domain.includes(window.document.domain)) {
+      return null;
+    }
+
+    window.zilPay.isConnect = msg.payload.isConfirm;
+    if (msg.payload.account) {
+      ACCOUNT = msg.payload.account;
+      window.zilPay.setDefaultAccount(ACCOUNT);
+    }
   }
 }
 
@@ -219,6 +247,7 @@ class ZilPay {
     this.defaultAccount = null;
     this.provider = provider;
     this.net = net;
+    this.isConnect = false;
 
     onAddressListing.initEvent('addressListing');
   }
@@ -234,7 +263,7 @@ class ZilPay {
   }
 
   setDefaultAccount(account) {
-    if (!this.isEnable || !account) {
+    if (!this.isEnable || !account || !this.isConnect) {
       return null;
     }
 
@@ -259,7 +288,7 @@ class ZilPay {
   }
 
   sign(tx) {
-    if (!window.zilPay.isEnable) {
+    if (!this.isEnable || !this.isConnect) {
       throw new Error('ZilPay is disabled.');
     }
     tx.confirm = () => confirm(tx);
@@ -279,6 +308,24 @@ class ZilPay {
     };
   
     new SecureMessage({ type, payload }).send(stream, recipient);
+
+    return new Promise((resolve, reject) => {
+      // Waiting response from background.js //
+      const result = subjectStream.subscribe(resultConfirm => {
+        if (resultConfirm.isConfirm) {
+          resolve(resultConfirm.isConfirm);
+          result.unsubscribe();
+        } else if (!resultConfirm.isConfirm) {
+          reject('User denied access!');
+          result.unsubscribe();
+        }
+        // Close stream by time.
+        setTimeout(() => {
+          result.unsubscribe();
+          reject(new Error('waiting time may have problems ZilPay'));
+        }, 15000);
+      });
+    });
   }
 
 }

@@ -24,6 +24,10 @@ or
 zilPay.observableAccount().subscribe(account => console.log(account));
 ```
 
+```javaScript
+zilPay.connect(); // to get a permission!
+```
+
 
 ```javaScript
 if (zilPay.isEnable) {

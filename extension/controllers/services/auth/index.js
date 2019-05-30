@@ -79,6 +79,17 @@ export class Auth {
     return { decryptSeed, decryptImported };
   }
 
+  async isConnect(domain) {
+    const storage = new BrowserStorage();
+    let dappList = await storage.get(fields.STATIC);
+
+    dappList = dappList[fields.STATIC]['dappsList'] || [];
+
+    return dappList.filter(
+      dapp => dapp.domain.includes(domain)
+    ).length > 0;
+  }
+
   async vaultSync() {
     const data = await this._storage.get(
       [fields.VAULT, fields.VAULT_IMPORTED]

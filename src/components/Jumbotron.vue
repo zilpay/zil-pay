@@ -19,7 +19,6 @@
             <li><a :href="exploreAddress(account.address)" target="_blanck">Account details</a></li>
             <li @click="$router.push({name: 'Networks'})">Change network</li>
             <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export PrivateKey</li>
-            <li>Delete account</li>
             <li @click="logOut">Log out</li>
           </ul>
         </div>
@@ -28,7 +27,7 @@
       <div class="text-center text-white">
         {{account.address | toAddress(addressFormat)}}
         <img src="/icons/copy.svg" v-tooltip="'Copy'" class="pointer"
-             height="30" @click="copy">
+             height="30" @click="copy(account.address)">
       </div>
 
       <div class="bottom text-center text-white">
