@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'LockScreen',
@@ -34,6 +34,14 @@ export default {
       wrong: false
     };
   },
+  computed: {
+    ...mapState('Transactions', [
+      'confirmationTx'
+    ]),
+    ...mapState('Static', [
+      'connect'
+    ])
+  },
   methods: {
     ...mapActions('Wallet', [
       'unlockWallet'
@@ -42,7 +50,13 @@ export default {
     async unlock() {
       try {
         await this.unlockWallet(this.password);
-        this.$router.push({ name: 'Home' });
+        if (this.confirmationTx.length > 0) {
+          this.$router.push({ name: 'Popup' });
+        } else if (Object.keys(this.connect).length > 0) {
+          this.$router.push({ name: 'Connect' });
+        } else {
+          this.$router.push({ name: 'Home' });
+        }
       } catch(err) {
         this.wrong = true;
       }

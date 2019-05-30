@@ -31,8 +31,7 @@ export default {
     ]),
 
     ...mapActions('Wallet', [
-      'initPopup',
-      'randomSeed'
+      'initPopup'
     ]),
 
     async init() {

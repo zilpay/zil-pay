@@ -288,7 +288,7 @@ class ZilPay {
   }
 
   sign(tx) {
-    if (!this.isEnable || !this.isConnect) {
+    if (!this.isEnable) {
       throw new Error('ZilPay is disabled.');
     }
     tx.confirm = () => confirm(tx);
