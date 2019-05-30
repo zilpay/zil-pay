@@ -68,6 +68,7 @@ export default new Vuex.Store({
         return null;
       }
       extension.tabs.create({ url: apiConfig.PROMT_PAGE });
+      window.window.close();
     }
   },
   getters: {

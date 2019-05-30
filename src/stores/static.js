@@ -11,6 +11,7 @@ async function updateStatic(object, isOverwrite=false) {
   stateData = stateData[fields.STATIC];
 
   if (!stateData || Object.keys(stateData).length < 3 || isOverwrite) {
+    console.log(object.dappsList);
     await storage.set(new BuildObject(fields.STATIC, {
       currency: object.currency,
       addressFormat: object.addressFormat,

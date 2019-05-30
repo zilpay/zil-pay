@@ -35,6 +35,10 @@
     "wallet": {
       "title": "active accounts",
       "type": "object"
+    },
+    "connect": {
+      "title": "data for connection to dApps",
+      "type": "object"
     }
   }
 }

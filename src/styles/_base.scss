@@ -19,8 +19,10 @@ html {
 }
 body, html {
 	min-height: 600px;
+	overflow-x: hidden;
 	min-width: $nav-min-width;
-	background-color: #f7f7f7;  
+	background-color: #f7f7f7;
+	height: 100%;  
 }
 
 // Default body styles
@@ -64,6 +66,7 @@ a {
 textarea, .seed {
 	margin: 0px; height: 106px; width: 318px;
 	font-size: 16px;
+	color: $color-primary-100;
 }
 small {
   font-size: 13px;
@@ -85,4 +88,9 @@ small {
 	height: auto;
 	justify-self: center;
 	font-weight: 600;
+}
+@media screen and (max-width: 360px) {
+  body, html {
+    max-width: 360px;
+  }
 }

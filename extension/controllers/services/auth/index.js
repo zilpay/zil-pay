@@ -83,11 +83,15 @@ export class Auth {
     const storage = new BrowserStorage();
     let dappList = await storage.get(fields.STATIC);
 
-    dappList = dappList[fields.STATIC]['dappsList'] || [];
+    try {
+      dappList = dappList[fields.STATIC]['dappsList'] || [];
 
-    return dappList.filter(
-      dapp => dapp.domain.includes(domain)
-    ).length > 0;
+      return dappList.filter(
+        dapp => dapp && dapp.domain.includes(domain)
+      ).length > 0;
+    } catch(err) {
+      return false;
+    }
   }
 
   async vaultSync() {

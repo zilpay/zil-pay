@@ -6,7 +6,8 @@ export default {
       gasLimit: 1,
       gasPrice: 1000,
 
-      gasMutate: false
+      gasMutate: false,
+      factor: Math.pow(10, -6)
     };
   },
   computed: {
@@ -15,7 +16,7 @@ export default {
     ]),
 
     fee() {
-      const amount = this.gasLimit * this.gasPrice * Math.pow(10, -6);
+      const amount = this.gasLimit * this.gasPrice * this.factor;
       return amount.toFixed(3);
     }
   },
@@ -32,18 +33,20 @@ export default {
   },
   watch: {
     gasLimit(newGasLimit) {
-      if (this.gasMutate) {
+      if (this.gasMutate && newGasLimit) {
         this.mutateGasLimit(newGasLimit);
       }
     },
-    gasPrice(newGasLimit) {
-      if (this.gasMutate) {
-        this.mutateGasPrice(newGasLimit);
+    gasPrice(gasPrice) {
+      if (this.gasMutate && gasPrice) {
+        this.mutateGasPrice(gasPrice);
       }
     }
   },
   mounted() {
-    this.gasLimit = this.defaultGas.gasLimit;
-    this.gasPrice = this.defaultGas.gasPrice;
+    if (this.defaultGas.gasLimit && this.defaultGas.gasPrice) {
+      this.gasLimit = this.defaultGas.gasLimit;
+      this.gasPrice = this.defaultGas.gasPrice;
+    }
   }
 }

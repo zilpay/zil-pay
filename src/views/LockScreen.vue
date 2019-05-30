@@ -50,9 +50,10 @@ export default {
     async unlock() {
       try {
         await this.unlockWallet(this.password);
-        if (this.confirmationTx.length > 0) {
+
+        if (this.confirmationTx && this.confirmationTx.length > 0) {
           this.$router.push({ name: 'Popup' });
-        } else if (Object.keys(this.connect).length > 0) {
+        } else if (this.connect && Object.keys(this.connect).length > 0) {
           this.$router.push({ name: 'Connect' });
         } else {
           this.$router.push({ name: 'Home' });
