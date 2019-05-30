@@ -1,128 +1,132 @@
 <template>
-  <div class="container">
-    <div class="row justify-content-center text-center">
-      <h5 class="mr-auto p-2 point text-warning"
-          @click="$router.go(-1)">&#60;BACK</h5>
-      <h5 class="col-lg-12 text-pink">
-        Account export
-      </h5>
+  <div>
+    <BackBar/>
 
-      <div v-if="text">
-        <textarea class="form-control bg-null"
-                  v-model="text"
-                  disabled>
-        </textarea>
-        <button v-btn="'info btn-lg m-2'"
-                @click="copy(text)">
-          copy
-        </button>
-        <button v-btn="'warning btn-lg m-2'"
-                @click="$router.push({name: 'home'})">
-          close
-        </button>
+    <main class="export is-mini">
+      <small class="warning-msg text-center">
+        DO NOT share this information with anyone!
+      </small>
+
+      <div class="header" v-show="textarea">
+        <label>{{label}}</label>
+        <br>
+        <textarea class="seed" cols="30" v-model="textarea"></textarea>
       </div>
 
-      <div v-if="!text" class="form-group pt-2">
-        <label for="pass">Enter password to continue</label>
-        <input type="password"
-               class="form-control bg-null text-pink"
-               id="pass"
-               autofocus
-               placeholder="Password"
-               v-model="password"
-               @input="wrongPassword = false">
-        <div class="error text-danger" v-if="wrongPassword">
-          Incorrect password
+      <div class="input-group" v-show="!textarea">
+         <div class="text-left">
+          <label>Password</label>
+          <input type="password" autofocus v-model="password">
+          <small v-show="wrongPassword"
+                 class="text-danger">
+            Wrong password.
+          </small>
         </div>
-
-        <button v-btn="'info btn-lg btn-block mt-4'"
-                :disabled="!password"
-                @click="onSubmit">
-          continue
-        </button>
+        <button @click="onExport">Export</button>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
-import copy from 'clipboard-copy'
-import btn from '../directives/btn'
-import { exportTypes } from '../lib/messages/messageTypes'
+import { MTypesAuth } from '../../lib/messages/messageTypes'
+import { Message } from '../../lib/messages/messageCall'
 
+const BackBar = () => import('../components/BackBar');
+
+
+async function exportSeed(password) {
+  const result = await new Message({
+    type: MTypesAuth.EXPORT_SEED,
+    payload: { password }
+  }).send();
+
+  if (result.resolve) {
+    return result.resolve;
+  } else if (result.reject) {
+    throw new Error(result.reject);
+  }
+
+  return null;
+}
+async function exportPrivKey(password) {
+  const result = await new Message({
+    type: MTypesAuth.EXPORT_PRIV_KEY,
+    payload: { password }
+  }).send();
+
+  if (result.resolve) {
+    return result.resolve;
+  } else if (result.reject) {
+    throw new Error(result.reject);
+  }
+
+  return null;
+}
 
 export default {
   name: 'Export',
-  directives: { btn },
+  components: { BackBar },
   data() {
     return {
-      text: null,
-      password: null,
-      wrongPassword: false
+      textarea: null,
+      password: null, wrongPassword: null
     };
   },
   computed: {
     type() {
-      const type = this.$router
-                       .history
-                       .current
-                       .params
-                       .type;
-      if (type == exportTypes.PRIVATE_KEY || type == exportTypes.SEED) {
-        return type;
-      } else {
-        return exportTypes.PRIVATE_KEY;
+      return this.$router.currentRoute.params.type;
+    },
+    label() {
+      if (this.type == 'key') {
+        return 'Your PrivateKey.';
       }
+      if (this.type == 'seed') {
+        return 'Your mnemonic word phrase.';
+      }
+      return null;
     }
   },
   methods: {
-    copy,
-    ...mapMutations(['spiner']),
-    ...mapActions('storage', [
-      'exportSeed',
-      'exportPrivKey'
-    ]),
-
-    async revealSeedWords() {
-      if (this.wrongPassword) {
-        return null;
-      }
-
-      try {
-        this.text = await this.exportSeed(this.password);
-      } catch(err) {
-        this.wrongPassword = true;
-      }
-    },
     async revealPrivateKey() {
       if (this.wrongPassword) {
         return null;
       }
-
       try {
-        this.text = await this.exportPrivKey(this.password);
+        this.textarea = await exportPrivKey(this.password);
       } catch(err) {
         this.wrongPassword = true;
       }
     },
-    async onSubmit() {
-      this.spiner();
-
-      if (this.type === exportTypes.SEED) {
-        await this.revealSeedWords();
-      } else if (this.type === exportTypes.PRIVATE_KEY) {
-        await this.revealPrivateKey();
+    async revealSeedWords() {
+      if (this.wrongPassword) {
+        return null;
       }
-
-      this.spiner();
+      try {
+        this.textarea = await exportSeed(this.password);
+      } catch(err) {
+        this.wrongPassword = true;
+      }
+    },
+    onExport() {
+      if (this.type == 'key') {
+        this.revealPrivateKey();
+      }
+      if (this.type == 'seed') {
+        this.revealSeedWords();
+      }
     }
-  },
-  mounted() { }
+  }
 }
 </script>
 
 <style lang="scss">
-// @import '../styles/colors';
+.export {
+  justify-items: center;
 
+  & > .input-group > button {
+    margin-top: 40px;
+    width: 100%;
+  }
+}
 </style>

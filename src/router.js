@@ -1,19 +1,20 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Storage from './stroe/storage'
+import Wallet from './stores/wallet'
 
-
-Vue.use(Router);
-
+Vue.use(Router)
 
 function guard(to, from, next) {
-  if (Storage.state.isReady && Storage.state.isEnable) {
+  if (Wallet.state.isReady && Wallet.state.isEnable) {
     next();
+  } else if (!Wallet.state.isReady) {
+    next('create');
+  } else if (Wallet.state.isReady && !Wallet.state.isEnable) {
+    next('lock');
   } else {
     next(false);
   }
 }
-
 
 export default new Router({
   mode: 'history',
@@ -21,55 +22,113 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'lock',
-      component: () => import('./views/Lock')
+      name: 'First',
+      component: () => import('./views/FirstStart')
     },
     {
       path: '/create',
-      name: 'create',
-      component: () => import('./views/Create')
+      name: 'Create',
+      component: () => import('./views/CreateAcc')
+    },
+    {
+      path: '/lock',
+      name: 'Lock',
+      component: () => import('./views/LockScreen')
     },
     {
       path: '/home',
-      name: 'home',
+      name: 'Home',
       beforeEnter: guard,
       component: () => import('./views/Home')
     },
     {
-      path: '/settings',
-      name: 'settings',
+      path: '/receive',
+      name: 'Receive',
       beforeEnter: guard,
-      component: () => import('./views/Settings')
+      component: () => import('./views/Receive')
     },
     {
       path: '/send',
-      name: 'send',
+      name: 'Send',
       beforeEnter: guard,
       component: () => import('./views/Send')
     },
     {
-      path: '/confirm',
-      name: 'confirmation',
+      path: '/accounts',
+      name: 'Accounts',
       beforeEnter: guard,
-      component: () => import('./views/Confirmation')
+      component: () => import('./views/Accounts')
     },
     {
       path: '/export/:type',
-      name: 'export',
+      name: 'Export',
       beforeEnter: guard,
       component: () => import('./views/Export')
     },
     {
-      path: '/import',
-      name: 'import',
+      path: '/dapps',
+      name: 'DAPP',
       beforeEnter: guard,
+      component: () => import('./views/Dapp')
+    },
+    {
+      path: '/popup',
+      name: 'Popup',
+      beforeEnter: guard,
+      component: () => import('./views/Popup')
+    },
+    {
+      path: '/restore',
+      name: 'Restore',
+      component: () => import('./views/Restore')
+    },
+    {
+      path: '/accounts/import',
+      name: 'Import',
+      // beforeEnter: guard,
       component: () => import('./views/Import')
     },
     {
-      path: '/net',
-      name: 'net',
+      path: '/connect',
+      name: 'Connect',
       beforeEnter: guard,
-      component: () => import('./views/NetworkSettings')
+      component: () => import('./views/Connect')
+    },
+    {
+      path: '/setting',
+      name: 'Setting',
+      beforeEnter: guard,
+      component: () => import('./views/Setting')
+    },
+    {
+      path: '/setting/general',
+      name: 'General',
+      beforeEnter: guard,
+      component: () => import('./views/General')
+    },
+    {
+      path: '/setting/networks',
+      name: 'Networks',
+      beforeEnter: guard,
+      component: () => import('./views/Networks')
+    },
+    {
+      path: '/setting/advanced',
+      name: 'Advanced',
+      beforeEnter: guard,
+      component: () => import('./views/Advanced')
+    },
+    {
+      path: '/setting/security',
+      name: 'Security',
+      beforeEnter: guard,
+      component: () => import('./views/Security')
+    },
+    {
+      path: '/setting/about',
+      name: 'About',
+      beforeEnter: guard,
+      component: () => import('./views/About')
     }
   ]
 })

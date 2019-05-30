@@ -1,70 +1,130 @@
 <template>
-  <div class="container">
-    <h5 class="mr-auto p-2 point text-warning"
-        @click="$router.go(-1)">&#60;BACK</h5>
-    <h3 class="col-lg-12 text-ightindigo">
-      PrivateKey
-    </h3>
+  <div>
+    <BackBar/>
 
-    <div class="row justify-content-center">
-      <textarea class="form-control bg-null"
-                v-model="text"
-                @input="errMsg = null">
-      </textarea>
-      <button v-btn="'info btn-lg m-2'"
-              @click="importThis">
-        import
-      </button>
-      <button v-btn="'warning btn-lg m-2'"
-              @click="$router.push({name: 'home'})">
-        close
-      </button>
-      <small class="form-text text-danger">{{errMsg}}</small>
+    <main class="is-mini">
+      <h5 class="text-center">
+        You can import account by private key or hardware wallet
+      </h5>
 
-      <button v-btn="'info btn-lg mt-5'" disabled>
-        hardware wallet ledger
-      </button>
-    </div>
+      <div class="option">
+        <button @click="type = 'key'">private key</button>
+        <button @click="type = 'hardware'">hardware</button>
+      </div>
+      
+
+      <div v-if="type == 'key'" class="by-key">
+        <label>Pass your private key.</label>
+        <textarea class="private-key"
+                  cols="30"
+                  v-model="privKey"
+                  @input="privKeyErrMsg = null"></textarea>
+        <small class="text-danger">
+          {{privKeyErrMsg}}
+        </small>
+        <button @click="importThis">import account</button>
+      </div>
+
+      <div v-if="type == 'hardware'" class="by-hardware text-center">
+        <h5>Connect a hardware wallet</h5>
+        <span>{{appVersion}}</span>
+        <label>Select a hardware wallet to use with ZilPay</label>
+
+        <div class="type-select">
+          <button class="form-border" @click="hardWareType = 'ledger'">
+            <img src="/icons/ledger-logo.svg" height="30">
+          </button>
+          <button class="form-border" @click="hardWareType = 'trezor'">
+            <img src="/icons/trezor-logo.svg" height="30">
+          </button>
+        </div>
+
+        <div class="coming-soon" v-if="hardWareType">
+          <h1>coming soon</h1>
+        </div>
+        <button v-if="hardWareType" disabled>continue</button>
+      </div>
+
+    </main>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import btn from '../directives/btn'
+
+const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'Import',
-  directives: { btn },
+  components: { BackBar },
   data() {
     return {
-      text: null,
-      errMsg: null
+      type: null,
+      hardWareType: null,
+
+      privKey: null, privKeyErrMsg: null,
     };
   },
   methods: {
     ...mapMutations(['spiner']),
-    ...mapActions('storage', [
+    ...mapActions('Wallet', [
       'importByPrivateKey'
     ]),
 
     async importThis() {
       this.spiner();
       try {
-        await this.importByPrivateKey(this.text);
+        await this.importByPrivateKey(this.privKey);
       } catch(err) {
-        this.errMsg = err.message;
+        this.privKeyErrMsg = err.message;
       }
       this.spiner();
-
-      if (!this.errMsg) {
-        this.$router.push({ name: 'home' });
+      if (!this.privKeyErrMsg) {
+        this.$router.push({ name: 'Home' });
       }
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
+.option {
+  justify-self: center;
 
+  button {
+    margin: 10px;
+  }
+}
+.private-key {
+  margin: 0px; width: 304px; height: 164px;
+}
+.by-key {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+
+  button {
+    margin: 10px;
+  }
+}
+.type-select {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-gap: 10px;
+  justify-content: center;
+  justify-items: center;
+  
+  button {
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+    height: 60px;
+    background-color: transparent;
+
+    &:focus {
+      outline: -webkit-focus-ring-color auto 5px;
+    }
+  }
+}
 </style>

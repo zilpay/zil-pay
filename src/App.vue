@@ -1,143 +1,93 @@
 <template>
   <div id="app">
-    <NavBar/>
     <router-view/>
   </div>
 </template>
 
+
 <script>
 import { mapMutations, mapActions } from 'vuex'
 
-const NavBar = () => import('./components/UI/NavBar')
-
-
 export default {
   name: 'App',
-  components: { NavBar },
-  mounted() {
-    this.preStart();
-  },
   methods: {
-    ...mapMutations(['spiner']),
-    ...mapActions(['updateRate']),
-
-    ...mapMutations('storage', [
+    ...mapMutations([
+      'spiner',
+      'mutateIsConnect'
+    ]),
+    ...mapMutations('Wallet', [
       'mutateIsReady',
-      'isEnable',
-      'setNet',
-      'config',
-      'setWallet',
-      'transactions',
-      'confirmationTx',
-      'mutateIsConnected'
+      'mutateIsEnable',
+      'mutateWallet'
     ]),
-    ...mapActions('storage', [
-      'initPopup',
-      'jazzicon',
-      'netTest'
+    ...mapMutations('Static', [
+      'mutateNetwork',
+      'mutateNetworkConfig',
+      'mutateConnect'
+    ]),
+    ...mapMutations('Transactions', [
+      'mutateTransactions',
+      'mutateConfirmationTx'
     ]),
 
-    async preStart() {
-      let data;
+    ...mapActions('Wallet', [
+      'initPopup'
+    ]),
 
-      try {
-        data = await this.initPopup();
-      } catch(err) {
-        this.$router.push({ name: 'create' });
-        this.spiner();
-        return null;
-      }
-      this.updateRate();
+    async init() {
       this.spiner();
-
+      
+      let state;
+      const data = await this.initPopup();
+      
       if (data.reject) {
-        this.mutateIsReady(data.reject.isReady);
-        this.isEnable(data.reject.isEnable);
-        this.setNet(data.reject.selectednet);
-        this.config(data.reject.config);
-        this.mutateIsConnected(data.reject.networkStatus);
-
-        if (!data.reject.isEnable) {
-          this.$router.push({ name: 'lock' });
-        }
-        if (!data.reject.isReady) {
-          this.$router.push({ name: 'create' });
-        }
-
-        return null;
+        state = data.reject;
       } else {
-        this.mutateIsReady(data.resolve.isReady);
-        this.isEnable(data.resolve.isEnable);
-        this.setNet(data.resolve.data.selectednet);
-        this.config(data.resolve.data.config);
-        this.setWallet(data.resolve.data.wallet);
-        this.confirmationTx(data.resolve.data.confirm || []);
-        this.jazzicon('jazzicon');
-        this.mutateIsConnected(data.resolve.networkStatus);
-
-        if (data.resolve.data.transactions) {
-          this.transactions(data.resolve.data.transactions);
-        }
-
-        if (data.resolve.isEnable) {
-          if (data.resolve.data.confirm && data.resolve.data.confirm.length > 0) {
-            this.$router.push({ name: 'confirmation' });
-            return null;
-          } else if (window.data) {
-            this.$router.push({ name: 'confirmation' });
-            return null;
-          }
-
-          this.$router.push({ name: 'home' });
-          return null;
-        } else {
-          this.$router.push({ name: 'lock' });
-          return null;
-        }
+        state = data.resolve;
+        this.dataStateUpdate(state.data);
+      }
+      
+      this.commonStateUpdate(state);
+      this.routePush(state);
+    },
+    commonStateUpdate(state) {
+      this.mutateIsReady(state.isReady);
+      this.mutateIsEnable(state.isEnable);
+      this.mutateNetwork(state.selectednet || state.data.selectednet);
+      this.mutateNetworkConfig(state.config || state.data.config);
+      this.mutateIsConnect(state.networkStatus);
+    },
+    dataStateUpdate(state) {
+      if (!state) {
+        return null;
       }
 
+      this.mutateWallet(state.wallet);
+      this.mutateTransactions(state.transactions);
+      this.mutateConfirmationTx(state.confirm);
+      this.mutateConnect(state.connect || {});
+    },
+    routePush(state) {
+      if (!state.isReady) {
+        this.$router.push({ name: 'First' });
+      } else if (!state.isEnable) {
+        this.$router.push({ name: 'Lock' });
+      } else if (state.data.confirm && state.data.confirm.length > 0) {
+        this.$router.push({ name: 'Popup' });
+      } else if (state.data.connect && Object.keys(state.data.connect).length > 0) {
+        this.$router.push({ name: 'Connect' });
+      } else {
+        this.$router.push({ name: 'Home' });
+      }
     }
+  },
+  mounted() {
+    this.init();
   }
 }
 </script>
 
 
-
 <style lang="scss">
-@import './styles/bootstrap';
-.container {
-  padding: 5%;
-}
-.point {
-  cursor: pointer;
-}
-.error-input {
-  border-color: $red;
-}
-textarea {
-  cursor: pointer;
-  font-size: 20px !important;
-  height: 120px !important;
-}
-textarea:hover {
-  box-shadow: inset 0px 0px 40px $lightviolet;
-}
-.display-10 {
-  font-size: 15px !important;
-}
-.little {
-  font-size: 10px !important;
-}
-.expand-view {
-  position: absolute;
-  top: 0;
-  cursor: pointer;
-  left: 0;
-}
-.error {
-  font-size: 12px !important;
-}
-.changer {
-  border: rgba(33,37,41,.05);
-}
+@import "./styles/main";
 </style>

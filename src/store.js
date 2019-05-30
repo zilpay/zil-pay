@@ -2,28 +2,26 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import fetch from 'cross-fetch'
 import extension from 'extensionizer'
+import Static from './stores/static'
+import Wallet from './stores/wallet'
+import Transactions from './stores/transactions'
 
-import storage from './stroe/storage'
-import apiConfig from './config/api'
+import apiConfig from '../config/api.json'
 
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: { storage },
+  modules: { Static, Wallet, Transactions },
   state: {
-    currencyController: {
-      nativeCurrency: 'ZIL',
-      currentCurrency: 'USD',
-      conversionRate: 0
-    },
-    minGas: '1000000000',
-    loading: true
+    loading: true,
+    isConnect: true,
+    conversionRate: {
+      BTC: 0,
+      USD: 0
+    }
   },
   mutations: {
-    minGas(state, payload) {
-      state.minGas = payload;
-    },
     spiner(state) {
       let spiner = window.document.querySelector('#spinner');
       let app = window.document.querySelector('#app');
@@ -39,6 +37,9 @@ export default new Vuex.Store({
         spiner.className = null;   
         spiner.style.display = 'none';
       }
+    },
+    mutateIsConnect(state, isConnect) {
+      state.isConnect = isConnect;
     }
   },
   actions: {
@@ -48,25 +49,31 @@ export default new Vuex.Store({
 
       try {
         const response = await fetch(url, { method: 'GET' });
-
         rate = await response.json();
-        rate = rate[0]['price_usd'] || 0;
+        rate = {
+          USD: rate[0]['price_usd'],
+          BTC: rate[0]['price_btc']
+        };
       } catch(err) {
-        rate = 0;
+        rate = {
+          BTC: 0,
+          USD: 0
+        };
       }
 
-      state.currencyController.conversionRate = rate;
+      state.conversionRate = rate;
     },
-
-    onExpand() {
+    onExpand({ getters }) {
+      if (getters.isExpand) {
+        return null;
+      }
       extension.tabs.create({ url: apiConfig.PROMT_PAGE });
+      window.window.close();
     }
   },
   getters: {
     isExpand() {
-      if (window.location.pathname.includes('confirm')) {
-        return true;
-      } else if (window.innerWidth <= 350) {
+      if (window.innerWidth <= 375) {
         return false;
       }
 

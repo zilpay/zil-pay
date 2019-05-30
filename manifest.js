@@ -2,7 +2,7 @@ const fs = require('fs');
 const manifest = {
   "name": "ZilPay",
   "short_name": "ZilPay Zilliqa wallet",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "ZilPay browser Extension for zilliqa blockchain",
   "author": "https://zilpay.xyz",
   "manifest_version": 2,
@@ -19,13 +19,11 @@ const manifest = {
     "managed_schema": "schema.json"
   },
   "permissions": [
-    "clipboardWrite",
     "storage",
-    "notifications",
-    "activeTab",
-    "webRequest",
-    "tabs",
-    "<all_urls>"
+    "clipboardWrite",
+    "https://api.coinmarketcap.com/v1/ticker/*",
+    "https://api.zilliqa.com/",
+    "https://dev-api.zilliqa.com/"
   ],
   "content_scripts": [
     {
@@ -52,8 +50,7 @@ const manifest = {
     "scripts": [
         "background.js"
     ]
-  },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  }
 }
 
 if (process.env.PLATFORM == 'firefox') {

@@ -1,6 +1,6 @@
 {
   "name": "zil-pay",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "ZilPay browser Extension for zilliqa blockchain",
   "private": false,
   "scripts": {
@@ -9,19 +9,17 @@
     "serve": "vue-cli-service serve",
     "all:firefox": "export PLATFORM=firefox && npm run build && npm run scripts && node manifest.js",
     "all:chrome": "export PLATFORM=chrome && npm run build && npm run scripts && node manifest.js",
-    "content": "webpack --config src/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
-    "inpage": "webpack --config src/inpage/webpack.config.js --progress --colors -o ./dist/inpage.js",
-    "background": "webpack --config src/controllers/webpack.config.js --progress --colors -o ./dist/background.js",
+    "content": "webpack --config extension/content/webpack.config.js --progress --colors -o ./dist/contentScript.js",
+    "inpage": "webpack --config extension/inpage/webpack.config.js --progress --colors -o ./dist/inpage.js",
+    "background": "webpack --config extension/controllers/webpack.config.js --progress --colors -o ./dist/background.js",
     "scripts": "npm run content && npm run inpage && npm run background",
     "build:prod:firefox": "export NODE_ENV=production && npm run all:firefox",
     "build:prod:chrome": "export NODE_ENV=production && npm run all:chrome",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@zilliqa-js/zilliqa": "^0.5.3",
+    "@zilliqa-js/zilliqa": "^0.6.1",
     "bip39": "^2.6.0",
-    "bootstrap-scss": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.19",
     "clipboard-copy": "^3.0.0",
     "cross-fetch": "^3.0.2",
     "crypto": "^1.0.1",
@@ -29,26 +27,25 @@
     "extensionizer": "^1.0.1",
     "jazzicon": "^1.5.0",
     "qrcode": "^1.3.3",
-    "rxjs": "^6.5.1",
+    "rxjs": "^6.5.2",
     "uuid": "^3.3.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.6",
-    "vuelidate": "^0.7.4",
-    "vuex": "^3.0.1"
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.7.0",
     "@vue/cli-plugin-eslint": "^3.7.0",
     "@vue/cli-service": "^3.7.0",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.7.1",
+    "babel-jest": "^24.8.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.6.10",
-    "webpack-cli": "^3.3.1"
+    "webpack-cli": "^3.3.2"
   },
   "keywords": [
     "blockchain",

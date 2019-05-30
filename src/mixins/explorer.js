@@ -1,14 +1,20 @@
+
+import extension from 'extensionizer'
 import { mapState } from 'vuex'
-import apiConfig from '../config/api'
+import apiConfig from '../../config/api.json'
+import toAddress from '../filters/toAddress'
 
 
 export default {
   computed: {
-    ...mapState('storage', [
-      'selectednet'
+    ...mapState('Static', [
+      'network'
+    ]),
+    ...mapState('Static', [
+      'addressFormat'
     ]),
     net() {
-      return `network=${this.selectednet}`;
+      return `network=${this.network}`;
     },
     url() {
       return apiConfig.EXPLORER;
@@ -16,10 +22,20 @@ export default {
   },
   methods: {
     exploreTransactions(hash) {
-      return `${this.url}/tx/0x${hash}?${this.net}`;
+      return `${this.url}/tx/${hash}?${this.net}`;
     },
     exploreAddress(address) {
+      address = toAddress(
+        address,
+        this.addressFormat,
+        false
+      );
       return `${this.url}/address/${address}?${this.net}`;
+    },
+    toView(hash) {
+      extension.tabs.create({
+        url: this.exploreTransactions(hash)
+      });
     }
   }
 }

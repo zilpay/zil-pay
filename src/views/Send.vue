@@ -1,219 +1,205 @@
 <template>
-  <div class="container">
-    <div class="row justify-content-center text-left">
-      <h3 class="col-lg-12 text-ightindigo display-5">Send ZIL</h3>
-      <p class="col-lg-12 text-warning">Only send ZIL to an Zilliqa address.</p>
+  <div>
+    <BackBar/>
 
-      <form class="col">
-        <div class="form-group">
-          <label for="to">To address</label>
+    <main class="text-center is-mini">
+
+      <small class="warning-msg text-black"
+             v-show="isWarning">
+        This ZIL in {{network}} (It does not cost)!
+      </small>
+
+      <div class="input-group">
+        <div class="to text-left" @mouseleave="isInput = false">
+          <label>To address</label>
           <input type="text"
-                 class="form-control bg-null"
-                 id="to"
-                 autocomplete="off"
+                 autocomplete="false"
                  placeholder="To address"
-                 v-model="toAddress"
-                 @blur="blurMenu"
-                 @focus="isMenu = true && !toAddress"
-                 @click="isMenu = true && !toAddress">
-          <div class="dropdown-menu address-book"
-               :class="{show: isMenu}">
-            <a v-for="(account, index) of accounts" :key="account.index"
-               class="dropdown-item point"
-               @click="selectAddress(account.address)">
-              {{getName(index)}}
-              {{account.address | trimAddress}}
-            </a>
+                 @focus="isInput = true"
+                 @click="isInput = true"
+                 @input="isInput = false"
+                 v-model="to">
+          <div class="dropdown-input text-black" v-show="isInput">
+            <div v-for="acc of wallet.identities"
+                 :key="acc.address"
+                 class="item"
+                 @click="to = toAddress(acc.address, addressFormat, false)">
+              <div class="name">
+                {{acc.name || (`Account ${acc.index + 1}`)}}
+              </div>
+              <div class="address">
+                {{acc.address | toAddress(addressFormat)}}
+              </div>
+            </div>
           </div>
-          <small class="form-text text-danger"
-                 v-if="!$v.toAddress.sameAs">{{addressMsg}}</small>
-        </div>
-        <div class="form-group">
-          <label for="amount">
-            Amount  <a v-show="amount !== maxAmount"
-                       class="point display-10 text-warning"
-                       @click="amount = maxAmount">max</a>
-          </label>
-          <input type="number"
-                 class="form-control bg-null"
-                 id="amount"
-                 v-model="amount">
-         <small class="form-text text-danger"
-                v-if="!$v.amount.sameAs">{{amounMsg}}</small>
-        </div>
-        <div class="form-group">
-          <label for="gas">Gas Price (ZILs)</label>
-          <input type="text"
-                 class="form-control bg-null"
-                 id="gas"
-                 v-model="gas">
-         <small class="form-text text-danger"
-                v-if="!$v.gas.sameAs">{{gasMsg}}</small>
+          <small class="text-danger" v-show="isAddress">{{isAddress}}</small>
         </div>
 
-        <button v-btn="'success'"
-                :disabled="!$v.submitForm.sameAs"
-                @click="txFormSubmit">SEND</button>
-        <button v-btn="'danger m-2'"
-                @click="$router.push({ name: 'home' })">REJECT</button>
-      </form>
-    </div>
+        <div class="amount text-left">
+          <label>Transfer Amount ZIL.
+            <span @click="amount = maxAmount" class="text-primary">max</span>
+          </label>
+          <input type="number" v-model="amount" min="0">
+          <small class="text-danger" v-show="isAmount">{{isAmount}}</small>
+        </div>
+
+        <div class="text-primary text-right advance"
+             @click="isAdvance = !isAdvance">
+          <div class="text-left">fee: {{fee}}</div>
+          {{isAdvance ? '-': '+'}} Advance
+        </div>
+
+        <div class="gas" v-show="isAdvance">
+          <div class="text-left">
+            <label>Gas Limit</label>
+            <input type="number" v-model="gasLimit">
+          </div>
+          <div class="text-left">
+            <label>Gas Price (Li)</label>
+            <input type="number" v-model="gasPrice">
+          </div>
+        </div>
+
+        <button class="send"
+                :disabled="isValidTx"
+                @click="send">Send Transaction</button>
+      </div>
+
+      <div>
+      </div>
+    </main>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-import { isValidChecksumAddress } from '@zilliqa-js/crypto'
-import { validationMixin } from 'vuelidate'
-import { fromZil, toZil, toBN } from '../filters/zil'
-import trimAddress from '../filters/trimAddress'
-import { required, sameAs } from 'vuelidate/lib/validators'
-import { ERRORCODE } from '../lib/errors/code'
-import btn from '../directives/btn'
-import accName from '../mixins/accName'
+import { MTypesZilPay } from '../../lib/messages/messageTypes'
+import { Message } from '../../lib/messages/messageCall'
+import { BN, units } from '@zilliqa-js/util'
+import { mapState, mapActions, mapMutations } from 'vuex'
+import { validation } from '@zilliqa-js/util'
+import GasFee from '../mixins/gas-fee'
+import toZIL from '../filters/to-zil'
+import fromZil from '../filters/from-zil'
+import clipboardMixin from '../mixins/clipboard'
+import AccountListing from '../mixins/account-listing'
+import { ERRORCODE } from '../../lib/errors/code'
 
+const BackBar = () => import('../components/BackBar');
+
+
+async function nonContractSendTransaction(data) {
+  const type = MTypesZilPay.CALL_SIGN_TX;
+  const payload = data;
+  await new Message({ type, payload }).send();  
+}
 
 export default {
-  directives: { btn },
-  mixins: [validationMixin, accName],
   name: 'Send',
-  filters: { fromZil, trimAddress },
+  mixins: [GasFee, clipboardMixin, AccountListing],
+  components: { BackBar },
   data() {
     return {
-      toAddress: '', addressMsg: null,
-      amount: 0, amounMsg: null,
-      gas: 0, gasMsg: null,
-      submitForm: true,
-      isMenu: false
+      isAdvance: false,
+      isInput: false,
+
+      amount: 0,
+      to: null
     };
   },
-  validations: {
-    amount: {
-      required,
-      sameAs: sameAs(vue => {
-        if (+vue.amount < 0 || isNaN(+vue.amount)) {
-          vue.amounMsg = ERRORCODE[0];
-          return true;
-        } else if (+vue.amount > +fromZil(vue.account.balance)) {
-          vue.amounMsg = ERRORCODE[1];
-          return true;
-        }
-
-        vue.amounMsg = null;
-
-        return false;
-      })
-    },
-    toAddress: {
-      sameAs: sameAs(vue => {
-        let isAddress = isValidChecksumAddress(vue.toAddress);
-
-        if (!isAddress) {
-          vue.addressMsg = ERRORCODE[2];
-        } else {
-          vue.addressMsg = null;
-        }
-
-        return isAddress;
-      })
-    },
-    gas: {
-      sameAs: sameAs(vue => {
-        if (vue.gas <= 0 || isNaN(vue.gas) || vue.gas == '') {
-          vue.gasMsg = ERRORCODE[0];
-          return true;
-        } else if (vue.gas > +fromZil(vue.account.balance)) {
-          vue.gasMsg = ERRORCODE[1];
-          return true;
-        }
-
-        vue.gasMsg = null;
-
-        return false;
-      })
-    },
-    submitForm: {
-      sameAs: sameAs(vue => {
-        return !vue.addressMsg &&
-               !vue.amounMsg &&
-               !vue.gasMsg;
-      })
-    }
-  },
   computed: {
-    ...mapState([
-      'minGas'
+    ...mapState('Static', [
+      'network'
     ]),
-    ...mapState('storage', [
-      'wallet'
-    ]),
-
-    account() {
-      return this.wallet.identities[
-        this.wallet.selectedAddress
-      ];
+    isWarning() {
+      return this.network == 'testnet' || this.network == 'private';
     },
-    accounts() {
-      return this.wallet.identities;
+    isAddress() {
+      if (this.to === null) {
+        return null;
+      }
+      
+      const isBech32 = validation.isBech32(this.to);
+      const isHex = validation.isAddress(this.to);
+      const isBase58 = validation.isBase58(this.to);
+
+      if (isBech32 || isHex || isBase58) {
+        return false;
+      }
+
+      return ERRORCODE[2];
+    },
+    isAmount() {
+      try {
+        const amountBN = new BN(toZIL(this.amount));
+        const balanceBN = new BN(this.account.balance);
+        const feeBN = new BN(toZIL(this.fee));
+        const txAmountBN = feeBN.add(amountBN);
+        const isInsufficientFunds = balanceBN.lt(txAmountBN);
+
+        if (isInsufficientFunds) {
+          return ERRORCODE[1];
+        }
+      } catch(err) {
+        return ERRORCODE[3];
+      }
+      return false;
+    },
+    isValidTx() {
+      if (this.isAddress == null) {
+        return true;
+      }
+
+      return !!this.isAmount || !!this.isAddress;
     },
     maxAmount() {
-      if (+this.account.balance == 0) {
-        return '0';
+       if (+this.account.balance == 0) {
+        return 0;
       }
-      const fullBalance = toBN(this.account.balance);
-      const gas = toBN(toZil(this.gas));
-      const amount = fullBalance.sub(gas);
+
+      const fullBalance = new BN(this.account.balance);
+      const feeBN = new BN(toZIL(this.fee));
+      const amount = fullBalance.sub(feeBN);
 
       return fromZil(amount, false);
     }
   },
   methods: {
-    ...mapMutations([
-      'spiner'
-    ]),
-    ...mapActions('storage', [
-      'nonContractSendTransaction',
+    ...mapMutations(['spiner']),
+    ...mapActions('Transactions', [
       'transactionsUpdate'
     ]),
 
-    async txFormSubmit() {
+    async send() {
       this.spiner();
-
+      
       let data = {
-        toAddr: this.toAddress,
-        amount: toZil(this.amount),
-        gasPrice: toZil(this.gas),
-        gasLimit: 1,
+        toAddr: this.to,
+        amount: toZIL(this.amount),
+        gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
+        gasLimit: this.gasLimit,
         code: '',
         data: ''
       };
 
-      await this.nonContractSendTransaction(data);
-
-      this.transactionsUpdate();
-      this.spiner();
-      this.$router.push({ name: 'home' });
-    },
-    selectAddress(address) {
-      this.toAddress = address;
-      this.isMenu = false;
-    },
-    blurMenu() {
-      setTimeout(() => this.isMenu = false, 500);
+       await nonContractSendTransaction(data);
+       this.transactionsUpdate();
+       this.spiner();
     }
-  },
-  mounted() {
-    this.gas = fromZil(this.minGas);
   }
 }
 </script>
 
 <style lang="scss">
-// @import '../styles/colors';
-.address-book {
-  margin-top: 56px;
-  margin-left: 15px;
-  right: 0;
-  margin-right: 15px;
+.dropdown-input > .item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.amount > label > span {
+  cursor: pointer;
+}
+.input-group {
+  .send {
+    margin-top: 30px;
+  }
 }
 </style>

@@ -1,0 +1,96 @@
+// Base
+// ––––––––––––––––––––––––––––––––––––––––––––––––––
+
+// Set box-sizing globally to handle padding and border widths
+*,
+*:after,
+*:before {
+	box-sizing: inherit;
+}
+::-webkit-scrollbar { 
+	display: none; 
+}
+
+// The base font-size is set at 62.5% for having the convenience
+// of sizing rems in a way that is similar to using px: 1.6rem = 16px
+html {
+	box-sizing: border-box;
+	font-size: 62.5%;
+}
+body, html {
+	min-height: 600px;
+	overflow-x: hidden;
+	min-width: $nav-min-width;
+	background-color: #f7f7f7;
+	height: 100%;  
+}
+
+// Default body styles
+body, #app {
+	color: $color-secondary;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 1.6em; // Currently ems cause chrome bug misinterpreting rems on body element
+	font-weight: 300;
+	letter-spacing: .01em;
+	line-height: 1.6;
+}
+
+body, html, #app {
+	user-select: none;
+	margin: 0;
+	padding: 0;
+}
+ul {
+	padding-left: 0;
+	li {
+		list-style: none;
+	}
+}
+a {
+	color: $color-quinary;
+	&:link {
+		text-decoration: none;
+	}
+	&:visited {
+		text-decoration: none;
+	}
+	&:hover {
+		text-decoration: underline;
+		text-decoration: none;
+	}
+	&:active {
+		text-decoration: none;
+		text-decoration: underline;
+	}
+}
+textarea, .seed {
+	margin: 0px; height: 106px; width: 318px;
+	font-size: 16px;
+	color: $color-primary-100;
+}
+small {
+  font-size: 13px;
+}
+.point:hover {
+	transform: scale(0.9);
+}
+.img-border {
+	border: 1px solid $color-primary;
+	border-radius: 20px;
+}
+.pointer {
+	cursor: pointer;
+}
+.warning-msg {
+	border-radius: 10px;
+	background-color: $color-warning;
+	padding: 10px;
+	height: auto;
+	justify-self: center;
+	font-weight: 600;
+}
+@media screen and (max-width: 360px) {
+  body, html {
+    max-width: 360px;
+  }
+}
