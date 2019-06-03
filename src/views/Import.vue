@@ -51,9 +51,12 @@
 
 <script>
 import { mapActions, mapMutations } from 'vuex'
+import LedgerControll from '../../lib/hardware/ledger'
 
 const BackBar = () => import('../components/BackBar');
 
+
+const ledgerControll = new LedgerControll();
 
 export default {
   name: 'Import',
@@ -84,6 +87,10 @@ export default {
         this.$router.push({ name: 'Home' });
       }
     }
+  },
+  mounted() {
+    ledgerControll.init().then(console.log);
+    // ledgerControll.getAddresses().then(console.log);
   }
 }
 </script>
