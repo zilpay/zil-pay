@@ -2684,9 +2684,8 @@ function (_AccountControl) {
                 wallet.identities.push({
                   balance: result,
                   address: payload.pubAddr,
-                  hwIndex: payload.hwIndex,
-                  hwType: payload.hwType,
-                  name: "".concat(payload.hwType, " ").concat(payload.hwIndex)
+                  index: payload.hwIndex,
+                  hwType: payload.hwType
                 });
                 wallet.selectedAddress = wallet.identities.length - 1;
                 _context.next = 14;

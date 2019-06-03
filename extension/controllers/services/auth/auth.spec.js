@@ -1,8 +1,8 @@
 import { Auth } from './index'
 import uuidv4 from 'uuid/v4'
-import { BrowserStorage, BuildObject } from '../../../lib/storage'
+import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 // import ZilliqaConfig from '../../../config/zil'
-import fields from '../../../config/fields'
+import fields from '../../../../config/fields'
 
 const browserStorage = new BrowserStorage();
 const decryptSeed = 'banana blind business arrest escape blame stadium display border flower daughter story';

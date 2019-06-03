@@ -18,8 +18,9 @@
              :style="{backgroundColor: addressToColor(acc.address)}">
           <div class="header">
             <div>
-              {{acc.name || (`Account ${acc.index + 1}`)}}
-              <span v-show="acc.isImport" class="imported">Imported</span>
+              {{acc.name || (`Account ${(acc.index) + 1}`)}}
+              <span v-if="acc.isImport" class="imported">Imported</span>
+              <span v-if="acc.hwType" class="imported">{{acc.hwType}}</span>
             </div>
             <img v-show="index == wallet.selectedAddress"
                  src="/icons/selected.svg" height="25">

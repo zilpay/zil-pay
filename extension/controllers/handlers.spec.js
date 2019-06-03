@@ -7,8 +7,8 @@ import {
   NetworkHandler,
   TransactionHandler
 } from './handlers'
-import zilConfig from './../config/zil'
-import fields from '../config/fields'
+import zilConfig from '../../config/zil'
+import fields from '../../config/fields'
 
 
 const defaultSelected = Object.keys(zilConfig)[0];
@@ -116,7 +116,11 @@ describe('handlers for background page', () => {
     await ZilliqaHandler.initZilPay(value => {
       expect(value.provider).toBe(zilConfig[defaultSelected]['PROVIDER']);
       expect(value.isEnable).toBe(true);
-      expect(value.account.address).toEqual(toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'));
+      if (value.isConnect) {
+        expect(value.account.address).toEqual(toChecksumAddress('a359105c9c8fda34278186c564ca2d3664e86821'));
+      } else {
+        expect(value.account).toBe(null);
+      }
     });
   });
 

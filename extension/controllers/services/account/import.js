@@ -37,9 +37,8 @@ export class AccountImporter extends AccountControl {
     wallet.identities.push({
       balance: result,
       address: payload.pubAddr,
-      hwIndex: payload.hwIndex,
-      hwType: payload.hwType,
-      name: `${payload.hwType} ${payload.hwIndex}`
+      index: payload.hwIndex,
+      hwType: payload.hwType
     });
     wallet.selectedAddress = wallet.identities.length - 1;
 
