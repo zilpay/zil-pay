@@ -2,17 +2,16 @@
   <div>
     <BackBar/>
 
-    <main class="is-mini">
-      <h5 class="text-center">
+    <main class="is-mini import-page">
+      <h2 class="text-center">
         You can import account by private key or hardware wallet
-      </h5>
+      </h2>
 
       <div class="option">
         <button @click="type = 'key'">private key</button>
         <button @click="type = 'hardware'">hardware</button>
       </div>
       
-
       <div v-if="type == 'key'" class="by-key">
         <label>Pass your private key.</label>
         <textarea class="private-key"
@@ -26,23 +25,28 @@
       </div>
 
       <div v-if="type == 'hardware'" class="by-hardware text-center">
-        <h5>Connect a hardware wallet</h5>
-        <span>{{appVersion}}</span>
-        <label>Select a hardware wallet to use with ZilPay</label>
+        <span>Connect a hardware wallet</span>
 
         <div class="type-select">
           <button class="form-border" @click="hardWareType = 'ledger'">
-            <img src="/icons/ledger-logo.svg" height="30">
+            <img src="/icons/ledger-logo.svg" height="20">
           </button>
           <button class="form-border" @click="hardWareType = 'trezor'">
-            <img src="/icons/trezor-logo.svg" height="30">
+            <img src="/icons/trezor-logo.svg" height="20">
           </button>
         </div>
 
-        <div class="coming-soon" v-if="hardWareType">
-          <h1>coming soon</h1>
+        <div class="coming-soon" v-if="hardWareType == 'trezor'">
+          <h1>Coming soon</h1>
         </div>
-        <button v-if="hardWareType" disabled>continue</button>
+
+        <div class="form-border ledger-form" v-if="hardWareType == 'ledger'">
+          <div class="input-form">
+            <input type="number" v-model="ladgerIndex">
+            <button @click="ledgerGetAddress">connect</button>
+          </div>
+          <small class="text-danger">{{ledgerErr}}</small>
+        </div>
       </div>
 
     </main>
@@ -67,6 +71,9 @@ export default {
       hardWareType: null,
 
       privKey: null, privKeyErrMsg: null,
+
+      ledgerAddress: null, ledgerErr: null,
+      ladgerIndex: 0
     };
   },
   methods: {
@@ -86,16 +93,30 @@ export default {
       if (!this.privKeyErrMsg) {
         this.$router.push({ name: 'Home' });
       }
+    },
+    async ledgerGetAddress() {
+      try {
+        if (isNaN(this.ladgerIndex)) {
+          throw new Error('index must be number');
+        }
+        const { pubAddr } = await ledgerControll.getAddresses(
+          this.ladgerIndex
+        );
+        this.ledgerAddress = pubAddr;
+        console.log(this.ledgerAddress);
+      } catch(err) {
+        this.ledgerErr = err.message;
+      }
     }
-  },
-  mounted() {
-    ledgerControll.init().then(console.log);
-    // ledgerControll.getAddresses().then(console.log);
   }
 }
 </script>
 
 <style lang="scss">
+.import-page {
+  font-size: 15px;
+  font-weight: 600;
+}
 .option {
   justify-self: center;
 
@@ -117,10 +138,8 @@ export default {
 }
 .type-select {
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
-  justify-content: center;
-  justify-items: center;
   
   button {
     display: grid;
@@ -132,6 +151,24 @@ export default {
     &:focus {
       outline: -webkit-focus-ring-color auto 5px;
     }
+  }
+}
+.by-hardware {
+  width: 80%;
+  justify-self: center;
+
+  .type-select {
+    margin-top: 40px;
+  }
+}
+.ledger-form {
+  padding: 20px;
+  margin-top: 50px;
+  
+  div.input-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 30px;
   }
 }
 </style>
