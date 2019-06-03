@@ -103,6 +103,18 @@ export default {
     
       return null;
     },
+    async importByHw({ state }, { pubAddr, hwIndex, hwType }) {
+      const type = MTypesAuth.IMPORT_BY_HW;
+      const payload = { pubAddr, hwIndex, hwType };
+      const result = await new Message({ type, payload }).send();
+      
+      if (result.resolve) {
+        state.wallet = result.resolve;
+        return result.resolve;
+      } else if (result.reject) {
+        throw new Error(result.reject);
+      }
+    },
     logOut({ commit }) {
       Message.signal(MTypesAuth.LOG_OUT).send();
       commit('mutateIsEnable', false);
@@ -113,6 +125,5 @@ export default {
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
   getters: {
-
   }
 };

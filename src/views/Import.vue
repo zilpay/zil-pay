@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import { fromBech32Address } from '@zilliqa-js/crypto'
 import { mapActions, mapMutations } from 'vuex'
 import LedgerControll from '../../lib/hardware/ledger'
 
@@ -72,14 +73,15 @@ export default {
 
       privKey: null, privKeyErrMsg: null,
 
-      ledgerAddress: null, ledgerErr: null,
+      ledgerErr: null,
       ladgerIndex: 0
     };
   },
   methods: {
     ...mapMutations(['spiner']),
     ...mapActions('Wallet', [
-      'importByPrivateKey'
+      'importByPrivateKey',
+      'importByHw'
     ]),
 
     async importThis() {
@@ -95,18 +97,27 @@ export default {
       }
     },
     async ledgerGetAddress() {
+      this.spiner();
+      const hwIndex = this.ladgerIndex;
+      const hwType = 'ledger';
+
       try {
-        if (isNaN(this.ladgerIndex)) {
+        if (isNaN(hwIndex)) {
           throw new Error('index must be number');
         }
-        const { pubAddr } = await ledgerControll.getAddresses(
-          this.ladgerIndex
+        let { pubAddr } = await ledgerControll.getAddresses(
+          hwIndex
         );
-        this.ledgerAddress = pubAddr;
-        console.log(this.ledgerAddress);
+
+        pubAddr = fromBech32Address(pubAddr);
+        await this.importByHw({ pubAddr, hwIndex, hwType });
+        this.spiner();
+        this.$router.push({ name: 'Home' });
+        return null;
       } catch(err) {
         this.ledgerErr = err.message;
       }
+      this.spiner();
     }
   }
 }

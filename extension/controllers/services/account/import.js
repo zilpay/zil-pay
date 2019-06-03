@@ -20,6 +20,36 @@ export class AccountImporter extends AccountControl {
     throw new Error(errorsCode.DisableMethod);
   }
 
+  async importByHwAccount(payload) {
+    let wallet = await this._storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
+    wallet.identities.forEach(account => {
+      if (account.address == payload.pubAddr) {
+        throw new Error(errorsCode.ImportUniqueWrong);
+      }
+    });
+
+    this.zilliqa = new ZilliqaControl(this.network.provider);
+
+    const { result } = await this.zilliqa.getBalance(payload.pubAddr);
+
+    wallet.identities.push({
+      balance: result,
+      address: payload.pubAddr,
+      hwIndex: payload.hwIndex,
+      hwType: payload.hwType,
+      name: `${payload.hwType} ${payload.hwIndex}`
+    });
+    wallet.selectedAddress = wallet.identities.length - 1;
+
+    await this._storage.set(
+      new BuildObject(fields.WALLET, wallet)
+    );
+
+    return wallet;
+  }
+
   async importAccountByPrivateKey(privateKey) {
     await this.auth.vaultSync();
 

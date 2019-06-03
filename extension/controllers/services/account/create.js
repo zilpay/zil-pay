@@ -70,7 +70,7 @@ export class AccountControl {
 
     let { wallet } = await this._storage.get(fields.WALLET);
     const index = wallet.identities.filter(
-      el => !el.isImport
+      el => !el.isImport && !el.hwType
     ).length;
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, index

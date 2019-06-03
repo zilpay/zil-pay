@@ -75,6 +75,10 @@ export class Background {
         new AccountHandler(message.payload).importPrivateKey(sendResponse);
         break;
 
+      case MTypesAuth.IMPORT_BY_HW:
+        new AccountHandler(message.payload).ImportHwAccount(sendResponse);
+        break;
+
       case MTypesInternal.GET_DECRYPT_SEED:
         new WalletHandler().getRandomSeedPhrase(sendResponse);
         break;

@@ -204,6 +204,17 @@ export class AccountHandler {
     }
   }
 
+  async ImportHwAccount(sendResponse) {
+    const accountImporter = new AccountImporter(accountControl);
+
+    try {
+      const wallet = await accountImporter.importByHwAccount(this.payload);
+      sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
   async createAccountBySeed(sendResponse) {
     try {
       const wallet = await accountControl.newAccountBySeed();
