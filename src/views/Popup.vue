@@ -77,7 +77,9 @@ import toConversion from '../filters/to-conversion'
 import fromZil from '../filters/from-zil'
 import toZIL from '../filters/to-zil'
 import { ERRORCODE } from '../../lib/errors/code'
+import LedgerControll from '../../lib/hardware/ledger'
 
+const ledgerControll = new LedgerControll();
 
 export default {
   name: 'Send',
@@ -126,13 +128,19 @@ export default {
       }
 
       return null;
+    },
+    txParams() {
+      const txs = this.confirmationTx;
+      const length = txs.length;
+      return txs[length - 1];
     }
   },
   methods: {
     ...mapMutations(['spiner']),
     ...mapActions('Transactions', [
       'rejectConfirmTx',
-      'confirmTx'
+      'confirmTx',
+      'buildTxParams'
     ]),
 
     async reject() {
@@ -141,6 +149,13 @@ export default {
     },
     async confirm() {
       this.spiner();
+      
+      if (this.account.hwType) {
+        await this.hwConfirm();
+        this.spiner();
+        return null;
+      }
+
       try {
         await this.confirmTx({
           gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
@@ -151,6 +166,24 @@ export default {
       }
       this.spiner();
       this.popupClouse();
+    },
+    async hwConfirm () {
+      let txParams;
+
+      try {
+        txParams = await this.buildTxParams({
+          txParams: this.txParams,
+          from: this.account.address
+        });
+        const sig = await ledgerControll.sendTransaction(
+          this.account.index,
+          txParams
+        );
+        console.log(sig);
+      } catch(err) {
+        console.log(err);
+        // ** //
+      }
     },
 
     popupClouse() {

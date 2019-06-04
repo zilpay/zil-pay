@@ -274,6 +274,7 @@ var MTypesZilPay = {
   // Types message for call methods from dapps. //
   INIT_DATA: 'init_data',
   CALL_SIGN_TX: 'c_s_t',
+  BUILD_TX_PARAMS: 'build_tx_params',
   GET_CONFIRM_TX: 'g_c_t',
   REJECT_CONFIRM_TX: 'r_c_t',
   CONFIRM_TX: 'c_t',
@@ -590,6 +591,9 @@ function (_Message2) {
 
   return TabsMessage;
 }(messageCall_Message);
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es6.regexp.to-string.js
+var es6_regexp_to_string = __webpack_require__("./node_modules/core-js/modules/es6.regexp.to-string.js");
+
 // EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/array/is-array.js
 var is_array = __webpack_require__("./node_modules/@babel/runtime-corejs2/core-js/array/is-array.js");
 var is_array_default = /*#__PURE__*/__webpack_require__.n(is_array);
@@ -1315,16 +1319,84 @@ function (_Zilliqa) {
       return getBalance;
     }()
   }, {
+    key: "buildTxParams",
+    value: function () {
+      var _buildTxParams = _asyncToGenerator(
+      /*#__PURE__*/
+      regenerator_default.a.mark(function _callee2(txData, from, currentNonce, pubKey) {
+        var balance, amount, code, data, gasLimit, gasPrice, toAddr, nonce, version;
+        return regenerator_default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return this.getBalance(from);
+
+              case 2:
+                balance = _context2.sent;
+                amount = txData.amount, code = txData.code, data = txData.data, gasLimit = txData.gasLimit, gasPrice = txData.gasPrice, toAddr = txData.toAddr, nonce = txData.nonce, version = txData.version;
+
+                if (version) {
+                  _context2.next = 8;
+                  break;
+                }
+
+                _context2.next = 7;
+                return this.version();
+
+              case 7:
+                version = _context2.sent;
+
+              case 8:
+                if (isNaN(nonce)) {
+                  nonce = balance.nonce;
+                }
+
+                if (currentNonce > balance.nonce) {
+                  nonce = currentNonce;
+                }
+
+                amount = new util_dist_index_umd["BN"](amount);
+                gasPrice = new util_dist_index_umd["BN"](gasPrice);
+                gasLimit = util_dist_index_umd["Long"].fromNumber(gasLimit);
+                nonce++;
+                return _context2.abrupt("return", this.transactions.new({
+                  nonce: nonce,
+                  gasPrice: gasPrice,
+                  amount: amount,
+                  gasLimit: gasLimit,
+                  version: version,
+                  toAddr: toAddr,
+                  pubKey: pubKey,
+                  code: code,
+                  data: data
+                }));
+
+              case 15:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function buildTxParams(_x2, _x3, _x4, _x5) {
+        return _buildTxParams.apply(this, arguments);
+      }
+
+      return buildTxParams;
+    }()
+  }, {
     key: "singTransaction",
     value: function () {
       var _singTransaction = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee2(txData, seedOrPrivateKey, index, currentNonce, msgId) {
-        var pubKey, balance, amount, code, data, gasLimit, gasPrice, toAddr, nonce, version, zilTxData, _ref2, txParams;
+      regenerator_default.a.mark(function _callee3(txData, seedOrPrivateKey, index, currentNonce) {
+        var zilTxData, _ref2, txParams;
 
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
+        return regenerator_default.a.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 /**
                  * @param {txData}: Object with data about transaction.
@@ -1339,72 +1411,33 @@ function (_Zilliqa) {
                   this.wallet.addByMnemonic(seedOrPrivateKey, index);
                 }
 
-                pubKey = this.wallet.defaultAccount.publicKey;
-                _context2.next = 4;
-                return this.getBalance(this.wallet.defaultAccount.address);
+                _context3.next = 3;
+                return this.buildTxParams(txData, this.wallet.defaultAccount.address, currentNonce, this.wallet.defaultAccount.publicKey);
 
-              case 4:
-                balance = _context2.sent;
-                amount = txData.amount, code = txData.code, data = txData.data, gasLimit = txData.gasLimit, gasPrice = txData.gasPrice, toAddr = txData.toAddr, nonce = txData.nonce, version = txData.version;
-
-                if (version) {
-                  _context2.next = 10;
-                  break;
-                }
-
-                _context2.next = 9;
-                return this.version(msgId);
-
-              case 9:
-                version = _context2.sent;
-
-              case 10:
-                if (isNaN(nonce)) {
-                  nonce = balance.nonce;
-                }
-
-                if (currentNonce > balance.nonce) {
-                  nonce = currentNonce;
-                }
-
-                amount = new util_dist_index_umd["BN"](amount);
-                gasPrice = new util_dist_index_umd["BN"](gasPrice);
-                gasLimit = util_dist_index_umd["Long"].fromNumber(gasLimit);
-                nonce++;
-                zilTxData = this.transactions.new({
-                  nonce: nonce,
-                  gasPrice: gasPrice,
-                  amount: amount,
-                  gasLimit: gasLimit,
-                  version: version,
-                  toAddr: toAddr,
-                  pubKey: pubKey,
-                  code: code,
-                  data: data
-                }); // Sign transaction by current account. //
-
-                _context2.next = 19;
+              case 3:
+                zilTxData = _context3.sent;
+                _context3.next = 6;
                 return this.wallet.sign(zilTxData);
 
-              case 19:
-                _ref2 = _context2.sent;
+              case 6:
+                _ref2 = _context3.sent;
                 txParams = _ref2.txParams;
-                _context2.next = 23;
+                _context3.next = 10;
                 return this.provider.send( // Send to shard node.
                 index_umd["RPCMethod"].CreateTransaction, txParams);
 
-              case 23:
-                return _context2.abrupt("return", _context2.sent);
+              case 10:
+                return _context3.abrupt("return", _context3.sent);
 
-              case 24:
+              case 11:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
-      function singTransaction(_x2, _x3, _x4, _x5, _x6) {
+      function singTransaction(_x6, _x7, _x8, _x9) {
         return _singTransaction.apply(this, arguments);
       }
 
@@ -1415,31 +1448,31 @@ function (_Zilliqa) {
     value: function () {
       var _version = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee3() {
+      regenerator_default.a.mark(function _callee4() {
         var msgVerison,
             _ref3,
             result,
-            _args3 = arguments;
+            _args4 = arguments;
 
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
+        return regenerator_default.a.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                msgVerison = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : 1;
-                _context3.next = 3;
+                msgVerison = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : 1;
+                _context4.next = 3;
                 return this.network.GetNetworkId();
 
               case 3:
-                _ref3 = _context3.sent;
+                _ref3 = _context4.sent;
                 result = _ref3.result;
-                return _context3.abrupt("return", util_dist_index_umd["bytes"].pack(result, msgVerison));
+                return _context4.abrupt("return", util_dist_index_umd["bytes"].pack(result, msgVerison));
 
               case 6:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       function version() {
@@ -1453,15 +1486,15 @@ function (_Zilliqa) {
     value: function () {
       var _getAccountBySeed = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee4(seed, index) {
+      regenerator_default.a.mark(function _callee5(seed, index) {
         var _this$wallet$defaultA, address, publicKey, privateKey, _ref4, result;
 
-        return regenerator_default.a.wrap(function _callee4$(_context4) {
+        return regenerator_default.a.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 if (!(typeof seed !== 'string' || isNaN(index))) {
-                  _context4.next = 2;
+                  _context5.next = 2;
                   break;
                 }
 
@@ -1470,13 +1503,13 @@ function (_Zilliqa) {
               case 2:
                 this.wallet.addByMnemonic(seed, index);
                 _this$wallet$defaultA = this.wallet.defaultAccount, address = _this$wallet$defaultA.address, publicKey = _this$wallet$defaultA.publicKey, privateKey = _this$wallet$defaultA.privateKey;
-                _context4.next = 6;
+                _context5.next = 6;
                 return this.getBalance(address);
 
               case 6:
-                _ref4 = _context4.sent;
+                _ref4 = _context5.sent;
                 result = _ref4.result;
-                return _context4.abrupt("return", {
+                return _context5.abrupt("return", {
                   index: index,
                   publicKey: publicKey,
                   privateKey: privateKey,
@@ -1486,13 +1519,13 @@ function (_Zilliqa) {
 
               case 9:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
-      function getAccountBySeed(_x7, _x8) {
+      function getAccountBySeed(_x10, _x11) {
         return _getAccountBySeed.apply(this, arguments);
       }
 
@@ -1503,41 +1536,41 @@ function (_Zilliqa) {
     value: function () {
       var _getAccountByPrivateKey = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee5(importPrivateKey) {
+      regenerator_default.a.mark(function _callee6(importPrivateKey) {
         var index,
             account,
             _ref5,
             result,
-            _args5 = arguments;
+            _args6 = arguments;
 
-        return regenerator_default.a.wrap(function _callee5$(_context5) {
+        return regenerator_default.a.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                index = _args5.length > 1 && _args5[1] !== undefined ? _args5[1] : 0;
+                index = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : 0;
                 this.wallet.addByPrivateKey(importPrivateKey);
                 account = this.wallet.defaultAccount;
-                _context5.next = 5;
+                _context6.next = 5;
                 return this.getBalance(account.address);
 
               case 5:
-                _ref5 = _context5.sent;
+                _ref5 = _context6.sent;
                 result = _ref5.result;
                 account.address = Object(dist_index_umd["toChecksumAddress"])(account.address);
-                return _context5.abrupt("return", Object.assign(account, {
+                return _context6.abrupt("return", Object.assign(account, {
                   index: index,
                   balance: result
                 }));
 
               case 9:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this);
+        }, _callee6, this);
       }));
 
-      function getAccountByPrivateKey(_x9) {
+      function getAccountByPrivateKey(_x12) {
         return _getAccountByPrivateKey.apply(this, arguments);
       }
 
@@ -1548,11 +1581,11 @@ function (_Zilliqa) {
     value: function () {
       var _addForSingTransaction = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee6(payload) {
+      regenerator_default.a.mark(function _callee7(payload) {
         var storage, forConfirm;
-        return regenerator_default.a.wrap(function _callee6$(_context6) {
+        return regenerator_default.a.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
                 /**
                  * @method: This method call add to storage some payload data.
@@ -1564,11 +1597,11 @@ function (_Zilliqa) {
                   }
                 });
                 storage = new storage_BrowserStorage();
-                _context6.next = 4;
+                _context7.next = 4;
                 return storage.get(fields.CONFIRM_TX);
 
               case 4:
-                forConfirm = _context6.sent;
+                forConfirm = _context7.sent;
 
                 if (util_dist_index_umd["validation"].isBase58(payload.toAddr)) {
                   payload.toAddr = Object(dist_index_umd["decodeBase58"])(payload.toAddr);
@@ -1585,7 +1618,7 @@ function (_Zilliqa) {
                   forConfirm = [payload];
                 }
 
-                _context6.next = 10;
+                _context7.next = 10;
                 return storage.set(new storage_BuildObject(fields.CONFIRM_TX, forConfirm));
 
               case 10:
@@ -1593,13 +1626,13 @@ function (_Zilliqa) {
 
               case 11:
               case "end":
-                return _context6.stop();
+                return _context7.stop();
             }
           }
-        }, _callee6, this);
+        }, _callee7, this);
       }));
 
-      function addForSingTransaction(_x10) {
+      function addForSingTransaction(_x13) {
         return _addForSingTransaction.apply(this, arguments);
       }
 
@@ -1610,36 +1643,36 @@ function (_Zilliqa) {
     value: function () {
       var _rmForSingTransaction = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee7() {
+      regenerator_default.a.mark(function _callee8() {
         var storage, forConfirm, removedConfirm;
-        return regenerator_default.a.wrap(function _callee7$(_context7) {
+        return regenerator_default.a.wrap(function _callee8$(_context8) {
           while (1) {
-            switch (_context7.prev = _context7.next) {
+            switch (_context8.prev = _context8.next) {
               case 0:
                 /**
                  * @method: This method remove payload data from storage.
                  */
                 storage = new storage_BrowserStorage();
-                _context7.next = 3;
+                _context8.next = 3;
                 return storage.get(fields.CONFIRM_TX);
 
               case 3:
-                forConfirm = _context7.sent;
+                forConfirm = _context8.sent;
                 forConfirm = forConfirm[fields.CONFIRM_TX];
                 removedConfirm = forConfirm.pop();
-                _context7.next = 8;
+                _context8.next = 8;
                 return storage.set(new storage_BuildObject(fields.CONFIRM_TX, forConfirm));
 
               case 8:
                 this.notificationsCounter(forConfirm);
-                return _context7.abrupt("return", removedConfirm);
+                return _context8.abrupt("return", removedConfirm);
 
               case 10:
               case "end":
-                return _context7.stop();
+                return _context8.stop();
             }
           }
-        }, _callee7, this);
+        }, _callee8, this);
       }));
 
       function rmForSingTransaction() {
@@ -1653,11 +1686,11 @@ function (_Zilliqa) {
     value: function () {
       var _addTransactionList = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee8(tx, net) {
+      regenerator_default.a.mark(function _callee9(tx, net) {
         var storage, from, txsList, data;
-        return regenerator_default.a.wrap(function _callee8$(_context8) {
+        return regenerator_default.a.wrap(function _callee9$(_context9) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
                 /**
                  * @method: Add to storage payload data of completed transaction.
@@ -1666,11 +1699,11 @@ function (_Zilliqa) {
                  */
                 storage = new storage_BrowserStorage();
                 from = Object(dist_index_umd["toChecksumAddress"])(tx.from);
-                _context8.next = 4;
+                _context9.next = 4;
                 return storage.get(fields.TRANSACTIONS);
 
               case 4:
-                txsList = _context8.sent;
+                txsList = _context9.sent;
                 data = {
                   Info: tx.Info,
                   TranID: tx.TranID,
@@ -1680,7 +1713,7 @@ function (_Zilliqa) {
                 };
 
                 if (net) {
-                  _context8.next = 8;
+                  _context9.next = 8;
                   break;
                 }
 
@@ -1713,18 +1746,18 @@ function (_Zilliqa) {
                   txsList[from][net].shift();
                 }
 
-                _context8.next = 13;
+                _context9.next = 13;
                 return storage.set(new storage_BuildObject(fields.TRANSACTIONS, txsList));
 
               case 13:
               case "end":
-                return _context8.stop();
+                return _context9.stop();
             }
           }
-        }, _callee8);
+        }, _callee9);
       }));
 
-      function addTransactionList(_x11, _x12) {
+      function addTransactionList(_x14, _x15) {
         return _addTransactionList.apply(this, arguments);
       }
 
@@ -1735,25 +1768,25 @@ function (_Zilliqa) {
     value: function () {
       var _rmAllTransactionList = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee9() {
+      regenerator_default.a.mark(function _callee10() {
         var storage;
-        return regenerator_default.a.wrap(function _callee9$(_context9) {
+        return regenerator_default.a.wrap(function _callee10$(_context10) {
           while (1) {
-            switch (_context9.prev = _context9.next) {
+            switch (_context10.prev = _context10.next) {
               case 0:
                 /**
                  * @method: clear all completed transaction from storage.
                  */
                 storage = new storage_BrowserStorage();
-                _context9.next = 3;
+                _context10.next = 3;
                 return storage.set(new storage_BuildObject(fields.TRANSACTIONS, {}));
 
               case 3:
               case "end":
-                return _context9.stop();
+                return _context10.stop();
             }
           }
-        }, _callee9);
+        }, _callee10);
       }));
 
       function rmAllTransactionList() {
@@ -1767,25 +1800,25 @@ function (_Zilliqa) {
     value: function () {
       var _notificationsCounter = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee10(value) {
+      regenerator_default.a.mark(function _callee11(value) {
         var forConfirm, storage;
-        return regenerator_default.a.wrap(function _callee10$(_context10) {
+        return regenerator_default.a.wrap(function _callee11$(_context11) {
           while (1) {
-            switch (_context10.prev = _context10.next) {
+            switch (_context11.prev = _context11.next) {
               case 0:
                 if (value) {
-                  _context10.next = 8;
+                  _context11.next = 8;
                   break;
                 }
 
                 storage = new storage_BrowserStorage();
-                _context10.next = 4;
+                _context11.next = 4;
                 return storage.get(fields.CONFIRM_TX);
 
               case 4:
-                forConfirm = _context10.sent;
+                forConfirm = _context11.sent;
                 forConfirm = forConfirm[fields.CONFIRM_TX];
-                _context10.next = 9;
+                _context11.next = 9;
                 break;
 
               case 8:
@@ -1800,13 +1833,13 @@ function (_Zilliqa) {
 
               case 10:
               case "end":
-                return _context10.stop();
+                return _context11.stop();
             }
           }
-        }, _callee10);
+        }, _callee11);
       }));
 
-      function notificationsCounter(_x13) {
+      function notificationsCounter(_x16) {
         return _notificationsCounter.apply(this, arguments);
       }
 
@@ -2982,6 +3015,7 @@ function () {
   return PromptService;
 }();
 // CONCATENATED MODULE: ./extension/controllers/handlers.js
+
 
 
 
@@ -4244,7 +4278,7 @@ function () {
 
               case 30:
                 _context22.next = 32;
-                return zilliqaControl.singTransaction(transaction, seedOrKey, accountID, lastNonce, networkControl.version);
+                return zilliqaControl.singTransaction(transaction, seedOrKey, accountID, lastNonce);
 
               case 32:
                 resultTx = _context22.sent;
@@ -4314,23 +4348,91 @@ function () {
       return buildTransaction;
     }()
   }, {
-    key: "_transactionListing",
+    key: "buildTxParams",
     value: function () {
-      var _transactionListing2 = _asyncToGenerator(
+      var _buildTxParams = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee23(txHash) {
+      regenerator_default.a.mark(function _callee23(sendResponse) {
+        var zilliqaControl, address, storage, lastNonce, transactionsHistory, lastTx, _ref2, txParams;
+
         return regenerator_default.a.wrap(function _callee23$(_context23) {
           while (1) {
             switch (_context23.prev = _context23.next) {
               case 0:
+                zilliqaControl = new zilliqa_ZilliqaControl(networkControl.provider);
+                address = this.payload.from;
+                storage = new storage_BrowserStorage();
+                lastNonce = 0;
+                _context23.next = 6;
+                return storage.get(fields.TRANSACTIONS);
+
+              case 6:
+                transactionsHistory = _context23.sent;
+                transactionsHistory = transactionsHistory[fields.TRANSACTIONS];
+
+                if (transactionsHistory && transactionsHistory[address]) {
+                  lastTx = transactionsHistory[address][networkControl.selected];
+
+                  if (lastTx.length > 0) {
+                    lastNonce = transactionsHistory[lastTx.length - 1].nonce;
+                  }
+                }
+
+                _context23.prev = 9;
+                _context23.next = 12;
+                return zilliqaControl.buildTxParams(this.payload.txParams, address, lastNonce, '');
+
+              case 12:
+                _ref2 = _context23.sent;
+                txParams = _ref2.txParams;
+                txParams.amount = txParams.amount.toString();
+                txParams.gasLimit = txParams.gasLimit.toString();
+                txParams.gasPrice = txParams.gasPrice.toString();
+                sendResponse({
+                  resolve: txParams
+                });
+                _context23.next = 23;
+                break;
+
+              case 20:
+                _context23.prev = 20;
+                _context23.t0 = _context23["catch"](9);
+                sendResponse({
+                  reject: _context23.t0.message
+                });
+
+              case 23:
               case "end":
                 return _context23.stop();
             }
           }
-        }, _callee23);
+        }, _callee23, this, [[9, 20]]);
       }));
 
-      function _transactionListing(_x24) {
+      function buildTxParams(_x24) {
+        return _buildTxParams.apply(this, arguments);
+      }
+
+      return buildTxParams;
+    }()
+  }, {
+    key: "_transactionListing",
+    value: function () {
+      var _transactionListing2 = _asyncToGenerator(
+      /*#__PURE__*/
+      regenerator_default.a.mark(function _callee24(txHash) {
+        return regenerator_default.a.wrap(function _callee24$(_context24) {
+          while (1) {
+            switch (_context24.prev = _context24.next) {
+              case 0:
+              case "end":
+                return _context24.stop();
+            }
+          }
+        }, _callee24);
+      }));
+
+      function _transactionListing(_x25) {
         return _transactionListing2.apply(this, arguments);
       }
 
@@ -4491,6 +4593,10 @@ function () {
 
         case MTypesZilPay.CONFIRM_TX:
           new handlers_TransactionHandler(message.payload).buildTransaction(sendResponse);
+          break;
+
+        case MTypesZilPay.BUILD_TX_PARAMS:
+          new handlers_TransactionHandler(message.payload).buildTxParams(sendResponse);
           break;
 
         case MTypesInternal.ACC_CHANGE_NAME:
@@ -86462,6 +86568,23 @@ __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js"
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es6.regexp.flags.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.regexp.flags.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 21.2.5.3 get RegExp.prototype.flags()
+if (__webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") && /./g.flags != 'g') __webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js").f(RegExp.prototype, 'flags', {
+  configurable: true,
+  get: __webpack_require__(/*! ./_flags */ "./node_modules/core-js/modules/_flags.js")
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es6.regexp.replace.js":
 /*!************************************************************!*\
   !*** ./node_modules/core-js/modules/es6.regexp.replace.js ***!
@@ -86589,6 +86712,44 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
     });
   }
 });
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.regexp.to-string.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.regexp.to-string.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+__webpack_require__(/*! ./es6.regexp.flags */ "./node_modules/core-js/modules/es6.regexp.flags.js");
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var $flags = __webpack_require__(/*! ./_flags */ "./node_modules/core-js/modules/_flags.js");
+var DESCRIPTORS = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js");
+var TO_STRING = 'toString';
+var $toString = /./[TO_STRING];
+
+var define = function (fn) {
+  __webpack_require__(/*! ./_redefine */ "./node_modules/core-js/modules/_redefine.js")(RegExp.prototype, TO_STRING, fn, true);
+};
+
+// 21.2.5.14 RegExp.prototype.toString()
+if (__webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () { return $toString.call({ source: 'a', flags: 'b' }) != '/a/b'; })) {
+  define(function toString() {
+    var R = anObject(this);
+    return '/'.concat(R.source, '/',
+      'flags' in R ? R.flags : !DESCRIPTORS && R instanceof RegExp ? $flags.call(R) : undefined);
+  });
+// FF44- RegExp#toString has a wrong name
+} else if ($toString.name != TO_STRING) {
+  define(function toString() {
+    return $toString.call(this);
+  });
+}
 
 
 /***/ }),

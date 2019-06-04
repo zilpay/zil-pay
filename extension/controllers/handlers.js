@@ -503,8 +503,7 @@ export class TransactionHandler {
         transaction,
         seedOrKey,
         accountID,
-        lastNonce,
-        networkControl.version
+        lastNonce
       );
     } catch(err) {
       sendResponse({ reject: err.message });
@@ -536,6 +535,41 @@ export class TransactionHandler {
       sendResponse({ reject: error.message });
     }
 
+  }
+
+  async buildTxParams(sendResponse) {
+    const zilliqaControl = new ZilliqaControl(
+      networkControl.provider
+    );
+    const address = this.payload.from;
+    const storage = new BrowserStorage();
+    let lastNonce = 0;
+    let transactionsHistory = await storage.get(fields.TRANSACTIONS);
+    transactionsHistory = transactionsHistory[fields.TRANSACTIONS];
+    
+    if (transactionsHistory && transactionsHistory[address]) {
+      const lastTx = transactionsHistory[address][networkControl.selected];
+      if (lastTx.length > 0) {
+        lastNonce = transactionsHistory[lastTx.length - 1].nonce;
+      }
+    }
+
+    try {
+      const { txParams } = await zilliqaControl.buildTxParams(
+        this.payload.txParams,
+        address,
+        lastNonce,
+        ''
+      );
+
+      txParams.amount = txParams.amount.toString();
+      txParams.gasLimit = txParams.gasLimit.toString();
+      txParams.gasPrice = txParams.gasPrice.toString();
+  
+      sendResponse({ resolve: txParams });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
   }
 
   async _transactionListing(txHash) {
