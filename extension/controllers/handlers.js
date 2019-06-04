@@ -572,6 +572,16 @@ export class TransactionHandler {
     }
   }
 
+  async sendSignTx(sendResponse) {
+    const zilliqaControl = new ZilliqaControl(
+      networkControl.provider
+    );
+
+    const result = await zilliqaControl.transactions.new(this.payload);
+    const sentTx = await zilliqaControl.signedTxSend(result);
+    sendResponse({ resolve: sentTx });
+  }
+
   async _transactionListing(txHash) {
     // const zilliqaControl = new ZilliqaControl(
     //   networkControl.provider

@@ -72,6 +72,12 @@ export class ZilliqaControl extends Zilliqa {
     });
   }
 
+  async signedTxSend(payload) {
+    return await this.provider.send( // Send to shard node.
+      RPCMethod.CreateTransaction, payload
+    );
+  } 
+
   async singTransaction(txData, seedOrPrivateKey, index, currentNonce) {
     /**
      * @param {txData}: Object with data about transaction.
@@ -95,9 +101,7 @@ export class ZilliqaControl extends Zilliqa {
     );
     // Sign transaction by current account. //
     const { txParams } = await this.wallet.sign(zilTxData);
-    return await this.provider.send( // Send to shard node.
-      RPCMethod.CreateTransaction, txParams
-    );
+    return await this.signedTxSend(txParams);
   }
 
   async version(msgVerison=1) {

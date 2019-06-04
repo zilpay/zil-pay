@@ -275,6 +275,7 @@ var MTypesZilPay = {
   INIT_DATA: 'init_data',
   CALL_SIGN_TX: 'c_s_t',
   BUILD_TX_PARAMS: 'build_tx_params',
+  SEND_SIGN_TX: 'send_sign_tx',
   GET_CONFIRM_TX: 'g_c_t',
   REJECT_CONFIRM_TX: 'r_c_t',
   CONFIRM_TX: 'c_t',
@@ -1387,16 +1388,47 @@ function (_Zilliqa) {
       return buildTxParams;
     }()
   }, {
+    key: "signedTxSend",
+    value: function () {
+      var _signedTxSend = _asyncToGenerator(
+      /*#__PURE__*/
+      regenerator_default.a.mark(function _callee3(payload) {
+        return regenerator_default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return this.provider.send( // Send to shard node.
+                index_umd["RPCMethod"].CreateTransaction, payload);
+
+              case 2:
+                return _context3.abrupt("return", _context3.sent);
+
+              case 3:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function signedTxSend(_x6) {
+        return _signedTxSend.apply(this, arguments);
+      }
+
+      return signedTxSend;
+    }()
+  }, {
     key: "singTransaction",
     value: function () {
       var _singTransaction = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee3(txData, seedOrPrivateKey, index, currentNonce) {
+      regenerator_default.a.mark(function _callee4(txData, seedOrPrivateKey, index, currentNonce) {
         var zilTxData, _ref2, txParams;
 
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
+        return regenerator_default.a.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 /**
                  * @param {txData}: Object with data about transaction.
@@ -1411,33 +1443,32 @@ function (_Zilliqa) {
                   this.wallet.addByMnemonic(seedOrPrivateKey, index);
                 }
 
-                _context3.next = 3;
+                _context4.next = 3;
                 return this.buildTxParams(txData, this.wallet.defaultAccount.address, currentNonce, this.wallet.defaultAccount.publicKey);
 
               case 3:
-                zilTxData = _context3.sent;
-                _context3.next = 6;
+                zilTxData = _context4.sent;
+                _context4.next = 6;
                 return this.wallet.sign(zilTxData);
 
               case 6:
-                _ref2 = _context3.sent;
+                _ref2 = _context4.sent;
                 txParams = _ref2.txParams;
-                _context3.next = 10;
-                return this.provider.send( // Send to shard node.
-                index_umd["RPCMethod"].CreateTransaction, txParams);
+                _context4.next = 10;
+                return this.signedTxSend(txParams);
 
               case 10:
-                return _context3.abrupt("return", _context3.sent);
+                return _context4.abrupt("return", _context4.sent);
 
               case 11:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
-      function singTransaction(_x6, _x7, _x8, _x9) {
+      function singTransaction(_x7, _x8, _x9, _x10) {
         return _singTransaction.apply(this, arguments);
       }
 
@@ -1448,31 +1479,31 @@ function (_Zilliqa) {
     value: function () {
       var _version = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee4() {
+      regenerator_default.a.mark(function _callee5() {
         var msgVerison,
             _ref3,
             result,
-            _args4 = arguments;
+            _args5 = arguments;
 
-        return regenerator_default.a.wrap(function _callee4$(_context4) {
+        return regenerator_default.a.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                msgVerison = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : 1;
-                _context4.next = 3;
+                msgVerison = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : 1;
+                _context5.next = 3;
                 return this.network.GetNetworkId();
 
               case 3:
-                _ref3 = _context4.sent;
+                _ref3 = _context5.sent;
                 result = _ref3.result;
-                return _context4.abrupt("return", util_dist_index_umd["bytes"].pack(result, msgVerison));
+                return _context5.abrupt("return", util_dist_index_umd["bytes"].pack(result, msgVerison));
 
               case 6:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
       function version() {
@@ -1486,15 +1517,15 @@ function (_Zilliqa) {
     value: function () {
       var _getAccountBySeed = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee5(seed, index) {
+      regenerator_default.a.mark(function _callee6(seed, index) {
         var _this$wallet$defaultA, address, publicKey, privateKey, _ref4, result;
 
-        return regenerator_default.a.wrap(function _callee5$(_context5) {
+        return regenerator_default.a.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
                 if (!(typeof seed !== 'string' || isNaN(index))) {
-                  _context5.next = 2;
+                  _context6.next = 2;
                   break;
                 }
 
@@ -1503,13 +1534,13 @@ function (_Zilliqa) {
               case 2:
                 this.wallet.addByMnemonic(seed, index);
                 _this$wallet$defaultA = this.wallet.defaultAccount, address = _this$wallet$defaultA.address, publicKey = _this$wallet$defaultA.publicKey, privateKey = _this$wallet$defaultA.privateKey;
-                _context5.next = 6;
+                _context6.next = 6;
                 return this.getBalance(address);
 
               case 6:
-                _ref4 = _context5.sent;
+                _ref4 = _context6.sent;
                 result = _ref4.result;
-                return _context5.abrupt("return", {
+                return _context6.abrupt("return", {
                   index: index,
                   publicKey: publicKey,
                   privateKey: privateKey,
@@ -1519,13 +1550,13 @@ function (_Zilliqa) {
 
               case 9:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this);
+        }, _callee6, this);
       }));
 
-      function getAccountBySeed(_x10, _x11) {
+      function getAccountBySeed(_x11, _x12) {
         return _getAccountBySeed.apply(this, arguments);
       }
 
@@ -1536,41 +1567,41 @@ function (_Zilliqa) {
     value: function () {
       var _getAccountByPrivateKey = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee6(importPrivateKey) {
+      regenerator_default.a.mark(function _callee7(importPrivateKey) {
         var index,
             account,
             _ref5,
             result,
-            _args6 = arguments;
+            _args7 = arguments;
 
-        return regenerator_default.a.wrap(function _callee6$(_context6) {
+        return regenerator_default.a.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
-                index = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : 0;
+                index = _args7.length > 1 && _args7[1] !== undefined ? _args7[1] : 0;
                 this.wallet.addByPrivateKey(importPrivateKey);
                 account = this.wallet.defaultAccount;
-                _context6.next = 5;
+                _context7.next = 5;
                 return this.getBalance(account.address);
 
               case 5:
-                _ref5 = _context6.sent;
+                _ref5 = _context7.sent;
                 result = _ref5.result;
                 account.address = Object(dist_index_umd["toChecksumAddress"])(account.address);
-                return _context6.abrupt("return", Object.assign(account, {
+                return _context7.abrupt("return", Object.assign(account, {
                   index: index,
                   balance: result
                 }));
 
               case 9:
               case "end":
-                return _context6.stop();
+                return _context7.stop();
             }
           }
-        }, _callee6, this);
+        }, _callee7, this);
       }));
 
-      function getAccountByPrivateKey(_x12) {
+      function getAccountByPrivateKey(_x13) {
         return _getAccountByPrivateKey.apply(this, arguments);
       }
 
@@ -1581,11 +1612,11 @@ function (_Zilliqa) {
     value: function () {
       var _addForSingTransaction = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee7(payload) {
+      regenerator_default.a.mark(function _callee8(payload) {
         var storage, forConfirm;
-        return regenerator_default.a.wrap(function _callee7$(_context7) {
+        return regenerator_default.a.wrap(function _callee8$(_context8) {
           while (1) {
-            switch (_context7.prev = _context7.next) {
+            switch (_context8.prev = _context8.next) {
               case 0:
                 /**
                  * @method: This method call add to storage some payload data.
@@ -1597,11 +1628,11 @@ function (_Zilliqa) {
                   }
                 });
                 storage = new storage_BrowserStorage();
-                _context7.next = 4;
+                _context8.next = 4;
                 return storage.get(fields.CONFIRM_TX);
 
               case 4:
-                forConfirm = _context7.sent;
+                forConfirm = _context8.sent;
 
                 if (util_dist_index_umd["validation"].isBase58(payload.toAddr)) {
                   payload.toAddr = Object(dist_index_umd["decodeBase58"])(payload.toAddr);
@@ -1618,7 +1649,7 @@ function (_Zilliqa) {
                   forConfirm = [payload];
                 }
 
-                _context7.next = 10;
+                _context8.next = 10;
                 return storage.set(new storage_BuildObject(fields.CONFIRM_TX, forConfirm));
 
               case 10:
@@ -1626,13 +1657,13 @@ function (_Zilliqa) {
 
               case 11:
               case "end":
-                return _context7.stop();
+                return _context8.stop();
             }
           }
-        }, _callee7, this);
+        }, _callee8, this);
       }));
 
-      function addForSingTransaction(_x13) {
+      function addForSingTransaction(_x14) {
         return _addForSingTransaction.apply(this, arguments);
       }
 
@@ -1643,36 +1674,36 @@ function (_Zilliqa) {
     value: function () {
       var _rmForSingTransaction = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee8() {
+      regenerator_default.a.mark(function _callee9() {
         var storage, forConfirm, removedConfirm;
-        return regenerator_default.a.wrap(function _callee8$(_context8) {
+        return regenerator_default.a.wrap(function _callee9$(_context9) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
                 /**
                  * @method: This method remove payload data from storage.
                  */
                 storage = new storage_BrowserStorage();
-                _context8.next = 3;
+                _context9.next = 3;
                 return storage.get(fields.CONFIRM_TX);
 
               case 3:
-                forConfirm = _context8.sent;
+                forConfirm = _context9.sent;
                 forConfirm = forConfirm[fields.CONFIRM_TX];
                 removedConfirm = forConfirm.pop();
-                _context8.next = 8;
+                _context9.next = 8;
                 return storage.set(new storage_BuildObject(fields.CONFIRM_TX, forConfirm));
 
               case 8:
                 this.notificationsCounter(forConfirm);
-                return _context8.abrupt("return", removedConfirm);
+                return _context9.abrupt("return", removedConfirm);
 
               case 10:
               case "end":
-                return _context8.stop();
+                return _context9.stop();
             }
           }
-        }, _callee8, this);
+        }, _callee9, this);
       }));
 
       function rmForSingTransaction() {
@@ -1686,11 +1717,11 @@ function (_Zilliqa) {
     value: function () {
       var _addTransactionList = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee9(tx, net) {
+      regenerator_default.a.mark(function _callee10(tx, net) {
         var storage, from, txsList, data;
-        return regenerator_default.a.wrap(function _callee9$(_context9) {
+        return regenerator_default.a.wrap(function _callee10$(_context10) {
           while (1) {
-            switch (_context9.prev = _context9.next) {
+            switch (_context10.prev = _context10.next) {
               case 0:
                 /**
                  * @method: Add to storage payload data of completed transaction.
@@ -1699,11 +1730,11 @@ function (_Zilliqa) {
                  */
                 storage = new storage_BrowserStorage();
                 from = Object(dist_index_umd["toChecksumAddress"])(tx.from);
-                _context9.next = 4;
+                _context10.next = 4;
                 return storage.get(fields.TRANSACTIONS);
 
               case 4:
-                txsList = _context9.sent;
+                txsList = _context10.sent;
                 data = {
                   Info: tx.Info,
                   TranID: tx.TranID,
@@ -1713,7 +1744,7 @@ function (_Zilliqa) {
                 };
 
                 if (net) {
-                  _context9.next = 8;
+                  _context10.next = 8;
                   break;
                 }
 
@@ -1746,18 +1777,18 @@ function (_Zilliqa) {
                   txsList[from][net].shift();
                 }
 
-                _context9.next = 13;
+                _context10.next = 13;
                 return storage.set(new storage_BuildObject(fields.TRANSACTIONS, txsList));
 
               case 13:
               case "end":
-                return _context9.stop();
+                return _context10.stop();
             }
           }
-        }, _callee9);
+        }, _callee10);
       }));
 
-      function addTransactionList(_x14, _x15) {
+      function addTransactionList(_x15, _x16) {
         return _addTransactionList.apply(this, arguments);
       }
 
@@ -1768,25 +1799,25 @@ function (_Zilliqa) {
     value: function () {
       var _rmAllTransactionList = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee10() {
+      regenerator_default.a.mark(function _callee11() {
         var storage;
-        return regenerator_default.a.wrap(function _callee10$(_context10) {
+        return regenerator_default.a.wrap(function _callee11$(_context11) {
           while (1) {
-            switch (_context10.prev = _context10.next) {
+            switch (_context11.prev = _context11.next) {
               case 0:
                 /**
                  * @method: clear all completed transaction from storage.
                  */
                 storage = new storage_BrowserStorage();
-                _context10.next = 3;
+                _context11.next = 3;
                 return storage.set(new storage_BuildObject(fields.TRANSACTIONS, {}));
 
               case 3:
               case "end":
-                return _context10.stop();
+                return _context11.stop();
             }
           }
-        }, _callee10);
+        }, _callee11);
       }));
 
       function rmAllTransactionList() {
@@ -1800,25 +1831,25 @@ function (_Zilliqa) {
     value: function () {
       var _notificationsCounter = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee11(value) {
+      regenerator_default.a.mark(function _callee12(value) {
         var forConfirm, storage;
-        return regenerator_default.a.wrap(function _callee11$(_context11) {
+        return regenerator_default.a.wrap(function _callee12$(_context12) {
           while (1) {
-            switch (_context11.prev = _context11.next) {
+            switch (_context12.prev = _context12.next) {
               case 0:
                 if (value) {
-                  _context11.next = 8;
+                  _context12.next = 8;
                   break;
                 }
 
                 storage = new storage_BrowserStorage();
-                _context11.next = 4;
+                _context12.next = 4;
                 return storage.get(fields.CONFIRM_TX);
 
               case 4:
-                forConfirm = _context11.sent;
+                forConfirm = _context12.sent;
                 forConfirm = forConfirm[fields.CONFIRM_TX];
-                _context11.next = 9;
+                _context12.next = 9;
                 break;
 
               case 8:
@@ -1833,13 +1864,13 @@ function (_Zilliqa) {
 
               case 10:
               case "end":
-                return _context11.stop();
+                return _context12.stop();
             }
           }
-        }, _callee11);
+        }, _callee12);
       }));
 
-      function notificationsCounter(_x16) {
+      function notificationsCounter(_x17) {
         return _notificationsCounter.apply(this, arguments);
       }
 
@@ -2718,7 +2749,8 @@ function (_AccountControl) {
                   balance: result,
                   address: payload.pubAddr,
                   index: payload.hwIndex,
-                  hwType: payload.hwType
+                  hwType: payload.hwType,
+                  pubKey: payload.publicKey
                 });
                 wallet.selectedAddress = wallet.identities.length - 1;
                 _context.next = 14;
@@ -4416,23 +4448,65 @@ function () {
       return buildTxParams;
     }()
   }, {
-    key: "_transactionListing",
+    key: "sendSignTx",
     value: function () {
-      var _transactionListing2 = _asyncToGenerator(
+      var _sendSignTx = _asyncToGenerator(
       /*#__PURE__*/
-      regenerator_default.a.mark(function _callee24(txHash) {
+      regenerator_default.a.mark(function _callee24(sendResponse) {
+        var zilliqaControl, result, sentTx;
         return regenerator_default.a.wrap(function _callee24$(_context24) {
           while (1) {
             switch (_context24.prev = _context24.next) {
               case 0:
+                zilliqaControl = new zilliqa_ZilliqaControl(networkControl.provider);
+                _context24.next = 3;
+                return zilliqaControl.transactions.new(this.payload);
+
+              case 3:
+                result = _context24.sent;
+                console.log(this.payload);
+                _context24.next = 7;
+                return zilliqaControl.signedTxSend(result);
+
+              case 7:
+                sentTx = _context24.sent;
+                console.log(sentTx);
+                sendResponse({
+                  resolve: this.payload
+                });
+
+              case 10:
               case "end":
                 return _context24.stop();
             }
           }
-        }, _callee24);
+        }, _callee24, this);
       }));
 
-      function _transactionListing(_x25) {
+      function sendSignTx(_x25) {
+        return _sendSignTx.apply(this, arguments);
+      }
+
+      return sendSignTx;
+    }()
+  }, {
+    key: "_transactionListing",
+    value: function () {
+      var _transactionListing2 = _asyncToGenerator(
+      /*#__PURE__*/
+      regenerator_default.a.mark(function _callee25(txHash) {
+        return regenerator_default.a.wrap(function _callee25$(_context25) {
+          while (1) {
+            switch (_context25.prev = _context25.next) {
+              case 0:
+              case "end":
+                return _context25.stop();
+            }
+          }
+        }, _callee25);
+      }));
+
+      function _transactionListing(_x26) {
         return _transactionListing2.apply(this, arguments);
       }
 
@@ -4597,6 +4671,10 @@ function () {
 
         case MTypesZilPay.BUILD_TX_PARAMS:
           new handlers_TransactionHandler(message.payload).buildTxParams(sendResponse);
+          break;
+
+        case MTypesZilPay.SEND_SIGN_TX:
+          new handlers_TransactionHandler(message.payload).sendSignTx(sendResponse);
           break;
 
         case MTypesInternal.ACC_CHANGE_NAME:

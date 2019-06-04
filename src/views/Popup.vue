@@ -140,7 +140,8 @@ export default {
     ...mapActions('Transactions', [
       'rejectConfirmTx',
       'confirmTx',
-      'buildTxParams'
+      'buildTxParams',
+      'sendSignTx'
     ]),
 
     async reject() {
@@ -175,13 +176,15 @@ export default {
           txParams: this.txParams,
           from: this.account.address
         });
-        const sig = await ledgerControll.sendTransaction(
+        txParams.pubKey = this.account.pubKey;
+        txParams.signature = await ledgerControll.sendTransaction(
           this.account.index,
           txParams
         );
-        console.log(sig);
+        txParams.from = this.account.address;
+        await this.sendSignTx(txParams);
       } catch(err) {
-        console.log(err);
+        console.error(err);
         // ** //
       }
     },

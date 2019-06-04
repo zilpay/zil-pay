@@ -103,9 +103,8 @@ export default {
     
       return null;
     },
-    async importByHw({ state }, { pubAddr, hwIndex, hwType }) {
+    async importByHw({ state }, payload) {
       const type = MTypesAuth.IMPORT_BY_HW;
-      const payload = { pubAddr, hwIndex, hwType };
       const result = await new Message({ type, payload }).send();
       
       if (result.resolve) {

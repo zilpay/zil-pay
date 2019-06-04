@@ -105,12 +105,14 @@ export default {
         if (isNaN(hwIndex)) {
           throw new Error('index must be number');
         }
-        let { pubAddr } = await ledgerControll.getAddresses(
+        let { pubAddr, publicKey } = await ledgerControll.getAddresses(
           hwIndex
         );
 
         pubAddr = fromBech32Address(pubAddr);
-        await this.importByHw({ pubAddr, hwIndex, hwType });
+        await this.importByHw({
+          pubAddr, hwIndex, hwType, publicKey
+        });
         this.spiner();
         this.$router.push({ name: 'Home' });
         return null;

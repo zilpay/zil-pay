@@ -55,6 +55,18 @@ export default {
       } else {
         throw new Error(result.reject);
       }
+    },
+    async sendSignTx({}, payload) {
+      const type = MTypesZilPay.SEND_SIGN_TX;
+      const result = await new Message({
+        type, payload
+      }).send();
+
+      if (result.resolve) {
+        return result.resolve;
+      } else {
+        throw new Error(result.reject);
+      }
     }
   },
   getters: {

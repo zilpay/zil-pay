@@ -118,6 +118,10 @@ export class Background {
       case MTypesZilPay.BUILD_TX_PARAMS:
         new TransactionHandler(message.payload).buildTxParams(sendResponse);
         break;
+
+      case MTypesZilPay.SEND_SIGN_TX:
+        new TransactionHandler(message.payload).sendSignTx(sendResponse);
+        break;
         
       case MTypesInternal.ACC_CHANGE_NAME:
         new WalletHandler(message.payload).changeAccountName(sendResponse);
