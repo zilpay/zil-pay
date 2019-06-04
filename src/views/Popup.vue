@@ -150,43 +150,43 @@ export default {
     },
     async confirm() {
       this.spiner();
-      
-      if (this.account.hwType) {
-        await this.hwConfirm();
-        this.spiner();
-        return null;
-      }
+
+      const gasFee = {
+        gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
+        gasLimit: this.gasLimit
+      };
 
       try {
-        await this.confirmTx({
-          gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
-          gasLimit: this.gasLimit
-        });
-      } catch(err) {
-        // ** //
-      }
-      this.spiner();
-      this.popupClouse();
-    },
-    async hwConfirm () {
-      let txParams;
-
-      try {
-        txParams = await this.buildTxParams({
-          txParams: this.txParams,
-          from: this.account.address
-        });
-        txParams.pubKey = this.account.pubKey;
-        txParams.signature = await ledgerControll.sendTransaction(
-          this.account.index,
-          txParams
-        );
-        txParams.from = this.account.address;
-        await this.sendSignTx(txParams);
+        if (this.account.hwType) {
+          await this.hwConfirm(gasFee);
+        } else {
+          await this.confirmTx(gasFee);
+        }
+        this.popupClouse();
       } catch(err) {
         console.error(err);
-        // ** //
       }
+
+      this.spiner();
+    },
+    async hwConfirm ({ gasPrice, gasLimit }) {
+      let txParams;
+
+      txParams = await this.buildTxParams({
+        txParams: this.txParams,
+        from: this.account.address
+      });
+      
+      txParams.gasPrice = gasPrice;
+      txParams.gasLimit = gasLimit;
+      txParams.pubKey = this.account.pubKey;
+
+      txParams.signature = await ledgerControll.sendTransaction(
+        this.account.index,
+        txParams
+      );
+      txParams.from = this.account.address;
+      return await this.sendSignTx(txParams);
     },
 
     popupClouse() {

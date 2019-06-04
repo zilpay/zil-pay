@@ -549,7 +549,7 @@ export class TransactionHandler {
     
     if (transactionsHistory && transactionsHistory[address]) {
       const lastTx = transactionsHistory[address][networkControl.selected];
-      if (lastTx.length > 0) {
+      if (lastTx.length > 0 && transactionsHistory[lastTx.length - 1]) {
         lastNonce = transactionsHistory[lastTx.length - 1].nonce;
       }
     }
@@ -573,13 +573,45 @@ export class TransactionHandler {
   }
 
   async sendSignTx(sendResponse) {
+    let resultTx;
     const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     );
 
-    const result = await zilliqaControl.transactions.new(this.payload);
-    const sentTx = await zilliqaControl.signedTxSend(result);
-    sendResponse({ resolve: sentTx });
+    await TransactionHandler.rmTransactionsConfirm();
+
+    try {
+      const { txParams } = await zilliqaControl.transactions.new(this.payload);
+      resultTx = await zilliqaControl.signedTxSend(txParams);
+    } catch(err) {
+      sendResponse({ reject: err.message });
+      return null;
+    }
+
+    const { result, req, error } = resultTx;
+    
+    if (result) {
+      let tx = Object.assign(result, req.payload.params[0]);
+      tx.from = this.payload.from;
+
+      await accountControl.zilliqa.addTransactionList(
+        tx, networkControl.selected
+      );
+      
+      sendResponse({ resolve: tx });
+
+      if (this.payload.uuid) {
+        TransactionHandler.returnTx(
+          { resolve: tx }, this.payload.uuid
+        );
+      }
+      this._transactionListing(tx.TranID);
+    } else {
+      if (this.payload.uuid) {
+        TransactionHandler.returnTx({ reject: error.message }, this.payload.uuid);
+      }
+      sendResponse({ reject: error.message });
+    }
   }
 
   async _transactionListing(txHash) {

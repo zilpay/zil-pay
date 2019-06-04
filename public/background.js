@@ -1393,6 +1393,7 @@ function (_Zilliqa) {
       var _signedTxSend = _asyncToGenerator(
       /*#__PURE__*/
       regenerator_default.a.mark(function _callee3(payload) {
+        var tx;
         return regenerator_default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -1402,9 +1403,10 @@ function (_Zilliqa) {
                 index_umd["RPCMethod"].CreateTransaction, payload);
 
               case 2:
-                return _context3.abrupt("return", _context3.sent);
+                tx = _context3.sent;
+                return _context3.abrupt("return", tx);
 
-              case 3:
+              case 4:
               case "end":
                 return _context3.stop();
             }
@@ -4405,7 +4407,7 @@ function () {
                 if (transactionsHistory && transactionsHistory[address]) {
                   lastTx = transactionsHistory[address][networkControl.selected];
 
-                  if (lastTx.length > 0) {
+                  if (lastTx.length > 0 && transactionsHistory[lastTx.length - 1]) {
                     lastNonce = transactionsHistory[lastTx.length - 1].nonce;
                   }
                 }
@@ -4453,34 +4455,86 @@ function () {
       var _sendSignTx = _asyncToGenerator(
       /*#__PURE__*/
       regenerator_default.a.mark(function _callee24(sendResponse) {
-        var zilliqaControl, result, sentTx;
+        var resultTx, zilliqaControl, _ref3, txParams, _resultTx2, result, req, error, tx;
+
         return regenerator_default.a.wrap(function _callee24$(_context24) {
           while (1) {
             switch (_context24.prev = _context24.next) {
               case 0:
                 zilliqaControl = new zilliqa_ZilliqaControl(networkControl.provider);
                 _context24.next = 3;
-                return zilliqaControl.transactions.new(this.payload);
+                return TransactionHandler.rmTransactionsConfirm();
 
               case 3:
-                result = _context24.sent;
-                console.log(this.payload);
-                _context24.next = 7;
-                return zilliqaControl.signedTxSend(result);
+                _context24.prev = 3;
+                _context24.next = 6;
+                return zilliqaControl.transactions.new(this.payload);
 
-              case 7:
-                sentTx = _context24.sent;
-                console.log(sentTx);
-                sendResponse({
-                  resolve: this.payload
-                });
+              case 6:
+                _ref3 = _context24.sent;
+                txParams = _ref3.txParams;
+                _context24.next = 10;
+                return zilliqaControl.signedTxSend(txParams);
 
               case 10:
+                resultTx = _context24.sent;
+                _context24.next = 17;
+                break;
+
+              case 13:
+                _context24.prev = 13;
+                _context24.t0 = _context24["catch"](3);
+                sendResponse({
+                  reject: _context24.t0.message
+                });
+                return _context24.abrupt("return", null);
+
+              case 17:
+                _resultTx2 = resultTx, result = _resultTx2.result, req = _resultTx2.req, error = _resultTx2.error;
+
+                if (!result) {
+                  _context24.next = 28;
+                  break;
+                }
+
+                tx = Object.assign(result, req.payload.params[0]);
+                tx.from = this.payload.from;
+                _context24.next = 23;
+                return handlers_accountControl.zilliqa.addTransactionList(tx, networkControl.selected);
+
+              case 23:
+                sendResponse({
+                  resolve: tx
+                });
+
+                if (this.payload.uuid) {
+                  TransactionHandler.returnTx({
+                    resolve: tx
+                  }, this.payload.uuid);
+                }
+
+                this._transactionListing(tx.TranID);
+
+                _context24.next = 30;
+                break;
+
+              case 28:
+                if (this.payload.uuid) {
+                  TransactionHandler.returnTx({
+                    reject: error.message
+                  }, this.payload.uuid);
+                }
+
+                sendResponse({
+                  reject: error.message
+                });
+
+              case 30:
               case "end":
                 return _context24.stop();
             }
           }
-        }, _callee24, this);
+        }, _callee24, this, [[3, 13]]);
       }));
 
       function sendSignTx(_x25) {

@@ -56,11 +56,13 @@ export default {
         throw new Error(result.reject);
       }
     },
-    async sendSignTx({}, payload) {
+    async sendSignTx({ state }, payload) {
       const type = MTypesZilPay.SEND_SIGN_TX;
       const result = await new Message({
         type, payload
       }).send();
+
+      state.confirmationTx.pop();
 
       if (result.resolve) {
         return result.resolve;

@@ -73,9 +73,10 @@ export class ZilliqaControl extends Zilliqa {
   }
 
   async signedTxSend(payload) {
-    return await this.provider.send( // Send to shard node.
+    const tx =  await this.provider.send( // Send to shard node.
       RPCMethod.CreateTransaction, payload
     );
+    return tx;
   } 
 
   async singTransaction(txData, seedOrPrivateKey, index, currentNonce) {
