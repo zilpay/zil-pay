@@ -90,6 +90,7 @@ export class AccountControl {
   }
 
   async walletUpdate(wallet) {
+    wallet.identities = wallet.identities.filter(acc => !!acc);
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
     );

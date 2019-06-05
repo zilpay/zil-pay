@@ -18,7 +18,9 @@ export default {
         this.wallet.selectedAddress
       ];
 
-      if (!account.name) {
+      if (!account.name && account.hwType) {
+        account.name = `Ledger ${account.index + 1}`;
+      } else if (!account.name) {
         account.name = `Account ${account.index + 1}`;
       }
 
@@ -33,7 +35,8 @@ export default {
     ...mapActions('Wallet', [
       'createAccount',
       'changeAccountName',
-      'logOut'
+      'logOut',
+      'removeAccount'
     ]),
 
     split(hex, length=10) {

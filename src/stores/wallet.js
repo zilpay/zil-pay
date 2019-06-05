@@ -114,6 +114,30 @@ export default {
         throw new Error(result.reject);
       }
     },
+    removeAccount({ state, commit }) {
+      if (state.wallet.selectedAddress == 0) {
+        return null;
+      }
+
+      delete state.wallet.identities[
+        state.wallet.selectedAddress
+      ];
+
+      state.wallet.selectedAddress--;
+      state.wallet.identities = state.wallet.identities.filter(el => !!el);
+      commit('mutateWallet', state.wallet);
+    },
+    walletReset({ state, commit }) {
+      if (state.wallet.selectedAddress == 0) {
+        return null;
+      }
+      const firstIndex = 0;
+      state.wallet.identities = state.wallet.identities.filter(
+        (_, index) => index == firstIndex
+      );
+      state.wallet.selectedAddress = firstIndex;
+      commit('mutateWallet', state.wallet);
+    },
     logOut({ commit }) {
       Message.signal(MTypesAuth.LOG_OUT).send();
       commit('mutateIsEnable', false);

@@ -2314,10 +2314,13 @@ function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _context3.next = 2;
+                wallet.identities = wallet.identities.filter(function (acc) {
+                  return !!acc;
+                });
+                _context3.next = 3;
                 return this._storage.set(new storage_BuildObject(fields.WALLET, wallet));
 
-              case 2:
+              case 3:
               case "end":
                 return _context3.stop();
             }
@@ -2781,7 +2784,7 @@ function (_AccountControl) {
       var _importAccountByPrivateKey = _asyncToGenerator(
       /*#__PURE__*/
       regenerator_default.a.mark(function _callee2(privateKey) {
-        var _ref2, decryptImported, wallet, index, account;
+        var _ref2, decryptImported, wallet, index, account, isSome;
 
         return regenerator_default.a.wrap(function _callee2$(_context2) {
           while (1) {
@@ -2827,6 +2830,14 @@ function (_AccountControl) {
 
               case 20:
                 account = _context2.sent;
+                wallet.identities.forEach(function (acc) {
+                  if (acc.address == account.address) {
+                    throw new Error(account_errors.ImportUniqueWrong);
+                  }
+                });
+                isSome = decryptImported.filter(function (acc) {
+                  return acc.index == account.index || acc.privateKey === account.privateKey;
+                }).length > 0;
                 wallet.selectedAddress = wallet.identities.length;
                 wallet.identities.push({
                   index: index,
@@ -2834,28 +2845,34 @@ function (_AccountControl) {
                   balance: account.balance,
                   isImport: true
                 });
-                decryptImported.forEach(function (el) {
-                  if (el.privateKey === account.privateKey) {
-                    throw new Error(account_errors.ImportUniqueWrong);
-                  } else if (el.index === account.index) {
-                    throw new Error(account_errors.IndexUniqueWrong);
-                  }
-                });
-                decryptImported.push({
-                  index: index,
-                  privateKey: privateKey
-                });
-                _context2.next = 27;
+
+                if (isSome) {
+                  decryptImported.map(function (acc) {
+                    if (acc.index == account.index || acc.privateKey === account.privateKey) {
+                      acc = {
+                        index: index,
+                        privateKey: privateKey
+                      };
+                    }
+                  });
+                } else {
+                  decryptImported.push({
+                    index: index,
+                    privateKey: privateKey
+                  });
+                }
+
+                _context2.next = 28;
                 return this.auth.updateImported(decryptImported);
 
-              case 27:
-                _context2.next = 29;
+              case 28:
+                _context2.next = 30;
                 return this._storage.set(new storage_BuildObject(fields.WALLET, wallet));
 
-              case 29:
+              case 30:
                 return _context2.abrupt("return", wallet);
 
-              case 30:
+              case 31:
               case "end":
                 return _context2.stop();
             }
