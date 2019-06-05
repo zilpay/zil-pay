@@ -67,8 +67,21 @@ export default {
     },
     
     addressToColor(hex) {
-      hex = hex.replace('0x', '');
-      return '#'+hex.slice(-6);
+      let rgb = this.hexToRgb(hex.slice(-6));
+
+      rgb.r = rgb.r > 150 ? 150 : rgb.r;
+      rgb.g = rgb.g > 200 ? 200 : rgb.g;
+      rgb.b = rgb.b > 100 ? 100 : rgb.b;
+    
+      return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    },
+    hexToRgb(hex) {
+      const bigint = parseInt(hex, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+  
+      return { r, g, b };
     }
   }
 };
