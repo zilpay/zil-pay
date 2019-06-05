@@ -29,8 +29,9 @@
 
 
 <script>
+// this modal implement https://github.com/mburakerman/vuexplosive-modal
 export default {
-  name: "Modal",
+  name: 'Modal',
   props: {
     visible: {
       default: false

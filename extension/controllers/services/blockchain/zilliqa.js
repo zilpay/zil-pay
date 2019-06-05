@@ -77,7 +77,7 @@ export class ZilliqaControl extends Zilliqa {
       RPCMethod.CreateTransaction, payload
     );
     return tx;
-  } 
+  }
 
   async singTransaction(txData, seedOrPrivateKey, index, currentNonce) {
     /**

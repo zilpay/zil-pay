@@ -36,7 +36,9 @@
           </div>
         </div>
 
-        <small class="text-danger">{{isMaxAmount}}</small>
+        <small class="text-danger">
+          {{isMaxAmount || errMsg}}
+        </small>
 
         <div class="text-primary text-right advance"
              @click="isAdvance = !isAdvance">
@@ -97,7 +99,8 @@ export default {
       isInput: false,
 
       data: null,
-      popupId: null
+      popupId: null,
+      errMsg: null
     };
   },
   computed: {
@@ -164,7 +167,7 @@ export default {
         }
         this.popupClouse();
       } catch(err) {
-        console.error(err);
+        this.errMsg = err.message;
       }
 
       this.spiner();
