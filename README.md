@@ -39,7 +39,7 @@ Donate
 
 Maybe you want to help.
 
-- ZIL: 0x77E27C39ce572283b848E2cDF32ccE761e34Fa49
+- ZIL: zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace
 - ETH: 0x246C5881E3F109B2aF170F5C773EF969d3da581B
 - BTC: 326zbJQmYY4yhKVoXHFaomshakt5av8KjP
 - ZEC: t1dZMw8FVWnGKC9cyXKaiKWmmAFmQoeNc5Y
