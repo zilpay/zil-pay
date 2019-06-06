@@ -1,7 +1,7 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
 import { toChecksumAddress, decodeBase58, fromBech32Address } from '@zilliqa-js/crypto'
-import { Long, BN, bytes, validation, units } from '@zilliqa-js/util'
+import { Long, BN, bytes, validation } from '@zilliqa-js/util'
 import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 import { NotificationsControl } from '../browser/notifications'
 import fields from '../../../../config/fields'
@@ -15,7 +15,7 @@ export class ZilliqaControl extends Zilliqa {
 
   async getBalance(address) {
     // Get the balance by address. // 
-    let { result, error } = await this.blockchain.getBalance(
+    let { result } = await this.blockchain.getBalance(
       address.replace('0x', '')
     );
     let nonce = 0;
@@ -30,25 +30,8 @@ export class ZilliqaControl extends Zilliqa {
     return { result, nonce };
   }
 
-  async singTransaction(txData, seedOrPrivateKey, index, currentNonce, msgId) {
-    /**
-     * @param {txData}: Object with data about transaction.
-     * @param seedOrPrivateKey: type String, seed phrase or private key.
-     * @param index: type Number, the index of address from seed phrase.
-     * @prarm msgId: Message version network.
-     */
-
-    // importing account from private key or seed phrase. //
-    if (validation.isPrivateKey(seedOrPrivateKey)) {
-      this.wallet.addByPrivateKey(seedOrPrivateKey);
-    } else {
-      this.wallet.addByMnemonic(seedOrPrivateKey, index);
-    }
-
-    const pubKey = this.wallet.defaultAccount.publicKey;
-    const balance = await this.getBalance(
-      this.wallet.defaultAccount.address
-    );
+  async buildTxParams(txData, from, currentNonce, pubKey) {
+    const balance = await this.getBalance(from);
     let {
       amount,   // Amount of zil. type Number.
       code,     // Value contract code. type String.
@@ -61,7 +44,7 @@ export class ZilliqaControl extends Zilliqa {
     } = txData;
 
     if (!version) {
-      version = await this.version(msgId);
+      version = await this.version();
     }
     if (isNaN(nonce)) {
       nonce = balance.nonce;
@@ -76,7 +59,7 @@ export class ZilliqaControl extends Zilliqa {
 
     nonce++;
 
-    const zilTxData = this.transactions.new({
+    return this.transactions.new({
       nonce,
       gasPrice,
       amount,
@@ -87,11 +70,39 @@ export class ZilliqaControl extends Zilliqa {
       code,
       data
     });
+  }
+
+  async signedTxSend(payload) {
+    const tx =  await this.provider.send( // Send to shard node.
+      RPCMethod.CreateTransaction, payload
+    );
+    return tx;
+  }
+
+  async singTransaction(txData, seedOrPrivateKey, index, currentNonce) {
+    /**
+     * @param {txData}: Object with data about transaction.
+     * @param seedOrPrivateKey: type String, seed phrase or private key.
+     * @param index: type Number, the index of address from seed phrase.
+     * @prarm msgId: Message version network.
+     */
+
+    // importing account from private key or seed phrase. //
+    if (validation.isPrivateKey(seedOrPrivateKey)) {
+      this.wallet.addByPrivateKey(seedOrPrivateKey);
+    } else {
+      this.wallet.addByMnemonic(seedOrPrivateKey, index);
+    }
+
+    const zilTxData = await this.buildTxParams(
+      txData,
+      this.wallet.defaultAccount.address,
+      currentNonce,
+      this.wallet.defaultAccount.publicKey
+    );
     // Sign transaction by current account. //
     const { txParams } = await this.wallet.sign(zilTxData);
-    return await this.provider.send( // Send to shard node.
-      RPCMethod.CreateTransaction, txParams
-    );
+    return await this.signedTxSend(txParams);
   }
 
   async version(msgVerison=1) {

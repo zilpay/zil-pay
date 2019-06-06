@@ -75,6 +75,10 @@ export class Background {
         new AccountHandler(message.payload).importPrivateKey(sendResponse);
         break;
 
+      case MTypesAuth.IMPORT_BY_HW:
+        new AccountHandler(message.payload).ImportHwAccount(sendResponse);
+        break;
+
       case MTypesInternal.GET_DECRYPT_SEED:
         new WalletHandler().getRandomSeedPhrase(sendResponse);
         break;
@@ -110,7 +114,15 @@ export class Background {
       case MTypesZilPay.CONFIRM_TX:
         new TransactionHandler(message.payload).buildTransaction(sendResponse);
         break;
+      
+      case MTypesZilPay.BUILD_TX_PARAMS:
+        new TransactionHandler(message.payload).buildTxParams(sendResponse);
+        break;
 
+      case MTypesZilPay.SEND_SIGN_TX:
+        new TransactionHandler(message.payload).sendSignTx(sendResponse);
+        break;
+        
       case MTypesInternal.ACC_CHANGE_NAME:
         new WalletHandler(message.payload).changeAccountName(sendResponse);
         break;

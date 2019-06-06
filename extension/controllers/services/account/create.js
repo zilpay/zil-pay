@@ -70,7 +70,7 @@ export class AccountControl {
 
     let { wallet } = await this._storage.get(fields.WALLET);
     const index = wallet.identities.filter(
-      el => !el.isImport
+      el => !el.isImport && !el.hwType
     ).length;
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, index
@@ -90,6 +90,7 @@ export class AccountControl {
   }
 
   async walletUpdate(wallet) {
+    wallet.identities = wallet.identities.filter(acc => !!acc);
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
     );

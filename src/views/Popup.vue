@@ -36,7 +36,9 @@
           </div>
         </div>
 
-        <small class="text-danger">{{isMaxAmount}}</small>
+        <small class="text-danger">
+          {{isMaxAmount || errMsg}}
+        </small>
 
         <div class="text-primary text-right advance"
              @click="isAdvance = !isAdvance">
@@ -77,7 +79,9 @@ import toConversion from '../filters/to-conversion'
 import fromZil from '../filters/from-zil'
 import toZIL from '../filters/to-zil'
 import { ERRORCODE } from '../../lib/errors/code'
+import LedgerControll from '../../lib/hardware/ledger'
 
+const ledgerControll = new LedgerControll();
 
 export default {
   name: 'Send',
@@ -95,7 +99,8 @@ export default {
       isInput: false,
 
       data: null,
-      popupId: null
+      popupId: null,
+      errMsg: null
     };
   },
   computed: {
@@ -126,13 +131,20 @@ export default {
       }
 
       return null;
+    },
+    txParams() {
+      const txs = this.confirmationTx;
+      const length = txs.length;
+      return txs[length - 1];
     }
   },
   methods: {
     ...mapMutations(['spiner']),
     ...mapActions('Transactions', [
       'rejectConfirmTx',
-      'confirmTx'
+      'confirmTx',
+      'buildTxParams',
+      'sendSignTx'
     ]),
 
     async reject() {
@@ -141,16 +153,43 @@ export default {
     },
     async confirm() {
       this.spiner();
+
+      const gasFee = {
+        gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
+        gasLimit: this.gasLimit
+      };
+
       try {
-        await this.confirmTx({
-          gasPrice: units.toQa(this.gasPrice, units.Units.Li).toString(),
-          gasLimit: this.gasLimit
-        });
+        if (this.account.hwType) {
+          await this.hwConfirm(gasFee);
+        } else {
+          await this.confirmTx(gasFee);
+        }
+        this.popupClouse();
       } catch(err) {
-        // ** //
+        this.errMsg = err.message;
       }
+
       this.spiner();
-      this.popupClouse();
+    },
+    async hwConfirm ({ gasPrice, gasLimit }) {
+      let txParams;
+
+      txParams = await this.buildTxParams({
+        txParams: this.txParams,
+        from: this.account.address
+      });
+      
+      txParams.gasPrice = gasPrice;
+      txParams.gasLimit = gasLimit;
+      txParams.pubKey = this.account.pubKey;
+
+      txParams.signature = await ledgerControll.sendTransaction(
+        this.account.index,
+        txParams
+      );
+      txParams.from = this.account.address;
+      return await this.sendSignTx(txParams);
     },
 
     popupClouse() {

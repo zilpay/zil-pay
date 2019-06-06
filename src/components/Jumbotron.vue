@@ -19,6 +19,7 @@
             <li><a :href="exploreAddress(account.address)" target="_blanck">Account details</a></li>
             <li @click="$router.push({name: 'Networks'})">Change network</li>
             <li @click="$router.push({name: 'Export', params: {type: 'key'}})">Export PrivateKey</li>
+            <li v-if="wallet.selectedAddress > 0" @click="removeAccount">Remove account</li>
             <li @click="logOut">Log out</li>
           </ul>
         </div>

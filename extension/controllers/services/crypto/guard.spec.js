@@ -1,7 +1,7 @@
 import { CryptoGuard } from './guard'
 import uuidv4 from 'uuid/v4'
 import errorCodes from './errors'
-import Crypto from '../../../lib/crypto'
+import Crypto from '../../../../lib/crypto'
 
 
 describe('Test guard control', () => {

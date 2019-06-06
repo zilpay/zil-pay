@@ -1,6 +1,6 @@
 import { NetworkControl } from './index'
-import ZilliqaConfig from '../../../config/zil'
-import fields from '../../../config/fields'
+import ZilliqaConfig from '../../../../config/zil'
+import fields from '../../../../config/fields'
 
 
 describe('Test network control', () => {

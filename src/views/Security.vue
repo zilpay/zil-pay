@@ -19,6 +19,13 @@
         <h5>Restore new mnemonic Seed Phrase</h5>
         <button @click="restore">restore</button>
       </div>
+
+      <div class="form">
+        <h5>Restore your wallet to first form</h5>
+        <button @click="resetWalelt">Reset wallet</button>
+      </div>
+      
+      <br>
     </main>
   </div>
 </template>
@@ -35,9 +42,12 @@ export default {
     ...mapActions('Static', [
       'clearDappList'
     ]),
+    ...mapActions('Wallet', [
+      'walletReset'
+    ]),
 
     restore() {
-      this.$router.push({name: 'Restore'});
+      this.$router.push({ name: 'Restore' });
     },
     ExportSeed() {
       this.$router.push({
@@ -47,6 +57,10 @@ export default {
     },
     async clearData() {
       await this.clearDappList();
+      this.$router.push({ name: 'Home' });
+    },
+    resetWalelt() {
+      this.walletReset();
       this.$router.push({ name: 'Home' });
     }
   }

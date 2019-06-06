@@ -2,15 +2,15 @@
   <div>
     <main class="first-page">
       <img src="/icon128.png">
-      <h2 class="text-black">ZilPay</h2>
+      <h2 class="text-black">New ZilPay</h2>
       
       <div class="panels">
-        <div class="form-border">
+        <div>
           <img src="/icons/download.svg" height="70">
           <h5>I have mnemonic word phrase.</h5>
           <button @click="$router.push({name: 'Restore'})">Restore</button>
         </div>
-        <div class="form-border">
+        <div>
           <img src="/icons/plus.svg" height="70">
           <h5>let's create new Account.</h5>
           <button @click="$router.push({name: 'Create'})">Create</button>
@@ -47,6 +47,9 @@ export default {
   grid-gap: 10px;
 
   div {
+    border: 1px solid rgb(216, 216, 216);
+    box-sizing: border-box;
+    border-radius: 10px;
     padding: 10px;
     display: grid;
     justify-items: center;

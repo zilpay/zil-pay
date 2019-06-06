@@ -4,7 +4,7 @@ import { AccountImporter } from './import'
 import { AccountExporter } from './export'
 import uuidv4 from 'uuid/v4'
 import errorsCode from './errors'
-import fields from '../../../config/fields'
+import fields from '../../../../config/fields'
 
 
 const decryptSeed = 'banana blind business arrest escape blame stadium display border flower daughter story';

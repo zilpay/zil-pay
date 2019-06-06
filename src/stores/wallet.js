@@ -103,6 +103,39 @@ export default {
     
       return null;
     },
+    async importByHw({ state }, payload) {
+      const type = MTypesAuth.IMPORT_BY_HW;
+      const result = await new Message({ type, payload }).send();
+      
+      if (result.resolve) {
+        state.wallet = result.resolve;
+        return result.resolve;
+      } else if (result.reject) {
+        throw new Error(result.reject);
+      }
+    },
+    removeAccount({ state, commit }) {
+      if (state.wallet.selectedAddress == 0) {
+        return null;
+      }
+
+      delete state.wallet.identities[
+        state.wallet.selectedAddress
+      ];
+
+      state.wallet.selectedAddress--;
+      state.wallet.identities = state.wallet.identities.filter(el => !!el);
+      commit('mutateWallet', state.wallet);
+    },
+    walletReset({ state, commit }) {
+      const firstIndex = 0;
+      const firstAccount = state.wallet.identities[firstIndex];
+      
+      state.wallet.identities = [firstAccount];
+      state.wallet.selectedAddress = firstIndex;
+      
+      commit('mutateWallet', state.wallet);
+    },
     logOut({ commit }) {
       Message.signal(MTypesAuth.LOG_OUT).send();
       commit('mutateIsEnable', false);
@@ -113,6 +146,5 @@ export default {
     randomSeed: () => Message.signal(MTypesInternal.GET_DECRYPT_SEED).send()
   },
   getters: {
-
   }
 };

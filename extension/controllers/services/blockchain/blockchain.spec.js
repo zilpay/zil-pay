@@ -1,7 +1,7 @@
 import { ZilliqaControl } from './zilliqa'
 import { NetworkControl } from '../network'
 import { toChecksumAddress } from '@zilliqa-js/crypto';
-import fields from '../../../config/fields'
+import fields from '../../../../config/fields'
 
 
 const decryptSeed = 'banana blind business arrest escape blame stadium display border flower daughter story';
@@ -56,7 +56,7 @@ describe('Test zilliqa control', () => {
       data: '',
       gasLimit: '123',
       gasPrice: '1000000000',
-      toAddr: '1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3'
+      toAddr: '0x1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3'
     };
 
     await zilliqaControl.addForSingTransaction(tx);
@@ -78,9 +78,9 @@ describe('Test zilliqa control', () => {
       Info: 'Contract Txn, Sent To Ds',
       TranID: 'd1c197340e834ede4c2203a4594316c47cf1961887a9bc6f8d804bd6adbccbcd',
       amount: '1000000000000',
-      toAddr: '1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3',
+      toAddr: '0x1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3',
       nonce: 106,
-      from: 'eef22809b26479ce53f52a0849dbbdad630e0f35'
+      from: '0xEEf22809B26479ce53F52A0849DbBDAd630E0F35'
     };
 
     await zilliqaControl.addTransactionList(tx, networkControl.selected);

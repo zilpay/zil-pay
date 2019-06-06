@@ -204,6 +204,17 @@ export class AccountHandler {
     }
   }
 
+  async ImportHwAccount(sendResponse) {
+    const accountImporter = new AccountImporter(accountControl);
+
+    try {
+      const wallet = await accountImporter.importByHwAccount(this.payload);
+      sendResponse({ resolve: wallet });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
   async createAccountBySeed(sendResponse) {
     try {
       const wallet = await accountControl.newAccountBySeed();
@@ -492,8 +503,7 @@ export class TransactionHandler {
         transaction,
         seedOrKey,
         accountID,
-        lastNonce,
-        networkControl.version
+        lastNonce
       );
     } catch(err) {
       sendResponse({ reject: err.message });
@@ -527,54 +537,125 @@ export class TransactionHandler {
 
   }
 
+  async buildTxParams(sendResponse) {
+    const zilliqaControl = new ZilliqaControl(
+      networkControl.provider
+    );
+    const address = this.payload.from;
+    const storage = new BrowserStorage();
+    let lastNonce = 0;
+    let transactionsHistory = await storage.get(fields.TRANSACTIONS);
+    transactionsHistory = transactionsHistory[fields.TRANSACTIONS];
+    
+    if (transactionsHistory && transactionsHistory[address]) {
+      const lastTx = transactionsHistory[address][networkControl.selected];
+      if (lastTx.length > 0 && transactionsHistory[lastTx.length - 1]) {
+        lastNonce = transactionsHistory[lastTx.length - 1].nonce;
+      }
+    }
+
+    try {
+      const { txParams } = await zilliqaControl.buildTxParams(
+        this.payload.txParams,
+        address,
+        lastNonce,
+        ''
+      );
+
+      txParams.amount = txParams.amount.toString();
+      txParams.gasLimit = txParams.gasLimit.toString();
+      txParams.gasPrice = txParams.gasPrice.toString();
+  
+      sendResponse({ resolve: txParams });
+    } catch(err) {
+      sendResponse({ reject: err.message });
+    }
+  }
+
+  async sendSignTx(sendResponse) {
+    let resultTx;
+    const zilliqaControl = new ZilliqaControl(
+      networkControl.provider
+    );
+
+    await TransactionHandler.rmTransactionsConfirm();
+
+    try {
+      const { txParams } = await zilliqaControl.transactions.new(this.payload);
+      resultTx = await zilliqaControl.signedTxSend(txParams);
+    } catch(err) {
+      sendResponse({ reject: err.message });
+      return null;
+    }
+
+    const { result, req, error } = resultTx;
+    
+    if (result) {
+      let tx = Object.assign(result, req.payload.params[0]);
+      tx.from = this.payload.from;
+
+      await accountControl.zilliqa.addTransactionList(
+        tx, networkControl.selected
+      );
+      
+      sendResponse({ resolve: tx });
+
+      if (this.payload.uuid) {
+        TransactionHandler.returnTx(
+          { resolve: tx }, this.payload.uuid
+        );
+      }
+      this._transactionListing(tx.TranID);
+    } else {
+      if (this.payload.uuid) {
+        TransactionHandler.returnTx({ reject: error.message }, this.payload.uuid);
+      }
+      sendResponse({ reject: error.message });
+    }
+  }
+
   async _transactionListing(txHash) {
-    // const zilliqaControl = new ZilliqaControl(
-    //   networkControl.provider
-    // );
-    // const net = `network=${networkControl.selected}`;
-    // const timeInterval = 4000;
-    // const countIntervl = 50;
-    // const title = 'ZilPay Transactions';
-    // let k = 0;
+    const zilliqaControl = new ZilliqaControl(
+      networkControl.provider
+    );
+    zilliqaControl.blockchain.c
+    const net = `network=${networkControl.selected}`;
+    const timeInterval = 4000;
+    const countIntervl = 100;
+    const title = 'ZilPay Transactions';
+    let k = 0;
 
-    // const interval = setInterval(
-    //   async () => {
+    const interval = setInterval(
+      async () => {
         
-    //     try {
-    //       await zilliqaControl
-    //       .blockchain
-    //       .getTransaction(txHash);
+        try {
+          await zilliqaControl
+          .blockchain
+          .getTransaction(txHash);
           
-    //       new NotificationsControl({
-    //         url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
-    //         title: title,
-    //         message: 'Transactions send to shard done.'
-    //       }).create();
+          new NotificationsControl({
+            url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
+            title: title,
+            message: 'Transactions send to shard done.'
+          }).create();
 
-    //       clearInterval(interval);
-    //       return null;
-    //     } catch(err) {
-    //       if (k > countIntervl) {
+          clearInterval(interval);
+          return null;
+        } catch(err) {
+          if (k > countIntervl) {
+            clearInterval(interval);
+            return null;
+          }
+        }
 
-    //         new NotificationsControl({
-    //           url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
-    //           title: title,
-    //           message: 'Transactions not completed'
-    //         }).create();
+        if (k > countIntervl) {
+          clearInterval(interval);
+        }
 
-    //         clearInterval(interval);
-    //         return null;
-    //       }
-    //     }
-
-    //     if (k > countIntervl) {
-    //       clearInterval(interval);
-    //     }
-
-    //     k++;
-    //   },
-    //   timeInterval
-    // );
+        k++;
+      },
+      timeInterval
+    );
   }
 
 }

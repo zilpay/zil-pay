@@ -18,8 +18,10 @@ export default {
         this.wallet.selectedAddress
       ];
 
-      if (!account.name) {
-        account.name = `Account ${account.index + 1}`;
+      if (!account.name && account.hwType) {
+        account.name = `Ledger ${account.index}`;
+      } else if (!account.name) {
+        account.name = `Account ${account.index}`;
       }
 
       return account;
@@ -33,7 +35,8 @@ export default {
     ...mapActions('Wallet', [
       'createAccount',
       'changeAccountName',
-      'logOut'
+      'logOut',
+      'removeAccount'
     ]),
 
     split(hex, length=10) {
@@ -64,8 +67,21 @@ export default {
     },
     
     addressToColor(hex) {
-      hex = hex.replace('0x', '');
-      return '#'+hex.slice(-6);
+      let rgb = this.hexToRgb(hex.slice(-6));
+
+      rgb.r = rgb.r > 150 ? 150 : rgb.r;
+      rgb.g = rgb.g > 200 ? 200 : rgb.g;
+      rgb.b = rgb.b > 100 ? 100 : rgb.b;
+    
+      return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    },
+    hexToRgb(hex) {
+      const bigint = parseInt(hex, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+  
+      return { r, g, b };
     }
   }
 };

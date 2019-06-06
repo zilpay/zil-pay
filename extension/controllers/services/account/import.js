@@ -20,10 +20,40 @@ export class AccountImporter extends AccountControl {
     throw new Error(errorsCode.DisableMethod);
   }
 
+  async importByHwAccount(payload) {
+    let wallet = await this._storage.get(fields.WALLET);
+    wallet = wallet[fields.WALLET];
+
+    wallet.identities.forEach(account => {
+      if (account.address == payload.pubAddr) {
+        throw new Error(errorsCode.ImportUniqueWrong);
+      }
+    });
+
+    this.zilliqa = new ZilliqaControl(this.network.provider);
+
+    const { result } = await this.zilliqa.getBalance(payload.pubAddr);
+
+    wallet.identities.push({
+      balance: result,
+      address: payload.pubAddr,
+      index: payload.hwIndex,
+      hwType: payload.hwType,
+      pubKey: payload.publicKey
+    });
+    wallet.selectedAddress = wallet.identities.length - 1;
+
+    await this._storage.set(
+      new BuildObject(fields.WALLET, wallet)
+    );
+
+    return wallet;
+  }
+
   async importAccountByPrivateKey(privateKey) {
     await this.auth.vaultSync();
 
-    const { decryptImported } = await this.auth.getWallet();
+    let { decryptImported } = await this.auth.getWallet();
 
     if (!this.auth.isReady) {
       throw new Error(
@@ -45,6 +75,15 @@ export class AccountImporter extends AccountControl {
       privateKey, index
     );
 
+    wallet.identities.forEach(acc => {
+      if (acc.address == account.address) {
+        throw new Error(errorsCode.ImportUniqueWrong);
+      }
+    });
+    const isSome = decryptImported.filter(
+      acc => acc.index == account.index || acc.privateKey === account.privateKey
+    ).length > 0;
+
     wallet.selectedAddress = wallet.identities.length;
     wallet.identities.push({
       index,
@@ -52,19 +91,17 @@ export class AccountImporter extends AccountControl {
       balance: account.balance,
       isImport: true
     });
-
-    decryptImported.forEach(el => {
-      if (el.privateKey === account.privateKey) {
-        throw new Error(errorsCode.ImportUniqueWrong);
-      } else if (el.index === account.index) {
-        throw new Error(errorsCode.IndexUniqueWrong);
-      }
-    });
+    
+    if (isSome) {
+      decryptImported.map(acc => {
+        if (acc.index == account.index || acc.privateKey === account.privateKey) {
+          acc = { index, privateKey }
+        }
+      });
+    } else {
+      decryptImported.push({ index, privateKey });
+    }
  
-    decryptImported.push({
-      index, privateKey
-    });
-
     await this.auth.updateImported(decryptImported);
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
