@@ -15,7 +15,7 @@ export class ZilliqaControl extends Zilliqa {
 
   async getBalance(address) {
     // Get the balance by address. // 
-    let { result, error } = await this.blockchain.getBalance(
+    let { result } = await this.blockchain.getBalance(
       address.replace('0x', '')
     );
     let nonce = 0;

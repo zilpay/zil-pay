@@ -61,11 +61,13 @@ export class NotificationsControl {
   }
 
   _notificationClicked() {
-    // const onClicked = extension.notifications.onClicked;
-    
-    // onClicked.addListener((onExplorerTx, _) => {
-    //   extension.tabs.create({ url: onExplorerTx });
-    // });
+    if (!extension.notifications.onClicked.hasListener(this._viewOnViewBlock)) {
+      extension.notifications.onClicked.addListener(this._viewOnViewBlock)
+    }
+  }
+
+  _viewOnViewBlock(viewBlockUrl) {
+    extension.tabs.create({ url: viewBlockUrl });
   }
 
 }

@@ -615,53 +615,48 @@ export class TransactionHandler {
   }
 
   async _transactionListing(txHash) {
-    // const zilliqaControl = new ZilliqaControl(
-    //   networkControl.provider
-    // );
-    // const net = `network=${networkControl.selected}`;
-    // const timeInterval = 4000;
-    // const countIntervl = 50;
-    // const title = 'ZilPay Transactions';
-    // let k = 0;
+    const zilliqaControl = new ZilliqaControl(
+      networkControl.provider
+    );
+    zilliqaControl.blockchain.c
+    const net = `network=${networkControl.selected}`;
+    const timeInterval = 4000;
+    const countIntervl = 100;
+    const title = 'ZilPay Transactions';
+    let k = 0;
 
-    // const interval = setInterval(
-    //   async () => {
+    const interval = setInterval(
+      async () => {
         
-    //     try {
-    //       await zilliqaControl
-    //       .blockchain
-    //       .getTransaction(txHash);
+        try {
+          await zilliqaControl
+          .blockchain
+          .getTransaction(txHash);
           
-    //       new NotificationsControl({
-    //         url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
-    //         title: title,
-    //         message: 'Transactions send to shard done.'
-    //       }).create();
+          new NotificationsControl({
+            url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
+            title: title,
+            message: 'Transactions send to shard done.'
+          }).create();
 
-    //       clearInterval(interval);
-    //       return null;
-    //     } catch(err) {
-    //       if (k > countIntervl) {
+          clearInterval(interval);
+          return null;
+        } catch(err) {
+          console.log(err);
+          if (k > countIntervl) {
+            clearInterval(interval);
+            return null;
+          }
+        }
 
-    //         new NotificationsControl({
-    //           url: `${zilApi.EXPLORER}/tx/0x${txHash}?${net}`,
-    //           title: title,
-    //           message: 'Transactions not completed'
-    //         }).create();
+        if (k > countIntervl) {
+          clearInterval(interval);
+        }
 
-    //         clearInterval(interval);
-    //         return null;
-    //       }
-    //     }
-
-    //     if (k > countIntervl) {
-    //       clearInterval(interval);
-    //     }
-
-    //     k++;
-    //   },
-    //   timeInterval
-    // );
+        k++;
+      },
+      timeInterval
+    );
   }
 
 }

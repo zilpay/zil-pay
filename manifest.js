@@ -21,6 +21,7 @@ const manifest = {
   "permissions": [
     "storage",
     "clipboardWrite",
+    "notifications",
     "https://api.coinmarketcap.com/v1/ticker/*",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
