@@ -642,7 +642,6 @@ export class TransactionHandler {
           clearInterval(interval);
           return null;
         } catch(err) {
-          console.log(err);
           if (k > countIntervl) {
             clearInterval(interval);
             return null;
