@@ -128,14 +128,12 @@ export default {
       commit('mutateWallet', state.wallet);
     },
     walletReset({ state, commit }) {
-      if (state.wallet.selectedAddress == 0) {
-        return null;
-      }
       const firstIndex = 0;
-      state.wallet.identities = state.wallet.identities.filter(
-        (_, index) => index == firstIndex
-      );
+      const firstAccount = state.wallet.identities[firstIndex];
+      
+      state.wallet.identities = [firstAccount];
       state.wallet.selectedAddress = firstIndex;
+      
       commit('mutateWallet', state.wallet);
     },
     logOut({ commit }) {

@@ -161,6 +161,11 @@ export default {
     height: 60px;
     background-color: transparent;
 
+    img {
+      display: block;
+      margin: auto;
+    }
+
     &:focus {
       outline: -webkit-focus-ring-color auto 5px;
     }

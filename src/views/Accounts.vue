@@ -18,7 +18,7 @@
              :style="{backgroundColor: addressToColor(acc.address)}">
           <div class="header">
             <div>
-              {{acc.name || (`Account ${(acc.index) + 1}`)}}
+              {{acc.name || 'Account '+acc.index}}
               <span v-if="acc.isImport" class="imported">Imported</span>
               <span v-if="acc.hwType" class="imported">{{acc.hwType}}</span>
             </div>

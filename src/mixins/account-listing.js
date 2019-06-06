@@ -19,9 +19,9 @@ export default {
       ];
 
       if (!account.name && account.hwType) {
-        account.name = `Ledger ${account.index + 1}`;
+        account.name = `Ledger ${account.index}`;
       } else if (!account.name) {
-        account.name = `Account ${account.index + 1}`;
+        account.name = `Account ${account.index}`;
       }
 
       return account;

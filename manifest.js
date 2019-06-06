@@ -23,7 +23,8 @@ const manifest = {
     "clipboardWrite",
     "https://api.coinmarketcap.com/v1/ticker/*",
     "https://api.zilliqa.com/",
-    "https://dev-api.zilliqa.com/"
+    "https://dev-api.zilliqa.com/",
+    "https://zilpay.xyz/*"
   ],
   "content_scripts": [
     {
