@@ -9,7 +9,7 @@ var utils = zilliqa.utils;
 
 get defaultAccount
 ```javaScript
-var {address} = zilPay.defaultAccount;
+var {base16, base58, bech32} = zilPay.defaultAccount;
 ```
 
 
