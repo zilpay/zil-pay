@@ -17,7 +17,6 @@ export class NonSecureStream {
     });
   }
 
-
   _dispenseMessage(sendResponse, message) {
     if (!message) {
       return null;
@@ -26,7 +25,6 @@ export class NonSecureStream {
     this._broadcastToSecure(message);
     sendResponse(true);
   }
-
 
   _broadcastToSecure(msg) {
     let toSecureMsg = null;

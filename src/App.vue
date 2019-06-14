@@ -7,9 +7,11 @@
 
 <script>
 import { mapMutations, mapActions } from 'vuex'
+import StatusUpdater from './mixins/status-updater'
 
 export default {
   name: 'App',
+  mixins: [StatusUpdater],
   methods: {
     ...mapMutations([
       'spiner',
@@ -47,6 +49,7 @@ export default {
         this.dataStateUpdate(state.data);
       }
       
+      this.upadteAllState();
       this.commonStateUpdate(state);
       this.routePush(state);
     },

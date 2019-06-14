@@ -256,7 +256,7 @@ class ZilPay {
     return new Observable(subscriber => {
       addEventListener(
         'addressListing',
-        () => subscriber.next(ACCOUNT),
+        () => subscriber.next(this.defaultAccount),
         false
       );
     });

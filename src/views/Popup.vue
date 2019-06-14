@@ -14,7 +14,7 @@
     </div>    
     <main class="text-center popup">
 
-      <img :src="CONFIRM_TX.icon || '/favicon.ico'">
+      <img :src="CONFIRM_TX.icon || '/favicon.ico'" height="50">
 
       <h5>Transaction 1</h5>
 

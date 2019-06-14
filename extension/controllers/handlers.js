@@ -578,8 +578,6 @@ export class TransactionHandler {
       networkControl.provider
     );
 
-    await TransactionHandler.rmTransactionsConfirm();
-
     try {
       const { txParams } = await zilliqaControl.transactions.new(this.payload);
       resultTx = await zilliqaControl.signedTxSend(txParams);
@@ -587,6 +585,8 @@ export class TransactionHandler {
       sendResponse({ reject: err.message });
       return null;
     }
+
+    await TransactionHandler.rmTransactionsConfirm();
 
     const { result, req, error } = resultTx;
     

@@ -11,7 +11,6 @@ async function updateStatic(object, isOverwrite=false) {
   stateData = stateData[fields.STATIC];
 
   if (!stateData || Object.keys(stateData).length < 3 || isOverwrite) {
-    console.log(object.dappsList);
     await storage.set(new BuildObject(fields.STATIC, {
       currency: object.currency,
       addressFormat: object.addressFormat,
@@ -71,7 +70,7 @@ export default {
     },
     mutateDappsList(state, newDapp) {
       for (let index = 0; index < state.dappsList.length; index++) {
-        if (state.dappsList[index].domain == newDapp.domain) {
+        if (state.dappsList[index].domain === newDapp.domain) {
           return null;
         }
       }

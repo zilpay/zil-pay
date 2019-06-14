@@ -65,9 +65,6 @@ export default {
       this.upadteAllState();
       setTimeout(() => this.spiner(), 500);
     }
-  },
-  mounted() {
-    this.upadteAllState();
   }
 }
 </script>

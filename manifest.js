@@ -2,7 +2,7 @@ const fs = require('fs');
 const manifest = {
   "name": "ZilPay",
   "short_name": "ZilPay Zilliqa wallet",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ZilPay browser Extension for zilliqa blockchain",
   "author": "https://zilpay.xyz",
   "manifest_version": 2,
