@@ -497,14 +497,13 @@ export class TransactionHandler {
       const zilliqaControl = new ZilliqaControl(
         networkControl.provider
       );
-      await accountControl.zilliqa.rmForSingTransaction();
-
       resultTx = await zilliqaControl.singTransaction(
         transaction,
         seedOrKey,
         accountID,
         lastNonce
       );
+      await accountControl.zilliqa.rmForSingTransaction();
     } catch(err) {
       sendResponse({ reject: err.message });
       return null;
