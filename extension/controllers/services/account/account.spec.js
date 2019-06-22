@@ -88,7 +88,6 @@ describe('Test Account control', () => {
     const wallet = await accountImporter.importAccountByPrivateKey(privateKey);
     expect(wallet).toEqual(global.storage[fields.WALLET]);
     expect(wallet.selectedAddress).toBe(1);
-    expect(wallet.identities[1].index).toBe(1);
     expect(wallet.identities[1].isImport).toBe(true);
     expect(wallet.identities[1].address).toBe(toChecksumAddress('31de24752489e04d06ad32a1095b86ce9310bf9b'));
   });
@@ -134,7 +133,6 @@ describe('Test Account control', () => {
   test('Account exporter control index exportAccountFromStore', async () => {
     global.storage[fields.WALLET].selectedAddress = 1;
     const account = await accountExporter.exportAccountFromStore();
-    expect(account.index).toBe(1);
     expect(account.privateKey).toBe(privateKey);
   });
 
@@ -142,7 +140,7 @@ describe('Test Account control', () => {
     const { decryptSeed, decryptImported } = await accountExporter.exportSeed();
     expect(decryptImported).toEqual([{
       privateKey,
-      index: 1
+      index: 0
     }]);
     expect(decryptSeed).toBe(decryptSeed);
   });

@@ -74,14 +74,17 @@ describe('handlers for background page', () => {
   test('AccountHandler.importPrivateKey', async () => {
     const privKey = '3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8';
     await new AccountHandler({ privKey }).importPrivateKey(value => {
-      expect(value.resolve.selectedAddress).toEqual(1);
-      expect(
-        value.resolve.selectedAddress
-      ).toEqual(
-        value.resolve.identities[1].index
-      );
-      expect(value.resolve.identities[1].address).toEqual(toChecksumAddress('8254b2c9acdf181d5d6796d63320fbb20d4edd12'));
-      expect(value.resolve.identities[1].isImport).toBe(true);
+
+      if (value.resolve) {
+        expect(value.resolve.selectedAddress).toEqual(1);
+        expect(
+          value.resolve.selectedAddress
+        ).toEqual(
+          value.resolve.identities[1].index
+        );
+        expect(value.resolve.identities[1].address).toEqual(toChecksumAddress('8254b2c9acdf181d5d6796d63320fbb20d4edd12'));
+        expect(value.resolve.identities[1].isImport).toBe(true);
+      }
     });
   });
 
