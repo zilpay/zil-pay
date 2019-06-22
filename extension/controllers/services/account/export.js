@@ -73,11 +73,12 @@ export class AccountExporter extends AccountControl {
     let wallet = await this._storage.get(fields.WALLET);
 
     wallet = wallet[fields.WALLET];
-    
-    const [account] = decryptImported.filter(
-      el => el.index === wallet.selectedAddress
+
+    const accountID = wallet.identities[wallet.selectedAddress].index;
+    const account = decryptImported.find(
+      acc =>  acc.index === accountID
     );
-    
+        
     if (!account) {
       throw new Error(errorsCode.WrongIndex);
     }
@@ -92,13 +93,9 @@ export class AccountExporter extends AccountControl {
   }
 
   async isImported() {
-    const { decryptImported } = await this.auth.getWallet();
     let wallet = await this._storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
-    
-    const [account] = decryptImported.filter(
-      el => el.index === wallet.selectedAddress
-    );
-    return !!account;
+    const account = wallet.identities[wallet.selectedAddress];
+    return !!account.isImport;
   }
 }
