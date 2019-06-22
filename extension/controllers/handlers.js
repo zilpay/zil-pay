@@ -471,14 +471,17 @@ export class TransactionHandler {
       } = accountControl.auth.getWallet();
 
       if (accountSelected.isImport) {
-        const [{ privateKey }] = decryptImported.filter(
-          acc => acc.index === wallet.selectedAddress
+        const { privateKey } = decryptImported.find(
+          acc =>  acc.index === accountID
         );
         seedOrKey = privateKey;
       } else {
         seedOrKey = decryptSeed;
       }
-      
+
+      if (!seedOrKey) {
+        throw new Error('Account Fail');
+      }
     } catch(err) {
       sendResponse({ reject: err.message });
       return null;
