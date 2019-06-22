@@ -64,13 +64,36 @@ export class AccountImporter extends AccountControl {
         errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
-    
+
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
     let wallet = await this._storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
 
-    const index = wallet.identities.length;
+    // If found privateKey in Imported Object than replace this account.
+    const isFound = decryptImported.find(acc => {
+      const somePrivateKey = acc.privateKey.toLocaleLowerCase();
+      const forImportPrivateKey = privateKey.toLocaleLowerCase();
+      return somePrivateKey === forImportPrivateKey;
+    });
+    const index = isFound ? isFound.index : decryptImported.length;
+
+    if (isFound) {
+      decryptImported = decryptImported.map(acc => {
+        const somePrivateKey = acc.privateKey.toLocaleLowerCase();
+        const forImportPrivateKey = privateKey.toLocaleLowerCase();
+        if (somePrivateKey === forImportPrivateKey) {
+          acc.privateKey = privateKey.toLocaleLowerCase();
+        }
+        return acc;
+      });
+    } else {
+      decryptImported.push({
+        index, privateKey: privateKey.toLocaleLowerCase()
+      });
+    }
+
+    // Get the address and publickKey from PrivateKey.
     const account = await this.zilliqa.getAccountByPrivateKey(
       privateKey, index
     );
@@ -80,9 +103,6 @@ export class AccountImporter extends AccountControl {
         throw new Error(errorsCode.ImportUniqueWrong);
       }
     });
-    const isSome = decryptImported.filter(
-      acc => acc.index == account.index || acc.privateKey === account.privateKey
-    ).length > 0;
 
     wallet.selectedAddress = wallet.identities.length;
     wallet.identities.push({
@@ -92,16 +112,6 @@ export class AccountImporter extends AccountControl {
       isImport: true
     });
     
-    if (isSome) {
-      decryptImported.map(acc => {
-        if (acc.index == account.index || acc.privateKey === account.privateKey) {
-          acc = { index, privateKey }
-        }
-      });
-    } else {
-      decryptImported.push({ index, privateKey });
-    }
- 
     await this.auth.updateImported(decryptImported);
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
