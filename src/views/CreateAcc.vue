@@ -46,14 +46,13 @@ import AccountCreater from '../mixins/account-creater'
 const BackBar = () => import('../components/BackBar');
 
 
-
-
 export default {
   name: 'CreateAcc',
   components: { BackBar },
   mixins: [PasswordValidator, AccountCreater],
   mounted() {
     this.randomMnemonic();
+    this.isKeyDownloaded = true;
   }
 }
 </script>
