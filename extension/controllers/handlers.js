@@ -506,7 +506,6 @@ export class TransactionHandler {
         accountID,
         lastNonce
       );
-      await accountControl.zilliqa.rmForSingTransaction();
     } catch(err) {
       sendResponse({ reject: err.message });
       return null;
@@ -515,6 +514,8 @@ export class TransactionHandler {
     const { result, req, error } = resultTx;
     
     if (result) {
+      await accountControl.zilliqa.rmForSingTransaction();
+      
       let tx = Object.assign(result, req.payload.params[0]);
       tx.from = accountSelected.address;
 

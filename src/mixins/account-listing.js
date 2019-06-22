@@ -48,7 +48,7 @@ export default {
     async createAccountBySeed() {
       this.spiner();
       await this.createAccount();
-      await this.balanceUpdate();
+      await this.upadteAllState();
       this.spiner();
     },
     async selectAccount(index) {

@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import StatusUpdater from '../mixins/status-updater'
+
 const HomeBar = () => import('../components/HomeBar');
 const Jumbotron = () => import('../components/Jumbotron');
 const TxList = () => import('../components/TxList');
@@ -14,6 +16,10 @@ const TxList = () => import('../components/TxList');
 
 export default {
   name: 'home',
-  components: { HomeBar, Jumbotron, TxList }
+  mixins: [StatusUpdater],
+  components: { HomeBar, Jumbotron, TxList },
+  mounted() {
+    this.upadteAllState();
+  }
 }
 </script>
