@@ -1,7 +1,7 @@
 <template>
   <div>
     <BackBar/>
-    <main class="is-mini">
+    <main class="animated fadeInUp faster is-mini">
 
       <a v-for="dapp of dappsList"
            :key="dapp.domain"
