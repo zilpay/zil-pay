@@ -13,7 +13,7 @@
       <div v-for="(acc, index) of wallet.identities"
            :key="acc.address"
            @click="selectAccount(index)"
-           class="cards pointer">
+           class="animated fadeInUp faster cards pointer">
         <div class="card text-white"
              :style="{backgroundColor: addressToColor(acc.address)}">
           <div class="header">

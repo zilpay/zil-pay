@@ -19,7 +19,7 @@
                  @click="isInput = true"
                  @input="isInput = false"
                  v-model="to">
-          <div class="dropdown-input text-black" v-show="isInput">
+          <div class="animated fadeIn dropdown-input text-black" v-show="isInput">
             <div v-for="acc of wallet.identities"
                  :key="acc.address"
                  class="item"
@@ -49,7 +49,7 @@
           {{isAdvance ? '-': '+'}} Advance
         </div>
 
-        <div class="gas" v-show="isAdvance">
+        <div class="animated fadeIn faster gas" v-show="isAdvance">
           <div class="text-left">
             <label>Gas Limit</label>
             <input type="number" v-model="gasLimit">

@@ -15,7 +15,7 @@
           <img src="/icons/menu-burger.svg" height="30"
                @click="isDropdown = !isDropdown">
           <ul v-show="isDropdown" @mouseleave="isDropdown = false"
-              class="dropdown dropdown-input text-black">
+              class="animated fadeIn faster dropdown dropdown-input text-black">
             <li>
               <a :href="exploreAddress(account.address)" target="_blanck">Account details</a>
             </li>

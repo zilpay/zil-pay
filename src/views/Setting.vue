@@ -1,7 +1,7 @@
 <template>
   <div>
      <BackBar/>
-     <main class="tab-bar is-mini">
+     <main class="animated fadeInUp faster tab-bar is-mini">
       <div class="tab-item"
            @click="$router.push({name: 'General'})">
         <h5 class="title">General</h5>

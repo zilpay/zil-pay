@@ -9,7 +9,7 @@
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
         
-        <div class="dropdown-input text-black" v-show="isInput">
+        <div class="animated fadeIn fast dropdown-input text-black" v-show="isInput">
           <div class="item"
                 v-for="item of networkItems"
                 :key="item"

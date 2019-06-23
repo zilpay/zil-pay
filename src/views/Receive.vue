@@ -7,7 +7,7 @@
 
       <h1 class="text-black">{{account.name}}</h1>
 
-      <div>
+      <div class="animated fadeInUp faster">
         <img v-if="qrcode" :src="qrcode">
         <br>
         <span class="full-address">{{account.address | toAddress(addressFormat, false)}}</span>

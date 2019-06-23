@@ -3,7 +3,7 @@
 
     <div class="text-left title">History</div>
 
-    <ul class="list text-black">
+    <ul class="animated fadeInUp faster list text-black">
       <li v-for="tx of transactionsList"
           :key="tx.nonce"
           @click="toView(tx.TranID)"

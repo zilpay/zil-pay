@@ -10,7 +10,7 @@
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
         
-        <div class="dropdown-input text-black" v-show="isCurrencyInput">
+        <div class="animated fadeIn fast dropdown-input text-black" v-show="isCurrencyInput">
           <div class="item"
                 v-for="item of currencyItems"
                 :key="item"
@@ -27,7 +27,7 @@
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
         
-        <div class="dropdown-input text-black" v-show="isFormatAddress">
+        <div class="animated fadeIn fast dropdown-input text-black" v-show="isFormatAddress">
           <div class="item"
                 v-for="item of addressFormatItems"
                 :key="item"

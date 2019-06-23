@@ -2,7 +2,7 @@ export default function(el, binding) {
   el.addEventListener('mouseenter', function () {
     const $tooltip = document.createElement('div');
     const $tooltipDimension = el.getBoundingClientRect();
-    $tooltip.setAttribute('class', 'tooltip');
+    $tooltip.setAttribute('class', 'animated fadeIn tooltip');
     $tooltip.setAttribute('id', 'id_Tooltip');
     $tooltip.innerHTML = binding.value;
     $tooltip.style.left = $tooltipDimension.left + ($tooltipDimension.width / 2) + 'px';
