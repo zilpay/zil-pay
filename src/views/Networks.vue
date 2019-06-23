@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import defaultConfig from '../../config/zil.json'
 const BackBar = () => import('../components/BackBar');
 
@@ -67,14 +67,17 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['spiner']),
     ...mapActions('Static', [
       'changeNetwork',
       'configUpdate'
     ]),
 
-    selectedNetwork(item) {
-      this.changeNetwork(item);
+    async selectedNetwork(item) {
+      this.spiner();
+      await this.changeNetwork(item);
       this.isInput = false;
+      this.spiner();
     },
     changeNetworkConfig(el, key, value) {
       let config = this.networkConfig;
