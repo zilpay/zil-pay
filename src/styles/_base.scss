@@ -68,6 +68,9 @@ textarea, .seed {
 	font-size: 16px;
 	color: $color-primary-100;
 }
+input, textarea {
+	color: $color-quinary;
+}
 small {
   font-size: 13px;
 }
