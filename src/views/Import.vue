@@ -12,7 +12,7 @@
         <button @click="type = 'hardware'">hardware</button>
       </div>
       
-      <div v-if="type == 'key'" class="by-key">
+      <div v-if="type == 'key'" class="animated fadeInUp faster by-key">
         <label>Pass your private key.</label>
         <textarea class="private-key"
                   cols="30"
@@ -24,7 +24,7 @@
         <button @click="importThis">import account</button>
       </div>
 
-      <div v-if="type == 'hardware'" class="by-hardware text-center">
+      <div v-if="type == 'hardware'" class="animated fadeInUp faster by-hardware text-center">
         <span>Connect a hardware wallet</span>
 
         <div class="type-select">
