@@ -46,7 +46,7 @@
           {{isAdvance ? '-': '+'}} Advance
         </div>
 
-        <div class="gas" v-show="isAdvance">
+        <div class="animated fadeIn gas" v-show="isAdvance">
           <div class="text-left">
             <label for="gas-limit">Gas Limit</label>
             <input type="number" id="gas-limit" v-model="gasLimit">
