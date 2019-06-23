@@ -4,7 +4,7 @@
       <img src="/icon128.png">
       <h2 class="text-black">New ZilPay</h2>
       
-      <div class="panels">
+      <div class="animated fadeInUp faster panels">
         <div>
           <img src="/icons/download.svg" height="70">
           <h5>I have mnemonic word phrase.</h5>

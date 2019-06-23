@@ -15,7 +15,7 @@
         <small v-show="isMnemonic" class="text-danger">{{isMnemonic}}</small>
       </div>
 
-      <div class="input-group">
+      <div class="animated fadeInUp faster input-group">
          <div class="text-left">
           <label>Password (min 6 chars)</label>
           <input type="password" v-model.lazy="password">
