@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="animated fadeIn faster">
     <div class="send-recipient">
       <a :href="exploreAddress(account.address)"
          target="_blacnk">

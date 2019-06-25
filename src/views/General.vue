@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="is-mini">
+    <main class="animated fadeIn faster is-mini">
       <div class="text-left" @mouseleave="isCurrencyInput = false">
         <span>Currency Conversion</span>
         <div class="dropdown-el" @click="isCurrencyInput = !isCurrencyInput">

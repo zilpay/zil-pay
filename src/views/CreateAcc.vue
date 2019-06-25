@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="create-acc is-mini">
+    <main class="animated fadeIn faster create-acc is-mini">
       <label>Your mnemonic Seed Phrase.
         <img src="/icons/refresh.svg" height="15"
              class="update-seed"
@@ -17,7 +17,7 @@
         Save your mnemonic Seed Phrase!
       </div>
 
-      <div class="animated fadeInUp faster input-group">
+      <div class="input-group">
          <div class="text-left">
           <label>Password (min 6 chars)</label>
           <input type="password" v-model.lazy="password">

@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="is-mini">
+    <main class="animated fadeIn faster is-mini">
       <div class="form">
         <h5>Privacy Data</h5>
         <div class="dis">Clear all allowed accesses to dApp.</div>

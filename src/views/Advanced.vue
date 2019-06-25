@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
     
-    <main class="is-mini">
+    <main class="animated fadeIn faster is-mini">
       <div class="form-border change-gas">
         <div>
           <label for="gasPrice">Gas Price (Li)</label>

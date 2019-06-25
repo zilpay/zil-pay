@@ -1,7 +1,7 @@
 <template>
   <div>
     <BackBar/>
-    <main class="about is-mini">
+    <main class="animated fadeIn about is-mini">
       <img src="/icon48.png">
       <div class="text-center">
         <span>ZilPay Version {{version}}</span>

@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="restore is-mini">
+    <main class="animated fadeIn faster restore is-mini">
       <div>
         <h5>Restore by mnemonic Seed Phrase</h5>
         <label>Enter your secret mnemonic word phrase here.</label>
@@ -15,7 +15,7 @@
         <small v-show="isMnemonic" class="text-danger">{{isMnemonic}}</small>
       </div>
 
-      <div class="animated fadeInUp faster input-group">
+      <div class="animated fadeIn faster input-group">
          <div class="text-left">
           <label>Password (min 6 chars)</label>
           <input type="password" v-model.lazy="password">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main class="is-mini">
+    <main class="animated fadeIn faster is-mini">
       <div class="dapp text-center">
         <img :src="connect.icon">
         <div class="title">{{connect.title}}</div>

@@ -1,7 +1,7 @@
 <template>
   <main class="lock text-center">
     
-    <div>
+    <div class="animated fadeIn faster">
       <img src="/icon128.png">
       <h1>ZilPay</h1>
       <span>Welcom back</span>

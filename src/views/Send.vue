@@ -9,7 +9,7 @@
         This ZIL in {{network}} (It does not cost)!
       </small>
 
-      <div class="input-group">
+      <div class="animated fadeIn faster input-group">
         <div class="to text-left" @mouseleave="isInput = false">
           <label>To address</label>
           <input type="text"

@@ -2,7 +2,7 @@
   <div>
     <BackBar/>
 
-    <main class="export is-mini">
+    <main class="animated fadeIn faster export is-mini">
       <small class="warning-msg text-center">
         DO NOT share this information with anyone!
       </small>
