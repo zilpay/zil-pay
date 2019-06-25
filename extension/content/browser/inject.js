@@ -13,6 +13,7 @@ export class Inject {
   }
 
   _injectscript () {
+    // Create new script tag in the document head.
     const container = (document.head || document.documentElement);
     const scriptTag = document.createElement('script');
     const src = this._getUrlExtension();

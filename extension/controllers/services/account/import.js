@@ -21,10 +21,32 @@ export class AccountImporter extends AccountControl {
   }
 
   async importByHwAccount(payload) {
+    /**
+     * Import by Ledger device.
+     * @interface payload: {
+        pubAddr:String,
+        hwIndex: Number,
+        hwType: String,
+        publicKey: String
+      }
+     */
+    
+    // Mandatory authentication test.
+    if (!this.auth.isReady) {
+      throw new Error(
+        errorsCode.WalletIsNotReady + this.auth.isReady
+      );
+    } else if (!this.auth.isEnable) {
+      throw new Error(
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
+      );
+    }
+
     let wallet = await this._storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
 
     wallet.identities.forEach(account => {
+      // Testing for a unique account.
       if (account.address == payload.pubAddr) {
         throw new Error(errorsCode.ImportUniqueWrong);
       }
@@ -53,8 +75,7 @@ export class AccountImporter extends AccountControl {
   async importAccountByPrivateKey(privateKey) {
     await this.auth.vaultSync();
 
-    let { decryptImported } = await this.auth.getWallet();
-
+    // Mandatory authentication test.
     if (!this.auth.isReady) {
       throw new Error(
         errorsCode.WalletIsNotReady + this.auth.isReady
@@ -64,6 +85,8 @@ export class AccountImporter extends AccountControl {
         errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
+
+    let { decryptImported } = await this.auth.getWallet();
 
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
@@ -79,6 +102,7 @@ export class AccountImporter extends AccountControl {
     const index = isFound ? isFound.index : decryptImported.length;
 
     if (isFound) {
+      // If account is found then replace it.
       decryptImported = decryptImported.map(acc => {
         const somePrivateKey = acc.privateKey.toLocaleLowerCase();
         const forImportPrivateKey = privateKey.toLocaleLowerCase();
@@ -89,7 +113,8 @@ export class AccountImporter extends AccountControl {
       });
     } else {
       decryptImported.push({
-        index, privateKey: privateKey.toLocaleLowerCase()
+        index,
+        privateKey: privateKey.toLocaleLowerCase()
       });
     }
 

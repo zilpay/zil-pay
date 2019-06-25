@@ -1,3 +1,5 @@
+// Error message for authorization service.
+
 export default {
   GuardWrong: 'Authentication failed!',
   SyncWrong: 'Not synchronized with storage!',

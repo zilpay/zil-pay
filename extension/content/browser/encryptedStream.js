@@ -66,6 +66,7 @@ export class SecureStream {
   }
 
   async onSyncAll() {
+    // Get the some data { address, net, nodeURL }.
     const recipient = MTypesSecure.INJECTED;
 
     try {
@@ -81,6 +82,7 @@ export class SecureStream {
   }
 
   async proxyMethod(payload) {
+    // Proxyed some blockchain method.
     let result = {};
     const { params, method, uuid } = payload;
     const recipient = MTypesSecure.INJECTED;

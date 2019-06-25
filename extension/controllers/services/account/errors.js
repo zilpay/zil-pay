@@ -1,3 +1,4 @@
+// Errors message for account Control.
 export default {
   WalletIsNotReady: 'Wallet not encrypt isReady: ',
   WalletIsNotEnable: 'Wallet not enable isEnable: ',

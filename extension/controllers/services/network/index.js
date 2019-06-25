@@ -10,10 +10,16 @@ const defaultSelected = Object.keys(ZilliqaConfig)[0];
 export class NetworkControl {
 
   get provider() {
+    /**
+     * @return nodeURL.
+     */
     return this.config[this.selected]['PROVIDER'];
   }
 
   get version() {
+    /**
+     * @return Number, blockchain version.
+     */
     return this.config[this.selected]['MSG_VERSION'];
   }
 
@@ -25,6 +31,10 @@ export class NetworkControl {
   }
 
   async changeNetwork(selected) {
+    /**
+     * Change the network.
+     * @params selected: (mainnet, testnet, private).
+     */
     if (!this.config.hasOwnProperty(selected)) {
       throw new Error(
         `${errorsCode.changeNetwork}
@@ -64,6 +74,9 @@ export class NetworkControl {
   }
 
   async netwrokSync() {
+    /**
+     * Synchronize with storage.
+     */
     const { config, selectednet } = await this._storage.get(
       [fields.SELECTED_NET, fields.CONFIG]
     );
@@ -82,6 +95,9 @@ export class NetworkControl {
   }
 
   async checkProvider() {
+    /**
+     * Call the options requests to node URL.
+     */
     try {
       await fetch(this.provider);
       this.status = true;

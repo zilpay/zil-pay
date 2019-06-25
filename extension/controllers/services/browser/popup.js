@@ -19,7 +19,9 @@ const log = new Loger('PROMT');
 export class PromptService {
 
   constructor() {
+    // Height popup window.
     this._height = 600;
+    // Width popup window.
     this._width = 360;
     this._type = 'popup';
 
@@ -27,6 +29,9 @@ export class PromptService {
   }
 
   async open() {
+    /**
+     * Create new window popup for confirm tx and connection dApp.
+     */
     const {
       screenX,
       screenY,

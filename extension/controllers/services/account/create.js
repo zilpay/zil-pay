@@ -19,13 +19,17 @@ export class AccountControl {
   }
 
   async initWallet(decryptSeed) {
-    if (typeof decryptSeed !== 'string' || decryptSeed.length < 12) {
+    /**
+     * Initial new wallet by seed phase.
+     * @interface decryptSeed: String.
+     */
+    this.zilliqa = new ZilliqaControl(this.network.provider);
+
+    if (!this.zilliqa.wallet.isValidMnemonic(decryptSeed)) {
       throw new Error(errorsCodeGuard.WrongDecryptSeed);
     } else if (!this.auth._guard) {
       throw new Error(errorsCodeGuard.GuardWrong);
     }
-
-    this.zilliqa = new ZilliqaControl(this.network.provider);
 
     const selectedAddress = 0;
     const account = await this.zilliqa.getAccountBySeed(
@@ -52,10 +56,14 @@ export class AccountControl {
   }
 
   async newAccountBySeed() {
+    /**
+     * Create new pair's private Key and public Key via seed phase.
+     */
     await this.auth.vaultSync();
 
     const { decryptSeed } = await this.auth.getWallet();
 
+    // Mandatory authentication test.
     if (!this.auth.isReady) {
       throw new Error(
         errorsCode.WalletIsNotReady + this.auth.isReady
@@ -69,6 +77,9 @@ export class AccountControl {
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
     let { wallet } = await this._storage.get(fields.WALLET);
+    
+    // Get a new index account, but excluding a hardware wallet
+    // and importd by private key.
     const index = wallet.identities.filter(
       el => !el.isImport && !el.hwType
     ).length;
@@ -90,6 +101,10 @@ export class AccountControl {
   }
 
   async walletUpdate(wallet) {
+    /**
+     * Any update wallet store.
+     * @interface wallet: { identities: Array, selectedAddress: number };
+     */
     wallet.identities = wallet.identities.filter(acc => !!acc);
     await this._storage.set(
       new BuildObject(fields.WALLET, wallet)
@@ -97,6 +112,10 @@ export class AccountControl {
   }
 
   async changeAccountName(name) {
+    /**
+     * Create and change account name.
+     * @interface name: String.
+     */
     if (!name || typeof name !== 'string' || name.length > MAX_LENGTH_NAME) {
       throw new Error(errorsCode.WrongName);
     }
@@ -112,8 +131,14 @@ export class AccountControl {
   }
 
   async addForConnectDapp(payload) {
+    /**
+     * Add to store App info, for confirm access.
+     * @interface payload: { domain: String, icon: String, title: String }
+     */
     const storage = new BrowserStorage();
-    await storage.set(new BuildObject(fields.CONNECT_DAPP, payload));
+    await storage.set(
+      new BuildObject(fields.CONNECT_DAPP, payload)
+    );
   }
 
 }

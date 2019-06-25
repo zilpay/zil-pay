@@ -5,7 +5,12 @@ import api from '../../../../config/api'
 import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 
 
-Date.prototype.addHours = function(h) {    
+Date.prototype.addHours = function(h) {
+  /**
+   * Added new method for Date instance.
+   * @interface h: Number.
+   * @returns: Current date + h hours.
+   */
   this.setTime(this.getTime() + (h*60*60*1000)); 
   return this;   
 }
@@ -14,6 +19,10 @@ Date.prototype.addHours = function(h) {
 export class Auth {
 
   get verificationTime() {
+    /**
+     * Verification time session.
+     * @return Boolean.
+     */
     if (!this._endSession) {
       return null;
     }
@@ -23,17 +32,28 @@ export class Auth {
   }
 
   constructor(encryptSeed=null, encryptImported=null) {
+    // this property is responsible for control session.
     this.isEnable = false;
+    // this property is responsible for control wallet.
     this.isReady = false;
+    // Imported storage in encrypted.
     this.encryptImported = encryptImported;
+    // Seed phase storage in encrypted.
     this.encryptSeed = encryptSeed;
+    // CryptoGuard instance.
     this._guard = null;
+    // Current time + some hours.
     this._endSession = null;
-
+    // Instance BrowserStorage.
     this._storage = new BrowserStorage();
   }
 
   async setPassword(password) {
+    /**
+     * Activation CryptoGuard by password.
+     */
+
+    // Synchronize with storage
     await this.vaultSync();
     this._guard = new CryptoGuard(password);
     this.isReady = true;
@@ -64,6 +84,9 @@ export class Auth {
   }
 
   getWallet() {
+    /**
+     * Get and decrypt the wallet from storage.
+     */
     if (!this._guard || !this.isReady) {
       throw new Error(errorsCode.GuardWrong);
     } else if (!this.encryptSeed) {
@@ -80,6 +103,10 @@ export class Auth {
   }
 
   async isConnect(domain) {
+    /**
+     * Check access to dApp.
+     * @return Boolean.
+     */
     const storage = new BrowserStorage();
     let dappList = await storage.get(fields.STATIC);
 
@@ -95,6 +122,9 @@ export class Auth {
   }
 
   async vaultSync() {
+    /**
+     * Synchronization with storage.
+     */
     const data = await this._storage.get(
       [fields.VAULT, fields.VAULT_IMPORTED]
     );
@@ -115,6 +145,11 @@ export class Auth {
   }
 
   async updateImported(decryptImported) {
+    /**
+     * Write decryptImported to storage.
+     * @interface decryptImported: Object.
+     * @return String.
+     */
     if (typeof decryptImported !== 'object') {
       throw new Error(errorsCode.WrongImported);
     }
@@ -129,6 +164,9 @@ export class Auth {
   }
 
   static encryptWallet(decryptSeed, decryptImported, password) {
+    /**
+     * Encrypt decryptSeed, decryptImported by password.
+     */
     if (!decryptSeed || typeof decryptSeed !== 'string') {
       throw new Error(errorsCode.WrongSeed);
     } else if (typeof decryptImported !== 'object') {

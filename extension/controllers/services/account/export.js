@@ -19,10 +19,14 @@ export class AccountExporter extends AccountControl {
   }
 
   async exportPrivateKeyFromSeed() {
+    /**
+     * Export Private Key from seed pashe via index.
+     */
+
+    // Sync with storage.
     await this.auth.vaultSync();
 
-    const { decryptSeed } = await this.auth.getWallet();
-
+    // Mandatory authentication test.
     if (!this.auth.isReady) {
       throw new Error(
         errorsCode.WalletIsNotReady + this.auth.isReady
@@ -32,20 +36,25 @@ export class AccountExporter extends AccountControl {
         errorsCode.WalletIsNotEnable + this.auth.isEnable
       );
     }
+    // Get the decrypt seed phase.
+    const { decryptSeed } = await this.auth.getWallet();
 
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
     let wallet = await this._storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
 
-    const index = wallet.identities[wallet.selectedAddress].index;
+    const selectedAccount = wallet.identities[wallet.selectedAddress];
+
+    // Chek account type.
+    if (selectedAccount.isImport || selectedAccount.hwType) {
+      throw new Error(errorsCode.AccountIsImported);
+    }
+
+    const index = selectedAccount.index;
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, index
     );
-
-    if (wallet.identities[wallet.selectedAddress].isImport) {
-      throw new Error(errorsCode.AccountIsImported);
-    }
     
     return {
       index,
@@ -54,10 +63,14 @@ export class AccountExporter extends AccountControl {
   }
 
   async exportAccountFromStore() {
+    /**
+     * Export private key from imported storage.
+     */
+
+    // Sync with storage.
     await this.auth.vaultSync();
 
-    const { decryptImported } = await this.auth.getWallet();
-
+    // Mandatory authentication test.
     if (!this.auth.isReady) {
       throw new Error(
         errorsCode.WalletIsNotReady + this.auth.isReady
@@ -68,14 +81,16 @@ export class AccountExporter extends AccountControl {
       );
     }
 
+    const { decryptImported } = await this.auth.getWallet();
+
     this.zilliqa = new ZilliqaControl(this.network.provider);
 
     let wallet = await this._storage.get(fields.WALLET);
-
     wallet = wallet[fields.WALLET];
 
     const accountID = wallet.identities[wallet.selectedAddress].index;
     const account = decryptImported.find(
+      // Searching account by index.
       acc =>  acc.index === accountID
     );
         
@@ -87,12 +102,18 @@ export class AccountExporter extends AccountControl {
   }
 
   async exportSeed() {
+    /**
+     * Export seed phase.
+     */
     await this.auth.vaultSync();
-
     return await this.auth.getWallet();
   }
 
   async isImported() {
+    /**
+     * Testing function.
+     * @returns Boolean.
+     */
     let wallet = await this._storage.get(fields.WALLET);
     wallet = wallet[fields.WALLET];
     const account = wallet.identities[wallet.selectedAddress];
