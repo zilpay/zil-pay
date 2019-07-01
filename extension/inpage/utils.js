@@ -7,6 +7,9 @@ import { validation } from '@zilliqa-js/util'
 
 
 export function getFavicon() {
+  /**
+   * Get the favicon from current tab.
+   */
   let favicon = undefined;
   let nodeList = document.getElementsByTagName('link');
   
@@ -27,6 +30,9 @@ export function getFavicon() {
 }
 
 export function toAccountFormat(address) {
+  /**
+   * Replace from base16 to (base16, beach32, base58).
+   */
   const isAddress = validation.isAddress(address);
 
   if (!isAddress) {

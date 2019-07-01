@@ -49,6 +49,7 @@ label[for=amount] > span, .advance {
 }
 .is-mini {
   margin-top: 0;
+  font-size: 17px;
 }
 @media screen and (max-width: $nav-max-width) {
   .is-mini {

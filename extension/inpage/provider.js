@@ -7,11 +7,15 @@ import {
 import { SecureMessage } from '../../lib/messages/messageCall'
 import { from } from 'rxjs'
 
+// Private variables. //
+var _stream = new WeakMap(); // Stream instance.
+var _subject = new WeakMap(); // Listener instance.
+// Private variables. //
 
-var _stream = new WeakMap();
-var _subject = new WeakMap();
 
-
+// HTTP Proxy provider.
+// this provider proxyed all http requests to content.js
+// and encrypted all data.
 export default class HTTPProvider {
 
   constructor(subjectStream, stream) {
@@ -30,12 +34,13 @@ export default class HTTPProvider {
   send(method, params) {
     const type = MTypesZilPay.PROXY_MEHTOD;
     const recipient = MTypesSecure.CONTENT;
-    const uuid = uuidv4();
+    const uuid = uuidv4(); // Request id.
 
-    new SecureMessage({
+    new SecureMessage({ // Send to content.js
       type, payload: { params, method, uuid }
     }).send(_stream, recipient);
 
+    // Waiting for an answer from content.js.
     return from(_subject).pipe(
       filter(res => res.type === MTypesZilPay.PROXY_RESULT),
       map(res => res.payload),

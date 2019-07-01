@@ -9,13 +9,14 @@ import {
 import { SecureMessage } from '../../lib/messages/messageCall'
 import { getFavicon, toAccountFormat } from './utils'
 
-
-var _stream = new WeakMap();
-var _subject = new WeakMap();
+// Private variables. //
+var _stream = new WeakMap(); // Stream instance.
+var _subject = new WeakMap(); // Listener instance.
 var _defaultAccount = null;
 var _isConnect = false;
 var _isEnable = false;
 var _net = null;
+// Private variables. //
 
 
 export default class Wallet {
@@ -69,12 +70,18 @@ export default class Wallet {
   }
 
   observableAccount() {
+    /**
+     * Subscribe on all account change.
+     */
     if (!this.isConnect) {
       throw new Error("ZilPay is't connection to dApp");
     }
     let lastAccount = null;
     return from(_subject).pipe(
       map(msg => {
+        if (lastAccount === null) {
+          return _defaultAccount;
+        }
         switch (msg.type) {
           case MTypesSecure.PAY_OBJECT_INIT:
             return toAccountFormat(msg.payload.account.address);
@@ -91,6 +98,9 @@ export default class Wallet {
   }
 
   observableNetwork() {
+    /**
+     * Subscribe on all network change.
+     */
     return from(_subject).pipe(
       filter(msg => msg && msg.type === MTypesSecure.SET_NODE),
       map(msg => msg.payload.net)
@@ -98,6 +108,9 @@ export default class Wallet {
   }
 
   sign(tx) {
+    /**
+     * Call popup for confirm Transaction.
+     */
     if (!this.isEnable) {
       throw new Error("ZilPay is disabled.");
     } else if (!this.isConnect) {
@@ -109,17 +122,23 @@ export default class Wallet {
     const uuid = uuidv4();
     let { payload } = tx;
     
+    // Transaction id.
     payload.uuid = uuid;
+    // Current tab title.
     payload.title = window.document.title;
+    // Url on favicon by current tab.
     payload.icon = getFavicon();
 
+    // Send transaction to content.js > background.js.
     new SecureMessage({ type, payload }).send(_stream, recipient);
 
     tx.provider.send = () => {
+      // Override this method.
       return { error: null, result: {} };
     };
 
     tx.confirm = () => from(_subject).pipe(
+      // Waiting an answer by uuid.
       filter(res => res.type === MTypesTabs.TX_RESULT),
       map(res => res.payload),
       filter(res => res.uuid && res.uuid === uuid),
@@ -136,6 +155,10 @@ export default class Wallet {
   }
 
   async connect() {
+    /**
+     * Call popup for the get access from user.
+     * this method need for show user info such as your address.
+     */
     const type = MTypesSecure.CONNECT;
     const recipient = MTypesSecure.CONTENT;
     const uuid = uuidv4();
@@ -151,12 +174,16 @@ export default class Wallet {
     new SecureMessage({ type, payload }).send(_stream, recipient);
 
     const confirmPayload = await from(_subject).pipe(
+      filter(msg => msg.type === MTypesTabs.CONNECT_TO_DAPP),
+      map(res => res.payload),
       filter(res => res.uuid && res.uuid === uuid),
       take(1)
     ).toPromise();
 
     _isConnect = confirmPayload.isConfirm;
     this._setDefaultAccount(confirmPayload.account);
+
+    return confirmPayload.isConfirm;
   }
 
   _setDefaultAccount(account) {

@@ -90,13 +90,13 @@ export default {
   }
   .title {
     font-weight: 400;
-    font-size: 18px;
+    font-size: 15px;
     color: #4d4d4d;
     
   }
 }
 .tab-content {
-  p {font-size: 15px;}
+  p {font-size: 13px;}
 }
 
 </style>

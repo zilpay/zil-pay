@@ -8,10 +8,16 @@ import { SecureMessage } from '../../lib/messages/messageCall'
 export default class Handler {
 
   constructor() {
+    // Stream with content.js
     this.stream = new WeakMap();
+    // Event listener.
     this.subjectStream = new Subject();
 
-    this._init();
+    try {
+      this._init(); // Init stream.
+    } catch(err) {
+      setTimeout(() => this._init, 100);
+    }
   }
 
   _init() {
