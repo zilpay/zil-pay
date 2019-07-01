@@ -13,7 +13,9 @@
         <textarea class="seed" cols="30" v-model="textarea"></textarea>
       </div>
 
-      <div class="input-group" v-show="!textarea">
+      <form class="input-group"
+            v-show="!textarea"
+            @submit.prevent="onExport">
          <div class="text-left">
           <label>Password</label>
           <input type="password" autofocus v-model="password">
@@ -22,13 +24,15 @@
             Wrong password.
           </small>
         </div>
-        <button @click="onExport">Export</button>
-      </div>
+        <input class="btn" type="submit" value="Export"
+               @submit.prevent="onExport">
+      </form>
     </main>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import { MTypesAuth } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
 
@@ -88,6 +92,8 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['spiner']),
+
     async revealPrivateKey() {
       if (this.wrongPassword) {
         return null;
@@ -108,13 +114,15 @@ export default {
         this.wrongPassword = true;
       }
     },
-    onExport() {
+    async onExport() {
+      this.spiner();
       if (this.type == 'key') {
-        this.revealPrivateKey();
+        await this.revealPrivateKey();
       }
       if (this.type == 'seed') {
-        this.revealSeedWords();
+        await this.revealSeedWords();
       }
+      this.spiner();
     }
   }
 }
@@ -124,7 +132,7 @@ export default {
 .export {
   justify-items: center;
 
-  & > .input-group > button {
+  & > .input-group > .btn {
     margin-top: 40px;
     width: 100%;
   }
