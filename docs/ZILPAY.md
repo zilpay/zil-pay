@@ -3,36 +3,33 @@
 
 init Zilliqa object
 ```javaScript
-var zilliqa = new Zilliqa();
-var utils = zilliqa.utils;
+var blockchain = zilPay.blockchain;
+var crypto = zilPay.crypto;
+var utils = zilPay.utils;
 ```
 
 get defaultAccount
 ```javaScript
-var {base16, base58, bech32} = zilPay.defaultAccount;
+var {base16, base58, bech32} = zilPay.wallet.defaultAccount;
 ```
 
-
-follow the change of account
+subscribe on all account change.
 ```javaScript
-addEventListener('addressListing', function (e) {
-  console.log('address change');
-}, false);
+zilPay.wallet.observableAccount().subscribe(console.log);
 ```
-or
+subscribe on all network change.
 ```javaScript
-zilPay.observableAccount().subscribe(account => console.log(account));
+zilPay.wallet.observableNetwork().subscribe(console.log);
 ```
 
+if default Account is null, you need ask permission via:
 ```javaScript
-zilPay.connect(); // to get a permission!
+zilPay.wallet.connect().then(status => true || false);
 ```
 
-
+state variables
 ```javaScript
-if (zilPay.isEnable) {
-  // is unlocked
-} else {
-  // is blocked
-}
+zilPay.wallet.net // show selected network.
+zilPay.wallet.isConnect // show permission to your dApp.
+zilPay.wallet.isEnable // show unlock or lock wallet.
 ```
