@@ -1,3 +1,6 @@
-import ZilPayStreamRun from './browser/zilPay'
+import Handler from './handler'
+import ZilPay from './zil-pay'
 
-ZilPayStreamRun();
+const handler = new Handler();
+window.zilPay = new ZilPay(handler.subjectStream, handler.stream);
+handler.stateUpdate();

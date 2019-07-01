@@ -15,10 +15,6 @@ var _subject = new WeakMap();
 export default class HTTPProvider {
 
   constructor(subjectStream, stream) {
-    if (!subjectStream || !stream) {
-      throw new Error('subjectStream and stream is necessary params.');
-    }
-
     this.middleware = {
       request: {
         use() {}
