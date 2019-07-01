@@ -132,11 +132,6 @@ export default class Wallet {
     // Send transaction to content.js > background.js.
     new SecureMessage({ type, payload }).send(_stream, recipient);
 
-    tx.provider.send = () => {
-      // Override this method.
-      return { error: null, result: {} };
-    };
-
     tx.confirm = () => from(_subject).pipe(
       // Waiting an answer by uuid.
       filter(res => res.type === MTypesTabs.TX_RESULT),
@@ -144,13 +139,14 @@ export default class Wallet {
       filter(res => res.uuid && res.uuid === uuid),
       map(res => {
         if (res.reject) {
-          throw res.reject;
+          throw new Error(res.reject);
         } else if (res.resolve) {
-          return Object.assign(tx, res.resolve)
+          return Object.assign(tx, res.resolve);
         }
       }),
       take(1)
     ).toPromise();
+
     return tx;
   }
 

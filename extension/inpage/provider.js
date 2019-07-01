@@ -1,11 +1,12 @@
 import { filter, take, map } from 'rxjs/operators'
+import { from } from 'rxjs'
 import uuidv4 from 'uuid/v4'
 import {
   MTypesSecure,
   MTypesZilPay
 } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
-import { from } from 'rxjs'
+import { RPCMethod } from '@zilliqa-js/core'
 
 // Private variables. //
 var _stream = new WeakMap(); // Stream instance.
@@ -32,6 +33,9 @@ export default class HTTPProvider {
   }  
 
   send(method, params) {
+    if (RPCMethod.CreateTransaction === method) {
+      return { error: null, result: {} };
+    }
     const type = MTypesZilPay.PROXY_MEHTOD;
     const recipient = MTypesSecure.CONTENT;
     const uuid = uuidv4(); // Request id.
