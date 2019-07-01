@@ -8,7 +8,7 @@ import { SecureMessage } from '../../../lib/messages/messageCall'
 import { Blockchain } from '@zilliqa-js/blockchain'
 import { TransactionFactory } from '@zilliqa-js/account'
 import { Contracts } from '@zilliqa-js/contract';
-import { HTTPProvider } from '@zilliqa-js/core';
+// import { HTTPProvider } from '@zilliqa-js/core';
 import {
   decodeBase58, encodeBase58,
   fromBech32Address, toBech32Address,
@@ -17,9 +17,9 @@ import {
 import * as zilUtils from '@zilliqa-js/util'
 import { validation } from '@zilliqa-js/util'
 import zilConf from '../../../config/zil'
+import HTTPProvider from '../provider'
 
-
-function getFavicon(){
+function getFavicon() {
   let favicon = undefined;
   let nodeList = document.getElementsByTagName('link');
   for (let i = 0; i < nodeList.length; i++)
@@ -139,33 +139,33 @@ function confirm(tx) {
   });
 }
 
-HTTPProvider.prototype.send = (method, params) => {
-  const type = MTypesZilPay.PROXY_MEHTOD;
-  const recipient = MTypesSecure.CONTENT;
-  const uuid = uuidv4();
+// HTTPProvider.prototype.send = (method, params) => {
+//   const type = MTypesZilPay.PROXY_MEHTOD;
+//   const recipient = MTypesSecure.CONTENT;
+//   const uuid = uuidv4();
   
-  new SecureMessage({
-    type, payload: { params, method, uuid }
-  }).send(stream, recipient);
+//   new SecureMessage({
+//     type, payload: { params, method, uuid }
+//   }).send(stream, recipient);
 
-  return new Promise((resolve, reject) => {
-    const proxy = subjectStream.subscribe(result => {
+//   return new Promise((resolve, reject) => {
+//     const proxy = subjectStream.subscribe(result => {
 
-      if (!result.uuid || result.uuid !== uuid) {
-        return null;
-      } else if (result.error) {
-        reject(result.error);
-      } else {
-        resolve(result);
-      }
+//       if (!result.uuid || result.uuid !== uuid) {
+//         return null;
+//       } else if (result.error) {
+//         reject(result.error);
+//       } else {
+//         resolve(result);
+//       }
 
-      proxy.unsubscribe();
-    });
+//       proxy.unsubscribe();
+//     });
 
-    // we save our memory RAM.
-    setTimeout(() => proxy.unsubscribe(), 9000);
-  });
-}
+//     // we save our memory RAM.
+//     setTimeout(() => proxy.unsubscribe(), 9000);
+//   });
+// }
 
 class Listen {
   /**
@@ -176,11 +176,6 @@ class Listen {
     /**
      * when page was loaded, zilPay is injected.
      */
-    window.zilPay.isEnable = msg.payload.isEnable;
-    window.zilPay.setProvider(msg.payload.provider);
-    window.zilPay.setDefaultAccount(msg.payload.account);
-    window.zilPay.net = msg.payload.net;
-    window.zilPay.isConnect = msg.payload.isConnect;
 
     ACCOUNT = msg.payload.account;
     PROVIDER = msg.payload.provider;
@@ -188,8 +183,6 @@ class Listen {
 
   static onChangeNode(msg) {
     // Any change network.
-    window.zilPay.setProvider(msg.payload.provider);
-    window.zilPay.net = msg.payload.net;
     PROVIDER = msg.payload.provider;
   }
 
@@ -197,13 +190,12 @@ class Listen {
     // Any change account.
 
     ACCOUNT = msg.payload;
-    window.zilPay.setDefaultAccount(ACCOUNT);
   }
 
   static onChangeStatus(msg) {
     // change status wallet.
-    window.zilPay.isEnable = msg.payload.isEnable;
-    window.zilPay.setDefaultAccount(ACCOUNT);
+    // window.zilPay.isEnable = msg.payload.isEnable;
+    // window.zilPay.setDefaultAccount(ACCOUNT);
   }
 
   static onConnection(msg) {
@@ -220,8 +212,8 @@ class Listen {
 }
 
 class Zilliqa {
-  constructor(node=PROVIDER, provider=new HTTPProvider(PROVIDER)) {
-    this.provider = provider || new HTTPProvider(node);
+  constructor() {
+    this.provider = new HTTPProvider(subjectStream, stream);
     this.wallet = window.zilPay;
     this.blockchain = new Blockchain(this.provider, this.wallet);
     this.contracts = new Contracts(this.provider, this.wallet);
@@ -241,10 +233,9 @@ class ZilPay {
    * @param {provider}: String && url;
    */
 
-  constructor(provider, net=NET) {
+  constructor(net=NET) {
     this.isEnable = false; // true: unblock or block.
     this.defaultAccount = null;
-    this.provider = provider;
     this.net = net;
     this.isConnect = false;
 
@@ -334,15 +325,6 @@ class ZilPay {
 }
 
 
-window.zilPay = new ZilPay(new HTTPProvider(PROVIDER));
-
-if (typeof window.Zilliqa !== 'undefined') {
-  console.error('window.Zilliqa already exists');
-}
-
-window.Zilliqa = Zilliqa;
-
-
 export default function run() {
   // Create instance in page. //
   
@@ -356,3 +338,5 @@ export default function run() {
 
   new SecureMessage({ type, payload: {} }).send(stream, recipient);
 }
+
+window.Zilliqa = Zilliqa;
