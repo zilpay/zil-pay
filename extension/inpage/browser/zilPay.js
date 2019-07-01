@@ -24,10 +24,9 @@ function getFavicon(){
   let nodeList = document.getElementsByTagName('link');
   for (let i = 0; i < nodeList.length; i++)
   {
-      if((nodeList[i].getAttribute('rel') == 'icon') || (nodeList[i].getAttribute('rel') == 'shortcut icon'))
-      {
-          favicon = nodeList[i].getAttribute('href');
-      }
+    if((nodeList[i].getAttribute('rel') == 'icon') || (nodeList[i].getAttribute('rel') == 'shortcut icon')) {
+      favicon = nodeList[i].getAttribute('href');
+    }
   }
 
   if (!favicon.includes(window.document.domain)) {
@@ -306,6 +305,10 @@ class ZilPay {
       icon: getFavicon(),
       domain: window.document.domain
     };
+
+    if (this.isConnect) {
+      return Promise.resolve(this.isConnect);
+    }
   
     new SecureMessage({ type, payload }).send(stream, recipient);
 
@@ -332,6 +335,11 @@ class ZilPay {
 
 
 window.zilPay = new ZilPay(new HTTPProvider(PROVIDER));
+
+if (typeof window.Zilliqa !== 'undefined') {
+  console.error('window.Zilliqa already exists');
+}
+
 window.Zilliqa = Zilliqa;
 
 

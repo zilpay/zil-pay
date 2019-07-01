@@ -4,21 +4,22 @@
     <div class="animated fadeIn faster">
       <img src="/icon128.png">
       <h1>ZilPay</h1>
-      <span>Welcom back</span>
+      <span>Welcome back</span>
     </div>
 
-    <div class="password-form">
+    <form class="password-form"
+          @submit.prevent="unlock">
       <input class="text-center"
              type="password"
              autofocus
              placeholder="Password"
              @input="wrong = false"
-             v-model="password"
-             @blur="unlock">
-      <br>          
+             v-model="password">
+      <br>
       <div class="warn text-danger" v-show="wrong">Wrong password</div>
-      <button @click="unlock">Continue</button>
-    </div>
+      <input class="btn" type="submit" value="Continue"
+             @submit.prevent="unlock">
+    </form>
 
   </main>
 </template>
