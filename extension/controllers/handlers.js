@@ -322,10 +322,10 @@ export class ZilliqaHandler {
       account = wallet.identities[
         wallet.selectedAddress
       ];
+      this.payload.account = { address: account.address };
     }
-
-    const payload = Object.assign(this.payload, { account });
-
+    
+    const payload = this.payload;
     new TabsMessage({ type, payload }).send();
 
     if (sendResponse && typeof sendResponse == 'function') {

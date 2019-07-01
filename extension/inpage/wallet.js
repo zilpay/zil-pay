@@ -1,0 +1,174 @@
+import uuidv4 from 'uuid/v4'
+import { filter, take, map } from 'rxjs/operators'
+import { from } from 'rxjs'
+import {
+  MTypesSecure,
+  MTypesZilPay,
+  MTypesTabs
+} from '../../lib/messages/messageTypes'
+import { SecureMessage } from '../../lib/messages/messageCall'
+import { getFavicon, toAccountFormat } from './utils'
+
+
+var _stream = new WeakMap();
+var _subject = new WeakMap();
+var _defaultAccount = null;
+var _isConnect = false;
+var _isEnable = false;
+var _net = null;
+
+
+export default class Wallet {
+
+  get isConnect() {
+    return _isConnect;
+  }
+
+  get isEnable() {
+    return _isEnable;
+  }
+
+  get net() {
+    return _net;
+  }
+
+  get defaultAccount() {
+    return _defaultAccount;
+  }
+
+  constructor(subjectStream, stream) {
+    _stream = stream;
+    _subject = subjectStream;
+
+    _subject.subscribe(msg => {
+      switch (msg.type) {
+        
+        case MTypesSecure.STATUS_UPDATE:
+          _isEnable = msg.payload.isEnable;
+          break;
+
+        case MTypesSecure.PAY_OBJECT_INIT:
+          this._setDefaultAccount(msg.payload.account);
+          _isEnable = msg.payload.isEnable;
+          _isConnect = msg.payload.isConnect;
+          _net = msg.payload.net;
+          break;
+
+        case MTypesSecure.SET_ADDRESS:
+          this._setDefaultAccount(msg.payload);
+          break;
+
+        case MTypesSecure.SET_NODE:
+          _net = msg.payload.net;
+          break;
+
+        default:
+          break;
+      }
+    });
+  }
+
+  observableAccount() {
+    if (!this.isConnect) {
+      throw new Error("ZilPay is't connection to dApp");
+    }
+    let lastAccount = null;
+    return from(_subject).pipe(
+      map(msg => {
+        switch (msg.type) {
+          case MTypesSecure.PAY_OBJECT_INIT:
+            return toAccountFormat(msg.payload.account.address);
+          case MTypesSecure.SET_ADDRESS:
+            return toAccountFormat(msg.payload.address);
+        }
+      }),
+      filter(account => account && lastAccount !== account.base16),
+      map(account => {
+        lastAccount = account.base16
+        return account;
+      })
+    );
+  }
+
+  observableNetwork() {
+    return from(_subject).pipe(
+      filter(msg => msg && msg.type === MTypesSecure.SET_NODE),
+      map(msg => msg.payload.net)
+    );
+  }
+
+  sign(tx) {
+    if (!this.isEnable) {
+      throw new Error("ZilPay is disabled.");
+    } else if (!this.isConnect) {
+      throw new Error("User is't connections.");
+    }
+
+    const type = MTypesZilPay.CALL_SIGN_TX;
+    const recipient = MTypesSecure.CONTENT;
+    const uuid = uuidv4();
+    let { payload } = tx;
+    
+    payload.uuid = uuid;
+    payload.title = window.document.title;
+    payload.icon = getFavicon();
+
+    new SecureMessage({ type, payload }).send(_stream, recipient);
+
+    tx.provider.send = () => {
+      return { error: null, result: {} };
+    };
+
+    tx.confirm = () => from(_subject).pipe(
+      filter(res => res.type === MTypesTabs.TX_RESULT),
+      map(res => res.payload),
+      filter(res => res.uuid && res.uuid === uuid),
+      map(res => {
+        if (res.reject) {
+          throw res.reject;
+        } else if (res.resolve) {
+          return Object.assign(tx, res.resolve)
+        }
+      }),
+      take(1)
+    ).toPromise();
+    return tx;
+  }
+
+  async connect() {
+    const type = MTypesSecure.CONNECT;
+    const recipient = MTypesSecure.CONTENT;
+    const uuid = uuidv4();
+    const title = window.document.title;
+    const domain = window.document.domain;
+    const icon = getFavicon();
+    const payload = { title, domain, icon, uuid };
+
+    if (this.isConnect) {
+      return Promise.resolve(this.isConnect);
+    }
+
+    new SecureMessage({ type, payload }).send(_stream, recipient);
+
+    const confirmPayload = await from(_subject).pipe(
+      filter(res => res.uuid && res.uuid === uuid),
+      take(1)
+    ).toPromise();
+
+    _isConnect = confirmPayload.isConfirm;
+    this._setDefaultAccount(confirmPayload.account);
+  }
+
+  _setDefaultAccount(account) {
+    if (!this.isEnable || !account || !this.isConnect) {
+      return null;
+    } else if (_defaultAccount && account.address === _defaultAccount.base16) {
+      return _defaultAccount;
+    }
+      
+    _defaultAccount = toAccountFormat(account.address);
+  
+    return _defaultAccount;
+  }
+
+}

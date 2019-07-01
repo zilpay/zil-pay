@@ -28,7 +28,11 @@ import fields from '../../config/fields'
 
 async function removeConnection() {
   const storage = new BrowserStorage();
-  storage.set(new BuildObject(fields.CONNECT_DAPP, {}));
+  const payload = await storage.get(fields.CONNECT_DAPP);
+
+  await storage.set(new BuildObject(fields.CONNECT_DAPP, {}));
+
+  return payload[fields.CONNECT_DAPP];
 }
 
 export default {
@@ -47,14 +51,16 @@ export default {
     ]),
 
     async reject() {
-      await removeConnection();
-      await this.confirmDapp(false);
+      const payload = await removeConnection();
+      const isConfirm = false;
+      await this.confirmDapp(Object.assign(payload, { isConfirm }));
       window.window.close();
     },
     async confirm() {
       this.mutateDappsList(this.connect);
-      await removeConnection();
-      await this.confirmDapp(true);
+      const payload = await removeConnection();
+      const isConfirm = true;
+      await this.confirmDapp(Object.assign(payload, { isConfirm }));
       window.window.close();
     }
   }

@@ -1,3 +1,11 @@
+import {
+  encodeBase58,
+  toBech32Address,
+  toChecksumAddress
+} from '@zilliqa-js/crypto'
+import { validation } from '@zilliqa-js/util'
+
+
 export function getFavicon() {
   let favicon = undefined;
   let nodeList = document.getElementsByTagName('link');
@@ -16,4 +24,18 @@ export function getFavicon() {
     }
   }
   return favicon;        
+}
+
+export function toAccountFormat(address) {
+  const isAddress = validation.isAddress(address);
+
+  if (!isAddress) {
+    throw new Error('input param is not address type');
+  }
+
+  return {
+    base16: toChecksumAddress(address),
+    base58: encodeBase58(address),
+    bech32: toBech32Address(address)
+  };
 }

@@ -1,11 +1,15 @@
-import { filter, take } from 'rxjs/operators';
+import { filter, take, map } from 'rxjs/operators'
 import uuidv4 from 'uuid/v4'
 import {
   MTypesSecure,
   MTypesZilPay
 } from '../../lib/messages/messageTypes'
 import { SecureMessage } from '../../lib/messages/messageCall'
-import { from } from 'rxjs';
+import { from } from 'rxjs'
+
+
+var _stream = new WeakMap();
+var _subject = new WeakMap();
 
 
 export default class HTTPProvider {
@@ -23,8 +27,8 @@ export default class HTTPProvider {
         use() {}
       }
     }
-    this.stream = stream;
-    this.subject = subjectStream;
+    _stream = stream;
+    _subject = subjectStream;
   }  
 
   send(method, params) {
@@ -34,10 +38,12 @@ export default class HTTPProvider {
 
     new SecureMessage({
       type, payload: { params, method, uuid }
-    }).send(this.stream, recipient);
+    }).send(_stream, recipient);
 
-    return from(this.subject).pipe(
-      filter(res => res.uuid === uuid),
+    return from(_subject).pipe(
+      filter(res => res.type === MTypesZilPay.PROXY_RESULT),
+      map(res => res.payload),
+      filter(res => res.uuid && res.uuid === uuid),
       take(1)
     ).toPromise();
   }
