@@ -139,7 +139,7 @@ export default class Wallet {
       filter(res => res.uuid && res.uuid === uuid),
       map(res => {
         if (res.reject) {
-          throw new Error(res.reject);
+          throw res.reject;
         } else if (res.resolve) {
           return Object.assign(tx, res.resolve);
         }

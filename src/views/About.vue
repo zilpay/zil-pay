@@ -15,7 +15,7 @@
         </div>
 
         <ul class="text-left">
-          <li><a href="https://github.com/lich666dead/zil-pay" target="_blanck">GitHub</a></li>
+          <li><a href="https://github.com/zilpay/zil-pay" target="_blanck">GitHub</a></li>
           <li><a href="https://t.me/zilpay" target="_blanck">Telegram</a></li>
           <li><a href="https://zilpay.xyz/privacy.html" target="_blanck">privacy</a></li>
           <li><a href="https://zilpay.xyz/privacy.html" target="_blanck">terms</a></li>
