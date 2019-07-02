@@ -93,9 +93,9 @@ export class SecureStream {
 
       result = await httpProvider.send(method, params);
     } catch(err) {
-      result['error'] = err;
+      result['error'] = err.message || err;
     }
-    
+
     result.uuid = uuid;
 
     new SecureMessage({

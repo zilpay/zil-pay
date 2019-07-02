@@ -49,6 +49,13 @@ export default class HTTPProvider {
       filter(res => res.type === MTypesZilPay.PROXY_RESULT),
       map(res => res.payload),
       filter(res => res.uuid && res.uuid === uuid),
+      map(res => {
+        if (res.error) {
+          throw res.error;
+        }
+        delete res.uuid;
+        return res;
+      }),
       take(1)
     ).toPromise();
   }

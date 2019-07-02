@@ -109,9 +109,15 @@ export class Auth {
      */
     const storage = new BrowserStorage();
     let dappList = await storage.get(fields.STATIC);
-
+    
     try {
-      dappList = dappList[fields.STATIC]['dappsList'] || [];
+      dappList = dappList[fields.STATIC];
+      
+      if (typeof dappList === 'string') {
+        dappList = JSON.parse(dappList);
+      }
+
+      dappList = dappList['dappsList'] || [];
 
       return dappList.filter(
         dapp => dapp && dapp.domain.includes(domain)
