@@ -315,7 +315,6 @@ export class ZilliqaHandler {
     let account = null;
     const storage = new BrowserStorage();
     const type = MTypesTabs.CONNECT_TO_DAPP;
-    console.log(this.payload);
 
     if (this.payload.isConfirm) {
       let wallet = await storage.get(fields.WALLET);

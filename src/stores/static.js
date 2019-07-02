@@ -10,14 +10,23 @@ async function updateStatic(object, isOverwrite=false) {
   let stateData = await storage.get(fields.STATIC);
   stateData = stateData[fields.STATIC];
 
+  if (typeof stateData === 'string') {
+    // it need for the firefox.
+    stateData = JSON.parse(stateData);
+  }
+
   if (!stateData || Object.keys(stateData).length < 3 || isOverwrite) {
-    await storage.set(new BuildObject(fields.STATIC, {
+    const data = {
       currency: object.currency,
       addressFormat: object.addressFormat,
       defaultGas: object.defaultGas,
       lockTime: object.lockTime,
       dappsList: object.dappsList
-    }));
+    };
+    await storage.set(new BuildObject(
+      fields.STATIC,
+      JSON.stringify(data) 
+    ));
     return null;
   }
 
@@ -74,6 +83,11 @@ export default {
           return null;
         }
       }
+      
+      delete newDapp.uuid;
+      delete newDapp.account;
+      delete newDapp.isConfirm;
+
       state.dappsList.push(newDapp);
       updateStatic(state, true);
     },
