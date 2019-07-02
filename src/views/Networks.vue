@@ -97,6 +97,8 @@ export default {
 }
 .net-form {
   padding: 30px;
+  margin: 30px;
+  padding: 30px;
 }
 
 </style>
