@@ -17,7 +17,8 @@
         Save your mnemonic Seed Phrase!
       </div>
 
-      <div class="input-group">
+      <form class="input-group"
+            @submit.prevent="createWallet">
          <div class="text-left">
           <label>Password (min 6 chars)</label>
           <input type="password" v-model.lazy="password">
@@ -31,10 +32,11 @@
                  class="text-danger">{{isConfirmPassword}}</small>
         </div>
 
-        <button :disabled="isContinue" @click="createWallet">
-          continue
-        </button>
-      </div>
+        <br>
+
+        <input class="btn" type="submit" value="Continue"
+               @submit.prevent="createWallet">
+      </form>
     </main>
   </div>
 </template>
