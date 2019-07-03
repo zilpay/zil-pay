@@ -32,6 +32,7 @@ export default class Zilliqa {
     this.blockchain = new Blockchain(this.provider, this.wallet);
     this.contracts = new Contracts(this.provider, this.wallet);
     this.transactions = new TransactionFactory(this.provider, this.wallet);
+
     this.utils = zilUtils;
     this.crypto = {
       decodeBase58, encodeBase58,
