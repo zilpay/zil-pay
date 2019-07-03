@@ -74,7 +74,7 @@ export default class Wallet {
      * Subscribe on all account change.
      */
     if (!this.isConnect) {
-      throw new Error("ZilPay is't connection to dApp");
+      throw "ZilPay is't connection to dApp";
     }
     let lastAccount = null;
     return from(_subject).pipe(
@@ -112,9 +112,9 @@ export default class Wallet {
      * Call popup for confirm Transaction.
      */
     if (!this.isEnable) {
-      throw new Error("ZilPay is disabled.");
+      throw "ZilPay is disabled.";
     } else if (!this.isConnect) {
-      throw new Error("User is't connections.");
+      throw "User is't connections.";
     }
 
     const type = MTypesZilPay.CALL_SIGN_TX;
