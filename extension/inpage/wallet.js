@@ -10,12 +10,12 @@ import { SecureMessage } from '../../lib/messages/messageCall'
 import { getFavicon, toAccountFormat } from './utils'
 
 // Private variables. //
-var _stream = new WeakMap(); // Stream instance.
-var _subject = new WeakMap(); // Listener instance.
-var _defaultAccount = null;
-var _isConnect = false;
-var _isEnable = false;
-var _net = null;
+let _stream = new WeakMap(); // Stream instance.
+let _subject = new WeakMap(); // Listener instance.
+let _defaultAccount = null;
+let _isConnect = false;
+let _isEnable = false;
+let _net = null;
 // Private variables. //
 
 

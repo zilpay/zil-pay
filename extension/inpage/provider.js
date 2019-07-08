@@ -9,8 +9,8 @@ import { SecureMessage } from '../../lib/messages/messageCall'
 import { RPCMethod } from '@zilliqa-js/core'
 
 // Private variables. //
-var _stream = new WeakMap(); // Stream instance.
-var _subject = new WeakMap(); // Listener instance.
+let _stream = new WeakMap(); // Stream instance.
+let _subject = new WeakMap(); // Listener instance.
 // Private variables. //
 
 
