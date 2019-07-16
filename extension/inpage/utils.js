@@ -19,7 +19,9 @@ export function getFavicon() {
     }
   }
 
-  if (!favicon.includes(window.document.domain)) {
+  if (!favicon) {
+    return null;
+  } else if (!favicon.includes(window.document.domain)) {
     if (favicon[0] !== '/') {
       favicon = window.location.origin + '/' + favicon;
     } else {
