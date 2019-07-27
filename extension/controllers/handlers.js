@@ -458,6 +458,8 @@ export class TransactionHandler {
     const accountID = accountSelected.index;
 
     let transaction = data[fields.CONFIRM_TX].pop();
+
+    console.log(transaction);
     
     transaction.gasLimit = this.payload.gasLimit || transaction.gasLimit;
     transaction.gasPrice = this.payload.gasPrice || transaction.gasPrice;

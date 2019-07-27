@@ -16,6 +16,7 @@ let _defaultAccount = null;
 let _isConnect = false;
 let _isEnable = false;
 let _net = null;
+let _broadcastingTransaction =false;
 // Private variables. //
 
 
@@ -35,6 +36,17 @@ export default class Wallet {
 
   get defaultAccount() {
     return _defaultAccount;
+  }
+
+  get broadcasting() {
+    return _broadcastingTransaction;
+  }
+
+  set broadcasting(value) {
+    if (typeof value !== 'boolean') {
+      throw new Error('value must be boolean type');
+    }
+    _broadcastingTransaction = value;
   }
 
   constructor(subjectStream, stream) {
@@ -121,6 +133,8 @@ export default class Wallet {
     const recipient = MTypesSecure.CONTENT;
     const uuid = uuidv4();
     let { payload } = tx;
+
+    console.log(_broadcastingTransaction);
     
     // Transaction id.
     payload.uuid = uuid;
@@ -128,6 +142,8 @@ export default class Wallet {
     payload.title = window.document.title;
     // Url on favicon by current tab.
     payload.icon = getFavicon();
+    // if true then ZilPay will not send to blockchain this tx.
+    payload.isBroadcast = _broadcastingTransaction;
 
     // Send transaction to content.js > background.js.
     new SecureMessage({ type, payload }).send(_stream, recipient);
