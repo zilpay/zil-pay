@@ -134,8 +134,6 @@ export default class Wallet {
     const uuid = uuidv4();
     let { payload } = tx;
 
-    console.log(_broadcastingTransaction);
-    
     // Transaction id.
     payload.uuid = uuid;
     // Current tab title.

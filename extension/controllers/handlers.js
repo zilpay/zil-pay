@@ -458,8 +458,6 @@ export class TransactionHandler {
     const accountID = accountSelected.index;
 
     let transaction = data[fields.CONFIRM_TX].pop();
-
-    console.log(transaction);
     
     transaction.gasLimit = this.payload.gasLimit || transaction.gasLimit;
     transaction.gasPrice = this.payload.gasPrice || transaction.gasPrice;
@@ -512,15 +510,19 @@ export class TransactionHandler {
       sendResponse({ reject: err.message });
       return null;
     }
-
+    
     const { result, req, error } = resultTx;
     
     if (result) {
       await accountControl.zilliqa.rmForSingTransaction();
       
-      let tx = Object.assign(result, req.payload.params[0]);
+      let tx = result;
+
       tx.from = accountSelected.address;
 
+      if (req && req.payload && req.payload.params && req.payload.params[0]) {
+        Object.assign(tx, req.payload.params[0]);
+      }
       await accountControl.zilliqa.addTransactionList(
         tx, networkControl.selected
       );

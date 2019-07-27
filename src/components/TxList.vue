@@ -11,7 +11,7 @@
 
         <img v-if="tx.Info == call || tx.Info == deploy"
              src="/icons/contract.svg" height="20">
-        <img v-if="tx.Info == send"
+        <img v-if="tx.Info == send || tx.Info == nonBroadcasting"
              src="/icons/send-dark.svg"
              height="20">
 
@@ -63,7 +63,8 @@ export default {
     return {
       deploy: 'Deploy',
       call: 'Call',
-      send: 'Send ZIL'
+      send: 'Send ZIL',
+      nonBroadcasting: 'Non-broadcast'
     };
   },
   computed: {

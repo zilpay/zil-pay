@@ -101,7 +101,14 @@ export class ZilliqaControl extends Zilliqa {
       this.wallet.defaultAccount.publicKey
     );
     // Sign transaction by current account. //
-    const { txParams } = await this.wallet.sign(zilTxData);
+    const { txParams, payload } = await this.wallet.sign(zilTxData);
+    
+    if (txData.isBroadcast && typeof txData.isBroadcast === 'boolean') {
+      payload.Info = 'Non-broadcast';
+      payload.TranID = 'none';
+      return { result: payload, req: null };
+    }
+
     return await this.signedTxSend(txParams);
   }
 
