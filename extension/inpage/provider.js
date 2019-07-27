@@ -30,10 +30,12 @@ export default class HTTPProvider {
     }
     _stream = stream;
     _subject = subjectStream;
+
+    this.RPCMethod = RPCMethod;
   }  
 
   send(method, params) {
-    if (RPCMethod.CreateTransaction === method) {
+    if (this.RPCMethod.CreateTransaction === method) {
       return { error: null, result: {} };
     }
     const type = MTypesZilPay.PROXY_MEHTOD;
