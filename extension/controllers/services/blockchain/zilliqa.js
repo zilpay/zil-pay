@@ -106,6 +106,8 @@ export class ZilliqaControl extends Zilliqa {
     if (txData.isBroadcast && typeof txData.isBroadcast === 'boolean') {
       payload.Info = 'Non-broadcast';
       payload.TranID = 'none';
+      payload.version = txParams.version;
+
       return { result: payload, req: null };
     }
 

@@ -35,7 +35,8 @@ export default class HTTPProvider {
   }  
 
   send(method, params) {
-    if (this.RPCMethod.CreateTransaction === method) {
+    if (this.RPCMethod.CreateTransaction === method
+        && typeof params.signature === 'undefined') {
       return { error: null, result: {} };
     }
     const type = MTypesZilPay.PROXY_MEHTOD;
