@@ -22,8 +22,8 @@ $ npm run all:chrome  # all scripts build for chrome platform.
 
 
 #### ZilPay
-+ [ZilPay docs](https://github.com/lich666dead/zil-pay/blob/master/docs/ZILPAY.md)
-+ [ZilPay more docs](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
++ [ZilPay full documentation](https://zilpay.herokuapp.com/)
++ [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
 + [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
 
 
