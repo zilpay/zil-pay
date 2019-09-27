@@ -18,8 +18,10 @@ $ npm run background  # build background.js
 $ npm run scripts     # build content.js & inpage.js & background.js
 $ npm run all:firefox # all scripts build for firefox platform.
 $ npm run all:chrome  # all scripts build for chrome platform.
-$ npm run build:prod:firefox # build for production.
-$ npm run build:prod:chrome # build for production.
+
+# Production build:
+$ npm run build:prod:firefox
+$ npm run build:prod:chrome
 ```
 
 
@@ -27,7 +29,6 @@ $ npm run build:prod:chrome # build for production.
 + [ZilPay full documentation](https://zilpay.herokuapp.com/)
 + [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
 + [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
-
 
 
 ## Links
