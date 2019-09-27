@@ -59,11 +59,7 @@ const manifest = {
 }
 
 if (process.env.PLATFORM == 'firefox') {
-  manifest['applications'] = {
-    "gecko": {
-      "id": "addon@zilpay.xyz"
-    }
-  }
+  //
 } else if (process.env.PLATFORM == 'chrome') {
   manifest['background']['persistent'] = true;
 }
