@@ -18,6 +18,8 @@ $ npm run background  # build background.js
 $ npm run scripts     # build content.js & inpage.js & background.js
 $ npm run all:firefox # all scripts build for firefox platform.
 $ npm run all:chrome  # all scripts build for chrome platform.
+$ npm run build:prod:firefox # build for production.
+$ npm run build:prod:chrome # build for production.
 ```
 
 

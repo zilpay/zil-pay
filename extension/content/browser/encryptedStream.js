@@ -1,16 +1,45 @@
 import { EncryptedStream } from 'extension-streams'
 import uuidv4 from 'uuid/v4'
-import { HTTPProvider } from '@zilliqa-js/core';
+import fetch from 'cross-fetch'
+import { HTTPProvider, composeMiddleware } from '@zilliqa-js/core'
+
 import { MTypesSecure, MTypesZilPay } from '../../../lib/messages/messageTypes'
 import { SecureMessage, Message } from '../../../lib/messages/messageCall'
+
 import { Loger } from '../../../lib/logger'
 import apiConfig from '../../../config/api'
 import errors from '../../../config/errors'
 
-
+const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
 const log = new Loger(`${apiConfig.PAY_NAME}.SecureStream`);
 var stream = new WeakMap();
 
+
+HTTPProvider.prototype.send = async function(method, ...params) {
+  const [tReq, tRes] = this.getMiddleware(method);
+  const reqMiddleware = composeMiddleware(...tReq);
+  const resMiddleware = composeMiddleware(...tRes);
+
+  const req = reqMiddleware(this.buildPayload(method, params));
+  const response = await fetch(req.url, {
+    method: 'POST',
+    cache: 'no-cache',
+    mode: 'cors',
+    redirect: 'follow',
+    body: JSON.stringify(req.payload),
+    headers: {
+      ...DEFAULT_HEADERS,
+      ...((req.options && req.options.headers) || {}),
+    }
+  });
+  const body = await response.json();
+  const result = {
+    ...body,
+    req
+  };
+
+  return resMiddleware(result);
+}
 
 export class SecureStream {
 
