@@ -18,7 +18,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@zilliqa-js/zilliqa": "^0.7.5",
+    "@zilliqa-js/zilliqa": "^0.8.1",
     "bip39": "^3.0.2",
     "clipboard-copy": "^3.1.0",
     "cross-fetch": "^3.0.4",

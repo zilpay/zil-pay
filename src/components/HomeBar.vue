@@ -2,7 +2,11 @@
   <div class="nav-container">
     <nav>
       <div class="left">
-        <img :src="connectURL" height="30">
+        <img
+          :src="connectURL"
+          height="30"
+          @click="$router.push({name: 'Networks'})"
+        >
         <img src="/icons/qr-code.svg" height="30"
              class="point"
              @click="$router.push({name: 'Receive'})">

@@ -1,5 +1,7 @@
 # Using ZilPay in dapps.
 
+More information on (zilpay)[https://zilpay.xyz/]
+
 
 init Zilliqa object
 ```javaScript
