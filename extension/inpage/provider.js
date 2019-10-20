@@ -34,11 +34,12 @@ export default class HTTPProvider {
     this.RPCMethod = RPCMethod;
   }  
 
-  send(method, params) {
+  send(method, ...params) {
     if (this.RPCMethod.CreateTransaction === method
         && typeof params.signature === 'undefined') {
       return { error: null, result: {} };
     }
+
     const type = MTypesZilPay.PROXY_MEHTOD;
     const recipient = MTypesSecure.CONTENT;
     const uuid = uuidv4(); // Request id.

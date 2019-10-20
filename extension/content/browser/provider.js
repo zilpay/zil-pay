@@ -8,7 +8,7 @@ HTTPProvider.prototype.send = async function(method, ...params) {
   const reqMiddleware = composeMiddleware(...tReq);
   const resMiddleware = composeMiddleware(...tRes);
 
-  const req = reqMiddleware(this.buildPayload(method, params));
+  const req = reqMiddleware(this.buildPayload(method, ...params));
   const response = await fetch(req.url, {
     method: 'POST',
     cache: 'no-cache',
