@@ -26,7 +26,7 @@ $ npm run build:prod:chrome
 
 
 #### ZilPay
-+ [ZilPay full documentation](https://zilpay-test.web.app/Documentation/)
++ [ZilPay full documentation](https://zilpay.xyz/Documentation/)
 + [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
 + [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
 
