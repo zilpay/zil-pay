@@ -1,6 +1,6 @@
 # Using ZilPay in dapps.
 
-More information on (zilpay)[https://zilpay.xyz/]
+More information on [ZilPay full documentation](https://zilpay.xyz/Documentation/)
 
 
 init Zilliqa object
