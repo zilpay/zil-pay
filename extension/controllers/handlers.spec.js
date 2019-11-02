@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import uuidv4 from 'uuid/v4'
 import { toChecksumAddress } from '@zilliqa-js/crypto';
 import {
@@ -160,53 +161,53 @@ describe('handlers for background page', () => {
     });
   });
 
-  test('TransactionHandler.buildTransaction', async () => {
-    let nonceForTest;
-    const payload = {
-      gasLimit: '1',
-      gasPrice: '1000000000'
-    };
-    const selectednet = Object.keys(zilConfig)[1];
-    const wallet = global.storage[fields.WALLET];
-    const selectedAddress = wallet.identities[
-      wallet.selectedAddress
-    ].address;
-    const tx = global.storage[fields.CONFIRM_TX][0];
+  // test('TransactionHandler.buildTransaction', async () => {
+  //   let nonceForTest;
+  //   const payload = {
+  //     gasLimit: '1',
+  //     gasPrice: '1000000000'
+  //   };
+  //   const selectednet = Object.keys(zilConfig)[1];
+  //   const wallet = global.storage[fields.WALLET];
+  //   const selectedAddress = wallet.identities[
+  //     wallet.selectedAddress
+  //   ].address;
+  //   const tx = global.storage[fields.CONFIRM_TX][0];
 
-    await new TransactionHandler(payload).buildTransaction(value => {
-      expect(value.resolve.from).toBe(selectedAddress);
-      expect(payload.gasLimit).toBe(value.resolve.gasLimit);
-      expect(payload.gasPrice).toBe(value.resolve.gasPrice);
-      expect(tx.amount).toBe(value.resolve.amount);
-      expect(tx.toAddr).toBe(value.resolve.toAddr);
+  //   await new TransactionHandler(payload).buildTransaction(value => {
+  //     expect(value.resolve.from).toBe(selectedAddress);
+  //     expect(payload.gasLimit).toBe(value.resolve.gasLimit);
+  //     expect(payload.gasPrice).toBe(value.resolve.gasPrice);
+  //     expect(tx.amount).toBe(value.resolve.amount);
+  //     expect(tx.toAddr).toBe(value.resolve.toAddr);
 
-      const txList = global.storage[
-        fields.TRANSACTIONS
-      ][selectedAddress][selectednet][0];
+  //     const txList = global.storage[
+  //       fields.TRANSACTIONS
+  //     ][selectedAddress][selectednet][0];
 
-      expect(txList).toEqual({
-        Info: value.resolve.Info,
-        TranID: value.resolve.TranID,
-        amount: value.resolve.amount,
-        toAddr: value.resolve.toAddr,
-        nonce: value.resolve.nonce
-      });
-      nonceForTest = value.resolve.nonce;
-    });
+  //     expect(txList).toEqual({
+  //       Info: value.resolve.Info,
+  //       TranID: value.resolve.TranID,
+  //       amount: value.resolve.amount,
+  //       toAddr: value.resolve.toAddr,
+  //       nonce: value.resolve.nonce
+  //     });
+  //     nonceForTest = value.resolve.nonce;
+  //   });
 
-    await new TransactionHandler({
-      amount: '0',
-      code: '',
-      data: '',
-      gasLimit: '1',
-      gasPrice: '1000000000',
-      toAddr: '1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3'
-    }).callTransaction(console.log);
+  //   await new TransactionHandler({
+  //     amount: '0',
+  //     code: '',
+  //     data: '',
+  //     gasLimit: '1',
+  //     gasPrice: '1000000000',
+  //     toAddr: '1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3'
+  //   }).callTransaction(console.log);
 
-    await new TransactionHandler(payload).buildTransaction(value => {
-      expect(value.resolve.nonce).toBe(nonceForTest + 1);
-    });
-  }, 20000);
+  //   await new TransactionHandler(payload).buildTransaction(value => {
+  //     expect(value.resolve.nonce).toBe(nonceForTest + 1);
+  //   });
+  // }, 20000);
 
 
   test('ZilliqaHandler.rmAllTransactionList', async () => {

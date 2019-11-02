@@ -6,7 +6,8 @@ import {
   NetworkHandler,
   AccountHandler,
   ZilliqaHandler,
-  TransactionHandler
+  TransactionHandler,
+  UnstoppableDomainsHandler
 } from './handlers'
 
 
@@ -125,6 +126,10 @@ export class Background {
         
       case MTypesInternal.ACC_CHANGE_NAME:
         new WalletHandler(message.payload).changeAccountName(sendResponse);
+        break;
+
+      case MTypesInternal.GET_UD_OWNER:
+        new UnstoppableDomainsHandler(message.payload).getUdOwnerByDomain(sendResponse);
         break;
 
       case MTypesInternal.CLEAR_HISTORY_TX:

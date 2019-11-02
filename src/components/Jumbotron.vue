@@ -11,10 +11,11 @@
                :value="account.name"
                @blur="changeName">
 
-        <div class="burger dropdown-btn">
+        <div class="burger dropdown-btn"
+             v-click-outside="burgerMenuClose">
           <img src="/icons/menu-burger.svg" height="30"
                @click="isDropdown = !isDropdown">
-          <ul v-show="isDropdown" @mouseleave="isDropdown = false"
+          <ul v-show="isDropdown"
               class="animated fadeIn faster dropdown dropdown-input text-black">
             <li>
               <a :href="exploreAddress(account.address)" target="_blanck">Account details</a>
@@ -64,6 +65,7 @@
 <script>
 import { mapState } from 'vuex'
 import Jazzicon from '../mixins/jazzicon'
+import vClickOutside from 'v-click-outside'
 import tooltip from '../directives/tooltip'
 import clipboardMixin from '../mixins/clipboard'
 import AccountListing from '../mixins/account-listing'
@@ -82,7 +84,10 @@ export default {
     explorer
   ],
   filters: { toConversion, fromZil },
-  directives: { tooltip },
+  directives: {
+    tooltip,
+    clickOutside: vClickOutside.directive
+  },
   data() {
     return {
       isDropdown: false
@@ -96,6 +101,11 @@ export default {
   },
   mounted() {
     this.jazziconMake(this.account.address, 'acc');
+  },
+  methods: {
+    burgerMenuClose() {
+      this.isDropdown = false;
+    }
   }
 }
 </script>

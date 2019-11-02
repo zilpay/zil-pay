@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { ZilliqaControl } from './zilliqa'
 import { NetworkControl } from '../network'
 import { toChecksumAddress } from '@zilliqa-js/crypto';
@@ -43,7 +44,7 @@ describe('Test zilliqa control', () => {
 
     expect(account.address).toBe(toChecksumAddress(address));
     expect(account.index).toBe(index);
-    expect(account.privateKey).toBe(privkey);
+    expect(account.privateKey.toLowerCase()).toBe(privkey.toLowerCase());
   });
 
   test('add and rm transaction for confirm', async () => {

@@ -13,6 +13,8 @@ main, .row {
   grid-gap: 10px;
   justify-items: center;
   width: 330px;
+  height: 100px;
+  justify-items: start;
 	
 	border: 1px solid $color-quaternary;
 	border-radius: 4px;

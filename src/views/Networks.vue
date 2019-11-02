@@ -3,8 +3,10 @@
     <BackBar/>
 
     <main class="animated fadeIn faster is-mini">
-      <div class="change-net text-left" @mouseleave="isInput = false">
-        <div class="dropdown-el text-black" @click="isInput = !isInput">
+      <div class="change-net text-left"
+           v-click-outside="dropdownClose">
+        <div class="dropdown-el text-black"
+             @click="isInput = !isInput">
           {{network}}
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
@@ -43,14 +45,18 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
-import defaultConfig from '../../config/zil.json'
+import { mapState, mapActions, mapMutations } from 'vuex';
+import vClickOutside from 'v-click-outside';
+import defaultConfig from '../../config/zil.json';
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'Networks',
   components: { BackBar },
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   data() {
     return {
       isInput: false
@@ -86,6 +92,9 @@ export default {
     },
     toDefaultNetworkConfig() {
       this.configUpdate(defaultConfig);
+    },
+    dropdownClose() {
+      this.isInput = false;
     }
   }
 }

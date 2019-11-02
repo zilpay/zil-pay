@@ -16,7 +16,10 @@
         <small>fee: {{fee}}</small>
       </div>
 
-      <div class="change-time text-left" @mouseleave="isInput = false">
+      <div
+        class="change-time text-left"
+        v-click-outside="dropdownInputClose"
+      >
         <label>Auto-Logout Timer (hours)</label>
         <div class="dropdown-el text-black" @click="isInput = !isInput">
           {{lockTime}}
@@ -33,14 +36,19 @@
         </div>
       </div>
 
-      <button class="def"
-              @click="defaultAll">default</button>
+      <button 
+        class="def"
+        @click="defaultAll"
+      >
+        default
+      </button>
     </main>
   </div>
 </template>
 
 <script>
 import GasFee from '../mixins/gas-fee'
+import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations } from 'vuex'
 import API from '../../config/api.json'
 
@@ -51,6 +59,9 @@ export default {
   name: 'Advanced',
   components: { BackBar },
   mixins: [GasFee],
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   data() {
     return {
       isInput: false,
@@ -70,10 +81,14 @@ export default {
       }
 
       this.mutateLockTime(time);
+      this.isInput = false;
     },
     defaultAll() {
       this.toDefaultGas();
       this.mutateLockTime(API.TIME_BEFORE_LOCK);
+    },
+    dropdownInputClose() {
+      this.isInput = false;
     }
   },
   mounted() {

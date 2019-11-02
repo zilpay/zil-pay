@@ -1,6 +1,6 @@
 {
   "name": "zil-pay",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "ZilPay browser Extension for zilliqa blockchain",
   "private": false,
   "scripts": {
@@ -26,9 +26,11 @@
     "extension-streams": "^1.0.7",
     "extensionizer": "^1.0.1",
     "jazzicon": "^1.5.0",
+    "namicorn": "^0.2.42",
     "qrcode": "^1.4.2",
     "rxjs": "^6.5.3",
     "uuid": "^3.3.3",
+    "v-click-outside": "^2.1.4",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
     "vuex": "^3.1.1"

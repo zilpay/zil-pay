@@ -3,7 +3,7 @@
     <BackBar/>
 
     <main class="is-mini import-page">
-      <h2 class="text-center">
+      <h2 class="text-center title">
         You can import account by private key or hardware wallet
       </h2>
 
@@ -126,6 +126,10 @@ export default {
 </script>
 
 <style lang="scss">
+.title {
+  font-size: 15px;
+  padding: 30px;
+}
 .import-page {
   font-size: 15px;
   font-weight: 600;

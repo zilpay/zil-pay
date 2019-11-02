@@ -107,6 +107,10 @@ export class Auth {
      * Check access to dApp.
      * @return Boolean.
      */
+    if (domain && domain.includes('zilpay.xyz')) {
+      return true;
+    }
+
     const storage = new BrowserStorage();
     let dappList = await storage.get(fields.STATIC);
     

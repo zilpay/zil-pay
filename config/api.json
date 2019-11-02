@@ -4,5 +4,6 @@
   "PAY_NAME": "ZILPAY",
   "INPAGE_NAME": "inpage.js",
   "PROMT_PAGE": "index.html",
-  "TIME_BEFORE_LOCK": 3
+  "TIME_BEFORE_LOCK": 3,
+  "UD_CONTRACT_ADDRESS": "zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz"
 }

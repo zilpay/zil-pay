@@ -3,6 +3,7 @@ import { AccountControl } from './services/account/create'
 import { NetworkControl } from './services/network/index'
 import { AccountExporter } from './services/account/export'
 import { AccountImporter } from './services/account/import'
+import { UnstoppableDomains } from './services/ud/ud'
 import { MnemonicControl } from './services/auth/mnemonic'
 import { NotificationsControl } from './services/browser/notifications'
 import { PromptService } from './services/browser/popup'
@@ -263,6 +264,11 @@ export class AccountHandler {
   }
 
   async connectToDapp(sendResponse) {
+    if (this.payload.domain && this.payload.domain.includes('zilpay.xyz')) {
+      sendResponse({ resolve: true });
+      return null;
+    }
+
     try {
       await accountControl.addForConnectDapp(this.payload);
       new PromptService().open();
@@ -664,4 +670,28 @@ export class TransactionHandler {
     );
   }
 
+}
+
+export class UnstoppableDomainsHandler {
+
+  constructor(payload) {
+    this.payload = payload;
+    this.unstoppableDomains = new UnstoppableDomains();
+  }
+
+  async getUdOwnerByDomain(sendResponse) {
+    const { domain } = this.payload;
+
+    try {
+      if (!domain) {
+        throw new Error('Incorrect domain name.');
+      }
+
+      const resolve = await this.unstoppableDomains.getAddressByDomain(domain);
+
+      sendResponse({ resolve });
+    } catch (err) {
+      sendResponse({ reject: err.message });
+    }
+  }
 }

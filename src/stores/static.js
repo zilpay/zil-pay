@@ -131,7 +131,7 @@ export default {
       state.dappsList = [];
       await updateStatic(state, true);
     },
-    async confirmDapp({}, payload) {
+    async confirmDapp(_, payload) {
       const type = MTypesZilPay.CONFIRM_DAPP;
       await new Message({ type, payload }).send();
     }

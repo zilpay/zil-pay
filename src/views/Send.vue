@@ -10,7 +10,8 @@
       </small>
 
       <div class="animated fadeIn faster input-group">
-        <div class="to text-left" @mouseleave="isInput = false">
+        <div class="to text-left"
+             v-click-outside="addressesDropdownClose">
           <label>To address</label>
           <input type="text"
                  autocomplete="false"
@@ -18,6 +19,8 @@
                  @focus="isInput = true"
                  @click="isInput = true"
                  @input="isInput = false"
+                 @change="checkDomain"
+                 @blur="checkDomain"
                  v-model="to">
           <div class="animated fadeIn dropdown-input text-black" v-show="isInput">
             <div v-for="acc of wallet.identities"
@@ -25,14 +28,19 @@
                  class="item"
                  @click="to = toAddress(acc.address, addressFormat, false)">
               <div class="name">
-                {{acc.name || (`Account ${acc.index + 1}`)}}
+                {{acc.name || (`Account ${acc.index}`)}}
               </div>
               <div class="address">
                 {{acc.address | toAddress(addressFormat)}}
               </div>
             </div>
           </div>
-          <small class="text-danger" v-show="isAddress">{{isAddress}}</small>
+          <small class="text-info" v-show="resolveDomain">
+            {{resolveDomain}}
+          </small>
+          <small class="text-danger" v-show="isAddress">
+            {{isAddress}}
+          </small>
         </div>
 
         <div class="amount text-left">
@@ -72,7 +80,8 @@
 </template>
 
 <script>
-import { MTypesZilPay } from '../../lib/messages/messageTypes'
+import vClickOutside from 'v-click-outside'
+import { MTypesZilPay, MTypesInternal } from '../../lib/messages/messageTypes'
 import { Message } from '../../lib/messages/messageCall'
 import { BN, units } from '@zilliqa-js/util'
 import { mapState, mapActions, mapMutations } from 'vuex'
@@ -86,7 +95,7 @@ import { ERRORCODE } from '../../lib/errors/code'
 
 const BackBar = () => import('../components/BackBar');
 
-
+const DEFAULT_ZONE = 'zil'
 async function nonContractSendTransaction(data) {
   const type = MTypesZilPay.CALL_SIGN_TX;
   const payload = data;
@@ -97,13 +106,17 @@ export default {
   name: 'Send',
   mixins: [GasFee, clipboardMixin, AccountListing],
   components: { BackBar },
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   data() {
     return {
       isAdvance: false,
       isInput: false,
 
       amount: 0,
-      to: null
+      to: null,
+      resolveDomain: null
     };
   },
   computed: {
@@ -184,6 +197,34 @@ export default {
        await nonContractSendTransaction(data);
        this.transactionsUpdate();
        this.spiner();
+    },
+    async checkDomain() {
+      const testZone = /.*\w.zil/gm;
+
+      if (!testZone.test(this.to)) {
+        return null;
+      }
+
+      this.to = this.to.toLowerCase();
+
+      this.isInput = false;
+
+      const type = MTypesInternal.GET_UD_OWNER;
+      const payload = { domain: this.to };
+      const { resolve } = await new Message({
+        type,
+        payload
+      }).send();
+
+      if (!resolve) {
+        return null;
+      }
+
+      this.resolveDomain = resolve.domain;
+      this.to = this.toAddress(resolve.owner, this.addressFormat, false);
+    },
+    addressesDropdownClose() {
+      this.isInput = false;
     }
   }
 }

@@ -3,9 +3,11 @@
     <BackBar/>
 
     <main class="animated fadeIn faster is-mini">
-      <div class="text-left" @mouseleave="isCurrencyInput = false">
+      <div class="text-left"
+           v-click-outside="closeCurrencyDrowDown">
         <span>Currency Conversion</span>
-        <div class="dropdown-el" @click="isCurrencyInput = !isCurrencyInput">
+        <div class="dropdown-el"
+             @click="isCurrencyInput = !isCurrencyInput">
           {{currency}}
           <img src="/icons/drop-down-arrow.svg" height="15">
         </div>
@@ -20,7 +22,7 @@
         </div>
       </div>
 
-      <div class="format text-left" @mouseleave="isFormatAddress = false">
+      <div class="format text-left">
         <span>Address format</span>
         <div class="dropdown-el" @click="isFormatAddress = !isFormatAddress">
           {{addressFormat}}
@@ -46,13 +48,18 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex';
+import vClickOutside from 'v-click-outside';
+
 const BackBar = () => import('../components/BackBar');
 
 
 export default {
   name: 'General',
   components: { BackBar },
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   data() {
     return {
       isCurrencyInput: false,
@@ -88,6 +95,12 @@ export default {
     clearTx() {
       this.clearTransactions();
       this.$router.push({ name: 'Home' });
+    },
+    closeCurrencyDrowDown() {
+      this.isCurrencyInput = false;
+    },
+    closeAddressFormatDrowDown() {
+      this.isCurrencyInput = false;
     }
   }
 }
