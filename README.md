@@ -44,7 +44,7 @@ Maybe you want to help.
 
 - ZIL: zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace
 - ETH: 0x246C5881E3F109B2aF170F5C773EF969d3da581B
-- BTC: 326zbJQmYY4yhKVoXHFaomshakt5av8KjP
+- BTC: 12MRR8LyLVLHVqXcjz46c9o3KBS76fAY9r
 - ZEC: t1dZMw8FVWnGKC9cyXKaiKWmmAFmQoeNc5Y
 - LTC: LM3JwjTbboMkHdFEYnn4ycJB61r3fqvXPr
 - DASH: Xv2tpCMHPAztd4B5UMnaqwkqnSfiUs1P8B
