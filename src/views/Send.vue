@@ -132,10 +132,8 @@ export default {
       }
       
       const isBech32 = validation.isBech32(this.to);
-      const isHex = validation.isAddress(this.to);
-      const isBase58 = validation.isBase58(this.to);
 
-      if (isBech32 || isHex || isBase58) {
+      if (isBech32) {
         return false;
       }
 
