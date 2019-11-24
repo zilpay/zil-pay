@@ -1,6 +1,6 @@
 {
   "name": "zil-pay",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "ZilPay browser Extension for zilliqa blockchain",
   "private": false,
   "scripts": {
