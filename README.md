@@ -33,7 +33,7 @@ $ npm run build:prod:chrome
 
 ## Links
 + [Telegram](https://t.me/zilpay)
-+ [Chrome stroe](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
++ [Chrome store](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 + [FireFox store](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 + Opera: Pending Review
 
