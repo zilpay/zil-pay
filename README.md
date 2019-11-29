@@ -1,46 +1,76 @@
 # ZilPay Browser Extension
 
-ZilPay is a browser wallet for Zilliqa. Developers can integrate ZilPay into their website to create Decentralised Apps.
+[![Chrome](https://img.shields.io/chrome-web-store/v/klnaejjgbibmhlephnhpmaofohgkpgkd)](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
+[![FireFox](https://img.shields.io/amo/v/zilpay)](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
+[![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
+
+
+ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilPay into their website to create Decentralised Apps.
 
 <p align="center">
   <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
-## Installation
+## Links
++ [discord](https://discordapp.com/channels/370992535725932544/636917110089580544)
++ [Chrome store](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
++ [FireFox store](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
++ [Opera](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 
-#### Install dependencies
-```sh
+## Getting Started
+You can deploy the local version, from source code.
+
+For dApp developers:
++ [ZilPay full documentation](https://zilpay.xyz/Documentation/)
++ [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
++ [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
+
+### Installing
+
+```bash
 $ npm install         # install dependencies
-$ npm run test        # run testing
+```
+
+### Building
+
+* For develop
+```bash
 $ npm run content     # build content.js
 $ npm run inpage      # build inpage.js
 $ npm run background  # build background.js
 $ npm run scripts     # build content.js & inpage.js & background.js
 $ npm run all:firefox # all scripts build for firefox platform.
 $ npm run all:chrome  # all scripts build for chrome platform.
+```
 
-# Production build:
+* For production:
+```bash
 $ npm run build:prod:firefox
 $ npm run build:prod:chrome
 ```
 
+### Running the tests
+```bash
+$ npm run test # run testing
+```
 
-#### ZilPay
-+ [ZilPay full documentation](https://zilpay.xyz/Documentation/)
-+ [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
-+ [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
+## Built With
 
+* [webpack](https://github.com/webpack/webpack)
+* [babel](https://github.com/babel/babel)
+* [vuejs](https://github.com/vuejs)
 
-## Links
-+ [Telegram](https://t.me/zilpay)
-+ [Chrome store](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
-+ [FireFox store](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
-+ Opera: Pending Review
+## Authors
 
-Donate
+* **Rinat Khasanshin** - *Initial work* - [lich666black](https://github.com/lich666dead)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/zilpay/zil-pay/blob/master/LICENSE) file for details.
+
+Thanks for yours donate.
 ------
-
-Maybe you want to help.
 
 - ZIL: zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace
 - ETH: 0x246C5881E3F109B2aF170F5C773EF969d3da581B
@@ -48,4 +78,3 @@ Maybe you want to help.
 - ZEC: t1dZMw8FVWnGKC9cyXKaiKWmmAFmQoeNc5Y
 - LTC: LM3JwjTbboMkHdFEYnn4ycJB61r3fqvXPr
 - DASH: Xv2tpCMHPAztd4B5UMnaqwkqnSfiUs1P8B
-- XMR: 4DCx5E9pauZMF7BPPTnsP9iqVXTBV2qgTcc8pgR52GJfTkAFVLaMH8jXzkxSCjao4JbF5LAs1aUPN4tQNWXKAcY1c8GFvWxaiV16kSJSeX
