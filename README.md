@@ -13,7 +13,7 @@ ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilP
 </p>
 
 ## Links
-+ [discord](https://discordapp.com/channels/370992535725932544/636917110089580544)
++ [Discord](https://discordapp.com/channels/370992535725932544/636917110089580544)
 + [Chrome store](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 + [FireFox store](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 + [Opera](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
