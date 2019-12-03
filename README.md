@@ -31,19 +31,19 @@ For dApp developers:
 For Develop building and serve.
 ``` bash
 # Install dependencies
-$npm install
+$ npm install
 
 # Serve all files extension.
-$npm run dev
+$ npm run dev
 
 # Serve vue app files to dist.
-$npm run serve:ui
+$ npm run serve:ui
 
 # Serve extension (background.js) and any extensiong files to dist.
-$npm run serve:extension
+$ npm run serve:extension
 
 # Serve web on 8080 port.
-$npm run serve:web
+$ npm run serve:web
 ```
 
 ---
@@ -51,13 +51,13 @@ $npm run serve:web
 Testing project.
 ``` bash
 # run unit tests
-$npm test:unit
+$ npm test:unit
 
 # Watch testing for dev.
-$npm run test:watch
+$ npm run test:watch
 
 # Check lint ts,vue files.
-$npm run lint
+$ npm run lint
 
 ```
 
@@ -66,13 +66,13 @@ $npm run lint
 For production builing and deploy.
 ``` bash
 # Build all app and extension files and optimizing it.
-$npm run build
+$ npm run build
 
 # Build only UI files and optimizing it.
-$npm run build:ui
+$ npm run build:ui
 
 # Build only extension files and optimizing it.
-$npm run build:extension
+$ npm run build:extension
 ```
 
 ## Built With
