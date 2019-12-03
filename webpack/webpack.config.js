@@ -67,7 +67,7 @@ const defaultManifest = {
       'extension/background.js'
     ]
   },
-  'content_security_policy': "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  'content_security_policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\''
 }
 
 manifest.hooks.transform.tap('extension', () => {
@@ -76,9 +76,9 @@ manifest.hooks.transform.tap('extension', () => {
 
 module.exports = {
   entry: {
-    background: path.resolve(__dirname, '../extension/background.js'),
-    inpage: path.resolve(__dirname, '../extension/inpage.js'),
-    content: path.resolve(__dirname, '../extension/content.js')
+    background: path.resolve(__dirname, '../extension/background/index.js'),
+    inpage: path.resolve(__dirname, '../extension/inpage/index.js'),
+    content: path.resolve(__dirname, '../extension/content/index.js')
   },
   devtool: mode === development ? 'source-map' : false,
   target: 'web',
