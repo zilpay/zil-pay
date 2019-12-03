@@ -26,33 +26,53 @@ For dApp developers:
 + [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
 + [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
 
-### Installing
+### Build Setup
 
-```bash
-$ npm install         # install dependencies
+For Develop building and serve.
+``` bash
+# Install dependencies
+$npm install
+
+# Serve all files extension.
+$npm run dev
+
+# Serve vue app files to dist.
+$npm run serve:ui
+
+# Serve extension (background.js) and any extensiong files to dist.
+$npm run serve:extension
+
+# Serve web on 8080 port.
+$npm run serve:web
 ```
 
-### Building
+---
 
-* For develop
-```bash
-$ npm run content     # build content.js
-$ npm run inpage      # build inpage.js
-$ npm run background  # build background.js
-$ npm run scripts     # build content.js & inpage.js & background.js
-$ npm run all:firefox # all scripts build for firefox platform.
-$ npm run all:chrome  # all scripts build for chrome platform.
+Testing project.
+``` bash
+# run unit tests
+$npm test:unit
+
+# Watch testing for dev.
+$npm run test:watch
+
+# Check lint ts,vue files.
+$npm run lint
+
 ```
 
-* For production:
-```bash
-$ npm run build:prod:firefox
-$ npm run build:prod:chrome
-```
+---
 
-### Running the tests
-```bash
-$ npm run test # run testing
+For production builing and deploy.
+``` bash
+# Build all app and extension files and optimizing it.
+$npm run build
+
+# Build only UI files and optimizing it.
+$npm run build:ui
+
+# Build only extension files and optimizing it.
+$npm run build:extension
 ```
 
 ## Built With

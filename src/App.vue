@@ -1,96 +1,32 @@
 <template>
   <div id="app">
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
     <router-view/>
   </div>
 </template>
 
+<style lang="scss">
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 
-<script>
-import { mapMutations, mapActions } from 'vuex'
-import StatusUpdater from './mixins/status-updater'
+#nav {
+  padding: 30px;
 
-export default {
-  name: 'App',
-  mixins: [StatusUpdater],
-  methods: {
-    ...mapMutations([
-      'spiner',
-      'mutateIsConnect'
-    ]),
-    ...mapMutations('Wallet', [
-      'mutateIsReady',
-      'mutateIsEnable',
-      'mutateWallet'
-    ]),
-    ...mapMutations('Static', [
-      'mutateNetwork',
-      'mutateNetworkConfig',
-      'mutateConnect'
-    ]),
-    ...mapMutations('Transactions', [
-      'mutateTransactions',
-      'mutateConfirmationTx'
-    ]),
+  a {
+    font-weight: bold;
+    color: #2c3e50;
 
-    ...mapActions('Wallet', [
-      'initPopup'
-    ]),
-
-    async init() {
-      this.spiner();
-      
-      let state;
-      const data = await this.initPopup();
-      
-      if (data.reject) {
-        state = data.reject;
-      } else {
-        state = data.resolve;
-        this.dataStateUpdate(state.data);
-      }
-      
-      this.upadteAllState();
-      this.commonStateUpdate(state);
-      this.routePush(state);
-    },
-    commonStateUpdate(state) {
-      this.mutateIsReady(state.isReady);
-      this.mutateIsEnable(state.isEnable);
-      this.mutateNetwork(state.selectednet || state.data.selectednet);
-      this.mutateNetworkConfig(state.config || state.data.config);
-      this.mutateIsConnect(state.networkStatus);
-    },
-    dataStateUpdate(state) {
-      if (!state) {
-        return null;
-      }
-
-      this.mutateWallet(state.wallet);
-      this.mutateTransactions(state.transactions);
-      this.mutateConfirmationTx(state.confirm);
-      this.mutateConnect(state.connect || {});
-    },
-    routePush(state) {
-      if (!state.isReady) {
-        this.$router.push({ name: 'First' });
-      } else if (!state.isEnable) {
-        this.$router.push({ name: 'Lock' });
-      } else if (state.data.confirm && state.data.confirm.length > 0) {
-        this.$router.push({ name: 'Popup' });
-      } else if (state.data.connect && Object.keys(state.data.connect).length > 0) {
-        this.$router.push({ name: 'Connect' });
-      } else {
-        this.$router.push({ name: 'Home' });
-      }
+    &.router-link-exact-active {
+      color: #42b983;
     }
-  },
-  mounted() {
-    this.init();
   }
 }
-</script>
-
-
-<style lang="scss">
-@import "./styles/main";
 </style>

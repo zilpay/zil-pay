@@ -1,6 +1,0 @@
-{
-  "MESSAGE_TYPE_ERR": "param type con be string",
-  "PAYLOAD_TYPE_ERR": "param payload con be object",
-  "NOT_TABS":         "no not one tabs",
-  "ZILPAY_NOT_SYNC":  "fail sync for ZilPay address and node"
-}
