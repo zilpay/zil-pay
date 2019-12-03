@@ -9,14 +9,20 @@ import { SecureMessage } from '../../lib/messages/messageCall'
 import { RPCMethod } from '@zilliqa-js/core'
 
 // Private variables. //
-let _stream = new WeakMap() // Stream instance.
-let _subject = new WeakMap() // Listener instance.
-// Private variables. //
+/**
+ * Stream instance.
+ */
+let _stream = new WeakMap()
+/**
+ * Listener instance.
+ */
+let _subject = new WeakMap()
 
-
-// HTTP Proxy provider.
-// this provider proxyed all http requests to content.js
-// and encrypted all data.
+/**
+ * HTTP Proxy provider.
+ * this provider proxyed all http requests to content.js
+ * and encrypted all data.
+ */
 export default class HTTPProvider {
 
   constructor(subjectStream, stream) {
@@ -42,9 +48,11 @@ export default class HTTPProvider {
 
     const type = MTypesZilPay.PROXY_MEHTOD
     const recipient = MTypesSecure.CONTENT
-    const uuid = uuidv4() // Request id.
+    // Request id.
+    const uuid = uuidv4()
 
-    new SecureMessage({ // Send to content.js
+    // Send to content.js
+    new SecureMessage({
       type, payload: { params, method, uuid }
     }).send(_stream, recipient)
 
