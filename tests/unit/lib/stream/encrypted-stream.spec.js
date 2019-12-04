@@ -9,8 +9,11 @@ describe('lib:stream:EncryptedStream', () => {
   it('should be able instantiate two unique streams', () => {
     streamA = new EncryptedStream('streamA', uuid())
     streamB = new EncryptedStream('streamB', uuid())
+
     streamB.onSync(() => synced = true)
-    // expect(true).toBe(true)
+
+    expect(streamA).toBeTruthy()
+    expect(streamB).toBeTruthy()
   })
 
   it('should be able to sync the streams and trigger encryption', () => {
