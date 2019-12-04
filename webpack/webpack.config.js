@@ -75,6 +75,7 @@ manifest.hooks.transform.tap('packages', () => {
 })
 
 module.exports = {
+  basePath: '',
   entry: {
     background: path.resolve(__dirname, '../packages/background/index.js'),
     inpage: path.resolve(__dirname, '../packages/inpage/index.js'),
@@ -99,7 +100,11 @@ module.exports = {
     ]
   },
   resolve: {
-    modules: ['./node_modules']
+    modules: ['./node_modules'],
+    alias: {
+      lib: path.resolve(__dirname, '../lib/'),
+      packages: path.resolve(__dirname, '../packages/')
+    }
   },
   output: {
     filename: '[name].js',
