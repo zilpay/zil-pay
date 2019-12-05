@@ -2,13 +2,17 @@ import { EncryptedStream } from 'lib/stream'
 import { uuid } from 'uuidv4'
 
 describe('lib:stream:EncryptedStream', () => {
+  const keyA = uuid()
+  const keyB = uuid()
+
   let streamA = null
   let streamB = null
+
   let synced = false
 
   it('should be able instantiate two unique streams', () => {
-    streamA = new EncryptedStream('streamA', uuid())
-    streamB = new EncryptedStream('streamB', uuid())
+    streamA = new EncryptedStream('streamA', keyA)
+    streamB = new EncryptedStream('streamB', keyB)
 
     streamB.onSync(() => synced = true)
 
@@ -17,7 +21,7 @@ describe('lib:stream:EncryptedStream', () => {
   })
 
   it('should be able to sync the streams and trigger encryption', () => {
-    streamA.sync('streamB', streamA.key)
+    streamA.sync('streamB', keyA)
 
     expect(streamA.synced).toBeTruthy()
     expect(streamB.synced).toBeTruthy()
