@@ -7,7 +7,6 @@ import {
   EncryptedStream
 } from 'lib/stream'
 
-
 export default class Handler {
 
   constructor() {

@@ -1,5 +1,7 @@
 require('packages/inpage')
 
+import { TypeChecker } from 'lib/type'
+
 const TEST_ADDRESS_BECH32 = 'zil1fmefrn4ajk45yv0t22czehcwyv02k4j6ew07pj'
 const TESTE_ADDRESS_BASE16 = '0x4ef291cEbD95ab4231eB52b02Cdf0E231Eab565a'
 
@@ -15,6 +17,27 @@ describe('lib:packages:inpage', () => {
 
   it('should have wallet object', () => {
     expect(window.zilPay.wallet).toBeTruthy()
+  })
+
+  it('should have observableAccount in wallet', () => {
+    const { observableAccount } = window.zilPay.wallet
+
+    expect(observableAccount).toBeTruthy()
+    expect(new TypeChecker(observableAccount).isFunction).toBeTruthy()
+  })
+
+  it('should have observableNetwork in wallet', () => {
+    const { observableNetwork } = window.zilPay.wallet
+
+    expect(observableNetwork).toBeTruthy()
+    expect(new TypeChecker(observableNetwork).isFunction).toBeTruthy()
+  })
+
+  it('should have connect in wallet', () => {
+    const { connect } = window.zilPay.wallet
+
+    expect(connect).toBeTruthy()
+    expect(new TypeChecker(connect).isFunction).toBeTruthy()
   })
 
   it('should have blockchain object', () => {

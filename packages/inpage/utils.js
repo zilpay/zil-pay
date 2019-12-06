@@ -4,11 +4,10 @@ import {
 } from '@zilliqa-js/crypto'
 import { validation } from '@zilliqa-js/util'
 
-
+/**
+ * Get the favicon from current tab.
+ */
 export function getFavicon() {
-  /**
-   * Get the favicon from current tab.
-   */
   let favicon = undefined
   let nodeList = document.getElementsByTagName('link')
   
@@ -30,10 +29,10 @@ export function getFavicon() {
   return favicon        
 }
 
+/**
+ * Replace from base16 to (base16, beach32).
+ */
 export function toAccountFormat(address) {
-  /**
-   * Replace from base16 to (base16, beach32).
-   */
   const isAddress = validation.isAddress(address)
 
   if (!isAddress) {

@@ -84,10 +84,10 @@ export default class Wallet {
     })
   }
 
+  /**
+   * Subscribe on all account change.
+   */
   observableAccount() {
-    /**
-     * Subscribe on all account change.
-     */
     if (!this.isConnect) {
       throw 'ZilPay is\'t connection to dApp'
     }
@@ -115,20 +115,20 @@ export default class Wallet {
     )
   }
 
+  /**
+   * Subscribe on all network change.
+   */
   observableNetwork() {
-    /**
-     * Subscribe on all network change.
-     */
     return from(_subject).pipe(
       filter(msg => msg && msg.type === MTypeTab.SET_NET),
       map(msg => msg.payload.net)
     )
   }
 
+  /**
+   * Call popup for confirm Transaction.
+   */
   sign(tx) {
-    /**
-     * Call popup for confirm Transaction.
-     */
     if (!this.isEnable) {
       throw 'ZilPay is disabled.'
     } else if (!this.isConnect) {
@@ -170,11 +170,11 @@ export default class Wallet {
     return tx
   }
 
+  /**
+   * Call popup for the get access from user.
+   * this method need for show user info such as your address.
+   */
   async connect() {
-    /**
-     * Call popup for the get access from user.
-     * this method need for show user info such as your address.
-     */
     const type = MTypeTab.CONNECT_APP
     const recipient = MTypeTab.CONNECT_APP
     const uuid = uuidv4()
@@ -208,9 +208,9 @@ export default class Wallet {
     } else if (_defaultAccount && account.address === _defaultAccount.base16) {
       return _defaultAccount
     }
-      
+
     _defaultAccount = toAccountFormat(account.address)
-  
+
     return _defaultAccount
   }
 
