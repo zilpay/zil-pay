@@ -51,6 +51,10 @@ describe('lib:storage:BrowserStorage', () => {
     expect(storage).toBeTruthy()
   })
 
+  it('should have subscribe static method in BrowserStorage', () => {
+    expect(BrowserStorage.subscribe).toBeTruthy()
+  })
+
   it('should have EXT_ID prop', () => {
     expect(storage.EXT_ID).toEqual(sinonChrome.runtime.id)
   })
