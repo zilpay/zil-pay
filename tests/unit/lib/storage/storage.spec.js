@@ -13,8 +13,13 @@ extension.storage = {
   ...global.chrome.storage,
   local: {
     set(value, resolve) {
-      store = { ...store , ...value }
-      resolve(value)
+      Object
+        .keys(value)
+        .forEach(key => store[key] = {
+          ...store[key],
+          ...value[key]
+        })
+      resolve()
     },
     get(key, resolve) {
       if (!key) {
@@ -22,6 +27,15 @@ extension.storage = {
       }
 
       resolve(store[key])
+    },
+    remove(key, resolve) {
+      delete store[key]
+
+      resolve()
+    },
+    clear(resolve) {
+      store = {}
+      resolve()
     }
   }
 }
@@ -60,4 +74,51 @@ describe('lib:storage:BrowserStorage', () => {
       [key]: payload
     })
   })
+
+  it('try clear all values', async () => {
+    await storage.clear()
+
+    const recievePaylod = await storage.getAll()
+
+    expect(recievePaylod).toEqual({})
+  })
+
+  it('try set more params value', async () => {
+    const someValue = new BuildObject('test1', {
+      key: '0'
+    })
+    const someValue1 = new BuildObject('test2', {
+      key1: '1'
+    })
+    const someValue2 = new BuildObject('test3', {
+      key2: '2'
+    })
+
+    await storage.set([
+      someValue,
+      someValue1,
+      someValue2
+    ])
+  })
+
+  it('test on get all params wrote above', async () => {
+    const recievePaylodWithMoreParams = await storage.getAll()
+
+    expect(recievePaylodWithMoreParams).toEqual({
+      test1: { key: '0' },
+      test2: { key1: '1'},
+      test3: { key2: '2' }
+    })
+  })
+
+  it('try remove one item', async () => {
+    await storage.rm('test2')
+
+    const recievePaylod = await storage.getAll()
+    expect(recievePaylod).toEqual({
+      test1: { key: '0' },
+      test3: { key2: '2' }
+    })
+  })
+
 })
