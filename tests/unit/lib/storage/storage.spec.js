@@ -36,6 +36,12 @@ extension.storage = {
     clear(resolve) {
       store = {}
       resolve()
+    },
+    onChanged: {
+      removeListener() {},
+      addListener(cb) {
+        cb(true)
+      }
     }
   }
 }
@@ -53,6 +59,10 @@ describe('lib:storage:BrowserStorage', () => {
 
   it('should have subscribe static method in BrowserStorage', () => {
     expect(BrowserStorage.subscribe).toBeTruthy()
+  })
+
+  it('should return unsubscribe method when call subscribe', () => {
+    expect(BrowserStorage.subscribe(() => null).unsubscribe).toBeTruthy()
   })
 
   it('should have EXT_ID prop', () => {
