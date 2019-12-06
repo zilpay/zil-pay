@@ -25,8 +25,6 @@ describe('lib:stream:message:Message', () => {
     }
     const message = new Message(msg)
 
-    message.send().then(console.log)
-
     expect(message).toBeTruthy()
     expect(message.send).toBeTruthy()
     expect(message.type).toEqual(msg.type)
