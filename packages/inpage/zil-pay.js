@@ -3,8 +3,6 @@ import { Blockchain } from '@zilliqa-js/blockchain'
 import { TransactionFactory } from '@zilliqa-js/account'
 import { Contracts } from '@zilliqa-js/contract'
 import {
-  decodeBase58,
-  encodeBase58,
   fromBech32Address,
   toBech32Address,
   isValidChecksumAddress,
@@ -19,7 +17,7 @@ import Wallet from './wallet'
  * @param {Object} subjectStream Listener instance.
  * @param {Object} stream Stream instance.
 */
-export default class Zilliqa {
+export class ZilPay {
 
   constructor(subjectStream, stream) {
     if (!subjectStream || !stream) {
@@ -37,9 +35,10 @@ export default class Zilliqa {
 
     this.utils = zilUtils
     this.crypto = {
-      decodeBase58, encodeBase58,
-      fromBech32Address, toBech32Address,
-      isValidChecksumAddress, toChecksumAddress
+      fromBech32Address,
+      toBech32Address,
+      isValidChecksumAddress,
+      toChecksumAddress
     }
   }
 }

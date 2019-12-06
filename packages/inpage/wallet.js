@@ -1,12 +1,14 @@
 import uuidv4 from 'uuid/v4'
 import { filter, take, map } from 'rxjs/operators'
 import { from } from 'rxjs'
+
 import {
-  MTypesSecure,
-  MTypesZilPay,
-  MTypesTabs
-} from '../../lib/messages/messageTypes'
-import { SecureMessage } from '../../lib/messages/messageCall'
+  SecureMessage,
+  MTypeSecure,
+  MTypeTab,
+  MTypeInpage
+} from 'lib/stream'
+
 import { getFavicon, toAccountFormat } from './utils'
 
 // Private variables. //
@@ -46,6 +48,7 @@ export default class Wallet {
     if (typeof value !== 'boolean') {
       throw new Error('value must be boolean type')
     }
+
     _broadcastingTransaction = value
   }
 
@@ -56,22 +59,22 @@ export default class Wallet {
     _subject.subscribe(msg => {
       switch (msg.type) {
         
-      case MTypesSecure.STATUS_UPDATE:
+      case MTypeTab.STATUS_UPDATE:
         _isEnable = msg.payload.isEnable
         break
 
-      case MTypesSecure.PAY_OBJECT_INIT:
+      case MTypeInpage.INJECTED_INIT:
         this._setDefaultAccount(msg.payload.account)
         _isEnable = msg.payload.isEnable
         _isConnect = msg.payload.isConnect
         _net = msg.payload.net
         break
 
-      case MTypesSecure.SET_ADDRESS:
+      case MTypeTab.SET_ADDRESS:
         this._setDefaultAccount(msg.payload)
         break
 
-      case MTypesSecure.SET_NODE:
+      case MTypeTab.SET_NET:
         _net = msg.payload.net
         break
 
@@ -88,16 +91,19 @@ export default class Wallet {
     if (!this.isConnect) {
       throw 'ZilPay is\'t connection to dApp'
     }
+
     let lastAccount = null
+
     return from(_subject).pipe(
       map(msg => {
         if (lastAccount === null) {
           return _defaultAccount
         }
+
         switch (msg.type) {
-        case MTypesSecure.PAY_OBJECT_INIT:
+        case MTypeInpage.INJECTED_INIT:
           return toAccountFormat(msg.payload.account.address)
-        case MTypesSecure.SET_ADDRESS:
+        case MTypeTab.SET_ADDRESS:
           return toAccountFormat(msg.payload.address)
         }
       }),
@@ -114,7 +120,7 @@ export default class Wallet {
      * Subscribe on all network change.
      */
     return from(_subject).pipe(
-      filter(msg => msg && msg.type === MTypesSecure.SET_NODE),
+      filter(msg => msg && msg.type === MTypeTab.SET_NET),
       map(msg => msg.payload.net)
     )
   }
@@ -129,8 +135,8 @@ export default class Wallet {
       throw 'User is\'t connections.'
     }
 
-    const type = MTypesZilPay.CALL_SIGN_TX
-    const recipient = MTypesSecure.CONTENT
+    const type = MTypeTab.CALL_SIGN_TX
+    const recipient = MTypeSecure.CONTENT
     const uuid = uuidv4()
     let { payload } = tx
 
@@ -148,7 +154,7 @@ export default class Wallet {
 
     tx.confirm = () => from(_subject).pipe(
       // Waiting an answer by uuid.
-      filter(res => res.type === MTypesTabs.TX_RESULT),
+      filter(res => res.type === MTypeTab.TX_RESULT),
       map(res => res.payload),
       filter(res => res.uuid && res.uuid === uuid),
       map(res => {
@@ -169,8 +175,8 @@ export default class Wallet {
      * Call popup for the get access from user.
      * this method need for show user info such as your address.
      */
-    const type = MTypesSecure.CONNECT
-    const recipient = MTypesSecure.CONTENT
+    const type = MTypeTab.CONNECT_APP
+    const recipient = MTypeTab.CONNECT_APP
     const uuid = uuidv4()
     const title = window.document.title
     const domain = window.document.domain
@@ -184,7 +190,7 @@ export default class Wallet {
     new SecureMessage({ type, payload }).send(_stream, recipient)
 
     const confirmPayload = await from(_subject).pipe(
-      filter(msg => msg.type === MTypesTabs.CONNECT_TO_DAPP),
+      filter(msg => msg.type === MTypeTab.CONNECT_APP),
       map(res => res.payload),
       filter(res => res.uuid && res.uuid === uuid),
       take(1)

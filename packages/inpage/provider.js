@@ -1,12 +1,14 @@
+import uuidv4 from 'uuid/v4'
 import { filter, take, map } from 'rxjs/operators'
 import { from } from 'rxjs'
-import uuidv4 from 'uuid/v4'
-import {
-  MTypesSecure,
-  MTypesZilPay
-} from '../../lib/messages/messageTypes'
-import { SecureMessage } from '../../lib/messages/messageCall'
 import { RPCMethod } from '@zilliqa-js/core'
+
+import { TypeChecker } from 'lib/type'
+import {
+  SecureMessage,
+  MTypeSecure,
+  MTypeTab
+} from 'lib/stream'
 
 // Private variables. //
 /**
@@ -42,12 +44,12 @@ export default class HTTPProvider {
 
   send(method, ...params) {
     if (this.RPCMethod.CreateTransaction === method
-        && typeof params.signature === 'undefined') {
+        && new TypeChecker(params.signature).isUndefined) {
       return { error: null, result: {} }
     }
 
-    const type = MTypesZilPay.PROXY_MEHTOD
-    const recipient = MTypesSecure.CONTENT
+    const type = MTypeTab.CONTENT_PROXY_MEHTOD
+    const recipient = MTypeSecure.CONTENT
     // Request id.
     const uuid = uuidv4()
 
@@ -58,7 +60,7 @@ export default class HTTPProvider {
 
     // Waiting for an answer from content.js.
     return from(_subject).pipe(
-      filter(res => res.type === MTypesZilPay.PROXY_RESULT),
+      filter(res => res.type === MTypeTab.CONTENT_PROXY_RESULT),
       map(res => res.payload),
       filter(res => res.uuid && res.uuid === uuid),
       map(res => {

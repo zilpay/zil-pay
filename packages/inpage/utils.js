@@ -1,5 +1,4 @@
 import {
-  encodeBase58,
   toBech32Address,
   toChecksumAddress
 } from '@zilliqa-js/crypto'
@@ -33,7 +32,7 @@ export function getFavicon() {
 
 export function toAccountFormat(address) {
   /**
-   * Replace from base16 to (base16, beach32, base58).
+   * Replace from base16 to (base16, beach32).
    */
   const isAddress = validation.isAddress(address)
 
@@ -43,7 +42,6 @@ export function toAccountFormat(address) {
 
   return {
     base16: toChecksumAddress(address),
-    base58: encodeBase58(address),
     bech32: toBech32Address(address)
   }
 }

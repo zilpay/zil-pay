@@ -1,6 +1,5 @@
 import Handler from './handler'
-import ZilPay from './zil-pay'
-
+import { ZilPay } from './zil-pay'
 
 // Create handler stream. 
 const handler = new Handler()
