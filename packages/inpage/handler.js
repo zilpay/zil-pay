@@ -13,11 +13,7 @@ export default class Handler {
     // Event listener.
     this.subjectStream = new Subject()
 
-    try {
-      this._init() // Init stream.
-    } catch(err) {
-      setTimeout(() => this._init, 100)
-    }
+    this._init() // Init stream.
   }
 
   _init() {
@@ -31,6 +27,7 @@ export default class Handler {
   stateUpdate() {
     const type = MTypesSecure.PAY_OBJECT_INIT
     const recipient = MTypesSecure.CONTENT
+
     new SecureMessage({ type, payload: {} }).send(this.stream, recipient)
   }
 }

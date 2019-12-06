@@ -3,21 +3,23 @@ import { Blockchain } from '@zilliqa-js/blockchain'
 import { TransactionFactory } from '@zilliqa-js/account'
 import { Contracts } from '@zilliqa-js/contract'
 import {
-  decodeBase58, encodeBase58,
-  fromBech32Address, toBech32Address,
-  isValidChecksumAddress, toChecksumAddress
+  decodeBase58,
+  encodeBase58,
+  fromBech32Address,
+  toBech32Address,
+  isValidChecksumAddress,
+  toChecksumAddress
 } from '@zilliqa-js/crypto'
 
 import HTTPProvider from './provider'
 import Wallet from './wallet'
 
-
+/**
+ * ZipPay Object which will be create in some tab.
+ * @param {Object} subjectStream Listener instance.
+ * @param {Object} stream Stream instance.
+*/
 export default class Zilliqa {
-  /**
-   * ZipPay Object which will be create in some tab.
-   * @param {*} subjectStream Listener instance.
-   * @param {*} stream Stream instance.
-   */
 
   constructor(subjectStream, stream) {
     if (!subjectStream || !stream) {
