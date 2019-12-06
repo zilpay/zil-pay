@@ -3,6 +3,7 @@ require('packages/inpage')
 const TEST_ADDRESS_BECH32 = 'zil1fmefrn4ajk45yv0t22czehcwyv02k4j6ew07pj'
 const TESTE_ADDRESS_BASE16 = '0x4ef291cEbD95ab4231eB52b02Cdf0E231Eab565a'
 
+
 describe('lib:packages:inpage', () => {
 
   it('should injected proxy object', () => {
