@@ -6,21 +6,46 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import sinonChrome from 'sinon-chrome'
 import extension from 'extensionizer'
 import { uuid } from 'uuidv4'
 
 jest.useFakeTimers()
 
-sinonChrome.runtime.id = uuid()
+const extensionID = uuid()
 
-global.chrome = sinonChrome
-
-extension.runtime = global.chrome.runtime
+extension.runtime = {
+  id: extensionID,
+  sendMessage(msg, cb) {
+    this.onMessage.trigger(msg, cb)
+  },
+  onMessage:{
+    messageQueue:[],
+    trigger(data, cb) {
+      this.messageQueue.push({
+        data,
+        cb
+      })
+    },
+    addListener(cb) {
+      setInterval(() => {
+        if(this.messageQueue.length){
+          let message = this.messageQueue.pop()
+          cb(
+            {
+              data: message.data
+            },
+            {
+              id: extensionID
+            },
+            message.cb
+          )
+        }
+      }, 1000)
+    }
+  }
+}
 
 const { LocalStream } = require('lib/stream')
-
-// setInterval(() => console.log('work'), 1000)
 
 describe('lib:stream:LocalStream', () => {
 
@@ -29,15 +54,25 @@ describe('lib:stream:LocalStream', () => {
   })
 
   it('test import class LocalStream', () => {
-    LocalStream.watch(console.log)
+    LocalStream.watch((request, response) => {
+      response(true)
+
+      expect(request).toEqual({
+        data: {
+          type: 'test',
+          payload: 'work'
+        }
+      })
+    })
   })
 
   it('should be able send request', () => {
     LocalStream.send({
       type: 'test',
       payload: 'work'
-    }).then((res) => console.log('work', res))
+    }).then((res) => expect(res).toBeTruthy())
+
+    jest.advanceTimersByTime(2000)
   })
 
 })
-jest.advanceTimersByTime(10000)
