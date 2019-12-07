@@ -6,46 +6,24 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { TypeChecker } from 'lib/type'
 import {
   LocalStream,
-  SecureMessage,
-  MTypeSecure
+  SecureMessage
 } from 'lib/stream'
 
 export class NonSecureStream {
 
-  constructor(secureStream) {
-    this.secureStream = secureStream
-    this._watchTabMessaging()
-  }
+  _watchTabMessaging(cb) {
+    if (!new TypeChecker(cb).isFunction) {
+      throw new Error('cb must be callback function!')
+    }
 
-  _watchTabMessaging() {
     LocalStream.watch((request, response) => {
       const message = new SecureMessage(request)
 
-      this._dispenseMessage(response, message)
+      cb(response, message)
     })
-  }
-
-  _dispenseMessage(sendResponse, message) {
-    if (!message) {
-      return null
-    }
-
-    this._broadcastToSecure(message)
-
-    sendResponse(true)
-  }
-
-  _broadcastToSecure(msg) {
-    let toSecureMsg = msg.type
-
-    const recipient = MTypeSecure.INJECTED
-
-    new SecureMessage({
-      type: toSecureMsg,
-      payload: msg.payload
-    }).send(this.secureStream, recipient)
   }
 
 }

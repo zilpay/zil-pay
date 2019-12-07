@@ -8,9 +8,15 @@
  */
 import { extension } from 'extensionizer'
 
+import { TypeChecker } from 'lib/type'
+
 export class Inject {
 
   constructor(name) {
+    if (!new TypeChecker(name).isString) {
+      throw new Error('Argument name must be string.')
+    }
+
     this._name = name
     this._injectscript()
   }
