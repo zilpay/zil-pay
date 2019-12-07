@@ -6,16 +6,10 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import sinonChrome from 'sinon-chrome'
-import extension from 'extensionizer'
-import { uuid } from 'uuidv4'
+require('tests/extension-sinnon')
+
 import { TypeChecker } from 'lib/type'
 
-sinonChrome.runtime.id = uuid()
-
-global.chrome = sinonChrome
-
-extension.runtime = global.chrome.runtime
 
 const { BrowserContent } = require('packages/content/content')
 const { NonSecureStream } = require('packages/content/local-stream')

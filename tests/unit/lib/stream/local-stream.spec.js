@@ -8,7 +8,7 @@
  */
 jest.useFakeTimers()
 
-require('../../../extension-sinnon')
+require('tests/extension-sinnon')
 
 const { LocalStream } = require('lib/stream')
 

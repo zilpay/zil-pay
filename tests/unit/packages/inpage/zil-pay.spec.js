@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+require('tests/extension-sinnon')
 require('packages/inpage')
 
 import { TypeChecker } from 'lib/type'

@@ -1,12 +1,14 @@
-import extension from 'extensionizer'
-import sinonChrome from 'sinon-chrome'
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(lich666dead)
+ * -----
+ * Modified By: the developer formerly known as Rinat(lich666dead) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2019 ZilPay
+ */
+require('tests/extension-sinnon')
+
 import { uuid } from 'uuidv4'
-
-sinonChrome.runtime.id = uuid()
-
-global.chrome = sinonChrome
-
-extension.runtime = global.chrome.runtime
 
 const { TabsMessage } = require('lib/stream/message')
 
