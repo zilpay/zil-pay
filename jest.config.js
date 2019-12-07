@@ -4,8 +4,5 @@ module.exports = {
   verbose: true,
   notify: false,
   roots: ['<rootDir>'],
-  // moduleNameMapper: {
-  //   'lib/(.*)$': '<rootDir>/lib/$'
-  // },
   modulePaths: ['']
 }

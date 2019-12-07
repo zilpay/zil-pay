@@ -20,7 +20,7 @@ describe('packages:content:BrowserContent', () => {
     expect(window.zilPay).toBeTruthy()
   })
 
-  it('Should can import', () => {
+  it('end', () => {
     // expect(BrowserContent).toBeTruthy()
 
     jest.advanceTimersByTime(1000)

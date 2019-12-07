@@ -14,8 +14,8 @@ const handler = new Handler()
 // Init ZilPay object with some methods and properties.
 const zilPay = new ZilPay(handler.subjectStream, handler.stream)
 
-// Update state(network, accounts).
-handler.stateUpdate()
+// Request for state(network, accounts).
+handler.initialized()
 
 // Nobody can change this object.
 Object.freeze(zilPay)

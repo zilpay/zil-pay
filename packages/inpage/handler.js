@@ -8,7 +8,7 @@
  */
 import { Subject } from 'rxjs'
 import {
-  MTypeInpage,
+  MTypeBackground,
   MTypeSecure,
   SecureMessage,
   TabStream
@@ -25,13 +25,20 @@ export default class Handler {
     this._init() // Init stream.
   }
 
+  /**
+   * Creating `instance observable` for listing event from content.
+   */
   _init() {
     this.stream = new TabStream(MTypeSecure.INJECTED)
     this.stream.listen().subscribe(msg => console.log('INJECTED', msg))
   }
 
-  stateUpdate() {
-    const type = MTypeInpage.INJECTED_INIT
+  /**
+   * When injected script was initialized
+   * for wallet need some data about account and network.
+   */
+  initialized() {
+    const type = MTypeBackground.CONTENT_GET_WALLET_DATA
     const recipient = MTypeSecure.CONTENT
 
     new SecureMessage({ type, payload: {} })
