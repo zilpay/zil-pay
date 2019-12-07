@@ -6,13 +6,12 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import uuidv4 from 'uuid/v4'
 import { Subject } from 'rxjs'
 import {
   MTypeInpage,
   MTypeSecure,
   SecureMessage,
-  EncryptedStream
+  TabStream
 } from 'lib/stream'
 
 export default class Handler {
@@ -27,11 +26,8 @@ export default class Handler {
   }
 
   _init() {
-    const name = MTypeSecure.INJECTED
-
-    this.stream = new EncryptedStream(name, uuidv4())
-    this.stream.listenWith(msg => this.subjectStream.next(msg))
-    this.stream.sync(MTypeSecure.CONTENT, this.stream.key)
+    this.stream = new TabStream(MTypeSecure.INJECTED)
+    this.stream.listen().subscribe(msg => console.log('INJECTED', msg))
   }
 
   stateUpdate() {

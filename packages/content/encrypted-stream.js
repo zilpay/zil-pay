@@ -6,17 +6,14 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import uuidv4 from 'uuid/v4'
-
 import {
-  EncryptedStream,
+  TabStream,
   SecureMessage,
   Message,
   MTypeTab,
   MTypeSecure,
   MTypeInpage,
-  MTypeBackground,
-  TYPES
+  MTypeBackground
 } from 'lib/stream'
 
 import HTTPProvider from './provider'
@@ -30,15 +27,8 @@ export class SecureStream {
   }
 
   constructor() {
-    stream = new EncryptedStream(MTypeSecure.CONTENT, uuidv4())
-    stream.listenWith(msg => this.listener(msg))
-    stream.onSync(() => this.onSyncAll())
-  }
-
-  _sync(message) {
-    stream.key = message.handshake.length ? message.handshake : null
-    stream.send({ type: TYPES.sync }, MTypeSecure.INJECTED)
-    stream.synced = true
+    stream = new TabStream(MTypeSecure.CONTENT)
+    stream.listen().subscribe(msg => console.log('CONTENT', msg))
   }
 
   listener(msg) {
