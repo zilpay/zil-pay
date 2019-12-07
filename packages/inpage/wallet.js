@@ -73,6 +73,7 @@ export default class Wallet {
 
       case MTypeInpage.INJECTED_INIT:
         this._setDefaultAccount(msg.payload.account)
+
         _isEnable = msg.payload.isEnable
         _isConnect = msg.payload.isConnect
         _net = msg.payload.net
@@ -97,7 +98,7 @@ export default class Wallet {
    */
   observableAccount() {
     if (!this.isConnect) {
-      throw 'ZilPay is\'t connection to dApp'
+      throw 'ZilPay is\'t connection to dApp'
     }
 
     let lastAccount = null

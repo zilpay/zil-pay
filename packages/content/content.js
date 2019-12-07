@@ -6,6 +6,13 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { BrowserContent } from './content'
+import { Inject } from './inject'
+import { Stream } from './stream'
 
-new BrowserContent()
+export class BrowserContent extends Stream {
+  constructor() {
+    super()
+
+    this._inject = new Inject('inpage.js')
+  }
+}
