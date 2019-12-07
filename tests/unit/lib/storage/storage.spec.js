@@ -10,7 +10,10 @@ require('../../../extension-sinnon')
 
 import extension from 'extensionizer'
 
-const { BrowserStorage, BuildObject } = require('lib/storage')
+const {
+  BrowserStorage,
+  BuildObject
+} = require('lib/storage')
 
 describe('lib:storage:BrowserStorage', () => {
   const storage = new BrowserStorage()

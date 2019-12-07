@@ -10,7 +10,6 @@ require('tests/extension-sinnon')
 
 import { TypeChecker } from 'lib/type'
 
-
 const { BrowserContent } = require('packages/content/content')
 const { NonSecureStream } = require('packages/content/local-stream')
 const { SecureStream } = require('packages/content/encrypted-stream')

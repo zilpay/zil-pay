@@ -6,16 +6,26 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { uuid } from 'uuidv4'
-
+jest.useFakeTimers()
 require('tests/extension-sinnon')
 
+import { uuid } from 'uuidv4'
+
+const { LocalStream } = require('lib/stream')
 const { Message } = require('lib/stream/message')
 
 describe('lib:stream:message:Message', () => {
 
   it('test import class Message', () => {
     expect(Message).toBeTruthy()
+  })
+
+  it('test recieve messages', () => {
+    LocalStream.watch((request, response) => {
+      response(request.data)
+
+      expect(request.data instanceof Message).toBeTruthy()
+    })
   })
 
   it('test init class Message', () => {
@@ -31,10 +41,30 @@ describe('lib:stream:message:Message', () => {
     expect(message.send).toBeTruthy()
     expect(message.type).toEqual(msg.type)
     expect(message.payload).toEqual(msg.payload)
+
+    message.send().then(res => expect(res).toEqual(msg))
   })
 
   it('should have static method signal', () => {
     expect(Message.signal).toBeTruthy()
   })
 
+  it('try send signal', () => {
+    const testTypeMsg = '@/test-app/test-msg'
+
+    Message
+      .signal(testTypeMsg)
+      .send()
+      .then(res => {
+        expect(res instanceof Message).toBeTruthy()
+        return res
+      })
+      .then(res => expect(res).toEqual({
+        type: testTypeMsg,
+        payload: {},
+        domain: undefined
+      }))
+      .then(() => jest.advanceTimersByTime(5000))
+      .catch(() => jest.advanceTimersByTime(5000))
+  })
 })
