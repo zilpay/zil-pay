@@ -6,44 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import extension from 'extensionizer'
-import { uuid } from 'uuidv4'
-
 jest.useFakeTimers()
 
-const extensionID = uuid()
-
-extension.runtime = {
-  id: extensionID,
-  sendMessage(msg, cb) {
-    this.onMessage.trigger(msg, cb)
-  },
-  onMessage:{
-    messageQueue:[],
-    trigger(data, cb) {
-      this.messageQueue.push({
-        data,
-        cb
-      })
-    },
-    addListener(cb) {
-      setInterval(() => {
-        if(this.messageQueue.length){
-          let message = this.messageQueue.pop()
-          cb(
-            {
-              data: message.data
-            },
-            {
-              id: extensionID
-            },
-            message.cb
-          )
-        }
-      }, 1000)
-    }
-  }
-}
+require('../../../extension-sinnon')
 
 const { LocalStream } = require('lib/stream')
 

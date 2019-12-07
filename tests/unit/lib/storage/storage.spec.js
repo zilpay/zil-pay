@@ -6,53 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+require('../../../extension-sinnon')
+
 import extension from 'extensionizer'
-import sinonChrome from 'sinon-chrome'
-import { uuid } from 'uuidv4'
-
-let store = {}
-
-sinonChrome.runtime.id = uuid()
-
-global.chrome = sinonChrome
-
-extension.runtime = global.chrome.runtime
-extension.storage = {
-  ...global.chrome.storage,
-  local: {
-    set(value, resolve) {
-      Object
-        .keys(value)
-        .forEach(key => store[key] = {
-          ...store[key],
-          ...value[key]
-        })
-      resolve()
-    },
-    get(key, resolve) {
-      if (!key) {
-        resolve(store)
-      }
-
-      resolve(store[key])
-    },
-    remove(key, resolve) {
-      delete store[key]
-
-      resolve()
-    },
-    clear(resolve) {
-      store = {}
-      resolve()
-    },
-    onChanged: {
-      removeListener() {},
-      addListener(cb) {
-        cb(true)
-      }
-    }
-  }
-}
 
 const { BrowserStorage, BuildObject } = require('lib/storage')
 
@@ -74,7 +30,7 @@ describe('lib:storage:BrowserStorage', () => {
   })
 
   it('should have EXT_ID prop', () => {
-    expect(storage.EXT_ID).toEqual(sinonChrome.runtime.id)
+    expect(storage.EXT_ID).toEqual(extension.runtime.id)
   })
 
   it('try set value', async () => {
