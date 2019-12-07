@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "config": {
+      "title": "main network config",
+      "type": "object"
+    },
+    "confirm": {
+      "title": "transactions for confirmation",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "selectednet": {
+      "title": "current network name",
+      "type": "string"
+    },
+    "transactions": {
+      "title": "transaction execution",
+      "type": "object"
+    },
+    "static": {
+      "title": "static data `BTC, USD`, address format...",
+      "type": "object"
+    },
+    "vault": {
+      "title": "encrypted seed phrases",
+      "type": "string"
+    },
+    "importedvault": {
+      "title": "encrypted imported privateKeys",
+      "type": "string"
+    },
+    "wallet": {
+      "title": "active accounts",
+      "type": "object"
+    },
+    "connect": {
+      "title": "data for connection to dApps",
+      "type": "object"
+    }
+  }
+}
