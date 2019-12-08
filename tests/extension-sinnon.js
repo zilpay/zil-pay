@@ -61,7 +61,9 @@ extension.storage = {
         resolve(store)
       }
 
-      resolve(store[key])
+      resolve({
+        [key]: store[key]
+      })
     },
     remove(key, resolve) {
       delete store[key]
