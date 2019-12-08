@@ -34,8 +34,10 @@ export class Auth {
     if (!this._endSession) {
       return null
     }
+
     const now = new Date()
     const timeDifference = this._endSession - now
+
     return timeDifference > 0
   }
 

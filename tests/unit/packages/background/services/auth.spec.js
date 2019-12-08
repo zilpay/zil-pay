@@ -58,4 +58,14 @@ describe('packages:background:services:Auth', () => {
     expect(authControl.isEnable).toBe(false)
   })
 
+  it('Auth control can set password', async() => {
+    await authControl.setPassword(password)
+
+    expect(authControl._guard.pwdHash).toBeTruthy()
+    expect(authControl._endSession).toBeTruthy()
+    expect(authControl.isReady).toBe(true)
+    expect(authControl.isEnable).toBe(true)
+    expect(authControl.verificationTime).toBe(true)
+  })
+
 })
