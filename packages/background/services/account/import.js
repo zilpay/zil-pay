@@ -6,11 +6,12 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { FIELDS } from 'config'
+import { BuildObject } from 'lib/storage'
+
 import { AccountControl } from './create'
-import { BuildObject } from '../../../../lib/storage'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 import errorsCode from './errors'
-import fields from '../../../../config/fields'
 
 export class AccountImporter extends AccountControl {
 
@@ -35,7 +36,7 @@ export class AccountImporter extends AccountControl {
     hwIndex: Number,
     hwType: String,
     publicKey: String
-  }
+   }
   */
   async importByHwAccount(payload) {
     // Mandatory authentication test.
@@ -49,8 +50,8 @@ export class AccountImporter extends AccountControl {
       )
     }
 
-    let wallet = await this._storage.get(fields.WALLET)
-    wallet = wallet[fields.WALLET]
+    let wallet = await this._storage.get(FIELDS.WALLET)
+    wallet = wallet[FIELDS.WALLET]
 
     wallet.identities.forEach(account => {
       // Testing for a unique account.
@@ -73,7 +74,7 @@ export class AccountImporter extends AccountControl {
     wallet.selectedAddress = wallet.identities.length - 1
 
     await this._storage.set(
-      new BuildObject(fields.WALLET, wallet)
+      new BuildObject(FIELDS.WALLET, wallet)
     )
 
     return wallet
@@ -97,8 +98,8 @@ export class AccountImporter extends AccountControl {
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
-    let wallet = await this._storage.get(fields.WALLET)
-    wallet = wallet[fields.WALLET]
+    let wallet = await this._storage.get(FIELDS.WALLET)
+    wallet = wallet[FIELDS.WALLET]
 
     // If found privateKey in Imported Object than replace this account.
     const isFound = decryptImported.find(acc => {
@@ -146,7 +147,7 @@ export class AccountImporter extends AccountControl {
 
     await this.auth.updateImported(decryptImported)
     await this._storage.set(
-      new BuildObject(fields.WALLET, wallet)
+      new BuildObject(FIELDS.WALLET, wallet)
     )
 
     return wallet

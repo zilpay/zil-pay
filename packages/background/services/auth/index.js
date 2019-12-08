@@ -6,30 +6,31 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { FIELDS, DEFAULT } from 'config'
+import { BrowserStorage, BuildObject } from 'lib/storage'
+import { TypeChecker } from 'lib/type'
+
 import { CryptoGuard } from '../crypto/guard'
 import errorsCode from './errors'
-import fields from '../../../../config/fields'
-import api from '../../../../config/api'
-import { BrowserStorage, BuildObject } from '../../../../lib/storage'
 
+/**
+ * Added new method for Date instance.
+ * @param {Number} h - Number of hour.
+ * @returns: Current date + h hours.
+ */
 Date.prototype.addHours = function(h) {
-  /**
-   * Added new method for Date instance.
-   * @interface h: Number.
-   * @returns: Current date + h hours.
-   */
   this.setTime(this.getTime() + (h * 60 * 60 * 1000))
+
   return this
 }
 
-
 export class Auth {
 
+  /**
+   * Verification time session.
+   * @return Boolean.
+   */
   get verificationTime() {
-    /**
-     * Verification time session.
-     * @return Boolean.
-     */
     if (!this._endSession) {
       return null
     }
@@ -55,25 +56,24 @@ export class Auth {
     this._storage = new BrowserStorage()
   }
 
+  /**
+   * Activation CryptoGuard by password.
+   * @param {String} password - User password string.
+   */
   async setPassword(password) {
-    /**
-     * Activation CryptoGuard by password.
-     */
-
     // Synchronize with storage
     await this.vaultSync()
+
     this._guard = new CryptoGuard(password)
     this.isReady = true
 
-    let hours
+    let hours = DEFAULT.TIME_BEFORE_LOCK
     const storage = new BrowserStorage()
-    let stateData = await storage.get(fields.STATIC)
-    stateData = stateData[fields.STATIC]
 
-    if (!stateData) {
-      hours = api.TIME_BEFORE_LOCK
-    } else {
-      hours = stateData.lockTime || api.TIME_BEFORE_LOCK
+    let stateData = await storage.get(FIELDS.STATIC)
+
+    if (stateData) {
+      hours = stateData.lockTime
     }
 
     try {
@@ -82,6 +82,7 @@ export class Auth {
 
       this._endSession = new Date().addHours(hours)
       this.isEnable = true
+
       return { decryptSeed, decryptImported }
     } catch (err) {
       this.isEnable = false
@@ -90,10 +91,10 @@ export class Auth {
     return null
   }
 
+  /**
+   * Get and decrypt the wallet from storage.
+   */
   getWallet() {
-    /**
-     * Get and decrypt the wallet from storage.
-     */
     if (!this._guard || !this.isReady) {
       throw new Error(errorsCode.GuardWrong)
     } else if (!this.encryptSeed) {
@@ -109,22 +110,23 @@ export class Auth {
     return { decryptSeed, decryptImported }
   }
 
+  /**
+   * Check access to dApp.
+   * @param {String} domain - Website domain name.
+   * @return Boolean.
+   */
   async isConnect(domain) {
-    /**
-     * Check access to dApp.
-     * @return Boolean.
-     */
     if (domain && domain.includes('zilpay.xyz')) {
       return true
     }
 
     const storage = new BrowserStorage()
-    let dappList = await storage.get(fields.STATIC)
+    let dappList = await storage.get(FIELDS.STATIC)
 
     try {
-      dappList = dappList[fields.STATIC]
+      dappList = dappList[FIELDS.STATIC]
 
-      if (typeof dappList === 'string') {
+      if (new TypeChecker(dappList).isString) {
         dappList = JSON.parse(dappList)
       }
 
@@ -138,16 +140,17 @@ export class Auth {
     }
   }
 
+  /**
+   * Synchronization with storage.
+   */
   async vaultSync() {
-    /**
-     * Synchronization with storage.
-     */
-    const data = await this._storage.get(
-      [fields.VAULT, fields.VAULT_IMPORTED]
-    )
+    const data = await this._storage.get([
+      FIELDS.VAULT,
+      FIELDS.VAULT_IMPORTED
+    ])
 
-    this.encryptSeed = data[fields.VAULT]
-    this.encryptImported = data[fields.VAULT_IMPORTED]
+    this.encryptSeed = data[FIELDS.VAULT]
+    this.encryptImported = data[FIELDS.VAULT_IMPORTED]
 
     if (this.encryptSeed) {
       this.isReady = true
@@ -161,37 +164,39 @@ export class Auth {
     }
   }
 
+  /**
+   * Write decryptImported to storage.
+   * @param {Object} decryptImported - Imported account object.
+   * @return String.
+   */
   async updateImported(decryptImported) {
-    /**
-     * Write decryptImported to storage.
-     * @interface decryptImported: Object.
-     * @return String.
-     */
-    if (typeof decryptImported !== 'object') {
+    if (!new TypeChecker(decryptImported).isObject) {
       throw new Error(errorsCode.WrongImported)
     }
 
     const encryptImported = this._guard.encryptJson(decryptImported)
 
     await this._storage.set(
-      new BuildObject(fields.VAULT_IMPORTED, encryptImported)
+      new BuildObject(FIELDS.VAULT_IMPORTED, encryptImported)
     )
 
     return encryptImported
   }
 
+  /**
+   * Encrypt decryptSeed, decryptImported by password.
+   */
   static encryptWallet(decryptSeed, decryptImported, password) {
-    /**
-     * Encrypt decryptSeed, decryptImported by password.
-     */
-    if (!decryptSeed || typeof decryptSeed !== 'string') {
+    if (!new TypeChecker(decryptSeed).isString) {
       throw new Error(errorsCode.WrongSeed)
-    } else if (typeof decryptImported !== 'object') {
+    } else if (!new TypeChecker(decryptImported).isObject) {
       throw new Error(errorsCode.WrongImported)
     }
+
     const guard = new CryptoGuard(password)
     const encryptSeed = guard.encrypt(decryptSeed)
     const encryptImported = guard.encryptJson(decryptImported)
+
     return { encryptSeed, encryptImported }
   }
 

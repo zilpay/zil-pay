@@ -6,13 +6,24 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { FIELDS, DEFAULT } from 'config'
+import { BrowserStorage, BuildObject } from 'lib/storage'
+import { TypeChecker } from 'lib/type'
+
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
-import { toChecksumAddress, decodeBase58, fromBech32Address } from '@zilliqa-js/crypto'
-import { Long, BN, bytes, validation } from '@zilliqa-js/util'
-import { BrowserStorage, BuildObject } from '../../../../lib/storage'
+import {
+  toChecksumAddress,
+  fromBech32Address
+} from '@zilliqa-js/crypto'
+import {
+  Long,
+  BN,
+  bytes,
+  validation
+} from '@zilliqa-js/util'
+
 import { NotificationsControl } from '../browser/notifications'
-import fields from '../../../../config/fields'
 import errorsCode from './errors'
 
 export class ZilliqaControl extends Zilliqa {
@@ -21,6 +32,10 @@ export class ZilliqaControl extends Zilliqa {
     super(provider)
   }
 
+  /**
+   * Recieve account balance.
+   * @param {String} address - Account address.
+   */
   async getBalance(address) {
     // Get the balance by address. //
     let { result } = await this.blockchain.getBalance(
@@ -38,6 +53,13 @@ export class ZilliqaControl extends Zilliqa {
     return { result, nonce }
   }
 
+  /**
+   * Preparation transaction to send.
+   * @param {Object} txData - some tx params.
+   * @param {String} from - Sender address.
+   * @param {Number} currentNonce - Transaction nonce.
+   * @param {String} pubKey - Sender publicKey.
+   */
   async buildTxParams(txData, from, currentNonce, pubKey) {
     const balance = await this.getBalance(from)
     let {
@@ -54,9 +76,11 @@ export class ZilliqaControl extends Zilliqa {
     if (!version) {
       version = await this.version()
     }
+
     if (isNaN(nonce)) {
       nonce = balance.nonce
     }
+
     if (currentNonce > balance.nonce) {
       nonce = currentNonce
     }
@@ -80,21 +104,24 @@ export class ZilliqaControl extends Zilliqa {
     })
   }
 
-  async signedTxSend(payload) {
-    const tx = await this.provider.send( // Send to shard node.
+  /**
+   * Send sing transaction to node via JsonRPC.
+   * @param {Object} payload - Signed transaction payload for send to node.
+   */
+  signedTxSend(payload) {
+    return this.provider.send(
       RPCMethod.CreateTransaction, payload
     )
-    return tx
   }
 
+  /**
+   * Sign transaction via privateKey.
+   * @param {Object} txData - payload without signature.
+   * @param {String} seedOrPrivateKey - PrivateKey for sing.
+   * @param {Number} index - ID in mnemonic seed phrase.
+   * @param {Number} currentNonce - Transaction nonce from storage.
+   */
   async singTransaction(txData, seedOrPrivateKey, index, currentNonce) {
-    /**
-     * @param {txData}: Object with data about transaction.
-     * @param seedOrPrivateKey: type String, seed phrase or private key.
-     * @param index: type Number, the index of address from seed phrase.
-     * @prarm msgId: Message version network.
-     */
-
     // importing account from private key or seed phrase. //
     if (validation.isPrivateKey(seedOrPrivateKey)) {
       this.wallet.addByPrivateKey(seedOrPrivateKey)
@@ -111,7 +138,7 @@ export class ZilliqaControl extends Zilliqa {
     // Sign transaction by current account. //
     const { txParams, payload } = await this.wallet.sign(zilTxData)
 
-    if (txData.isBroadcast && typeof txData.isBroadcast === 'boolean') {
+    if (new TypeChecker(txData.isBroadcast).isBoolean) {
       payload.Info = 'Non-broadcast'
       payload.TranID = 'none'
       payload.version = txParams.version
@@ -122,13 +149,24 @@ export class ZilliqaControl extends Zilliqa {
     return await this.signedTxSend(txParams)
   }
 
+  /**
+   * The decimal conversion of the
+   * bitwise concatenation of `CHAIN_ID` and `MSG_VERSION` parameters.
+   * @param {Number} msgVerison - `MSG_VERSION` chain.
+   */
   async version(msgVerison = 1) {
     const { result } = await this.network.GetNetworkId()
+
     return bytes.pack(result, msgVerison)
   }
 
+  /**
+   * Generate account via mnemonic seed phrase.
+   * @param {String} seed - mnemonic seed phrase.
+   * @param {Number} index - ID in mnemonic seed phrase.
+   */
   async getAccountBySeed(seed, index) {
-    if (typeof seed !== 'string' || isNaN(index)) {
+    if (!new TypeChecker(seed).isString || isNaN(index)) {
       throw new Error(errorsCode.WrongParams)
     }
 
@@ -148,6 +186,11 @@ export class ZilliqaControl extends Zilliqa {
     }
   }
 
+  /**
+   * Generate account via imported privateKey.
+   * @param {String} importPrivateKey - PrivateKey.
+   * @param {Number} index - Imported storage object index.
+   */
   async getAccountByPrivateKey(importPrivateKey, index = 0) {
     this.wallet.addByPrivateKey(importPrivateKey)
 
@@ -156,72 +199,82 @@ export class ZilliqaControl extends Zilliqa {
 
     account.address = toChecksumAddress(account.address)
 
-    return Object.assign(account, { index, balance: result })
+    return {
+      ...account,
+      index,
+      balance: result
+    }
   }
 
+  /**
+   * Set to storage non-sing transaction payload for call popup nad sing it.
+   * @param {Object} payload - Tranaction payload "amount, gas, data"...
+   */
   async addForSingTransaction(payload) {
-    /**
-     * @method: This method call add to storage some payload data.
-     * @param {payload}: It is transaction params "amount, gas, data"...
-     */
-    [
+    const neededParams = [
       'amount',
       'toAddr'
-    ].forEach(key => {
-      if (!payload.hasOwnProperty(key)) {
+    ]
+
+    for (let index = 0; index < neededParams.length; index++) {
+      const param = neededParams[index]
+
+      if (!(param in payload)) {
         throw new Error(
-          errorsCode.WrongRequiredparam + key
+          errorsCode.WrongRequiredparam + param
         )
       }
-    })
+    }
 
     const storage = new BrowserStorage()
-    let forConfirm = await storage.get(fields.CONFIRM_TX)
+    let forConfirm = await storage.get(FIELDS.CONFIRM_TX)
 
-    if (validation.isBase58(payload.toAddr)) {
-      payload.toAddr = decodeBase58(payload.toAddr)
-    } else if (validation.isBech32(payload.toAddr)) {
+    if (validation.isBech32(payload.toAddr)) {
       payload.toAddr = fromBech32Address(payload.toAddr)
     }
 
     payload.toAddr = toChecksumAddress(payload.toAddr)
 
     try {
-      forConfirm = forConfirm[fields.CONFIRM_TX]
       forConfirm.push(payload)
     } catch (err) {
       forConfirm = [payload]
     }
 
-    await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm))
+    await storage.set(
+      new BuildObject(FIELDS.CONFIRM_TX, forConfirm)
+    )
+
     this.notificationsCounter(forConfirm)
   }
 
+  /**
+   * If user confirm or reject tranaction,
+   * this method remove it from storage.
+   */
   async rmForSingTransaction() {
-    /**
-     * @method: This method remove payload data from storage.
-     */
     const storage = new BrowserStorage()
-    let forConfirm = await storage.get(fields.CONFIRM_TX)
-
-    forConfirm = forConfirm[fields.CONFIRM_TX]
-
+    let forConfirm = await storage.get(FIELDS.CONFIRM_TX)
     const removedConfirm = forConfirm.pop()
 
-    await storage.set(new BuildObject(fields.CONFIRM_TX, forConfirm))
+    await storage.set(
+      new BuildObject(FIELDS.CONFIRM_TX, forConfirm)
+    )
+
     this.notificationsCounter(forConfirm)
+
     return removedConfirm
   }
 
+  /**
+   * When user confirm transaction, it will add to storage.
+   * @param {Object} tx - Tranaction payload.
+   * @param {String} net - Network name.
+   */
   async addTransactionList(tx, net) {
-    /**
-     * @method: Add to storage payload data of completed transaction.
-     * @param {tx}: Payload data.
-     * @param net: It is network wthi which call transaction.
-     */
     const storage = new BrowserStorage()
     const from = toChecksumAddress(tx.from)
-    let txsList = await storage.get(fields.TRANSACTIONS)
+    let txsList = await storage.get(FIELDS.TRANSACTIONS)
     const data = {
       Info: tx.Info,
       TranID: tx.TranID,
@@ -235,6 +288,7 @@ export class ZilliqaControl extends Zilliqa {
         errorsCode.WrongRequiredparam + 'net'
       )
     }
+
     Object.keys(data).forEach(key => {
       if (!data[key]) {
         throw new Error(
@@ -244,7 +298,7 @@ export class ZilliqaControl extends Zilliqa {
     })
 
     try {
-      txsList = txsList[fields.TRANSACTIONS]
+      txsList = txsList[FIELDS.TRANSACTIONS]
       if (!txsList[from]) {
         txsList[from] = {}
         txsList[from][net] = []
@@ -257,36 +311,37 @@ export class ZilliqaControl extends Zilliqa {
       txsList[from][net].push(data)
     }
 
-    if (txsList[from][net].length > 5) {
+    if (txsList[from][net].length > DEFAULT.MAX_TX_AMOUNT_LIST) {
       txsList[from][net].shift()
     }
 
     await storage.set(
-      new BuildObject(fields.TRANSACTIONS, txsList)
+      new BuildObject(FIELDS.TRANSACTIONS, txsList)
     )
   }
 
+  /**
+   * Clear tranaction from storage.
+   */
   async rmAllTransactionList() {
-    /**
-     * @method: clear all completed transaction from storage.
-     */
     const storage = new BrowserStorage()
+
     await storage.set(
-      new BuildObject(fields.TRANSACTIONS, {})
+      new BuildObject(FIELDS.TRANSACTIONS, {})
     )
   }
 
+  /**
+   * Set "BadgeText" for show number of actions.
+   * @param {Number} value - Number of action.
+   */
   async notificationsCounter(value) {
-    /**
-     * @method: Set "BadgeText" for show number of actions.
-     * @param value: Number of action.
-     */
-    let forConfirm
+    let forConfirm = null
 
     if (!value) {
       const storage = new BrowserStorage()
-      forConfirm = await storage.get(fields.CONFIRM_TX)
-      forConfirm = forConfirm[fields.CONFIRM_TX]
+
+      forConfirm = await storage.get(FIELDS.CONFIRM_TX)
     } else {
       forConfirm = value
     }

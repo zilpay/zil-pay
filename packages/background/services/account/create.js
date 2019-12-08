@@ -6,16 +6,24 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { FIELDS } from 'config'
+import { BrowserStorage, BuildObject } from 'lib/storage'
+import { TypeChecker } from 'lib/type'
+
 import { Auth } from '../auth/index'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 import { NetworkControl } from '../network/index'
-import { BrowserStorage, BuildObject } from '../../../../lib/storage'
-import fields from '../../../../config/fields'
-import errorsCode from './errors'
 import errorsCodeGuard from '../auth/errors'
+
+import errorsCode from './errors'
 
 const MAX_LENGTH_NAME = 20
 
+/**
+ * Account controll, managers user accounts.
+ * Can create wallet.
+ * Can create account(pair pubKey, privKey).
+ */
 export class AccountControl {
 
   constructor() {
@@ -25,11 +33,11 @@ export class AccountControl {
     this.auth = new Auth()
   }
 
+  /**
+   * Initial new wallet by seed phase.
+   * @param {String} decryptSeed - Mnemonic seed phrase.
+   */
   async initWallet(decryptSeed) {
-    /**
-     * Initial new wallet by seed phase.
-     * @interface decryptSeed: String.
-     */
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
     if (!this.zilliqa.wallet.isValidMnemonic(decryptSeed)) {
@@ -54,21 +62,21 @@ export class AccountControl {
     }
 
     await this._storage.set([
-      new BuildObject(fields.VAULT, encryptedWallet),
-      new BuildObject(fields.VAULT_IMPORTED, importedWallet),
-      new BuildObject(fields.WALLET, wallet)
+      new BuildObject(FIELDS.VAULT, encryptedWallet),
+      new BuildObject(FIELDS.VAULT_IMPORTED, importedWallet),
+      new BuildObject(FIELDS.WALLET, wallet)
     ])
 
     return account
   }
 
+  /**
+   * Create new pair's private Key and public Key via seed phase.
+   */
   async newAccountBySeed() {
-    /**
-     * Create new pair's private Key and public Key via seed phase.
-     */
     await this.auth.vaultSync()
 
-    const { decryptSeed } = await this.auth.getWallet()
+    const { decryptSeed } = this.auth.getWallet()
 
     // Mandatory authentication test.
     if (!this.auth.isReady) {
@@ -83,7 +91,7 @@ export class AccountControl {
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
-    let { wallet } = await this._storage.get(fields.WALLET)
+    let wallet = await this._storage.get(FIELDS.WALLET)
 
     // Get a new index account, but excluding a hardware wallet
     // and importd by private key.
@@ -101,50 +109,49 @@ export class AccountControl {
     })
 
     await this._storage.set(
-      new BuildObject(fields.WALLET, wallet)
+      new BuildObject(FIELDS.WALLET, wallet)
     )
 
     return wallet
   }
 
+  /**
+   * Any update wallet store.
+   * @param {Object} wallet - Wallet object ZilPay type.
+   * @interface wallet: { identities: Array, selectedAddress: number };
+   */
   async walletUpdate(wallet) {
-    /**
-     * Any update wallet store.
-     * @interface wallet: { identities: Array, selectedAddress: number };
-     */
-    wallet.identities = wallet.identities.filter(acc => !!acc)
+    wallet.identities = wallet.identities.filter(Boolean)
+
     await this._storage.set(
-      new BuildObject(fields.WALLET, wallet)
+      new BuildObject(FIELDS.WALLET, wallet)
     )
   }
 
+  /**
+   * Create and change account name.
+   * @param {String} name - User account name.
+   */
   async changeAccountName(name) {
-    /**
-     * Create and change account name.
-     * @interface name: String.
-     */
-    if (!name || typeof name !== 'string' || name.length > MAX_LENGTH_NAME) {
+    if (!new TypeChecker(name).isString || name.length > MAX_LENGTH_NAME) {
       throw new Error(errorsCode.WrongName)
     }
 
-    let wallet = await this._storage.get(fields.WALLET)
-    wallet = wallet[fields.WALLET]
+    let wallet = await this._storage.get(FIELDS.WALLET)
 
-    wallet.identities[
-      wallet.selectedAddress
-    ]['name'] = name
+    wallet.identities[wallet.selectedAddress].name = name
 
     await this.walletUpdate(wallet)
   }
 
+  /**
+   * Add to store App info, for confirm access.
+   * @param {Object} payload - dapp data.
+   * @interface payload: { domain: String, icon: String, title: String }
+   */
   async addForConnectDapp(payload) {
-    /**
-     * Add to store App info, for confirm access.
-     * @interface payload: { domain: String, icon: String, title: String }
-     */
-    const storage = new BrowserStorage()
-    await storage.set(
-      new BuildObject(fields.CONNECT_DAPP, payload)
+    await this._storage.set(
+      new BuildObject(FIELDS.CONNECT_DAPP, payload)
     )
   }
 

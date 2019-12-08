@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import config from '../../../../config/api'
+import { DEFAULT } from '../../../../config'
 import extension from 'extensionizer'
 
 const { Promise, window } = global
@@ -15,18 +15,17 @@ export class PromptService {
 
   constructor() {
     // Height popup window.
-    this._height = 600
+    this._height = DEFAULT.POPUP_HEIGHT
     // Width popup window.
-    this._width = 360
+    this._width = DEFAULT.POPUP_WIDTH
     this._type = 'popup'
-
     this.id
   }
 
+  /**
+   * Create new window popup for confirm tx or connection dApp.
+   */
   async open() {
-    /**
-     * Create new window popup for confirm tx and connection dApp.
-     */
     const {
       screenX,
       screenY,
@@ -41,18 +40,20 @@ export class PromptService {
     )
     const createData = {
       type: this._type,
-      url: config.PROMT_PAGE,
+      url: DEFAULT.PROMT_PAGE,
       width: this._width,
       height: this._height,
       top: Math.max(notificationTop, 0),
-      left: Math.max(notificationLeft, 0),
+      left: Math.max(notificationLeft, 0)
     }
     const lastPopups = await this._getPopup()
 
     if (lastPopups && lastPopups.length > 0) {
-      lastPopups.forEach(popup => {
+      for (let index = 0; index < lastPopups.length; index++) {
+        const popup = lastPopups[index]
+
         extension.windows.remove(popup.id, console.error)
-      })
+      }
     }
 
     try {

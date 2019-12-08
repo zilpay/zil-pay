@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-export const fiedls = {
+export const FIELDS = {
   VAULT: 'vault',
   VAULT_IMPORTED: 'importedvault',
   CONFIG: 'config',

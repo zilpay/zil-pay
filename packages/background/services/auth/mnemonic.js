@@ -6,7 +6,10 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { generateMnemonic, validateMnemonic } from 'bip39'
+import {
+  generateMnemonic,
+  validateMnemonic
+} from 'bip39'
 
 export class MnemonicControl {
 

@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import fields from '../../../../config/fields'
+import { FIELDS } from '../../../../config'
 import { AccountControl } from './create'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 import errorsCode from './errors'
@@ -48,8 +48,8 @@ export class AccountExporter extends AccountControl {
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
-    let wallet = await this._storage.get(fields.WALLET)
-    wallet = wallet[fields.WALLET]
+    let wallet = await this._storage.get(FIELDS.WALLET)
+    wallet = wallet[FIELDS.WALLET]
 
     const selectedAccount = wallet.identities[wallet.selectedAddress]
 
@@ -69,11 +69,10 @@ export class AccountExporter extends AccountControl {
     }
   }
 
+  /**
+   * Export private key from imported storage.
+   */
   async exportAccountFromStore() {
-    /**
-     * Export private key from imported storage.
-     */
-
     // Sync with storage.
     await this.auth.vaultSync()
 
@@ -92,8 +91,8 @@ export class AccountExporter extends AccountControl {
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
-    let wallet = await this._storage.get(fields.WALLET)
-    wallet = wallet[fields.WALLET]
+    let wallet = await this._storage.get(FIELDS.WALLET)
+    wallet = wallet[FIELDS.WALLET]
 
     const accountID = wallet.identities[wallet.selectedAddress].index
     const account = decryptImported.find(
@@ -108,22 +107,26 @@ export class AccountExporter extends AccountControl {
     return account
   }
 
+  /**
+   * Export seed phase.
+   */
   async exportSeed() {
-    /**
-     * Export seed phase.
-     */
     await this.auth.vaultSync()
-    return await this.auth.getWallet()
+
+    return this.auth.getWallet()
   }
 
+  /**
+   * Testing function.
+   * @returns Boolean.
+   */
   async isImported() {
-    /**
-     * Testing function.
-     * @returns Boolean.
-     */
-    let wallet = await this._storage.get(fields.WALLET)
-    wallet = wallet[fields.WALLET]
+    let wallet = await this._storage.get(FIELDS.WALLET)
+
+    wallet = wallet[FIELDS.WALLET]
+
     const account = wallet.identities[wallet.selectedAddress]
+
     return !!account.isImport
   }
 }

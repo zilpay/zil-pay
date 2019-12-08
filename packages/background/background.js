@@ -18,7 +18,6 @@ import {
   UnstoppableDomainsHandler,
 } from './handlers'
 
-
 export class Background {
 
   constructor() {

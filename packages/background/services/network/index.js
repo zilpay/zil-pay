@@ -6,44 +6,44 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { FIELDS, ZILLIQA } from 'config'
+import { BrowserStorage, BuildObject } from 'lib/storage'
+
 import fetch from 'cross-fetch'
-import ZilliqaConfig from '../../../../config/zil'
+
 import errorsCode from './errors'
-import { BrowserStorage, BuildObject } from '../../../../lib/storage'
-import fields from '../../../../config/fields'
 
-
-const defaultSelected = Object.keys(ZilliqaConfig)[0]
+const defaultSelected = Object.keys(ZILLIQA)[0]
 
 export class NetworkControl {
 
+  /**
+   * @return nodeURL.
+   */
   get provider() {
-    /**
-     * @return nodeURL.
-     */
-    return this.config[this.selected]['PROVIDER']
+    return this.config[this.selected].PROVIDER
   }
 
+  /**
+   * @return Number, blockchain version.
+   */
   get version() {
-    /**
-     * @return Number, blockchain version.
-     */
-    return this.config[this.selected]['MSG_VERSION']
+    return this.config[this.selected].MSG_VERSION
   }
 
-  constructor(config = ZilliqaConfig, selected = defaultSelected) {
+  constructor(config = ZILLIQA, selected = defaultSelected) {
     this.config = config
     this.selected = selected
     this.status = null
     this._storage = new BrowserStorage()
   }
 
+  /**
+   * Change the network.
+   * @param {String} selected - Can be only (mainnet, testnet, private).
+   */
   async changeNetwork(selected) {
-    /**
-     * Change the network.
-     * @params selected: (mainnet, testnet, private).
-     */
-    if (!this.config.hasOwnProperty(selected)) {
+    if (!(selected in this.config)) {
       throw new Error(
         `${errorsCode.changeNetwork}
          ${Object.keys(this.config)}`
@@ -51,8 +51,9 @@ export class NetworkControl {
     }
 
     await this._storage.set(
-      new BuildObject(fields.SELECTED_NET, selected)
+      new BuildObject(FIELDS.SELECTED_NET, selected)
     )
+
     this.selected = selected
 
     await this.checkProvider()
@@ -64,16 +65,21 @@ export class NetworkControl {
     }
   }
 
-  async changeConfig(config = ZilliqaConfig) {
-    if (typeof config !== 'object') {
+  /**
+   * Change Zilliqa network config.
+   * @param {Object} config - Zilliqa config object.
+   */
+  async changeConfig(config = ZILLIQA) {
+    if (!new TypeError(config).isObject) {
       throw new Error(
         `${errorsCode.changeNetwork} ${typeof config}`
       )
     }
 
     await this._storage.set(
-      new BuildObject(fields.CONFIG, config)
+      new BuildObject(FIELDS.CONFIG, config)
     )
+
     this.config = config
 
     await this.checkProvider()
@@ -81,17 +87,19 @@ export class NetworkControl {
     return this.config
   }
 
+  /**
+   * Synchronize with storage.
+   */
   async netwrokSync() {
-    /**
-     * Synchronize with storage.
-     */
-    const { config, selectednet } = await this._storage.get(
-      [fields.SELECTED_NET, fields.CONFIG]
-    )
+    const { config, selectednet } = await this._storage.get([
+      FIELDS.SELECTED_NET,
+      FIELDS.CONFIG
+    ])
 
     if (config) {
       this.config = config
     }
+
     if (selectednet) {
       this.selected = selectednet
     }
@@ -102,12 +110,19 @@ export class NetworkControl {
     }
   }
 
+  /**
+   * Call the options requests to node URL.
+   */
   async checkProvider() {
-    /**
-     * Call the options requests to node URL.
-     */
     try {
-      await fetch(this.provider)
+      const response = await fetch(this.provider, {
+        method: 'OPTIONS',
+        cache: 'no-cache',
+        mode: 'cors'
+      })
+
+      await response.json()
+
       this.status = true
     } catch (err) {
       this.status = false

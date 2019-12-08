@@ -6,14 +6,18 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { ZILLIQA, DEFAULT } from 'config'
+
 import namehash from 'namicorn/lib/zns/namehash'
 import { Zilliqa } from '@zilliqa-js/zilliqa'
-import API from '../../../../config/api'
-import ZIL from '../../../../config/zil'
 
-const { UD_CONTRACT_ADDRESS } = API
-const { PROVIDER } = ZIL.mainnet
+const { UD_CONTRACT_ADDRESS } = DEFAULT
+const { PROVIDER } = ZILLIQA.mainnet
 
+/**
+ * Unstoppabledomains service domain resolver.
+ * [more info](http://unstoppabledomains.com/)
+ */
 export class UnstoppableDomains {
 
   constructor() {
