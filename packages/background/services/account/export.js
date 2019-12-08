@@ -25,11 +25,10 @@ export class AccountExporter extends AccountControl {
     throw new Error(errorsCode.DisableMethod)
   }
 
+  /**
+   * Export Private Key from seed pashe via index.
+   */
   async exportPrivateKeyFromSeed() {
-    /**
-     * Export Private Key from seed pashe via index.
-     */
-
     // Sync with storage.
     await this.auth.vaultSync()
 
@@ -49,7 +48,6 @@ export class AccountExporter extends AccountControl {
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
     let wallet = await this._storage.get(FIELDS.WALLET)
-    wallet = wallet[FIELDS.WALLET]
 
     const selectedAccount = wallet.identities[wallet.selectedAddress]
 
@@ -92,7 +90,6 @@ export class AccountExporter extends AccountControl {
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
     let wallet = await this._storage.get(FIELDS.WALLET)
-    wallet = wallet[FIELDS.WALLET]
 
     const accountID = wallet.identities[wallet.selectedAddress].index
     const account = decryptImported.find(
@@ -122,8 +119,6 @@ export class AccountExporter extends AccountControl {
    */
   async isImported() {
     let wallet = await this._storage.get(FIELDS.WALLET)
-
-    wallet = wallet[FIELDS.WALLET]
 
     const account = wallet.identities[wallet.selectedAddress]
 

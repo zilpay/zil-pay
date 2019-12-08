@@ -99,7 +99,6 @@ export class AccountImporter extends AccountControl {
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
     let wallet = await this._storage.get(FIELDS.WALLET)
-    wallet = wallet[FIELDS.WALLET]
 
     // If found privateKey in Imported Object than replace this account.
     const isFound = decryptImported.find(acc => {
@@ -114,9 +113,11 @@ export class AccountImporter extends AccountControl {
       decryptImported = decryptImported.map(acc => {
         const somePrivateKey = acc.privateKey.toLocaleLowerCase()
         const forImportPrivateKey = privateKey.toLocaleLowerCase()
+
         if (somePrivateKey === forImportPrivateKey) {
           acc.privateKey = privateKey.toLocaleLowerCase()
         }
+
         return acc
       })
     } else {
@@ -131,11 +132,13 @@ export class AccountImporter extends AccountControl {
       privateKey, index
     )
 
-    wallet.identities.forEach(acc => {
+    for (let index = 0; index < wallet.identities.length; index++) {
+      const acc = wallet.identities[index]
+
       if (acc.address === account.address) {
         throw new Error(errorsCode.ImportUniqueWrong)
       }
-    })
+    }
 
     wallet.selectedAddress = wallet.identities.length
     wallet.identities.push({
