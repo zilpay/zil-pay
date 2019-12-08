@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from 'config'
+import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 
@@ -17,7 +17,7 @@ import errorsCodeGuard from '../auth/errors'
 
 import errorsCode from './errors'
 
-const MAX_LENGTH_NAME = 20
+const { MAX_LENGTH_NAME, ZERO } = DEFAULT
 
 /**
  * Account controll, managers user accounts.
@@ -46,7 +46,7 @@ export class AccountControl {
       throw new Error(errorsCodeGuard.GuardWrong)
     }
 
-    const selectedAddress = 0
+    const selectedAddress = ZERO
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, selectedAddress
     )

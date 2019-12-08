@@ -7,9 +7,11 @@
  * Copyright (c) 2019 ZilPay
  */
 export const DEFAULT = {
+  ZERO: 0,
   TIME_BEFORE_LOCK: 3, // Number in hour.
   MAX_TX_AMOUNT_LIST: 5,
   MIN_LENGTH_PASSWORD: 6,
+  MAX_LENGTH_NAME: 20,
   POPUP_WIDTH: 360,
   POPUP_HEIGHT: 600,
   PROMT_PAGE: 'index.html',
