@@ -14,7 +14,10 @@ import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { RPCMethod } from '@zilliqa-js/core'
 import {
   toChecksumAddress,
-  fromBech32Address
+  fromBech32Address,
+  verifyPrivateKey,
+  getAddressFromPrivateKey,
+  getPubKeyFromPrivateKey
 } from '@zilliqa-js/crypto'
 import {
   Long,
@@ -192,9 +195,15 @@ export class ZilliqaControl extends Zilliqa {
    * @param {Number} index - Imported storage object index.
    */
   async getAccountByPrivateKey(importPrivateKey, index = 0) {
-    this.wallet.addByPrivateKey(importPrivateKey)
+    if (!verifyPrivateKey(importPrivateKey)) {
+      throw new Error(errorsCode.WrongPrivateKey)
+    }
 
-    const account = this.wallet.defaultAccount
+    const account = {
+      privateKey: importPrivateKey,
+      publicKey: getPubKeyFromPrivateKey(importPrivateKey),
+      address: getAddressFromPrivateKey(importPrivateKey)
+    }
     const { result } = await this.getBalance(account.address)
 
     account.address = toChecksumAddress(account.address)

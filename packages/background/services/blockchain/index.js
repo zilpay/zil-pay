@@ -7,4 +7,4 @@
  * Copyright (c) 2019 ZilPay
  */
 export * from './errors'
-export * from './network'
+export * from './zilliqa'
