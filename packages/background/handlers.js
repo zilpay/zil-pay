@@ -21,7 +21,6 @@ import zilApi from '../../config/api'
 import { TabsMessage } from '../../lib/messages/messageCall'
 import { MTypesTabs } from '../../lib/messages/messageTypes'
 
-
 let accountControl = new AccountControl()
 let networkControl = new NetworkControl()
 
