@@ -6,6 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { Background } from './background'
 
-new Background()
+// Errors message for Network Control.
+export default {
+  changeNetwork: 'Selected net most be',
+  changeConfig: 'Config most be Object type! config:'
+}

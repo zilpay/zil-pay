@@ -7,9 +7,13 @@
  * Copyright (c) 2019 ZilPay
  */
 import uuidv4 from 'uuid/v4'
-import { filter, take, map } from 'rxjs/operators'
-import { from } from 'rxjs'
 import { RPCMethod } from '@zilliqa-js/core'
+import { from } from 'rxjs'
+import {
+  filter,
+  take,
+  map
+} from 'rxjs/operators'
 
 import { TypeChecker } from 'lib/type'
 import {
@@ -22,11 +26,11 @@ import {
 /**
  * Stream instance.
  */
-let _stream = new WeakMap()
+let _stream = null
 /**
  * Listener instance.
  */
-let _subject = new WeakMap()
+let _subject = null
 
 /**
  * HTTP Proxy provider.
@@ -48,7 +52,7 @@ export default class HTTPProvider {
     _subject = subjectStream
 
     this.RPCMethod = RPCMethod
-  }  
+  }
 
   send(method, ...params) {
     if (this.RPCMethod.CreateTransaction === method
@@ -75,7 +79,9 @@ export default class HTTPProvider {
         if (res.error) {
           throw res.error
         }
+
         delete res.uuid
+
         return res
       }),
       take(1)

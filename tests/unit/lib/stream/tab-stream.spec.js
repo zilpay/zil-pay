@@ -23,7 +23,7 @@ describe('lib:stream:TabStream', () => {
 
   it('streamB should be able to send messages and receive ', () => {
     const payload = {
-      streamA: 'testa data from streamA'
+      streamA: 'testa data from streamA',
     }
 
     const stream = streamB.listen().subscribe(msg => {
@@ -38,7 +38,7 @@ describe('lib:stream:TabStream', () => {
 
   it('streamA should be able to send messages and receive', () => {
     const payload = {
-      streamB: 'testa data from streamB'
+      streamB: 'testa data from streamB',
     }
 
     const stream = streamA.listen().subscribe(msg => {

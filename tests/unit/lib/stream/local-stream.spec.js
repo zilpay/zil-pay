@@ -8,9 +8,9 @@
  */
 jest.useFakeTimers()
 
-require('tests/extension-sinnon')
+import 'tests/extension-sinnon'
 
-const { LocalStream } = require('lib/stream')
+import { LocalStream } from 'lib/stream'
 
 describe('lib:stream:LocalStream', () => {
 
@@ -25,8 +25,8 @@ describe('lib:stream:LocalStream', () => {
       expect(request).toEqual({
         data: {
           type: 'test',
-          payload: 'work'
-        }
+          payload: 'work',
+        },
       })
     })
   })
@@ -34,7 +34,7 @@ describe('lib:stream:LocalStream', () => {
   it('should be able send request', () => {
     LocalStream.send({
       type: 'test',
-      payload: 'work'
+      payload: 'work',
     }).then((res) => expect(res).toBeTruthy())
 
     jest.advanceTimersByTime(2000)

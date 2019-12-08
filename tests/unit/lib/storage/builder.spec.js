@@ -16,7 +16,7 @@ describe('lib:storage:BuildObject', () => {
 
   it('has key and value', () => {
     expect(new BuildObject('test', 'value')).toEqual({
-      test: 'value'
+      test: 'value',
     })
   })
 })

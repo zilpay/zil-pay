@@ -36,7 +36,7 @@ export class ZilPay {
     this.provider = new HTTPProvider(subjectStream, stream)
     // Redefined Wallet to work with user interface.
     this.wallet = new Wallet(subjectStream, stream)
-    
+
     this.blockchain = new Blockchain(this.provider, this.wallet)
     this.contracts = new Contracts(this.provider, this.wallet)
     this.transactions = new TransactionFactory(this.provider, this.wallet)

@@ -1,3 +1,4 @@
+/* eslint-disable no-new-object */
 /*
  * Project: ZilPay-wallet
  * Author: Rinat(lich666dead)
@@ -7,6 +8,8 @@
  * Copyright (c) 2019 ZilPay
  */
 import { TypeChecker } from 'lib/type'
+
+const { Symbol } = global
 
 describe('lib:type:TypeChecker', () => {
 

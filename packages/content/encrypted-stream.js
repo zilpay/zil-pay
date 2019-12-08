@@ -13,12 +13,12 @@ import {
   MTypeTab,
   MTypeSecure,
   MTypeInpage,
-  MTypeBackground
+  MTypeBackground,
 } from 'lib/stream'
 
 import HTTPProvider from './provider'
 
-let stream = new WeakMap()
+let stream = null
 
 export class SecureStream {
 
@@ -36,14 +36,14 @@ export class SecureStream {
       return null
     }
 
-    msg.domain = window.document.domain
+    msg.domain = global.window.document.domain
 
     switch (msg.type) {
 
     case MTypeInpage.INJECTED_INIT:
       this.onSyncAll()
       break
-      
+
     case MTypeTab.CONNECT_APP:
       new Message(msg).send()
       break
@@ -51,7 +51,7 @@ export class SecureStream {
     case MTypeTab.CALL_SIGN_TX:
       new Message(msg).send()
       break
-        
+
     case MTypeTab.CONTENT_PROXY_MEHTOD:
       this.proxyMethod(msg.payload)
       break
@@ -72,9 +72,9 @@ export class SecureStream {
 
       new SecureMessage({
         type: MTypeInpage.INJECTED_INIT,
-        payload: data
+        payload: data,
       }).send(stream, recipient)
-    } catch(err) {
+    } catch (err) {
       console.error(err)
     }
   }
@@ -92,7 +92,7 @@ export class SecureStream {
       const httpProvider = new HTTPProvider(provider)
 
       result = await httpProvider.send(method, params)
-    } catch(err) {
+    } catch (err) {
       result['error'] = err.message || err
     }
 
@@ -100,7 +100,7 @@ export class SecureStream {
 
     new SecureMessage({
       type: MTypeTab.CONTENT_PROXY_RESULT,
-      payload: result
+      payload: result,
     }).send(stream, recipient)
   }
 

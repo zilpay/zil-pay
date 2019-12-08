@@ -6,11 +6,10 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-require('tests/extension-sinnon')
+import 'tests/extension-sinnon'
 
 import { uuid } from 'uuidv4'
-
-const { SecureMessage } = require('lib/stream/message')
+import { SecureMessage } from 'lib/stream/message'
 
 describe('lib:stream:message:SecureMessage', () => {
 

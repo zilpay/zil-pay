@@ -6,6 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { Background } from './background'
 
-new Background()
+// Errors message for blockchain control.
+export default {
+  WrongParams: 'seed most be string, index most be number',
+  WrongRequiredparam: 'param required is: '
+}

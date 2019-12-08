@@ -7,12 +7,12 @@
  * Copyright (c) 2019 ZilPay
  */
 jest.useFakeTimers()
-require('tests/extension-sinnon')
+import 'tests/extension-sinnon'
 
 import { uuid } from 'uuidv4'
 
-const { LocalStream } = require('lib/stream')
-const { Message } = require('lib/stream/message')
+import { LocalStream } from 'lib/stream'
+import { Message } from 'lib/stream/message'
 
 describe('lib:stream:message:Message', () => {
 
@@ -62,7 +62,7 @@ describe('lib:stream:message:Message', () => {
       .then(res => expect(res).toEqual({
         type: testTypeMsg,
         payload: {},
-        domain: undefined
+        domain: undefined,
       }))
       .then(() => jest.advanceTimersByTime(5000))
       .catch(() => jest.advanceTimersByTime(5000))

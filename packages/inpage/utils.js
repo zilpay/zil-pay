@@ -12,15 +12,19 @@ import {
 } from '@zilliqa-js/crypto'
 import { validation } from '@zilliqa-js/util'
 
+
+const { document, window } = global
+
 /**
  * Get the favicon from current tab.
  */
 export function getFavicon() {
-  let favicon = undefined
+  let favicon = null
   let nodeList = document.getElementsByTagName('link')
-  
+
   for (let i = 0; i < nodeList.length; i++) {
-    if((nodeList[i].getAttribute('rel') == 'icon') || (nodeList[i].getAttribute('rel') == 'shortcut icon')) {
+    if ((nodeList[i].getAttribute('rel') === 'icon')
+      || (nodeList[i].getAttribute('rel') === 'shortcut icon')) {
       favicon = nodeList[i].getAttribute('href')
     }
   }
@@ -34,7 +38,7 @@ export function getFavicon() {
       favicon = window.location.origin + favicon
     }
   }
-  return favicon        
+  return favicon
 }
 
 /**

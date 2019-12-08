@@ -19,14 +19,16 @@ import {
 
 import { getFavicon, toAccountFormat } from './utils'
 
+const { window, Promise } = global
+
 // Private variables. //
-let _stream = new WeakMap() // Stream instance.
-let _subject = new WeakMap() // Listener instance.
+let _stream = null // Stream instance.
+let _subject = null // Listener instance.
 let _defaultAccount = null
 let _isConnect = false
 let _isEnable = false
 let _net = null
-let _broadcastingTransaction =false
+let _broadcastingTransaction = false
 // Private variables. //
 
 
@@ -66,7 +68,7 @@ export default class Wallet {
 
     _subject.subscribe(msg => {
       switch (msg.type) {
-        
+
       case MTypeTab.STATUS_UPDATE:
         _isEnable = msg.payload.isEnable
         break
@@ -98,7 +100,7 @@ export default class Wallet {
    */
   observableAccount() {
     if (!this.isConnect) {
-      throw 'ZilPay is\'t connection to dApp'
+      throw new Error('ZilPay is\'t connection to dApp')
     }
 
     let lastAccount = null
@@ -139,9 +141,9 @@ export default class Wallet {
    */
   sign(tx) {
     if (!this.isEnable) {
-      throw 'ZilPay is disabled.'
+      throw new Error('ZilPay is disabled.')
     } else if (!this.isConnect) {
-      throw 'User is\'t connections.'
+      throw new Error('User is\'t connections.')
     }
 
     const type = MTypeTab.CALL_SIGN_TX

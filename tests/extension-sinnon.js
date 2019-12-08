@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 /*
  * Project: ZilPay-wallet
  * Author: Rinat(lich666dead)
@@ -18,31 +19,31 @@ extension.runtime = {
   sendMessage(msg, cb) {
     this.onMessage.trigger(msg, cb)
   },
-  onMessage:{
-    messageQueue:[],
+  onMessage: {
+    messageQueue: [],
     trigger(data, cb) {
       this.messageQueue.push({
         data,
-        cb
+        cb,
       })
     },
     addListener(cb) {
       setInterval(() => {
-        if(this.messageQueue.length){
+        if (this.messageQueue.length){
           let message = this.messageQueue.pop()
           cb(
             {
-              data: message.data
+              data: message.data,
             },
             {
-              id: extensionID
+              id: extensionID,
             },
             message.cb
           )
         }
       }, 100)
-    }
-  }
+    },
+  },
 }
 extension.storage = {
   local: {
@@ -51,7 +52,7 @@ extension.storage = {
         .keys(value)
         .forEach(key => store[key] = {
           ...store[key],
-          ...value[key]
+          ...value[key],
         })
       resolve()
     },
@@ -75,7 +76,7 @@ extension.storage = {
       removeListener() {},
       addListener(cb) {
         cb(true)
-      }
-    }
-  }
+      },
+    },
+  },
 }

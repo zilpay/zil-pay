@@ -6,14 +6,14 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-require('../../../extension-sinnon')
+import 'tests/extension-sinnon'
 
 import extension from 'extensionizer'
 
-const {
+import {
   BrowserStorage,
   BuildObject
-} = require('lib/storage')
+} from 'lib/storage'
 
 describe('lib:storage:BrowserStorage', () => {
   const storage = new BrowserStorage()
@@ -36,27 +36,27 @@ describe('lib:storage:BrowserStorage', () => {
     expect(storage.EXT_ID).toEqual(extension.runtime.id)
   })
 
-  it('try set value', async () => {
+  it('try set value', async() => {
     const someValue = new BuildObject(key, payload)
 
     await storage.set(someValue)
   })
 
-  it('try get previous value', async () => {
+  it('try get previous value', async() => {
     const recievePaylod = await storage.get(key)
 
     expect(recievePaylod).toEqual(payload)
   })
 
-  it('try get all values', async () => {
+  it('try get all values', async() => {
     const recievePaylod = await storage.getAll(key)
 
     expect(recievePaylod).toEqual({
-      [key]: payload
+      [key]: payload,
     })
   })
 
-  it('try clear all values', async () => {
+  it('try clear all values', async() => {
     await storage.clear()
 
     const recievePaylod = await storage.getAll()
@@ -64,41 +64,41 @@ describe('lib:storage:BrowserStorage', () => {
     expect(recievePaylod).toEqual({})
   })
 
-  it('try set more params value', async () => {
+  it('try set more params value', async() => {
     const someValue = new BuildObject('test1', {
-      key: '0'
+      key: '0',
     })
     const someValue1 = new BuildObject('test2', {
-      key1: '1'
+      key1: '1',
     })
     const someValue2 = new BuildObject('test3', {
-      key2: '2'
+      key2: '2',
     })
 
     await storage.set([
       someValue,
       someValue1,
-      someValue2
+      someValue2,
     ])
   })
 
-  it('test on get all params wrote above', async () => {
+  it('test on get all params wrote above', async() => {
     const recievePaylodWithMoreParams = await storage.getAll()
 
     expect(recievePaylodWithMoreParams).toEqual({
       test1: { key: '0' },
       test2: { key1: '1'},
-      test3: { key2: '2' }
+      test3: { key2: '2' },
     })
   })
 
-  it('try remove one item', async () => {
+  it('try remove one item', async() => {
     await storage.rm('test2')
 
     const recievePaylod = await storage.getAll()
     expect(recievePaylod).toEqual({
       test1: { key: '0' },
-      test3: { key2: '2' }
+      test3: { key2: '2' },
     })
   })
 

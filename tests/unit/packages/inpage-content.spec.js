@@ -7,7 +7,11 @@
  * Copyright (c) 2019 ZilPay
  */
 jest.useFakeTimers()
-require('tests/extension-sinnon')
+
+import 'tests/extension-sinnon'
+import 'packages/inpage'
+
+const { window } = global
 
 require('packages/content')
 

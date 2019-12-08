@@ -15,25 +15,25 @@ const {
 } = require('../package.json')
 
 const defaultManifest = {
-  'name': 'ZilPay',
-  'short_name': shortName,
-  'version': version,
-  'description': description,
-  'author': homepage,
-  'manifest_version': 2,
-  'icons': {
-    '128': 'icon128.png',
-    '96': 'icon96.png',
-    '48': 'icon48.png',
-    '38': 'icon38.png',
-    '39': 'icon19.png',
-    '19': 'icon19.png',
-    '16': 'icon16.png'
+  name: 'ZilPay',
+  short_name: shortName,
+  version: version,
+  description: description,
+  author: homepage,
+  manifest_version: 2,
+  icons: {
+    128: 'icon128.png',
+    96: 'icon96.png',
+    48: 'icon48.png',
+    38: 'icon38.png',
+    39: 'icon19.png',
+    19: 'icon19.png',
+    16: 'icon16.png'
   },
-  'storage': {
-    'managed_schema': 'schema.json'
+  storage: {
+    managed_schema: 'schema.json'
   },
-  'permissions': [
+  permissions: [
     'storage',
     'notifications',
     'https://api.coinmarketcap.com/v1/ticker/*',
@@ -41,33 +41,33 @@ const defaultManifest = {
     'https://dev-api.zilliqa.com/',
     'https://zilpay.xyz/*'
   ],
-  'content_scripts': [
+  content_scripts: [
     {
-      'matches': [
+      matches: [
         '*://*/*'
       ],
-      'js': ['extension/content.js'],
-      'run_at': 'document_start',
-      'all_frames': true
+      js: ['extension/content.js'],
+      run_at: 'document_start',
+      all_frames: true
     }
   ],
-  'web_accessible_resources': [
+  web_accessible_resources: [
     'extension/inpage.js'
   ],
-  'browser_action': {
-    'default_icon': {
-      '19': 'icon19.png',
-      '38': 'icon38.png'
+  browser_action: {
+    default_icon: {
+      19: 'icon19.png',
+      38: 'icon38.png'
     },
-    'default_title': 'ZilPay',
-    'default_popup': 'index.html'
+    default_title: 'ZilPay',
+    default_popup: 'index.html'
   },
-  'background': {
-    'scripts': [
+  background: {
+    scripts: [
       'extension/background.js'
     ]
   },
-  'content_security_policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\''
+  content_security_policy: 'script-src \'self\' \'unsafe-eval\'; object-src \'self\''
 }
 
 manifest.hooks.transform.tap('packages', () => {
