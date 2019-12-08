@@ -1,6 +1,16 @@
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(lich666dead)
+ * -----
+ * Modified By: the developer formerly known as Rinat(lich666dead) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2019 ZilPay
+ */
 import 'tests/extension-sinnon'
 
 // import { generateMnemonic } from 'bip39'
+// import uuidv4 from 'uuid/v4'
+// import { FIELDS } from 'config'
 
 import { AccountControl } from '../../../../../packages/background/services/account'
 

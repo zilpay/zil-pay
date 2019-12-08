@@ -48,22 +48,25 @@ extension.runtime = {
 extension.storage = {
   local: {
     set(value, resolve) {
-      Object
-        .keys(value)
-        .forEach(key => store[key] = {
-          ...store[key],
-          ...value[key],
-        })
+      store = Object.assign(store, value)
       resolve()
     },
-    get(key, resolve) {
-      if (!key) {
+    get(inputKeys, resolve) {
+      if (!inputKeys) {
         resolve(store)
       }
 
-      resolve({
-        [key]: store[key]
-      })
+      let data = {}
+
+      try {
+        inputKeys.forEach(key => {
+          data[key] = store[key]
+        })
+      } catch (err) {
+        data[inputKeys] = store[inputKeys]
+      }
+
+      resolve(data)
     },
     remove(key, resolve) {
       delete store[key]
