@@ -85,3 +85,7 @@ extension.storage = {
     },
   },
 }
+extension.browserAction = {
+  setBadgeText() {
+  }
+}
