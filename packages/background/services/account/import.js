@@ -27,17 +27,17 @@ export class AccountImporter extends AccountControl {
     throw new Error(errorsCode.DisableMethod)
   }
 
+  /**
+   * Import by Ledger device.
+   * @param {Object} payload - Account payload.
+   * @interface payload: {
+    pubAddr:String,
+    hwIndex: Number,
+    hwType: String,
+    publicKey: String
+  }
+  */
   async importByHwAccount(payload) {
-    /**
-     * Import by Ledger device.
-     * @interface payload: {
-        pubAddr:String,
-        hwIndex: Number,
-        hwType: String,
-        publicKey: String
-      }
-     */
-
     // Mandatory authentication test.
     if (!this.auth.isReady) {
       throw new Error(
