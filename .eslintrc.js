@@ -1,34 +1,40 @@
 module.exports = {
   root: true,
   env: {
-    node: true
+    node: true,
   },
   extends: [
     'plugin:vue/essential',
-    'eslint:recommended'
+    'eslint:recommended',
+    'strongloop',
   ],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'indent': [
+    indent: [
       'error',
-      2
+      2,
     ],
+    'max-len': ['error', { code: 120 }],
     'linebreak-style': [
       'error',
-      'unix'
+      'unix',
     ],
-    'quotes': [
+    quotes: [
       'error',
-      'single'
+      'single',
     ],
-    'semi': [
+    'no-new': 0,
+    'comma-dangle': 0,
+    'no-return-assign': 0,
+    'no-extend-native': 0,
+    semi: [
       'error',
-      'never'
-    ]
+      'never',
+    ],
   },
   parserOptions: {
     parser: 'babel-eslint',
-    sourceType: 'module'
-  }
+    sourceType: 'module',
+  },
 }
