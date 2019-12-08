@@ -103,7 +103,8 @@ module.exports = {
     modules: ['./node_modules'],
     alias: {
       lib: path.resolve(__dirname, '../lib/'),
-      packages: path.resolve(__dirname, '../packages/')
+      packages: path.resolve(__dirname, '../packages/'),
+      config: path.resolve(__dirname, '../config/')
     }
   },
   output: {
