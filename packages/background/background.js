@@ -11,7 +11,6 @@ import { MTypesInternal, MTypesZilPay, MTypesAuth, MTypesSecure } from '../../li
 import { SecureMessage } from '../../lib/messages/messageCall'
 import {
   WalletHandler,
-  NetworkHandler,
   AccountHandler,
   ZilliqaHandler,
   TransactionHandler,
@@ -27,6 +26,7 @@ export class Background {
   _watchInternalMessaging() {
     LocalStream.watch((request, response) => {
       const message = new SecureMessage(request)
+
       this._dispenseMessage(response, message)
     })
   }
@@ -67,10 +67,6 @@ export class Background {
       new WalletHandler().initPopup(sendResponse)
       break
 
-    case MTypesInternal.SET_NET:
-      new NetworkHandler(message.payload).changeNetwork(sendResponse)
-      break
-
     case MTypesAuth.EXPORT_SEED:
       new AccountHandler(message.payload).exportSeedPhrase(sendResponse)
       break
@@ -91,10 +87,6 @@ export class Background {
       new WalletHandler().getRandomSeedPhrase(sendResponse)
       break
 
-    case MTypesInternal.CHANGE_ACCOUNT:
-      new AccountHandler(message.payload).changeAddress(sendResponse)
-      break
-
     case MTypesInternal.CREATE_ACCOUNT:
       new AccountHandler().createAccountBySeed(sendResponse)
       break
@@ -107,22 +99,6 @@ export class Background {
       new AccountHandler().balanceUpdate(sendResponse)
       break
 
-    case MTypesInternal.CONFIG_UPDATE:
-      new NetworkHandler(message.payload).changeConfig(sendResponse)
-      break
-
-    case MTypesZilPay.REJECT_CONFIRM_TX:
-      TransactionHandler.rmTransactionsConfirm(sendResponse)
-      break
-
-    case MTypesZilPay.CONFIRM_DAPP:
-      new ZilliqaHandler(message.payload).connectionToDapp(sendResponse)
-      break
-
-    case MTypesZilPay.CONFIRM_TX:
-      new TransactionHandler(message.payload).buildTransaction(sendResponse)
-      break
-
     case MTypesZilPay.BUILD_TX_PARAMS:
       new TransactionHandler(message.payload).buildTxParams(sendResponse)
       break
@@ -131,16 +107,8 @@ export class Background {
       new TransactionHandler(message.payload).sendSignTx(sendResponse)
       break
 
-    case MTypesInternal.ACC_CHANGE_NAME:
-      new WalletHandler(message.payload).changeAccountName(sendResponse)
-      break
-
     case MTypesInternal.GET_UD_OWNER:
       new UnstoppableDomainsHandler(message.payload).getUdOwnerByDomain(sendResponse)
-      break
-
-    case MTypesInternal.CLEAR_HISTORY_TX:
-      ZilliqaHandler.rmAllTransactionList(sendResponse)
       break
 
     default:
@@ -170,3 +138,12 @@ export class Background {
   }
 
 }
+// @TODO list of for delete don't needed func.
+// ZilliqaHandler.rmAllTransactionList(sendResponse)
+// changeAccountName(sendResponse)
+// TransactionHandler(message.payload).buildTransaction(sendResponse)
+// ZilliqaHandler(message.payload).connectionToDapp(sendResponse)
+// TransactionHandler.rmTransactionsConfirm(sendResponse)
+// NetworkHandler(message.payload).changeConfig(sendResponse)
+// AccountHandler(message.payload).changeAddress(sendResponse)
+// NetworkHandler(message.payload).changeNetwork(sendResponse)
