@@ -117,13 +117,9 @@ export class NetworkControl {
    */
   async checkProvider() {
     try {
-      const response = await fetch(this.provider, {
-        method: 'OPTIONS',
-        cache: 'no-cache',
-        mode: 'cors'
+      await fetch(this.provider, {
+        method: 'OPTIONS'
       })
-
-      await response.json()
 
       this.status = true
     } catch (err) {

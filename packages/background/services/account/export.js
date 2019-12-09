@@ -122,6 +122,6 @@ export class AccountExporter extends AccountControl {
 
     const account = wallet.identities[wallet.selectedAddress]
 
-    return !!account.isImport
+    return Boolean(account.isImport)
   }
 }

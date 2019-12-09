@@ -44,8 +44,6 @@ export class AccountControl {
       throw new Error(errorsCodeGuard.WrongDecryptSeed)
     } else if (!this.auth._guard) {
       throw new Error(errorsCodeGuard.GuardWrong)
-    } else if (!this.network.status) {
-      throw new Error(errorsCode.NetWorkError)
     }
 
     const selectedAddress = ZERO
@@ -89,10 +87,6 @@ export class AccountControl {
       throw new Error(
         errorsCode.WalletIsNotEnable + this.auth.isEnable
       )
-    } else if (!this.network.status) {
-      throw new Error(
-        errorsCode.NetWorkError
-      )
     }
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
@@ -107,6 +101,7 @@ export class AccountControl {
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, index
     )
+
     wallet.selectedAddress = wallet.identities.length
     wallet.identities.push({
       address: account.address,
