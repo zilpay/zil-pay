@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from '../../config'
+import { FIELDS } from 'config'
 
 /**
  * Store Handler call when window.chrome.storage.local has been changed.

@@ -13,6 +13,8 @@ import { uuid } from 'uuidv4'
 const extensionID = uuid()
 
 let store = {}
+let storeChanged = {}
+let hasBeenChanged = false
 
 extension.runtime = {
   id: extensionID,
@@ -48,8 +50,20 @@ extension.runtime = {
 extension.storage = {
   local: {
     set(value, resolve) {
+      storeChanged = {
+        newValue: value,
+        oldValue: ''
+      }
+
+      for (const key in value) {
+        storeChanged.oldValue = store[key]
+      }
+
       store = Object.assign(store, value)
+
       resolve()
+
+      hasBeenChanged = true
     },
     get(inputKeys, resolve) {
       if (!inputKeys) {
@@ -69,18 +83,34 @@ extension.storage = {
       resolve(data)
     },
     remove(key, resolve) {
+      storeChanged = {
+        newValue: null,
+        oldValue: store[key]
+      }
+
       delete store[key]
 
       resolve()
+
+      hasBeenChanged = true
     },
     clear(resolve) {
       store = {}
+
       resolve()
+
+      hasBeenChanged = true
     },
     onChanged: {
       removeListener() {},
       addListener(cb) {
-        cb(true)
+        global.setInterval(() => {
+          if (hasBeenChanged) {
+            cb(storeChanged)
+          }
+
+          hasBeenChanged = false
+        }, 100)
       },
     },
   },
