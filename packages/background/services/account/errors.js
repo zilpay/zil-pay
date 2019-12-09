@@ -17,5 +17,6 @@ export default {
   DisableMethod: 'This method is disable',
   WrongIndex: 'not found index',
   AccountIsImported: 'this account imported',
-  WrongName: 'name is not valid'
+  WrongName: 'name is not valid',
+  NetWorkError: 'Fail status check network'
 }

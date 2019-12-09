@@ -36,6 +36,8 @@ export class NetworkControl {
     this.selected = selected
     this.status = null
     this._storage = new BrowserStorage()
+
+    this.checkProvider()
   }
 
   /**
