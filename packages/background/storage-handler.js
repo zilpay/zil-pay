@@ -6,6 +6,21 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-// import { FIELDS } from '../../config'
+import { FIELDS } from '../../config'
 
-export function browserStorageHandler() {}
+/**
+ * Store Handler call when window.chrome.storage.local has been changed.
+ * @param {Object} store - Changed store
+ * @interface { [key]: newValue, oldValue }
+ */
+export function browserStorageHandler(store) {
+  for (const keyStore in store) {
+    if (!(keyStore in FIELDS)) {
+      return null
+    }
+
+    const { newValue, oldValue } = store[keyStore]
+
+    console.log(newValue, oldValue)
+  }
+}
