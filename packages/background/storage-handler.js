@@ -6,6 +6,6 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { BrowserStorage } from '../../lib/storage'
+// import { FIELDS } from '../../config'
 
-BrowserStorage.subscribe()
+export function browserStorageHandler() {}
