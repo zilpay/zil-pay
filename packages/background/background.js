@@ -29,7 +29,7 @@ export class Background {
   _watchInternalMessaging() {
     LocalStream.watch((request, response) => {
       const message = new SecureMessage(request)
-      console.log(message)
+
       this._dispenseMessage(response, message)
     })
   }

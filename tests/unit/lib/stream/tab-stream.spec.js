@@ -7,15 +7,14 @@
  * Copyright (c) 2019 ZilPay
  */
 import { TabStream } from 'lib/stream'
-import { uuid } from 'uuidv4'
 
 describe('lib:stream:TabStream', () => {
   let streamA = null
   let streamB = null
 
   it('should be able instantiate two unique streams', () => {
-    streamA = new TabStream('streamA', uuid())
-    streamB = new TabStream('streamB', uuid())
+    streamA = new TabStream('streamA')
+    streamB = new TabStream('streamB')
 
     expect(streamA).toBeTruthy()
     expect(streamB).toBeTruthy()

@@ -10,7 +10,11 @@ jest.useFakeTimers()
 
 import 'tests/extension-sinnon'
 
-import { LocalStream } from 'lib/stream'
+import {
+  LocalStream,
+  MTypePopup,
+  Message
+} from 'lib/stream'
 
 describe('lib:stream:LocalStream', () => {
 
@@ -23,17 +27,17 @@ describe('lib:stream:LocalStream', () => {
       response(true)
 
       expect(request).toEqual({
-        type: 'test',
-        payload: 'work',
+        type: MTypePopup.POPUP_INIT,
+        payload: {}
       })
     })
   })
 
   it('should be able send request', () => {
-    LocalStream.send({
-      type: 'test',
-      payload: 'work',
-    }).then((res) => expect(res).toBeTruthy())
+    new Message({
+      type: MTypePopup.POPUP_INIT,
+      payload: {}
+    }).send().then((res) => expect(res).toBeTruthy())
 
     jest.advanceTimersByTime(2000)
   })

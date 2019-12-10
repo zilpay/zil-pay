@@ -15,6 +15,7 @@ const extensionID = uuid()
 let store = {}
 let storeChanged = {}
 let hasBeenChanged = false
+let messageQueue = []
 
 extension.runtime = {
   id: extensionID,
@@ -22,17 +23,16 @@ extension.runtime = {
     this.onMessage.trigger(msg, cb)
   },
   onMessage: {
-    messageQueue: [],
     trigger(data, cb) {
-      this.messageQueue.push({
+      messageQueue.push({
         data,
         cb
       })
     },
     addListener(cb) {
       setInterval(() => {
-        if (this.messageQueue.length){
-          let message = this.messageQueue.pop()
+        if (messageQueue.length) {
+          let message = messageQueue.pop()
 
           cb(
             message.data,
