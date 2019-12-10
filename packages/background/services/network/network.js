@@ -74,7 +74,7 @@ export class NetworkControl {
   async changeConfig(config = ZILLIQA) {
     if (!new TypeError(config).isObject) {
       throw new Error(
-        `${errorsCode.changeNetwork} ${typeof config}`
+        `${errorsCode.changeNetwork} config type is ${typeof config}`
       )
     }
 
