@@ -6,8 +6,8 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { NonSecureStream } from './local-stream'
-import { SecureStream } from './encrypted-stream'
+import { ContentBackgroundStream } from './local-stream'
+import { ContentTabStream } from './tab-stream'
 import {
   SecureMessage,
   MTypeSecure
@@ -16,10 +16,10 @@ import {
 export class Stream {
 
   constructor() {
-    this.secureStream = new SecureStream()
-    this.nonSecureStream = new NonSecureStream()
+    this.tabStream = new ContentTabStream()
+    this.backgroundStream = new ContentBackgroundStream()
 
-    this.nonSecureStream._watchTabMessaging(
+    this.backgroundStream._watchTabMessaging(
       (...args) => this._dispenseMessage(...args)
     )
   }

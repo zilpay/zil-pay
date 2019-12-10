@@ -8,9 +8,9 @@
  */
 import { Subject } from 'rxjs'
 import {
-  MTypeBackground,
-  MTypeSecure,
+  MTypeTabContent,
   SecureMessage,
+  MTypeTab,
   TabStream
 } from 'lib/stream'
 
@@ -18,7 +18,7 @@ export default class Handler {
 
   constructor() {
     // Stream with content.js
-    this.stream = new WeakMap()
+    this.stream = null
     // Event listener.
     this.subjectStream = new Subject()
 
@@ -29,7 +29,7 @@ export default class Handler {
    * Creating `instance observable` for listing event from content.
    */
   _init() {
-    this.stream = new TabStream(MTypeSecure.INJECTED)
+    this.stream = new TabStream(MTypeTabContent.INJECTED)
     this.stream.listen().subscribe(msg => console.log('INJECTED', msg))
   }
 
@@ -38,8 +38,8 @@ export default class Handler {
    * for wallet need some data about account and network.
    */
   initialized() {
-    const type = MTypeBackground.CONTENT_GET_WALLET_DATA
-    const recipient = MTypeSecure.CONTENT
+    const type = MTypeTab.GET_WALLET_DATA
+    const recipient = MTypeTabContent.CONTENT
 
     new SecureMessage({ type, payload: {} })
       .send(this.stream, recipient)

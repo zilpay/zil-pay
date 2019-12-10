@@ -12,7 +12,7 @@ import {
   SecureMessage
 } from 'lib/stream'
 
-export class NonSecureStream {
+export class ContentBackgroundStream {
 
   _watchTabMessaging(cb) {
     if (!new TypeChecker(cb).isFunction) {
