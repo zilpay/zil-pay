@@ -44,27 +44,6 @@ export class Transaction {
   }
 
   /**
-   * Get full tx list history.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  static async getTransactionsList(sendResponse) {
-    let transactions = null
-    const storage = new BrowserStorage()
-
-    try {
-      transactions = await storage.get(FIELDS.TRANSACTIONS)
-    } catch (err) {
-      transactions = {}
-    }
-
-    if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse(transactions)
-    }
-
-    return transactions
-  }
-
-  /**
    * When user rejected tx through popup.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
