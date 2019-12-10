@@ -20,7 +20,7 @@ import {
 } from './main'
 import {
   TabsMessage,
-  MTypesTabs
+  MTypeTab
 } from 'lib/stream'
 
 /**
@@ -34,7 +34,7 @@ export class Transaction {
    * @param {String} uuid - tx id.
    */
   static returnTx(payload, uuid) {
-    const type = MTypesTabs.TX_RESULT
+    const type = MTypeTab.TX_RESULT
 
     payload.uuid = uuid
 

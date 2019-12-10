@@ -18,7 +18,7 @@ import {
 import { TypeChecker } from 'lib/type'
 import {
   SecureMessage,
-  MTypeSecure,
+  MTypeTabContent,
   MTypeTab
 } from 'lib/stream'
 
@@ -61,7 +61,7 @@ export default class HTTPProvider {
     }
 
     const type = MTypeTab.CONTENT_PROXY_MEHTOD
-    const recipient = MTypeSecure.CONTENT
+    const recipient = MTypeTabContent.CONTENT
     // Request id.
     const uuid = uuidv4()
 

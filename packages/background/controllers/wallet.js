@@ -11,7 +11,7 @@ import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import {
   TabsMessage,
-  MTypesTabs
+  MTypeTab
 } from 'lib/stream'
 import {
   AccountExporter,
@@ -135,7 +135,7 @@ export class Wallet {
     const account = wallet.identities[
       wallet.selectedAddress
     ]
-    const type = MTypesTabs.ADDRESS_CHANGED
+    const type = MTypeTab.ADDRESS_CHANGED
 
     await accountControl.walletUpdate(wallet)
 

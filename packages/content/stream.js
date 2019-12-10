@@ -10,7 +10,7 @@ import { ContentBackgroundStream } from './local-stream'
 import { ContentTabStream } from './tab-stream'
 import {
   SecureMessage,
-  MTypeSecure
+  MTypeTabContent
 } from 'lib/stream'
 
 export class Stream {
@@ -37,7 +37,7 @@ export class Stream {
   _broadcastToSecure(msg) {
     let toSecureMsg = msg.type
 
-    const recipient = MTypeSecure.INJECTED
+    const recipient = MTypeTabContent.INJECTED
 
     new SecureMessage({
       type: toSecureMsg,

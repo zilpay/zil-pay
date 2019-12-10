@@ -11,7 +11,7 @@ import { TypeChecker } from 'lib/type'
 import { networkControl } from './main'
 import {
   TabsMessage,
-  MTypesTabs
+  MTypeTab
 } from 'lib/stream'
 
 /**
@@ -30,7 +30,7 @@ export class Network {
   async changeNetwork(sendResponse) {
     let payload = null
     const selectednet = this.payload[FIELDS.SELECTED_NET]
-    const type = MTypesTabs.NETWORK_CHANGED
+    const type = MTypeTab.NETWORK_CHANGED
 
     try {
       await networkControl.netwrokSync()

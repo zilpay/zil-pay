@@ -16,7 +16,7 @@ import {
 } from './main'
 import {
   TabsMessage,
-  MTypesTabs
+  MTypeTab
 } from 'lib/stream'
 
 /**
@@ -28,7 +28,7 @@ export class Popup {
    * Send new status about wallet to content.js > inpage.js.
    */
   static walletStatusUpdate() {
-    const type = MTypesTabs.LOCK_STAUS
+    const type = MTypeTab.LOCK_STAUS
 
     return new TabsMessage({
       type,

@@ -11,7 +11,7 @@ import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import {
   TabsMessage,
-  MTypesTabs
+  MTypeTab
 } from 'lib/stream'
 import {
   accountControl,
@@ -76,7 +76,7 @@ export class Zilliqa {
   async connectionToDapp(sendResponse) {
     let account = null
     const storage = new BrowserStorage()
-    const type = MTypesTabs.CONNECT_TO_DAPP
+    const type = MTypeTab.CONNECT_TO_DAPP
     const payload = this.payload
 
     if (payload.isConfirm) {

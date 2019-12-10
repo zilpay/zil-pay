@@ -13,9 +13,8 @@ import { from } from 'rxjs'
 import { TypeChecker } from 'lib/type'
 import {
   SecureMessage,
-  MTypeSecure,
-  MTypeTab,
-  MTypeInpage
+  MTypeTabContent,
+  MTypeTab
 } from 'lib/stream'
 
 import { getFavicon, toAccountFormat } from './utils'
@@ -74,7 +73,7 @@ export default class Wallet {
         _isEnable = msg.payload.isEnable
         break
 
-      case MTypeInpage.INJECTED_INIT:
+      case MTypeTab.CONTENT_GET_WALLET_DATA:
         this._setDefaultAccount(msg.payload.account)
 
         _isEnable = msg.payload.isEnable
@@ -113,7 +112,7 @@ export default class Wallet {
         }
 
         switch (msg.type) {
-        case MTypeInpage.INJECTED_INIT:
+        case MTypeTab.CONTENT_GET_WALLET_DATA:
           return toAccountFormat(msg.payload.account.address)
         case MTypeTab.SET_ADDRESS:
           return toAccountFormat(msg.payload.address)
@@ -148,7 +147,7 @@ export default class Wallet {
     }
 
     const type = MTypeTab.CALL_SIGN_TX
-    const recipient = MTypeSecure.CONTENT
+    const recipient = MTypeTabContent.CONTENT
     const uuid = uuidv4()
     let { payload } = tx
 

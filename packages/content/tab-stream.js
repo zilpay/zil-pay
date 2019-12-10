@@ -12,7 +12,6 @@ import {
   Message,
   MTypeTab,
   MTypeTabContent,
-  MTypeBackground,
 } from 'lib/stream'
 
 import HTTPProvider from './provider'
@@ -86,7 +85,7 @@ export class ContentTabStream {
 
     try {
       const { provider } = await Message.signal(
-        MTypeBackground.CONTENT_GET_WALLET_DATA
+        MTypeTab.CONTENT_GET_WALLET_DATA
       ).send()
       const httpProvider = new HTTPProvider(provider)
 
