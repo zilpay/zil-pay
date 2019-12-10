@@ -26,6 +26,8 @@ describe('packages:background:browserStorageHandler', () => {
 
   it('Should can subscribe', () => {
     BrowserStorage.subscribe(data => {
+      browserStorageHandler(data)
+
       expect(data.newValue).toEqual({
         test: { test: 1 }
       })
