@@ -102,7 +102,7 @@ describe('lib:type:TypeChecker', () => {
   })
 
   it('isObject should be true with one param', () => {
-    const test = new TypeChecker(new Object())
+    const test = new TypeChecker({})
 
     expect(test.isObject).toBeTruthy()
   })
