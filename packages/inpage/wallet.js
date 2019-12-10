@@ -10,6 +10,7 @@ import uuidv4 from 'uuid/v4'
 import { filter, take, map } from 'rxjs/operators'
 import { from } from 'rxjs'
 
+import { TypeChecker } from 'lib/type'
 import {
   SecureMessage,
   MTypeSecure,
@@ -55,7 +56,7 @@ export default class Wallet {
   }
 
   set broadcasting(value) {
-    if (typeof value !== 'boolean') {
+    if (!new TypeChecker(value).isBoolean) {
       throw new Error('value must be boolean type')
     }
 
