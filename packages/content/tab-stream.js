@@ -11,8 +11,7 @@ import {
   SecureMessage,
   Message,
   MTypeTab,
-  MTypeSecure,
-  MTypeInpage,
+  MTypeTabContent,
   MTypeBackground,
 } from 'lib/stream'
 
@@ -20,14 +19,14 @@ import HTTPProvider from './provider'
 
 let stream = null
 
-export class SecureStream {
+export class ContentTabStream {
 
   get stream() {
     return stream
   }
 
   constructor() {
-    stream = new TabStream(MTypeSecure.CONTENT)
+    stream = new TabStream(MTypeTabContent.CONTENT)
     stream.listen().subscribe(msg => console.log('CONTENT', msg))
   }
 
@@ -40,7 +39,7 @@ export class SecureStream {
 
     switch (msg.type) {
 
-    case MTypeInpage.INJECTED_INIT:
+    case MTypeTab.GET_WALLET_DATA:
       this.onSyncAll()
       break
 
@@ -63,15 +62,15 @@ export class SecureStream {
 
   async onSyncAll() {
     // Get the some data { address, net, nodeURL }.
-    const recipient = MTypeSecure.INJECTED
+    const recipient = MTypeTabContent.INJECTED
 
     try {
       const data = await Message.signal(
-        MTypeBackground.CONTENT_GET_WALLET_DATA
+        MTypeTab.GET_WALLET_DATA
       ).send()
 
       new SecureMessage({
-        type: MTypeInpage.INJECTED_INIT,
+        type: MTypeTab.GET_WALLET_DATA,
         payload: data,
       }).send(stream, recipient)
     } catch (err) {
@@ -83,7 +82,7 @@ export class SecureStream {
     // Proxyed some blockchain method.
     let result = {}
     const { params, method, uuid } = payload
-    const recipient = MTypeSecure.INJECTED
+    const recipient = MTypeTabContent.INJECTED
 
     try {
       const { provider } = await Message.signal(
