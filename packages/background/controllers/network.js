@@ -51,20 +51,4 @@ export class Network {
     }
   }
 
-  /**
-   * When user change network config through popup.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  async changeConfig(sendResponse) {
-    const config = this.payload[FIELDS.CONFIG]
-
-    try {
-      await networkControl.changeConfig(config)
-
-      sendResponse({ resolve: true })
-    } catch (err) {
-      sendResponse({ reject: err.message })
-    }
-  }
-
 }

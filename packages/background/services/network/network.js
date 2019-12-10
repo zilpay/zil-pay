@@ -44,11 +44,10 @@ export class NetworkControl {
    * Change the network.
    * @param {String} selected - Can be only (mainnet, testnet, private).
    */
-  async changeNetwork(selected) {
+  async changeNetwork(selected = defaultSelected) {
     if (!(selected in this.config)) {
       throw new Error(
-        `${errorsCode.changeNetwork}
-         ${Object.keys(this.config)}`
+        `${errorsCode.changeNetwork}`
       )
     }
 
@@ -71,10 +70,10 @@ export class NetworkControl {
    * Change Zilliqa network config.
    * @param {Object} config - Zilliqa config object.
    */
-  async changeConfig(config = ZILLIQA) {
-    if (!new TypeError(config).isObject) {
+  async changeConfig(config) {
+    if (new TypeError(config).isUndefined) {
       throw new Error(
-        `${errorsCode.changeNetwork} config type is ${typeof config}`
+        `${errorsCode.changeNetwork} config type is ${typeof ZILLIQA}`
       )
     }
 

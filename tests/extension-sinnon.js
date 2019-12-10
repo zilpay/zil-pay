@@ -42,7 +42,7 @@ extension.runtime = {
             message.cb
           )
         }
-      }, 100)
+      }, 1)
     },
   },
 }

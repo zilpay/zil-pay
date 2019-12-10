@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from 'config'
+import { FIELDS, ZILLIQA } from 'config'
 import { AccountControl, MnemonicControl } from '../services'
 import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
@@ -79,7 +79,7 @@ export class Popup {
     }
 
     if (!accountControl.auth.isReady) {
-      await networkControl.changeConfig()
+      await networkControl.changeConfig(ZILLIQA)
       await networkControl.changeNetwork(networkControl.selected)
 
       sendResponse({
@@ -91,6 +91,7 @@ export class Popup {
           networkStatus: networkControl.status
         }
       })
+
       return null
     }
 

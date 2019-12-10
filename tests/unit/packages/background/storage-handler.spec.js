@@ -39,6 +39,7 @@ describe('packages:background:browserStorageHandler', () => {
     browserStorage.set(
       new BuildObject('test', { test: 1 })
     )
+
     jest.advanceTimersByTime(2000)
   })
 

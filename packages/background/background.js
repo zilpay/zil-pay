@@ -8,7 +8,7 @@
  */
 import { LocalStream } from 'lib/stream'
 import {
-  SecureMessage,
+  Message,
   MTypePopup,
   MTypeTab
 } from 'lib/stream'
@@ -28,7 +28,7 @@ export class Background {
 
   _watchInternalMessaging() {
     LocalStream.watch((request, response) => {
-      const message = new SecureMessage(request)
+      const message = new Message(request)
 
       this._dispenseMessage(response, message)
     })
