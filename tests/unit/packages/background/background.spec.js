@@ -9,10 +9,10 @@
 jest.useFakeTimers()
 import 'tests/extension-sinnon'
 
-import {
-  Message,
-  MTypePopup
-} from '../../../../lib/stream'
+// import {
+//   Message,
+//   MTypePopup
+// } from '../../../../lib/stream'
 
 import { Background } from 'packages/background/background'
 
@@ -27,12 +27,5 @@ describe('packages:background:Background', () => {
     background = new Background()
 
     expect(background).toBeTruthy()
-  })
-
-  it('Try init popup', async() => {
-    await Message
-      .signal(MTypePopup.POPUP_INIT)
-      .send()
-    jest.advanceTimersByTime(5000)
   })
 })
