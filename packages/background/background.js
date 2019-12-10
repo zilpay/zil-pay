@@ -6,16 +6,19 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { LocalStream } from 'extension-streams'
-import { MTypesInternal, MTypesZilPay, MTypesAuth, MTypesSecure } from '../../lib/messages/messageTypes'
-import { SecureMessage } from '../../lib/messages/messageCall'
+import { LocalStream } from 'lib/stream'
 import {
-  WalletHandler,
-  AccountHandler,
-  ZilliqaHandler,
-  TransactionHandler,
-  UnstoppableDomainsHandler,
-} from './handlers'
+  SecureMessage,
+  MTypePopup,
+  MTypeTab
+} from '../../lib/stream'
+import {
+  Popup,
+  Zilliqa,
+  Domains,
+  Transaction,
+  Wallet
+} from './controllers'
 
 export class Background {
 
@@ -43,16 +46,16 @@ export class Background {
 
   _authDispenseMessage(sendResponse, message) {
     switch (message.type) {
-    case MTypesAuth.SET_PASSWORD:
-      new WalletHandler(message.payload).walletUnlock(sendResponse)
+    case MTypePopup.SET_PASSWORD:
+      new Popup(message.payload).walletUnlock(sendResponse)
       break
 
-    case MTypesAuth.LOG_OUT:
-      WalletHandler.logOut(sendResponse)
+    case MTypePopup.LOG_OUT:
+      Popup.logOut(sendResponse)
       break
 
-    case MTypesAuth.SET_SEED_AND_PWD:
-      new WalletHandler(message.payload).initWallet(sendResponse)
+    case MTypePopup.SET_SEED_AND_PASSWORD:
+      new Popup(message.payload).initWallet(sendResponse)
       break
 
     default:
@@ -63,52 +66,48 @@ export class Background {
   _popupDispenseMessage(sendResponse, message) {
     switch (message.type) {
 
-    case MTypesInternal.INIT:
-      new WalletHandler().initPopup(sendResponse)
+    case MTypePopup.POPUP_INIT:
+      new Popup().initPopup(sendResponse)
       break
 
-    case MTypesAuth.EXPORT_SEED:
-      new AccountHandler(message.payload).exportSeedPhrase(sendResponse)
+    case MTypePopup.EXPORT_SEED:
+      new Wallet(message.payload).exportSeedPhrase(sendResponse)
       break
 
-    case MTypesAuth.EXPORT_PRIV_KEY:
-      new AccountHandler(message.payload).exportPrivateKey(sendResponse)
+    case MTypePopup.EXPORT_PRIVATE_KEY:
+      new Wallet(message.payload).exportPrivateKey(sendResponse)
       break
 
-    case MTypesAuth.IMPORT_PRIV_KEY:
-      new AccountHandler(message.payload).importPrivateKey(sendResponse)
+    case MTypePopup.IMPORT_PRIVATE_KEY:
+      new Wallet(message.payload).importPrivateKey(sendResponse)
       break
 
-    case MTypesAuth.IMPORT_BY_HW:
-      new AccountHandler(message.payload).ImportHwAccount(sendResponse)
+    case MTypePopup.IMPORT_BY_HARDWARE:
+      new Wallet(message.payload).ImportHwAccount(sendResponse)
       break
 
-    case MTypesInternal.GET_DECRYPT_SEED:
-      new WalletHandler().getRandomSeedPhrase(sendResponse)
+    case MTypePopup.GET_RANDOM_SEED:
+      new Popup().getRandomSeedPhrase(sendResponse)
       break
 
-    case MTypesInternal.CREATE_ACCOUNT:
-      new AccountHandler().createAccountBySeed(sendResponse)
+    case MTypePopup.CREATE_ACCOUNT_BY_SEED:
+      new Wallet().createAccountBySeed(sendResponse)
       break
 
-    case MTypesInternal.GET_ALL_TX:
-      TransactionHandler.getTransactionsList(sendResponse)
+    case MTypePopup.UPDATE_BALANCE:
+      new Wallet().balanceUpdate(sendResponse)
       break
 
-    case MTypesInternal.UPDATE_BALANCE:
-      new AccountHandler().balanceUpdate(sendResponse)
+    case MTypePopup.BUILD_TX_PARAMS:
+      new Transaction(message.payload).buildTxParams(sendResponse)
       break
 
-    case MTypesZilPay.BUILD_TX_PARAMS:
-      new TransactionHandler(message.payload).buildTxParams(sendResponse)
+    case MTypePopup.SET_SEED_AND_PASSWORD:
+      new Transaction(message.payload).sendSignTx(sendResponse)
       break
 
-    case MTypesZilPay.SEND_SIGN_TX:
-      new TransactionHandler(message.payload).sendSignTx(sendResponse)
-      break
-
-    case MTypesInternal.GET_UD_OWNER:
-      new UnstoppableDomainsHandler(message.payload).getUdOwnerByDomain(sendResponse)
+    case MTypePopup.DOMAIN_RESOLVE:
+      new Domains(message.payload).getUdOwnerByDomain(sendResponse)
       break
 
     default:
@@ -119,17 +118,17 @@ export class Background {
   _contentDispenseMessage(sendResponse, message) {
     switch (message.type) {
 
-    case MTypesZilPay.INIT_DATA:
-      ZilliqaHandler.initZilPay(sendResponse, message.domain)
+    case MTypeTab.GET_WALLET_DATA:
+      Zilliqa.initZilPay(sendResponse, message.domain)
       break
 
-    case MTypesSecure.CONNECT:
-      new AccountHandler(message.payload).connectToDapp(sendResponse)
+    case MTypeTab.CONNECT_APP:
+      new Wallet(message.payload).connectToDapp(sendResponse)
       break
 
-    case MTypesZilPay.CALL_SIGN_TX:
+    case MTypeTab.CALL_TO_SIGN_TX:
       message.payload.domain = message.domain
-      new TransactionHandler(message.payload).callTransaction(sendResponse)
+      new Transaction(message.payload).callTransaction(sendResponse)
       break
 
     default:
@@ -139,11 +138,11 @@ export class Background {
 
 }
 // @TODO list of for delete don't needed func.
-// ZilliqaHandler.rmAllTransactionList(sendResponse)
+// Zilliqa.rmAllTransactionList(sendResponse)
 // changeAccountName(sendResponse)
-// TransactionHandler(message.payload).buildTransaction(sendResponse)
-// ZilliqaHandler(message.payload).connectionToDapp(sendResponse)
-// TransactionHandler.rmTransactionsConfirm(sendResponse)
+// Transaction(message.payload).buildTransaction(sendResponse)
+// Zilliqa(message.payload).connectionToDapp(sendResponse)
+// Transaction.rmTransactionsConfirm(sendResponse)
 // NetworkHandler(message.payload).changeConfig(sendResponse)
-// AccountHandler(message.payload).changeAddress(sendResponse)
+// Wallet(message.payload).changeAddress(sendResponse)
 // NetworkHandler(message.payload).changeNetwork(sendResponse)
