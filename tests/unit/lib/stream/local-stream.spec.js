@@ -23,10 +23,8 @@ describe('lib:stream:LocalStream', () => {
       response(true)
 
       expect(request).toEqual({
-        data: {
-          type: 'test',
-          payload: 'work',
-        },
+        type: 'test',
+        payload: 'work',
       })
     })
   })
