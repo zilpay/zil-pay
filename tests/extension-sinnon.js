@@ -26,17 +26,16 @@ extension.runtime = {
     trigger(data, cb) {
       this.messageQueue.push({
         data,
-        cb,
+        cb
       })
     },
     addListener(cb) {
       setInterval(() => {
         if (this.messageQueue.length){
           let message = this.messageQueue.pop()
+
           cb(
-            {
-              data: message.data,
-            },
+            message.data,
             {
               id: extensionID,
             },
