@@ -8,7 +8,7 @@
  */
 import { ZILLIQA, DEFAULT } from 'config'
 
-import namehash from 'namicorn/lib/zns/namehash'
+import namehash from 'namicorn/build/zns/namehash'
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 
 const { UD_CONTRACT_ADDRESS } = DEFAULT
