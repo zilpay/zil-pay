@@ -10,9 +10,9 @@ require('tests/extension-sinnon')
 
 import { TypeChecker } from 'lib/type'
 
-const { BrowserContent } = require('packages/content/content')
-const { NonSecureStream } = require('packages/content/local-stream')
-const { SecureStream } = require('packages/content/encrypted-stream')
+import { BrowserContent } from 'packages/content/content'
+import { ContentBackgroundStream } from 'packages/content/local-stream'
+import { ContentTabStream } from 'packages/content/tab-stream'
 
 describe('packages:content:BrowserContent', () => {
   it('Should can import', () => {
@@ -25,18 +25,18 @@ describe('packages:content:BrowserContent', () => {
     expect(content).toBeTruthy()
   })
 
-  it('Should be secureStream property', () => {
+  it('Should be ContentTabStream property', () => {
     const content = new BrowserContent()
 
-    expect(content.secureStream).toBeTruthy()
-    expect(content.secureStream instanceof SecureStream).toBeTruthy()
+    expect(content.tabStream).toBeTruthy()
+    expect(content.tabStream instanceof ContentTabStream).toBeTruthy()
   })
 
-  it('Should be nonSecureStream property', () => {
+  it('Should be ContentBackgroundStream property', () => {
     const content = new BrowserContent()
 
-    expect(content.nonSecureStream).toBeTruthy()
-    expect(content.nonSecureStream instanceof NonSecureStream).toBeTruthy()
+    expect(content.backgroundStream).toBeTruthy()
+    expect(content.backgroundStream instanceof ContentBackgroundStream).toBeTruthy()
   })
 
   it('Should be _dispenseMessage property', () => {
@@ -53,4 +53,3 @@ describe('packages:content:BrowserContent', () => {
     expect(new TypeChecker(content._broadcastToSecure).isFunction).toBeTruthy()
   })
 })
-
