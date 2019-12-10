@@ -22,6 +22,7 @@
     "core-js": "^3.4.3",
     "crypto": "^1.0.1",
     "extensionizer": "^1.0.1",
+    "namicorn": "^0.3.7",
     "qrcode": "^1.4.4",
     "rxjs": "^6.5.3",
     "uuidv4": "^6.0.0",
