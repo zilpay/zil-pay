@@ -1,5 +1,5 @@
 <template>
-  <p :class="b({ variant, font })">
+  <p :class="b({ variant, font, pointer })">
     <slot />
   </p>
 </template>
@@ -26,6 +26,10 @@ export default {
     font: {
       type: String,
       default: FONT_VARIANTS.light
+    },
+    pointer: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -44,6 +48,10 @@ export default {
 
   &_font-PoppinsLight {
     font-family: var(--font-family-light);
+  }
+
+  &_pointer {
+    cursor: pointer;
   }
 }
 </style>
