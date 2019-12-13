@@ -12,7 +12,7 @@ import { ICON_TYPE } from '@/config'
 
 /**
  * @example
- * import { ICON_TYPE } from '@/config'
+ * import { ICON_TYPE, ICON_VARIANTS } from '@/config'
  * import Icon from '@/components/Icon'
  * <Icon :icon="ICON_VARIANTS.logo" />
  */
