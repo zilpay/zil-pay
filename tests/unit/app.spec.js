@@ -16,12 +16,13 @@ localVue.use(VueRouter)
 
 const router = new VueRouter()
 
-describe('src:App.vue', () => {
+describe('App.vue', () => {
   it('Should be mount', () => {
     const wrapper = shallowMount(App, {
       localVue,
       router,
     })
+
     expect(wrapper).toBeTruthy()
   })
 })
