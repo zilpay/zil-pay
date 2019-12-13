@@ -37,7 +37,7 @@ import TxData from '@/pages/popup/TxData'
 import Import from '@/pages/accounts/Import'
 
 Vue.use(VueRouter)
-
+console.log(Import)
 // route level code-splitting
 // this generates a separate chunk (about.[hash].js) for this route
 // which is lazy-loaded when the route is visited.
@@ -50,17 +50,20 @@ const routes = [
   {
     path: '/FirstStart',
     name: 'FirstStart',
-    component: FirstStart
+    component: FirstStart,
+    meta: { requiresAuth: false }
   },
   {
     path: '/CreateAcc',
     name: 'CreateAcc',
-    component: CreateAcc
+    component: CreateAcc,
+    meta: { requiresAuth: false }
   },
   {
     path: '/LockScreen',
     name: 'LockScreen',
-    component: LockScreen
+    component: LockScreen,
+    meta: { requiresAuth: false }
   },
   /**
    * Guards routers.
@@ -69,51 +72,63 @@ const routes = [
     path: '/Accounts',
     name: 'Accounts',
     component: Accounts,
-    children: {
-      path: '/Import',
-      name: 'Import',
-      component: Import
-    }
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '/Import',
+        name: 'Import',
+        component: Import
+      }
+    ]
   },
   {
     path: '/Connect',
     name: 'Connect',
-    component: Connect
+    component: Connect,
+    meta: { requiresAuth: true }
   },
   {
     path: '/Dapps',
     name: 'Dapps',
-    component: Dapps
+    component: Dapps,
+    meta: { requiresAuth: true }
   },
   {
     path: '/Home',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { requiresAuth: true }
   },
   {
     path: '/Popup',
     name: 'Popup',
     component: Popup,
-    children: {
-      path: '/TxData',
-      name: 'TxData',
-      component: TxData
-    }
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '/TxData',
+        name: 'TxData',
+        component: TxData
+      }
+    ]
   },
   {
     path: '/Receive',
     name: 'Receive',
-    component: Receive
+    component: Receive,
+    meta: { requiresAuth: true }
   },
   {
     path: '/Send',
     name: 'Send',
-    component: Send
+    component: Send,
+    meta: { requiresAuth: true }
   },
   {
     path: '/Settings',
     name: 'Settings',
     component: Settings,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '/About',
@@ -150,7 +165,8 @@ const routes = [
   {
     path: '/TxInfo',
     name: 'TxInfo',
-    component: TxInfo
+    component: TxInfo,
+    meta: { requiresAuth: true }
   },
   {
     path: '*',
