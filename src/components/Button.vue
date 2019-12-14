@@ -82,18 +82,22 @@ export default {
 .Button {
   &_color-primary {
     background-color: var(--accent-color-primary);
+    color: var(--accent-color-white);
   }
 
   &_color-white {
     background-color: var(--accent-color-white);
+    color: var(--accent-color-block);
   }
 
   &_color-gray {
     background-color: var(--accent-color-gray);
+    color: var(--accent-color-white);
   }
 
   &_color-success {
     background-color: var(--accent-color-success);
+    color: var(--accent-color-white);
   }
 
   &_color-info {
@@ -112,19 +116,19 @@ export default {
 
 .Button {
   &_size-xs {
-    padding: var(--size-xs);
+    height: var(--size-xs);
   }
 
   &_size-sm {
-    padding: var(--size-sm);
+    height: var(--size-sm);
   }
 
   &_size-md {
-    padding: var(--size-md);
+    height: var(--size-md);
   }
 
   &_size-lg {
-    padding: var(--size-lg);
+    height: var(--size-lg);
   }
 }
 

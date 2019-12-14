@@ -19,20 +19,18 @@ $xs-break: 400px   !default;
 $sm-break: 576px   !default;
 $md-break: 768px   !default;
 $lg-break: 992px   !default;
-$xl-break: 1200px  !default;
-$xll-break: 1392px !default;
 
-$xs: 0px    !default;
-$sm: 5px    !default;
-$md: 10px   !default;
-$lg: 20px   !default;
+$xs: 35px !default;
+$sm: 40px !default;
+$md: 50px !default;
+$lg: 60px !default;
 
 // Color system
 $black:     #000000 !default;
 $white:     #FFFFFF !default;
-$gray:      #fbfbfb !default;
+$gray:      #DEDEDE !default;
 
-$primary:         #002B44 !default;
-$success:         #2EB358 !default;
+$primary:         #057A8E !default;
+$success:         #002B44 !default;
 $info:            #00B2FF !default;
-$danger:          #FF5C00 !default;
+$danger:          #FA5D50 !default;
