@@ -8,6 +8,7 @@
  */
 export const ICON_VARIANTS = {
   logo: 'logo',
+  zilliqaLogo: 'zilliqa_logo',
   arrowLefrt: 'arrow_lefrt',
   arrowRight: 'arrow_right',
   cancel: 'cancel'
