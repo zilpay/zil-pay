@@ -10,5 +10,6 @@
 export const FONT_VARIANTS = {
   light: 'light',
   medium: 'medium',
-  regular: 'regular'
+  regular: 'regular',
+  bold: 'bold'
 }

@@ -1,11 +1,14 @@
 <template>
-  <div :class="b({ variant })">
+  <div :class="b({ variant, font })">
     <slot />
   </div>
 </template>
 
 <script>
-import { COLOR_VARIANTS } from '@/config'
+import {
+  COLOR_VARIANTS,
+  FONT_VARIANTS
+} from '@/config'
 
 /**
  * @example
@@ -19,6 +22,10 @@ export default {
     variant: {
       type: String,
       default: COLOR_VARIANTS.black
+    },
+    font: {
+      type: String,
+      default: FONT_VARIANTS.bold
     }
   }
 }
@@ -26,12 +33,25 @@ export default {
 
 <style lang="scss">
 .Title {
-  font-family: var(--font-family-bold);
-  font-size: 48px;
-  line-height: 58px;
+  font-size: 36px;
+  line-height: 32px;
+
+  letter-spacing: -0.1875px;
 
   &_variant-black {
     color: var(--accent-color-black);
+  }
+
+  &_font-light {
+    font-family: var(--font-family-light);
+  }
+
+  &_font-medium {
+    font-family: var(--font-family-medium);
+  }
+
+  &_font-bold {
+    font-family: var(--font-family-bold);
   }
 }
 </style>

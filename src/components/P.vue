@@ -46,7 +46,7 @@ export default {
     color: var(--accent-color-black);
   }
 
-  &_font-PoppinsLight {
+  &_font-light {
     font-family: var(--font-family-light);
   }
 
