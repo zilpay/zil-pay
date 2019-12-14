@@ -57,8 +57,6 @@ export default {
   align-items: center;
   grid-template-columns: 15px 100px;
 
-  width: 100%;
-
   padding-left: 24px;
   padding-right: 24px;
 
