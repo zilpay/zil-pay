@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 export const ICON_VARIANTS = {
-  logo: 'logo',
+  zilPayLogo: 'zilpay_logo',
   zilliqaLogo: 'zilliqa_logo',
   arrowLefrt: 'arrow_lefrt',
   arrowRight: 'arrow_right',
