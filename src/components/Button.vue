@@ -2,6 +2,7 @@
   <button
     :class="b({ round, block, size, color })"
     :disabled="disabled"
+    @click="$emit('click')"
   >
     <slot />
   </button>
@@ -55,6 +56,8 @@ export default {
 <style lang="scss">
 .Button {
   cursor: pointer;
+
+  max-width: 250px;
 
   box-sizing: border-box;
   font-family: var(--font-family-medium);
