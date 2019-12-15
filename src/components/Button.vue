@@ -58,10 +58,6 @@ export default {
 
   box-sizing: border-box;
   font-family: var(--font-family-medium);
-  font-style: normal;
-  font-weight: 500;
-  font-size: 21px;
-  line-height: 31px;
 
   border: 0;
   outline: none;
@@ -69,7 +65,7 @@ export default {
 
 .Button {
   &_round {
-    border-radius: .25rem;
+    border-radius: var(--default-border-radius);
   }
 
   &_block {

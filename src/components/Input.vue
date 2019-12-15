@@ -88,8 +88,7 @@ export default {
 <style lang="scss">
 .Input {
   font-family: var(--font-family-medium);
-  font-size: 21px;
-  line-height: 31px;
+  color: var(--accent-color-black);
 
   border: 1px solid var(--accent-color-gray);
   background: transparent;
@@ -97,7 +96,7 @@ export default {
 
 .Input {
   &_round {
-    border-radius: .25rem;
+    border-radius: var(--default-border-radius);
   }
 
   &_block {
@@ -129,6 +128,11 @@ export default {
   &[disabled="disabled"] {
     cursor: unset;
     opacity: 0.5;
+  }
+
+  &:focus {
+    border-color: var(--accent-color-primary);
+    outline: 0;
   }
 }
 </style>

@@ -1,36 +1,45 @@
 <template>
   <div :class="b()">
-    <Icon
-      :class="b('logo')"
-      :icon="icons.zilliqaLogo"
-      width="106"
-      height="144"
-    />
-    <Title :class="b('title')">
-      Zilliqa
-    </Title>
-    <P
-      :class="b('greeting')"
-      :font="fonts.regular"
-    >
-      Welcome back
-    </P>
-    <form
-      :class="b('form')"
-      @submit.prevent="unlock"
-    >
-      <Input
-        :class="b('form-password')"
-        :type="inputTypes.password"
-        :size="sizes.sm"
-        placeholder="Password"
-        required
-        autofocus
+    <Container :class="b('wrapper')">
+      <Icon
+        :class="b('logo')"
+        :icon="icons.zilliqaLogo"
+        width="106"
+        height="144"
       />
-      <Button :size="sizes.sm">
-        CONTINUE
-      </Button>
-    </form>
+      <Title :class="b('title')">
+        Zilliqa
+      </Title>
+      <P
+        :class="b('greeting')"
+        :font="fonts.regular"
+      >
+        Welcome back
+      </P>
+      <form
+        :class="b('form')"
+        @submit.prevent="unlock"
+      >
+        <Input
+          v-model="password"
+          :class="b('form-password')"
+          :type="inputTypes.password"
+          :size="sizes.xs"
+          placeholder="Password"
+          block
+          round
+          required
+          autofocus
+        />
+        <Button
+          :size="sizes.xs"
+          block
+          round
+        >
+          CONTINUE
+        </Button>
+      </form>
+    </Container>
   </div>
 </template>
 
@@ -41,6 +50,7 @@ import {
   SIZE_VARIANS
 } from '@/config'
 
+import Container from '@/components/Container'
 import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -54,19 +64,24 @@ export default {
     Title,
     P,
     Input,
-    Button
+    Button,
+    Container
   },
   data() {
     return {
+      // Proxy constants:
       icons: ICON_VARIANTS,
       fonts: FONT_VARIANTS,
       sizes: SIZE_VARIANS,
-      inputTypes: INPUT_TYPES
+      inputTypes: INPUT_TYPES,
+
+      // Locals:
+      password: null
     }
   },
   methods: {
     unlock() {
-      console.log('unlock')
+      console.log('unlock', this.password)
     }
   }
 }
@@ -75,17 +90,18 @@ export default {
 <style lang="scss">
 .LockScreen {
   display: grid;
+  justify-content: center;
+  align-items: center;
+  padding-top: 90px;
 
-  grid-template-rows: 1fr 23px 90px 1fr;
-  grid-template-columns: auto;
-
-  grid-template-areas: "logo"
-                       "title"
-                       "greeting"
-                       "form";
-  padding-top: 91px;
-  padding-left: 40px;
-  padding-right: 40px;
+  &__wrapper {
+    display: grid;
+    grid-template-areas: "logo"
+                         "title"
+                         "greeting"
+                         "form";
+    max-width: 250px;
+  }
 
   &__logo {
     grid-area: logo;
