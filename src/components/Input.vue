@@ -88,7 +88,7 @@ export default {
 <style lang="scss">
 .Input {
   font-family: var(--font-family-medium);
-  color: var(--accent-color-black);
+  color: var(--theme-color-font);
 
   border: 1px solid var(--accent-color-gray);
   background: transparent;
