@@ -13,19 +13,37 @@
         Connecting you to Zilliqa and
         the Decentralized Web. We’re happy to see you.
       </P>
-      <Button
-        :size="sizes.xs"
-        block
-        round
-        @click="goToCreate"
-      >
-        Get Started
-      </Button>
+      <div :class="b('actions')">
+        <div
+          v-for="action of actions"
+          :key="action.uuid"
+          :class="b('action')"
+        >
+          <Icon
+            :icon="action.icon"
+            width="110"
+            height="110"
+          />
+          <Button
+            :size="sizes.xs"
+            block
+            round
+            @click="$router.push({ name: action.toLink })"
+          >
+            {{ action.name }}
+          </Button>
+        </div>
+      </div>
     </div>
+    <img
+      :class="b('wave')"
+      src="/illustrations/wave.svg"
+    >
   </Container>
 </template>
 
 <script>
+import { uuid } from 'uuidv4'
 import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 import Icon from '@/components/Icon'
 import Title from '@/components/Title'
@@ -47,14 +65,23 @@ export default {
     return {
       // Proxy constants:
       icons: ICON_VARIANTS,
-      sizes: SIZE_VARIANS
-    }
-  },
-  methods: {
-    goToCreate() {
-      this.$router.push({
-        name: CreateAcc.name
-      })
+      sizes: SIZE_VARIANS,
+
+      // Local variables.
+      actions: [
+        {
+          uuid: uuid(),
+          name: 'CREATE',
+          icon: ICON_VARIANTS.add,
+          toLink: CreateAcc.name
+        },
+        {
+          uuid: uuid(),
+          name: 'RESTORE',
+          icon: ICON_VARIANTS.download,
+          toLink: CreateAcc.name
+        }
+      ]
     }
   }
 }
@@ -67,7 +94,7 @@ export default {
   justify-content: center;
   align-items: center;
 
-  height: 100vh;
+  height: 70vh;
 
   &__wrapper {
     display: grid;
@@ -77,6 +104,28 @@ export default {
     text-align: center;
 
     max-width: 600px;
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: repeat(2, 175px);
+    grid-gap: 130px;
+  }
+
+  &__action {
+    display: grid;
+    grid-gap: 15px;
+
+    justify-items: center;
+  }
+
+  &__wave {
+    position: fixed;
+    z-index: -1;
+    bottom: 0;
+
+    width: 100%;
+    max-width: 100vw;
   }
 }
 </style>
