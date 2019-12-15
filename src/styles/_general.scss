@@ -44,7 +44,7 @@
 
 // Enable document.getElementsByTagName('body')[0].setAttribute('theme', 'dark');
 [theme="dark"] {
-  --app-background-color: #{$success};
+  --app-background-color: #{$dark};
   --theme-color-font: #{$white};
 }
 

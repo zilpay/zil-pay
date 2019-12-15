@@ -26,6 +26,7 @@
           />
           <Button
             :size="sizes.xs"
+            :color="action.color"
             block
             round
             @click="$router.push({ name: action.toLink })"
@@ -44,7 +45,13 @@
 
 <script>
 import { uuid } from 'uuidv4'
-import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
+
+import {
+  ICON_VARIANTS,
+  SIZE_VARIANS,
+  COLOR_VARIANTS
+} from '@/config'
+
 import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -73,13 +80,15 @@ export default {
           uuid: uuid(),
           name: 'CREATE',
           icon: ICON_VARIANTS.add,
-          toLink: CreateAcc.name
+          toLink: CreateAcc.name,
+          color: COLOR_VARIANTS.success
         },
         {
           uuid: uuid(),
           name: 'RESTORE',
           icon: ICON_VARIANTS.download,
-          toLink: CreateAcc.name
+          toLink: CreateAcc.name,
+          color: COLOR_VARIANTS.primary
         }
       ]
     }
