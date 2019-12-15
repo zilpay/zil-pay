@@ -171,7 +171,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: `/${LockScreen.name.toLowerCase()}`
+    redirect: `/${FirstStart.name.toLowerCase()}`
   }
 ]
 
