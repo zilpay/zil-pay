@@ -5,10 +5,7 @@
 </template>
 
 <script>
-import {
-  COLOR_VARIANTS,
-  FONT_VARIANTS
-} from '@/config'
+import { FONT_VARIANTS } from '@/config'
 
 /**
  * @example
@@ -21,7 +18,7 @@ export default {
   props: {
     variant: {
       type: String,
-      default: COLOR_VARIANTS.black
+      required: false
     },
     font: {
       type: String,
@@ -42,13 +39,7 @@ export default {
   font-size: 22px;
   line-height: 32px;
 
-  &_variant-black {
-    color: var(--accent-color-black);
-  }
-
-  &_font-light {
-    font-family: var(--font-family-light);
-  }
+  color: var(--theme-color-font);
 
   &_pointer {
     cursor: pointer;
