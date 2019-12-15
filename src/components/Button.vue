@@ -61,6 +61,8 @@ export default {
 
   border: 0;
   outline: none;
+
+  box-shadow: var(--default-box-shadow);
 }
 
 .Button {
@@ -105,6 +107,7 @@ export default {
   }
 
   &_color-transparent {
+    color: var(--theme-color-font);
     background: transparent;
     border: 1px solid var(--accent-color-black);
   }
