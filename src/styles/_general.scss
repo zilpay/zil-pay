@@ -14,6 +14,7 @@
 :root {
   --app-background-color: #{$white};
 
+  --theme-color-font: #{$black};
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
   --accent-color-gray:  #{$gray};
@@ -34,15 +35,17 @@
   --size-lg: #{$lg};
 
   --default-border-radius: #{$default-border-radius};
+  --default-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 * {
   @include no-select;
 }
 
+// Enable document.getElementsByTagName('body')[0].setAttribute('theme', 'dark');
 [theme="dark"] {
   --app-background-color: #{$success};
-  --accent-color-black: #{$white};
+  --theme-color-font: #{$white};
 }
 
 body {
