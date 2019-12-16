@@ -1,4 +1,4 @@
-import namehash from 'namicorn/lib/zns/namehash'
+import namehash from 'namicorn/build/zns/namehash'
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import API from '../../../../config/api'
 import ZIL from '../../../../config/zil'
