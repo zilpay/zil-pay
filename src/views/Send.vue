@@ -95,7 +95,6 @@ import { ERRORCODE } from '../../lib/errors/code'
 
 const BackBar = () => import('../components/BackBar');
 
-const DEFAULT_ZONE = 'zil'
 async function nonContractSendTransaction(data) {
   const type = MTypesZilPay.CALL_SIGN_TX;
   const payload = data;

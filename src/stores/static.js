@@ -99,6 +99,7 @@ export default {
     }
   },
   actions: {
+    // eslint-disable-next-line no-unused-vars
     async stateUpdate({ state }) {
       state = await updateStatic(state);
     },

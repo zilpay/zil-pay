@@ -44,6 +44,7 @@ export default {
         throw new Error(result.reject);
       }
     },
+    // eslint-disable-next-line no-empty-pattern
     async buildTxParams({}, payload) {
       const type = MTypesZilPay.BUILD_TX_PARAMS;
       const result = await new Message({
