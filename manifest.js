@@ -27,7 +27,8 @@ const manifest = {
     "https://api.coinmarketcap.com/v1/ticker/*",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
-    "https://zilpay.xyz/*"
+    "https://zilpay.xyz/*",
+    "http://127.0.0.1:4200"
   ],
   "content_scripts": [
     {
