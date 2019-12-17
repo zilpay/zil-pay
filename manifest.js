@@ -28,7 +28,7 @@ const manifest = {
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
     "https://zilpay.xyz/*",
-    "http://127.0.0.1:4200"
+    "http://127.0.0.1/*"
   ],
   "content_scripts": [
     {
