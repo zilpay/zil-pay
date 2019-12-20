@@ -1,13 +1,13 @@
-# ZilPay Browser Extension
+# ZilPay browserextensie
 
 [![Chrome](https://img.shields.io/chrome-web-store/v/klnaejjgbibmhlephnhpmaofohgkpgkd)](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 [![FireFox](https://img.shields.io/amo/v/zilpay)](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*Read this in other languages: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
+*Lees dit in andere talen: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
 
-ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilPay into their website to create Decentralised Apps.
+ZilPay is een browserportemonnee voor Zilliqa blockchain. Ontwikkelaars kunnen ZilPay in hun website integreren om gedecentraliseerde apps te maken.
 
 <p align="center">
   <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
@@ -19,58 +19,58 @@ ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilP
 + [FireFox store](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 + [Opera](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 
-## Getting Started
-You can deploy the local version, from source code.
+## Ermee beginnen
+U kunt de lokale versie implementeren vanuit de broncode.
 
-For dApp developers:
-+ [ZilPay full documentation](https://zilpay.xyz/Documentation/)
-+ [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
-+ [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
+Voor dApp-ontwikkelaars:
++ [ZilPay volledige documentatie](https://zilpay.xyz/Documentation/)
++ [ZilPay probeer je dApp te bouwen](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
++ [Zilliqa dApps-voorbeeld](https://github.com/lich666dead/zilliqa-dApps)
 
-### Installing
+### installeren
 
 ```bash
-$ npm install         # install dependencies
+$ npm install         # afhankelijkheden installeren
 ```
 
-### Building
+### Gebouw
 
-* For develop
+* Voor ontwikkelen
 ```bash
 $ npm run content     # build content.js
 $ npm run inpage      # build inpage.js
 $ npm run background  # build background.js
 $ npm run scripts     # build content.js & inpage.js & background.js
-$ npm run all:firefox # all scripts build for firefox platform.
-$ npm run all:chrome  # all scripts build for chrome platform.
+$ npm run all:firefox # alle scripts gebouwd voor firefox-platform.
+$ npm run all:chrome  # alle scripts gebouwd voor Chrome-platform.
 ```
 
-* For production:
+* Voor productie:
 ```bash
 $ npm run build:prod:firefox
 $ npm run build:prod:chrome
 ```
 
-### Running the tests
+### De tests uitvoeren
 ```bash
-$ npm run test # run testing
+$ npm run test # testen uitvoeren
 ```
 
-## Built With
+## Gebouwd met
 
 * [webpack](https://github.com/webpack/webpack)
 * [babel](https://github.com/babel/babel)
 * [vuejs](https://github.com/vuejs)
 
-## Authors
+## auteurs
 
-* **Rinat Khasanshin** - *Initial work* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *Eerste werkzaamheden* - [lich666black](https://github.com/lich666dead)
 
-## License
+## Licentie
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/zilpay/zil-pay/blob/master/LICENSE) file for details.
+Dit project heeft een licentie onder de MIT-licentie - zie de [LICENSE.md](https://github.com/zilpay/zil-pay/blob/master/LICENSE) bestand voor details.
 
-Thanks for yours donate.
+Bedankt voor het doneren.
 ------
 
 - ZIL: zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace

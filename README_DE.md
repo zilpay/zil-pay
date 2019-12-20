@@ -1,13 +1,13 @@
-# ZilPay Browser Extension
+# ZilPay Browser Erweiterung
 
 [![Chrome](https://img.shields.io/chrome-web-store/v/klnaejjgbibmhlephnhpmaofohgkpgkd)](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 [![FireFox](https://img.shields.io/amo/v/zilpay)](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*Read this in other languages: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
+*Lesen Sie dies in anderen Sprachen: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Korean](README_KR.md).*
 
-ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilPay into their website to create Decentralised Apps.
+ZilPay ist eine Browserbrieftasche für die Zilliqa-Blockchain. Entwickler können ZilPay in ihre Website integrieren, um dezentrale Apps zu erstellen.
 
 <p align="center">
   <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
@@ -19,18 +19,18 @@ ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilP
 + [FireFox store](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 + [Opera](https://chrome.google.com/webstore/detail/zilpay/klnaejjgbibmhlephnhpmaofohgkpgkd?utm_source=chrome-ntp-icon)
 
-## Getting Started
-You can deploy the local version, from source code.
+## Beginnen
+Sie können die lokale Version über den Quellcode bereitstellen.
 
-For dApp developers:
-+ [ZilPay full documentation](https://zilpay.xyz/Documentation/)
-+ [ZilPay try build your dApp](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
-+ [Zilliqa dApps example](https://github.com/lich666dead/zilliqa-dApps)
+Für dApp-Entwickler:
++ [ZilPay vollständige Dokumentation](https://zilpay.xyz/Documentation/)
++ [ZilPay versuchen Sie, Ihre dApp zu erstellen](https://medium.com/coinmonks/test-and-develop-dapps-on-zilliqa-with-zilpay-52b165f118bf?source=friends_link&sk=2a60070ddac60677ec36b1234c60222a)
++ [Zilliqa dApps Beispiel](https://github.com/lich666dead/zilliqa-dApps)
 
-### Installing
+### Installieren
 
 ```bash
-$ npm install         # install dependencies
+$ npm install         # Abhängigkeiten installieren
 ```
 
 ### Building
@@ -41,36 +41,36 @@ $ npm run content     # build content.js
 $ npm run inpage      # build inpage.js
 $ npm run background  # build background.js
 $ npm run scripts     # build content.js & inpage.js & background.js
-$ npm run all:firefox # all scripts build for firefox platform.
-$ npm run all:chrome  # all scripts build for chrome platform.
+$ npm run all:firefox # Alle Skripte wurden für die Firefox-Plattform erstellt.
+$ npm run all:chrome  # Alle Skripte wurden für die Chrome-Plattform erstellt.
 ```
 
-* For production:
+* Für die Produktion:
 ```bash
 $ npm run build:prod:firefox
 $ npm run build:prod:chrome
 ```
 
-### Running the tests
+### Ausführen der Tests
 ```bash
-$ npm run test # run testing
+$ npm run test # Führen Sie einen Test durch
 ```
 
-## Built With
+## Gebaut mit
 
 * [webpack](https://github.com/webpack/webpack)
 * [babel](https://github.com/babel/babel)
 * [vuejs](https://github.com/vuejs)
 
-## Authors
+## Autoren
 
-* **Rinat Khasanshin** - *Initial work* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *Erste Arbeit* - [lich666black](https://github.com/lich666dead)
 
-## License
+## Lizenz
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/zilpay/zil-pay/blob/master/LICENSE) file for details.
+Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe [LICENSE.md](https://github.com/zilpay/zil-pay/blob/master/LICENSE) Datei für Details.
 
-Thanks for yours donate.
+Danke für deine Spende.
 ------
 
 - ZIL: zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace
