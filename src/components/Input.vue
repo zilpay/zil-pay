@@ -25,6 +25,21 @@ export const INPUT_TYPES = {
   time: 'time'
 }
 
+/**
+ * Input component.
+ * @example
+ * import Input from '@/components/Input'
+ * <Input
+ *   v-model="password"
+ *   :type="inputTypes.password"
+ *   :size="sizes.xs"
+ *   placeholder="Password"
+ *   block
+ *   round
+ *   required
+ *   autofocus
+   />
+ */
 export default {
   name: 'Input',
   props: {

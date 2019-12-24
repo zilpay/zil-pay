@@ -62,6 +62,8 @@ export default {
   box-sizing: border-box;
   font-family: var(--font-family-medium);
 
+  font-size: 12px;
+
   border: 0;
   outline: none;
 
