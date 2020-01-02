@@ -17,6 +17,9 @@
   --theme-color-font: #{$black};
   --theme-color-input: #{$input-ui-light};
 
+  --theme-color-alert: #{$alert-ui-light};
+  --theme-color-alert-border: #{$gray};
+
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
   --accent-color-gray:  #{$gray};
@@ -53,8 +56,13 @@
 // Enable document.getElementsByTagName('body')[0].setAttribute('theme', 'dark');
 [theme="dark"] {
   --app-background-color: #{$dark};
+
   --theme-color-font: #{$white};
+
   --theme-color-input: #{$input-ui-dark};
+
+  --theme-color-alert: #{$alert-ui-dark};
+  --theme-color-alert-border: #{$alert-ui-dark-border};
 }
 
 body {
