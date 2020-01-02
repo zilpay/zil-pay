@@ -21,8 +21,8 @@
         >
           <Icon
             :icon="action.icon"
-            width="110"
-            height="110"
+            width="80"
+            height="80"
           />
           <Button
             :size="sizes.xs"
@@ -58,6 +58,7 @@ import P from '@/components/P'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import CreateAcc from '@/pages/CreateAcc'
+import Restore from '@/pages/Restore'
 
 export default {
   name: 'FirstStart',
@@ -87,7 +88,7 @@ export default {
           uuid: uuid(),
           name: 'RESTORE',
           icon: ICON_VARIANTS.download,
-          toLink: CreateAcc.name,
+          toLink: Restore.name,
           color: COLOR_VARIANTS.primary
         }
       ]

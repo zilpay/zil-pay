@@ -28,7 +28,7 @@ import About from '@/pages/settings/About'
 import Advanced from '@/pages/settings/Advanced'
 import General from '@/pages/settings/General'
 import Networks from '@/pages/settings/Networks'
-import Restore from '@/pages/settings/Restore'
+import Restore from '@/pages/Restore'
 import Security from '@/pages/settings/Security'
 
 // Popup children pages.
@@ -65,6 +65,11 @@ const routes = [
     name: LockScreen.name,
     component: LockScreen,
     meta: { requiresAuth: false }
+  },
+  {
+    path: `/${Restore.name.toLowerCase()}`,
+    name: Restore.name,
+    component: Restore
   },
   /**
    * Guards routers.
@@ -150,11 +155,6 @@ const routes = [
         path: `/${Networks.name.toLowerCase()}`,
         name: Networks.name,
         component: Networks
-      },
-      {
-        path: `/${Restore.name.toLowerCase()}`,
-        name: Restore.name,
-        component: Restore
       },
       {
         path: `/${Security.name.toLowerCase()}`,
