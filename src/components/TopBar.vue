@@ -1,7 +1,7 @@
 <template>
   <div :class="b({ left, right, })">
     <Icon
-      :icon="icon"
+      :icon="ICON_VARIANTS.arrowLefrt"
       width="10"
       height="18"
       pointer
@@ -9,6 +9,12 @@
     <P pointer>
       {{ text }}
     </P>
+    <Icon
+      :icon="icon"
+      width="10"
+      height="18"
+      pointer
+    />
   </div>
 </template>
 
@@ -26,27 +32,14 @@ import P from '@/components/P'
  */
 export default {
   name: 'TopBar',
-  props: {
-    left: {
-      type: Boolean,
-      default: false
-    },
-    right: {
-      type: Boolean,
-      default: false
-    },
-    text: {
-      type: String,
-      default: 'Back'
-    },
-    icon: {
-      type: String,
-      default: ICON_VARIANTS.arrowLefrt
-    }
-  },
   components: {
     Icon,
     P
+  },
+  data() {
+    return {
+      ICON_VARIANTS
+    }
   }
 }
 </script>

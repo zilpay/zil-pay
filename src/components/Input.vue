@@ -34,6 +34,24 @@ export const INPUT_TYPES = {
   time: 'time'
 }
 
+/**
+ * ZilPay Input component.
+ * @example
+ * import { SIZE_VARIANS } from '@/config'
+ * import Input, { INPUT_TYPES } from '@/components/Input'
+ * <Input
+ *  v-model="password"
+ *  :class="b('form-password')"
+ *  :type="INPUT_TYPES.password"
+ *  :size="sizes.xs"
+ *  placeholder="Password"
+ *  block
+ *  round
+ *  centred
+ *  required
+ *  autofocus
+ * />
+ */
 export default {
   name: 'Input',
   props: {

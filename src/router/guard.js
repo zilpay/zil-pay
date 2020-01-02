@@ -21,7 +21,7 @@ export default function guard(to, from, next) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
     // eslint-disable-next-line no-constant-condition
-    if (true) {
+    if (false) {
       next({
         path: `/${LockScreen.name.toLowerCase()}`
       })
