@@ -56,7 +56,6 @@ export default {
 <style lang="scss">
 .Button {
   cursor: pointer;
-
   max-width: 250px;
 
   box-sizing: border-box;

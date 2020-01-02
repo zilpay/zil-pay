@@ -112,14 +112,15 @@ export default {
 
     justify-items: center;
     text-align: center;
-
-    max-width: 600px;
   }
 
   &__actions {
-    display: grid;
-    grid-template-columns: repeat(2, 175px);
-    grid-gap: 130px;
+    display: flex;
+
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    width: 100%;
   }
 
   &__action {
@@ -127,6 +128,8 @@ export default {
     grid-gap: 15px;
 
     justify-items: center;
+
+    min-width: 175px;
   }
 
   &__wave {
