@@ -34,9 +34,6 @@ export default {
 
 <style lang="scss">
 .Title {
-  font-size: 36px;
-  line-height: 32px;
-
   color: var(--theme-color-font);
 
   &_font-medium {

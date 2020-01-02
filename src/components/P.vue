@@ -1,11 +1,11 @@
 <template>
-  <p :class="b({ variant, font, pointer, size })">
+  <div :class="b({ variant, font, pointer, size })">
     <slot />
-  </p>
+  </div>
 </template>
 
 <script>
-import { FONT_VARIANTS, SIZE_VARIANS } from '@/config'
+import { FONT_VARIANTS } from '@/config'
 
 /**
  * @example
@@ -30,7 +30,7 @@ export default {
     },
     size: {
       type: String,
-      default: SIZE_VARIANS.sm
+      required: false
     }
   }
 }
@@ -38,12 +38,9 @@ export default {
 
 <style lang="scss">
 .P {
-  font-style: normal;
-  font-weight: normal;
-  font-size: 22px;
-  line-height: 32px;
-
   color: var(--theme-color-font);
+
+  letter-spacing: -0.139803px;
 
   &_pointer {
     cursor: pointer;
