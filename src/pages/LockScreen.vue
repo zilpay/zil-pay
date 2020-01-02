@@ -101,7 +101,7 @@ export default {
                          "title"
                          "greeting"
                          "form";
-    max-width: 250px;
+    min-width: 250px;
   }
 
   &__logo {
@@ -122,6 +122,8 @@ export default {
     grid-area: form;
     justify-self: center;
     grid-template-columns: 1fr;
+
+    min-width: 250px;
   }
 
   &__form-password {

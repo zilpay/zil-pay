@@ -23,7 +23,7 @@ describe('components:Icon', () => {
   const wrapper = shallowMount(Icon, {
     localVue,
     propsData: {
-      icon: ICON_VARIANTS.logo,
+      icon: ICON_VARIANTS.zilliqaLogo,
       type: ICON_TYPE.svg,
       height: 300,
       width: 10,
@@ -36,7 +36,7 @@ describe('components:Icon', () => {
   })
 
   it('checks the props', () => {
-    expect(wrapper.props().icon).toEqual(ICON_VARIANTS.logo)
+    expect(wrapper.props().icon).toEqual(ICON_VARIANTS.zilliqaLogo)
     expect(wrapper.props().type).toEqual(ICON_TYPE.svg)
     expect(wrapper.props().height).toBe(300)
     expect(wrapper.props().width).toBe(10)

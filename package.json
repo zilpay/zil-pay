@@ -72,7 +72,7 @@
   "homepage": "https://zilpay.xyz/",
   "author": "lich666black",
   "engines": {
-    "node": "^10.9.0",
+    "node": "^12.14.0",
     "npm": "^6.9.0"
   }
 }
