@@ -134,23 +134,24 @@ export default {
   display: grid;
 
   justify-items: left;
-
-  font-family: Poppins;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 15px;
 }
 
 .Input {
   &__title,
   &__error {
+    display: flex;
+    align-items: center;
+
     width: 100%;
+    height: 20px;
 
-    padding-left: 15px;
-
+    text-indent: 15px;
+    text-transform: capitalize;
     text-align: left;
 
+    font-family: var(--font-family-light);
     color: var(--theme-color-font);
+    font-size: var(--size-xs-font);
   }
 
   &__element {
