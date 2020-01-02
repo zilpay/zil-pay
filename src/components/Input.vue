@@ -4,7 +4,7 @@
       {{ title }}
     </div>
     <input
-      :class="b('element', { round, error: Boolean(error) })"
+      :class="b('element', { round, centred, error: Boolean(error) })"
       :disabled="disabled"
       :placeholder="placeholder"
       :value="value"
@@ -92,6 +92,10 @@ export default {
     autofocus: {
       type: Boolean,
       default: false
+    },
+    centred: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -145,6 +149,11 @@ export default {
 
     &_error {
       border: 1px solid var(--accent-color-danger);
+    }
+
+    &_centred {
+      text-align: center;
+      text-indent: 0;
     }
 
     &:focus {

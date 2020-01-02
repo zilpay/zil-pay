@@ -28,6 +28,7 @@
           placeholder="Password"
           block
           round
+          centred
           required
           autofocus
         />

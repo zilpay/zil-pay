@@ -87,7 +87,7 @@ export default {
   &__wrapper {
     display: grid;
 
-    padding-top: 10%;
+    padding-top: 10vh;
 
     justify-content: center;
   }
@@ -95,7 +95,7 @@ export default {
   &__seed-input {
     display: inline-block;
 
-    width: 320px;
+    width: 250px;
     height: 100px;
 
     padding: 15px;
@@ -116,7 +116,7 @@ export default {
 
     grid-template-rows: 150px 80px 80px;
 
-    max-width: 320px;
+    max-width: 250px;
 
     padding-top: 30px;
   }
