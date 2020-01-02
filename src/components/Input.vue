@@ -1,17 +1,26 @@
 <template>
-  <input
-    :class="b({ round, block, size })"
-    :disabled="disabled"
-    :placeholder="placeholder"
-    :value="value"
-    :type="type"
-    :min="min"
-    :max="max"
-    :step="step"
-    :required="required"
-    :autofocus="autofocus"
-    @input="onInput"
-  />
+  <label :class="b({ block, size })">
+    <div :class="b('title')">
+      {{ title }}
+    </div>
+    <input
+      :class="b('element', { round, error: Boolean(error) })"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :value="value"
+      :type="type"
+      :min="min"
+      :max="max"
+      :step="step"
+      :required="required"
+      :autofocus="autofocus"
+      ref="input"
+      @input="onInput"
+    />
+    <div :class="b('error')">
+      {{ error }}
+    </div>
+  </label>
 </template>
 
 <script>
@@ -48,6 +57,14 @@ export default {
       type: [String, Number],
       required: false
     },
+    title: {
+      type: [String, Number],
+      required: false
+    },
+    error: {
+      type: [String, Number],
+      required: false
+    },
     value: {
       type: [String, Number],
       required: false
@@ -81,58 +98,114 @@ export default {
     onInput(event) {
       this.$emit('input', event.target.value)
     }
+  },
+  mounted() {
+    if (this.autofocus) {
+      this.$refs.input.focus()
+    }
   }
 }
 </script>
 
 <style lang="scss">
 .Input {
-  font-family: var(--font-family-medium);
-  color: var(--theme-color-font);
+  display: grid;
 
-  border: 1px solid var(--accent-color-gray);
-  background: transparent;
+  justify-items: left;
+
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 15px;
 }
 
 .Input {
-  &_round {
-    border-radius: var(--default-border-radius);
+  &__title,
+  &__error {
+    width: 100%;
+
+    padding-left: 15px;
+
+    text-align: left;
   }
 
+  &__element {
+    width: 100%;
+
+    border: 0;
+    border-radius: 5px;
+
+    text-indent: 15px;
+
+    background: rgba(206, 206, 206, 0.4);
+
+    &_error {
+      border: 1px solid var(--accent-color-danger);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__title {
+    padding-bottom: 5px;
+  }
+
+  &__error {
+    padding-top: 5px;
+    color: var(--accent-color-danger);
+  }
+}
+
+.Input {
   &_block {
     display: block;
     width: 100%;
-    height: 100%;
   }
-}
 
-.Input {
   &_size-xs {
-    height: var(--size-xs);
+    .Input__element {
+      height: var(--size-xs);
+    }
+
+    .Input__title,
+    .Input__error {
+      font-size: var(--size-xs-font);
+    }
   }
 
   &_size-sm {
-    height: var(--size-sm);
+    .Input__element {
+      height: var(--size-sm);
+    }
+
+    .Input__title,
+    .Input__error {
+      font-size: var(--size-sm-font);
+    }
   }
 
   &_size-md {
-    height: var(--size-md);
+    .Input__element {
+      height: var(--size-md);
+    }
+
+    .Input__title,
+    .Input__error {
+      font-size: var(--size-md-font);
+    }
   }
 
   &_size-lg {
-    height: var(--size-lg);
-  }
-}
+    .Input__element {
+      height: var(--size-lg);
+    }
 
-.Input {
-  &[disabled="disabled"] {
-    cursor: unset;
-    opacity: 0.5;
-  }
-
-  &:focus {
-    border-color: var(--accent-color-primary);
-    outline: 0;
+    .Input__title,
+    .Input__error {
+      font-size: var(--size-lg-font);
+    }
   }
 }
 </style>
