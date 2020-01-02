@@ -71,6 +71,21 @@ export default {
       type: Array,
       required: true
     }
+  },
+  mounted() {
+    [
+      'value',
+      'event',
+      'variant',
+      'size',
+      'uuid'
+    ].forEach(necessaryKey => {
+      this.elements.forEach(btnObject => {
+        if (!(necessaryKey in btnObject)) {
+          throw new Error(`${necessaryKey} is necessary for BottomBar.`)
+        }
+      })
+    })
   }
 }
 </script>
