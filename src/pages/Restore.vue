@@ -98,10 +98,13 @@ export default {
     width: 320px;
     height: 100px;
 
+    padding: 15px;
+
     border: 0;
     border-radius: var(--default-border-radius);
     font-size: var(--size-sm-font);
-    background-color: var(--accent-color-gray);
+    color: var(--theme-color-font);
+    background-color: var(--theme-color-input);
 
     outline: none;
     resize: none;
@@ -111,7 +114,7 @@ export default {
   &__restore-form {
     display: grid;
 
-    grid-template-rows: 130px 80px 80px;
+    grid-template-rows: 150px 80px 80px;
 
     max-width: 320px;
 

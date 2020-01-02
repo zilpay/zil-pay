@@ -15,6 +15,8 @@
   --app-background-color: #{$white};
 
   --theme-color-font: #{$black};
+  --theme-color-input: #{$input-ui-light};
+
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
   --accent-color-gray:  #{$gray};
@@ -52,6 +54,7 @@
 [theme="dark"] {
   --app-background-color: #{$dark};
   --theme-color-font: #{$white};
+  --theme-color-input: #{$input-ui-dark};
 }
 
 body {

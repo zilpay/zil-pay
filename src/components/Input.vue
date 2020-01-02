@@ -127,6 +127,8 @@ export default {
     padding-left: 15px;
 
     text-align: left;
+
+    color: var(--theme-color-font);
   }
 
   &__element {
@@ -137,7 +139,9 @@ export default {
 
     text-indent: 15px;
 
-    background: rgba(206, 206, 206, 0.4);
+    background: var(--theme-color-input);
+
+    color: var(--theme-color-font);
 
     &_error {
       border: 1px solid var(--accent-color-danger);
