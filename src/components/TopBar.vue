@@ -78,8 +78,6 @@ export default {
 
   min-height: 65px;
 
-  background-color: red;
-
   &__back-icon {
     padding-left: 15px;
     justify-self: left;
