@@ -43,7 +43,7 @@ const TEST = [
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 
-describe('components:Button', () => {
+describe('components:BottomBar', () => {
   const wrapper = shallowMount(BottomBar, {
     localVue,
     propsData: {
