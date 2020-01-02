@@ -8,6 +8,7 @@
  */
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
+import VueRouter from 'vue-router'
 import TopBar from 'src/components/TopBar.vue'
 import {
   BEM_CONFIG,
@@ -16,11 +17,16 @@ import {
 
 const localVue = createLocalVue()
 
+localVue.use(VueRouter)
+
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+
+const router = new VueRouter()
 
 describe('components:TopBar', () => {
   const wrapper = shallowMount(TopBar, {
     localVue,
+    router,
     propsData: {
       left: true,
       text: 'test',
@@ -30,12 +36,5 @@ describe('components:TopBar', () => {
 
   it('Should be mount', () => {
     expect(wrapper).toBeTruthy()
-  })
-
-  it('checks the props', () => {
-    expect(wrapper.props().left).toBe(true)
-    expect(wrapper.props().right).toBe(false)
-    expect(wrapper.props().text).toEqual('test')
-    expect(wrapper.props().icon).toEqual(ICON_VARIANTS.cancel)
   })
 })

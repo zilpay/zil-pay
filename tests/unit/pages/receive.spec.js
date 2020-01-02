@@ -7,18 +7,24 @@
  * Copyright (c) 2019 ZilPay
  */
 import vueBemCn from 'vue-bem-cn'
+import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Receive from 'src/pages/Receive.vue'
 import { BEM_CONFIG } from 'src/config'
 
 const localVue = createLocalVue()
 
+localVue.use(VueRouter)
+
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+
+const router = new VueRouter()
 
 describe('pages:Receive.vue', () => {
   it('Should be mount', () => {
     const wrapper = shallowMount(Receive, {
-      localVue
+      localVue,
+      router
     })
 
     expect(wrapper).toBeTruthy()

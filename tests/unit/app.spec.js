@@ -20,7 +20,7 @@ describe('App.vue', () => {
   it('Should be mount', () => {
     const wrapper = shallowMount(App, {
       localVue,
-      router,
+      router
     })
 
     expect(wrapper).toBeTruthy()
