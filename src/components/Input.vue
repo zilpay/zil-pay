@@ -148,12 +148,7 @@ export default {
     }
   }
 
-  &__title {
-    padding-bottom: 5px;
-  }
-
   &__error {
-    padding-top: 5px;
     color: var(--accent-color-danger);
   }
 }

@@ -109,6 +109,10 @@ export default {
     background-color: var(--accent-color-danger);
   }
 
+  &_color-warning {
+    background-color: var(--accent-color-warning);
+  }
+
   &_color-transparent {
     color: var(--theme-color-font);
     background: transparent;

@@ -125,6 +125,7 @@ export default {
 
   &__form-password {
     text-align: center;
+    min-width: 250px;
   }
 }
 </style>
