@@ -16,7 +16,8 @@ export default {
  * 2. See the "width vs max-width" section
  */
 .Container {
-  width: 100%;
+  max-width: 100vw;
+
   margin-right: auto; /* 1 */
   margin-left:  auto; /* 1 */
 }
