@@ -3,18 +3,28 @@
 </template>
 
 <script>
+/**
+ * Just Separator for split content.
+ * @example
+ * import Separator from '@/components/Separator'
+ * <Separator />
+ */
 export default {
   name: 'Separator'
 }
 </script>
 
 <style lang="scss">
-.Separator {
-  width: 100%;
-  height: 1px;
-  border-radius: 50%;
+$width:  320px !default;
+$height: 1px   !default;
+$radius: 50%   !default;
 
-  border-bottom: 0.1rem solid var(--theme-color-separator);
+.Separator {
+  width: $width;
+  min-height: $height;
+
+  border-radius: $radius;
+  border: $height solid var(--theme-color-separator);
 
   background-color: var(--theme-color-separator);
 }
