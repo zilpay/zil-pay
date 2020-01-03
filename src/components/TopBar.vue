@@ -77,6 +77,7 @@ export default {
   align-items: center;
 
   min-height: 65px;
+  max-width: 600px;
 
   &__back-icon {
     padding-left: 15px;
