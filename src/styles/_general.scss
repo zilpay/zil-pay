@@ -20,6 +20,8 @@
   --theme-color-alert: #{$alert-ui-light};
   --theme-color-alert-border: #{$gray};
 
+  --theme-color-separator: #{$separator-ui-light};
+
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
   --accent-color-gray:  #{$gray};
@@ -60,6 +62,8 @@
   --theme-color-font: #{$white};
 
   --theme-color-input: #{$input-ui-dark};
+
+  --theme-color-separator: #{$separator-ui-dark};
 
   --theme-color-alert: #{$alert-ui-dark};
   --theme-color-alert-border: #{$alert-ui-dark-border};
