@@ -12,24 +12,23 @@
         {{ alertHeader.description }}
       </P>
     </Alert>
-    <Container :class="b('wrapper')">
-      <Container
-        v-for="variant of variants"
-        :key="variant.uuid"
-        :class="b('receipt-options')"
-      >
-        <div :class="b('options-header')">
-          <Icon
-            v-if="Boolean(variant.icon)"
-            :class="b('logo')"
-            :icon="variant.icon.name"
-            :width="variant.icon.width"
-            :height="variant.icon.height"
-          />
-          <Title :size="SIZE_VARIANS.sm">
-            {{ variant.title }}
-          </Title>
-        </div>
+    <Container
+      v-for="(variant, index) of variants"
+      :key="variant.uuid"
+      :class="b('receipt-options')"
+    >
+      <div :class="b('header')">
+        <Icon
+          v-if="Boolean(variant.icon)"
+          :icon="variant.icon.name"
+          :width="variant.icon.width"
+          :height="variant.icon.height"
+        />
+        <Title :size="SIZE_VARIANS.sm">
+          {{ variant.title }}
+        </Title>
+      </div>
+      <div :class="b('content')">
         <P
           :class="b('deposit-info')"
           :font="FONT_VARIANTS.regular"
@@ -43,7 +42,11 @@
         >
           {{ variant.button }}
         </Button>
-      </Container>
+      </div>
+      <Separator
+        v-show="index < variants.length - 1"
+        :class="b('separator')"
+      />
     </Container>
   </div>
 </template>
@@ -64,6 +67,7 @@ import P from '@/components/P'
 import Icon from '@/components/Icon'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
+import Separator from '@/components/Separator'
 
 const alertHeader = {
   title: 'Deposit ZIL.',
@@ -99,7 +103,8 @@ export default {
     P,
     Icon,
     Button,
-    Container
+    Container,
+    Separator
   },
   data() {
     return {
@@ -114,25 +119,25 @@ export default {
 
 <style lang="scss">
 .Receive {
-  &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 30px;
-  }
-
   &__receipt-options {
     display: grid;
     justify-content: left;
     grid-gap: 15px;
+
+    padding-top: 30px;
   }
 
-  &__options-header {
+  &__header,
+  &__content {
+    display: inline-grid;
+    grid-gap: 15px;
+
+    padding: 0 15px 0 15px;
+  }
+
+  &__header {
     display: inline-grid;
     grid-template-columns: max-content 1fr;
-    grid-gap: 15px;
   }
 
   &__deposit-info {
@@ -140,12 +145,14 @@ export default {
     line-height: 15px;
 
     letter-spacing: -0.139803px;
-
-    max-width: 290px;
   }
 
   &__deposit-btn {
     width: 175px;
+  }
+
+  &__separator {
+    grid-area: "separator";
   }
 }
 </style>
