@@ -31,8 +31,16 @@ describe('components:Icon', () => {
     }
   })
 
+  it('Should can import', () => {
+    expect(Icon).toBeTruthy()
+  })
+
   it('Should be mount', () => {
     expect(wrapper).toBeTruthy()
+  })
+
+  it('Should be vue instance', () => {
+    expect(wrapper.isVueInstance()).toBeTruthy()
   })
 
   it('checks the props', () => {
@@ -41,5 +49,25 @@ describe('components:Icon', () => {
     expect(wrapper.props().height).toBe(300)
     expect(wrapper.props().width).toBe(10)
     expect(wrapper.props().pointer).toEqual(true)
+  })
+
+  it('Should be have some class', () => {
+    expect(wrapper.classes()).toEqual([
+      Icon.name,
+      `${Icon.name}${BEM_CONFIG.mod}pointer`
+    ])
+  })
+
+  it('Should be have some attributes', () => {
+    expect(wrapper.attributes()).toEqual({
+      src: `/icons/${ICON_VARIANTS.zilliqaLogo}.${ICON_TYPE.svg}`,
+      height: '300',
+      width: '10',
+      class: `${Icon.name} ${Icon.name}${BEM_CONFIG.mod}pointer`
+    })
+  })
+
+  it('Should be img tag', () => {
+    expect(wrapper.element.tagName).toEqual('IMG')
   })
 })
