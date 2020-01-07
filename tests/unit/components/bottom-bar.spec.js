@@ -51,6 +51,10 @@ describe('components:BottomBar', () => {
     }
   })
 
+  it('Should be vue instance', () => {
+    expect(wrapper.isVueInstance()).toBeTruthy()
+  })
+
   it('Should can imported', () => {
     expect(BottomBar).toBeTruthy()
   })
@@ -59,7 +63,12 @@ describe('components:BottomBar', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('checks the props  ', () => {
+  it('checks the props', () => {
     expect(wrapper.props().elements).toEqual(TEST)
   })
+
+  it('Should be have some class', () => {
+    expect(wrapper.classes()[0]).toEqual(BottomBar.name)
+  })
+
 })
