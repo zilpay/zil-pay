@@ -7,6 +7,11 @@
 </template>
 
 <script>
+/**
+ * @example
+ * import Alert from '@/components/Alert'
+ * <Alert>TEST</Alert>
+ */
 export default {
   name: 'Alert'
 }
