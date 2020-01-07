@@ -12,17 +12,38 @@ import Alert from 'src/components/Alert.vue'
 import {
   BEM_CONFIG
 } from 'src/config'
+import { uuid } from 'uuidv4'
 
+const TEST_TEXT = uuid()
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 
 describe('components:Alert', () => {
   const wrapper = shallowMount(Alert, {
-    localVue
+    localVue,
+    slots: {
+      default: [TEST_TEXT]
+    }
+  })
+
+  it('Should be vue instance', () => {
+    expect(wrapper.isVueInstance()).toBeTruthy()
   })
 
   it('Should be mount', () => {
     expect(wrapper).toBeTruthy()
+  })
+
+  it('Should can import', () => {
+    expect(Alert).toBeTruthy()
+  })
+
+  it('Should be have some class', () => {
+    expect(wrapper.classes()[0]).toEqual(Alert.name)
+  })
+
+  it('Should be have childran text', () => {
+    expect(wrapper.text()).toEqual(TEST_TEXT)
   })
 })
