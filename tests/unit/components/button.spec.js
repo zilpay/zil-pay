@@ -14,7 +14,9 @@ import {
   SIZE_VARIANS,
   COLOR_VARIANTS
 } from 'src/config'
+import { uuid } from 'uuidv4'
 
+const TEST_TEXT = uuid()
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
@@ -28,18 +30,47 @@ describe('components:Button', () => {
       disabled: false,
       round: true,
       block: true
+    },
+    slots: {
+      default: [TEST_TEXT]
     }
+  })
+
+  it('Should can import', () => {
+    expect(Button).toBeTruthy()
   })
 
   it('Should be mount', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('checks the props  ', () => {
+  it('Should be vue instance', () => {
+    expect(wrapper.isVueInstance()).toBeTruthy()
+  })
+
+  it('checks the props', () => {
     expect(wrapper.props().size).toEqual(SIZE_VARIANS.md)
     expect(wrapper.props().color).toEqual(COLOR_VARIANTS.info)
     expect(wrapper.props().disabled).toBe(false)
     expect(wrapper.props().round).toBe(true)
     expect(wrapper.props().block).toEqual(true)
+  })
+
+  it('Should be have some class', () => {
+    expect(wrapper.classes()).toEqual([
+      Button.name,
+      `${Button.name}${BEM_CONFIG.mod}round`,
+      `${Button.name}${BEM_CONFIG.mod}block`,
+      `${Button.name}${BEM_CONFIG.mod}size-md`,
+      `${Button.name}${BEM_CONFIG.mod}color-info`
+    ])
+  })
+
+  it('Should be have childran text', () => {
+    expect(wrapper.text()).toEqual(TEST_TEXT)
+  })
+
+  it('Should be img button', () => {
+    expect(wrapper.element.tagName).toEqual('BUTTON')
   })
 })
