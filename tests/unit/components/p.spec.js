@@ -14,7 +14,9 @@ import {
   COLOR_VARIANTS,
   FONT_VARIANTS
 } from 'src/config'
+import { uuid } from 'uuidv4'
 
+const TEST_TEXT = uuid()
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
@@ -25,7 +27,18 @@ describe('components:P', () => {
     propsData: {
       variant: COLOR_VARIANTS.primary,
       font: FONT_VARIANTS.medium
+    },
+    slots: {
+      default: [TEST_TEXT]
     }
+  })
+
+  it('Should be import', () => {
+    expect(P).toBeTruthy()
+  })
+
+  it('Should be vue instance', () => {
+    expect(wrapper.isVueInstance()).toBeTruthy()
   })
 
   it('Should be mount', () => {
@@ -35,5 +48,21 @@ describe('components:P', () => {
   it('checks the props', () => {
     expect(wrapper.props().variant).toEqual(COLOR_VARIANTS.primary)
     expect(wrapper.props().font).toEqual(FONT_VARIANTS.medium)
+  })
+
+  it('Should be DIV tag', () => {
+    expect(wrapper.element.tagName).toEqual('DIV')
+  })
+
+  it('Should be have some class', () => {
+    expect(wrapper.classes()).toEqual([
+      P.name,
+      `${P.name}${BEM_CONFIG.mod}variant-${COLOR_VARIANTS.primary}`,
+      `${P.name}${BEM_CONFIG.mod}font-${FONT_VARIANTS.medium}`
+    ])
+  })
+
+  it('Should be have childran text', () => {
+    expect(wrapper.text()).toEqual(TEST_TEXT)
   })
 })
