@@ -34,7 +34,25 @@ describe('components:TopBar', () => {
     }
   })
 
+  it('Should be vue instance', () => {
+    expect(wrapper.isVueInstance()).toBeTruthy()
+  })
+
+  it('Should can import', () => {
+    expect(TopBar).toBeTruthy()
+  })
+
   it('Should be mount', () => {
     expect(wrapper).toBeTruthy()
+  })
+
+  it('Should be DIV tag', () => {
+    expect(wrapper.element.tagName).toEqual('DIV')
+  })
+
+  it('Should have some class', () => {
+    expect(wrapper.classes()).toEqual([
+      TopBar.name
+    ])
   })
 })
