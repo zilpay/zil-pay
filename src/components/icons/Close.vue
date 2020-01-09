@@ -1,5 +1,8 @@
 <template>
-  <div :class="b({ pointer, size })" />
+  <div
+    :class="b({ pointer, size })"
+    @click="$emit('click')"
+  />
 </template>
 
 <script>
@@ -22,7 +25,6 @@ export default {
 
 <style lang="scss">
 .Close {
-  display: flex;
   justify-content: center;
   align-items: center;
 
