@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS, EVENTS } from '@/config'
 
 export const INPUT_TYPES = {
   date: 'date',
@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     onInput(event) {
-      this.$emit('input', event.target.value)
+      this.$emit(EVENTS.input, event.target.value)
     }
   },
   mounted() {
