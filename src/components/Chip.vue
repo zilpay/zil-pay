@@ -1,7 +1,7 @@
 <template>
   <div
     :class="b({ pointer, size })"
-    @click="click"
+    @click="onClick"
   >
     <div :class="b('wrapper')">
       <div :class="b('circle')">
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS, EVENTS } from '@/config'
 
 import CloseIcon from '@/components/icons/Close'
 
@@ -48,10 +48,10 @@ export default {
   },
   methods: {
     onClose() {
-      this.$emit('close')
+      this.$emit(EVENTS.close)
     },
-    click() {
-      this.$emit('click')
+    onClick() {
+      this.$emit(EVENTS.click)
     }
   }
 }
