@@ -64,7 +64,6 @@ $default-height: 32px;
   display: inline-block;
 
   height: $default-height;
-  width: 100px;
 
   color: var(--theme-color-font);
   line-height: $default-height;

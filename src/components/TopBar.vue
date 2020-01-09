@@ -8,6 +8,7 @@
       pointer
     />
     <Title
+      v-show="route"
       :class="b('current-page')"
       :size="SIZE_VARIANS.md"
     >
@@ -44,6 +45,12 @@ export default {
   components: {
     Icon,
     Title
+  },
+  props: {
+    route: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {

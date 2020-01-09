@@ -57,7 +57,7 @@ import Title from '@/components/Title'
 import P from '@/components/P'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
-import CreateAcc from '@/pages/CreateAcc'
+import CreateAcc from '@/pages/Create'
 import Restore from '@/pages/Restore'
 
 export default {
