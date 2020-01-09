@@ -1,12 +1,12 @@
 <template>
   <div
     :class="b({ pointer, size })"
-    @click="$emit('click')"
+    @click="onClick"
   />
 </template>
 
 <script>
-import { SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS, EVENTS } from '@/config'
 
 export default {
   name: 'Close',
@@ -18,6 +18,11 @@ export default {
     size: {
       type: String,
       default: SIZE_VARIANS.xs
+    }
+  },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
     }
   }
 }
