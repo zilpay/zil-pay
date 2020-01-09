@@ -12,7 +12,7 @@ import guard from './guard'
 
 import Accounts from '@/pages/Accounts'
 import Connect from '@/pages/Connect'
-import CreateAcc from '@/pages/CreateAcc'
+import Create from '@/pages/Create'
 import Dapps from '@/pages/Dapps'
 import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
@@ -55,9 +55,9 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: `/${CreateAcc.name.toLowerCase()}`,
-    name: CreateAcc.name,
-    component: CreateAcc,
+    path: `/${Create.name.toLowerCase()}`,
+    name: Create.name,
+    component: Create,
     meta: { requiresAuth: false }
   },
   {
