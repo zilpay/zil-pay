@@ -8,11 +8,10 @@
  */
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
-import Button from 'src/components/Button.vue'
+import Chip from 'src/components/Chip.vue'
 import {
   BEM_CONFIG,
-  SIZE_VARIANS,
-  COLOR_VARIANTS
+  SIZE_VARIANS
 } from 'src/config'
 import { uuid } from 'uuidv4'
 
@@ -21,15 +20,11 @@ const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 
-describe('components:Button', () => {
-  const wrapper = shallowMount(Button, {
+describe('components:Chip', () => {
+  const wrapper = shallowMount(Chip, {
     localVue,
     propsData: {
-      size: SIZE_VARIANS.md,
-      color: COLOR_VARIANTS.info,
-      disabled: false,
-      round: true,
-      block: true
+      size: SIZE_VARIANS.md
     },
     slots: {
       default: [TEST_TEXT]
@@ -37,7 +32,7 @@ describe('components:Button', () => {
   })
 
   it('Should can import', () => {
-    expect(Button).toBeTruthy()
+    expect(Chip).toBeTruthy()
   })
 
   it('Should be mount', () => {
@@ -50,19 +45,12 @@ describe('components:Button', () => {
 
   it('checks the props', () => {
     expect(wrapper.props().size).toEqual(SIZE_VARIANS.md)
-    expect(wrapper.props().color).toEqual(COLOR_VARIANTS.info)
-    expect(wrapper.props().disabled).toBe(false)
-    expect(wrapper.props().round).toBe(true)
-    expect(wrapper.props().block).toEqual(true)
   })
 
   it('Should be have some class', () => {
     expect(wrapper.classes()).toEqual([
-      Button.name,
-      `${Button.name}${BEM_CONFIG.mod}round`,
-      `${Button.name}${BEM_CONFIG.mod}block`,
-      `${Button.name}${BEM_CONFIG.mod}size-md`,
-      `${Button.name}${BEM_CONFIG.mod}color-info`
+      Chip.name,
+      `${Chip.name}${BEM_CONFIG.mod}size-md`
     ])
   })
 
@@ -70,13 +58,19 @@ describe('components:Button', () => {
     expect(wrapper.text()).toEqual(TEST_TEXT)
   })
 
-  it('Should be img button', () => {
-    expect(wrapper.element.tagName).toEqual('BUTTON')
+  it('Should be img div', () => {
+    expect(wrapper.element.tagName).toEqual('DIV')
   })
 
   it('Should can emit click event', () => {
     wrapper.vm.onClick()
 
     expect(wrapper.emitted().click).toBeTruthy()
+  })
+
+  it('Should can emit close event', () => {
+    wrapper.vm.onClose()
+
+    expect(wrapper.emitted().close).toBeTruthy()
   })
 })
