@@ -7,7 +7,7 @@
       :size="el.size"
       :color="el.variant"
       block
-      @click="$emit('click', el.event)"
+      @click="onClick(el)"
     >
       <Icon
         :class="b('icon')"
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import { EVENTS } from '@/config'
+
 import Buttom from '@/components/Button'
 import Icon from '@/components/Icon'
 
@@ -86,6 +88,11 @@ export default {
         }
       })
     })
+  },
+  methods: {
+    onClick(element) {
+      this.$emit(EVENTS.click, element.event)
+    }
   }
 }
 </script>
