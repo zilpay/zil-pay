@@ -2,7 +2,7 @@
   <button
     :class="b({ round, block, size, color })"
     :disabled="disabled"
-    @click="$emit('click')"
+    @click="onClick"
   >
     <slot />
   </button>
@@ -11,7 +11,8 @@
 <script>
 import {
   COLOR_VARIANTS,
-  SIZE_VARIANS
+  SIZE_VARIANS,
+  EVENTS
 } from '@/config'
 
 /**
@@ -48,6 +49,11 @@ export default {
     block: {
       type: Boolean,
       default: false
+    }
+  },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
     }
   }
 }
