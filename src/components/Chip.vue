@@ -1,5 +1,8 @@
 <template>
-  <div :class="b({ pointer, size })">
+  <div
+    :class="b({ pointer, size })"
+    @click="click"
+  >
     <div :class="b('wrapper')">
       <div :class="b('circle')">
         {{ circle }}
@@ -7,7 +10,10 @@
       <div :class="b('content')">
         <slot />
       </div>
-      <CloseIcon :class="b('close', { close })" />
+      <CloseIcon
+        :class="b('close', { close })"
+        @click="onClose"
+      />
     </div>
   </div>
 </template>
@@ -39,6 +45,14 @@ export default {
       type: String,
       default: SIZE_VARIANS.sm
     }
+  },
+  methods: {
+    onClose() {
+      this.$emit('close')
+    },
+    click() {
+      this.$emit('click')
+    }
   }
 }
 </script>
@@ -59,7 +73,8 @@ $default-height: 32px;
   background-color: var(--theme-color-input);
 
   &__wrapper {
-    display: flex;
+    display: grid;
+    grid-template-columns: $default-height 1fr $default-height;
     justify-content: space-between;
   }
 
@@ -78,9 +93,19 @@ $default-height: 32px;
   }
 
   &__close {
+    display: none;
+
     height: 32px;
     width: 32px;
     text-align: center;
+
+    &_close {
+      display: flex;
+    }
+  }
+
+  &_pointer {
+    cursor: pointer;
   }
 
   &_size-xs {
