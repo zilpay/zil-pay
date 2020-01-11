@@ -1,10 +1,7 @@
 <template>
   <div :class="b()">
-    <Icon
+    <Arrow
       :class="b('back-icon')"
-      :icon="ICON_VARIANTS.arrowLefrt"
-      width="13"
-      height="23"
       pointer
     />
     <Title
@@ -30,6 +27,7 @@ import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Icon from '@/components/Icon'
 import Title from '@/components/Title'
+import Arrow from '@/components/icons/Arrow'
 
 const _two = 2
 
@@ -44,7 +42,8 @@ export default {
   name: 'TopBar',
   components: {
     Icon,
-    Title
+    Title,
+    Arrow
   },
   props: {
     route: {
