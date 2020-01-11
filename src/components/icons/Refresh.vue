@@ -1,8 +1,9 @@
 
 <template>
   <svg
-    :class="b()"
+    :class="b({ pointer })"
     viewBox="0 0 30 26"
+    @click="onClick"
   >
     <path
       v-for="(d, index) of paths"
@@ -13,9 +14,17 @@
 </template>
 
 <script>
+import { EVENTS } from '@/config'
+
 /* eslint-disable max-len */
 export default {
   name: 'Refresh',
+  props: {
+    pointer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       paths: [
@@ -23,10 +32,21 @@ export default {
         'M20.0001 12.8572C20.0001 11.2786 18.7216 10 17.1429 10C15.5643 10 14.2858 11.2786 14.2858 12.8572C14.2858 14.4357 15.5643 15.7143 17.1429 15.7143C18.7216 15.7143 20.0001 14.4357 20.0001 12.8572Z'
       ]
     }
+  },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
+    }
   }
 }
 </script>
 
 <style lang="scss">
+.Refresh {
+  fill: var(--theme-color-font);
 
+  &_pointer {
+    cursor: pointer;
+  }
+}
 </style>
