@@ -25,6 +25,7 @@
         :disabled="!isVerify"
         round
         block
+        @click="toHome"
       >
         CONTINUE
       </Button>
@@ -131,7 +132,7 @@ export default {
         phrase => phrase !== phraseRM
       )
     },
-    continue() {
+    toHome() {
       this.$router.push({ name: Home.name })
     }
   },
