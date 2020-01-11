@@ -7,13 +7,13 @@
     <div
       v-for="(_, index) of Array(3)"
       :key="index"
-      :class="b('line')"
+      :class="b('line', { color })"
     />
   </div>
 </template>
 
 <script>
-import { EVENTS } from '@/config'
+import { EVENTS, COLOR_VARIANTS } from '@/config'
 
 /**
  * Burger Menu.
@@ -35,6 +35,10 @@ export default {
     pointer: {
       type: Boolean,
       default: false
+    },
+    color: {
+      type: String,
+      default: COLOR_VARIANTS.primary
     }
   },
   computed: {
@@ -64,8 +68,35 @@ export default {
     width: 100%;
     height: 2px;
 
-    background-color: var(--accent-color-primary);
     border-radius: var(--default-border-radius);
+
+    &_color-primary {
+      background-color: var(--accent-color-primary);
+    }
+
+    &_color-white {
+      background-color: var(--accent-color-white);
+    }
+
+    &_color-gray {
+      background-color: var(--accent-color-gray);
+    }
+
+    &_color-success {
+      background-color: var(--accent-color-success);
+    }
+
+    &_color-info {
+      background-color: var(--accent-color-info);
+    }
+
+    &_color-danger {
+      background-color: var(--accent-color-danger);
+    }
+
+    &_color-warning {
+      background-color: var(--accent-color-warning);
+    }
   }
 
   &_pointer {
