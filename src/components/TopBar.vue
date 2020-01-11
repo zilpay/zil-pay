@@ -1,10 +1,20 @@
 <template>
   <div :class="b()">
-    <Arrow
-      :class="b('back-icon')"
-      pointer
+    <div
+      :class="b('back-wrapper')"
       @click="goBack"
-    />
+    >
+      <Arrow
+        :class="b('back-icon')"
+        pointer
+      />
+      <Title
+        v-if="back"
+        :size="SIZE_VARIANS.sm"
+      >
+        back
+      </Title>
+    </div>
     <Title
       v-show="route"
       :class="b('current-page')"
@@ -50,6 +60,10 @@ export default {
     route: {
       type: Boolean,
       default: true
+    },
+    back: {
+      type: Boolean,
+      required: false
     }
   },
   data() {
@@ -90,6 +104,13 @@ export default {
 
   min-height: 65px;
   max-width: 600px;
+
+  &__back-wrapper {
+    display: grid;
+    grid-template-columns: 30px auto;
+
+    cursor: pointer;
+  }
 
   &__back-icon {
     padding-left: 15px;

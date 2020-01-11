@@ -4,14 +4,18 @@
     @click="onClick"
   >
     <div :class="b('wrapper')">
-      <div :class="b('circle')">
+      <div
+        v-show="circle"
+        :class="b('circle')"
+      >
         {{ circle }}
       </div>
       <div :class="b('content')">
         <slot />
       </div>
       <CloseIcon
-        :class="b('close', { close })"
+        v-show="close"
+        :class="b('close')"
         @click="onClose"
       />
     </div>
@@ -73,7 +77,7 @@ $default-height: 32px;
 
   &__wrapper {
     display: grid;
-    grid-template-columns: $default-height 1fr $default-height;
+    grid-template-columns: auto 1fr auto;
     justify-content: space-between;
   }
 
@@ -92,15 +96,12 @@ $default-height: 32px;
   }
 
   &__close {
-    display: none;
+    display: flex;
 
-    height: 32px;
-    width: 32px;
+    height: $default-height;
+    width: $default-height;
+
     text-align: center;
-
-    &_close {
-      display: flex;
-    }
   }
 
   &_pointer {

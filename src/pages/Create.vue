@@ -1,7 +1,10 @@
 <template>
   <div :class="b()">
     <div :class="b('wrapper')">
-      <TopBar :route="false"/>
+      <TopBar
+        :route="false"
+        back
+      />
       <Title :size="SIZE_VARIANS.md">
         {{ TITLE }}
       </Title>
