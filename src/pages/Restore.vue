@@ -1,6 +1,10 @@
 <template>
   <div :class="b()">
     <Container :class="b('wrapper')">
+      <TopBar
+        :route="false"
+        back
+      />
       <Title>
         {{ TITLE }}
       </Title>
@@ -43,6 +47,7 @@
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Title from '@/components/Title'
+import TopBar from '@/components/TopBar'
 import P from '@/components/P'
 import Button from '@/components/Button'
 import Input, { INPUT_TYPES } from '@/components/Input'
@@ -60,7 +65,8 @@ export default {
     Container,
     Input,
     Button,
-    Wave
+    Wave,
+    TopBar
   },
   data() {
     return {

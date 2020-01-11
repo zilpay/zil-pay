@@ -153,6 +153,8 @@ export default {
     display: inline-grid;
     align-items: center;
     grid-template-rows: auto 60px 1fr 90px minmax(200px, 1fr);
+
+    min-width: 250px;
   }
 
   &__words {

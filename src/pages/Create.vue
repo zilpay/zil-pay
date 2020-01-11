@@ -128,6 +128,8 @@ export default {
     display: inline-grid;
     align-items: center;
     grid-template-rows: auto 50px 60px 50px 1fr 90px;
+
+    min-width: 250px;
   }
 
   &__reset-icon {
@@ -145,7 +147,7 @@ export default {
 
   &__actions {
     display: grid;
-    grid-template-columns: minmax(90px, 150px) minmax(90px, 150px);
+    grid-template-columns: minmax(90px, 100px) minmax(90px, 100px);
     justify-content: space-between;
     grid-gap: 30px;
   }
