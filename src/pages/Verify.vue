@@ -39,6 +39,7 @@
         </Chip>
       </div>
     </div>
+    <Wave />
   </div>
 </template>
 
@@ -57,6 +58,7 @@ import Chip from '@/components/Chip'
 import P from '@/components/P'
 import { shuffle } from '../../lib/utils'
 import Button from '@/components/Button'
+import Wave from '@/components/Wave'
 
 const DESCRIPTION = 'Verify your recovery phrase'
 
@@ -66,7 +68,8 @@ export default {
     TopBar,
     P,
     Chip,
-    Button
+    Button,
+    Wave
   },
   data() {
     return {

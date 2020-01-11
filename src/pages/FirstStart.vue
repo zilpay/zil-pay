@@ -36,10 +36,7 @@
         </div>
       </div>
     </div>
-    <img
-      :class="b('wave')"
-      src="/illustrations/wave.svg"
-    >
+    <Wave />
   </Container>
 </template>
 
@@ -59,6 +56,7 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import CreateAcc from '@/pages/Create'
 import Restore from '@/pages/Restore'
+import Wave from '@/components/Wave'
 
 export default {
   name: 'FirstStart',
@@ -67,7 +65,8 @@ export default {
     Title,
     P,
     Button,
-    Container
+    Container,
+    Wave
   },
   data() {
     return {

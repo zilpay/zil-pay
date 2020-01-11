@@ -2,10 +2,10 @@
   <div :class="b()">
     <Container :class="b('wrapper')">
       <Title>
-        Restore your Account.
+        {{ TITLE }}
       </Title>
-      <P>
-        Enter your secret word phrase here to restore your vault.
+      <P :class="b('description')">
+        {{ DESCRIPTION }}
       </P>
       <form
         :class="b('restore-form')"
@@ -35,10 +35,7 @@
         </Button>
       </form>
     </Container>
-    <img
-      :class="b('wave')"
-      src="/illustrations/wave.svg"
-    >
+    <Wave />
   </div>
 </template>
 
@@ -50,6 +47,10 @@ import P from '@/components/P'
 import Button from '@/components/Button'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Container from '@/components/Container'
+import Wave from '@/components/Wave'
+
+const TITLE = 'Restore your Account.'
+const DESCRIPTION = 'Enter your secret word phrase here to restore your vault.'
 
 export default {
   name: 'Restore',
@@ -58,13 +59,16 @@ export default {
     P,
     Container,
     Input,
-    Button
+    Button,
+    Wave
   },
   data() {
     return {
       COLOR_VARIANTS,
       SIZE_VARIANS,
       INPUT_TYPES,
+      TITLE,
+      DESCRIPTION,
       seed: null,
       password: null,
       confirmPassword: null
@@ -92,6 +96,10 @@ export default {
     justify-content: center;
   }
 
+  &__description {
+    opacity: 0.5;
+  }
+
   &__seed-input {
     display: inline-block;
 
@@ -113,7 +121,6 @@ export default {
 
   &__restore-form {
     display: grid;
-
     grid-template-rows: 150px 80px 80px;
 
     max-width: 250px;
@@ -123,15 +130,6 @@ export default {
 
   &__submit-btn {
     width: 175px;
-  }
-
-  &__wave {
-    position: fixed;
-    z-index: -1;
-    bottom: 0;
-
-    width: 100%;
-    max-width: 100vw;
   }
 }
 </style>
