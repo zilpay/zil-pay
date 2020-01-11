@@ -13,6 +13,7 @@ import guard from './guard'
 import Accounts from '@/pages/Accounts'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
+import Verify from '@/pages/Verify'
 import Dapps from '@/pages/Dapps'
 import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
@@ -58,6 +59,12 @@ const routes = [
     path: `/${Create.name.toLowerCase()}`,
     name: Create.name,
     component: Create,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: `/${Verify.name.toLowerCase()}`,
+    name: Verify.name,
+    component: Verify,
     meta: { requiresAuth: false }
   },
   {

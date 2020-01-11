@@ -3,6 +3,7 @@
     <Arrow
       :class="b('back-icon')"
       pointer
+      @click="goBack"
     />
     <Title
       v-show="route"
@@ -70,6 +71,11 @@ export default {
       }
 
       return false
+    }
+  },
+  methods: {
+    goBack() {
+      this.$router.go(-1)
     }
   }
 }
