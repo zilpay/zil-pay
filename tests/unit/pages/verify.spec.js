@@ -47,7 +47,7 @@ describe('pages:Verify.vue', () => {
     expect(wrapper.vm.shuffle).toBeDefined()
     expect(wrapper.vm.add).toBeDefined()
     expect(wrapper.vm.rm).toBeDefined()
-    expect(wrapper.vm.continue).toBeDefined()
+    expect(wrapper.vm.toHome).toBeDefined()
   })
 
   it('Should be have some methods', () => {
@@ -79,6 +79,6 @@ describe('pages:Verify.vue', () => {
 
     expect(wrapper.vm.exceptionalItems).toEqual([])
     expect(wrapper.vm.isVerify).toBeTruthy()
-    expect(wrapper.vm.continue).toBeTruthy()
+    expect(wrapper.vm.toHome).toBeTruthy()
   })
 })

@@ -82,11 +82,11 @@ export default {
   },
   methods: {
     restore() {
-      console.log(
-        this.seed,
-        this.password,
-        this.confirmPassword
-      )
+      // console.log(
+      //   this.seed,
+      //   this.password,
+      //   this.confirmPassword
+      // )
     }
   }
 }

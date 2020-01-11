@@ -3,7 +3,7 @@
     <Container :class="b('wrapper')">
       <Icon
         :class="b('logo')"
-        :icon="icons.zilliqaLogo"
+        :icon="ICON_VARIANTS.zilliqaLogo"
         width="106"
         height="144"
       />
@@ -12,7 +12,7 @@
       </Title>
       <P
         :class="b('greeting')"
-        :font="fonts.regular"
+        :font="FONT_VARIANTS.regular"
       >
         Welcome back
       </P>
@@ -23,8 +23,8 @@
         <Input
           v-model="password"
           :class="b('form-password')"
-          :type="inputTypes.password"
-          :size="sizes.xs"
+          :type="INPUT_TYPES.password"
+          :size="SIZE_VARIANS.xs"
           placeholder="Password"
           block
           round
@@ -71,10 +71,10 @@ export default {
   data() {
     return {
       // Proxy constants:
-      icons: ICON_VARIANTS,
-      fonts: FONT_VARIANTS,
-      sizes: SIZE_VARIANS,
-      inputTypes: INPUT_TYPES,
+      ICON_VARIANTS,
+      FONT_VARIANTS,
+      SIZE_VARIANS,
+      INPUT_TYPES,
 
       // Locals:
       password: null
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     unlock() {
-      console.log('unlock', this.password)
+      // console.log('unlock', this.password)
     }
   }
 }
@@ -95,13 +95,18 @@ export default {
   align-items: center;
   padding-top: 90px;
 
+  &__wrapper,
+  &__form,
+  &__form-password {
+    min-width: 250px;
+  }
+
   &__wrapper {
     display: grid;
     grid-template-areas: "logo"
                          "title"
                          "greeting"
                          "form";
-    min-width: 250px;
   }
 
   &__logo {
@@ -122,13 +127,10 @@ export default {
     grid-area: form;
     justify-self: center;
     grid-template-columns: 1fr;
-
-    min-width: 250px;
   }
 
   &__form-password {
     text-align: center;
-    min-width: 250px;
   }
 }
 </style>
