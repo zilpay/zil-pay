@@ -1,10 +1,7 @@
 <template>
   <div :class="b()">
     <div :class="b('wrapper')">
-      <TopBar
-        :class="b('nav-bar')"
-        :route="false"
-      />
+      <TopBar :route="false"/>
       <Title :size="SIZE_VARIANS.md">
         {{ TITLE }}
       </Title>
@@ -16,6 +13,7 @@
         width="30"
         height="30"
         pointer
+        @click="refreshWords"
       />
       <div :class="b('words')">
         <Chip
@@ -26,12 +24,23 @@
           {{ el.word }}
         </Chip>
       </div>
-      <Button
-        :class="b('continue-btn')"
-        round
-      >
-        CONTINUE
-      </Button>
+      <div :class="b('actions')">
+        <Button
+          :color="COLOR_VARIANTS.success"
+          block
+          round
+          @click="prinntWords"
+        >
+          PRINT
+        </Button>
+        <Button
+          block
+          round
+          @click="setWords"
+        >
+          CONTINUE
+        </Button>
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +53,8 @@ import {
 } from '@/config'
 import { uuid } from 'uuidv4'
 
+import Verify from '@/pages/Verify'
+
 import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
 import Title from '@/components/Title'
@@ -51,11 +62,14 @@ import P from '@/components/P'
 import Button from '@/components/Button'
 import Refresh from '@/components/icons/Refresh'
 
+import Printer from '@/mixins/printer'
+
 const TITLE = 'Your recovery phrase'
 const DESCRIPTION = 'Remember your 12 words.'
 
 export default {
   name: 'Create',
+  mixins: [Printer],
   components: {
     Chip,
     TopBar,
@@ -84,6 +98,16 @@ export default {
           uuid: uuid()
         }))
     }
+  },
+  methods: {
+    setWords() {
+      this.$router.push({ name: Verify.name })
+    },
+    refreshWords() {},
+    prinntWords() {
+      // Call from Printer mixin.
+      this.printSeed()
+    }
   }
 }
 </script>
@@ -97,9 +121,7 @@ export default {
   &__wrapper {
     display: inline-grid;
     align-items: center;
-    grid-template-rows: auto 50px 60px 50px 1fr 60px;
-
-    width: 30vw;
+    grid-template-rows: auto 50px 60px 50px 1fr 90px;
   }
 
   &__reset-icon {
@@ -115,13 +137,11 @@ export default {
     grid-row-gap: 10px;
   }
 
-  &__continue-btn {
-    justify-self: right;
-    width: 175px;
-  }
-
-  &__nav-bar {
-    width: 30vw;
+  &__actions {
+    display: grid;
+    grid-template-columns: minmax(90px, 150px) minmax(90px, 150px);
+    justify-content: space-between;
+    grid-gap: 30px;
   }
 }
 </style>
