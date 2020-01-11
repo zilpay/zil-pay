@@ -105,9 +105,10 @@ export default {
   right: 0;
 
   display: grid;
-
   grid-template-columns: 1fr 1fr;
   gap: 1px;
+
+  max-width: 360px;
 
   &__btn {
     display: flex;
