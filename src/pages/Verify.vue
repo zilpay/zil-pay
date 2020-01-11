@@ -149,7 +149,7 @@ export default {
   &__wrapper {
     display: inline-grid;
     align-items: center;
-    grid-template-rows: auto 60px 1fr 90px;
+    grid-template-rows: auto 60px 1fr 90px minmax(200px, 1fr);
   }
 
   &__words {
@@ -170,6 +170,7 @@ export default {
     display: inline-grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 15px;
+    grid-row: 5;
   }
 }
 </style>
