@@ -12,15 +12,16 @@
           width="20"
           pointer
         />
-        <div :class="b('fast-access')">
-          dsadsa
-        </div>
+        <FastPanel />
         <Gear
           width="20"
           height="20"
+          pointer
         />
       </div>
+      <Account />
     </div>
+    <Transactions />
     <BottomBar :elements="bottomBar"/>
   </div>
 </template>
@@ -36,6 +37,10 @@ import {
 
 import BottomBar from '@/components/BottomBar'
 import Icon from '@/components/Icon'
+import FastPanel from '@/components/FastPanel'
+import Account from '@/components/Account'
+import Transactions from '@/components/Transactions'
+
 import Burger from '@/components/icons/Burger'
 import Gear from '@/components/icons/Gear'
 
@@ -45,7 +50,10 @@ export default {
     BottomBar,
     Icon,
     Burger,
-    Gear
+    FastPanel,
+    Account,
+    Gear,
+    Transactions
   },
   data() {
     return {
@@ -86,7 +94,7 @@ export default {
 
   &__wrapper,
   &__nav-bar {
-    min-width: 360px;
+    min-width: calc(100vw - 30px);
   }
 
   &__wrapper {
@@ -98,7 +106,7 @@ export default {
 
   &__nav-bar {
     display: inline-grid;
-    grid-template-columns: 45px 1fr 45px;
+    grid-template-columns: 20px 1fr 20px;
     justify-items: center;
     align-items: center;
   }
