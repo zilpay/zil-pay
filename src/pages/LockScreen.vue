@@ -22,7 +22,6 @@
       >
         <Input
           v-model="password"
-          :class="b('form-password')"
           :type="INPUT_TYPES.password"
           :size="SIZE_VARIANS.xs"
           placeholder="Password"
@@ -33,7 +32,7 @@
           autofocus
         />
         <Button
-          :size="sizes.xs"
+          :size="SIZE_VARIANS.xs"
           block
           round
         >
@@ -96,8 +95,7 @@ export default {
   padding-top: 90px;
 
   &__wrapper,
-  &__form,
-  &__form-password {
+  &__form {
     min-width: 250px;
   }
 
@@ -127,10 +125,6 @@ export default {
     grid-area: form;
     justify-self: center;
     grid-template-columns: 1fr;
-  }
-
-  &__form-password {
-    text-align: center;
   }
 }
 </style>
