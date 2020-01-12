@@ -2,24 +2,27 @@
   <Alert :class="b()">
     <div :class="b('wrapper')">
       Transactions
+      <Status />
     </div>
   </Alert>
 </template>
 
 <script>
 import Alert from '@/components/Alert'
+import Status from '@/components/icons/Status'
 
 export default {
   name: 'Transactions',
   components: {
-    Alert
+    Alert,
+    Status
   }
 }
 </script>
 
 <style lang="scss">
 .Transactions {
-  width: 100vw;
+  min-width: 360px;
 
   &__wrapper {
     height: 273px;
