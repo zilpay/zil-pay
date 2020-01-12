@@ -21,7 +21,7 @@ export default {
 .Alert {
   display: grid;
 
-  grid-template-rows: 1px 80px 1px;
+  grid-template-rows: 1px 1fr 1px;
 
   width: 100%;
 
