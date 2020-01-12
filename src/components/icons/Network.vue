@@ -1,6 +1,6 @@
 <template>
   <svg
-    :class="b()"
+    :class="b({ pointer })"
     viewBox="0 0 17 18"
     @click="onClick"
   >
@@ -15,7 +15,7 @@
 
 <script>
 /* eslint-disable max-len */
-import { EVENTS, COLOR_VARIANTS } from '@/config'
+import { EVENTS } from '@/config'
 
 const SVG_CONTENT = [
   'M6.77847 7.59216H6.77515C6.62844 7.59216 6.51147 7.71039 6.51147 7.85612C6.51147 8.00196 6.63176 8.12008 6.77847 8.12008C6.92496 8.12008 7.04381 8.00196 7.04381 7.85612C7.04381 7.71039 6.92496 7.59216 6.77847 7.59216Z',
@@ -32,7 +32,7 @@ export default {
     },
     color: {
       type: String,
-      default: COLOR_VARIANTS.primary
+      required: false
     }
   },
   data() {
@@ -51,6 +51,8 @@ export default {
 <style lang="scss">
 .Network {
   &__path {
+    fill: var(--theme-color-font);
+
     &_color-primary {
       fill: var(--accent-color-primary);
     }
@@ -78,6 +80,10 @@ export default {
     &_color-warning {
       fill: var(--accent-color-warning);
     }
+  }
+
+  &_pointer {
+    cursor: pointer;
   }
 }
 </style>
