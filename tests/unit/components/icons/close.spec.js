@@ -64,4 +64,10 @@ describe('components:Close', () => {
   it('Should be img div', () => {
     expect(wrapper.element.tagName).toEqual('DIV')
   })
+
+  it('Should can emit click event', () => {
+    wrapper.vm.onClick()
+
+    expect(wrapper.emitted().click).toBeTruthy()
+  })
 })
