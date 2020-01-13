@@ -52,7 +52,7 @@ describe('components:Refresh', () => {
 
   it('Should be have some attributes', () => {
     expect(wrapper.attributes()).toEqual({
-      viewBox: '0 0 30 26',
+      viewBox: '0 0 19 18',
       height: '300',
       width: '10',
       class: `${Refresh.name} ${Refresh.name}${BEM_CONFIG.mod}pointer`
@@ -61,5 +61,11 @@ describe('components:Refresh', () => {
 
   it('Should be img svg', () => {
     expect(wrapper.element.tagName).toEqual('svg')
+  })
+
+  it('Should can emit click event', () => {
+    wrapper.vm.onClick()
+
+    expect(wrapper.emitted().click).toBeTruthy()
   })
 })
