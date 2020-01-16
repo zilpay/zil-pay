@@ -65,7 +65,7 @@ export default {
         {
           value: 'Receive',
           event: 'receive',
-          icon: ICON_VARIANTS.add,
+          icon: ICON_VARIANTS.receive,
           iconType: ICON_TYPE.svg,
           variant: COLOR_VARIANTS.primary,
           size: SIZE_VARIANS.sm,
@@ -74,7 +74,7 @@ export default {
         {
           value: 'Send',
           event: 'send',
-          icon: ICON_VARIANTS.add,
+          icon: ICON_VARIANTS.send,
           iconType: ICON_TYPE.svg,
           variant: COLOR_VARIANTS.primary,
           size: SIZE_VARIANS.sm,
