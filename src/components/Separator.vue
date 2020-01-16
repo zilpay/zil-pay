@@ -16,7 +16,7 @@ export default {
 
 <style lang="scss">
 $width:  320px !default;
-$height: 1px   !default;
+$height: 0.02rem   !default;
 $radius: 50%   !default;
 
 .Separator {
