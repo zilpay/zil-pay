@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { FONT_VARIANTS } from '@/config'
-
 /**
  * @example
  * import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
@@ -22,7 +20,7 @@ export default {
     },
     font: {
       type: String,
-      default: FONT_VARIANTS.light
+      required: false
     },
     pointer: {
       type: Boolean,
@@ -41,6 +39,18 @@ export default {
   color: var(--theme-color-font);
 
   letter-spacing: -0.139803px;
+
+  &_font-medium {
+    font-family: var(--font-family-medium);
+  }
+
+  &_font-regular {
+    font-family: var(--font-family-regular);
+  }
+
+  &_font-bold {
+    font-family: var(--font-family-bold);
+  }
 
   &_pointer {
     cursor: pointer;
