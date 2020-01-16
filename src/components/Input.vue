@@ -4,15 +4,10 @@
       {{ title }}
     </div>
     <input
+      v-bind="$attrs"
       :class="b('element', { round, centred, error: Boolean(error) })"
       :disabled="disabled"
-      :placeholder="placeholder"
       :value="value"
-      :type="type"
-      :min="min"
-      :max="max"
-      :step="step"
-      :required="required"
       :autofocus="autofocus"
       ref="input"
       @input="onInput"
@@ -71,10 +66,6 @@ export default {
       type: Boolean,
       default: false
     },
-    placeholder: {
-      type: [String, Number],
-      required: false
-    },
     title: {
       type: [String, Number],
       required: false
@@ -86,26 +77,6 @@ export default {
     value: {
       type: [String, Number],
       required: false
-    },
-    type: {
-      type: String,
-      default: INPUT_TYPES.text
-    },
-    min: {
-      type: Number,
-      required: false
-    },
-    max: {
-      type: Number,
-      required: false
-    },
-    step: {
-      type: Number,
-      required: false
-    },
-    required: {
-      type: Boolean,
-      default: false
     },
     autofocus: {
       type: Boolean,
@@ -119,6 +90,7 @@ export default {
   methods: {
     onInput(event) {
       this.$emit(EVENTS.input, event.target.value)
+      this.$attrs
     }
   },
   mounted() {
