@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <div :class="b('first-line')">
+    <Container :class="b('first-line')">
       <P
         :class="b('send')"
         :font="FONT_VARIANTS.bold"
@@ -13,8 +13,8 @@
       >
         -ZIL10
       </P>
-    </div>
-    <div :class="b('second-line')">
+    </Container>
+    <Container :class="b('second-line')">
       <Icon
         :icon="ICON_VARIANTS.statusDanger"
         height="15"
@@ -26,8 +26,8 @@
         width="2"
         right
       />
-    </div>
-    <div :class="b('thirdly-line')">
+    </Container>
+    <Container :class="b('thirdly-line')">
       <div :class="b('time')">
         1 min ago
       </div>
@@ -37,7 +37,7 @@
       >
         -$0.005
       </P>
-    </div>
+    </Container>
   </div>
 </template>
 
@@ -49,6 +49,7 @@ import {
 } from '@/config'
 
 import P from '@/components/P'
+import Container from '@/components/Container'
 import Icon from '@/components/Icon'
 import Arrow from '@/components/icons/Arrow'
 
@@ -57,7 +58,8 @@ export default {
   components: {
     P,
     Icon,
-    Arrow
+    Arrow,
+    Container
   },
   data() {
     return {
@@ -78,6 +80,7 @@ export default {
   &__thirdly-line {
     display: flex;
     justify-content: space-between;
+    max-height: 20px;
   }
 
   &__thirdly-line,
