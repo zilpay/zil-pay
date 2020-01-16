@@ -1,33 +1,40 @@
 <template>
   <Alert :class="b()">
     <div :class="b('wrapper')">
-      <div :class="b('title')">
+      <Title
+        :class="b('title')"
+        :size="SIZE_VARIANS.sm"
+        :font="FONT_VARIANTS.medium"
+      >
         Transactions
-      </div>
+      </Title>
       <TransactionCard />
+      <Separator />
     </div>
   </Alert>
 </template>
 
 <script>
 import {
-  ICON_VARIANTS,
   SIZE_VARIANS,
   FONT_VARIANTS
 } from '@/config'
 
 import Alert from '@/components/Alert'
 import TransactionCard from '@/components/TransactionCard'
+import Separator from '@/components/Separator'
+import Title from '@/components/Title'
 
 export default {
   name: 'Transactions',
   components: {
     Alert,
-    TransactionCard
+    TransactionCard,
+    Separator,
+    Title
   },
   data() {
     return {
-      ICON_VARIANTS,
       SIZE_VARIANS,
       FONT_VARIANTS,
       currentAddress: '',
