@@ -6,7 +6,6 @@
     <input
       v-bind="$attrs"
       :class="b('element', { round, centred, error: Boolean(error) })"
-      :disabled="disabled"
       :value="value"
       :autofocus="autofocus"
       ref="input"
@@ -59,10 +58,6 @@ export default {
       default: false
     },
     block: {
-      type: Boolean,
-      default: false
-    },
-    disabled: {
       type: Boolean,
       default: false
     },
