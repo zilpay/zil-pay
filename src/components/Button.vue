@@ -1,7 +1,7 @@
 <template>
   <button
+    v-bind="$attrs"
     :class="b({ round, block, size, color })"
-    :disabled="disabled"
     @click="onClick"
   >
     <slot />
