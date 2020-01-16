@@ -94,12 +94,14 @@ export default {
 
 <style lang="scss">
 .Restore {
+  display: flex;
+  justify-content: center;
+
   &__wrapper {
-    display: grid;
+    display: inline-grid;
+    align-items: center;
 
-    padding-top: 10vh;
-
-    justify-content: center;
+    min-width: 250px;
   }
 
   &__description {
