@@ -27,7 +27,6 @@ describe('components:Button', () => {
     propsData: {
       size: SIZE_VARIANS.md,
       color: COLOR_VARIANTS.info,
-      disabled: false,
       round: true,
       block: true
     },
@@ -51,7 +50,6 @@ describe('components:Button', () => {
   it('checks the props', () => {
     expect(wrapper.props().size).toEqual(SIZE_VARIANS.md)
     expect(wrapper.props().color).toEqual(COLOR_VARIANTS.info)
-    expect(wrapper.props().disabled).toBe(false)
     expect(wrapper.props().round).toBe(true)
     expect(wrapper.props().block).toEqual(true)
   })

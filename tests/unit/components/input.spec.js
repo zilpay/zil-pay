@@ -26,22 +26,23 @@ localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 describe('components:Input', () => {
   const wrapper = shallowMount(Input, {
     localVue,
-    propsData: {
-      size: SIZE_VARIANS.md,
-      disabled: false,
-      round: true,
-      block: true,
+    attrs: {
       type: INPUT_TYPES.number,
+      placeholder: TEST_PLACEHOLDER,
+      required: true,
       min: 10,
       max: 20,
       step: 1,
+    },
+    propsData: {
+      size: SIZE_VARIANS.md,
+      round: true,
+      block: true,
       centred: false,
       autofocus: true,
       title: TEST_TITLE,
       error: TEST_ERROR,
-      placeholder: TEST_PLACEHOLDER,
-      value: TEST_VALUE,
-      required: true
+      value: TEST_VALUE
     }
   })
 
@@ -60,20 +61,23 @@ describe('components:Input', () => {
 
   it('checks the props', () => {
     expect(wrapper.props().size).toEqual(SIZE_VARIANS.md)
-    expect(wrapper.props().disabled).toBe(false)
     expect(wrapper.props().round).toBe(true)
     expect(wrapper.props().block).toEqual(true)
-    expect(wrapper.props().placeholder).toEqual(TEST_PLACEHOLDER)
     expect(wrapper.props().title).toEqual(TEST_TITLE)
     expect(wrapper.props().error).toEqual(TEST_ERROR)
     expect(wrapper.props().value).toEqual(TEST_VALUE)
-    expect(wrapper.props().type).toEqual(INPUT_TYPES.number)
-    expect(wrapper.props().min).toEqual(10)
-    expect(wrapper.props().max).toEqual(20)
-    expect(wrapper.props().step).toEqual(1)
-    expect(wrapper.props().required).toEqual(true)
     expect(wrapper.props().autofocus).toEqual(true)
     expect(wrapper.props().centred).toEqual(false)
+  })
+
+  it('Should have some attributes', () => {
+    expect(wrapper.attributes().class).toEqual('Input Input_block Input_size-md')
+    expect(wrapper.attributes().type).toEqual(INPUT_TYPES.number)
+    expect(wrapper.attributes().placeholder).toEqual(TEST_PLACEHOLDER)
+    expect(wrapper.attributes().required).toEqual('required')
+    expect(wrapper.attributes().min).toEqual('10')
+    expect(wrapper.attributes().max).toEqual('20')
+    expect(wrapper.attributes().step).toEqual('1')
   })
 
 })
