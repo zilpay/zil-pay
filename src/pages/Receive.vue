@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <TopBar />
-    <Alert>
+    <Alert :class="b('alert-info')">
       <Title :size="SIZE_VARIANS.sm">
         {{ alertHeader.title }}
       </Title>
@@ -125,6 +125,10 @@ export default {
     grid-gap: 15px;
 
     padding-top: 30px;
+  }
+
+  &__alert-info {
+    height: 80px;
   }
 
   &__header,
