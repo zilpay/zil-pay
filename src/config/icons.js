@@ -16,7 +16,9 @@ export const ICON_VARIANTS = {
   cancel: 'cancel',
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',
-  statusSuccess: 'status_success'
+  statusSuccess: 'status_success',
+  send: 'send',
+  receive: 'receive'
 }
 
 export const ICON_TYPE = {
