@@ -13,7 +13,10 @@ export const ICON_VARIANTS = {
   zilliqaLogo: 'zilliqa_logo',
   arrowLefrt: 'arrow_lefrt',
   arrowRight: 'arrow_right',
-  cancel: 'cancel'
+  cancel: 'cancel',
+  statusPadding: 'status_padding',
+  statusDanger: 'status_danger',
+  statusSuccess: 'status_success'
 }
 
 export const ICON_TYPE = {
