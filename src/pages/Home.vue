@@ -22,7 +22,10 @@
       <Account />
     </div>
     <Transactions />
-    <BottomBar :elements="bottomBar"/>
+    <BottomBar
+      :elements="bottomBar"
+      @click="navBottom"
+    />
   </div>
 </template>
 
@@ -35,6 +38,9 @@ import {
   SIZE_VARIANS
 } from '@/config'
 
+import Receive from '@/pages/Receive'
+import Send from '@/pages/Send'
+
 import BottomBar from '@/components/BottomBar'
 import Icon from '@/components/Icon'
 import FastPanel from '@/components/FastPanel'
@@ -43,6 +49,11 @@ import Transactions from '@/components/Transactions'
 
 import Burger from '@/components/icons/Burger'
 import Gear from '@/components/icons/Gear'
+
+const events = {
+  send: uuid(),
+  receive: uuid()
+}
 
 export default {
   name: 'Home',
@@ -64,7 +75,7 @@ export default {
       bottomBar: [
         {
           value: 'Receive',
-          event: 'receive',
+          event: events.receive,
           icon: ICON_VARIANTS.receive,
           iconType: ICON_TYPE.svg,
           variant: COLOR_VARIANTS.primary,
@@ -73,7 +84,7 @@ export default {
         },
         {
           value: 'Send',
-          event: 'send',
+          event: events.send,
           icon: ICON_VARIANTS.send,
           iconType: ICON_TYPE.svg,
           variant: COLOR_VARIANTS.primary,
@@ -81,6 +92,20 @@ export default {
           uuid: uuid()
         }
       ]
+    }
+  },
+  methods: {
+    navBottom(event) {
+      switch (event) {
+      case events.send:
+        this.$router.push({ name: Send.name })
+        break
+      case events.receive:
+        this.$router.push({ name: Receive.name })
+        break
+      default:
+        break
+      }
     }
   }
 }
