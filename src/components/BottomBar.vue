@@ -114,6 +114,9 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    font-family: var(--font-family-bold);
+    font-size: var(--size-sm-font);
   }
 
   &__icon {
