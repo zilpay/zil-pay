@@ -11,20 +11,22 @@
         <Burger
           width="20"
           pointer
+          @click="onEvent(EVENTS.accounts)"
         />
         <FastPanel />
         <Gear
           width="20"
           height="20"
           pointer
+          @click="onEvent(EVENTS.settings)"
         />
       </div>
       <Account />
     </div>
     <Transactions />
     <BottomBar
-      :elements="bottomBar"
-      @click="navBottom"
+      :elements="BOTTOM_BAR"
+      @click="onEvent"
     />
   </div>
 </template>
@@ -40,6 +42,8 @@ import {
 
 import Receive from '@/pages/Receive'
 import Send from '@/pages/Send'
+import Accounts from '@/pages/Accounts'
+import Settings from '@/pages/Settings'
 
 import BottomBar from '@/components/BottomBar'
 import Icon from '@/components/Icon'
@@ -50,10 +54,32 @@ import Transactions from '@/components/Transactions'
 import Burger from '@/components/icons/Burger'
 import Gear from '@/components/icons/Gear'
 
-const events = {
+const EVENTS = {
   send: uuid(),
-  receive: uuid()
+  receive: uuid(),
+  accounts: uuid(),
+  settings: uuid()
 }
+const BOTTOM_BAR = [
+  {
+    value: 'Receive',
+    event: EVENTS.receive,
+    icon: ICON_VARIANTS.receive,
+    iconType: ICON_TYPE.svg,
+    variant: COLOR_VARIANTS.primary,
+    size: SIZE_VARIANS.sm,
+    uuid: uuid()
+  },
+  {
+    value: 'Send',
+    event: EVENTS.send,
+    icon: ICON_VARIANTS.send,
+    iconType: ICON_TYPE.svg,
+    variant: COLOR_VARIANTS.primary,
+    size: SIZE_VARIANS.sm,
+    uuid: uuid()
+  }
+]
 
 export default {
   name: 'Home',
@@ -72,36 +98,24 @@ export default {
       ICON_VARIANTS,
       COLOR_VARIANTS,
       SIZE_VARIANS,
-      bottomBar: [
-        {
-          value: 'Receive',
-          event: events.receive,
-          icon: ICON_VARIANTS.receive,
-          iconType: ICON_TYPE.svg,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm,
-          uuid: uuid()
-        },
-        {
-          value: 'Send',
-          event: events.send,
-          icon: ICON_VARIANTS.send,
-          iconType: ICON_TYPE.svg,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm,
-          uuid: uuid()
-        }
-      ]
+      EVENTS,
+      BOTTOM_BAR
     }
   },
   methods: {
-    navBottom(event) {
+    onEvent(event) {
       switch (event) {
-      case events.send:
+      case EVENTS.send:
         this.$router.push({ name: Send.name })
         break
-      case events.receive:
+      case EVENTS.receive:
         this.$router.push({ name: Receive.name })
+        break
+      case EVENTS.accounts:
+        this.$router.push({ name: Accounts.name })
+        break
+      case EVENTS.settings:
+        this.$router.push({ name: Settings.name })
         break
       default:
         break
