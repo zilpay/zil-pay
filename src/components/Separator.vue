@@ -20,8 +20,8 @@ $height: 0.02rem   !default;
 $radius: 50%   !default;
 
 .Separator {
-  width: $width;
-  min-height: $height;
+  max-width: $width;
+  height: $height;
 
   border-radius: $radius;
   border: $height solid var(--theme-color-separator);
