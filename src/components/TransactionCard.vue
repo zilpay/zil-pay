@@ -22,7 +22,7 @@
       />
       <Arrow
         :color="COLOR_VARIANTS.primary"
-        height="15"
+        height="10"
         width="2"
         right
       />
@@ -80,6 +80,7 @@ export default {
   &__thirdly-line {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     max-height: 20px;
   }
 
