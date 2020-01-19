@@ -44,6 +44,10 @@ export default {
     font-family: var(--font-family-bold);
   }
 
+  &_font-light {
+    font-family: var(--font-family-light);
+  }
+
   &_size-xs {
     font-size: var(--size-xs-font);
   }
@@ -58,6 +62,22 @@ export default {
 
   &_size-lg {
     font-size: var(--size-lg-font);
+  }
+
+  &_variant-success {
+    color: var(--accent-color-success);
+  }
+
+  &_variant-info {
+    color: var(--accent-color-info);
+  }
+
+  &_variant-danger {
+    color: var(--accent-color-danger);
+  }
+
+  &_variant-warning {
+    color: var(--accent-color-warning);
   }
 }
 </style>
