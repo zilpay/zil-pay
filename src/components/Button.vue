@@ -121,9 +121,9 @@ export default {
   }
 
   &_color-transparent {
-    color: var(--theme-color-font);
+    color: var(--accent-color-primary);
     background: transparent;
-    border: 1px solid var(--accent-color-black);
+    border: 1px solid var(--accent-color-primary);
   }
 }
 
