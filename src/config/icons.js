@@ -23,5 +23,6 @@ export const ICON_VARIANTS = {
 
 export const ICON_TYPE = {
   svg: 'svg',
-  png: 'png'
+  png: 'png',
+  auto: 'auto'
 }
