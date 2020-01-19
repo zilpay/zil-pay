@@ -15,9 +15,7 @@
           :selected="index === TEST_ACCOUNTS.selectedAddress"
           :trash="acc.index > 0"
         />
-        <div
-          v-show="tabs === 1"
-        >
+        <div v-show="tabs === 1">
           <Item pointer>
             <Plus />
             <Title :size="SIZE_VARIANS.sm">

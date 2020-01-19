@@ -133,7 +133,6 @@ export default {
     onEvent(event) {
       switch (event) {
       case EVENTS.send:
-        console.log(event)
         break
       case EVENTS.cancel:
         this.$router.push({ name: Home.name })

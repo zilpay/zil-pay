@@ -92,12 +92,11 @@ export default {
   }
 
   &__list {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: grid;
+    justify-content: center;
     align-items: center;
 
-    width: 100%;
+    width: 360px;
     height: 60px;
   }
 }
