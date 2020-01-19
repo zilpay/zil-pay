@@ -8,12 +8,35 @@
       />
       <div :class="b('account-list')">
         <AccountCard
+          v-show="tabs === 0"
           v-for="(acc, index) of TEST_ACCOUNTS.identities"
           :key="acc.address"
           :account="acc"
           :selected="index === TEST_ACCOUNTS.selectedAddress"
           :trash="acc.index > 0"
         />
+        <div
+          v-show="tabs === 1"
+        >
+          <Item pointer>
+            <Plus />
+            <Title :size="SIZE_VARIANS.sm">
+              New contact
+            </Title>
+          </Item>
+          <Separator/>
+          <div
+            v-for="(contact, index) of TEST_CONTACTS"
+            :key="index"
+          >
+            <Item trash pointer>
+              <Title :size="SIZE_VARIANS.sm">
+                {{ contact.name }}
+              </Title>
+            </Item>
+            <Separator v-show="index < TEST_CONTACTS.length - 1"/>
+          </div>
+        </div>
       </div>
     </div>
     <BottomBar :elements="BOTTOM_BAR"/>
@@ -31,6 +54,10 @@ import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import Tabs from '@/components/Tabs'
 import AccountCard from '@/components/AccountCard'
+import Item from '@/components/Item'
+import Separator from '@/components/Separator'
+import Title from '@/components/Title'
+import Plus from '@/components/icons/Plus'
 
 const EVENTS = {
   create: uuid(),
@@ -101,6 +128,20 @@ const TEST_ACCOUNTS = {
   ],
   selectedAddress: 1
 }
+const TEST_CONTACTS = [
+  {
+    name: 'Ark warden.',
+    address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
+  },
+  {
+    name: 'Terrorblade.',
+    address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
+  },
+  {
+    name: 'Doom.',
+    address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
+  }
+]
 
 export default {
   name: 'Accounts',
@@ -108,13 +149,19 @@ export default {
     TopBar,
     BottomBar,
     Tabs,
-    AccountCard
+    AccountCard,
+    Item,
+    Separator,
+    Title,
+    Plus
   },
   data() {
     return {
+      SIZE_VARIANS,
       BOTTOM_BAR,
       TABS,
       TEST_ACCOUNTS,
+      TEST_CONTACTS,
 
       tabs: 0
     }
