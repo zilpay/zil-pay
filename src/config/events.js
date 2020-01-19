@@ -1,5 +1,6 @@
 export const EVENTS = {
   close: 'close',
   click: 'click',
-  input: 'input'
+  input: 'input',
+  remove: 'remove'
 }
