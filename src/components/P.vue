@@ -71,5 +71,9 @@ export default {
   &_size-lg {
     font-size: var(--size-lg-font);
   }
+
+  &_variant-gray {
+    color: var(--accent-color-gray);
+  }
 }
 </style>
