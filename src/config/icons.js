@@ -11,6 +11,8 @@ export const ICON_VARIANTS = {
   download: 'download',
   zilPayLogo: 'zilpay_logo',
   zilliqaLogo: 'zilliqa_logo',
+  zilliqaWatermark: 'zilliqa_logo_watermark',
+  ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',
   arrowRight: 'arrow_right',
   cancel: 'cancel',
@@ -18,7 +20,8 @@ export const ICON_VARIANTS = {
   statusDanger: 'status_danger',
   statusSuccess: 'status_success',
   send: 'send',
-  receive: 'receive'
+  receive: 'receive',
+  selected: 'selected'
 }
 
 export const ICON_TYPE = {
