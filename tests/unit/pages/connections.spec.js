@@ -8,16 +8,16 @@
  */
 import vueBemCn from 'vue-bem-cn'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
-import Dapps from 'src/pages/Dapps.vue'
+import Connections from 'src/pages/Connections.vue'
 import { BEM_CONFIG } from 'src/config'
 
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 
-describe('pages:Dapps.vue', () => {
+describe('pages:Connections.vue', () => {
   it('Should be mount', () => {
-    const wrapper = shallowMount(Dapps, {
+    const wrapper = shallowMount(Connections, {
       localVue
     })
 
