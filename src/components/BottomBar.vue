@@ -10,6 +10,7 @@
       @click="onClick(el)"
     >
       <Icon
+        v-if="el.icon"
         :class="b('icon')"
         :icon="el.icon"
         height="15"
