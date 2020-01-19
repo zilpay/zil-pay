@@ -4,11 +4,12 @@
     :src="src"
     :height="height"
     :width="width"
+    @click="onClick"
   >
 </template>
 
 <script>
-import { ICON_TYPE } from '@/config'
+import { ICON_TYPE, EVENTS } from '@/config'
 
 /**
  * @example
@@ -21,7 +22,7 @@ export default {
   props: {
     icon: {
       type: String,
-      required: true
+      required: false
     },
     type: {
       type: String,
@@ -42,7 +43,20 @@ export default {
   },
   computed: {
     src() {
+      if (this.type === ICON_TYPE.auto) {
+        if (!this.$attrs.src) {
+          throw new Error('Attr src is required')
+        }
+
+        return this.$attrs.src
+      }
+
       return `/icons/${this.icon}.${this.type}`
+    }
+  },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
     }
   }
 }
