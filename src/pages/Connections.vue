@@ -27,9 +27,7 @@
           {{ item.title }}
         </P>
       </Item>
-      <Separator
-        v-show="index < CONNECTED_LIST.length - 1"
-      />
+      <Separator v-show="index < CONNECTED_LIST.length - 1"/>
     </div>
   </div>
 </template>
