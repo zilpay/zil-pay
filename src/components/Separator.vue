@@ -15,7 +15,7 @@ export default {
 </script>
 
 <style lang="scss">
-$width:  320px !default;
+$width:  360px !default;
 $height: 0.02rem   !default;
 $radius: 50%   !default;
 
