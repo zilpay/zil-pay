@@ -14,7 +14,7 @@ import Accounts from '@/pages/Accounts'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
 import Verify from '@/pages/Verify'
-import Dapps from '@/pages/Dapps'
+import Connections from '@/pages/Connections'
 import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
 import LockScreen from '@/pages/LockScreen'
@@ -101,9 +101,9 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: `/${Dapps.name.toLowerCase()}`,
-    name: Dapps.name,
-    component: Dapps,
+    path: `/${Connections.name.toLowerCase()}`,
+    name: Connections.name,
+    component: Connections,
     meta: { requiresAuth: true }
   },
   {
