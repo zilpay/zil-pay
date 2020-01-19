@@ -97,8 +97,9 @@ export default {
   width: 330px;
 
   &__content {
+    text-indent: 15px;
     height: 45px;
-    width: 250px;
+    width: 300px;
   }
 
   &_pointer {
