@@ -21,6 +21,12 @@
       pointer
       @click="onRemove"
     />
+    <Arrow
+      v-if="arrow"
+      right
+      height="12"
+      width="2"
+    />
   </div>
 </template>
 
@@ -35,6 +41,7 @@ import {
 import Icon from '@/components/Icon'
 
 import Trash from '@/components/icons/Trash'
+import Arrow from '@/components/icons/Arrow'
 
 /**
  * List item.
@@ -42,7 +49,7 @@ import Trash from '@/components/icons/Trash'
  * import Item from '@/components/Item'
  * <Item
  *   :src="item.icon"
- *   trash
+ *   trash // or arrow
  *   pointer
  *   @click="/ do something /"
  *   @remove="/ do something /"
@@ -54,7 +61,8 @@ export default {
   name: 'Item',
   components: {
     Icon,
-    Trash
+    Trash,
+    Arrow
   },
   props: {
     src: {
@@ -62,6 +70,10 @@ export default {
       required: false
     },
     trash: {
+      type: Boolean,
+      required: false
+    },
+    arrow: {
       type: Boolean,
       required: false
     },
@@ -83,6 +95,11 @@ export default {
     },
     onRemove() {
       this.$emit(EVENTS.remove)
+    }
+  },
+  mounted() {
+    if (this.arrow && this.trash) {
+      throw new Error('arrow and trash props can be only one of them.')
     }
   }
 }
