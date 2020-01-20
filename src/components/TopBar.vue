@@ -107,7 +107,6 @@ export default {
 
   &__back-wrapper {
     display: grid;
-    grid-template-columns: 30px auto;
     align-items: center;
     justify-items: center;
 
