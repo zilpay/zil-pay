@@ -108,21 +108,21 @@ export default {
 
   &__left {
     &_index-0 {
-      transform: translate(-50%, -20%) rotate(45deg);
+      transform: translate(-40%, 18%) rotate(45deg);
     }
 
     &_index-1 {
-      transform: translate(-40%, -58%) rotate(-45deg);
+      transform: translate(-40%, -18%) rotate(-45deg);
     }
   }
 
   &__right {
     &_index-0 {
-      transform: translate(-50%, -20%) rotate(-45deg);
+      transform: translate(-40%, 18%) rotate(-45deg);
     }
 
     &_index-1 {
-      transform: translate(-40%, -58%) rotate(45deg);
+      transform: translate(-40%, -18%) rotate(45deg);
     }
   }
 
