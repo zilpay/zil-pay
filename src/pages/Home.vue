@@ -133,14 +133,16 @@ export default {
 
   &__wrapper,
   &__nav-bar {
-    min-width: calc(100vw - 30px);
+    min-width: calc(360px - 30px);
   }
 
   &__wrapper {
     display: grid;
     justify-items: center;
     align-items: center;
-    grid-template-rows: 35px 45px;
+    grid-template-rows: 30px 45px;
+
+    padding-top: 15px;
   }
 
   &__nav-bar {
