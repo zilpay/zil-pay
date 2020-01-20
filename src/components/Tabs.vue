@@ -18,6 +18,26 @@ import { COLOR_VARIANTS } from '@/config'
 
 import Button from '@/components/Button'
 
+/**
+ * Few buttons for navigate.
+ * @example
+ * import Tabs from '@/components/Tabs'
+ * const tabs = 0
+ * const elements = [
+ *   {
+ *     name: 'example',
+ *     event: 'exampleEvent'
+ *   },
+ *   {
+ *     name: 'example 1',
+ *     event: 'exampleEvent 2'
+ *   }
+ * ]
+ * <Tabs
+ *   v-model="tabs"
+ *   :elements="elements"
+ * />
+ */
 export default {
   name: 'Tabs',
   components: {
