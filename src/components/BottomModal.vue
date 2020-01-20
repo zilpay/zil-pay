@@ -15,6 +15,15 @@
 </template>
 
 <script>
+/**
+ * Modal which show from bottom.
+ * @example
+ * import BottomModal from '@/components/BottomModal'
+ * const modal = false
+ * <BottomModal v-model="modal">
+ *   account
+ * </BottomModal>
+ */
 export default {
   name: 'BottomModal',
   props: {
