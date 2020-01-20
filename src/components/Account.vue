@@ -65,7 +65,7 @@ export default {
   grid-template-rows: 100px 100px;
   justify-content: left;
   align-items: center;
-  min-width: calc(100vw - 30px);
+  min-width: calc(360px - 30px);
 
   &__amount-currency {
     font-size: 12px;
