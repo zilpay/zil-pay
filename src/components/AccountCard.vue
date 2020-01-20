@@ -66,6 +66,22 @@ import P from '@/components/P'
 import Icon from '@/components/Icon'
 import Trash from '@/components/icons/Trash'
 
+/**
+ * Account card component show some information about [balance, address, type].
+ * @example
+ * import AccountCard from '@/components/AccountCard'
+ * const acc = {
+ *   address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F',
+ *   balance: '463851500000000',
+ *   index: 0,
+ *   name: 'Account 0'
+ * },
+ * <AccountCard
+ *   :account="acc"
+ *   :selected="true" // This account has as selected.
+ *   :trash="true" // If can remove, emiting `remove` event.
+ * />
+ */
 export default {
   name: 'AccountCard',
   components: {
