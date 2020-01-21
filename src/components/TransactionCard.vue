@@ -5,18 +5,18 @@
         :class="b('send')"
         :font="FONT_VARIANTS.bold"
       >
-        Send
+        {{ txType }}
       </P>
       <P
         :class="b('amount')"
         :font="FONT_VARIANTS.regular"
       >
-        -ZIL10
+        -ZIL{{ transaction.amount | fromZil }}
       </P>
     </Container>
     <Container :class="b('second-line')">
       <Icon
-        :icon="ICON_VARIANTS.statusDanger"
+        :icon="statusIcon"
         height="15"
         width="15"
       />
@@ -35,7 +35,7 @@
         :class="b('amount')"
         :font="FONT_VARIANTS.regular"
       >
-        -$0.005
+        -${{ transaction.amount | toConversion('0.001') }}
       </P>
     </Container>
   </div>
@@ -45,13 +45,22 @@
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
-  COLOR_VARIANTS
+  COLOR_VARIANTS,
+  TRANSACTION_STATUS
 } from '@/config'
 
 import P from '@/components/P'
 import Container from '@/components/Container'
 import Icon from '@/components/Icon'
 import Arrow from '@/components/icons/Arrow'
+
+import { fromZil, toConversion } from '@/filters'
+
+const TX_TYPES = {
+  send: 'Send',
+  deploy: 'deploy',
+  trigger: 'trigger'
+}
 
 export default {
   name: 'TransactionCard',
@@ -61,19 +70,64 @@ export default {
     Arrow,
     Container
   },
+  filters: { fromZil, toConversion },
+  props: {
+    transaction: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       ICON_VARIANTS,
       FONT_VARIANTS,
       COLOR_VARIANTS
     }
+  },
+  computed: {
+    txType() {
+      const { Info } = this.transaction
+
+      if (Info.includes('Contract Txn')) {
+        return TX_TYPES.trigger
+      } else if (Info.includes('Contract Creation')) {
+        return TX_TYPES.deploy
+      }
+
+      return TX_TYPES.send
+    },
+    statusIcon() {
+      switch (this.transaction.status) {
+      case TRANSACTION_STATUS.confirmed:
+        return ICON_VARIANTS.statusSuccess
+      case TRANSACTION_STATUS.rejected:
+        return ICON_VARIANTS.statusDanger
+      case TRANSACTION_STATUS.mining:
+        return ICON_VARIANTS.statusPadding
+      default:
+        return ICON_VARIANTS.statusDanger
+      }
+    }
+  },
+  mounted() {
+    [
+      'Info',
+      'TranID',
+      'amount',
+      'nonce',
+      'toAddr'
+    ].forEach(key => {
+      if (!(key in this.transaction)) {
+        throw new Error(`${key} is required.`)
+      }
+    })
   }
 }
 </script>
 
 <style lang="scss">
 .TransactionCard {
-  height: 70px;
+  height: 80px;
 
   &__first-line,
   &__second-line,
