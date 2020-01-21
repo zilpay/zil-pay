@@ -1,10 +1,17 @@
 <template>
-  <div :class="b()"></div>
+  <div :class="b()">
+    <TopBar />
+  </div>
 </template>
 
 <script>
+import TopBar from '@/components/TopBar'
+
 export default {
-  name: 'About'
+  name: 'About',
+  components: {
+    TopBar
+  }
 }
 </script>
 

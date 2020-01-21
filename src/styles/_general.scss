@@ -56,7 +56,7 @@
   @include no-select;
 }
 
-// Enable document.getElementsByTagName('body')[0].setAttribute('theme', 'dark');
+// Enable document.body.setAttribute('theme', 'dark');
 [theme="dark"] {
   --app-background-color: #{$dark};
 
@@ -71,8 +71,8 @@
 }
 
 body, html {
-  min-width: 360px;
-  min-height: 600px;
+  width: 360px;
+  height: 600px;
 
 	overflow-x: hidden;
 }

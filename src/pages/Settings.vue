@@ -9,6 +9,7 @@
         <Item
           arrow
           pointer
+          @click="$router.push({ name: item })"
         >
           <P>
             {{ item }}

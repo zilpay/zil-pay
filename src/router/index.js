@@ -116,14 +116,13 @@ const routes = [
     path: `/${Popup.name.toLowerCase()}`,
     name: Popup.name,
     component: Popup,
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: `/${TxData.name.toLowerCase()}`,
-        name: TxData.name,
-        component: TxData
-      }
-    ]
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${TxData.name.toLowerCase()}`,
+    name: TxData.name,
+    component: TxData,
+    meta: { requiresAuth: true }
   },
   {
     path: `/${Receive.name.toLowerCase()}`,
@@ -141,34 +140,37 @@ const routes = [
     path: `/${Settings.name.toLowerCase()}`,
     name: Settings.name,
     component: Settings,
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: `/${About.name.toLowerCase()}`,
-        name: About.name,
-        component: About
-      },
-      {
-        path: `/${Advanced.name.toLowerCase()}`,
-        name: Advanced.name,
-        component: Advanced
-      },
-      {
-        path: `/${General.name.toLowerCase()}`,
-        name: General.name,
-        component: General
-      },
-      {
-        path: `/${Networks.name.toLowerCase()}`,
-        name: Networks.name,
-        component: Networks
-      },
-      {
-        path: `/${Security.name.toLowerCase()}`,
-        name: Security.name,
-        component: Security
-      }
-    ]
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${About.name.toLowerCase()}`,
+    name: About.name,
+    component: About,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Advanced.name.toLowerCase()}`,
+    name: Advanced.name,
+    component: Advanced,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${General.name.toLowerCase()}`,
+    name: General.name,
+    component: General,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Networks.name.toLowerCase()}`,
+    name: Networks.name,
+    component: Networks,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Security.name.toLowerCase()}`,
+    name: Security.name,
+    component: Security,
+    meta: { requiresAuth: true }
   },
   {
     path: `/${TxInfo.name.toLowerCase()}`,

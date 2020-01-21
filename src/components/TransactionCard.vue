@@ -127,7 +127,7 @@ export default {
 
 <style lang="scss">
 .TransactionCard {
-  height: 80px;
+  height: 70px;
 
   &__first-line,
   &__second-line,
