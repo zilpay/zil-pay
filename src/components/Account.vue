@@ -2,24 +2,24 @@
   <div :class="b()">
     <div :class="b('info')">
       <Title :size="SIZE_VARIANS.md">
-        {{ info.name }}
+        {{ account.name }}
       </Title>
       <P>
-        {{ info.address }}
+        {{ account.address | toAddress(ADDRESS_FORMAT_VARIANTS.bech32) }}
       </P>
     </div>
     <div :class="b('balance')">
       <Title :size="SIZE_VARIANS.md">
-        {{ balance.title }}
+        {{ TITLE }}
       </Title>
       <P>
-        {{ balance.amount }}
+        {{ account.balance | fromZil }}
       </P>
       <P
         :class="b('amount-currency')"
         :size="FONT_VARIANTS.medium"
       >
-        {{ balance.usd }}
+        {{ account.balance | toConversion(0.001) }}
       </P>
     </div>
   </div>
@@ -28,12 +28,16 @@
 <script>
 import {
   SIZE_VARIANS,
-  FONT_VARIANTS
+  FONT_VARIANTS,
+  ADDRESS_FORMAT_VARIANTS
 } from '@/config'
 
+import { toAddress, fromZil, toConversion } from '@/filters'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
+
+const TITLE = 'Balance'
 
 export default {
   name: 'Account',
@@ -41,18 +45,18 @@ export default {
     Title,
     P
   },
+  filters: { toAddress, fromZil, toConversion },
   data() {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
-      info: {
-        name: 'Ledger 0',
-        address: 'zil1wl...zace'
-      },
-      balance: {
-        title: 'Balance',
-        amount: 'ZIL3.56471031',
-        usd: '$512.78'
+      ADDRESS_FORMAT_VARIANTS,
+      TITLE,
+      account: {
+        address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F',
+        balance: '463851500000000',
+        index: 0,
+        name: 'Account 0'
       }
     }
   }

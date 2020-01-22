@@ -5,7 +5,7 @@ import {
 
 import { ADDRESS_FORMAT_VARIANTS } from '@/config'
 
-export function trim(string, length = 6) {
+export function trim(string, length = 10) {
   let part0 = string.substr(0, length)
   let part1 = string.substr(length * -1)
 
