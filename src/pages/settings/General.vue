@@ -2,7 +2,7 @@
   <div :class="b()">
     <TopBar />
     <div :class="b('wrapper')">
-      <Radio>test</Radio>
+      <Radio v-model="radio">test</Radio>
     </div>
   </div>
 </template>
@@ -16,6 +16,11 @@ export default {
   components: {
     TopBar,
     Radio
+  },
+  data() {
+    return {
+      radio: false
+    }
   }
 }
 </script>
