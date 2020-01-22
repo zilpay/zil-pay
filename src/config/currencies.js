@@ -7,9 +7,8 @@
  * Copyright (c) 2019 ZilPay
  */
 
-export const EVENTS = {
-  close: 'close',
-  click: 'click',
-  input: 'input',
-  remove: 'remove'
+export const CURRENCIES = {
+  BTC: 'BTC',
+  USD: 'USD',
+  ETH: 'ETH'
 }
