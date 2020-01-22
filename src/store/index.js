@@ -9,6 +9,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import account from './account'
+import contacts from './contacts'
+import settings from './settings'
+import transactions from './transactions'
+import ui from './ui'
+import wallet from './wallet'
+
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -19,5 +27,11 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
+    account,
+    contacts,
+    settings,
+    transactions,
+    wallet,
+    ui
   }
 })
