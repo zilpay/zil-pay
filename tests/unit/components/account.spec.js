@@ -6,25 +6,22 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import Vuex from 'vuex'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import Account from 'src/components/Account.vue'
-import {
-  BEM_CONFIG
-} from 'src/config'
-import { uuid } from 'uuidv4'
+import { BEM_CONFIG } from 'src/config'
+import store from 'src/store'
 
-const TEST_TEXT = uuid()
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+localVue.use(Vuex)
 
 describe('components:Account', () => {
   const wrapper = shallowMount(Account, {
-    localVue,
-    slots: {
-      default: [TEST_TEXT]
-    }
+    store,
+    localVue
   })
 
   it('Should be vue instance', () => {

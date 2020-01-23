@@ -6,18 +6,22 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import Vuex from 'vuex'
 import vueBemCn from 'vue-bem-cn'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import General from 'src/pages/settings/General.vue'
 import { BEM_CONFIG } from 'src/config'
+import store from 'src/store'
 
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+localVue.use(Vuex)
 
 describe('pages:General.vue', () => {
   it('Should be mount', () => {
     const wrapper = shallowMount(General, {
+      store,
       localVue
     })
 
