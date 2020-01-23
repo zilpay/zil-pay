@@ -3,40 +3,77 @@
     <TopBar />
     <Container :class="b('wrapper')">
       <RadioGroup
-        v-model="radioGroup.index"
-        :title="radioGroup.title"
-        :elements="radioGroup.elements"
+        :value="currency"
+        :title="currencyTitle"
+        :elements="currencyItems"
+        @input="setCurrency"
       >
-        {{ radioGroup.title }}
+        {{ currencyTitle }}
       </RadioGroup>
+      <Separator />
+      <RadioGroup
+        :value="addressFormat"
+        :title="addressFormatTitle"
+        :elements="addressFormatItems"
+        @input="setAddressFormat"
+      >
+        {{ addressFormatTitle }}
+      </RadioGroup>
+      <div :class="b('btns')">
+        <Button
+          :color="COLOR_VARIANTS.warning"
+          round
+        >
+          Clear tx history
+        </Button>
+        <Button round>
+          Default
+        </Button>
+      </div>
     </Container>
   </div>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
+
+import { COLOR_VARIANTS } from '@/config'
+
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
+import Separator from '@/components/Separator'
 import RadioGroup from '@/components/RadioGroup'
+import Button from '@/components/Button'
 
 export default {
   name: 'General',
   components: {
     TopBar,
     RadioGroup,
-    Container
+    Container,
+    Separator,
+    Button
   },
   data() {
     return {
-      radio: false,
-      radioGroup: {
-        title: 'Currency conversion:',
-        elements: [
-          'USD',
-          'BTC'
-        ],
-        index: 0
-      }
+      COLOR_VARIANTS,
+      currencyTitle: 'Currency conversion:',
+      addressFormatTitle: 'Address formats:'
     }
+  },
+  computed: {
+    ...mapState('settings', [
+      'currencyItems',
+      'currency',
+      'addressFormatItems',
+      'addressFormat'
+    ])
+  },
+  methods: {
+    ...mapMutations('settings', [
+      'setCurrency',
+      'setAddressFormat'
+    ])
   }
 }
 </script>
@@ -44,8 +81,20 @@ export default {
 <style lang="scss">
 .General {
   &__wrapper {
+    display: grid;
+    grid-gap: 15px;
+    align-items: center;
+
     padding-left: 15px;
     padding-right: 15px;
+  }
+
+  &__btns {
+    display: grid;
+    justify-self: right;
+    grid-gap: 15px;
+
+    width: 175px;
   }
 }
 </style>

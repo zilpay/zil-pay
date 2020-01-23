@@ -11,8 +11,8 @@
       :key="index"
       :class="b('item', { border: index < elements.length - 1 })"
       :name="NAME"
-      :value="value === index"
-      @input="onInput(index)"
+      :value="value === label"
+      @input="onInput(label)"
     >
       <P
         :size="SIZE_VARIANS.md"
@@ -68,8 +68,8 @@ export default {
     }
   },
   methods: {
-    onInput(index) {
-      this.$emit('input', Number(index))
+    onInput(item) {
+      this.$emit('input', item)
     }
   }
 }

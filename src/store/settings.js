@@ -29,7 +29,18 @@ export default {
     dappsList: [],
     connect: {}
   },
-  mutations: {},
+  mutations: {
+    setCurrency(state, currency) {
+      if (state.currencyItems.includes(currency)) {
+        state.currency = currency
+      }
+    },
+    setAddressFormat(state, addressFormat) {
+      if (state.addressFormatItems.includes(addressFormat)) {
+        state.addressFormat = addressFormat
+      }
+    }
+  },
   actions: {},
   getters: {}
 }
