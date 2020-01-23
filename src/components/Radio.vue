@@ -8,12 +8,14 @@
       type="radio"
       @input="onInput"
     >
-    <div :class="b('check', { checked: value })" />
     <label
       :for="uuid"
       :class="b('radio-label')"
     >
-      <slot />
+      <div :class="b('check', { checked: value })" />
+      <div>
+        <slot />
+      </div>
     </label>
   </div>
 </template>
@@ -44,7 +46,6 @@ export default {
 
 <style lang="scss">
 .Radio {
-  cursor: pointer;
   display: flex;
 
   &__radio {
@@ -53,11 +54,11 @@ export default {
   }
 
   &__check {
-    height: 20px;
     width: 20px;
+    height: 20px;
     background: transparent;
     border-radius: 100%;
-    border: 5px solid #AAAAAA;
+    border: 5px solid var(--accent-color-info);
 
     &_checked {
       &:before {
@@ -70,14 +71,18 @@ export default {
       margin: 5px;
       width: 10px;
       height: 10px;
-      background-color: black;
+      background-color: var(--accent-color-info);
       border-radius: 100%;
     }
   }
 
   &__radio-label {
     cursor: pointer;
-    padding-left: 10px;
+    display: flex;
+
+    :last-of-type {
+      margin-left: 10px;
+    }
   }
 }
 </style>
