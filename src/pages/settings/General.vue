@@ -2,24 +2,31 @@
   <div :class="b()">
     <TopBar />
     <div :class="b('wrapper')">
-      <Radio v-model="radio">test</Radio>
+      <RadioGroup
+        title="Currency conversion"
+        :elements="elements"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import TopBar from '@/components/TopBar'
-import Radio from '@/components/Radio'
+import RadioGroup from '@/components/RadioGroup'
 
 export default {
   name: 'General',
   components: {
     TopBar,
-    Radio
+    RadioGroup
   },
   data() {
     return {
-      radio: false
+      radio: false,
+      elements: [
+        'USD',
+        'BTC'
+      ]
     }
   }
 }

@@ -58,9 +58,11 @@ export default {
     height: 20px;
     background: transparent;
     border-radius: 100%;
-    border: 5px solid var(--accent-color-info);
+    border: 3px solid var(--theme-color-separator);
 
     &_checked {
+      border: 3px solid var(--accent-color-info);
+
       &:before {
         content: " ";
       }
