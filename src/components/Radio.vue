@@ -2,9 +2,9 @@
   <div :class="b()">
     <input
       v-bind="$attrs"
+      :value="value"
       :id="uuid"
       :class="b('radio')"
-      :value="value"
       type="radio"
       @input="onInput"
     >
@@ -23,12 +23,24 @@
 <script>
 import { uuid } from 'uuidv4'
 
+/**
+ * Radio button.
+ * @example
+ * import Radio from '@/components/Radio'
+ * const value = true
+ * <Radio
+ *   v-model="value"
+ *   name="example"
+ * >
+ *   Some testing content
+ * </Radio>
+ */
 export default {
   name: 'Radio',
   props: {
     value: {
       type: Boolean,
-      required: true
+      required: false
     }
   },
   data() {
@@ -84,6 +96,12 @@ export default {
 
     :last-of-type {
       margin-left: 10px;
+    }
+
+    &:hover {
+      .Radio__check {
+        border: 3px solid var(--accent-color-info);
+      }
     }
   }
 }

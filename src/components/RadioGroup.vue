@@ -1,56 +1,75 @@
 <template>
   <div :class="b()">
-    <Title :size="SIZE_VARIANS.md">
-      {{ title }}
-    </Title>
-    <div
+    <P
+      :class="b('title')"
+      :font="FONT_VARIANTS.regular"
+    >
+      <slot />
+    </P>
+    <Radio
       v-for="(label, index) of elements"
       :key="index"
+      :class="b('item', { border: index < elements.length - 1 })"
+      :name="NAME"
+      :value="value === index"
+      @input="onInput(index)"
     >
-      <Radio @input="$emit('selected', index)">
-        <Title :size="SIZE_VARIANS.md">
-          {{ label }}
-        </Title>
-      </Radio>
-    </div>
+      <P
+        :size="SIZE_VARIANS.md"
+        :font="FONT_VARIANTS.medium"
+      >
+        {{ label }}
+      </P>
+    </Radio>
   </div>
 </template>
 
 <script>
-import { SIZE_VARIANS } from '@/config'
+import { uuid } from 'uuidv4'
+import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
-import Title from '@/components/Title'
+import P from '@/components/P'
 import Radio from '@/components/Radio'
+
+const NAME = uuid()
 
 /**
  * @example
  * import RadioGroup from '@/components/RadioGroup'
- * const title = 'some text'
  * const elements = ['test1', 'test2']
  * <RadioGroup
- *   :title="title"
- *   :elements="elements"
- * />
+ *   v-model="radioGroup.index"
+ *   :elements="radioGroup.elements"
+ * >
+ *   Some Example title.
+ * </RadioGroup>
  */
 export default {
   name: 'RadioGroup',
   components: {
-    Title,
+    P,
     Radio
   },
   props: {
-    title: {
-      type: String,
-      required: false
-    },
     elements: {
       type: Array,
+      required: true
+    },
+    value: {
+      type: [Number, String],
       required: true
     }
   },
   data() {
     return {
-      SIZE_VARIANS
+      SIZE_VARIANS,
+      FONT_VARIANTS,
+      NAME
+    }
+  },
+  methods: {
+    onInput(index) {
+      this.$emit('input', Number(index))
     }
   }
 }
@@ -58,5 +77,18 @@ export default {
 
 <style lang="scss">
 .RadioGroup {
+  border-right: 1px solid var(--accent-color-success);
+
+  &__title {
+    font-size: 15px;
+  }
+
+  &__item {
+    padding: 15px 0 15px 0;
+
+    &_border {
+      border-bottom: 1px solid var(--accent-color-success);
+    }
+  }
 }
 </style>
