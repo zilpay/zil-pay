@@ -9,15 +9,15 @@
       <div :class="b('account-list')">
         <AccountCard
           v-show="tabs === 0"
-          v-for="(acc, index) of TEST_ACCOUNTS.identities"
+          v-for="(acc, index) of identities"
           :key="acc.address"
           :account="acc"
-          :selected="index === TEST_ACCOUNTS.selectedAddress"
+          :selected="index === selectedAddress"
           :trash="acc.index > 0"
         />
         <div
           v-show="tabs === 1"
-          v-for="(contact, index) of TEST_CONTACTS"
+          v-for="(contact, index) of contactList"
           :key="index"
         >
           <Item trash pointer>
@@ -25,7 +25,7 @@
               {{ contact.name }}
             </Title>
           </Item>
-          <Separator v-show="index < TEST_CONTACTS.length - 1"/>
+          <Separator v-show="index < contactList.length - 1"/>
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@
 
 <script>
 import { uuid } from 'uuidv4'
+import { mapState } from 'vuex'
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
@@ -77,51 +78,6 @@ const TABS = [
     event: EVENTS.contacts
   }
 ]
-const TEST_ACCOUNTS = {
-  identities: [
-    {
-      address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F',
-      balance: '463851500000000',
-      index: 0,
-      name: 'Account 0'
-    },
-    {
-      address: '0xF59eCFE8e1844C7708e55750057669db8cAE46a4',
-      balance: '1500000000',
-      hwType: 'ledger',
-      index: '5',
-      name: 'Ledger 5',
-      pubKey: '0357d1d720b1987a8093588259158e055cdaf0f1b7c10758e83b9580bdba423a32'
-    },
-    {
-      address: '0xEa442d03947cEa05b18c666f178D617D909D1F92',
-      balance: '463851500000000',
-      index: 2,
-      name: 'Account 1'
-    },
-    {
-      address: '0x6e54F8dB8B876803aB55259E14d157e0326B2Db4',
-      balance: '463851500000000',
-      index: 3,
-      name: 'Account 2'
-    }
-  ],
-  selectedAddress: 1
-}
-const TEST_CONTACTS = [
-  {
-    name: 'Ark warden.',
-    address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
-  },
-  {
-    name: 'Terrorblade.',
-    address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
-  },
-  {
-    name: 'Doom.',
-    address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
-  }
-]
 
 export default {
   name: 'Accounts',
@@ -139,11 +95,13 @@ export default {
       SIZE_VARIANS,
       BOTTOM_BAR,
       TABS,
-      TEST_ACCOUNTS,
-      TEST_CONTACTS,
 
       tabs: 0
     }
+  },
+  computed: {
+    ...mapState('contacts', ['contactList']),
+    ...mapState('accounts', ['identities', 'selectedAddress'])
   }
 }
 </script>

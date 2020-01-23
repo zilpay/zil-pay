@@ -9,7 +9,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import account from './account'
+import accounts from './accounts'
 import contacts from './contacts'
 import settings from './settings'
 import transactions from './transactions'
@@ -27,7 +27,7 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-    account,
+    accounts,
     contacts,
     settings,
     transactions,

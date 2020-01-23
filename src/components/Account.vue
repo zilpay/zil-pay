@@ -2,10 +2,10 @@
   <div :class="b()">
     <div :class="b('info')">
       <Title :size="SIZE_VARIANS.md">
-        {{ account.name }}
+        {{ getCurrentAccount.name }}
       </Title>
       <P>
-        {{ account.address | toAddress(ADDRESS_FORMAT_VARIANTS.bech32) }}
+        {{ getCurrentAccount.address | toAddress(ADDRESS_FORMAT_VARIANTS.bech32) }}
       </P>
     </div>
     <div :class="b('balance')">
@@ -13,19 +13,20 @@
         {{ TITLE }}
       </Title>
       <P>
-        {{ account.balance | fromZil }}
+        {{ getCurrentAccount.balance | fromZil }}
       </P>
       <P
         :class="b('amount-currency')"
         :size="FONT_VARIANTS.medium"
       >
-        {{ account.balance | toConversion(0.001) }}
+        {{ getCurrentAccount.balance | toConversion(0.001) }}
       </P>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -51,14 +52,11 @@ export default {
       SIZE_VARIANS,
       FONT_VARIANTS,
       ADDRESS_FORMAT_VARIANTS,
-      TITLE,
-      account: {
-        address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F',
-        balance: '463851500000000',
-        index: 0,
-        name: 'Account 0'
-      }
+      TITLE
     }
+  },
+  computed: {
+    ...mapGetters('accounts', ['getCurrentAccount'])
   }
 }
 </script>
