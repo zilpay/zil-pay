@@ -15,7 +15,7 @@
       @input="onInput(label)"
     >
       <P
-        :size="SIZE_VARIANS.md"
+        :size="SIZE_VARIANS.sm"
         :font="FONT_VARIANTS.medium"
       >
         {{ label }}
