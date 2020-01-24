@@ -66,8 +66,8 @@ export default {
   }
 
   &__check {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     background: transparent;
     border-radius: 100%;
     border: 3px solid var(--theme-color-separator);
@@ -82,9 +82,9 @@ export default {
 
     &:before {
       position: absolute;
-      margin: 5px;
-      width: 10px;
-      height: 10px;
+      margin: 2px;
+      width: 11px;
+      height: 11px;
       background-color: var(--accent-color-info);
       border-radius: 100%;
     }
@@ -93,6 +93,7 @@ export default {
   &__radio-label {
     cursor: pointer;
     display: flex;
+    align-items: center;
 
     :last-of-type {
       margin-left: 10px;
