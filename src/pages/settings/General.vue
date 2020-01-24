@@ -82,7 +82,7 @@ export default {
 .General {
   &__wrapper {
     display: grid;
-    grid-gap: 15px;
+    grid-gap: 30px;
     align-items: center;
 
     padding-left: 15px;
