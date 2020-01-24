@@ -8,6 +8,11 @@
  */
 import { CURRENCIES } from '@/config'
 
+const THEMES = [
+  'light',
+  'dark'
+]
+
 export default {
   namespaced: true,
   state: {
@@ -16,9 +21,17 @@ export default {
     conversionRate: {
       [CURRENCIES.BTC]: 0,
       [CURRENCIES.USD]: 0
+    },
+    selectedTheme: THEMES[0],
+    themes: THEMES
+  },
+  mutations: {
+    setTheme(state, theme) {
+      if (state.themes.includes(theme)) {
+        state.selectedTheme = theme
+      }
     }
   },
-  mutations: {},
   actions: {},
   getters: {}
 }
