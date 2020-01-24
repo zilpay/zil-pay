@@ -6,7 +6,12 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-export * from './from-zil'
-export * from './to-conversion'
-export * from './to-address'
-export * from './keys'
+export function keys(value) {
+  if (Array.isArray(value)) {
+    return value
+  }
+
+  return Object.keys(value)
+}
+
+export default keys
