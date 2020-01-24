@@ -23,27 +23,29 @@
       {{ currentRouter.name }}
     </Title>
     <Icon
-      v-show="isNeedCancelIcon"
+      v-show="close"
       :class="b('cancel-icon')"
       :icon="ICON_VARIANTS.cancel"
       width="23"
       height="23"
       pointer
+      @click="onCancel"
     />
   </div>
 </template>
 
 <script>
-import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
+import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
 
 import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import Arrow from '@/components/icons/Arrow'
 
-const _two = 2
-
 /**
  * ToBar is bar for navigate by UI.
+ * @param route Show current router name.
+ * @param close Show close button.
+ * @event close When cleck to close button.
  * @example
  * import { ICON_VARIANTS } from '@/config'
  * import TopBar from '@/components/TopBar'
@@ -64,6 +66,10 @@ export default {
     back: {
       type: Boolean,
       required: false
+    },
+    close: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -75,21 +81,15 @@ export default {
   computed: {
     currentRouter() {
       return this.$router.history.current
-    },
-    isNeedCancelIcon() {
-      const { fullPath } = this.currentRouter
-      const lengthPath = fullPath.split('/').length
-
-      if (lengthPath > _two) {
-        return true
-      }
-
-      return false
     }
   },
   methods: {
     goBack() {
       this.$router.go(-1)
+    },
+    onCancel() {
+      this.$router.push({ path: '/home' })
+      this.$emit(EVENTS.close)
     }
   }
 }
