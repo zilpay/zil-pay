@@ -125,8 +125,6 @@ export default {
     width: 100%;
 
     border: 0;
-    border-radius: 5px;
-
     text-indent: 15px;
 
     background: var(--theme-color-input);
@@ -140,6 +138,10 @@ export default {
     &_centred {
       text-align: center;
       text-indent: 0;
+    }
+
+    &_round {
+      border-radius: 5px;
     }
 
     &:focus {
