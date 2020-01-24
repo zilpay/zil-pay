@@ -52,8 +52,18 @@ export default {
       if ((network in state.networkConfig)) {
         state.network = network
       }
+    },
+    setLockTime(state, time) {
+      time = time.replace(' hours.', '')
+
+      if (!isNaN(time)) {
+        state.lockTime = time
+      }
     }
   },
   actions: {},
-  getters: {}
+  getters: {
+    getCurrent: state => `${state.lockTime} hours.`,
+    getHours: () => DEFAULT.DEFAULT_HOURS_LOCK.map(hour => `${hour} hours.`)
+  }
 }
