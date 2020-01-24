@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <TopBar />
+    <TopBar close/>
     <Container :class="b('wrapper')">
       <RadioGroup
         :value="currency"
