@@ -9,6 +9,11 @@
 export const DEFAULT = {
   ZERO: 0,
   TIME_BEFORE_LOCK: 3, // Number in hour.
+  DEFAULT_HOURS_LOCK: [
+    1,
+    2,
+    3
+  ],
   MAX_TX_AMOUNT_LIST: 5,
   MIN_LENGTH_PASSWORD: 6,
   MAX_LENGTH_NAME: 20,
