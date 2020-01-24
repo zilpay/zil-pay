@@ -1,3 +1,11 @@
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(lich666dead)
+ * -----
+ * Modified By: the developer formerly known as Rinat(lich666dead) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2019 ZilPay
+ */
 import { DEFAULT } from '../../config/default'
 import { ZILLIQA } from '../../config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
@@ -38,6 +46,11 @@ export default {
     setAddressFormat(state, addressFormat) {
       if (state.addressFormatItems.includes(addressFormat)) {
         state.addressFormat = addressFormat
+      }
+    },
+    setNetwork(state, network) {
+      if ((network in state.networkConfig)) {
+        state.network = network
       }
     }
   },
