@@ -1,5 +1,5 @@
 <template>
-  <div :class="b({ variant, font, pointer, size })">
+  <div :class="b({ variant, font, pointer, size, copy })">
     <slot />
   </div>
 </template>
@@ -28,6 +28,10 @@ export default {
     },
     size: {
       type: String,
+      required: false
+    },
+    copy: {
+      type: Boolean,
       required: false
     }
   }
@@ -74,6 +78,16 @@ export default {
 
   &_variant-gray {
     color: var(--accent-color-gray);
+  }
+
+  &_copy {
+    cursor: pointer;
+
+    &:hover {
+      cursor: pointer;
+      border-radius: var(--default-border-radius);
+      background-color: var(--theme-color-alert-border);
+    }
   }
 }
 </style>
