@@ -6,6 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import 'tests/polyfill.spec.js'
+import Vuex from 'vuex'
+import Tooltip from 'vue-directive-tooltip'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import AccountCard from 'src/components/AccountCard.vue'
@@ -13,6 +16,7 @@ import {
   BEM_CONFIG,
   ICON_VARIANTS
 } from 'src/config'
+import store from 'src/store'
 
 const TEST_ACCOUNT = {
   address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F',
@@ -23,10 +27,13 @@ const TEST_ACCOUNT = {
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+localVue.use(Vuex)
+localVue.use(Tooltip)
 
 describe('components:AccountCard', () => {
   const wrapper = shallowMount(AccountCard, {
     localVue,
+    store,
     propsData: {
       account: TEST_ACCOUNT,
       selected: true,
@@ -58,12 +65,12 @@ describe('components:AccountCard', () => {
 
   it('Should be have some attributes', () => {
     expect(wrapper.attributes().class).toEqual(AccountCard.name)
-    expect(wrapper.attributes().style).toEqual('background-color: rgb(254, 134, 47);')
+    expect(wrapper.attributes().style).toEqual('background-color: rgb(150, 134, 47);')
   })
 
   it('Should be have some computed prop', () => {
     expect(wrapper.vm.color).toEqual({
-      backgroundColor: 'rgb(254, 134, 47)'
+      backgroundColor: 'rgb(150, 134, 47)'
     })
     expect(wrapper.vm.watermarkIcon).toBe(ICON_VARIANTS.zilliqaWatermark)
   })

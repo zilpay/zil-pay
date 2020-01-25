@@ -6,7 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import 'tests/polyfill.spec.js'
 import Vuex from 'vuex'
+import Tooltip from 'vue-directive-tooltip'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import Account from 'src/components/Account.vue'
@@ -17,6 +19,7 @@ const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 localVue.use(Vuex)
+localVue.use(Tooltip)
 
 describe('components:Account', () => {
   const wrapper = shallowMount(Account, {
