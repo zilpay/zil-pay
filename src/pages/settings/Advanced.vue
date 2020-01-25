@@ -2,7 +2,11 @@
   <div :class="b()">
     <TopBar close/>
     <Container :class="b('wrapper')">
-      <DoubleRange />
+      <GasControl
+        :value="defaultGas"
+        :DEFAULT="DEFAULT_GAS_FEE"
+        @input="setGas"
+      />
       <Separator />
       <RadioGroup
         :value="selectedTheme"
@@ -15,6 +19,7 @@
       <Button
         :class="b('btn')"
         round
+        @click="setDefaultGas"
       >
         default
       </Button>
@@ -25,8 +30,10 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 
+import { DEFAULT_GAS_FEE } from '../../../config/zilliqa'
+
 import TopBar from '@/components/TopBar'
-import DoubleRange from '@/components/DoubleRange'
+import GasControl from '@/components/GasControl'
 import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import Separator from '@/components/Separator'
@@ -36,7 +43,7 @@ export default {
   name: 'Advanced',
   components: {
     TopBar,
-    DoubleRange,
+    GasControl,
     Container,
     Separator,
     RadioGroup,
@@ -44,6 +51,7 @@ export default {
   },
   data() {
     return {
+      DEFAULT_GAS_FEE,
       radioGroupThemeTitle: 'Theme'
     }
   },
@@ -51,11 +59,18 @@ export default {
     ...mapState('ui', [
       'selectedTheme',
       'themes'
+    ]),
+    ...mapState('settings', [
+      'defaultGas'
     ])
   },
   methods: {
     ...mapMutations('ui', [
       'setTheme'
+    ]),
+    ...mapMutations('settings', [
+      'setDefaultGas',
+      'setGas'
     ])
   }
 }
@@ -73,6 +88,7 @@ export default {
   }
 
   &__btn {
+    margin-top: 130px;
     justify-self: right;
     width: 175px;
   }
