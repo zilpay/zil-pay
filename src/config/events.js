@@ -11,5 +11,7 @@ export const EVENTS = {
   close: 'close',
   click: 'click',
   input: 'input',
-  remove: 'remove'
+  remove: 'remove',
+  copy: 'copy',
+  selected: 'selected'
 }
