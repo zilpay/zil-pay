@@ -39,7 +39,15 @@ export default {
     ],
     selectedAddress: 0
   },
-  mutations: {},
+  mutations: {
+    setAccount(state, index) {
+      if (isNaN(index) || index > state.identities || index < 0) {
+        return null
+      }
+
+      state.selectedAddress = index
+    }
+  },
   actions: {},
   getters: {
     getCurrentAccount: state => state.identities[state.selectedAddress]
