@@ -8,6 +8,7 @@
  */
 import { CURRENCIES } from '@/config'
 
+const { document } = global
 const THEMES = [
   'light',
   'dark'
@@ -29,6 +30,7 @@ export default {
     setTheme(state, theme) {
       if (state.themes.includes(theme)) {
         state.selectedTheme = theme
+        document.body.setAttribute('theme', theme)
       }
     }
   },

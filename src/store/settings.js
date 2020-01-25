@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { DEFAULT } from '../../config/default'
-import { ZILLIQA } from '../../config/zilliqa'
+import { ZILLIQA, DEFAULT_GAS_FEE } from '../../config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
 export default {
@@ -31,8 +31,8 @@ export default {
     networkConfig: ZILLIQA,
 
     defaultGas: {
-      gasPrice: 1000, // in LI
-      gasLimit: 1
+      gasPrice: DEFAULT_GAS_FEE.gasPrice,
+      gasLimit: DEFAULT_GAS_FEE.gasLimit
     },
     dappsList: [],
     connect: {}
@@ -59,6 +59,14 @@ export default {
       if (!isNaN(time)) {
         state.lockTime = time
       }
+    },
+    setGas(state, { gasPrice, gasLimit }) {
+      if (gasPrice && gasLimit) {
+        state.defaultGas = { gasPrice, gasLimit }
+      }
+    },
+    setDefaultGas(state) {
+      state.defaultGas = DEFAULT_GAS_FEE
     }
   },
   actions: {},
