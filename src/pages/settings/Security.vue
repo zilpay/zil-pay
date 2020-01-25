@@ -91,6 +91,8 @@ export default {
     justify-self: right;
     grid-gap: 15px;
     width: 175px;
+
+    margin-top: 120px;
   }
 }
 </style>

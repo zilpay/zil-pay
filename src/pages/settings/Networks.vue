@@ -90,6 +90,8 @@ export default {
   &__btn {
     justify-self: right;
     width: 175px;
+
+    margin-top: 30px;
   }
 }
 </style>
