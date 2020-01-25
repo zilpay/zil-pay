@@ -20,3 +20,8 @@ export const ZILLIQA = {
     MSG_VERSION: 1
   }
 }
+
+export const DEFAULT_GAS_FEE = {
+  gasPrice: 1000,
+  gasLimit: 1
+}
