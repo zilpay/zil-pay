@@ -14,6 +14,7 @@
           :account="acc"
           :selected="index === selectedAddress"
           :trash="acc.index > 0"
+          @selected="setAccount(index)"
         />
         <div
           v-show="tabs === 1"
@@ -35,7 +36,7 @@
 
 <script>
 import { uuid } from 'uuidv4'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
@@ -102,6 +103,11 @@ export default {
   computed: {
     ...mapState('contacts', ['contactList']),
     ...mapState('accounts', ['identities', 'selectedAddress'])
+  },
+  methods: {
+    ...mapMutations('accounts', [
+      'setAccount'
+    ])
   }
 }
 </script>
