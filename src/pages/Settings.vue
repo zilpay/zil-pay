@@ -11,7 +11,7 @@
           arrow
           pointer
         >
-          <P>
+          <P :font="FONT_VARIANTS.medium">
             {{ item }}
           </P>
         </Item>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { FONT_VARIANTS } from '@/config'
+
 import General from '@/pages/settings/General'
 import Advanced from '@/pages/settings/Advanced'
 import Networks from '@/pages/settings/Networks'
@@ -53,7 +55,8 @@ export default {
   },
   data() {
     return {
-      ITEMS
+      ITEMS,
+      FONT_VARIANTS
     }
   }
 }
