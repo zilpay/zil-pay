@@ -5,11 +5,11 @@
       <div
         v-for="(item, index) of ITEMS"
         :key="index"
+        @click="$router.push({ name: item })"
       >
         <Item
           arrow
           pointer
-          @click="$router.push({ name: item })"
         >
           <P>
             {{ item }}
