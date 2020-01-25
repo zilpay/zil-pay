@@ -1,10 +1,17 @@
 <template>
-  <div :class="b({ variant, font, pointer, size, copy })">
+  <div
+    :class="b({ variant, font, pointer, size, copy })"
+    @click="onCopyContent"
+  >
     <slot />
   </div>
 </template>
 
 <script>
+import copy from 'clipboard-copy'
+
+import { EVENTS } from '@/config'
+
 /**
  * @example
  * import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
@@ -33,6 +40,18 @@ export default {
     copy: {
       type: Boolean,
       required: false
+    },
+    content: {
+      type: [String, Number],
+      required: false
+    }
+  },
+  methods: {
+    onCopyContent() {
+      if (this.copy && this.content) {
+        copy(this.content)
+        this.$emit(EVENTS.copy)
+      }
     }
   }
 }
@@ -85,8 +104,9 @@ export default {
 
     &:hover {
       cursor: pointer;
-      border-radius: var(--default-border-radius);
-      background-color: var(--theme-color-alert-border);
+      // box-shadow: var(--default-box-shadow);
+      // border-radius: var(--default-border-radius);
+      // background-color: var(--theme-color-alert-border);
     }
   }
 }

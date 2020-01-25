@@ -10,7 +10,7 @@ import Vue from 'vue'
 import App from '@/App.vue'
 import router from './router'
 import store from './store'
-
+import Tooltip from 'vue-directive-tooltip'
 import vueBemCn from 'vue-bem-cn'
 
 import { BEM_CONFIG } from '@/config'
@@ -18,6 +18,7 @@ import { BEM_CONFIG } from '@/config'
 Vue.config.productionTip = false
 
 Vue.use(vueBemCn, { delimiters: BEM_CONFIG })
+Vue.use(Tooltip)
 
 new Vue({
   router,

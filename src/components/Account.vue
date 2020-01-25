@@ -4,8 +4,13 @@
       <Title :size="SIZE_VARIANS.md">
         {{ getCurrentAccount.name }}
       </Title>
-      <P>
-        {{ getCurrentAccount.address | toAddress(ADDRESS_FORMAT_VARIANTS.bech32) }}
+      <P
+        v-tooltip="copytitle"
+        :content="getCurrentAccount.address | toAddress(addressFormat, false)"
+        copy
+        @copy="onCopyMixin"
+      >
+        {{ getCurrentAccount.address | toAddress(addressFormat) }}
       </P>
     </div>
     <div :class="b('balance')">
@@ -26,7 +31,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -34,11 +39,16 @@ import {
 } from '@/config'
 
 import { toAddress, fromZil, toConversion } from '@/filters'
+import CopyMixin from '@/mixins/copy'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
 
 const TITLE = 'Balance'
+const COPY_FORMS = {
+  copy: 'copy',
+  copied: 'copied'
+}
 
 export default {
   name: 'Account',
@@ -46,16 +56,19 @@ export default {
     Title,
     P
   },
+  mixins: [CopyMixin],
   filters: { toAddress, fromZil, toConversion },
   data() {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
       ADDRESS_FORMAT_VARIANTS,
-      TITLE
+      TITLE,
+      copytitle: COPY_FORMS.copy
     }
   },
   computed: {
+    ...mapState('settings', ['addressFormat']),
     ...mapGetters('accounts', ['getCurrentAccount'])
   }
 }

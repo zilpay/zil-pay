@@ -159,7 +159,7 @@ export default {
   &__time {
     font-size: 10px;
     line-height: 20px;
-    color: var(--theme-color-separator);
+    color: var(--theme-color-font);
   }
 }
 </style>

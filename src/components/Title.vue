@@ -1,11 +1,14 @@
 <template>
-  <div :class="b({ variant, font, size })">
+  <div
+    :class="b({ variant, font, size })"
+    @click="onClick"
+  >
     <slot />
   </div>
 </template>
 
 <script>
-import { FONT_VARIANTS, SIZE_VARIANS } from '@/config'
+import { FONT_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
 
 /**
  * @example
@@ -27,6 +30,11 @@ export default {
     size: {
       type: String,
       default: SIZE_VARIANS.lg
+    }
+  },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
     }
   }
 }

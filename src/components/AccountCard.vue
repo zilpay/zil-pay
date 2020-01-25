@@ -6,60 +6,81 @@
       :icon="ICON_VARIANTS.selected"
       width="14"
       height="14"
+      @click="onSelectedCard"
     />
-    <Title :class="b('name')">
+    <Title
+      :class="b('name')"
+      @click="onSelectedCard"
+    >
       {{ account.name }}
     </Title>
-    <div :class="b('balance')">
-      <Icon
-        :class="b('zil-watermark')"
-        :icon="watermarkIcon"
-        width="25"
-        height="35"
-      />
-      <P
-        :class="b('zil')"
-        :font="FONT_VARIANTS.medium"
-        :variant="COLOR_VARIANTS.gray"
+    <div :class="b('wrapper')">
+      <div
+        :class="b('balance')"
+        @click="onSelectedCard"
       >
-        ZIL{{ account.balance | fromZil }}
-      </P>
-      <P
-        :class="b('currency')"
-        :font="FONT_VARIANTS.medium"
-        :variant="COLOR_VARIANTS.gray"
-      >
-        ${{ account.balance | toConversion(0.1) }}
-      </P>
+        <Icon
+          :class="b('zil-watermark')"
+          :icon="watermarkIcon"
+          width="25"
+          height="35"
+          @click="onSelectedCard"
+        />
+        <P
+          :class="b('zil')"
+          :font="FONT_VARIANTS.medium"
+          :variant="COLOR_VARIANTS.gray"
+          @click="onSelectedCard"
+        >
+          ZIL{{ account.balance | fromZil }}
+        </P>
+        <P
+          :class="b('currency')"
+          :font="FONT_VARIANTS.medium"
+          :variant="COLOR_VARIANTS.gray"
+          @click="onSelectedCard"
+        >
+          {{ currency }}{{ account.balance | toConversion(0.1) }}
+        </P>
+      </div>
       <Trash
         v-show="trash"
         :class="b('remove')"
         width="13"
         height="16"
+        @click="onRemove"
       />
     </div>
     <P
+      v-tooltip="copytitle"
       :class="b('address')"
       :size="SIZE_VARIANS.xs"
       :font="FONT_VARIANTS.medium"
       :variant="COLOR_VARIANTS.gray"
+      :content="account.address | toAddress(addressFormat, false)"
+      copy
+      @copy="onCopyMixin"
     >
-      {{ account.address | toAddress(ADDRESS_FORMAT_VARIANTS.bech32, false) }}
+      {{ account.address | toAddress(addressFormat, false) }}
     </P>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import {
   FONT_VARIANTS,
   SIZE_VARIANS,
   ICON_VARIANTS,
   COLOR_VARIANTS,
   HW_VARIANTS,
-  ADDRESS_FORMAT_VARIANTS
+  ADDRESS_FORMAT_VARIANTS,
+  EVENTS
 } from '@/config'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
+import CopyMixin from '@/mixins/copy'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -68,6 +89,11 @@ import Trash from '@/components/icons/Trash'
 
 /**
  * Account card component show some information about [balance, address, type].
+ * @param account Is full account object.
+ * @param selected Show icons `selected`.
+ * @param trash Show trash icon.
+ * @event selected Select new account, returns account object.
+ * @event remove Remove account, returns account object.
  * @example
  * import AccountCard from '@/components/AccountCard'
  * const acc = {
@@ -90,6 +116,7 @@ export default {
     Trash,
     P
   },
+  mixins: [CopyMixin],
   filters: { fromZil, toConversion, toAddress },
   props: {
     account: {
@@ -116,6 +143,11 @@ export default {
     }
   },
   computed: {
+    ...mapState('settings', [
+      'addressFormat',
+      'currency'
+    ]),
+
     color() {
       return {
         backgroundColor: this.addressToColor(this.account.address)
@@ -142,10 +174,19 @@ export default {
     })
   },
   methods: {
+    onSelectedCard() {
+      this.$emit(EVENTS.selected, this.account)
+    },
+    onRemove() {
+      this.$emit(EVENTS.remove, this.account)
+    },
+
     addressToColor(hex) {
       let rgb = this.hexToRgb(hex.slice(-6))
 
-      rgb.b = rgb.b > 250 ? 250 : rgb.b
+      rgb.r = rgb.r > 150 ? 150 : rgb.r
+      rgb.g = rgb.g > 200 ? 200 : rgb.g
+      rgb.b = rgb.b > 100 ? 100 : rgb.b
 
       return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
     },
@@ -172,6 +213,12 @@ $watermark-color: rgba(0, 0, 0, 0.25);
 
   box-shadow: var(--default-box-shadow);
   border-radius: var(--default-border-radius);
+
+  &__wrapper {
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    align-items: center;
+  }
 
   &__selected {
     position: absolute;

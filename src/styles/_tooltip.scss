@@ -1,0 +1,88 @@
+.vue-tooltip {
+    background-color: var(--theme-color-alert);
+    box-sizing: border-box;
+    color: var(--theme-color-font);
+    letter-spacing: -0.139803px;
+    text-align: center;
+    font-size: 15px;
+    min-width: fit-content;
+
+    padding-left: var(--default-border-radius);
+    padding-right: var(--default-border-radius);
+
+    border-radius: var(--default-border-radius);
+    z-index: 100;
+    box-shadow: var(--default-box-shadow);
+
+    &.vue-tooltip-hidden {
+      transform: translateX(-100000px) !important;
+    }
+
+    .vue-tooltip-content {
+        text-align: center;
+    }
+    
+    .tooltip-arrow {
+        content: '';
+        width: 0;
+        height: 0;
+        border-style: solid;
+        position: absolute;
+        margin: 5px;
+    }
+
+    &[x-out-of-boundaries] {
+        display: none;
+    }
+    
+    &[x-placement^="bottom"] {
+        margin-top: 5px;
+        
+        .tooltip-arrow {
+            border-width: 0 5px 5px 5px;
+            border-bottom-color: var(--theme-color-alert);
+            border-top-color: transparent;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            top: -5px;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    }
+    
+    &[x-placement^="top"] {
+        margin-bottom: 5px;
+        
+        .tooltip-arrow {
+            border-width: 5px 5px 0 5px;
+            border-top-color: var(--theme-color-alert);
+            bottom: -5px;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    }
+    
+    &[x-placement^="right"] {
+        margin-left: 5px;
+        
+        .tooltip-arrow {
+            border-width: 5px 5px 5px 0;
+            border-right-color: var(--theme-color-alert);
+            left: -5px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+    
+    &[x-placement^="left"] {
+        margin-right: 5px;
+        
+        .tooltip-arrow {
+            border-width: 5px 0 5px 5px;
+            border-left-color: var(--theme-color-alert);
+            right: -5px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+}
