@@ -23,11 +23,13 @@
           v-model="password"
           :type="INPUT_TYPES.password"
           title="Password (min 8 chars)"
+          round
         />
         <Input
           v-model="confirmPassword"
           :type="INPUT_TYPES.password"
           title="Confirm Password."
+          round
         />
         <Button
           :class="b('submit-btn')"

@@ -5,7 +5,10 @@
       <Title :size="SIZE_VARIANS.sm">
         {{ ALERT_TITLE }}
       </Title>
-      <Input :placeholder="INPUT_PLACEHOLDER"/>
+      <Input
+        :placeholder="INPUT_PLACEHOLDER"
+        round
+      />
     </Alert>
     <div v-for="(action, index) of ACTIONS" :key="index">
       <Item
@@ -29,6 +32,7 @@
         title="Amount ZIL."
         pattern="[0-9]*"
         required
+        round
       />
       <Button
         :color="COLOR_VARIANTS.warning"
