@@ -84,8 +84,9 @@ export default {
   },
   methods: {
     onInput(event) {
-      this.$emit(EVENTS.input, event.target.value)
-      this.$attrs
+      const { value } = event.target
+
+      this.$emit(EVENTS.input, value)
     }
   },
   mounted() {
