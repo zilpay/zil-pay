@@ -33,7 +33,7 @@
         Fee
       </P>
       <P :font="FONT_VARIANTS.bold">
-        ZIL0.01
+        {{ fee }}
       </P>
     </div>
   </Container>
@@ -91,6 +91,15 @@ export default {
         this.DEFAULT.gasLimit,
         MAX_RANGE
       ]
+    }
+  },
+  computed: {
+    fee() {
+      const { gasLimit, gasPrice } = this.value
+      const factor = Math.pow(10, -6) // 10 ^ -6
+      const amount = gasLimit * gasPrice * factor
+
+      return amount.toFixed(3)
     }
   },
   methods: {
