@@ -36,7 +36,10 @@
       </div>
     </Container>
     <Separator />
-    <Container :class="b('details')">
+    <Container
+      :class="b('details')"
+      @click="onDetails"
+    >
       <Title
         :size="SIZE_VARIANS.md"
         :font="FONT_VARIANTS.regular"
@@ -91,6 +94,8 @@ import GasControl from '@/components/GasControl'
 import Separator from '@/components/Separator'
 import BottomBar from '@/components/BottomBar'
 
+import TxDataPage from '@/pages/popup/TxData'
+
 import { fromZil, toConversion, toAddress } from '@/filters'
 
 const BOTTOM_BAR = [
@@ -144,7 +149,10 @@ export default {
   methods: {
     onCallFrom() { },
     setGasTx() { },
-    onEvent(event) { }
+    onEvent(event) { },
+    onDetails() {
+      this.$router.push({ name: TxDataPage.name })
+    }
   }
 }
 </script>
@@ -194,6 +202,7 @@ export default {
   &__to {
     position: fixed;
     bottom: 40px;
+    z-index: 1;
   }
 }
 </style>

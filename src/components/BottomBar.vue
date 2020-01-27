@@ -111,6 +111,8 @@ export default {
 
   max-width: 360px;
 
+  z-index: 2;
+
   &__btn {
     display: flex;
     justify-content: center;

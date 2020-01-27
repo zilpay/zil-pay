@@ -1,12 +1,22 @@
 <template>
-  <div :class="b()">
+  <div
+    :class="b()"
+    @click="onClick"
+  >
     <slot />
   </div>
 </template>
 
 <script>
+import { EVENTS } from '@/config'
+
 export default {
-  name: 'Container'
+  name: 'Container',
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
+    }
+  }
 }
 </script>
 
