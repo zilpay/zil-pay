@@ -56,7 +56,7 @@ import Arrow from '@/components/icons/Arrow'
 
 import { fromZil, toConversion } from '@/filters'
 
-const TX_TYPES = {
+export const TX_TYPES = {
   send: 'Send',
   deploy: 'deploy',
   trigger: 'trigger'

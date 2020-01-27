@@ -47,7 +47,7 @@ export default {
     onInput(value, index) {
       const currentState = this.value
 
-      if (isNaN(value)) {
+      if (isNaN(value) || isNaN(index)) {
         return null
       }
 

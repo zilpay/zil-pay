@@ -26,7 +26,7 @@
 
 <script>
 import { uuid } from 'uuidv4'
-import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
+import { SIZE_VARIANS, FONT_VARIANTS, EVENTS } from '@/config'
 
 import P from '@/components/P'
 import Radio from '@/components/Radio'
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     onInput(item) {
-      this.$emit('input', item)
+      this.$emit(EVENTS.input, item)
     }
   }
 }
