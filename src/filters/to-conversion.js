@@ -13,7 +13,7 @@ export function toConversion(value, rate) {
     throw new Error('Rate is ', typeof rate)
   }
 
-  if (value === 0) {
+  if (value <= 0) {
     return 0
   }
 
