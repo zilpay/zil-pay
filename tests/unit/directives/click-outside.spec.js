@@ -13,7 +13,7 @@ const localVue = createLocalVue()
 
 localVue.directive('click-outside', OutSideClick)
 
-describe('components:Button', () => {
+describe('directives:click-outside', () => {
 
   it('Should can imported', () => {
     expect(OutSideClick).toBeTruthy()
