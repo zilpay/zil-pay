@@ -33,7 +33,7 @@
         <P :font="FONT_VARIANTS.bold">
           ZIL123
         </P>
-    </div>
+      </div>
     </Container>
     <Separator />
     <Container :class="b('details')">
