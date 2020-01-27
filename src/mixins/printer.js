@@ -45,7 +45,6 @@ const printMnemonic = phrase => {
   .print-container {
     text-align: center;
       font-family: 'Source Sans Pro', sans-serif;
-      -webkit-font-smoothing: antialiased;
       width: 900px;
       border: 1px solid gray;
       display: flex;
@@ -83,8 +82,6 @@ const printMnemonic = phrase => {
     margin-bottom: 2rem;
     border-radius: .25rem;
     border:  1px solid gray;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
     line-height: 1.5;
   }
