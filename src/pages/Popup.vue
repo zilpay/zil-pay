@@ -12,7 +12,7 @@
         Address from:
       </Title>
       <P>
-        zil1az5e0c6e4s4pazgahhmlca2cvgamp6kjtaxf4q
+        {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
       </P>
     </Alert>
     <Container :class="b('wrapper')">
@@ -62,7 +62,7 @@
         Address to:
       </Title>
       <P>
-        zil1az5e0c6e4s4pazgahhmlca2cvgamp6kjtaxf4q
+        {{ getCurrent.toAddr | toAddress(addressFormat, false) }}
       </P>
     </Alert>
     <BottomBar
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import { uuid } from 'uuidv4'
 import {
   SIZE_VARIANS,
@@ -143,6 +143,8 @@ export default {
     }
   },
   computed: {
+    ...mapState('settings', ['addressFormat']),
+    ...mapGetters('accounts', ['getCurrentAccount']),
     ...mapGetters('transactions', [
       'getCurrent',
       'getCurrentGas'
