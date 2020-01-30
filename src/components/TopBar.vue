@@ -35,7 +35,6 @@
 <script>
 import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
 
-// import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import Arrow from '@/components/icons/Arrow'
 import Close from '@/components/icons/Close'
@@ -46,14 +45,12 @@ import Close from '@/components/icons/Close'
  * @param close Show close button.
  * @event close When cleck to close button.
  * @example
- * import { ICON_VARIANTS } from '@/config'
  * import TopBar from '@/components/TopBar'
  * <TopBar/>
  */
 export default {
   name: 'TopBar',
   components: {
-    // Icon,
     Title,
     Arrow,
     Close
