@@ -6,8 +6,10 @@
         {{ ALERT_TITLE }}
       </Title>
       <Input
+        :value="address"
         :placeholder="INPUT_PLACEHOLDER"
         round
+        autofocus
       />
     </Alert>
     <div v-for="(action, index) of ACTIONS" :key="index">
@@ -46,15 +48,53 @@
       :elements="BOTTOM_BAR"
       @click="onEvent"
     />
-    <BottomModal v-model="modal">
-      account
+    <BottomModal v-model="accountModal">
+      <div
+        v-for="(acc, index) of identities"
+        :key="index"
+        @click="onAddress(acc.address)"
+      >
+        <Item pointer arrow>
+          <Title
+            :font="FONT_VARIANTS.light"
+            :size="SIZE_VARIANS.sm"
+          >
+            {{ acc.name }}
+          </Title>
+        </Item>
+        <Separator v-show="index < identities.length - 1"/>
+      </div>
+    </BottomModal>
+    <BottomModal v-model="contactModal">
+      <div
+        v-for="(acc, index) of contactList"
+        :key="index"
+        @click="onAddress(acc.address)"
+      >
+        <Item pointer arrow>
+          <Title
+            :font="FONT_VARIANTS.light"
+            :size="SIZE_VARIANS.sm"
+          >
+            {{ acc.name }}
+          </Title>
+        </Item>
+        <Separator v-show="index < contactList.length - 1"/>
+      </div>
     </BottomModal>
   </div>
 </template>
 
 <script>
 import { uuid } from 'uuidv4'
-import { SIZE_VARIANS, COLOR_VARIANTS, FONT_VARIANTS } from '@/config'
+import { mapState } from 'vuex'
+
+import {
+  SIZE_VARIANS,
+  COLOR_VARIANTS,
+  FONT_VARIANTS,
+  ADDRESS_FORMAT_VARIANTS
+} from '@/config'
 
 import Home from '@/pages/Home'
 
@@ -67,6 +107,8 @@ import Input, { INPUT_TYPES } from '@/components/Input'
 import Item from '@/components/Item'
 import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
+
+import { toAddress } from '@/filters'
 
 const ALERT_TITLE = 'Add recipient'
 const INPUT_PLACEHOLDER = 'Select, public address (zil1), or ZNS'
@@ -118,6 +160,7 @@ export default {
     Separator,
     Button,
   },
+  filters: { toAddress },
   data() {
     return {
       SIZE_VARIANS,
@@ -130,8 +173,18 @@ export default {
       BOTTOM_BAR,
 
       amount: 0,
-      modal: false
+      address: null,
+      accountModal: false,
+      contactModal: false
     }
+  },
+  computed: {
+    ...mapState('accounts', [
+      'identities'
+    ]),
+    ...mapState('contacts', [
+      'contactList'
+    ])
   },
   methods: {
     onEvent(event) {
@@ -142,14 +195,23 @@ export default {
         this.$router.push({ name: Home.name })
         break
       case EVENTS.accounts:
-        this.modal = true
+        this.accountModal = true
         break
       case EVENTS.contacts:
-        this.modal = true
+        this.contactModal = true
         break
       default:
         break
       }
+    },
+    onAddress(address) {
+      this.address = toAddress(
+        address,
+        ADDRESS_FORMAT_VARIANTS.bech32,
+        false
+      )
+      this.accountModal = false
+      this.contactModal = false
     }
   }
 }
