@@ -22,12 +22,10 @@
     >
       {{ currentRouter.name }}
     </Title>
-    <Icon
+    <Close
       v-show="close"
       :class="b('cancel-icon')"
-      :icon="ICON_VARIANTS.cancel"
-      width="23"
-      height="23"
+      :size="SIZE_VARIANS.lg"
       pointer
       @click="onCancel"
     />
@@ -37,9 +35,10 @@
 <script>
 import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
 
-import Icon from '@/components/Icon'
+// import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import Arrow from '@/components/icons/Arrow'
+import Close from '@/components/icons/Close'
 
 /**
  * ToBar is bar for navigate by UI.
@@ -54,9 +53,10 @@ import Arrow from '@/components/icons/Arrow'
 export default {
   name: 'TopBar',
   components: {
-    Icon,
+    // Icon,
     Title,
-    Arrow
+    Arrow,
+    Close
   },
   props: {
     route: {

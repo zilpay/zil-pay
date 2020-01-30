@@ -1,6 +1,7 @@
 <template>
   <div
-    :class="b({ pointer, size })"
+    :class="b({ pointer, size, opacity })"
+    :style="style"
     @click="onClick"
   />
 </template>
@@ -11,6 +12,10 @@ import { SIZE_VARIANS, EVENTS } from '@/config'
 export default {
   name: 'Close',
   props: {
+    width: {
+      type: [String, Number],
+      default: 15
+    },
     pointer: {
       type: Boolean,
       default: true
@@ -18,6 +23,17 @@ export default {
     size: {
       type: String,
       default: SIZE_VARIANS.xs
+    },
+    opacity: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    style() {
+      return {
+        width: `${this.width}px`
+      }
     }
   },
   methods: {
@@ -30,21 +46,25 @@ export default {
 
 <style lang="scss">
 .Close {
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  opacity: 0.3;
-
-  &:before, &:after {
-    content: ' ';
+  &:before,
+  &:after {
+    content: "";
     position: absolute;
     height: 10px;
-    width: 2px;
-    background-color: var(--accent-color-black);
+    background-color: var(--theme-color-font);
+    border-radius: var(--default-border-radius);
   }
 
   &_pointer {
     cursor: pointer;
+  }
+
+  &_opacity {
+    opacity: 0.3;
   }
 
   &_size-xs {
@@ -56,19 +76,21 @@ export default {
   &_size-sm {
     &:before, &:after {
       height: calc(var(--size-sm) - 20px);
+      width: 3px;
     }
   }
 
   &_size-md {
     &:before, &:after {
       height: calc(var(--size-md) - 30px);
+      width: 3px;
     }
   }
 
   &_size-lg {
     &:before, &:after {
       height: calc(var(--size-lg) - 30px);
-      width: 3px;
+      width: 4px;
     }
   }
 
