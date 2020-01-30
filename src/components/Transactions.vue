@@ -8,19 +8,21 @@
       >
         Transactions:
       </Title>
-      <div v-for="(tx, index) of transactions" :key="tx.TranID">
+      <div
+        v-for="(tx, index) of getCurrentTransactions"
+        :key="tx.TranID"
+      >
         <TransactionCard :transaction="tx"/>
-        <Separator v-show="index < transactions.length - 1"/>
+        <Separator v-show="index < getCurrentTransactions.length - 1"/>
       </div>
     </div>
   </Alert>
 </template>
 
 <script>
-import {
-  SIZE_VARIANS,
-  FONT_VARIANTS
-} from '@/config'
+import { mapGetters } from 'vuex'
+
+import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
 import Alert from '@/components/Alert'
 import TransactionCard from '@/components/TransactionCard'
@@ -38,35 +40,13 @@ export default {
   data() {
     return {
       SIZE_VARIANS,
-      FONT_VARIANTS,
-      currentAddress: '',
-      transactions: [
-        {
-          Info: 'Contract Txn, Shards Match of the sender and reciever',
-          TranID: '8bd99abe0f280d5df9fd515eadd93870902ecf5a5c661cfc37bca22fc657f5fd',
-          amount: '10000000000000',
-          nonce: 55,
-          toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-          status: 'confirmed'
-        },
-        {
-          Info: '',
-          TranID: 'aaf3ef4c1e5135ac112d55082d97c9c235385bf567c9005e0fc82cbfcd735730',
-          amount: '1000000000000',
-          nonce: 52,
-          toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-          status: 'rejected'
-        },
-        {
-          Info: 'Contract Creation',
-          TranID: 'aaf3ef4c1e5135ac112d55082d27c9c235385bf517c9005e0fc82cbfcd735730',
-          amount: '23000000000000',
-          nonce: 56,
-          toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-          status: 'mining'
-        }
-      ]
+      FONT_VARIANTS
     }
+  },
+  computed: {
+    ...mapGetters('transactions', [
+      'getCurrentTransactions'
+    ])
   }
 }
 </script>
