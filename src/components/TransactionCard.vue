@@ -1,5 +1,8 @@
 <template>
-  <div :class="b()">
+  <div
+    :class="b()"
+    @click="onClick"
+  >
     <Container :class="b('first-line')">
       <P
         :class="b('send')"
@@ -46,7 +49,8 @@ import {
   ICON_VARIANTS,
   FONT_VARIANTS,
   COLOR_VARIANTS,
-  TRANSACTION_STATUS
+  TRANSACTION_STATUS,
+  EVENTS
 } from '@/config'
 
 import P from '@/components/P'
@@ -109,6 +113,11 @@ export default {
       }
     }
   },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
+    }
+  },
   mounted() {
     [
       'Info',
@@ -127,6 +136,7 @@ export default {
 
 <style lang="scss">
 .TransactionCard {
+  cursor: pointer;
   height: 70px;
 
   &__first-line,
