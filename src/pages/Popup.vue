@@ -17,14 +17,14 @@
     </Alert>
     <Container :class="b('wrapper')">
       <Icon
-        :src="TEST_URL"
+        :src="getCurrent.icon"
         width="40"
         height="40"
       />
       <GasControl
-        :value="defaultGas"
+        :value="getCurrentGas"
         :DEFAULT="DEFAULT_GAS_FEE"
-        @input="setGasTx"
+        @input="setCurrentGas"
       />
       <div :class="b('amount')">
         <P :font="FONT_VARIANTS.bold">
@@ -73,12 +73,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { uuid } from 'uuidv4'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
-  EVENTS,
   COLOR_VARIANTS,
   ICON_VARIANTS
 } from '@/config'
@@ -98,24 +97,27 @@ import TxDataPage from '@/pages/popup/TxData'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
 
+const BOTTOM_BAR_EVENTS = {
+  confirm: uuid(),
+  reject: uuid()
+}
+
 const BOTTOM_BAR = [
   {
     value: 'CONFIRM',
-    event: EVENTS.cancel,
+    event: BOTTOM_BAR_EVENTS.confirm,
     size: SIZE_VARIANS.sm,
     variant: COLOR_VARIANTS.primary,
     uuid: uuid()
   },
   {
     value: 'REJECT',
-    event: EVENTS.send,
+    event: BOTTOM_BAR_EVENTS.reject,
     variant: COLOR_VARIANTS.primary,
     size: SIZE_VARIANS.sm,
     uuid: uuid()
   }
 ]
-// eslint-disable-next-line max-len
-const TEST_URL = 'https://dappreview.oss-cn-hangzhou.aliyuncs.com/dappLogo/11729/rocketgame.vip/AXd8XwDdCibdyfF7bjJQDfKmTsEnpr3Q.png?x-oss-process=style/dapp-logo'
 
 export default {
   name: 'Popup',
@@ -137,20 +139,39 @@ export default {
       FONT_VARIANTS,
       DEFAULT_GAS_FEE,
       ICON_VARIANTS,
-      BOTTOM_BAR,
-      TEST_URL,
-      tx: {}
+      BOTTOM_BAR
     }
   },
   computed: {
-    ...mapState('settings', [
-      'defaultGas'
+    ...mapGetters('transactions', [
+      'getCurrent',
+      'getCurrentGas'
     ])
   },
   methods: {
+    ...mapMutations('transactions', [
+      'setCurrentGas'
+    ]),
+
     onCallFrom() { },
-    setGasTx() { },
-    onEvent(event) { },
+    onReject() {
+      if (!this.confirmationTx || this.confirmationTx.length < 1) {
+        console.log('close')
+      }
+    },
+    onConfirm() {},
+    onEvent(event) {
+      switch (event) {
+      case BOTTOM_BAR_EVENTS.reject:
+        this.onReject()
+        break
+      case BOTTOM_BAR_EVENTS.confirm:
+        this.onConfirm()
+        break
+      default:
+        break
+      }
+    },
     onDetails() {
       this.$router.push({ name: TxDataPage.name })
     }
