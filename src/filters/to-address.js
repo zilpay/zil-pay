@@ -1,7 +1,5 @@
-import {
-  toBech32Address,
-  toChecksumAddress
-} from '@zilliqa-js/crypto'
+import { toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
+import { toChecksumAddress } from '@zilliqa-js/crypto/dist/util'
 
 import { ADDRESS_FORMAT_VARIANTS } from '@/config'
 
