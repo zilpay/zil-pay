@@ -9,7 +9,7 @@
         :size="SIZE_VARIANS.md"
         :font="FONT_VARIANTS.regular"
       >
-        Address from
+        Address from:
       </Title>
       <P>
         zil1az5e0c6e4s4pazgahhmlca2cvgamp6kjtaxf4q
@@ -46,8 +46,7 @@
       >
         View details
       </Title>
-      <Icon
-        :icon="ICON_VARIANTS.arrowInCircle"
+      <ArrowInCircle
         width="40"
         height="40"
       />
@@ -60,7 +59,7 @@
         :size="SIZE_VARIANS.md"
         :font="FONT_VARIANTS.regular"
       >
-        Address to
+        Address to:
       </Title>
       <P>
         zil1az5e0c6e4s4pazgahhmlca2cvgamp6kjtaxf4q
@@ -93,6 +92,7 @@ import Container from '@/components/Container'
 import GasControl from '@/components/GasControl'
 import Separator from '@/components/Separator'
 import BottomBar from '@/components/BottomBar'
+import ArrowInCircle from '@/components/icons/ArrowInCircle'
 
 import TxDataPage from '@/pages/popup/TxData'
 
@@ -127,7 +127,8 @@ export default {
     GasControl,
     Container,
     Separator,
-    BottomBar
+    BottomBar,
+    ArrowInCircle
   },
   filters: { fromZil, toConversion, toAddress },
   data() {
@@ -195,6 +196,7 @@ export default {
     cursor: pointer;
 
     display: grid;
+    align-items: center;
     grid-template-columns: 1fr 40px;
     grid-gap: 10px;
   }
