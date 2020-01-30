@@ -22,8 +22,7 @@ describe('components:Close', () => {
   const wrapper = shallowMount(Close, {
     localVue,
     propsData: {
-      height: 300,
-      width: 10,
+      width: 30,
       pointer: true
     }
   })
@@ -55,8 +54,7 @@ describe('components:Close', () => {
 
   it('Should be have some attributes', () => {
     expect(wrapper.attributes()).toEqual({
-      height: '300',
-      width: '10',
+      style: 'width: 30px;',
       class: `${Close.name} ${Close.name}${BEM_CONFIG.mod}pointer ${Close.name}${BEM_CONFIG.mod}size-xs`
     })
   })
