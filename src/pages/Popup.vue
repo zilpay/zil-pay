@@ -158,7 +158,7 @@ export default {
     onCallFrom() { },
     onReject() {
       if (!this.confirmationTx || this.confirmationTx.length < 1) {
-        console.log('close')
+        // console.log('close')
       }
     },
     onConfirm() {},

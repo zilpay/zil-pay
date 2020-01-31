@@ -13,7 +13,7 @@
         :key="tx.TranID"
       >
         <TransactionCard :transaction="tx"/>
-        <Separator v-show="index < getCurrentTransactions.length - 1"/>
+        <Separator v-show="index < getCurrentTransactions.length - 1" />
       </div>
     </div>
   </Alert>
@@ -54,6 +54,7 @@ export default {
 <style lang="scss">
 .Transactions {
   min-width: 360px;
+  min-height: 250px;
 
   &__title {
     height: 16px;
@@ -62,8 +63,6 @@ export default {
   &__wrapper {
     display: grid;
     grid-gap: 5px;
-
-    height: 273px;
   }
 }
 </style>
