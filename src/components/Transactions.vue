@@ -11,11 +11,15 @@
       <div
         v-for="(tx, index) of getCurrentTransactions"
         :key="tx.TranID"
+        @click="onSelect(index)"
       >
         <TransactionCard :transaction="tx"/>
         <Separator v-show="index < getCurrentTransactions.length - 1" />
       </div>
     </div>
+    <BottomModal v-model="info">
+      {{ selectedTx }}
+    </BottomModal>
   </Alert>
 </template>
 
@@ -28,6 +32,7 @@ import Alert from '@/components/Alert'
 import TransactionCard from '@/components/TransactionCard'
 import Separator from '@/components/Separator'
 import Title from '@/components/Title'
+import BottomModal from '@/components/BottomModal'
 
 export default {
   name: 'Transactions',
@@ -35,18 +40,30 @@ export default {
     Alert,
     TransactionCard,
     Separator,
-    Title
+    Title,
+    BottomModal
   },
   data() {
     return {
       SIZE_VARIANS,
-      FONT_VARIANTS
+      FONT_VARIANTS,
+      info: false,
+      selected: null
     }
   },
   computed: {
     ...mapGetters('transactions', [
       'getCurrentTransactions'
-    ])
+    ]),
+    selectedTx() {
+      return this.getCurrentTransactions[this.selected]
+    }
+  },
+  methods: {
+    onSelect(index) {
+      this.selected = index
+      this.info = true
+    }
   }
 }
 </script>
