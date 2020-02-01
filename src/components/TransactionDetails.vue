@@ -138,6 +138,10 @@ export default {
         {
           key: 'Nonce',
           value: this.transaction.nonce
+        },
+        {
+          key: 'Epoch',
+          value: this.transaction.epoch
         }
       ]
     }

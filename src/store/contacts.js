@@ -24,7 +24,40 @@ export default {
       }
     ]
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    setContacts(state, contactList) {
+      if (!contactList || contactList.lenght < 1) {
+        return null
+      }
+
+      state.contactList = contactList
+    }
+  },
+  actions: {
+    onRemoveByIndex({ commit, state }, index) {
+      commit(
+        'setContacts',
+        state.contactList.filter((_, i) => index !== i)
+      )
+    },
+    onAddedContact({ commit, state }, payload) {
+      if (!payload || !payload.address || !payload.name) {
+        return null
+      }
+
+      const onlyAddreses = state.contactList.filter(c => c.address)
+      const onlyName = state.contactList.filter(c => c.name)
+
+      if (onlyAddreses.includes(payload.address)) {
+        throw new Error('Address must be unique.')
+      } else if (onlyName.includes(payload.name)) {
+        throw new Error('Name must be unique.')
+      }
+
+      const newList = [...state.contactList, payload]
+
+      commit('setContacts', newList)
+    }
+  },
   getters: {}
 }

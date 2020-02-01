@@ -21,7 +21,11 @@
           v-for="(contact, index) of contactList"
           :key="index"
         >
-          <Item trash pointer>
+          <Item
+            trash
+            pointer
+            @remove="onRemoveByIndex(index)"
+          >
             <Title :size="SIZE_VARIANS.sm">
               {{ contact.name }}
             </Title>
@@ -30,13 +34,19 @@
         </div>
       </div>
     </div>
-    <BottomBar :elements="BOTTOM_BAR"/>
+    <BottomBar
+      :elements="BOTTOM_BAR"
+      @click="onEvent"
+    />
+    <BottomModal v-model="contactModal">
+      <ContactCreater @close="contactModal = false"/>
+    </BottomModal>
   </div>
 </template>
 
 <script>
 import { uuid } from 'uuidv4'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
@@ -46,6 +56,8 @@ import AccountCard from '@/components/AccountCard'
 import Item from '@/components/Item'
 import Separator from '@/components/Separator'
 import Title from '@/components/Title'
+import BottomModal from '@/components/BottomModal'
+import ContactCreater from '@/components/ContactCreater'
 
 const EVENTS = {
   create: uuid(),
@@ -89,7 +101,9 @@ export default {
     AccountCard,
     Item,
     Separator,
-    Title
+    Title,
+    BottomModal,
+    ContactCreater
   },
   data() {
     return {
@@ -97,7 +111,8 @@ export default {
       BOTTOM_BAR,
       TABS,
 
-      tabs: 0
+      tabs: 0,
+      contactModal: false
     }
   },
   computed: {
@@ -107,7 +122,14 @@ export default {
   methods: {
     ...mapMutations('accounts', [
       'setAccount'
-    ])
+    ]),
+    ...mapActions('contacts', ['onRemoveByIndex']),
+
+    onEvent(event) {
+      if (EVENTS.create && this.tabs === 1) {
+        this.contactModal = true
+      }
+    }
   }
 }
 </script>

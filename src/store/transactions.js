@@ -20,7 +20,8 @@ export default {
             amount: '10000000000000',
             nonce: 55,
             toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-            status: 'confirmed'
+            status: 'confirmed',
+            epoch: '113232'
           },
           {
             Info: '',
@@ -28,7 +29,8 @@ export default {
             amount: '1000000000000',
             nonce: 52,
             toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-            status: 'rejected'
+            status: 'rejected',
+            epoch: '113233'
           },
           {
             Info: 'Contract Creation',
@@ -36,7 +38,8 @@ export default {
             amount: '23000000000000',
             nonce: 56,
             toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-            status: 'mining'
+            status: 'mining',
+            epoch: '32432'
           }
         ]
       }
