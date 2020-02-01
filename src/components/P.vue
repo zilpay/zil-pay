@@ -63,6 +63,10 @@ export default {
 
   letter-spacing: -0.139803px;
 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   &_font-medium {
     font-family: var(--font-family-medium);
   }
