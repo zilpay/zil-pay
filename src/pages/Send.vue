@@ -231,7 +231,7 @@ export default {
     display: grid;
     grid-template-columns: 1fr 60px;
     grid-gap: 5px;
-    align-items: center;
+    align-items: self-end;
 
     padding-left: 30px;
     padding-right: 30px;
