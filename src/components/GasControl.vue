@@ -130,6 +130,9 @@ export default {
 
 <style lang="scss">
 .GasControl {
+  display: grid;
+  grid-gap: 15px;
+
   &__fee {
     display: grid;
     grid-template-columns: 100px 50px 100px;
@@ -138,6 +141,7 @@ export default {
   }
 
   &__hr {
+    margin-top: 35px;
     width: 40px;
     color: var(--theme-color-separator);
   }
@@ -145,8 +149,6 @@ export default {
   &__info {
     display: flex;
     justify-content: space-between;
-
-    padding-top: 15px;
     font-size: 15px;
   }
 }
