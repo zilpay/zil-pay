@@ -39,7 +39,7 @@
           {{ el.key }}
         </P>
         <P
-          v-tooltip="copytitle"
+          v-tooltip.left="copytitle"
           :class="b('value')"
           :size="SIZE_VARIANS.xs"
           :content="el.value"
