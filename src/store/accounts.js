@@ -50,9 +50,8 @@ export default {
       state.selectedAddress = index
     },
     setAccountName(state, value) {
-      console.log(value)
       if (typeof value !== 'string' || value.length > DEFAULT.MAX_LENGTH_NAME) {
-        // return null
+        return null
       }
 
       const { identities, selectedAddress } = state
