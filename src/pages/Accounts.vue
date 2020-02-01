@@ -15,6 +15,7 @@
           :selected="index === selectedAddress"
           :trash="acc.index > 0"
           @selected="setAccount(index)"
+          @remove="onRemoveAccount(index)"
         />
         <div
           v-show="tabs === 1"
@@ -39,7 +40,10 @@
       @click="onEvent"
     />
     <BottomModal v-model="contactModal">
-      <ContactCreater @close="contactModal = false"/>
+      <ContactCreater
+        v-if="contactModal"
+        @close="contactModal = false"
+      />
     </BottomModal>
   </div>
 </template>
@@ -123,6 +127,7 @@ export default {
     ...mapMutations('accounts', [
       'setAccount'
     ]),
+    ...mapActions('accounts', ['onRemoveAccount']),
     ...mapActions('contacts', ['onRemoveByIndex']),
 
     onEvent(event) {

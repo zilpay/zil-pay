@@ -42,6 +42,13 @@ export default {
     selectedAddress: 0
   },
   mutations: {
+    setAccounts(state, identities) {
+      if (!identities || identities.length < 1) {
+        return null
+      }
+
+      state.identities = identities
+    },
     setAccount(state, index) {
       if (isNaN(index) || index > state.identities || index < 0) {
         return null
@@ -59,7 +66,21 @@ export default {
       identities[selectedAddress].name = value
     }
   },
-  actions: {},
+  actions: {
+    onRemoveAccount({ state, commit }, index) {
+      if (isNaN(index)) {
+        return null
+      }
+
+      const { identities, selectedAddress } = state
+
+      if (selectedAddress === index) {
+        commit('setAccount', selectedAddress - 1)
+      }
+
+      commit('setAccounts', identities.filter((_, i) => i !== index))
+    }
+  },
   getters: {
     getCurrentAccount: state => state.identities[state.selectedAddress]
   }
