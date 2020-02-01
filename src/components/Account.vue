@@ -1,9 +1,12 @@
 <template>
   <div :class="b()">
     <div :class="b('info')">
-      <Title :size="SIZE_VARIANS.md">
-        {{ getCurrentAccount.name }}
-      </Title>
+      <Title
+        :value="getCurrentAccount.name"
+        :size="SIZE_VARIANS.md"
+        changeable
+        @input="setAccountName"
+      />
       <P
         v-tooltip="copytitle"
         :content="getCurrentAccount.address | toAddress(addressFormat, false)"
@@ -31,7 +34,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapMutations } from 'vuex'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -65,6 +68,9 @@ export default {
   computed: {
     ...mapState('settings', ['addressFormat']),
     ...mapGetters('accounts', ['getCurrentAccount'])
+  },
+  methods: {
+    ...mapMutations('accounts', ['setAccountName'])
   }
 }
 </script>
