@@ -72,7 +72,6 @@ export default {
   &__input {
     max-width: fit-content;
     max-width: 250px;
-    max-height: 20px;
 
     color: var(--theme-color-font);
     text-indent: -1px;

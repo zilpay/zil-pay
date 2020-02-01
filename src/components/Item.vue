@@ -118,6 +118,7 @@ export default {
     align-items: center;
 
     text-indent: 15px;
+
     height: 45px;
     width: 300px;
   }

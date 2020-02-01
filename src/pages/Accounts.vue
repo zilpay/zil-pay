@@ -6,7 +6,7 @@
         v-model="tabs"
         :elements="TABS"
       />
-      <div :class="b('account-list')">
+      <div :class="b('list')">
         <AccountCard
           v-show="tabs === 0"
           v-for="(acc, index) of identities"
@@ -121,7 +121,7 @@ export default {
     grid-template-rows: 80px auto;
   }
 
-  &__account-list {
+  &__list {
     display: grid;
     grid-gap: 15px;
   }

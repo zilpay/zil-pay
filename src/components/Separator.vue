@@ -15,13 +15,12 @@ export default {
 </script>
 
 <style lang="scss">
-$width:  360px !default;
-$height: 0.02rem   !default;
-$radius: 50%   !default;
+$width:  360px   !default;
+$height: 0.04rem !default;
+$radius: 50%     !default;
 
 .Separator {
   max-width: $width;
-  height: $height;
 
   border-radius: $radius;
   border: $height solid var(--theme-color-separator);

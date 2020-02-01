@@ -48,6 +48,9 @@
         :class="b('separator')"
       />
     </Container>
+    <BottomModal v-model="accountInfo">
+      test
+    </BottomModal>
   </div>
 </template>
 
@@ -68,6 +71,7 @@ import Icon from '@/components/Icon'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Separator from '@/components/Separator'
+import BottomModal from '@/components/BottomModal'
 
 const alertHeader = {
   title: 'Deposit ZIL.',
@@ -104,14 +108,16 @@ export default {
     Icon,
     Button,
     Container,
-    Separator
+    Separator,
+    BottomModal
   },
   data() {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
       variants,
-      alertHeader
+      alertHeader,
+      accountInfo: false
     }
   }
 }
@@ -145,6 +151,7 @@ export default {
   }
 
   &__deposit-info {
+    white-space: normal;
     font-size: 13px;
     line-height: 15px;
 

@@ -9,8 +9,14 @@
       <Title :size="SIZE_VARIANS.sm">
         Thanks for your donats.
       </Title>
-      <P :size="SIZE_VARIANS.xs" copy>
-        zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace
+      <P
+        v-tooltip="copytitle"
+        :size="SIZE_VARIANS.sm"
+        :content="donateAddress"
+        copy
+        @copy="onCopyMixin"
+      >
+        {{ donateAddress }}
       </P>
     </Container>
     <Container>
@@ -50,6 +56,8 @@ import Container from '@/components/Container'
 import Title from '@/components/Title'
 import P from '@/components/P'
 
+import CopyMixin from '@/mixins/copy'
+
 export default {
   name: 'About',
   components: {
@@ -59,6 +67,7 @@ export default {
     Title,
     P
   },
+  mixins: [CopyMixin],
   data() {
     return {
       ICON_VARIANTS,
@@ -67,6 +76,7 @@ export default {
         name: 'Rinat',
         url: 'https://github.com/lich666dead'
       },
+      donateAddress: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
       links: [
         {
           name: 'Github',
@@ -99,7 +109,8 @@ export default {
   &__wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: left;
+    padding: 30px;
   }
 
   &__links {
