@@ -44,7 +44,7 @@ import Trash from '@/components/icons/Trash'
 import Arrow from '@/components/icons/Arrow'
 
 /**
- * List item.
+ * List item
  * @example
  * import Item from '@/components/Item'
  * <Item

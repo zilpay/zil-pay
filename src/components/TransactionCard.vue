@@ -32,7 +32,7 @@
     </Container>
     <Container :class="b('thirdly-line')">
       <div :class="b('time')">
-        1 min ago
+        epoch {{ transaction.epoch}}
       </div>
       <P
         :class="b('amount')"
