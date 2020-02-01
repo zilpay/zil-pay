@@ -6,6 +6,8 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { DEFAULT } from '../../config/default'
+
 export default {
   namespaced: true,
   state: {
@@ -46,6 +48,16 @@ export default {
       }
 
       state.selectedAddress = index
+    },
+    setAccountName(state, value) {
+      console.log(value)
+      if (typeof value !== 'string' || value.length > DEFAULT.MAX_LENGTH_NAME) {
+        // return null
+      }
+
+      const { identities, selectedAddress } = state
+
+      identities[selectedAddress].name = value
     }
   },
   actions: {},
