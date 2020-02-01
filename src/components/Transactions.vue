@@ -17,14 +17,20 @@
         <Separator v-show="index < getCurrentTransactions.length - 1" />
       </div>
     </div>
-    <BottomModal v-model="info">
-      {{ selectedTx }}
+    <BottomModal
+      v-model="info"
+    >
+      <TransactionDetails
+        v-if="getCurrentAccount && selectedTx"
+        :account="getCurrentAccount"
+        :transaction="selectedTx"
+      />
     </BottomModal>
   </Alert>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
@@ -33,6 +39,7 @@ import TransactionCard from '@/components/TransactionCard'
 import Separator from '@/components/Separator'
 import Title from '@/components/Title'
 import BottomModal from '@/components/BottomModal'
+import TransactionDetails from '@/components/TransactionDetails'
 
 export default {
   name: 'Transactions',
@@ -41,7 +48,8 @@ export default {
     TransactionCard,
     Separator,
     Title,
-    BottomModal
+    BottomModal,
+    TransactionDetails
   },
   data() {
     return {
@@ -52,6 +60,10 @@ export default {
     }
   },
   computed: {
+    ...mapState('settings', ['addressFormat']),
+    ...mapGetters('accounts', [
+      'getCurrentAccount'
+    ]),
     ...mapGetters('transactions', [
       'getCurrentTransactions'
     ]),

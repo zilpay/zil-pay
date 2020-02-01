@@ -45,10 +45,6 @@ import Title from '@/components/Title'
 import P from '@/components/P'
 
 const TITLE = 'Balance'
-const COPY_FORMS = {
-  copy: 'copy',
-  copied: 'copied'
-}
 
 export default {
   name: 'Account',
@@ -63,8 +59,7 @@ export default {
       SIZE_VARIANS,
       FONT_VARIANTS,
       ADDRESS_FORMAT_VARIANTS,
-      TITLE,
-      copytitle: COPY_FORMS.copy
+      TITLE
     }
   },
   computed: {
