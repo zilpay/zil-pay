@@ -148,7 +148,7 @@ export default {
 <style lang="scss">
 .TransactionDetails {
   /* top | right | bottom | left */
-  padding: 5px 15px 30px 15px;
+  padding: 10px 15px 30px 15px;
 
   &__sender-recipient {
     display: flex;

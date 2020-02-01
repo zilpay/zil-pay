@@ -8,6 +8,13 @@
       >
         Transactions:
       </Title>
+      <Title
+        v-show="getCurrentTransactions.length === 0"
+        :size="SIZE_VARIANS.sm"
+        :font="FONT_VARIANTS.regular"
+      >
+        You don’t have any transactions yet.
+      </Title>
       <div
         v-for="(tx, index) of getCurrentTransactions"
         :key="tx.TranID"
@@ -17,9 +24,7 @@
         <Separator v-show="index < getCurrentTransactions.length - 1" />
       </div>
     </div>
-    <BottomModal
-      v-model="info"
-    >
+    <BottomModal v-model="info">
       <TransactionDetails
         v-if="getCurrentAccount && selectedTx"
         :account="getCurrentAccount"
