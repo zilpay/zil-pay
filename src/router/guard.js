@@ -7,6 +7,9 @@
  * Copyright (c) 2019 ZilPay
  */
 import LockScreen from '@/pages/LockScreen'
+import FirstStart from '@/pages/FirstStart'
+
+import Wallet from '@/store/wallet'
 
 /**
  * Common guard for routers.
@@ -20,8 +23,11 @@ export default function guard(to, from, next) {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    // eslint-disable-next-line no-constant-condition
-    if (false) {
+    if (!Wallet.state.isReady) {
+      next({
+        path: `/${FirstStart.name.toLowerCase()}`
+      })
+    } else if (!Wallet.state.isEnable) {
       next({
         path: `/${LockScreen.name.toLowerCase()}`
       })
