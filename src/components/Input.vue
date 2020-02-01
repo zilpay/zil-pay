@@ -11,7 +11,7 @@
       ref="input"
       @input="onInput"
     />
-    <div :class="b('error')">
+    <div :class="b('error', { enable: Boolean(error) })">
       {{ error }}
     </div>
   </label>
@@ -111,7 +111,6 @@ export default {
     align-items: center;
 
     width: 100%;
-    height: 20px;
 
     text-indent: 15px;
     text-transform: capitalize;
@@ -120,6 +119,10 @@ export default {
     font-family: var(--font-family-light);
     color: var(--theme-color-font);
     font-size: var(--size-xs-font);
+
+    &__enable {
+      height: 20px;
+    }
   }
 
   &__element {
