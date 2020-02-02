@@ -85,14 +85,13 @@ const routes = [
     path: `/${Accounts.name.toLowerCase()}`,
     name: Accounts.name,
     component: Accounts,
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: `/${Import.name.toLowerCase()}`,
-        name: Import.name,
-        component: Import
-      }
-    ]
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Import.name.toLowerCase()}`,
+    name: Import.name,
+    component: Import,
+    meta: { requiresAuth: true }
   },
   {
     path: `/${Connect.name.toLowerCase()}`,

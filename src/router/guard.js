@@ -24,17 +24,15 @@ export default function guard(to, from, next) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
     if (!Wallet.state.isReady) {
-      next({
+      return next({
         path: `/${FirstStart.name.toLowerCase()}`
       })
     } else if (!Wallet.state.isEnable) {
-      next({
+      return next({
         path: `/${LockScreen.name.toLowerCase()}`
       })
-    } else {
-      next()
     }
-  } else {
-    next() // make sure to always call next()!
   }
+
+  return next() // make sure to always call next()!
 }
