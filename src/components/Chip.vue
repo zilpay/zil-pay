@@ -15,7 +15,8 @@
       </div>
       <CloseIcon
         v-show="close"
-        :class="b('close')"
+        :size="SIZE_VARIANS.sm"
+        opacity
         @click="onClose"
       />
     </div>
@@ -50,6 +51,11 @@ export default {
       default: SIZE_VARIANS.sm
     }
   },
+  data() {
+    return {
+      SIZE_VARIANS
+    }
+  },
   methods: {
     onClose() {
       this.$emit(EVENTS.close)
@@ -77,7 +83,7 @@ $default-height: 32px;
 
   &__wrapper {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr 25px;
     justify-content: space-between;
   }
 
@@ -93,15 +99,6 @@ $default-height: 32px;
 
   &__content {
     text-indent: 5px;
-  }
-
-  &__close {
-    display: flex;
-
-    height: $default-height;
-    width: $default-height;
-
-    text-align: center;
   }
 
   &_pointer {
