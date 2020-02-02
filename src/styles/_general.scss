@@ -72,8 +72,8 @@
 }
 
 body, html {
-  width: 360px;
-  height: 600px;
+  min-width: 360px;
+  min-height: 600px;
 
 	overflow-x: hidden;
 }
