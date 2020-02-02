@@ -3,13 +3,13 @@
     <TopBar />
     <Alert :class="b('alert-info')">
       <Title :size="SIZE_VARIANS.sm">
-        {{ alertHeader.title }}
+        {{ ALERT_HEADER.title }}
       </Title>
       <P
         :class="b('deposit-info')"
         :font="FONT_VARIANTS.regular"
       >
-        {{ alertHeader.description }}
+        {{ ALERT_HEADER.description }}
       </P>
     </Alert>
     <Container
@@ -39,6 +39,7 @@
           :class="b('deposit-btn')"
           :size="SIZE_VARIANS.xs"
           round
+          @click="onEvent(variant.uuid)"
         >
           {{ variant.button }}
         </Button>
@@ -49,16 +50,49 @@
       />
     </Container>
     <BottomModal v-model="accountInfo">
-      test
+      <Container :class="b('account')">
+        <Title :size="SIZE_VARIANS.sm">
+          {{ getCurrentAccount.name }}
+        </Title>
+        <Icon
+          v-if="qrcode"
+          :src="qrcode"
+          :type="ICON_TYPE.auto"
+          height="200"
+          width="200"
+        />
+        <P
+          v-tooltip="copytitle"
+          :content="getCurrentAccount.address | toAddress(addressFormat, false)"
+          copy
+          @copy="onCopyMixin"
+        >
+          {{ getCurrentAccount.address | toAddress(addressFormat) }}
+        </P>
+        <Button
+          round
+          block
+        >
+          Export Private Key
+        </Button>
+        <ViewblockLink
+          :class="b('view-block')"
+          :address="getCurrentAccount.address"
+        />
+      </Container>
     </BottomModal>
   </div>
 </template>
 
 <script>
+import QRCode from 'qrcode'
+import { mapState, mapGetters } from 'vuex'
+
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
-  ICON_VARIANTS
+  ICON_VARIANTS,
+  ICON_TYPE
 } from '@/config'
 
 import { uuid } from 'uuidv4'
@@ -72,31 +106,44 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
+import ViewblockLink from '@/components/ViewblockLink'
 
-const alertHeader = {
+import { toAddress } from '@/filters'
+import CopyMixin from '@/mixins/copy'
+
+const ALERT_HEADER = {
   title: 'Deposit ZIL.',
   description: 'To interact with decentralized applications using ZilPay, you’ll need ZIL coin in your wallet.'
 }
-const variants = [
-  {
-    icon: {
-      name: ICON_VARIANTS.zilliqaLogo,
-      width: '38',
-      height: '51'
-    },
-    title: 'Transfer ZIL.',
-    text: 'The easiest way to get ZIL is to simply transfer it from another address.',
-    button: 'SHOW ADDRESS',
-    uuid: uuid()
+const TRANSFER = {
+  icon: {
+    name: ICON_VARIANTS.zilliqaLogo,
+    width: '38',
+    height: '51'
   },
-  {
-    icon: false,
-    title: 'Buy ZIL on CoinSwitch.',
-    text: 'CoinSwitch is the one-stop destination to exchange more than 300 cryptocurrencies at the best rate.',
-    button: 'BUY ZIL',
-    uuid: uuid()
-  }
-]
+  title: 'Transfer ZIL.',
+  text: 'The easiest way to get ZIL is to simply transfer it from another address.',
+  button: 'SHOW ADDRESS',
+  uuid: uuid()
+}
+const BUY = {
+  icon: false,
+  title: 'Buy ZIL on CoinSwitch.',
+  text: 'CoinSwitch is the one-stop destination to exchange more than 300 cryptocurrencies at the best rate.',
+  button: 'BUY ZIL',
+  uuid: uuid()
+}
+const FAUCET = {
+  icon: {
+    name: ICON_VARIANTS.drop,
+    width: '38',
+    height: '51'
+  },
+  title: 'Test Faucet.',
+  text: 'Get ZIL from a faucet for the test network.',
+  button: 'GET ZIL',
+  uuid: uuid()
+}
 
 export default {
   name: 'Receive',
@@ -109,16 +156,69 @@ export default {
     Button,
     Container,
     Separator,
-    BottomModal
+    BottomModal,
+    ViewblockLink
   },
+  filters: { toAddress },
+  mixins: [CopyMixin],
   data() {
     return {
       SIZE_VARIANS,
+      ICON_TYPE,
       FONT_VARIANTS,
-      variants,
-      alertHeader,
-      accountInfo: false
+      ALERT_HEADER,
+
+      accountInfo: false,
+      qrcode: null
     }
+  },
+  computed: {
+    ...mapState('settings', [
+      'network',
+      'networkConfig'
+    ]),
+    ...mapState('settings', ['addressFormat']),
+    ...mapGetters('accounts', ['getCurrentAccount']),
+
+    variants() {
+      const [mainnet] = Object.keys(this.networkConfig)
+
+      return [
+        TRANSFER,
+        mainnet === this.network ? BUY : FAUCET
+      ]
+    }
+  },
+  methods: {
+    onEvent(uuid) {
+      switch (uuid) {
+      case FAUCET.uuid:
+        console.log('FAUCET')
+        break
+      case BUY.uuid:
+        console.log('BUY')
+        break
+      case TRANSFER.uuid:
+        this.accountInfo = true
+        break
+      default:
+        break
+      }
+    },
+    async qrcodeGenerate() {
+      const address = toAddress(
+        this.getCurrentAccount.address,
+        this.addressFormat,
+        false
+      )
+
+      this.qrcode = await QRCode.toDataURL(
+        `zilliqa:${address}`
+      )
+    }
+  },
+  mounted() {
+    this.qrcodeGenerate()
   }
 }
 </script>
@@ -163,6 +263,20 @@ export default {
 
   &__separator {
     grid-area: "separator";
+  }
+
+  &__account {
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+    grid-gap: 15px;
+
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  &__view-block {
+    justify-self: right;
   }
 }
 </style>
