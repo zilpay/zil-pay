@@ -151,10 +151,8 @@ export default {
   align-items: center;
 
   &__wrapper {
-    display: inline-grid;
-    align-items: center;
-    grid-template-rows: auto 60px 1fr 90px minmax(200px, 1fr);
-
+    display: flex;
+    flex-direction: column;
     min-width: 250px;
   }
 
