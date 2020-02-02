@@ -45,6 +45,7 @@
           :content="el.value"
           :font="FONT_VARIANTS.regular"
           copy
+          nowrap
           @copy="onCopyMixin"
         >
           {{ el.value }}
