@@ -21,7 +21,8 @@ export const ICON_VARIANTS = {
   statusSuccess: 'status_success',
   send: 'send',
   receive: 'receive',
-  selected: 'selected'
+  selected: 'selected',
+  drop: 'drop'
 }
 
 export const ICON_TYPE = {
