@@ -1,6 +1,13 @@
 <template>
   <div
-    :class="b({ variant, font, pointer, size, copy })"
+    :class="b({
+      variant,
+      font,
+      pointer,
+      size,
+      copy,
+      nowrap
+    })"
     @click="onCopyContent"
   >
     <slot />
@@ -44,6 +51,10 @@ export default {
     content: {
       type: [String, Number],
       required: false
+    },
+    nowrap: {
+      type: Boolean,
+      required: false
     }
   },
   methods: {
@@ -63,9 +74,11 @@ export default {
 
   letter-spacing: -0.139803px;
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  &_nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   &_font-medium {
     font-family: var(--font-family-medium);
