@@ -9,8 +9,8 @@
 export default {
   namespaced: true,
   state: {
-    isReady: false,
-    isEnable: false
+    isReady: true,
+    isEnable: true
   },
   mutations: {},
   actions: {},

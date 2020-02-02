@@ -213,6 +213,9 @@ export default {
       this.accountModal = false
       this.contactModal = false
     }
+  },
+  mounted() {
+    this.address = this.$router.currentRoute.params.address
   }
 }
 </script>

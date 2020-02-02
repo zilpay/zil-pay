@@ -25,6 +25,7 @@
           <Item
             trash
             pointer
+            @click="onSelectContact(contact)"
             @remove="onRemoveByIndex(index)"
           >
             <Title :size="SIZE_VARIANS.sm">
@@ -53,6 +54,8 @@ import { uuid } from 'uuidv4'
 import { mapState, mapMutations, mapActions } from 'vuex'
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
+import SendPage from '@/pages/Send'
+
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import Tabs from '@/components/Tabs'
@@ -62,6 +65,8 @@ import Separator from '@/components/Separator'
 import Title from '@/components/Title'
 import BottomModal from '@/components/BottomModal'
 import ContactCreater from '@/components/ContactCreater'
+
+import { toAddress } from '@/filters'
 
 const EVENTS = {
   create: uuid(),
@@ -120,6 +125,7 @@ export default {
     }
   },
   computed: {
+    ...mapState('settings', ['addressFormat']),
     ...mapState('contacts', ['contactList']),
     ...mapState('accounts', ['identities', 'selectedAddress'])
   },
@@ -134,6 +140,14 @@ export default {
       if (EVENTS.create && this.tabs === 1) {
         this.contactModal = true
       }
+    },
+    onSelectContact(contact) {
+      this.$router.push({
+        name: SendPage.name,
+        params: {
+          address: toAddress(contact.address, this.addressFormat, false)
+        }
+      })
     }
   }
 }

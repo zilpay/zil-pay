@@ -131,7 +131,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: `/${Send.name.toLowerCase()}`,
+    path: `/${Send.name.toLowerCase()}/:?address`,
     name: Send.name,
     component: Send,
     meta: { requiresAuth: true }
