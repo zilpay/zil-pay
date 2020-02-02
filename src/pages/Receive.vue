@@ -151,7 +151,6 @@ export default {
   }
 
   &__deposit-info {
-    white-space: normal;
     font-size: 13px;
     line-height: 15px;
 
