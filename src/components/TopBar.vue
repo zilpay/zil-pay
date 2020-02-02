@@ -103,9 +103,10 @@ export default {
   max-width: 600px;
 
   &__back-wrapper {
-    display: grid;
+    display: flex;
     align-items: center;
-    justify-items: center;
+
+    text-indent: 10px;
 
     cursor: pointer;
   }
