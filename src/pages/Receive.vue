@@ -110,6 +110,7 @@ import ViewblockLink from '@/components/ViewblockLink'
 
 import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
+import LinksMixin from '@/mixins/links'
 
 const ALERT_HEADER = {
   title: 'Deposit ZIL.',
@@ -160,7 +161,7 @@ export default {
     ViewblockLink
   },
   filters: { toAddress },
-  mixins: [CopyMixin],
+  mixins: [CopyMixin, LinksMixin],
   data() {
     return {
       SIZE_VARIANS,
@@ -193,10 +194,14 @@ export default {
     onEvent(uuid) {
       switch (uuid) {
       case FAUCET.uuid:
-        console.log('FAUCET')
+        this.linksToFaucet()
         break
       case BUY.uuid:
-        console.log('BUY')
+        this.linksToCoinswitch(toAddress(
+          this.getCurrentAccount.address,
+          this.addressFormat,
+          false
+        ))
         break
       case TRANSFER.uuid:
         this.accountInfo = true
