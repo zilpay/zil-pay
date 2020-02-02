@@ -55,6 +55,7 @@ import { mapState, mapMutations, mapActions } from 'vuex'
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import SendPage from '@/pages/Send'
+import ImportPage from '@/pages/accounts/Import'
 
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
@@ -139,6 +140,12 @@ export default {
     onEvent(event) {
       if (EVENTS.create && this.tabs === 1) {
         this.contactModal = true
+      }
+
+      if (EVENTS.import) {
+        this.$router.push({
+          name: ImportPage.name
+        })
       }
     },
     onSelectContact(contact) {
