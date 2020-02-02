@@ -77,6 +77,9 @@ export default {
 
 <style lang="scss">
 .RadioGroup {
+  display: block;
+  width: 100%;
+
   border-right: 1px solid var(--accent-color-success);
 
   &__title {
