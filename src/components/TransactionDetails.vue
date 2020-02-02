@@ -52,20 +52,7 @@
         </P>
       </li>
     </ul>
-    <div
-      :class="b('viewblock')"
-      @click="onViewblockTx(transaction.TranID)"
-    >
-      <Title :size="SIZE_VARIANS.sm">
-        Viewblock
-      </Title>
-      <Icon
-        src="/illustrations/viewblock-logo.png"
-        height="40"
-        width="40"
-        :type="ICON_TYPE.auto"
-      />
-    </div>
+    <ViewblockLink :hash="transaction.TranID"/>
   </Container>
 </template>
 
@@ -75,15 +62,13 @@ import { mapState } from 'vuex'
 import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 
 import P from '@/components/P'
-import Title from '@/components/Title'
 import Container from '@/components/Container'
 import Separator from '@/components/Separator'
-import Icon from '@/components/Icon'
+import ViewblockLink from '@/components/ViewblockLink'
 import Arrow from '@/components/icons/Arrow'
 
 import { toAddress, fromZil, toConversion } from '@/filters'
 import CopyMixin from '@/mixins/copy'
-import viewblockMixin from '@/mixins/viewblock'
 
 /**
  * Show more information about transaction.
@@ -100,11 +85,10 @@ export default {
     Container,
     Separator,
     Arrow,
-    Icon,
-    Title,
-    P
+    P,
+    ViewblockLink
   },
-  mixins: [CopyMixin, viewblockMixin],
+  mixins: [CopyMixin],
   filters: { toAddress, fromZil, toConversion },
   props: {
     account: {
@@ -178,17 +162,6 @@ export default {
 
   &__value {
     max-width: 200px;
-  }
-
-  &__viewblock {
-    display: flex;
-    align-items: center;
-    float: right;
-
-    cursor: pointer;
-
-    padding-top: 15px;
-    padding-bottom: 15px;
   }
 }
 </style>
