@@ -14,6 +14,7 @@
         :size="SIZE_VARIANS.sm"
         :content="donateAddress"
         copy
+        nowrap
         @copy="onCopyMixin"
       >
         {{ donateAddress }}
@@ -111,6 +112,8 @@ export default {
     flex-direction: column;
     align-items: left;
     padding: 30px;
+
+    max-width: 250px;
   }
 
   &__links {
