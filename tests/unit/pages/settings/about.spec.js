@@ -6,7 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import 'tests/polyfill.spec.js'
 import vueBemCn from 'vue-bem-cn'
+import Tooltip from 'vue-directive-tooltip'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import About from 'src/pages/settings/About.vue'
 import { BEM_CONFIG } from 'src/config'
@@ -14,6 +16,7 @@ import { BEM_CONFIG } from 'src/config'
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+localVue.use(Tooltip)
 
 describe('pages:About.vue', () => {
   it('Should be mount', () => {

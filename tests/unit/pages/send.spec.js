@@ -8,6 +8,7 @@
  */
 import Vuex from 'vuex'
 import vueBemCn from 'vue-bem-cn'
+import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Send from 'src/pages/Send.vue'
 import { BEM_CONFIG } from 'src/config'
@@ -17,12 +18,16 @@ const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
 localVue.use(Vuex)
+localVue.use(VueRouter)
+
+const router = new VueRouter()
 
 describe('pages:Send.vue', () => {
   it('Should be mount', () => {
     const wrapper = shallowMount(Send, {
       store,
-      localVue
+      localVue,
+      router
     })
 
     expect(wrapper).toBeTruthy()
