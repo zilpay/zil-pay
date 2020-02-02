@@ -1,10 +1,10 @@
 <template>
   <div :class="b()">
+    <TopBar
+      :route="false"
+      back
+    />
     <Container :class="b('wrapper')">
-      <TopBar
-        :route="false"
-        back
-      />
       <Title>
         {{ TITLE }}
       </Title>
@@ -96,14 +96,14 @@ export default {
 
 <style lang="scss">
 .Restore {
-  display: flex;
+  display: grid;
   justify-content: center;
+  align-items: center;
 
   &__wrapper {
-    display: inline-grid;
-    align-items: center;
-
-    min-width: 250px;
+    padding-top: 30px;
+    padding-right: 15px;
+    padding-left: 15px;
   }
 
   &__description {
