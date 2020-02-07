@@ -88,6 +88,8 @@
 <script>
 import { uuid } from 'uuidv4'
 import { mapState } from 'vuex'
+import accountsStore from '@/store/accounts'
+import contactsStore from '@/store/contacts'
 
 import {
   SIZE_VARIANS,
@@ -179,11 +181,11 @@ export default {
     }
   },
   computed: {
-    ...mapState('accounts', [
-      'identities'
+    ...mapState(accountsStore.STORE_NAME, [
+      accountsStore.STATE_NAMES.identities
     ]),
-    ...mapState('contacts', [
-      'contactList'
+    ...mapState(contactsStore.STORE_NAME, [
+      contactsStore.STATE_NAMES.contactList
     ])
   },
   methods: {

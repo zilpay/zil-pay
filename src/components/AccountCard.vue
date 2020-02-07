@@ -68,6 +68,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import settingsStore from '@/store/settings'
 
 import {
   FONT_VARIANTS,
@@ -143,9 +144,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', [
-      'addressFormat',
-      'currency'
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat,
+      settingsStore.STATE_NAMES.currency
     ]),
 
     color() {

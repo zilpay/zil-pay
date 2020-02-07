@@ -52,6 +52,10 @@
 <script>
 import { uuid } from 'uuidv4'
 import { mapState, mapMutations, mapActions } from 'vuex'
+import contactsStore from '@/store/contacts'
+import accountsStore from '@/store/accounts'
+import settingsStore from '@/store/settings'
+
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import SendPage from '@/pages/Send'
@@ -126,16 +130,27 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', ['addressFormat']),
-    ...mapState('contacts', ['contactList']),
-    ...mapState('accounts', ['identities', 'selectedAddress'])
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapState(contactsStore.STORE_NAME, [
+      contactsStore.STATE_NAMES.contactList
+    ]),
+    ...mapState(accountsStore.STORE_NAME, [
+      accountsStore.STATE_NAMES.identities,
+      accountsStore.STATE_NAMES.selectedAddress
+    ])
   },
   methods: {
-    ...mapMutations('accounts', [
-      'setAccount'
+    ...mapMutations(accountsStore.STORE_NAME, [
+      accountsStore.MUTATIONS_NAMES.setAccount
     ]),
-    ...mapActions('accounts', ['onRemoveAccount']),
-    ...mapActions('contacts', ['onRemoveByIndex']),
+    ...mapActions(accountsStore.STORE_NAME, [
+      accountsStore.ACTIONS_NAMES.onRemoveAccount
+    ]),
+    ...mapActions(contactsStore.STORE_NAME, [
+      contactsStore.ACTIONS_NAMES.onRemoveByIndex
+    ]),
 
     onEvent(event) {
       if (EVENTS.create && this.tabs === 1) {
@@ -152,7 +167,11 @@ export default {
       this.$router.push({
         name: SendPage.name,
         params: {
-          address: toAddress(contact.address, this.addressFormat, false)
+          address: toAddress(
+            contact.address,
+            this.addressFormat,
+            false
+          )
         }
       })
     }

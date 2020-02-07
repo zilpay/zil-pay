@@ -9,9 +9,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import accounts from './accounts'
-import contacts from './contacts'
-import settings from './settings'
+import accountsStore from './accounts'
+import contactsStore from './contacts'
+import settingsStore from './settings'
 import transactions from './transactions'
 import ui from './ui'
 import wallet from './wallet'
@@ -27,9 +27,9 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-    accounts,
-    contacts,
-    settings,
+    [accountsStore.STORE_NAME]: accountsStore.STORE,
+    [contactsStore.STORE_NAME]: contactsStore.STORE,
+    [settingsStore.STORE_NAME]: settingsStore.STORE,
     transactions,
     wallet,
     ui

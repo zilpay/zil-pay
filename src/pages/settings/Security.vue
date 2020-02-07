@@ -33,9 +33,10 @@
 </template>
 
 <script>
-import { COLOR_VARIANTS } from '@/config'
-
 import { mapState, mapGetters, mapMutations } from 'vuex'
+import settingsStore from '@/store/settings'
+
+import { COLOR_VARIANTS } from '@/config'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
@@ -59,17 +60,17 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', [
-      'lockTime'
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.lockTime
     ]),
-    ...mapGetters('settings', [
-      'getHours',
-      'getCurrent'
+    ...mapGetters(settingsStore.STORE_NAME, [
+      settingsStore.GETTERS_NAMES.getHours,
+      settingsStore.GETTERS_NAMES.getCurrent
     ])
   },
   methods: {
-    ...mapMutations('settings', [
-      'setLockTime'
+    ...mapMutations(settingsStore.STORE_NAME, [
+      settingsStore.MUTATIONS_NAMES.setLockTime
     ])
   }
 }

@@ -36,6 +36,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import settingsStore from '@/store/settings'
 
 import { COLOR_VARIANTS } from '@/config'
 
@@ -62,17 +63,17 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', [
-      'currencyItems',
-      'currency',
-      'addressFormatItems',
-      'addressFormat'
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.currencyItems,
+      settingsStore.STATE_NAMES.currency,
+      settingsStore.STATE_NAMES.addressFormatItems,
+      settingsStore.STATE_NAMES.addressFormat
     ])
   },
   methods: {
-    ...mapMutations('settings', [
-      'setCurrency',
-      'setAddressFormat'
+    ...mapMutations(settingsStore.STORE_NAME, [
+      settingsStore.MUTATIONS_NAMES.setCurrency,
+      settingsStore.MUTATIONS_NAMES.setAddressFormat
     ])
   }
 }

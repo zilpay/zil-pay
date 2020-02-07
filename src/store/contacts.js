@@ -6,10 +6,24 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-export default {
+
+const STORE_NAME = 'contacts'
+const STATE_NAMES = {
+  contactList: 'contactList'
+}
+const MUTATIONS_NAMES = {
+  setContacts: 'setContacts'
+}
+const ACTIONS_NAMES = {
+  onRemoveByIndex: 'onRemoveByIndex',
+  onAddedContact: 'onAddedContact'
+}
+const GETTERS_NAMES = { }
+
+const STORE = {
   namespaced: true,
   state: {
-    contactList: [
+    [STATE_NAMES.contactList]: [
       {
         name: 'Ark warden.',
         address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
@@ -25,7 +39,7 @@ export default {
     ]
   },
   mutations: {
-    setContacts(state, contactList) {
+    [MUTATIONS_NAMES.setContacts](state, contactList) {
       if (!contactList || contactList.lenght < 1) {
         return null
       }
@@ -34,21 +48,30 @@ export default {
     }
   },
   actions: {
-    onRemoveByIndex({ commit, state }, index) {
+    [ACTIONS_NAMES.onRemoveByIndex]({ commit, state }, index) {
       commit(
-        'setContacts',
+        MUTATIONS_NAMES.setContacts,
         state.contactList.filter((_, i) => index !== i)
       )
     },
-    onAddedContact({ commit, state }, payload) {
+    [ACTIONS_NAMES.onAddedContact]({ commit, state }, payload) {
       if (!payload || !payload.address || !payload.name) {
         return null
       }
 
       const newList = [...state.contactList, payload]
 
-      commit('setContacts', newList)
+      commit(MUTATIONS_NAMES.setContacts, newList)
     }
   },
   getters: {}
+}
+
+export default {
+  STORE_NAME,
+  STORE,
+  STATE_NAMES,
+  MUTATIONS_NAMES,
+  ACTIONS_NAMES,
+  GETTERS_NAMES
 }

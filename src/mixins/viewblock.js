@@ -1,12 +1,15 @@
-import { mapState } from 'vuex'
 import extension from 'extensionizer'
+
+import { mapState } from 'vuex'
+import settingsStore from '@/store/settings'
+
 
 import { API } from '../../config/api'
 
 export default {
   computed: {
-    ...mapState('settings', [
-      'network'
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.network
     ]),
     net() {
       return `network=${this.network}`

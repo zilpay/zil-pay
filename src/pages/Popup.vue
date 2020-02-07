@@ -73,8 +73,11 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from 'vuex'
 import { uuid } from 'uuidv4'
+import { mapState, mapGetters, mapMutations } from 'vuex'
+import settingsStore from '@/store/settings'
+import accountsStore from '@/store/accounts'
+
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -143,8 +146,12 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', ['addressFormat']),
-    ...mapGetters('accounts', ['getCurrentAccount']),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
+    ]),
     ...mapGetters('transactions', [
       'getCurrent',
       'getCurrentGas'

@@ -87,6 +87,8 @@
 <script>
 import QRCode from 'qrcode'
 import { mapState, mapGetters } from 'vuex'
+import settingsStore from '@/store/settings'
+import accountsStore from '@/store/accounts'
 
 import {
   SIZE_VARIANS,
@@ -174,12 +176,14 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', [
-      'network',
-      'networkConfig'
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.networkConfig,
+      settingsStore.STATE_NAMES.network,
+      settingsStore.STATE_NAMES.addressFormat
     ]),
-    ...mapState('settings', ['addressFormat']),
-    ...mapGetters('accounts', ['getCurrentAccount']),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
+    ]),
 
     variants() {
       const [mainnet] = Object.keys(this.networkConfig)

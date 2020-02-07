@@ -34,6 +34,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import settingsStore from '@/store/settings'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
@@ -61,9 +62,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', [
-      'networkConfig',
-      'network'
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.networkConfig,
+      settingsStore.STATE_NAMES.network
     ]),
 
     node() {
@@ -71,7 +72,9 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('settings', ['setNetwork'])
+    ...mapMutations(settingsStore.STORE_NAME, [
+      settingsStore.MUTATIONS_NAMES.setNetwork
+    ])
   }
 }
 </script>

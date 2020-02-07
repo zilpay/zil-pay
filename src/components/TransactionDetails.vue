@@ -58,6 +58,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import settingsStore from '@/store/settings'
 
 import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 
@@ -108,7 +109,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', ['addressFormat']),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat
+    ]),
 
     infoList() {
       return [

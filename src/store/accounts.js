@@ -8,10 +8,26 @@
  */
 import { DEFAULT } from '../../config/default'
 
-export default {
+const STORE_NAME = 'accounts'
+const STATE_NAMES = {
+  identities: 'identities',
+  selectedAddress: 'selectedAddress'
+}
+const MUTATIONS_NAMES = {
+  setAccounts: 'setAccounts',
+  setAccount: 'setAccount',
+  setAccountName: 'setAccountName'
+}
+const ACTIONS_NAMES = {
+  onRemoveAccount: 'onRemoveAccount'
+}
+const GETTERS_NAMES = {
+  getCurrentAccount: 'getCurrentAccount'
+}
+const STORE = {
   namespaced: true,
   state: {
-    identities: [
+    [STATE_NAMES.identities]: [
       {
         address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F',
         balance: '463851500000000',
@@ -39,24 +55,24 @@ export default {
         name: 'Account 2'
       }
     ],
-    selectedAddress: 0
+    [STATE_NAMES.selectedAddress]: 0
   },
   mutations: {
-    setAccounts(state, identities) {
+    [MUTATIONS_NAMES.setAccounts](state, identities) {
       if (!identities || identities.length < 1) {
         return null
       }
 
       state.identities = identities
     },
-    setAccount(state, index) {
+    [MUTATIONS_NAMES.setAccount](state, index) {
       if (isNaN(index) || index > state.identities || index < 0) {
         return null
       }
 
       state.selectedAddress = index
     },
-    setAccountName(state, value) {
+    [MUTATIONS_NAMES.setAccountName](state, value) {
       if (typeof value !== 'string' || value.length > DEFAULT.MAX_LENGTH_NAME) {
         return null
       }
@@ -67,7 +83,7 @@ export default {
     }
   },
   actions: {
-    onRemoveAccount({ state, commit }, index) {
+    [ACTIONS_NAMES.onRemoveAccount]({ state, commit }, index) {
       if (isNaN(index)) {
         return null
       }
@@ -75,13 +91,21 @@ export default {
       const { identities, selectedAddress } = state
 
       if (selectedAddress === index) {
-        commit('setAccount', selectedAddress - 1)
+        commit(MUTATIONS_NAMES.setAccount, selectedAddress - 1)
       }
 
-      commit('setAccounts', identities.filter((_, i) => i !== index))
+      commit(MUTATIONS_NAMES.setAccounts, identities.filter((_, i) => i !== index))
     }
   },
   getters: {
-    getCurrentAccount: state => state.identities[state.selectedAddress]
+    [GETTERS_NAMES.getCurrentAccount]: state => state.identities[state.selectedAddress]
   }
+}
+export default {
+  STORE_NAME,
+  STORE,
+  STATE_NAMES,
+  MUTATIONS_NAMES,
+  ACTIONS_NAMES,
+  GETTERS_NAMES
 }

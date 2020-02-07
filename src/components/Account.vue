@@ -35,6 +35,9 @@
 
 <script>
 import { mapGetters, mapState, mapMutations } from 'vuex'
+import accountsStore from '@/store/accounts'
+import settingsStore from '@/store/settings'
+
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -66,11 +69,17 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', ['addressFormat']),
-    ...mapGetters('accounts', ['getCurrentAccount'])
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
+    ])
   },
   methods: {
-    ...mapMutations('accounts', ['setAccountName'])
+    ...mapMutations(accountsStore.STORE_NAME, [
+      accountsStore.MUTATIONS_NAMES.setAccountName
+    ])
   }
 }
 </script>
