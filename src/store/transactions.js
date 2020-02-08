@@ -10,7 +10,7 @@ import { units, BN } from '@zilliqa-js/util'
 
 const STORE_NAME = 'transactions'
 const STATE_NAMES = {
-  transactions: 'transactions',
+  transactions: STORE_NAME,
   confirmationTx: 'confirmationTx'
 }
 const MUTATIONS_NAMES = {

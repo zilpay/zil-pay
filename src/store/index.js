@@ -13,9 +13,8 @@ import accountsStore from './accounts'
 import contactsStore from './contacts'
 import settingsStore from './settings'
 import transactionsStore from './transactions'
-import ui from './ui'
-import wallet from './wallet'
-
+import uiStore from './ui'
+import walletStore from './wallet'
 
 Vue.use(Vuex)
 
@@ -31,7 +30,7 @@ export default new Vuex.Store({
     [contactsStore.STORE_NAME]: contactsStore.STORE,
     [settingsStore.STORE_NAME]: settingsStore.STORE,
     [transactionsStore.STORE_NAME]: transactionsStore.STORE,
-    wallet,
-    ui
+    [uiStore.STORE_NAME]: uiStore.STORE,
+    [walletStore.STORE_NAME]: walletStore.STORE
   }
 })

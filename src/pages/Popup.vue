@@ -159,8 +159,8 @@ export default {
     ])
   },
   methods: {
-    ...mapMutations('transactions', [
-      'setCurrentGas'
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setCurrentGas
     ]),
 
     onCallFrom() { },

@@ -6,13 +6,30 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-export default {
+const STORE_NAME = 'wallet'
+const STATE_NAMES = {
+  isReady: 'isReady',
+  isEnable: 'isEnable'
+}
+const MUTATIONS_NAMES = { }
+const ACTIONS_NAMES = { }
+const GETTERS_NAMES = { }
+const STORE = {
   namespaced: true,
   state: {
-    isReady: true,
-    isEnable: true
+    [STATE_NAMES.isReady]: true,
+    [STATE_NAMES.isEnable]: true
   },
   mutations: {},
   actions: {},
   getters: {}
+}
+
+export default {
+  STORE_NAME,
+  STORE,
+  STATE_NAMES,
+  MUTATIONS_NAMES,
+  ACTIONS_NAMES,
+  GETTERS_NAMES
 }

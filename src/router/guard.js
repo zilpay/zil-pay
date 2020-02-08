@@ -9,7 +9,7 @@
 import LockScreen from '@/pages/LockScreen'
 import FirstStart from '@/pages/FirstStart'
 
-import Wallet from '@/store/wallet'
+import walletStore from '@/store/wallet'
 
 /**
  * Common guard for routers.
@@ -23,11 +23,11 @@ export default function guard(to, from, next) {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    if (!Wallet.state.isReady) {
+    if (!walletStore.STORE.state.isReady) {
       return next({
         path: `/${FirstStart.name.toLowerCase()}`
       })
-    } else if (!Wallet.state.isEnable) {
+    } else if (!walletStore.STORE.state.isEnable) {
       return next({
         path: `/${LockScreen.name.toLowerCase()}`
       })

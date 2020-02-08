@@ -30,6 +30,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import { DEFAULT_GAS_FEE } from '../../../config/zilliqa'
 
@@ -57,17 +58,17 @@ export default {
     }
   },
   computed: {
-    ...mapState('ui', [
-      'selectedTheme',
-      'themes'
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.selectedTheme,
+      uiStore.STATE_NAMES.themes
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.defaultGas
     ])
   },
   methods: {
-    ...mapMutations('ui', [
-      'setTheme'
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setTheme
     ]),
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setDefaultGas,
