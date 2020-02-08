@@ -8,10 +8,25 @@
  */
 import { units, BN } from '@zilliqa-js/util'
 
-export default {
+const STORE_NAME = 'transactions'
+const STATE_NAMES = {
+  transactions: 'transactions',
+  confirmationTx: 'confirmationTx'
+}
+const MUTATIONS_NAMES = {
+  setCurrentGas: 'setCurrentGas'
+}
+const ACTIONS_NAMES = { }
+const GETTERS_NAMES = {
+  getCurrent: 'getCurrent',
+  getCurrentGas: 'getCurrentGas',
+  getCurrentTransactions: 'getCurrentTransactions'
+}
+
+const STORE = {
   namespaced: true,
   state: {
-    transactions: {
+    [STATE_NAMES.transactions]: {
       '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F': {
         mainnet: [
           {
@@ -44,7 +59,7 @@ export default {
         ]
       }
     },
-    confirmationTx: [
+    [STATE_NAMES.confirmationTx]: [
       {
         amount: '100000000000000',
         code: '',
@@ -63,25 +78,24 @@ export default {
     ]
   },
   mutations: {
-    setCurrentGas(state, gas) {
+    [MUTATIONS_NAMES.setCurrentGas](state, gas) {
       if (!gas || !gas.gasPrice || !gas.gasLimit) {
         return null
       }
 
       const { gasPrice, gasLimit } = gas
+      const gasInQa = units.toQa(gasPrice, units.Units.Li)
 
-      state.confirmationTx[0].gasPrice = units.toQa(
-        gasPrice, units.Units.Li
-      ).toString()
-      state.confirmationTx[0].gasLimit = gasLimit
+      state[STATE_NAMES.confirmationTx][0].gasPrice = String(gasInQa)
+      state[STATE_NAMES.confirmationTx][0].gasLimit = gasLimit
     }
   },
   actions: {},
   getters: {
-    getCurrent(state) {
+    [GETTERS_NAMES.getCurrent](state) {
       return state.confirmationTx[0]
     },
-    getCurrentGas(state) {
+    [GETTERS_NAMES.getCurrentGas](state) {
       const gasPrice = units.fromQa(
         new BN(state.confirmationTx[0].gasPrice), units.Units.Li
       ).toString()
@@ -91,7 +105,7 @@ export default {
         gasLimit: state.confirmationTx[0].gasLimit
       }
     },
-    getCurrentTransactions(state, _, rootState, rootGetters) {
+    [GETTERS_NAMES.getCurrentTransactions](state, _, rootState, rootGetters) {
       try {
         const { address } = rootGetters['accounts/getCurrentAccount']
         const { network } = rootState.settings
@@ -102,4 +116,13 @@ export default {
       }
     }
   }
+}
+
+export default {
+  STORE_NAME,
+  STORE,
+  STATE_NAMES,
+  MUTATIONS_NAMES,
+  ACTIONS_NAMES,
+  GETTERS_NAMES
 }

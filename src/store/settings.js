@@ -10,7 +10,7 @@ import { DEFAULT } from '../../config/default'
 import { ZILLIQA, DEFAULT_GAS_FEE } from '../../config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
-const STORE_NAME = 'contacts'
+const STORE_NAME = 'settings'
 const STATE_NAMES = {
   lockTime: 'lockTime',
   currency: 'currency',

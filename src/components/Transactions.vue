@@ -38,6 +38,7 @@
 import { mapGetters, mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
+import transactionsStore from '@/store/transactions'
 
 import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
@@ -73,8 +74,8 @@ export default {
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
     ]),
-    ...mapGetters('transactions', [
-      'getCurrentTransactions'
+    ...mapGetters(transactionsStore.STORE_NAME, [
+      transactionsStore.GETTERS_NAMES.getCurrentTransactions
     ]),
     selectedTx() {
       return this.getCurrentTransactions[this.selected]

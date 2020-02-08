@@ -77,6 +77,7 @@ import { uuid } from 'uuidv4'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
+import transactionsStore from '@/store/transactions'
 
 import {
   SIZE_VARIANS,
@@ -152,9 +153,9 @@ export default {
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
     ]),
-    ...mapGetters('transactions', [
-      'getCurrent',
-      'getCurrentGas'
+    ...mapGetters(transactionsStore.STORE_NAME, [
+      transactionsStore.GETTERS_NAMES.getCurrent,
+      transactionsStore.GETTERS_NAMES.getCurrentGas
     ])
   },
   methods: {
