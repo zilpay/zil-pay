@@ -86,6 +86,7 @@
 
 <script>
 import QRCode from 'qrcode'
+import { uuid } from 'uuidv4'
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
@@ -96,8 +97,6 @@ import {
   ICON_VARIANTS,
   ICON_TYPE
 } from '@/config'
-
-import { uuid } from 'uuidv4'
 
 import TopBar from '@/components/TopBar'
 import Alert from '@/components/Alert'

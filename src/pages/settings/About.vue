@@ -11,6 +11,7 @@
       </Title>
       <P
         v-tooltip="copytitle"
+        :class="b('address')"
         :size="SIZE_VARIANS.sm"
         :content="donateAddress"
         copy
@@ -110,10 +111,8 @@ export default {
   &__wrapper {
     display: flex;
     flex-direction: column;
-    align-items: left;
+    align-items: center;
     padding: 30px;
-
-    max-width: 250px;
   }
 
   &__links {
@@ -127,6 +126,10 @@ export default {
   &__owner-link {
     text-decoration: none;
     color: var(--theme-color-font);
+  }
+
+  &__address {
+    width: 250px;
   }
 
   &__owner-link {

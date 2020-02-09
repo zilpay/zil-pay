@@ -92,6 +92,10 @@ export default {
     font-family: var(--font-family-bold);
   }
 
+  &_font-light {
+    font-family: var(--font-family-light);
+  }
+
   &_pointer {
     cursor: pointer;
   }
