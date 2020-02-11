@@ -2,18 +2,14 @@
   <div :class="b()">
     <Container :class="b('wrapper')">
       <Icon
-        :class="b('logo')"
         :icon="ICON_VARIANTS.zilliqaLogo"
         width="106"
         height="144"
       />
-      <Title :class="b('title')">
+      <Title>
         Zilliqa
       </Title>
-      <P
-        :class="b('greeting')"
-        :font="FONT_VARIANTS.regular"
-      >
+      <P :font="FONT_VARIANTS.regular">
         Welcome back
       </P>
       <form
@@ -24,6 +20,7 @@
           v-model="password"
           :type="INPUT_TYPES.password"
           :size="SIZE_VARIANS.xs"
+          minlength="6"
           placeholder="Password"
           block
           round
@@ -47,7 +44,8 @@
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
-  SIZE_VARIANS
+  SIZE_VARIANS,
+  REGX_PATTERNS
 } from '@/config'
 
 import Container from '@/components/Container'
@@ -74,6 +72,7 @@ export default {
       FONT_VARIANTS,
       SIZE_VARIANS,
       INPUT_TYPES,
+      REGX_PATTERNS,
 
       // Locals:
       password: null
@@ -92,7 +91,6 @@ export default {
   display: grid;
   justify-content: center;
   align-items: center;
-  padding-top: 90px;
 
   &__wrapper,
   &__form {
@@ -101,30 +99,15 @@ export default {
 
   &__wrapper {
     display: grid;
-    grid-template-areas: "logo"
-                         "title"
-                         "greeting"
-                         "form";
-  }
+    grid-template-rows: auto 60px 40px 1fr;
 
-  &__logo {
-    grid-area: logo;
-  }
-
-  &__title {
-    grid-area: title;
-  }
-
-  &__greeting {
-    grid-area: greeting;
+    padding-top: 90px;
   }
 
   &__form {
     display: grid;
     grid-gap: 11px;
-    grid-area: form;
     justify-self: center;
-    grid-template-columns: 1fr;
   }
 }
 </style>
