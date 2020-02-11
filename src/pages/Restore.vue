@@ -11,35 +11,17 @@
       <P :class="b('description')">
         {{ DESCRIPTION }}
       </P>
-      <form
-        :class="b('restore-form')"
-        @submit.prevent="restore"
-      >
+      <div>
         <textarea
           v-model="seed"
           :class="b('seed-input')"
         />
-        <Input
-          v-model="password"
-          :type="INPUT_TYPES.password"
-          title="Password (min 8 chars)"
-          round
+        <PasswordForm
+          :titles="form.titles"
+          :btn="form.btn"
+          @submit="restore"
         />
-        <Input
-          v-model="confirmPassword"
-          :type="INPUT_TYPES.password"
-          title="Confirm Password."
-          round
-        />
-        <Button
-          :class="b('submit-btn')"
-          :size="SIZE_VARIANS.xs"
-          :color="COLOR_VARIANTS.warning"
-          round
-        >
-          Restore.
-        </Button>
-      </form>
+      </div>
     </Container>
     <Wave />
   </div>
@@ -51,10 +33,9 @@ import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 import Title from '@/components/Title'
 import TopBar from '@/components/TopBar'
 import P from '@/components/P'
-import Button from '@/components/Button'
-import Input, { INPUT_TYPES } from '@/components/Input'
 import Container from '@/components/Container'
 import Wave from '@/components/Wave'
+import PasswordForm from '@/components/PasswordForm'
 
 const TITLE = 'Restore your Account.'
 const DESCRIPTION = 'Enter your secret word phrase here to restore your vault.'
@@ -65,30 +46,30 @@ export default {
     Title,
     P,
     Container,
-    Input,
-    Button,
     Wave,
-    TopBar
+    TopBar,
+    PasswordForm
   },
   data() {
     return {
       COLOR_VARIANTS,
       SIZE_VARIANS,
-      INPUT_TYPES,
       TITLE,
       DESCRIPTION,
+
       seed: null,
-      password: null,
-      confirmPassword: null
+      form: {
+        titles: [
+          'Password (min 8 chars)',
+          'Confirm Password.'
+        ],
+        btn: 'Restore.'
+      }
     }
   },
   methods: {
-    restore() {
-      // console.log(
-      //   this.seed,
-      //   this.password,
-      //   this.confirmPassword
-      // )
+    restore(event) {
+      console.log(event)
     }
   }
 }
@@ -107,16 +88,20 @@ export default {
   }
 
   &__description {
+    padding-top: 30px;
     opacity: 0.5;
   }
 
   &__seed-input {
     display: inline-block;
 
-    width: 250px;
+    width: 235px;
     height: 100px;
 
-    padding: 15px;
+    margin-top: 15px;
+
+    padding-left: 15px;
+    padding-top: 15px;
 
     border: 0;
     border-radius: var(--default-border-radius);
@@ -127,19 +112,6 @@ export default {
     outline: none;
     resize: none;
     overflow: hidden;
-  }
-
-  &__restore-form {
-    display: grid;
-    grid-template-rows: 150px 80px 80px;
-
-    max-width: 250px;
-
-    padding-top: 30px;
-  }
-
-  &__submit-btn {
-    width: 175px;
   }
 }
 </style>

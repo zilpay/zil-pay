@@ -13,5 +13,6 @@ export const EVENTS = {
   input: 'input',
   remove: 'remove',
   copy: 'copy',
+  submit: 'submit',
   selected: 'selected'
 }
