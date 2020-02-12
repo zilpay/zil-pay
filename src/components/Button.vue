@@ -74,6 +74,10 @@ export default {
   outline: none;
 
   box-shadow: var(--default-box-shadow);
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 .Button {
