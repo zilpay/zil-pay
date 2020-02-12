@@ -1,5 +1,6 @@
 <template>
   <div :class="b()">
+    <UiPanel />
     <div :class="b('wrapper')">
       <TopBar
         :route="false"
@@ -66,7 +67,7 @@ import P from '@/components/P'
 import Button from '@/components/Button'
 import Refresh from '@/components/icons/Refresh'
 import Wave from '@/components/Wave'
-
+import UiPanel from '@/components/UiPanel'
 import Printer from '@/mixins/printer'
 
 const TITLE = 'Your recovery phrase'
@@ -82,7 +83,8 @@ export default {
     Title,
     Button,
     Refresh,
-    Wave
+    Wave,
+    UiPanel
   },
   data() {
     return {

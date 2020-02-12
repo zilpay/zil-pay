@@ -1,5 +1,6 @@
 <template>
   <div :class="b()">
+    <UiPanel />
     <TopBar
       :route="false"
       back
@@ -36,6 +37,7 @@ import P from '@/components/P'
 import Container from '@/components/Container'
 import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
+import UiPanel from '@/components/UiPanel'
 
 const TITLE = 'Restore your Account.'
 const DESCRIPTION = 'Enter your secret word phrase here to restore your vault.'
@@ -48,7 +50,8 @@ export default {
     Container,
     Wave,
     TopBar,
-    PasswordForm
+    PasswordForm,
+    UiPanel
   },
   data() {
     return {

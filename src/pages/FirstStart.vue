@@ -1,5 +1,6 @@
 <template>
   <Container :class="b()">
+    <UiPanel />
     <div :class="b('wrapper')">
       <Icon
         :icon="icons.zilPayLogo"
@@ -57,6 +58,7 @@ import Container from '@/components/Container'
 import CreateAcc from '@/pages/Create'
 import Restore from '@/pages/Restore'
 import Wave from '@/components/Wave'
+import UiPanel from '@/components/UiPanel'
 
 export default {
   name: 'FirstStart',
@@ -66,7 +68,8 @@ export default {
     P,
     Button,
     Container,
-    Wave
+    Wave,
+    UiPanel
   },
   data() {
     return {

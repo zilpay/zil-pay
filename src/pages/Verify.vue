@@ -1,5 +1,6 @@
 <template>
   <div :class="b()">
+    <UiPanel />
     <div :class="b('wrapper')">
       <TopBar
         :route="false"
@@ -56,6 +57,7 @@ import P from '@/components/P'
 import { shuffle } from '../../lib/utils'
 import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
+import UiPanel from '@/components/UiPanel'
 
 const DESCRIPTION = 'Verify your recovery phrase'
 
@@ -66,7 +68,8 @@ export default {
     P,
     Chip,
     Wave,
-    PasswordForm
+    PasswordForm,
+    UiPanel
   },
   data() {
     return {
