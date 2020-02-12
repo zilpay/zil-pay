@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <TopBar />
-    <Container :class="b('wrapper')">
+    <Container>
       <div
         v-for="(item, index) of ITEMS"
         :key="index"
@@ -63,5 +63,4 @@ export default {
 </script>
 
 <style lang="scss">
-
 </style>

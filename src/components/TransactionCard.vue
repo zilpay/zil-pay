@@ -155,13 +155,11 @@ export default {
   }
 
   &__send {
-    font-weight: 600;
     font-size: 10px;
     line-height: 25px;
   }
 
   &__amount {
-    font-weight: normal;
     font-size: 10px;
     line-height: 20px;
   }
