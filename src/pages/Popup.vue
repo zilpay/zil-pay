@@ -3,7 +3,7 @@
     <Alert
       :class="b('from')"
       pointer
-      @click="onCallFrom"
+      @click="onFrom"
     >
       <Title
         :size="SIZE_VARIANS.md"
@@ -54,6 +54,7 @@
     <Alert
       :class="b('to')"
       pointer
+      @click="onTo"
     >
       <Title
         :size="SIZE_VARIANS.md"
@@ -97,6 +98,8 @@ import Separator from '@/components/Separator'
 import BottomBar from '@/components/BottomBar'
 import ArrowInCircle from '@/components/icons/ArrowInCircle'
 
+import viewblockMixin from '@/mixins/viewblock'
+
 import TxDataPage from '@/pages/popup/TxData'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
@@ -136,6 +139,7 @@ export default {
     BottomBar,
     ArrowInCircle
   },
+  mixins: [viewblockMixin],
   filters: { fromZil, toConversion, toAddress },
   data() {
     return {
@@ -163,7 +167,12 @@ export default {
       transactionsStore.MUTATIONS_NAMES.setCurrentGas
     ]),
 
-    onCallFrom() { },
+    onTo() {
+      this.onViewblockAddress(this.getCurrent.toAddr)
+    },
+    onFrom() {
+      this.onViewblockAddress(this.getCurrentAccount.address)
+    },
     onReject() {
       if (!this.confirmationTx || this.confirmationTx.length < 1) {
         // console.log('close')

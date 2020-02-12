@@ -16,14 +16,13 @@
           :circle="index + 1"
           :color="colorChip"
           close
-          isVerify
           @close="rm(phrase)"
         >
           {{ phrase }}
         </Chip>
       </div>
       <PasswordForm
-        v-show="isContinue"
+        v-show="isVerify"
         :titles="form.titles"
         :btn="form.btn"
         @submit="toHome"
