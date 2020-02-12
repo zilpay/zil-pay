@@ -19,16 +19,12 @@
           {{ phrase }}
         </Chip>
       </div>
-      <Button
+      <PasswordForm
         v-show="isContinue"
-        :class="b('continue-btn')"
-        :disabled="!isVerify"
-        round
-        block
-        @click="toHome"
-      >
-        CONTINUE
-      </Button>
+        :titles="form.titles"
+        :btn="form.btn"
+        @submit="toHome"
+      />
       <div :class="b('verify-words')">
         <Chip
           v-for="(phrase, index) of exceptionalItems"
@@ -58,8 +54,8 @@ import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
 import P from '@/components/P'
 import { shuffle } from '../../lib/utils'
-import Button from '@/components/Button'
 import Wave from '@/components/Wave'
+import PasswordForm from '@/components/PasswordForm'
 
 const DESCRIPTION = 'Verify your recovery phrase'
 
@@ -69,17 +65,25 @@ export default {
     TopBar,
     P,
     Chip,
-    Button,
-    Wave
+    Wave,
+    PasswordForm
   },
   data() {
     return {
       SIZE_VARIANS,
       COLOR_VARIANTS,
       DESCRIPTION,
+
       words: 'banana blind business arrest escape blame stadium display border flower daughter story',
       verifyWords: [],
-      randomItems: []
+      randomItems: [],
+      form: {
+        titles: [
+          'Password (min 8 chars)',
+          'Confirm Password.'
+        ],
+        btn: 'CONTINUE.'
+      }
     }
   },
   computed: {

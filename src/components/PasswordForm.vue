@@ -9,6 +9,7 @@
       :title="titles[0]"
       :error="error"
       round
+      autocomplete=off
       @input="onReset"
     />
     <Input
@@ -16,6 +17,7 @@
       :type="INPUT_TYPES.password"
       :title="titles[1]"
       :error="errorConfirm"
+      autocomplete=off
       round
       @input="onReset"
     />
