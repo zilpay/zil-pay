@@ -22,7 +22,9 @@ export const ICON_VARIANTS = {
   send: 'send',
   receive: 'receive',
   selected: 'selected',
-  drop: 'drop'
+  drop: 'drop',
+  moon: 'moon',
+  sun: 'sun'
 }
 
 export const ICON_TYPE = {
