@@ -14,7 +14,9 @@
           v-for="(phrase, index) of verifyWords"
           :key="index"
           :circle="index + 1"
+          :color="colorChip"
           close
+          isVerify
           @close="rm(phrase)"
         >
           {{ phrase }}
@@ -44,10 +46,7 @@
 <script>
 const { Set } = global
 
-import {
-  SIZE_VARIANS,
-  COLOR_VARIANTS
-} from '@/config'
+import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
 
 import Home from '@/pages/Home'
 
@@ -115,6 +114,13 @@ export default {
       }
 
       return true
+    },
+    colorChip() {
+      if (this.exceptionalItems.length > 0) {
+        return COLOR_VARIANTS.info
+      }
+
+      return this.isVerify ? COLOR_VARIANTS.success : COLOR_VARIANTS.danger
     }
   },
   methods: {

@@ -6,7 +6,7 @@
     <div :class="b('wrapper')">
       <div
         v-show="circle"
-        :class="b('circle')"
+        :class="b('circle', { color })"
       >
         {{ circle }}
       </div>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { SIZE_VARIANS, EVENTS } from '@/config'
+import { SIZE_VARIANS, EVENTS, COLOR_VARIANTS } from '@/config'
 
 import CloseIcon from '@/components/icons/Close'
 
@@ -37,6 +37,10 @@ export default {
     circle: {
       type: [String, Number],
       required: false
+    },
+    color: {
+      type: String,
+      default: COLOR_VARIANTS.info
     },
     pointer: {
       type: Boolean,
@@ -92,9 +96,20 @@ $default-height: 32px;
     width: $default-height;
 
     border-radius: 16px;
-    background-color: var(--accent-color-info);
 
     text-align: center;
+
+    &_color-info {
+      background-color: var(--accent-color-info);
+    }
+
+    &_color-danger {
+      background-color: var(--accent-color-danger);
+    }
+
+    &_color-success {
+      background-color: var(--accent-color-success);
+    }
   }
 
   &__content {
