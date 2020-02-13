@@ -10,7 +10,7 @@
         Zilliqa
       </Title>
       <P :font="FONT_VARIANTS.regular">
-        Welcome back
+        {{ local.WELCOME_BACK }}
       </P>
       <form
         :class="b('form')"
@@ -20,8 +20,8 @@
           v-model="password"
           :type="INPUT_TYPES.password"
           :size="SIZE_VARIANS.xs"
+          :placeholder="local.PASSWORD"
           minlength="6"
-          placeholder="Password"
           block
           round
           centred
@@ -33,7 +33,7 @@
           block
           round
         >
-          CONTINUE
+          {{ local.CONTINUE }}
         </Button>
       </form>
     </Container>
@@ -41,12 +41,17 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
   SIZE_VARIANS,
   REGX_PATTERNS
 } from '@/config'
+
+import Home from '@/pages/Home'
 
 import Container from '@/components/Container'
 import Icon from '@/components/Icon'
@@ -78,9 +83,14 @@ export default {
       password: null
     }
   },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ])
+  },
   methods: {
     unlock() {
-      // console.log('unlock', this.password)
+      this.$router.push({ name: Home.name })
     }
   }
 }
