@@ -18,7 +18,6 @@
           :class="b('seed-input')"
         />
         <PasswordForm
-          :titles="form.titles"
           :btn="local.RESTORE"
           @submit="restore"
         />
@@ -58,13 +57,7 @@ export default {
       COLOR_VARIANTS,
       SIZE_VARIANS,
 
-      seed: null,
-      form: {
-        titles: [
-          'Password (min 8 chars)',
-          'Confirm Password.'
-        ]
-      }
+      seed: null
     }
   },
   computed: {
