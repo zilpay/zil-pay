@@ -64,6 +64,10 @@
     "CONFIRM": "confirm",
     "REJECT": "reject",
     "VIEW": "view",
-    "DETAILS": "details"
+    "DETAILS": "details",
+
+    "CONNECT": "connect",
+    "CONNECT_INFO": "would like to connect to your account.",
+    "CONNECT_DIS": "This site is requesting access to view your current account address. Always make sure you trust the sites you interact with."
   }
 }
