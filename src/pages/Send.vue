@@ -3,16 +3,16 @@
     <TopBar />
     <Alert :class="b('recipient')">
       <Title :size="SIZE_VARIANS.sm">
-        {{ ALERT_TITLE }}
+        {{ local.ADD }} {{ local.RECIPIENT }}
       </Title>
       <Input
         :value="address"
-        :placeholder="INPUT_PLACEHOLDER"
+        :placeholder="placeholder"
         round
         autofocus
       />
     </Alert>
-    <div v-for="(action, index) of ACTIONS" :key="index">
+    <div v-for="(action, index) of transferTo" :key="index">
       <Item
         pointer
         @click="onEvent(action.event)"
@@ -25,13 +25,13 @@
           {{ action.name }}
         </Title>
       </Item>
-      <Separator v-show="index < ACTIONS.length - 1"/>
+      <Separator v-show="index < transferTo.length - 1"/>
     </div>
     <form :class="b('amount-form')">
       <Input
         v-model="amount"
         :type="INPUT_TYPES.number"
-        title="Amount ZIL."
+        :title="local.AMOUNT + ' ZIL.'"
         pattern="[0-9]*"
         required
         round
@@ -45,7 +45,7 @@
       </Button>
     </form>
     <BottomBar
-      :elements="BOTTOM_BAR"
+      :elements="bottomBar"
       @click="onEvent"
     />
     <BottomModal v-model="accountModal">
@@ -87,9 +87,11 @@
 
 <script>
 import { uuid } from 'uuidv4'
+
 import { mapState } from 'vuex'
 import accountsStore from '@/store/accounts'
 import contactsStore from '@/store/contacts'
+import uiStore from '@/store/ui'
 
 import {
   SIZE_VARIANS,
@@ -112,43 +114,12 @@ import BottomModal from '@/components/BottomModal'
 
 import { toAddress } from '@/filters'
 
-const ALERT_TITLE = 'Add recipient'
-const INPUT_PLACEHOLDER = 'Select, public address (zil1), or ZNS'
 const EVENTS = {
   send: uuid(),
   cancel: uuid(),
   accounts: uuid(),
   contacts: uuid()
 }
-
-const ACTIONS = [
-  {
-    name: 'Transfer between my accounts.',
-    event: EVENTS.accounts
-  },
-  {
-    name: 'Transfer to my contacts.',
-    event: EVENTS.contacts
-  }
-]
-
-const BOTTOM_BAR = [
-  {
-    value: 'CANCEL',
-    event: EVENTS.cancel,
-    size: SIZE_VARIANS.sm,
-    variant: COLOR_VARIANTS.primary,
-    uuid: uuid()
-  },
-  {
-    value: 'SEND',
-    event: EVENTS.send,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  }
-]
-
 export default {
   name: 'Send',
   components: {
@@ -169,10 +140,6 @@ export default {
       COLOR_VARIANTS,
       FONT_VARIANTS,
       INPUT_TYPES,
-      ALERT_TITLE,
-      INPUT_PLACEHOLDER,
-      ACTIONS,
-      BOTTOM_BAR,
 
       amount: 0,
       address: null,
@@ -181,12 +148,49 @@ export default {
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(accountsStore.STORE_NAME, [
       accountsStore.STATE_NAMES.identities
     ]),
     ...mapState(contactsStore.STORE_NAME, [
       contactsStore.STATE_NAMES.contactList
-    ])
+    ]),
+
+    placeholder() {
+      return `${this.local.SELECT} ${this.local.PUBLIC} ${this.local.ADDRESS} (zil1), ${this.local.OR} ZNS`
+    },
+    transferTo() {
+      return [
+        {
+          name: `${this.local.TRANSFER} ${this.local.BETWEEN} ${this.local.MY} ${this.local.ACCOUNTS}`,
+          event: EVENTS.accounts
+        },
+        {
+          name: `${this.local.TRANSFER} ${this.local.BETWEEN} ${this.local.MY} ${this.local.CONTACTS}`,
+          event: EVENTS.contacts
+        }
+      ]
+    },
+    bottomBar() {
+      return [
+        {
+          value: this.local.CANCEL,
+          event: EVENTS.cancel,
+          size: SIZE_VARIANS.sm,
+          variant: COLOR_VARIANTS.primary,
+          uuid: uuid()
+        },
+        {
+          value: this.local.SEND,
+          event: EVENTS.send,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm,
+          uuid: uuid()
+        }
+      ]
+    }
   },
   methods: {
     onEvent(event) {
