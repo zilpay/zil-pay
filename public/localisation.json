@@ -24,6 +24,7 @@
     "CONNECTIONS": "connections",
     "CLEAR": "clear",
     "GENERAL": "general",
+    "PRINT": "print",
     "CUR_CONVER": "currency conversion",
     "ADDR_FORMATS": "address formats",
     "HISTORY": "history",
@@ -38,6 +39,8 @@
     "RESET": "reset",
     "RESTORE": "restore",
     "THX_DONATS": "Thanks for your donats.",
+    "ADD": "add",
+    "RECIPIENT": "recipient",
 
     "RECEIVE": "receive",
     "DEPOSIT": "deposit",
@@ -73,6 +76,15 @@
 
     "CONTINUE": "continue",
     "WELCOME_BACK": "Welcome back",
-    "PASSWORD": "password"
+    "PASSWORD": "password",
+    "IS": "is",
+    "REQUIRED": "required",
+    "LOW_COMPLEXITY": "low complexity",
+    "MUST_LEAST": "must be at least",
+    "CHARS": "characters",
+    "LONG": "long",
+    "NOT_MATCH": "do not match. Please try again",
+
+    "IMPORT_INFO": "Imported accounts will not be associated with your originally created ZilPay account seedphrase."
   }
 }
