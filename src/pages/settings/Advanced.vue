@@ -10,11 +10,11 @@
       <Separator />
       <RadioGroup
         :value="selectedTheme"
-        :title="radioGroupThemeTitle"
+        :title="local.THEME"
         :elements="themes"
         @input="setTheme"
       >
-        {{ radioGroupThemeTitle }}
+        {{ local.THEME }}
       </RadioGroup>
       <Button
         :class="b('btn')"
@@ -53,14 +53,14 @@ export default {
   },
   data() {
     return {
-      DEFAULT_GAS_FEE,
-      radioGroupThemeTitle: 'Theme'
+      DEFAULT_GAS_FEE
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.selectedTheme,
-      uiStore.STATE_NAMES.themes
+      uiStore.STATE_NAMES.themes,
+      uiStore.STATE_NAMES.local
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.defaultGas
