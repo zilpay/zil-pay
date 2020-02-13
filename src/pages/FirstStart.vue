@@ -3,16 +3,15 @@
     <UiPanel />
     <div :class="b('wrapper')">
       <Icon
-        :icon="icons.zilPayLogo"
+        :icon="ICON_VARIANTS.zilPayLogo"
         width="148"
         height="148"
       />
       <Title>
-        Welcome to ZilPay
+        {{ local.FIRSTSTART_TITLE }}
       </Title>
       <P>
-        Connecting you to Zilliqa and
-        the Decentralized Web. We’re happy to see you.
+        {{ local.FIRSTSTART_DIS }}
       </P>
       <div :class="b('actions')">
         <div
@@ -26,7 +25,7 @@
             height="80"
           />
           <Button
-            :size="sizes.xs"
+            :size="SIZE_VARIANS.xs"
             :color="action.color"
             block
             round
@@ -43,6 +42,9 @@
 
 <script>
 import { uuid } from 'uuidv4'
+
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
 
 import {
   ICON_VARIANTS,
@@ -74,21 +76,27 @@ export default {
   data() {
     return {
       // Proxy constants:
-      icons: ICON_VARIANTS,
-      sizes: SIZE_VARIANS,
+      ICON_VARIANTS,
+      SIZE_VARIANS
+    }
+  },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
 
-      // Local variables.
-      actions: [
+    actions() {
+      return [
         {
           uuid: uuid(),
-          name: 'CREATE',
+          name: this.local.CREATE,
           icon: ICON_VARIANTS.add,
           toLink: CreateAcc.name,
           color: COLOR_VARIANTS.success
         },
         {
           uuid: uuid(),
-          name: 'RESTORE',
+          name: this.local.RESTORE,
           icon: ICON_VARIANTS.download,
           toLink: Restore.name,
           color: COLOR_VARIANTS.primary
