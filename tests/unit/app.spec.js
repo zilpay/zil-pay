@@ -6,21 +6,25 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import Vuex from 'vuex'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import App from 'src/App.vue'
+import store from 'src/store'
 
 const localVue = createLocalVue()
 
 localVue.use(VueRouter)
 
 const router = new VueRouter()
+localVue.use(Vuex)
 
 describe('App.vue', () => {
   it('Should be mount', () => {
     const wrapper = shallowMount(App, {
       localVue,
-      router
+      router,
+      store
     })
 
     expect(wrapper).toBeTruthy()
