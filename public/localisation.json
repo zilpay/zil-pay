@@ -47,11 +47,12 @@
     "SHOW": "show",
     "ADDRESS": "address",
     "BUY": "buy",
-    "BUY_ON": "Buy ZIL on CoinSwitch.",
+    "BUY_ON": "on CoinSwitch.",
     "BUY_DIS": "CoinSwitch is the one-stop destination to exchange more than 300 cryptocurrencies at the best rate.",
     "TEST_FAUCET": "test faucet",
     "TEST_FAUCET_DIS": "Get ZIL from a faucet for the test network.",
     "GET": "get",
+    "EXPORT": "export",
 
     "PUBLIC": "public",
     "OR": "or",

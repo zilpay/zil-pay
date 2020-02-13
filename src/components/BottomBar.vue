@@ -3,7 +3,7 @@
     <Buttom
       v-for="el of elements"
       :class="b('btn')"
-      :key="el.uuid"
+      :key="el.event"
       :size="el.size"
       :color="el.variant"
       block
@@ -46,7 +46,6 @@ import Icon from '@/components/Icon'
  *     iconType: ICON_TYPE.svg,
  *     variant: COLOR_VARIANTS.primary,
  *     size: SIZE_VARIANS.sm,
- *     uuid: uuid()
  *  },
  *  {
  *     value: 'Receive',
@@ -55,7 +54,6 @@ import Icon from '@/components/Icon'
  *     iconType: ICON_TYPE.svg,
  *     variant: COLOR_VARIANTS.primary,
  *     size: SIZE_VARIANS.sm,
- *     uuid: uuid()
  *   }
  * ]
  * <BottomBar
@@ -80,8 +78,7 @@ export default {
       'value',
       'event',
       'variant',
-      'size',
-      'uuid'
+      'size'
     ].forEach(necessaryKey => {
       this.elements.forEach(btnObject => {
         if (!(necessaryKey in btnObject)) {

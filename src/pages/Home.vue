@@ -25,7 +25,7 @@
     </div>
     <Transactions />
     <BottomBar
-      :elements="BOTTOM_BAR"
+      :elements="bottomBar"
       @click="onEvent"
     />
   </div>
@@ -33,6 +33,9 @@
 
 <script>
 import { uuid } from 'uuidv4'
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import {
   ICON_TYPE,
   ICON_VARIANTS,
@@ -60,27 +63,6 @@ const EVENTS = {
   accounts: uuid(),
   settings: uuid()
 }
-const BOTTOM_BAR = [
-  {
-    value: 'Receive',
-    event: EVENTS.receive,
-    icon: ICON_VARIANTS.receive,
-    iconType: ICON_TYPE.svg,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  },
-  {
-    value: 'Send',
-    event: EVENTS.send,
-    icon: ICON_VARIANTS.send,
-    iconType: ICON_TYPE.svg,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  }
-]
-
 export default {
   name: 'Home',
   components: {
@@ -98,8 +80,33 @@ export default {
       ICON_VARIANTS,
       COLOR_VARIANTS,
       SIZE_VARIANS,
-      EVENTS,
-      BOTTOM_BAR
+      EVENTS
+    }
+  },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
+
+    bottomBar() {
+      return [
+        {
+          value: this.local.RECEIVE,
+          event: EVENTS.receive,
+          icon: ICON_VARIANTS.receive,
+          iconType: ICON_TYPE.svg,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm
+        },
+        {
+          value: this.local.SEND,
+          event: EVENTS.send,
+          icon: ICON_VARIANTS.send,
+          iconType: ICON_TYPE.svg,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm
+        }
+      ]
     }
   },
   methods: {
