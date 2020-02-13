@@ -35,14 +35,14 @@
           round
           @click="prinntWords"
         >
-          PRINT
+          {{ local.PRINT }}
         </Button>
         <Button
           block
           round
           @click="setWords"
         >
-          CONTINUE
+          {{ local.CONTINUE }}
         </Button>
       </div>
     </div>
