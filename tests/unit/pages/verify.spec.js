@@ -6,20 +6,24 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import Vuex from 'vuex'
 import vueBemCn from 'vue-bem-cn'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Verify from 'src/pages/Verify.vue'
 import { BEM_CONFIG } from 'src/config'
 import { generateMnemonic } from 'bip39'
+import store from 'src/store'
 
 const TEST_SEED = generateMnemonic(128)
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+localVue.use(Vuex)
 
 describe('pages:Verify.vue', () => {
   const wrapper = shallowMount(Verify, {
-    localVue
+    localVue,
+    store
   })
 
   it('Should can import', () => {

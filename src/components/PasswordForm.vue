@@ -76,7 +76,7 @@ export default {
     },
     btn: {
       type: String,
-      required: true
+      required: false
     }
   },
   data() {
