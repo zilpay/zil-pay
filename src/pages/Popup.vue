@@ -9,7 +9,7 @@
         :size="SIZE_VARIANS.md"
         :font="FONT_VARIANTS.regular"
       >
-        Address from:
+        {{ local.ADDRESS }} {{ local.FROM }}:
       </Title>
       <P>
         {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
@@ -28,7 +28,7 @@
       />
       <div :class="b('amount')">
         <P :font="FONT_VARIANTS.bold">
-          amount
+          {{ local.AMOUNT }}
         </P>
         <P :font="FONT_VARIANTS.bold">
           ZIL123
@@ -44,7 +44,7 @@
         :size="SIZE_VARIANS.md"
         :font="FONT_VARIANTS.regular"
       >
-        View details
+        {{ local.VIEW }} {{ local.DETAILS }}
       </Title>
       <ArrowInCircle
         width="40"
@@ -60,7 +60,7 @@
         :size="SIZE_VARIANS.md"
         :font="FONT_VARIANTS.regular"
       >
-        Address to:
+        {{ local.ADDRESS }} {{ local.TO }}:
       </Title>
       <P>
         {{ getCurrent.toAddr | toAddress(addressFormat, false) }}
@@ -75,9 +75,11 @@
 
 <script>
 import { uuid } from 'uuidv4'
+
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
+import uiStore from '@/store/ui'
 import transactionsStore from '@/store/transactions'
 
 import {
@@ -153,6 +155,9 @@ export default {
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
