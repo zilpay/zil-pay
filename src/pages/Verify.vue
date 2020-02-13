@@ -7,7 +7,7 @@
         back
       />
       <P :variant="COLOR_VARIANTS.gray">
-        {{ DESCRIPTION }}
+        {{ local.VERIFY_DIS }}
       </P>
       <div :class="b('words')">
         <Chip
@@ -23,7 +23,6 @@
       </div>
       <PasswordForm
         v-show="isVerify"
-        :titles="form.titles"
         :btn="local.CONTINUE"
         @submit="toHome"
       />
@@ -60,8 +59,6 @@ import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
 
-const DESCRIPTION = 'Verify your recovery phrase'
-
 export default {
   name: 'Verify',
   components: {
@@ -76,17 +73,10 @@ export default {
     return {
       SIZE_VARIANS,
       COLOR_VARIANTS,
-      DESCRIPTION,
 
       words: 'banana blind business arrest escape blame stadium display border flower daughter story',
       verifyWords: [],
-      randomItems: [],
-      form: {
-        titles: [
-          'Password (min 8 chars)',
-          'Confirm Password.'
-        ]
-      }
+      randomItems: []
     }
   },
   computed: {
