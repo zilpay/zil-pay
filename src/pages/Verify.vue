@@ -24,7 +24,7 @@
       <PasswordForm
         v-show="isVerify"
         :titles="form.titles"
-        :btn="form.btn"
+        :btn="local.CONTINUE"
         @submit="toHome"
       />
       <div :class="b('verify-words')">
@@ -44,6 +44,9 @@
 
 <script>
 const { Set } = global
+
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
 
 import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
 
@@ -82,12 +85,14 @@ export default {
         titles: [
           'Password (min 8 chars)',
           'Confirm Password.'
-        ],
-        btn: 'CONTINUE.'
+        ]
       }
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     /**
      * Divide the array.
      */
