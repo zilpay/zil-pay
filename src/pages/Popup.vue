@@ -6,8 +6,8 @@
       @click="onFrom"
     >
       <Title
-        :size="SIZE_VARIANS.md"
-        :font="FONT_VARIANTS.regular"
+        :size="SIZE_VARIANS.sm"
+        :font="FONT_VARIANTS.bold"
       >
         {{ local.ADDRESS }} {{ local.FROM }}:
       </Title>
@@ -31,7 +31,7 @@
           {{ local.AMOUNT }}
         </P>
         <P :font="FONT_VARIANTS.bold">
-          ZIL123
+          ZIL{{ getCurrent.amount | fromZil }}
         </P>
       </div>
     </Container>
@@ -57,8 +57,8 @@
       @click="onTo"
     >
       <Title
-        :size="SIZE_VARIANS.md"
-        :font="FONT_VARIANTS.regular"
+        :size="SIZE_VARIANS.sm"
+        :font="FONT_VARIANTS.bold"
       >
         {{ local.ADDRESS }} {{ local.TO }}:
       </Title>
@@ -67,7 +67,7 @@
       </P>
     </Alert>
     <BottomBar
-      :elements="BOTTOM_BAR"
+      :elements="bottomBar"
       @click="onEvent"
     />
   </div>
@@ -111,23 +111,6 @@ const BOTTOM_BAR_EVENTS = {
   reject: uuid()
 }
 
-const BOTTOM_BAR = [
-  {
-    value: 'CONFIRM',
-    event: BOTTOM_BAR_EVENTS.confirm,
-    size: SIZE_VARIANS.sm,
-    variant: COLOR_VARIANTS.primary,
-    uuid: uuid()
-  },
-  {
-    value: 'REJECT',
-    event: BOTTOM_BAR_EVENTS.reject,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  }
-]
-
 export default {
   name: 'Popup',
   components: {
@@ -148,8 +131,7 @@ export default {
       SIZE_VARIANS,
       FONT_VARIANTS,
       DEFAULT_GAS_FEE,
-      ICON_VARIANTS,
-      BOTTOM_BAR
+      ICON_VARIANTS
     }
   },
   computed: {
@@ -165,7 +147,24 @@ export default {
     ...mapGetters(transactionsStore.STORE_NAME, [
       transactionsStore.GETTERS_NAMES.getCurrent,
       transactionsStore.GETTERS_NAMES.getCurrentGas
-    ])
+    ]),
+
+    bottomBar() {
+      return [
+        {
+          value: this.local.CONFIRM,
+          event: BOTTOM_BAR_EVENTS.confirm,
+          size: SIZE_VARIANS.sm,
+          variant: COLOR_VARIANTS.primary
+        },
+        {
+          value: this.local.REJECT,
+          event: BOTTOM_BAR_EVENTS.reject,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm
+        }
+      ]
+    }
   },
   methods: {
     ...mapMutations(transactionsStore.STORE_NAME, [
