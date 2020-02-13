@@ -4,30 +4,30 @@
     <Container :class="b('wrapper')">
       <RadioGroup
         :value="currency"
-        :title="currencyTitle"
+        :title="local.CUR_CONVER"
         :elements="currencyItems"
         @input="setCurrency"
       >
-        {{ currencyTitle }}
+        {{ local.CUR_CONVER }}:
       </RadioGroup>
       <Separator />
       <RadioGroup
         :value="addressFormat"
-        :title="addressFormatTitle"
+        :title="local.ADDR_FORMATS"
         :elements="addressFormatItems"
         @input="setAddressFormat"
       >
-        {{ addressFormatTitle }}
+        {{ local.ADDR_FORMATS }}:
       </RadioGroup>
       <div :class="b('btns')">
         <Button
           :color="COLOR_VARIANTS.warning"
           round
         >
-          Clear tx history
+          {{ local.CLEAR }} {{ local.HISTORY }}
         </Button>
         <Button round>
-          Default
+          {{ local.DEFAULT }}
         </Button>
       </div>
     </Container>
@@ -37,6 +37,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS } from '@/config'
 
@@ -57,12 +58,13 @@ export default {
   },
   data() {
     return {
-      COLOR_VARIANTS,
-      currencyTitle: 'Currency conversion:',
-      addressFormatTitle: 'Address formats:'
+      COLOR_VARIANTS
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.currencyItems,
       settingsStore.STATE_NAMES.currency,

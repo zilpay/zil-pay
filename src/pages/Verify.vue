@@ -7,7 +7,7 @@
         back
       />
       <P :variant="COLOR_VARIANTS.gray">
-        {{ DESCRIPTION }}
+        {{ local.VERIFY_DIS }}
       </P>
       <div :class="b('words')">
         <Chip
@@ -23,8 +23,7 @@
       </div>
       <PasswordForm
         v-show="isVerify"
-        :titles="form.titles"
-        :btn="form.btn"
+        :btn="local.CONTINUE"
         @submit="toHome"
       />
       <div :class="b('verify-words')">
@@ -45,6 +44,9 @@
 <script>
 const { Set } = global
 
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
 
 import Home from '@/pages/Home'
@@ -56,8 +58,6 @@ import { shuffle } from '../../lib/utils'
 import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
-
-const DESCRIPTION = 'Verify your recovery phrase'
 
 export default {
   name: 'Verify',
@@ -73,21 +73,16 @@ export default {
     return {
       SIZE_VARIANS,
       COLOR_VARIANTS,
-      DESCRIPTION,
 
       words: 'banana blind business arrest escape blame stadium display border flower daughter story',
       verifyWords: [],
-      randomItems: [],
-      form: {
-        titles: [
-          'Password (min 8 chars)',
-          'Confirm Password.'
-        ],
-        btn: 'CONTINUE.'
-      }
+      randomItems: []
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     /**
      * Divide the array.
      */

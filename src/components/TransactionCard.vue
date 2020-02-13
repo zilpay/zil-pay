@@ -32,7 +32,7 @@
     </Container>
     <Container :class="b('thirdly-line')">
       <div :class="b('time')">
-        epoch {{ transaction.epoch}}
+        {{ this.local.EPOCH }} {{ transaction.epoch}}
       </div>
       <P
         :class="b('amount')"
@@ -45,6 +45,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
@@ -59,12 +62,6 @@ import Icon from '@/components/Icon'
 import Arrow from '@/components/icons/Arrow'
 
 import { fromZil, toConversion } from '@/filters'
-
-export const TX_TYPES = {
-  send: 'Send',
-  deploy: 'deploy',
-  trigger: 'trigger'
-}
 
 export default {
   name: 'TransactionCard',
@@ -89,16 +86,19 @@ export default {
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     txType() {
       const { Info } = this.transaction
 
       if (Info.includes('Contract Txn')) {
-        return TX_TYPES.trigger
+        return this.local.TRIGGER
       } else if (Info.includes('Contract Creation')) {
-        return TX_TYPES.deploy
+        return this.local.DEPLOY
       }
 
-      return TX_TYPES.send
+      return this.local.SEND
     },
     statusIcon() {
       switch (this.transaction.status) {

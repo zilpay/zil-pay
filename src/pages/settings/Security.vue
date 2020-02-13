@@ -4,11 +4,10 @@
     <Container :class="b('wrapper')">
       <RadioGroup
         :value="getCurrent"
-        :title="autoLogoutTimerTitle"
         :elements="getHours"
         @input="setLockTime"
       >
-        {{ autoLogoutTimerTitle }}
+        {{ local.AUTO_LOGOUT_HOURS }} ({{ local.HOURS }})
       </RadioGroup>
       <Separator />
       <div :class="b('btns')">
@@ -16,16 +15,16 @@
           :color="COLOR_VARIANTS.warning"
           round
         >
-          RESET
+          {{ local.RESET }}
         </Button>
         <Button
           :color="COLOR_VARIANTS.warning"
           round
         >
-          RESTORE
+          {{ local.RESTORE }}
         </Button>
         <Button round>
-          default
+          {{ local.DEFAULT }}
         </Button>
       </div>
     </Container>
@@ -35,6 +34,7 @@
 <script>
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS } from '@/config'
 
@@ -55,11 +55,13 @@ export default {
   },
   data() {
     return {
-      COLOR_VARIANTS,
-      autoLogoutTimerTitle: 'Auto-Logout Timer (hours)'
+      COLOR_VARIANTS
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.lockTime
     ]),

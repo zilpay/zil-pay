@@ -21,7 +21,7 @@
         {{ CONNECT_TEST.domain }}
       </Title>
       <P>
-        {{ CONNECT_TEST.title }} would like to connect to your account.
+        {{ CONNECT_TEST.title }} {{ local.CONNECT_INFO }}
       </P>
     </Container>
     <Alert :class="b('about-connect')">
@@ -29,11 +29,11 @@
         :class="b('info')"
         :font="FONT_VARIANTS.light"
       >
-        {{ TEXT_INFO }}
+        {{ local.CONNECT_DIS }}
       </P>
     </Alert>
     <BottomBar
-      :elements="BOTTOM_BAR"
+      :elements="bottomBar"
       @click="onEvent"
     />
   </div>
@@ -41,9 +41,11 @@
 
 <script>
 import { uuid } from 'uuidv4'
+
 import { mapGetters, mapState } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import {
   SIZE_VARIANS,
@@ -65,31 +67,12 @@ const EVENTS = {
   connect: uuid(),
   cancel: uuid()
 }
-const BOTTOM_BAR = [
-  {
-    value: 'CANCEL',
-    event: EVENTS.cancel,
-    size: SIZE_VARIANS.sm,
-    variant: COLOR_VARIANTS.primary,
-    uuid: uuid()
-  },
-  {
-    value: 'CONNECT',
-    event: EVENTS.connect,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  }
-]
 const CONNECT_TEST = {
   domain: 'rocketgame.io',
   icon: 'https://rocketgame.io/favicon.ico',
   title: 'RocketGame',
   uuid: '574ed57d-08bf-4118-b372-014a45995a66'
 }
-const TEXT_INFO = 'This site is requesting access to view ' +
-                  'your current account address. Always make sure you trust the sites you interact with.'
-
 export default {
   name: 'Connect',
   components: {
@@ -107,18 +90,36 @@ export default {
       COLOR_VARIANTS,
       FONT_VARIANTS,
       ICON_TYPE,
-      BOTTOM_BAR,
-      TEXT_INFO,
       CONNECT_TEST
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
-    ])
+    ]),
+
+    bottomBar() {
+      return [
+        {
+          value: this.local.CANCEL,
+          event: EVENTS.cancel,
+          size: SIZE_VARIANS.sm,
+          variant: COLOR_VARIANTS.primary
+        },
+        {
+          value: this.local.CONNECT,
+          event: EVENTS.connect,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm
+        }
+      ]
+    }
   },
   methods: {
     onEvent(event) {}

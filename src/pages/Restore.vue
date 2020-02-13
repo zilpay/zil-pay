@@ -7,10 +7,10 @@
     />
     <Container :class="b('wrapper')">
       <Title>
-        {{ TITLE }}
+        {{ local.RESTORE_TITLE }}
       </Title>
       <P :class="b('description')">
-        {{ DESCRIPTION }}
+        {{ local.RESTORE_DIS }}
       </P>
       <div>
         <textarea
@@ -18,8 +18,7 @@
           :class="b('seed-input')"
         />
         <PasswordForm
-          :titles="form.titles"
-          :btn="form.btn"
+          :btn="local.RESTORE"
           @submit="restore"
         />
       </div>
@@ -29,6 +28,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Title from '@/components/Title'
@@ -38,9 +40,6 @@ import Container from '@/components/Container'
 import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
-
-const TITLE = 'Restore your Account.'
-const DESCRIPTION = 'Enter your secret word phrase here to restore your vault.'
 
 export default {
   name: 'Restore',
@@ -57,18 +56,14 @@ export default {
     return {
       COLOR_VARIANTS,
       SIZE_VARIANS,
-      TITLE,
-      DESCRIPTION,
 
-      seed: null,
-      form: {
-        titles: [
-          'Password (min 8 chars)',
-          'Confirm Password.'
-        ],
-        btn: 'Restore.'
-      }
+      seed: null
     }
+  },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ])
   },
   methods: {
     restore(event) {

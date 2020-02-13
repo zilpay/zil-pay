@@ -6,6 +6,8 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import fetch from 'cross-fetch'
+
 import { CURRENCIES } from '@/config'
 
 const { document } = global
@@ -19,12 +21,17 @@ const STATE_NAMES = {
   isConnect: 'isConnect',
   conversionRate: 'conversionRate',
   selectedTheme: 'selectedTheme',
-  themes: 'themes'
+  themes: 'themes',
+  local: 'local',
+  currentLocal: 'currentLocal'
 }
 const MUTATIONS_NAMES = {
-  setTheme: 'setTheme'
+  setTheme: 'setTheme',
+  setLocal: 'setLocal'
 }
-const ACTIONS_NAMES = { }
+const ACTIONS_NAMES = {
+  onLocal: 'onLocal'
+}
 const GETTERS_NAMES = { }
 const STORE = {
   namespaced: true,
@@ -36,7 +43,9 @@ const STORE = {
       [CURRENCIES.USD]: 0
     },
     [STATE_NAMES.selectedTheme]: THEMES[0],
-    [STATE_NAMES.themes]: THEMES
+    [STATE_NAMES.themes]: THEMES,
+    [STATE_NAMES.local]: {},
+    [STATE_NAMES.currentLocal]: 'en'
   },
   mutations: {
     [MUTATIONS_NAMES.setTheme](state, theme) {
@@ -44,9 +53,27 @@ const STORE = {
         state.selectedTheme = theme
         document.body.setAttribute('theme', theme)
       }
+    },
+    [MUTATIONS_NAMES.setLocal](state, data) {
+      const { currentLocal } = state
+
+      if (!data || typeof data !== 'object') {
+        return null
+      } else if (!data[currentLocal]) {
+        return null
+      }
+
+      state[STATE_NAMES.local] = data[currentLocal]
     }
   },
-  actions: {},
+  actions: {
+    async [ACTIONS_NAMES.onLocal]({ commit }) {
+      const res = await fetch('/localisation.json')
+      const data = await res.json()
+
+      commit(MUTATIONS_NAMES.setLocal, data)
+    }
+  },
   getters: {}
 }
 

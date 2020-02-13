@@ -6,7 +6,7 @@
     <Input
       v-model="password"
       :type="INPUT_TYPES.password"
-      :title="titles[0]"
+      :title="local.PASSWORD"
       :error="error"
       round
       autocomplete=off
@@ -15,7 +15,7 @@
     <Input
       v-model="confirmPassword"
       :type="INPUT_TYPES.password"
-      :title="titles[1]"
+      :title="local.CONFIRM + ' ' + local.PASSWORD"
       :error="errorConfirm"
       autocomplete=off
       round
@@ -33,6 +33,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
+import { MIN_LENGTH_PASSWORD } from '../../config/default'
 import {
   EVENTS,
   REGX_PATTERNS,
@@ -51,14 +55,9 @@ import Input, { INPUT_TYPES } from '@/components/Input'
  * @example
  * import PasswordForm from '@/components/PasswordForm'
  * const form = {
- *   titles: [
- *     'Password (min 8 chars)',
- *     'Confirm Password.'
- *   ],
  *   btn: 'submit.'
  * }
  * <PasswordForm
- *   :titles="form.titles"
  *   :btn="form.btn"
  *   @submit="restore"
  * />
@@ -70,13 +69,9 @@ export default {
     Input
   },
   props: {
-    titles: {
-      type: Array,
-      required: true
-    },
     btn: {
       type: String,
-      required: true
+      required: false
     }
   },
   data() {
@@ -91,19 +86,29 @@ export default {
       errorConfirm: null
     }
   },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
+
+    passwordTitle() {
+      return `${this.local.PASSWORD}`
+    }
+  },
   methods: {
     onSubmit() {
       if (!this.password) {
-        this.error = '*Password is required!'
+        this.error = `*${this.local.PASSWORD} ${this.local.IS} ${this.local.REQUIRED}!`
         return null
       } else if (!new RegExp(REGX_PATTERNS).test(this.password)) {
-        this.error = '*Passwords low complexity.'
+        this.error = `*${this.local.PASSWORD} ${this.local.LOW_COMPLEXITY}`
         return null
-      } else if (this.password.length < 8) {
-        this.error = '*Passwords must be at least 8 characters long.'
+      } else if (this.password.length < MIN_LENGTH_PASSWORD) {
+        this.error = `*${this.local.PASSWORD} ${this.local.MUST_LEAST}` +
+                     `${MIN_LENGTH_PASSWORD} ${this.local.CHARS} ${this.local.LONG}`
         return null
       } else if (this.password !== this.confirmPassword) {
-        this.errorConfirm = '*Passwords do not match. Please try again'
+        this.errorConfirm = `*${this.local.PASSWORD} ${this.local.NOT_MATCH}`
         return null
       }
 

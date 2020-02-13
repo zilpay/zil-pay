@@ -4,7 +4,7 @@
     <Container :class="b('wrapper')">
       <Tabs
         v-model="tabs"
-        :elements="TABS"
+        :elements="tabElements"
       />
       <RadioGroup
         v-model="radioGroup.model"
@@ -14,15 +14,15 @@
     </Container>
     <Alert :class="b('info')">
       <P>
-        Imported accounts will not be associated with your originally created ZilPay account seedphrase.
+        {{ local.IMPORT_INFO }}
       </P>
       <Input
-        title="PrivateKey"
+        placeholder="PrivateKey"
         round
       />
     </Alert>
     <BottomBar
-      :elements="BOTTOM_BAR"
+      :elements="bottomBar"
       @click="onEvent"
     />
   </div>
@@ -30,6 +30,9 @@
 
 <script>
 import { uuid } from 'uuidv4'
+
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
@@ -47,32 +50,6 @@ const EVENTS = {
   import: uuid(),
   cancel: uuid()
 }
-const BOTTOM_BAR = [
-  {
-    value: 'CANCEL',
-    event: EVENTS.cancel,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  },
-  {
-    value: 'IMPORT',
-    event: EVENTS.import,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  }
-]
-const TABS = [
-  {
-    name: 'Import',
-    event: EVENTS.import
-  },
-  {
-    name: 'Connect',
-    event: EVENTS.connect
-  }
-]
 const RADIO_ELEMENTS = [
   'PrivateKey',
   'JSON file.'
@@ -92,9 +69,7 @@ export default {
   },
   data() {
     return {
-      BOTTOM_BAR,
       SIZE_VARIANS,
-      TABS,
 
       tabs: 0,
       radioGroup: {
@@ -102,6 +77,41 @@ export default {
         elements: RADIO_ELEMENTS,
         model: RADIO_ELEMENTS[0]
       }
+    }
+  },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
+
+    bottomBar() {
+      return [
+        {
+          value: this.local.CANCEL,
+          event: EVENTS.cancel,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm,
+          uuid: uuid()
+        },
+        {
+          value: this.local.IMPORT,
+          event: EVENTS.import,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm,
+        }
+      ]
+    },
+    tabElements() {
+      return [
+        {
+          name: this.local.IMPORT,
+          event: EVENTS.import
+        },
+        {
+          name: this.local.CONNECT,
+          event: EVENTS.connect
+        }
+      ]
     }
   },
   methods: {
@@ -122,6 +132,10 @@ export default {
   }
 
   &__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
     line-height: 20px;
     font-size: 15px;
 

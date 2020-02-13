@@ -4,7 +4,7 @@
     <div :class="b('wrapper')">
       <Tabs
         v-model="tabs"
-        :elements="TABS"
+        :elements="tabsElements"
       />
       <div :class="b('list')">
         <AccountCard
@@ -37,7 +37,7 @@
       </div>
     </div>
     <BottomBar
-      :elements="BOTTOM_BAR"
+      :elements="bottomBar"
       @click="onEvent"
     />
     <BottomModal v-model="contactModal">
@@ -55,6 +55,7 @@ import { mapState, mapMutations, mapActions } from 'vuex'
 import contactsStore from '@/store/contacts'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
@@ -79,33 +80,6 @@ const EVENTS = {
   contacts: uuid(),
   accounts: uuid()
 }
-const BOTTOM_BAR = [
-  {
-    value: 'CREATE',
-    event: EVENTS.create,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  },
-  {
-    value: 'IMPORT',
-    event: EVENTS.import,
-    variant: COLOR_VARIANTS.primary,
-    size: SIZE_VARIANS.sm,
-    uuid: uuid()
-  }
-]
-const TABS = [
-  {
-    name: 'Accounts',
-    event: EVENTS.accounts
-  },
-  {
-    name: 'Contacts',
-    event: EVENTS.contacts
-  }
-]
-
 export default {
   name: 'Accounts',
   components: {
@@ -122,14 +96,15 @@ export default {
   data() {
     return {
       SIZE_VARIANS,
-      BOTTOM_BAR,
-      TABS,
 
       tabs: 0,
       contactModal: false
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
     ]),
@@ -139,7 +114,36 @@ export default {
     ...mapState(accountsStore.STORE_NAME, [
       accountsStore.STATE_NAMES.identities,
       accountsStore.STATE_NAMES.selectedAddress
-    ])
+    ]),
+
+    bottomBar() {
+      return [
+        {
+          value: this.local.CREATE,
+          event: EVENTS.create,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm
+        },
+        {
+          value: this.local.IMPORT,
+          event: EVENTS.import,
+          variant: COLOR_VARIANTS.primary,
+          size: SIZE_VARIANS.sm
+        }
+      ]
+    },
+    tabsElements() {
+      return [
+        {
+          name: this.local.ACCOUNTS,
+          event: EVENTS.accounts
+        },
+        {
+          name: this.local.CONTACTS,
+          event: EVENTS.contacts
+        }
+      ]
+    }
   },
   methods: {
     ...mapMutations(accountsStore.STORE_NAME, [

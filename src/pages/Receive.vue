@@ -3,13 +3,13 @@
     <TopBar />
     <Alert :class="b('alert-info')">
       <Title :size="SIZE_VARIANS.sm">
-        {{ ALERT_HEADER.title }}
+        {{ local.DEPOSIT }} ZIL
       </Title>
       <P
         :class="b('deposit-info')"
         :font="FONT_VARIANTS.regular"
       >
-        {{ ALERT_HEADER.description }}
+        {{ local.RECEIVE_DEPOSIT_DIS }}
       </P>
     </Alert>
     <Container
@@ -39,7 +39,7 @@
           :class="b('deposit-btn')"
           :size="SIZE_VARIANS.xs"
           round
-          @click="onEvent(variant.uuid)"
+          @click="onEvent(variant.event)"
         >
           {{ variant.button }}
         </Button>
@@ -73,7 +73,7 @@
           round
           block
         >
-          Export Private Key
+          {{ local.EXPORT }} Private Key
         </Button>
         <ViewblockLink
           :class="b('view-block')"
@@ -90,6 +90,7 @@ import { uuid } from 'uuidv4'
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
+import uiStore from '@/store/ui'
 
 import {
   SIZE_VARIANS,
@@ -113,40 +114,15 @@ import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 import LinksMixin from '@/mixins/links'
 
-const ALERT_HEADER = {
-  title: 'Deposit ZIL.',
-  description: 'To interact with decentralized applications using ZilPay, you’ll need ZIL coin in your wallet.'
+const DEFAUL_IMG_SIZE = {
+  width: '38',
+  height: '51'
 }
-const TRANSFER = {
-  icon: {
-    name: ICON_VARIANTS.zilliqaLogo,
-    width: '38',
-    height: '51'
-  },
-  title: 'Transfer ZIL.',
-  text: 'The easiest way to get ZIL is to simply transfer it from another address.',
-  button: 'SHOW ADDRESS',
-  uuid: uuid()
+const EVENTS = {
+  faucet: uuid(),
+  buy: uuid(),
+  transfer: uuid()
 }
-const BUY = {
-  icon: false,
-  title: 'Buy ZIL on CoinSwitch.',
-  text: 'CoinSwitch is the one-stop destination to exchange more than 300 cryptocurrencies at the best rate.',
-  button: 'BUY ZIL',
-  uuid: uuid()
-}
-const FAUCET = {
-  icon: {
-    name: ICON_VARIANTS.drop,
-    width: '38',
-    height: '51'
-  },
-  title: 'Test Faucet.',
-  text: 'Get ZIL from a faucet for the test network.',
-  button: 'GET ZIL',
-  uuid: uuid()
-}
-
 export default {
   name: 'Receive',
   components: {
@@ -168,7 +144,6 @@ export default {
       SIZE_VARIANS,
       ICON_TYPE,
       FONT_VARIANTS,
-      ALERT_HEADER,
 
       accountInfo: false,
       qrcode: null
@@ -180,33 +155,63 @@ export default {
       settingsStore.STATE_NAMES.network,
       settingsStore.STATE_NAMES.addressFormat
     ]),
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
     ]),
 
     variants() {
       const [mainnet] = Object.keys(this.networkConfig)
+      const elements = [{
+        icon: {
+          ...DEFAUL_IMG_SIZE,
+          name: ICON_VARIANTS.zilliqaLogo
+        },
+        title: `${this.local.TRANSFER} ZIL.`,
+        text: this.local.TRANSFER_DIS,
+        button: `${this.local.SHOW} ${this.local.ADDRESS}`,
+        event: EVENTS.transfer
+      }]
 
-      return [
-        TRANSFER,
-        mainnet === this.network ? BUY : FAUCET
-      ]
+      if (mainnet === this.network) {
+        elements.push({
+          icon: false,
+          title: `${this.local.BUY} ZIL ${this.local.BUY_ON}.`,
+          text: this.local.BUY_DIS,
+          button: `${this.local.BUY} ZIL`,
+          event: EVENTS.buy
+        })
+      } else {
+        elements.push({
+          icon: {
+            ...DEFAUL_IMG_SIZE,
+            name: ICON_VARIANTS.drop
+          },
+          title: this.local.TEST_FAUCET,
+          text: this.local.TEST_FAUCET_DIS,
+          button: `${this.local.GET} ZIL`,
+        })
+      }
+
+      return elements
     }
   },
   methods: {
     onEvent(uuid) {
       switch (uuid) {
-      case FAUCET.uuid:
+      case EVENTS.faucet:
         this.linksToFaucet()
         break
-      case BUY.uuid:
+      case EVENTS.buy:
         this.linksToCoinswitch(toAddress(
           this.getCurrentAccount.address,
           this.addressFormat,
           false
         ))
         break
-      case TRANSFER.uuid:
+      case EVENTS.transfer:
         this.accountInfo = true
         break
       default:
