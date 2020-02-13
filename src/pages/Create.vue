@@ -7,10 +7,10 @@
         back
       />
       <Title :size="SIZE_VARIANS.md">
-        {{ TITLE }}
+        {{ local.CREATE_TITLE }}
       </Title>
       <P :variant="COLOR_VARIANTS.gray">
-        {{ DESCRIPTION }}
+        {{ local.CREATE_DIS }}
       </P>
       <Refresh
         :class="b('reset-icon')"
@@ -51,12 +51,16 @@
 </template>
 
 <script>
+import { uuid } from 'uuidv4'
+
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import {
   ICON_VARIANTS,
   SIZE_VARIANS,
   COLOR_VARIANTS
 } from '@/config'
-import { uuid } from 'uuidv4'
 
 import Verify from '@/pages/Verify'
 
@@ -69,9 +73,6 @@ import Refresh from '@/components/icons/Refresh'
 import Wave from '@/components/Wave'
 import UiPanel from '@/components/UiPanel'
 import Printer from '@/mixins/printer'
-
-const TITLE = 'Your recovery phrase'
-const DESCRIPTION = 'Remember your 12 words.'
 
 export default {
   name: 'Create',
@@ -91,12 +92,14 @@ export default {
       ICON_VARIANTS,
       SIZE_VARIANS,
       COLOR_VARIANTS,
-      TITLE,
-      DESCRIPTION,
       words: 'banana blind business arrest escape blame stadium display border flower daughter story'
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
+
     wrdsAsArray() {
       return this
         .words
