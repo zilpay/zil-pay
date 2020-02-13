@@ -18,7 +18,7 @@
     </div>
     <div :class="b('balance')">
       <Title :size="SIZE_VARIANS.md">
-        {{ TITLE }}
+        {{ local.BALANCE }}
       </Title>
       <P>
         {{ getCurrentAccount.balance | fromZil }}
@@ -37,6 +37,7 @@
 import { mapGetters, mapState, mapMutations } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import {
   SIZE_VARIANS,
@@ -50,8 +51,6 @@ import CopyMixin from '@/mixins/copy'
 import Title from '@/components/Title'
 import P from '@/components/P'
 
-const TITLE = 'Balance'
-
 export default {
   name: 'Account',
   components: {
@@ -64,11 +63,13 @@ export default {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
-      ADDRESS_FORMAT_VARIANTS,
-      TITLE
+      ADDRESS_FORMAT_VARIANTS
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
     ]),
