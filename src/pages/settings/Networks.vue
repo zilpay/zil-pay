@@ -4,10 +4,11 @@
     <Container :class="b('wrapper')">
       <RadioGroup
         :value="network"
+        :title="local.NETWORKS"
         :elements="networkConfig | keys"
         @input="setNetwork"
       >
-        {{ networkTitle }}
+        {{ local.NETWORKS }}:
       </RadioGroup>
       <Separator />
       <div>
@@ -26,7 +27,7 @@
         :class="b('btn')"
         round
       >
-        Default
+        {{ local.DEFAULT }}
       </Button>
     </Container>
   </div>
@@ -35,6 +36,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
@@ -56,12 +58,10 @@ export default {
     Button
   },
   filters: { keys },
-  data() {
-    return {
-      networkTitle: 'Network:'
-    }
-  },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.networkConfig,
       settingsStore.STATE_NAMES.network
