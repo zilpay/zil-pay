@@ -36,7 +36,7 @@
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { MIN_LENGTH_PASSWORD } from '../../config/default'
+import { DEFAULT } from '../../config/default'
 import {
   EVENTS,
   REGX_PATTERNS,
@@ -103,9 +103,9 @@ export default {
       } else if (!new RegExp(REGX_PATTERNS).test(this.password)) {
         this.error = `*${this.local.PASSWORD} ${this.local.LOW_COMPLEXITY}`
         return null
-      } else if (this.password.length < MIN_LENGTH_PASSWORD) {
+      } else if (this.password.length < DEFAULT.MIN_LENGTH_PASSWORD) {
         this.error = `*${this.local.PASSWORD} ${this.local.MUST_LEAST}` +
-                     `${MIN_LENGTH_PASSWORD} ${this.local.CHARS} ${this.local.LONG}`
+                     `${DEFAULT.MIN_LENGTH_PASSWORD} ${this.local.CHARS} ${this.local.LONG}`
         return null
       } else if (this.password !== this.confirmPassword) {
         this.errorConfirm = `*${this.local.PASSWORD} ${this.local.NOT_MATCH}`
