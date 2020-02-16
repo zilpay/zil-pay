@@ -14,12 +14,14 @@
         <Button
           :color="COLOR_VARIANTS.warning"
           round
+          @click="onExport"
         >
-          {{ local.RESET }}
+          {{ local.EXPORT }}
         </Button>
         <Button
           :color="COLOR_VARIANTS.warning"
           round
+          @click="onRestore"
         >
           {{ local.RESTORE }}
         </Button>
@@ -32,11 +34,16 @@
 </template>
 
 <script>
+import extension from 'extensionizer'
+
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS } from '@/config'
+
+import RestorePage from '@/pages/Restore'
+import ExportPage from '@/pages/accounts/Export'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
@@ -73,7 +80,18 @@ export default {
   methods: {
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setLockTime
-    ])
+    ]),
+
+    onRestore() {
+      const url = `/${RestorePage.name}`
+
+      extension.tabs.create({ url })
+    },
+    onExport() {
+      this.$router.push({
+        name: ExportPage.name
+      })
+    }
   }
 }
 </script>
