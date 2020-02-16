@@ -72,6 +72,7 @@
         <Button
           round
           block
+          @click="onExport"
         >
           {{ local.EXPORT }} Private Key
         </Button>
@@ -98,6 +99,8 @@ import {
   ICON_VARIANTS,
   ICON_TYPE
 } from '@/config'
+
+import ExportPage from '@/pages/accounts/Export'
 
 import TopBar from '@/components/TopBar'
 import Alert from '@/components/Alert'
@@ -217,6 +220,11 @@ export default {
       default:
         break
       }
+    },
+    onExport() {
+      this.$router.push({
+        name: ExportPage.name
+      })
     },
     async qrcodeGenerate() {
       const address = toAddress(
