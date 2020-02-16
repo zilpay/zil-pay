@@ -85,6 +85,10 @@
     "LONG": "long",
     "NOT_MATCH": "do not match. Please try again",
 
-    "IMPORT_INFO": "Imported accounts will not be associated with your originally created ZilPay account seedphrase."
+    "IMPORT_PRIVATE_KEY": "You can access your wallet with private key.",
+    "IMPORT_KEYSTORE": "You can access your wallet with your keystore file and passphrase.",
+    "IMPORT_HW": "Manage your crypto, with the security of your hardware wallet",
+    "WALLET_ID": "Select your wallet index.",
+    "INVALID_PRIVATEKEY": "invalid privateKey"
   }
 }
