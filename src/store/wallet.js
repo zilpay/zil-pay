@@ -12,7 +12,10 @@ const STATE_NAMES = {
   isEnable: 'isEnable'
 }
 const MUTATIONS_NAMES = { }
-const ACTIONS_NAMES = { }
+const ACTIONS_NAMES = {
+  onLedgerAccount: 'onLedgerAccount',
+  onKeyStore: 'onKeyStore'
+}
 const GETTERS_NAMES = { }
 const STORE = {
   namespaced: true,
@@ -21,7 +24,14 @@ const STORE = {
     [STATE_NAMES.isEnable]: true
   },
   mutations: {},
-  actions: {},
+  actions: {
+    [ACTIONS_NAMES.onLedgerAccount]({ state }, payload) {
+      // console.log(payload)
+    },
+    [ACTIONS_NAMES.onKeyStore]({ state }, payload) {
+      // console.log(payload)
+    }
+  },
   getters: {}
 }
 
