@@ -4,7 +4,7 @@
 [![FireFox](https://img.shields.io/amo/v/zilpay)](https://addons.mozilla.org/en-GB/firefox/addon/zilpay/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Issues][github-issues-image]][github-issues-url]  
-[![LoC](https://github.com/zilpay/zil-pay?category=lines)](https://github.com/Fantom-foundation/go-lachesis)  
+[![LoC](https://github.com/zilpay/zil-pay?category=lines)](https://github.com/zilpay/zil-pay)  
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
 *Read this in other languages: [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
