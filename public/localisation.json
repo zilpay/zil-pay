@@ -89,6 +89,13 @@
     "IMPORT_KEYSTORE": "You can access your wallet with your keystore file and passphrase.",
     "IMPORT_HW": "Manage your crypto, with the security of your hardware wallet",
     "WALLET_ID": "Select your wallet index.",
-    "INVALID_PRIVATEKEY": "invalid privateKey"
+    "INVALID": "invalid",
+    "PRIVATEKEY": "privateKey",
+    "PHRASE": "phrase",
+    "NEXT": "next",
+    "EXPORT_CAN_PASSWROD": "Enter password to continue.",
+    "EXPORT_DANGER": "DO NOT share this with anyone!",
+    "EXPORT_WARNING": "Save them somewhere safe and secret.",
+    "EXPORT_INFO": "If you ever change browsers or move computers, you will need this seed phrase to access your accounts."
   }
 }

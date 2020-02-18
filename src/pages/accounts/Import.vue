@@ -12,7 +12,7 @@
       :class="b('info')"
     >
       <P>
-        {{ local.IMPORT_PRIVATE_KEY }}
+        {{ local.IMPORT }} {{ local.PRIVATEKEY }}
       </P>
       <Input
         v-model="privateKey.model"
