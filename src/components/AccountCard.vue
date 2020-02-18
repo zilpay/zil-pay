@@ -40,7 +40,7 @@
           :variant="COLOR_VARIANTS.gray"
           @click="onSelectedCard"
         >
-          {{ currency }}{{ account.balance | toConversion(0.1) }}
+          {{ currency }}{{ account.balance | toConversion(getRate) }}
         </P>
       </div>
       <Trash
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 
 import {
@@ -147,6 +147,9 @@ export default {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat,
       settingsStore.STATE_NAMES.currency
+    ]),
+    ...mapGetters(settingsStore.STORE_NAME, [
+      settingsStore.GETTERS_NAMES.getRate
     ]),
 
     color() {
