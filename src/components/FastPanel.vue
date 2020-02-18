@@ -10,6 +10,7 @@
       :width="width"
       :height="width"
       pointer
+      @click="onRefresh"
     />
     <Connections
       :width="width"
@@ -21,6 +22,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import settingsStore from '@/store/settings'
+
 import NetworkPage from '@/pages/settings/Networks'
 import ConnectionsPage from '@/pages/Connections'
 
@@ -42,11 +46,18 @@ export default {
     }
   },
   methods: {
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.updateRate
+    ]),
+
     onNetwork() {
       this.$router.push({ name: NetworkPage.name })
     },
     onConnections() {
       this.$router.push({ name: ConnectionsPage.name })
+    },
+    onRefresh() {
+      this.updateRate()
     }
   }
 }

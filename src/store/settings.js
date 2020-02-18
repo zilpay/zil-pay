@@ -6,7 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { DEFAULT } from '../../config/default'
+import fetch from 'cross-fetch'
+
+import { DEFAULT, API } from '../../config'
 import { ZILLIQA, DEFAULT_GAS_FEE } from '../../config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
@@ -21,7 +23,8 @@ const STATE_NAMES = {
   networkConfig: 'networkConfig',
   defaultGas: 'defaultGas',
   dappsList: 'dappsList',
-  connect: 'connect'
+  connect: 'connect',
+  currentRate: 'currentRate'
 }
 const MUTATIONS_NAMES = {
   setCurrency: 'setCurrency',
@@ -29,12 +32,16 @@ const MUTATIONS_NAMES = {
   setNetwork: 'setNetwork',
   setLockTime: 'setLockTime',
   setGas: 'setGas',
-  setDefaultGas: 'setDefaultGas'
+  setDefaultGas: 'setDefaultGas',
+  setRate: 'setRate'
 }
-const ACTIONS_NAMES = { }
+const ACTIONS_NAMES = {
+  updateRate: 'updateRate'
+}
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
-  getHours: 'getHours'
+  getHours: 'getHours',
+  getRate: 'getRate'
 }
 
 const STORE = {
@@ -44,8 +51,7 @@ const STORE = {
     [STATE_NAMES.currency]: CURRENCIES.USD,
     [STATE_NAMES.currencyItems]: [
       CURRENCIES.BTC,
-      CURRENCIES.USD,
-      CURRENCIES.ETH
+      CURRENCIES.USD
     ],
 
     [STATE_NAMES.addressFormat]: ADDRESS_FORMAT_VARIANTS.bech32,
@@ -59,7 +65,11 @@ const STORE = {
 
     [STATE_NAMES.defaultGas]: DEFAULT_GAS_FEE,
     [STATE_NAMES.dappsList]: [],
-    [STATE_NAMES.connect]: {}
+    [STATE_NAMES.connect]: {},
+    [STATE_NAMES.currentRate]: {
+      [CURRENCIES.BTC]: 0,
+      [CURRENCIES.USD]: 0
+    }
   },
   mutations: {
     [MUTATIONS_NAMES.setCurrency](state, currency) {
@@ -91,10 +101,41 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setDefaultGas](state) {
       state.defaultGas = DEFAULT_GAS_FEE
+    },
+    [MUTATIONS_NAMES.setRate](state, payload) {
+      state[STATE_NAMES.currentRate] = payload
     }
   },
-  actions: {},
+  actions: {
+    async [ACTIONS_NAMES.updateRate]({ commit }) {
+      let rate = null
+      const url = `${API.COINMARKETCAP}/zilliqa`
+
+      try {
+        const response = await fetch(url, { method: 'GET' })
+
+        rate = await response.json()
+
+        rate = {
+          USD: rate[0]['price_usd'],
+          BTC: rate[0]['price_btc']
+        }
+      } catch (err) {
+        rate = {
+          BTC: 0,
+          USD: 0
+        }
+      }
+
+      commit(MUTATIONS_NAMES.setRate, rate)
+    }
+  },
   getters: {
+    [GETTERS_NAMES.getRate]: state => {
+      const currentCurrency = state[STATE_NAMES.currency]
+
+      return state[STATE_NAMES.currentRate][currentCurrency]
+    },
     [GETTERS_NAMES.getCurrent]: state => `${state.lockTime} hours.`,
     [GETTERS_NAMES.getHours]: () => DEFAULT.DEFAULT_HOURS_LOCK.map(hour => `${hour} hours.`)
   }

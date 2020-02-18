@@ -27,7 +27,7 @@
         :class="b('amount-currency')"
         :size="FONT_VARIANTS.medium"
       >
-        {{ getCurrentAccount.balance | toConversion(0.001) }}
+        {{ getCurrentAccount.balance | toConversion(getRate) }}
       </P>
     </div>
   </div>
@@ -75,7 +75,10 @@ export default {
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
-    ])
+    ]),
+    ...mapGetters(settingsStore.STORE_NAME, [
+      settingsStore.GETTERS_NAMES.getRate
+    ]),
   },
   methods: {
     ...mapMutations(accountsStore.STORE_NAME, [
