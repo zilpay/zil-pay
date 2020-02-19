@@ -123,6 +123,10 @@ export default {
     &__enable {
       height: 20px;
     }
+
+    &:first-letter {
+      text-transform: capitalize;
+    }
   }
 
   &__element {

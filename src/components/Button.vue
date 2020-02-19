@@ -74,8 +74,6 @@ export default {
   outline: none;
 
   box-shadow: var(--default-box-shadow);
-
-  text-transform: capitalize;
 }
 
 .Button {
@@ -156,6 +154,10 @@ export default {
   &[disabled="disabled"] {
     cursor: unset;
     opacity: 0.5;
+  }
+
+  &:first-letter {
+    text-transform: capitalize;
   }
 }
 </style>

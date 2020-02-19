@@ -137,5 +137,9 @@ export default {
   &__input_variant-warning {
     color: var(--accent-color-warning);
   }
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
 }
 </style>

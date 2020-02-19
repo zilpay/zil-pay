@@ -84,6 +84,10 @@ export default {
 
   &__title {
     font-size: 15px;
+
+    &:first-letter {
+      text-transform: capitalize;
+    }
   }
 
   &__item {

@@ -125,9 +125,6 @@ export default {
 
     &:hover {
       cursor: pointer;
-      // box-shadow: var(--default-box-shadow);
-      // border-radius: var(--default-border-radius);
-      // background-color: var(--theme-color-alert-border);
     }
   }
 }

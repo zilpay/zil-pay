@@ -117,6 +117,8 @@ export default {
 
     font-family: var(--font-family-bold);
     font-size: var(--size-sm-font);
+
+    text-transform: capitalize;
   }
 
   &__icon {
