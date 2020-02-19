@@ -23,6 +23,8 @@
 <script>
 import { uuid } from 'uuidv4'
 
+import { EVENTS } from '@/config'
+
 /**
  * Radio button.
  * @example
@@ -50,7 +52,7 @@ export default {
   },
   methods: {
     onInput() {
-      this.$emit('input', !this.value)
+      this.$emit(EVENTS.input, !this.value)
     }
   }
 }
