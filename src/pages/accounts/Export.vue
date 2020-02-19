@@ -14,12 +14,17 @@
         v-model="radioGroupModel"
         :elements="radioGroupElements"
       />
-      <form :class="b('form')">
+      <form
+        v-show="!seedWords"
+        :class="b('form')"
+        @submit.prevent="onSubmit"
+      >
         <Input
           :placeholder="local.PASSWORD"
           :title="local.EXPORT_CAN_PASSWROD"
           :type="INPUT_TYPES.password"
           round
+          required
         />
         <Button
           :class="b('next-btn')"
@@ -28,6 +33,27 @@
           {{ local.NEXT }}
         </Button>
       </form>
+    </Container>
+    <Alert v-show="seedWords">
+      <Container :class="b('warn-info')">
+        <Icon
+          :icon="ICON_VARIANTS.warn"
+          width="50"
+          height="60"
+        />
+        <P>
+          {{ local.EXPORT_DANGER }}
+        </P>
+      </Container>
+    </Alert>
+    <Container
+      v-show="seedWords"
+      :class="b('words')"
+    >
+      <Textarea
+        v-model="seedWords"
+        readonly
+      />
     </Container>
   </div>
 </template>
@@ -47,6 +73,8 @@ import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
 import Button from '@/components/Button'
 import Alert from '@/components/Alert'
+import Textarea from '@/components/Textarea'
+import Icon from '@/components/Icon'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import P from '@/components/P'
 import RadioGroup from '@/components/RadioGroup'
@@ -59,6 +87,8 @@ export default {
     Button,
     Input,
     Alert,
+    Icon,
+    Textarea,
     P,
     RadioGroup
   },
@@ -70,7 +100,8 @@ export default {
       SIZE_VARIANS,
       INPUT_TYPES,
 
-      radioGroupModel: 0
+      radioGroupModel: 0,
+      seedWords: null
     }
   },
   computed: {
@@ -84,6 +115,11 @@ export default {
         this.local.PHRASE
       ]
     }
+  },
+  methods: {
+    onSubmit() {
+      this.seedWords = true
+    }
   }
 }
 </script>
@@ -91,9 +127,8 @@ export default {
 <style lang="scss">
 .Export {
   &__wrapper {
-    padding-top: 30px;
-    padding-left: 15px;
-    padding-right: 15px;
+    /* top | right | bottom | left */
+    padding: 30px 15px 30px 15px;
   }
 
   &__next-btn {
@@ -110,6 +145,16 @@ export default {
   &__info {
     font-size: 15px;
     line-height: 20px;
+  }
+
+  &__warn-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__words {
+    padding-top: 15px;
   }
 }
 </style>
