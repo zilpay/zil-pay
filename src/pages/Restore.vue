@@ -13,9 +13,9 @@
         {{ local.RESTORE_DIS }}
       </P>
       <div>
-        <textarea
+        <Textarea
           v-model="seed"
-          :class="b('seed-input')"
+          round
         />
         <PasswordForm
           :btn="local.RESTORE"
@@ -34,6 +34,7 @@ import uiStore from '@/store/ui'
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Title from '@/components/Title'
+import Textarea from '@/components/Textarea'
 import TopBar from '@/components/TopBar'
 import P from '@/components/P'
 import Container from '@/components/Container'
@@ -48,6 +49,7 @@ export default {
     P,
     Container,
     Wave,
+    Textarea,
     TopBar,
     PasswordForm,
     UiPanel
@@ -83,33 +85,13 @@ export default {
     padding-top: 30px;
     padding-right: 15px;
     padding-left: 15px;
+
+    max-width: calc(360px - 30px);
   }
 
   &__description {
     padding-top: 30px;
     opacity: 0.5;
-  }
-
-  &__seed-input {
-    display: inline-block;
-
-    width: 235px;
-    height: 100px;
-
-    margin-top: 15px;
-
-    padding-left: 15px;
-    padding-top: 15px;
-
-    border: 0;
-    border-radius: var(--default-border-radius);
-    font-size: var(--size-sm-font);
-    color: var(--theme-color-font);
-    background-color: var(--theme-color-input);
-
-    outline: none;
-    resize: none;
-    overflow: hidden;
   }
 }
 </style>
