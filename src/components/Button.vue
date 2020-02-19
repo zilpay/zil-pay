@@ -75,9 +75,7 @@ export default {
 
   box-shadow: var(--default-box-shadow);
 
-  &:hover {
-    opacity: 0.9;
-  }
+  text-transform: capitalize;
 }
 
 .Button {
@@ -89,6 +87,10 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  &:hover {
+    opacity: 0.9;
   }
 }
 
