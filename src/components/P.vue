@@ -127,5 +127,9 @@ export default {
       cursor: pointer;
     }
   }
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
 }
 </style>
