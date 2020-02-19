@@ -24,7 +24,8 @@ export const ICON_VARIANTS = {
   selected: 'selected',
   drop: 'drop',
   moon: 'moon',
-  sun: 'sun'
+  sun: 'sun',
+  warn: 'warn'
 }
 
 export const ICON_TYPE = {
