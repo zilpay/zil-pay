@@ -46,10 +46,7 @@
         </P>
       </Container>
     </Alert>
-    <Container
-      v-show="seedWords"
-      :class="b('words')"
-    >
+    <Container v-show="seedWords">
       <Textarea
         v-model="seedWords"
         readonly
@@ -151,10 +148,6 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  &__words {
-    padding-top: 15px;
   }
 }
 </style>

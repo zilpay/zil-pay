@@ -27,7 +27,8 @@ const STATE_NAMES = {
 }
 const MUTATIONS_NAMES = {
   setTheme: 'setTheme',
-  setLocal: 'setLocal'
+  setLocal: 'setLocal',
+  setLoad: 'setLoad'
 }
 const ACTIONS_NAMES = {
   onLocal: 'onLocal'
@@ -45,7 +46,8 @@ const STORE = {
     [STATE_NAMES.selectedTheme]: THEMES[0],
     [STATE_NAMES.themes]: THEMES,
     [STATE_NAMES.local]: {},
-    [STATE_NAMES.currentLocal]: 'en'
+    [STATE_NAMES.currentLocal]: 'en',
+    [STATE_NAMES.loading]: true
   },
   mutations: {
     [MUTATIONS_NAMES.setTheme](state, theme) {
@@ -64,6 +66,22 @@ const STORE = {
       }
 
       state[STATE_NAMES.local] = data[currentLocal]
+    },
+    [MUTATIONS_NAMES.setLoad](state) {
+      let spiner = document.querySelector('#spinner')
+      let app = document.querySelector('#app')
+
+      state[STATE_NAMES.loading] = !state[STATE_NAMES.loading]
+
+      if (state.loading) {
+        spiner.style.display = 'block'
+        spiner.className = 'isLoad'
+        app.style.filter = 'blur(5px)'
+      } else {
+        app.style.filter = null
+        spiner.className = null
+        spiner.style.display = 'none'
+      }
     }
   },
   actions: {
