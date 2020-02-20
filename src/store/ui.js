@@ -38,7 +38,7 @@ const GETTERS_NAMES = { }
 const STORE = {
   namespaced: true,
   state: {
-    [STATE_NAMES.loading]: true,
+    [STATE_NAMES.loading]: false,
     [STATE_NAMES.isConnect]: true,
     [STATE_NAMES.conversionRate]: {
       [CURRENCIES.BTC]: 0,
@@ -47,8 +47,7 @@ const STORE = {
     [STATE_NAMES.selectedTheme]: THEMES[0],
     [STATE_NAMES.themes]: THEMES,
     [STATE_NAMES.local]: {},
-    [STATE_NAMES.currentLocal]: 'en',
-    [STATE_NAMES.loading]: true
+    [STATE_NAMES.currentLocal]: 'en'
   },
   mutations: {
     [MUTATIONS_NAMES.setTheme](state, theme) {

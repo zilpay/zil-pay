@@ -5,18 +5,28 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
+import settingsStore from '@/store/settings'
 
 export default {
   name: 'App',
   methods: {
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.updateRate
+    ]),
     ...mapActions(uiStore.STORE_NAME, [
       uiStore.ACTIONS_NAMES.onLocal
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
     ])
   },
-  beforeMount() {
-    this.onLocal()
+  async beforeMount() {
+    this.setLoad()
+    await this.onLocal()
+    await this.updateRate()
+    this.setLoad()
   }
 }
 </script>
