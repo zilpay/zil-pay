@@ -1,4 +1,4 @@
-import { TypeChecker } from '../../lib/type'
+import { TypeChecker } from '#/lib/type'
 
 import { INPUT_TYPES } from '@/components/Input'
 

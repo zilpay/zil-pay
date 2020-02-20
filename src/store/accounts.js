@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { DEFAULT } from '../../config/default'
+import { DEFAULT } from '#/config/default'
 
 const STORE_NAME = 'accounts'
 const STATE_NAMES = {

@@ -24,7 +24,7 @@
 <script>
 import { mapActions } from 'vuex'
 
-import { DEFAULT } from '../../config/default'
+import { DEFAULT } from '#/config/default'
 import { EVENTS } from '@/config'
 
 import Input from '@/components/Input'

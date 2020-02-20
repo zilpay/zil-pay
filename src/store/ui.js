@@ -7,6 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import fetch from 'cross-fetch'
+import { TypeChecker } from '#/lib/type'
 
 import { CURRENCIES } from '@/config'
 
@@ -59,7 +60,7 @@ const STORE = {
     [MUTATIONS_NAMES.setLocal](state, data) {
       const { currentLocal } = state
 
-      if (!data || typeof data !== 'object') {
+      if (!data || !new TypeChecker(data).isObject) {
         return null
       } else if (!data[currentLocal]) {
         return null

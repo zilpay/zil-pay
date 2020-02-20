@@ -32,7 +32,7 @@ import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
-import { DEFAULT_GAS_FEE } from '../../../config/zilliqa'
+import { DEFAULT_GAS_FEE } from '#/config/zilliqa'
 
 import TopBar from '@/components/TopBar'
 import GasControl from '@/components/GasControl'
