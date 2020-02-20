@@ -8,8 +8,8 @@
  */
 import fetch from 'cross-fetch'
 
-import { DEFAULT, API } from '#/config'
-import { ZILLIQA, DEFAULT_GAS_FEE } from '#/config/zilliqa'
+import { DEFAULT, API } from '../../config'
+import { ZILLIQA, DEFAULT_GAS_FEE } from '../../config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
 const STORE_NAME = 'settings'

@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import fetch from 'cross-fetch'
-import { TypeChecker } from '#/lib/type'
+import { TypeChecker } from '../../lib/type'
 
 import { CURRENCIES } from '@/config'
 

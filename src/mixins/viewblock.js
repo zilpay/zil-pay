@@ -4,7 +4,7 @@ import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 
 
-import { API } from '#/config/api'
+import { API } from '../../config/api'
 
 export default {
   computed: {

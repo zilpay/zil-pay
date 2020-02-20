@@ -88,7 +88,7 @@ import {
   COLOR_VARIANTS,
   ICON_VARIANTS
 } from '@/config'
-import { DEFAULT_GAS_FEE } from '#/config/zilliqa'
+import { DEFAULT_GAS_FEE } from '../../config/zilliqa'
 
 import Alert from '@/components/Alert'
 import Title from '@/components/Title'
