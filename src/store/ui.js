@@ -71,6 +71,10 @@ const STORE = {
       let spiner = document.querySelector('#spinner')
       let app = document.querySelector('#app')
 
+      if (!spiner || !app) {
+        return null
+      }
+
       state[STATE_NAMES.loading] = !state[STATE_NAMES.loading]
 
       if (state.loading) {
