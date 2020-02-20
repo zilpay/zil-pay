@@ -47,4 +47,8 @@ describe('components:Radio', () => {
     expect(wrapper.attributes().required).toEqual('required')
   })
 
+  it('Should have some attributes', () => {
+    expect(wrapper.attributes().required).toEqual('required')
+  })
+
 })

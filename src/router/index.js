@@ -22,7 +22,6 @@ import Popup from '@/pages/Popup'
 import Receive from '@/pages/Receive'
 import Send from '@/pages/Send'
 import Settings from '@/pages/Settings'
-import TxInfo from '@/pages/TxInfo'
 
 // Settings children pages.
 import About from '@/pages/settings/About'
@@ -176,12 +175,6 @@ const routes = [
     path: `/${Security.name.toLowerCase()}`,
     name: Security.name,
     component: Security,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${TxInfo.name.toLowerCase()}`,
-    name: TxInfo.name,
-    component: TxInfo,
     meta: { requiresAuth: true }
   },
   {
