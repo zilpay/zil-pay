@@ -64,7 +64,6 @@ export class Popup {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async initPopup(sendResponse) {
-    const storage = new BrowserStorage()
     const session = accountControl.auth.verificationTime
 
     if (!session && session !== null) {
@@ -86,20 +85,12 @@ export class Popup {
         reject: {
           isEnable: accountControl.auth.isEnable,
           isReady: accountControl.auth.isReady,
-          config: networkControl.config,
-          selectednet: networkControl.selected,
           networkStatus: networkControl.status
         }
       })
 
       return null
     }
-
-    const data = await storage.get([
-      FIELDS.TRANSACTIONS,
-      FIELDS.CONFIRM_TX,
-      FIELDS.CONNECT_DAPP
-    ])
 
     try {
       await accountControl.auth.getWallet()
@@ -111,7 +102,6 @@ export class Popup {
 
     sendResponse({
       resolve: {
-        data: data,
         isEnable: accountControl.auth.isEnable,
         isReady: accountControl.auth.isReady,
         networkStatus: networkControl.status
