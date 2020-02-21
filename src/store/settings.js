@@ -9,6 +9,7 @@
 import fetch from 'cross-fetch'
 
 import { DEFAULT, API } from 'config'
+import { TypeChecker } from '../../lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
@@ -33,7 +34,8 @@ const MUTATIONS_NAMES = {
   setLockTime: 'setLockTime',
   setGas: 'setGas',
   setDefaultGas: 'setDefaultGas',
-  setRate: 'setRate'
+  setRate: 'setRate',
+  setNetworkConfig: 'setNetworkConfig'
 }
 const ACTIONS_NAMES = {
   updateRate: 'updateRate'
@@ -75,6 +77,11 @@ const STORE = {
     [MUTATIONS_NAMES.setCurrency](state, currency) {
       if (state.currencyItems.includes(currency)) {
         state.currency = currency
+      }
+    },
+    [MUTATIONS_NAMES.setNetworkConfig](state, config) {
+      if (config && new TypeChecker(config).isObject) {
+        state[STATE_NAMES.networkConfig] = config
       }
     },
     [MUTATIONS_NAMES.setAddressFormat](state, addressFormat) {
