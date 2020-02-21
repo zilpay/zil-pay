@@ -1,5 +1,8 @@
 import extension from 'extensionizer'
 
+import { DEFAULT } from 'config'
+
+const { window } = global
 const coinswitch = 'https://coinswitch.co'
 const faucet = 'https://dev-wallet.zilliqa.com/faucet'
 
@@ -13,6 +16,9 @@ export default {
     linksToFaucet() {
       extension.tabs.create({ url: faucet })
     },
-    linksExpand() { }
+    linksExpand() {
+      extension.tabs.create({ url: DEFAULT.PROMT_PAGE })
+      window.window.close()
+    }
   }
 }

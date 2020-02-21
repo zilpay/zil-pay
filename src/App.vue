@@ -13,8 +13,12 @@ import walletStore from '@/store/wallet'
 import FirstPage from '@/pages/FirstStart'
 import LockPage from '@/pages/LockScreen'
 
+import LinkMixin from '@/mixins/links'
+import { isExpand } from '@/services'
+
 export default {
   name: 'App',
+  mixins: [LinkMixin],
   methods: {
     ...mapActions(settingsStore.STORE_NAME, [
       settingsStore.ACTIONS_NAMES.updateRate
@@ -30,6 +34,10 @@ export default {
     ]),
     toNavigation(authData) {
       if (!authData.isReady) {
+        if (isExpand()) {
+          this.linksExpand()
+        }
+
         this.$router.push({ name: FirstPage.name })
 
         return null
