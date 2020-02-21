@@ -65,4 +65,16 @@ export class Background {
       return Promise.reject(wallet.reject)
     }
   }
+
+  async unlockWallet(password) {
+    const type = MTypePopup.SET_PASSWORD
+    const payload = { password }
+    const status = await new Message({ type, payload }).send()
+
+    if (!status.resolve) {
+      throw new Error(status.resolve)
+    }
+
+    return status.resolve
+  }
 }

@@ -14,19 +14,20 @@
       </P>
       <form
         :class="b('form')"
-        @submit.prevent="unlock"
+        @submit.prevent="onUnlock"
       >
         <Input
           v-model="password"
           :type="INPUT_TYPES.password"
           :size="SIZE_VARIANS.xs"
           :placeholder="local.PASSWORD"
-          minlength="6"
+          :error="error"
           block
           round
           centred
           required
           autofocus
+          @input="error = null"
         />
         <Button
           :size="SIZE_VARIANS.xs"
@@ -41,17 +42,17 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
+import walletStore from '@/store/wallet'
 
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
-  SIZE_VARIANS,
-  REGX_PATTERNS
+  SIZE_VARIANS
 } from '@/config'
 
-import Home from '@/pages/Home'
+import HomePage from '@/pages/Home'
 
 import Container from '@/components/Container'
 import Icon from '@/components/Icon'
@@ -59,6 +60,8 @@ import Title from '@/components/Title'
 import P from '@/components/P'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
+
+import { Background } from '@/services'
 
 export default {
   name: 'LockScreen',
@@ -77,20 +80,42 @@ export default {
       FONT_VARIANTS,
       SIZE_VARIANS,
       INPUT_TYPES,
-      REGX_PATTERNS,
 
       // Locals:
-      password: null
+      password: null,
+      error: null
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapState(walletStore.STORE_NAME, [
+      walletStore.STATE_NAMES.isReady,
+      walletStore.STATE_NAMES.networkStatus
     ])
   },
   methods: {
-    unlock() {
-      this.$router.push({ name: Home.name })
+    ...mapMutations(walletStore.STORE_NAME, [
+      walletStore.MUTATIONS_NAMES.setAuth
+    ]),
+
+    async onUnlock() {
+      const bg = new Background()
+
+      try {
+        const isEnable = await bg.unlockWallet(this.password)
+
+        this.setAuth({
+          isEnable,
+          isReady: this.isReady,
+          networkStatus: this.networkStatus
+        })
+
+        this.$router.push({ name: HomePage.name })
+      } catch (err) {
+        this.error = `${this.local.INCORRECT} ${this.local.PASSWORD}!`
+      }
     }
   }
 }

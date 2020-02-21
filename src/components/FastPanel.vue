@@ -18,6 +18,12 @@
       pointer
       @click="onConnections"
     />
+    <Lock
+      :width="width"
+      :height="width"
+      pointer
+      @click="onLogout"
+    />
   </div>
 </template>
 
@@ -31,12 +37,16 @@ import ConnectionsPage from '@/pages/Connections'
 import Network from '@/components/icons/Network'
 import Refresh from '@/components/icons/Refresh'
 import Connections from '@/components/icons/Connections'
+import Lock from '@/components/icons/Lock'
+
+import { Background } from '@/services'
 
 export default {
   name: 'FastPanel',
   components: {
     Network,
     Refresh,
+    Lock,
     Connections
   },
   data() {
@@ -58,6 +68,11 @@ export default {
     },
     onRefresh() {
       this.updateRate()
+    },
+    onLogout() {
+      const bg = new Background()
+
+      bg.logOut()
     }
   }
 }

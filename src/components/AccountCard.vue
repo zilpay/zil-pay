@@ -12,7 +12,7 @@
       :class="b('name')"
       @click="onSelectedCard"
     >
-      {{ account.name }}
+      {{ name }}
     </Title>
     <div :class="b('wrapper')">
       <div
@@ -163,6 +163,13 @@ export default {
       }
 
       return this.ICON_VARIANTS.zilliqaWatermark
+    },
+    name() {
+      if (this.account.name) {
+        return this.account.name
+      }
+
+      return `Account ${this.account.index}`
     }
   },
   mounted() {

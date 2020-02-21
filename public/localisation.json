@@ -69,6 +69,7 @@
     "REJECT": "reject",
     "VIEW": "view",
     "DETAILS": "details",
+    "INCORRECT": "incorrect",
 
     "CONNECT": "connect",
     "CONNECT_INFO": "would like to connect to your account.",

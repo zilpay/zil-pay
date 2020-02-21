@@ -45,6 +45,7 @@ export class Popup {
    */
   static logOut(sendResponse) {
     accountControl = new AccountControl()
+
     Popup.walletStatusUpdate()
 
     if (new TypeChecker(sendResponse).isFunction) {

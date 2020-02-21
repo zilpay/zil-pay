@@ -13,6 +13,7 @@
     "serve:ui": "cross-env NODE_ENV=development vue-cli-service build --watch",
     "serve:extension": "cross-env NODE_ENV=development webpack --config webpack/webpack.config.js",
     "test:unit": "vue-cli-service test:unit",
+    "serve": "npm run serve:ui | npm run serve:extension",
     "test:watch": "vue-cli-service test:unit --watch",
     "lint": "vue-cli-service lint",
     "lint:fix": "vue-cli-service lint --fix"
