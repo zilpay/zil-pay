@@ -103,7 +103,7 @@ export class Background {
       break
 
     case MTypePopup.SET_SEED_AND_PASSWORD:
-      new Transaction(message.payload).sendSignTx(sendResponse)
+      new Popup(message.payload).initWallet(sendResponse)
       break
 
     case MTypePopup.DOMAIN_RESOLVE:
