@@ -96,9 +96,6 @@ export class Popup {
     }
 
     const data = await storage.get([
-      FIELDS.CONFIG,
-      FIELDS.WALLET,
-      FIELDS.SELECTED_NET,
       FIELDS.TRANSACTIONS,
       FIELDS.CONFIRM_TX,
       FIELDS.CONNECT_DAPP

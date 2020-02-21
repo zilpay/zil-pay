@@ -61,12 +61,8 @@ export class Background {
     const type = MTypePopup.SET_SEED_AND_PASSWORD
     const wallet = await new Message({ type, payload }).send()
 
-    if (!wallet) {
-      throw new Error(BG_ERROR)
-    } else if (wallet.reject) {
+    if (wallet.reject) {
       return Promise.reject(wallet.reject)
     }
-
-    return wallet.resolve
   }
 }

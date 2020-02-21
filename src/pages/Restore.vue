@@ -42,6 +42,11 @@ import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
 
+import { Background } from '@/services'
+
+const { window } = global
+const bgScript = new Background()
+
 export default {
   name: 'Restore',
   components: {
@@ -68,8 +73,12 @@ export default {
     ])
   },
   methods: {
-    restore(event) {
-      // console.log(event)
+    async restore(password) {
+      await bgScript.createWallet({
+        password,
+        seed: this.seed
+      })
+      window.close()
     }
   }
 }
