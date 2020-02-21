@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS, ZILLIQA } from 'config'
-import { AccountControl, MnemonicControl } from '../services'
+import { MnemonicControl } from '../services'
 import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import {
@@ -44,7 +44,7 @@ export class Popup {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   static logOut(sendResponse) {
-    accountControl = new AccountControl()
+    accountControl.resetAuth()
 
     Popup.walletStatusUpdate()
 

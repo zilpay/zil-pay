@@ -28,8 +28,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import accountsStore from '@/store/accounts'
+import uiStore from '@/store/ui'
 
 import NetworkPage from '@/pages/settings/Networks'
 import ConnectionsPage from '@/pages/Connections'
@@ -59,6 +61,12 @@ export default {
     ...mapActions(settingsStore.STORE_NAME, [
       settingsStore.ACTIONS_NAMES.updateRate
     ]),
+    ...mapActions(accountsStore.STORE_NAME, [
+      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
 
     onNetwork() {
       this.$router.push({ name: NetworkPage.name })
@@ -66,8 +74,17 @@ export default {
     onConnections() {
       this.$router.push({ name: ConnectionsPage.name })
     },
-    onRefresh() {
-      this.updateRate()
+    async onRefresh() {
+      this.setLoad()
+
+      try {
+        await this.updateRate()
+        await this.updateCurrentAccount()
+      } catch (err) {
+        //
+      } finally {
+        this.setLoad()
+      }
     },
     onLogout() {
       const bg = new Background()

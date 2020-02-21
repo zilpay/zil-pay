@@ -7,6 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { DEFAULT } from 'config/default'
+import { Background } from '@/services'
 
 const STORE_NAME = 'accounts'
 const STATE_NAMES = {
@@ -19,7 +20,8 @@ const MUTATIONS_NAMES = {
   setAccountName: 'setAccountName'
 }
 const ACTIONS_NAMES = {
-  onRemoveAccount: 'onRemoveAccount'
+  onRemoveAccount: 'onRemoveAccount',
+  updateCurrentAccount: 'updateCurrentAccount'
 }
 const GETTERS_NAMES = {
   getCurrentAccount: 'getCurrentAccount'
@@ -68,6 +70,13 @@ const STORE = {
       }
 
       commit(MUTATIONS_NAMES.setAccounts, identities.filter((_, i) => i !== index))
+    },
+    async [ACTIONS_NAMES.updateCurrentAccount]({ commit }) {
+      const bg = new Background()
+      const result = await bg.balanceUpdate()
+
+      commit(MUTATIONS_NAMES.setAccount, result.selectedAddress)
+      commit(MUTATIONS_NAMES.setAccounts, result.identities)
     }
   },
   getters: {

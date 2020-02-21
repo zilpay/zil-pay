@@ -13,6 +13,8 @@ import { TypeChecker } from '../../lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
+import { setSelectedNetwork } from '@/services'
+
 const STORE_NAME = 'settings'
 const STATE_NAMES = {
   lockTime: 'lockTime',
@@ -92,6 +94,7 @@ const STORE = {
     [MUTATIONS_NAMES.setNetwork](state, network) {
       if ((network in state.networkConfig)) {
         state.network = network
+        setSelectedNetwork(network)
       }
     },
     [MUTATIONS_NAMES.setLockTime](state, time) {

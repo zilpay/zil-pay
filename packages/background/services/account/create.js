@@ -33,6 +33,10 @@ export class AccountControl {
     this.auth = new Auth()
   }
 
+  resetAuth() {
+    this.auth = new Auth()
+  }
+
   /**
    * Initial new wallet by seed phase.
    * @param {String} decryptSeed - Mnemonic seed phrase.

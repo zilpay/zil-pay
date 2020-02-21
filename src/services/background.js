@@ -66,6 +66,10 @@ export class Background {
     }
   }
 
+  /**
+   * Authorization via password.
+   * @param {String} password.
+   */
   async unlockWallet(password) {
     const type = MTypePopup.SET_PASSWORD
     const payload = { password }
@@ -76,5 +80,19 @@ export class Background {
     }
 
     return status.resolve
+  }
+
+  async balanceUpdate() {
+    const result = await Message.signal(
+      MTypePopup.UPDATE_BALANCE
+    ).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
   }
 }

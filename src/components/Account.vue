@@ -2,7 +2,7 @@
   <div :class="b()">
     <div :class="b('info')">
       <Title
-        :value="getCurrentAccount.name"
+        :value="name"
         :size="SIZE_VARIANS.md"
         changeable
         @input="setAccountName"
@@ -79,6 +79,16 @@ export default {
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
     ]),
+
+    name() {
+      if (!this.getCurrentAccount) {
+        return null
+      } else if (this.getCurrentAccount.name) {
+        return this.getCurrentAccount.name
+      }
+
+      return `Account ${this.getCurrentAccount.index}`
+    }
   },
   methods: {
     ...mapMutations(accountsStore.STORE_NAME, [

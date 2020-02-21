@@ -1,9 +1,9 @@
 import { FIELDS } from 'config'
-import { BrowserStorage } from 'lib/storage'
+import { BrowserStorage, BuildObject } from 'lib/storage'
+
+const storage = new BrowserStorage()
 
 export async function getStorageData() {
-  const storage = new BrowserStorage()
-
   return await storage.get([
     FIELDS.CONFIG,
     FIELDS.WALLET,
@@ -12,4 +12,12 @@ export async function getStorageData() {
     FIELDS.CONFIRM_TX,
     FIELDS.CONNECT_DAPP
   ])
+}
+
+export async function setSelectedNetwork(net) {
+  await storage.set([
+    new BuildObject(FIELDS.SELECTED_NET, net)
+  ])
+
+  return net
 }
