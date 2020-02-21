@@ -176,10 +176,6 @@ const routes = [
     name: Security.name,
     component: Security,
     meta: { requiresAuth: true }
-  },
-  {
-    path: '*',
-    redirect: `/${Home.name.toLowerCase()}`
   }
 ]
 

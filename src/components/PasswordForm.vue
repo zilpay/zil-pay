@@ -36,7 +36,7 @@
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { DEFAULT } from '../../config/default'
+import { DEFAULT } from 'config/default'
 import {
   EVENTS,
   REGX_PATTERNS,
