@@ -24,7 +24,7 @@
       <PasswordForm
         v-show="isVerify"
         :btn="local.CONTINUE"
-        @submit="toHome"
+        @submit="onSubmit"
       />
       <div :class="b('verify-words')">
         <Chip
@@ -46,10 +46,9 @@ const { Set } = global
 
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
+import walletStore from '@/store/wallet'
 
 import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
-
-import Home from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
@@ -58,6 +57,11 @@ import { shuffle } from 'lib/utils'
 import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
+
+import { Background } from '@/services'
+
+const { window } = global
+const bgScript = new Background()
 
 export default {
   name: 'Verify',
@@ -74,7 +78,6 @@ export default {
       SIZE_VARIANS,
       COLOR_VARIANTS,
 
-      words: 'banana blind business arrest escape blame stadium display border flower daughter story',
       verifyWords: [],
       randomItems: []
     }
@@ -82,6 +85,9 @@ export default {
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapState(walletStore.STORE_NAME, [
+      walletStore.STATE_NAMES.verifly
     ]),
     /**
      * Divide the array.
@@ -95,7 +101,7 @@ export default {
      * Tessting for original seed phrase.
      */
     isVerify() {
-      return this.words === this.verifyWords.join(' ')
+      return this.verifly === this.verifyWords.join(' ')
     },
     /**
      * If Seed is true then can continue.
@@ -139,12 +145,16 @@ export default {
         phrase => phrase !== phraseRM
       )
     },
-    toHome() {
-      this.$router.push({ name: Home.name })
+    async onSubmit(password) {
+      await bgScript.createWallet({
+        password,
+        seed: this.verifyWords
+      })
+      window.close()
     }
   },
   mounted() {
-    const words = this.words.split(' ')
+    const words = this.verifly.split(' ')
 
     this.randomItems = this.shuffle(words)
   }

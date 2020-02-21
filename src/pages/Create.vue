@@ -53,8 +53,9 @@
 <script>
 import { uuid } from 'uuidv4'
 
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
+import walletStore from '@/store/wallet'
 
 import {
   ICON_VARIANTS,
@@ -115,7 +116,12 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(walletStore.STORE_NAME, [
+      walletStore.MUTATIONS_NAMES.setVerifly
+    ]),
+
     setWords() {
+      this.setVerifly(this.words)
       this.$router.push({ name: Verify.name })
     },
     async refreshWords() {

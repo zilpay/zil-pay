@@ -12,6 +12,7 @@ export default {
     },
     linksToFaucet() {
       extension.tabs.create({ url: faucet })
-    }
+    },
+    linksExpand() { }
   }
 }

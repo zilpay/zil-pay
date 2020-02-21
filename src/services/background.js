@@ -58,7 +58,7 @@ export class Background {
       throw new Error('seed, password is required')
     }
 
-    const type = MTypePopup.SET_SEED_AND_PWD
+    const type = MTypePopup.SET_SEED_AND_PASSWORD
     const wallet = await new Message({ type, payload }).send()
 
     if (!wallet) {

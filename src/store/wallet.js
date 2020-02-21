@@ -13,10 +13,12 @@ const STORE_NAME = 'wallet'
 const STATE_NAMES = {
   isReady: 'isReady',
   isEnable: 'isEnable',
-  networkStatus: 'networkStatus'
+  networkStatus: 'networkStatus',
+  verifly: 'verifly'
 }
 const MUTATIONS_NAMES = {
-  setAuth: 'setAuth'
+  setAuth: 'setAuth',
+  setVerifly: 'setVerifly'
 }
 const ACTIONS_NAMES = {
   onLedgerAccount: 'onLedgerAccount',
@@ -29,13 +31,17 @@ const STORE = {
   state: {
     [STATE_NAMES.isReady]: false,
     [STATE_NAMES.isEnable]: false,
-    [STATE_NAMES.networkStatus]: null
+    [STATE_NAMES.networkStatus]: null,
+    [STATE_NAMES.verifly]: null
   },
   mutations: {
     [MUTATIONS_NAMES.setAuth](state, data) {
       state[STATE_NAMES.isEnable] = data.isEnable
       state[STATE_NAMES.isReady] = data.isReady
       state[STATE_NAMES.networkStatus] = data.networkStatus
+    },
+    [MUTATIONS_NAMES.setVerifly](state, seed) {
+      state[STATE_NAMES.verifly] = seed
     }
   },
   actions: {
