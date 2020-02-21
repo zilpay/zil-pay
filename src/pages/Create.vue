@@ -74,6 +74,10 @@ import Wave from '@/components/Wave'
 import UiPanel from '@/components/UiPanel'
 import Printer from '@/mixins/printer'
 
+import { Background } from '@/services'
+
+const bgScript = new Background()
+
 export default {
   name: 'Create',
   mixins: [Printer],
@@ -92,7 +96,7 @@ export default {
       ICON_VARIANTS,
       SIZE_VARIANS,
       COLOR_VARIANTS,
-      words: 'banana blind business arrest escape blame stadium display border flower daughter story'
+      words: ''
     }
   },
   computed: {
@@ -114,11 +118,16 @@ export default {
     setWords() {
       this.$router.push({ name: Verify.name })
     },
-    refreshWords() {},
+    async refreshWords() {
+      this.words = await bgScript.getRandomMnemonic()
+    },
     prinntWords() {
       // Call from Printer mixin.
       this.printSeed()
     }
+  },
+  mounted() {
+    this.refreshWords()
   }
 }
 </script>

@@ -27,25 +27,29 @@ export default {
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
-    ])
+    ]),
+    toNavigation(authData) {
+      if (!authData.isReady) {
+        this.$router.push({ name: FirstPage.name })
+
+        return null
+      } else if (!authData.isEnable) {
+        this.$router.push({ name: LockPage.name })
+
+        return null
+      }
+    }
   },
   async beforeMount() {
     this.setLoad()
-    await this.onLocal()
 
     const authData = await this.onInit()
 
-    if (!authData.isReady) {
-      this.$router.push({ name: FirstPage.name })
+    await this.onLocal()
 
-      return null
-    } else if (!authData.isEnable) {
-      this.$router.push({ name: LockPage.name })
+    this.toNavigation(authData)
+    this.updateRate()
 
-      return null
-    }
-
-    await this.updateRate()
     this.setLoad()
   }
 }
