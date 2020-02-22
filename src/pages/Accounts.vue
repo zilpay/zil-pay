@@ -61,6 +61,7 @@ import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import SendPage from '@/pages/Send'
 import ImportPage from '@/pages/accounts/Import'
+import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
@@ -73,6 +74,8 @@ import BottomModal from '@/components/BottomModal'
 import ContactCreater from '@/components/ContactCreater'
 
 import { toAddress } from '@/filters'
+
+import { Background } from '@/services'
 
 const EVENTS = {
   create: uuid(),
@@ -147,7 +150,11 @@ export default {
   },
   methods: {
     ...mapMutations(accountsStore.STORE_NAME, [
-      accountsStore.MUTATIONS_NAMES.setAccount
+      accountsStore.MUTATIONS_NAMES.setAccount,
+      accountsStore.MUTATIONS_NAMES.setAccounts
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
       accountsStore.ACTIONS_NAMES.onRemoveAccount
@@ -159,12 +166,22 @@ export default {
     onEvent(event) {
       if (EVENTS.create && this.tabs === 1) {
         this.contactModal = true
+
+        return null
+      }
+
+      if (EVENTS.create && this.tabs === 0) {
+        this.onCreateAccount()
+
+        return null
       }
 
       if (EVENTS.import) {
         this.$router.push({
           name: ImportPage.name
         })
+
+        return null
       }
     },
     onSelectContact(contact) {
@@ -178,6 +195,23 @@ export default {
           )
         }
       })
+    },
+    async onCreateAccount() {
+      const bg = new Background()
+
+      this.setLoad()
+
+      try {
+        const result = await bg.createAccount()
+
+        this.setAccounts(result.identities)
+        this.setAccount(result.selectedAddress)
+      } catch (err) {
+        //
+      } finally {
+        this.setLoad()
+        this.$router.push({ name: homePage.name })
+      }
     }
   }
 }
