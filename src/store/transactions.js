@@ -14,7 +14,8 @@ const STATE_NAMES = {
   confirmationTx: 'confirmationTx'
 }
 const MUTATIONS_NAMES = {
-  setCurrentGas: 'setCurrentGas'
+  setCurrentGas: 'setCurrentGas',
+  setConfirmationTx: 'setConfirmationTx'
 }
 const ACTIONS_NAMES = { }
 const GETTERS_NAMES = {
@@ -59,23 +60,7 @@ const STORE = {
         ]
       }
     },
-    [STATE_NAMES.confirmationTx]: [
-      {
-        amount: '100000000000000',
-        code: '',
-        data: '{"_tag":"Roll","params":[{"vname":"rol","type":"Uint128","value":"50"}]}',
-        domain: 'zilpay.xyz',
-        gasLimit: '9000',
-        gasPrice: '1000000000',
-        // eslint-disable-next-line max-len
-        icon: 'https://dappreview.oss-cn-hangzhou.aliyuncs.com/dappLogo/11729/rocketgame.vip/AXd8XwDdCibdyfF7bjJQDfKmTsEnpr3Q.png?x-oss-process=style/dapp-logo',
-        isBroadcast: false,
-        title: 'ZilPay',
-        toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-        uuid: '607c800b-10a4-4b47-ad04-0bd78090f227',
-        version: 0
-      }
-    ]
+    [STATE_NAMES.confirmationTx]: []
   },
   mutations: {
     [MUTATIONS_NAMES.setCurrentGas](state, gas) {
@@ -88,6 +73,9 @@ const STORE = {
 
       state[STATE_NAMES.confirmationTx][0].gasPrice = String(gasInQa)
       state[STATE_NAMES.confirmationTx][0].gasLimit = gasLimit
+    },
+    [MUTATIONS_NAMES.setConfirmationTx](state, txParams) {
+      state[STATE_NAMES.confirmationTx].push(txParams)
     }
   },
   actions: {},
