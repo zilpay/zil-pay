@@ -47,6 +47,8 @@ import Input, { INPUT_TYPES } from '@/components/Input'
 import DoubleRange from '@/components/DoubleRange'
 import P from '@/components/P'
 
+import CalcMixin from '@/mixins/calc'
+
 const MAX_RANGE = 100
 
 /**
@@ -67,6 +69,7 @@ const MAX_RANGE = 100
  */
 export default {
   name: 'GasControl',
+  mixins: [CalcMixin],
   components: {
     Container,
     Input,
@@ -96,10 +99,8 @@ export default {
   computed: {
     fee() {
       const { gasLimit, gasPrice } = this.value
-      const factor = Math.pow(10, -6) // 10 ^ -6
-      const amount = gasLimit * gasPrice * factor
 
-      return amount.toFixed(3)
+      return this.calcFee(gasLimit, gasPrice)
     }
   },
   methods: {
