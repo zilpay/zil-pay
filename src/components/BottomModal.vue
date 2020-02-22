@@ -61,7 +61,8 @@ export default {
 
     height: fit-content;
 
-    animation: fadeInUp 0.3s;
+    animation: fadeInUp 0.5s;
+    animation-timing-function: cubic-bezier(.3,.17,.23,.96);
   }
 
   &__close {
@@ -73,7 +74,9 @@ export default {
 
     z-index: 5;
 
-    animation: fade;
+    animation: fade 0.5s;
+
+    animation-timing-function: cubic-bezier(.3,.17,.23,.96);
 
     opacity: 0.5;
   }
