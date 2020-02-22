@@ -69,6 +69,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import {
   FONT_VARIANTS,
@@ -144,6 +145,9 @@ export default {
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat,
       settingsStore.STATE_NAMES.currency
@@ -169,15 +173,14 @@ export default {
         return this.account.name
       }
 
-      return `Account ${this.account.index}`
+      return `${this.local.ACCOUNT} ${this.account.index}`
     }
   },
   mounted() {
     [
       'address',
       'balance',
-      'index',
-      'name'
+      'index'
     ].forEach(key => {
       if (!(key in this.account)) {
         throw new Error(`Property ${key} is required.`)
