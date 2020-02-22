@@ -17,9 +17,14 @@
     </Alert>
     <Container :class="b('wrapper')">
       <Icon
+        v-if="getCurrent.icon"
         :src="getCurrent.icon"
         width="40"
         height="40"
+      />
+      <Icon
+        v-if="!getCurrent.icon"
+        :icon="ICON_VARIANTS.zilliqaLogo"
       />
       <GasControl
         :value="getCurrentGas"
@@ -37,6 +42,7 @@
     </Container>
     <Separator />
     <Container
+      v-show="getCurrent.data"
       :class="b('details')"
       @click="onDetails"
     >
@@ -164,6 +170,13 @@ export default {
           size: SIZE_VARIANS.sm
         }
       ]
+    },
+    icon() {
+      if (this.getCurrent && this.getCurrent.icon) {
+        return this.getCurrent.icon
+      }
+
+      return ICON_VARIANTS.zilliqaLogo
     }
   },
   methods: {
