@@ -6,13 +6,15 @@
         {{ local.ADD }} {{ local.RECIPIENT }}
       </Title>
       <Input
-        :value="address"
+        v-model="recipientAddress.model"
         :placeholder="placeholder"
+        :error="recipientAddress.error"
         round
         autofocus
+        @input="recipientAddress.error = null"
       />
     </Alert>
-    <div v-for="(action, index) of transferTo" :key="index">
+    <Container v-for="(action, index) of transferTo" :key="index">
       <Item
         pointer
         @click="onEvent(action.event)"
@@ -26,30 +28,37 @@
         </Title>
       </Item>
       <Separator v-show="index < transferTo.length - 1"/>
-    </div>
-    <form :class="b('amount-form')">
-      <Input
-        v-model="amount"
-        :type="INPUT_TYPES.number"
-        :title="local.AMOUNT + ' ZIL.'"
-        pattern="[0-9]*"
-        required
-        round
-      />
+    </Container>
+    <Container :class="b('amount-form')">
+      <div :class="b('amount-zil')">
+        <Title :size="SIZE_VARIANS.xs">
+          {{ local.AMOUNT + ' ZIL.' }}
+        </Title>
+        <Input
+          v-model="amount.model"
+          :type="INPUT_TYPES.number"
+          :error="amount.error"
+          pattern="[0-9]*"
+          required
+          round
+          @input="amount.error = null"
+        />
+      </div>
       <Button
         :color="COLOR_VARIANTS.warning"
         round
         block
+        @click="toMaxAmount"
       >
-        max
+        MAX
       </Button>
-    </form>
+    </Container>
     <BottomBar
       :elements="bottomBar"
       @click="onEvent"
     />
     <BottomModal v-model="accountModal">
-      <div
+      <Container
         v-for="(acc, index) of identities"
         :key="index"
         @click="onAddress(acc.address)"
@@ -59,14 +68,14 @@
             :font="FONT_VARIANTS.light"
             :size="SIZE_VARIANS.sm"
           >
-            {{ acc.name }}
+            {{ Boolean(acc.name) ? acc.name : `${local.ACCOUNT} ${acc.index}` }}
           </Title>
         </Item>
         <Separator v-show="index < identities.length - 1"/>
-      </div>
+      </Container>
     </BottomModal>
     <BottomModal v-model="contactModal">
-      <div
+      <Container
         v-for="(acc, index) of contactList"
         :key="index"
         @click="onAddress(acc.address)"
@@ -80,18 +89,22 @@
           </Title>
         </Item>
         <Separator v-show="index < contactList.length - 1"/>
-      </div>
+      </Container>
     </BottomModal>
   </div>
 </template>
 
 <script>
 import { uuid } from 'uuidv4'
+import { isBech32 } from '@zilliqa-js/util/dist/validation'
+import { units } from '@zilliqa-js/util'
 
-import { mapState } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import accountsStore from '@/store/accounts'
 import contactsStore from '@/store/contacts'
 import uiStore from '@/store/ui'
+import settingsStore from '@/store/settings'
+import transactionsStore from '@/store/transactions'
 
 import {
   SIZE_VARIANS,
@@ -100,7 +113,8 @@ import {
   ADDRESS_FORMAT_VARIANTS
 } from '@/config'
 
-import Home from '@/pages/Home'
+import HomePage from '@/pages/Home'
+import PopupPage from '@/pages/Popup'
 
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
@@ -109,10 +123,12 @@ import Title from '@/components/Title'
 import Button from '@/components/Button'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Item from '@/components/Item'
+import Container from '@/components/Container'
 import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
 
-import { toAddress } from '@/filters'
+import { toAddress, toZIL } from '@/filters'
+import CalcMixin from '@/mixins/calc'
 
 const EVENTS = {
   send: uuid(),
@@ -122,6 +138,7 @@ const EVENTS = {
 }
 export default {
   name: 'Send',
+  mixins: [CalcMixin],
   components: {
     TopBar,
     BottomBar,
@@ -132,6 +149,7 @@ export default {
     Item,
     Separator,
     Button,
+    Container
   },
   filters: { toAddress },
   data() {
@@ -141,8 +159,15 @@ export default {
       FONT_VARIANTS,
       INPUT_TYPES,
 
-      amount: 0,
-      address: null,
+      amount: {
+        model: 0,
+        error: null
+      },
+      recipientAddress: {
+        model: null,
+        error: null
+      },
+      defaultGasFee: '',
       accountModal: false,
       contactModal: false
     }
@@ -151,11 +176,18 @@ export default {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.defaultGas
+    ]),
     ...mapState(accountsStore.STORE_NAME, [
-      accountsStore.STATE_NAMES.identities
+      accountsStore.STATE_NAMES.identities,
+      accountsStore.STATE_NAMES.selectedAddress
     ]),
     ...mapState(contactsStore.STORE_NAME, [
       contactsStore.STATE_NAMES.contactList
+    ]),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
     ]),
 
     placeholder() {
@@ -183,22 +215,52 @@ export default {
           uuid: uuid()
         },
         {
-          value: this.local.SEND,
+          value: this.local.NEXT,
           event: EVENTS.send,
           variant: COLOR_VARIANTS.primary,
           size: SIZE_VARIANS.sm,
           uuid: uuid()
         }
       ]
+    },
+    /**
+     * Testing for address format.
+     */
+    testAddress() {
+      try {
+        return isBech32(this.recipientAddress.model)
+      } catch (err) {
+        return false
+      }
+    },
+    /**
+     * Testing for insufficient funds.
+     */
+    testAmount() {
+      return this.calcIsInsufficientFunds(
+        this.amount.model,
+        this.getGasFee,
+        this.getCurrentAccount.balance
+      )
+    },
+    getGasFee() {
+      const { gasLimit, gasPrice } = this.defaultGas
+
+      return this.calcFee(gasLimit, gasPrice)
     }
   },
   methods: {
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setConfirmationTx
+    ]),
+
     onEvent(event) {
       switch (event) {
       case EVENTS.send:
+        this.onSend()
         break
       case EVENTS.cancel:
-        this.$router.push({ name: Home.name })
+        this.$router.push({ name: HomePage.name })
         break
       case EVENTS.accounts:
         this.accountModal = true
@@ -210,14 +272,59 @@ export default {
         break
       }
     },
+    /**
+     * Select address from storage.
+     * @param {String, Bech32} address Zilliqa address.
+     */
     onAddress(address) {
-      this.address = toAddress(
+      this.recipientAddress.model = toAddress(
         address,
         ADDRESS_FORMAT_VARIANTS.bech32,
         false
       )
+
+      this.recipientAddress.error = null
       this.accountModal = false
       this.contactModal = false
+    },
+    /**
+     * Send to BG and try sign via current account.
+     */
+    onSend() {
+      if (!this.recipientAddress.model) {
+        this.recipientAddress.error = `*${this.local.PASS_RECIPIENT_ADDR}`
+
+        return null
+      } else if (!this.testAddress) {
+        this.recipientAddress.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
+
+        return null
+      } else if (this.testAmount) {
+        this.amount.error = `*${this.local.INSUFFICIENT_FUNDS}`
+
+        return null
+      }
+
+      // Default gasLimit and gasPrice.
+      const { gasLimit, gasPrice } = this.defaultGas
+      // Generate tx params.
+      const txParams = {
+        toAddr: this.recipientAddress.model,
+        amount: toZIL(this.amount.model),
+        gasPrice: units.toQa(gasPrice, units.Units.Li).toString(),
+        gasLimit: gasLimit,
+        code: '',
+        data: ''
+      }
+
+      this.setConfirmationTx(txParams)
+      this.$router.push({ name: PopupPage.name })
+    },
+    toMaxAmount() {
+      this.amount.model = this.calcMaxAmount(
+        this.getGasFee,
+        this.getCurrentAccount.balance
+      )
     }
   },
   mounted() {
@@ -228,6 +335,10 @@ export default {
 
 <style lang="scss">
 .Send {
+  &__amount-zil  {
+    min-height: 95px;
+  }
+
   &__recipient {
     min-height: 80px;
   }
@@ -240,11 +351,11 @@ export default {
     display: grid;
     grid-template-columns: 1fr 60px;
     grid-gap: 5px;
-    align-items: self-end;
+    align-items: center;
 
+    padding-top: 180px;
     padding-left: 30px;
     padding-right: 30px;
-    padding-top: 194px;
   }
 }
 </style>
