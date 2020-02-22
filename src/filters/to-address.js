@@ -1,4 +1,5 @@
 import { toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
+import { isBech32 } from '@zilliqa-js/util/dist/validation'
 import { toChecksumAddress } from '@zilliqa-js/crypto/dist/util'
 
 import { ADDRESS_FORMAT_VARIANTS } from '@/config'
@@ -11,7 +12,7 @@ export function trim(string, length = 10) {
 }
 
 export function toAddress(hex, format, isTrim = true) {
-  let address
+  let address = null
 
   try {
     switch (format) {
@@ -19,7 +20,7 @@ export function toAddress(hex, format, isTrim = true) {
       address = toChecksumAddress(hex)
       break
     case ADDRESS_FORMAT_VARIANTS.bech32:
-      address = toBech32Address(hex)
+      address = isBech32(hex) ? hex : toBech32Address(hex)
       break
     default:
       return null
