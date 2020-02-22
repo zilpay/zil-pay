@@ -82,9 +82,26 @@ export class Background {
     return status.resolve
   }
 
+  /**
+   * Updated current account balance.
+   */
   async balanceUpdate() {
     const result = await Message.signal(
       MTypePopup.UPDATE_BALANCE
+    ).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  async createAccount() {
+    const result = await Message.signal(
+      MTypePopup.CREATE_ACCOUNT_BY_SEED
     ).send()
 
     if (!result) {
