@@ -1,6 +1,9 @@
 <template>
-  <div :class="b()">
-    <div :class="b('info')">
+  <div
+    v-if="getCurrentAccount"
+    :class="b()"
+  >
+    <Container>
       <Title
         :value="name"
         :size="SIZE_VARIANS.md"
@@ -9,13 +12,15 @@
       />
       <P
         v-tooltip="copytitle"
+        :class="b('address')"
         :content="getCurrentAccount.address | toAddress(addressFormat, false)"
         copy
+        nowrap
         @copy="onCopyMixin"
       >
-        {{ getCurrentAccount.address | toAddress(addressFormat) }}
+        {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
       </P>
-    </div>
+    </Container>
     <div :class="b('balance')">
       <Title :size="SIZE_VARIANS.md">
         {{ local.BALANCE }}
@@ -49,13 +54,15 @@ import { toAddress, fromZil, toConversion } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 
 import Title from '@/components/Title'
+import Container from '@/components/Container'
 import P from '@/components/P'
 
 export default {
   name: 'Account',
   components: {
     Title,
-    P
+    P,
+    Container
   },
   mixins: [CopyMixin],
   filters: { toAddress, fromZil, toConversion },
@@ -87,7 +94,7 @@ export default {
         return this.getCurrentAccount.name
       }
 
-      return `Account ${this.getCurrentAccount.index}`
+      return `${this.local.ACCOUNT} ${this.getCurrentAccount.index}`
     }
   },
   methods: {
@@ -105,6 +112,10 @@ export default {
   justify-content: left;
   align-items: center;
   min-width: calc(360px - 30px);
+
+  &__address {
+    width: calc(360px - 50px);
+  }
 
   &__amount-currency {
     font-size: 12px;
