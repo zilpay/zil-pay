@@ -192,6 +192,7 @@ export default {
             ...DEFAUL_IMG_SIZE,
             name: ICON_VARIANTS.drop
           },
+          event: EVENTS.faucet,
           title: this.local.TEST_FAUCET,
           text: this.local.TEST_FAUCET_DIS,
           button: `${this.local.GET} ZIL`,
