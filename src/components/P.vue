@@ -55,6 +55,10 @@ export default {
     nowrap: {
       type: Boolean,
       required: false
+    },
+    capitalize: {
+      type: Boolean,
+      required: false
     }
   },
   methods: {
@@ -128,8 +132,10 @@ export default {
     }
   }
 
-  &:first-letter {
-    text-transform: capitalize;
+  &_capitalize {
+    &:first-letter {
+      text-transform: capitalize;
+    }
   }
 }
 </style>
