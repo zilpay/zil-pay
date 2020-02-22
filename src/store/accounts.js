@@ -7,7 +7,8 @@
  * Copyright (c) 2019 ZilPay
  */
 import { DEFAULT } from 'config/default'
-import { Background } from '@/services'
+import { TypeChecker } from 'lib/type'
+import { Background, walletUpdate } from '@/services'
 
 const STORE_NAME = 'accounts'
 const STATE_NAMES = {
@@ -46,30 +47,35 @@ const STORE = {
       }
 
       state.selectedAddress = index
+      walletUpdate(state)
     },
     [MUTATIONS_NAMES.setAccountName](state, value) {
-      if (typeof value !== 'string' || value.length > DEFAULT.MAX_LENGTH_NAME) {
+      if (!new TypeChecker(value).isString || value.length > DEFAULT.MAX_LENGTH_NAME) {
         return null
       }
 
       const { identities, selectedAddress } = state
 
       identities[selectedAddress].name = value
+
+      walletUpdate(state)
     }
   },
   actions: {
     [ACTIONS_NAMES.onRemoveAccount]({ state, commit }, index) {
-      if (isNaN(index)) {
+      if (!new TypeChecker(index).isInt) {
         return null
       }
 
       const { identities, selectedAddress } = state
 
-      if (selectedAddress === index) {
+      if (selectedAddress === index || selectedAddress > index) {
         commit(MUTATIONS_NAMES.setAccount, selectedAddress - 1)
       }
 
       commit(MUTATIONS_NAMES.setAccounts, identities.filter((_, i) => i !== index))
+
+      walletUpdate(state)
     },
     async [ACTIONS_NAMES.updateCurrentAccount]({ commit }) {
       const bg = new Background()
