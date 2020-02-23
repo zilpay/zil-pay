@@ -119,6 +119,8 @@ import viewblockMixin from '@/mixins/viewblock'
 import CalcMixin from '@/mixins/calc'
 import { fromZil, toConversion, toAddress } from '@/filters'
 
+import { Background } from '@/services'
+
 const { window } = global
 const BOTTOM_BAR_EVENTS = {
   confirm: uuid(),
@@ -234,7 +236,11 @@ export default {
     /**
      * When confirmed tx.
      */
-    onConfirm() {},
+    async onConfirm() {
+      const bg = new Background()
+
+      bg.sendToSignBroadcasting(this.getCurrent)
+    },
     /**
      * Handle call event.
      */

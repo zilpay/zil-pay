@@ -98,12 +98,8 @@ export class Background {
       new Wallet().balanceUpdate(sendResponse)
       break
 
-    case MTypePopup.BUILD_TX_PARAMS:
-      new Transaction(message.payload).buildTxParams(sendResponse)
-      break
-
-    case MTypePopup.SET_SEED_AND_PASSWORD:
-      new Popup(message.payload).initWallet(sendResponse)
+    case MTypePopup.SIGN_AND_SEND:
+      new Transaction(message.payload).signSendTx(sendResponse)
       break
 
     case MTypePopup.DOMAIN_RESOLVE:

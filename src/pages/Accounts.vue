@@ -14,7 +14,7 @@
           :account="acc"
           :selected="index === selectedAddress"
           :trash="acc.index > 0"
-          @selected="setAccount(index)"
+          @selected="onSelectAccount(index)"
           @remove="onRemoveAccount(index)"
         />
         <div
@@ -157,7 +157,8 @@ export default {
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.onRemoveAccount
+      accountsStore.ACTIONS_NAMES.onRemoveAccount,
+      accountsStore.ACTIONS_NAMES.updateCurrentAccount
     ]),
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
@@ -184,6 +185,10 @@ export default {
         return null
       }
     },
+    onSelectAccount(index) {
+      this.setAccount(index)
+      this.updateCurrentAccount()
+    },
     onSelectContact(contact) {
       this.$router.push({
         name: SendPage.name,
@@ -206,6 +211,7 @@ export default {
 
         this.setAccounts(result.identities)
         this.setAccount(result.selectedAddress)
+        this.updateCurrentAccount()
       } catch (err) {
         //
       } finally {

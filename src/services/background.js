@@ -99,6 +99,9 @@ export class Background {
     return result.resolve
   }
 
+  /**
+   * Created account via seed phrase.
+   */
   async createAccount() {
     const result = await Message.signal(
       MTypePopup.CREATE_ACCOUNT_BY_SEED
@@ -111,5 +114,12 @@ export class Background {
     }
 
     return result.resolve
+  }
+
+  async sendToSignBroadcasting(payload) {
+    const type = MTypePopup.SIGN_AND_SEND
+    const result = await new Message({ type, payload }).send()
+
+    console.log(result)
   }
 }

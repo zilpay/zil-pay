@@ -5,6 +5,7 @@
   >
     <input
       v-if="changeable"
+      v-bind="$attrs"
       :value="value"
       :class="b('input', { variant, font, size })"
       type="text"

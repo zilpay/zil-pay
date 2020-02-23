@@ -33,8 +33,9 @@
 
 <script>
 import { uuid } from 'uuidv4'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import uiStore from '@/store/ui'
+import accountsStore from '@/store/accounts'
 
 import {
   ICON_TYPE,
@@ -110,6 +111,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions(accountsStore.STORE_NAME, [
+      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ]),
+
     onEvent(event) {
       switch (event) {
       case EVENTS.send:
@@ -128,6 +133,9 @@ export default {
         break
       }
     }
+  },
+  mounted() {
+    this.updateCurrentAccount()
   }
 }
 </script>

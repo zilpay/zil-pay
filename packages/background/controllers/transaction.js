@@ -6,13 +6,13 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, API } from 'config'
+import { API } from 'config'
 import {
   ZilliqaControl,
   PromptService,
   NotificationsControl
 } from '../services'
-import { BrowserStorage } from 'lib/storage'
+// import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import {
   accountControl,
@@ -39,7 +39,8 @@ export class Transaction {
     payload.uuid = uuid
 
     new TabsMessage({
-      type, payload
+      type,
+      payload
     }).send()
   }
 
@@ -48,7 +49,9 @@ export class Transaction {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   static async rmTransactionsConfirm(sendResponse) {
-    const removed = await accountControl.zilliqa.rmForSingTransaction()
+    const removed = await accountControl
+      .zilliqa
+      .rmForSingTransaction()
 
     Transaction.returnTx(
       { reject: 'User rejected' },
@@ -81,158 +84,6 @@ export class Transaction {
       new PromptService().open()
 
       sendResponse({ resolve: true })
-    } catch (err) {
-      sendResponse({ reject: err.message })
-    }
-  }
-
-  /**
-   * Send tx to node through jsonRPC.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  async buildTransaction(sendResponse) {
-    let resultTx = null
-    let seedOrKey = null
-    let lastNonce = null
-    const storage = new BrowserStorage()
-    const data = await storage.get([
-      FIELDS.CONFIRM_TX,
-      FIELDS.WALLET,
-      FIELDS.TRANSACTIONS
-    ])
-    const txList = data[FIELDS.TRANSACTIONS]
-    const wallet = data[FIELDS.WALLET]
-    const index = wallet.selectedAddress
-    const accountSelected = wallet.identities[index]
-    const address = accountSelected.address
-    const accountID = accountSelected.index
-
-    let transaction = data[FIELDS.CONFIRM_TX].pop()
-
-    // Set custom gasLimit, gasPrice.
-    transaction.gasLimit = this.payload.gasLimit || transaction.gasLimit
-    transaction.gasPrice = this.payload.gasPrice || transaction.gasPrice
-
-    try {
-      await accountControl.auth.vaultSync()
-
-      const { decryptImported, decryptSeed } = accountControl.auth.getWallet()
-
-      if (accountSelected.isImport) {
-        const { privateKey } = decryptImported.find(
-          acc => acc.index === accountID
-        )
-
-        seedOrKey = privateKey
-      } else {
-        seedOrKey = decryptSeed
-      }
-
-      if (!seedOrKey) {
-        throw new Error('Account Fail')
-      }
-    } catch (err) {
-      sendResponse({ reject: err.message })
-
-      return null
-    }
-
-    const isTxList = txList
-      && txList[address]
-      && txList[address][networkControl.selected]
-
-    if (isTxList) {
-      const lastTx = txList[address][networkControl.selected]
-
-      lastNonce = lastTx[lastTx.length - 1].nonce
-    }
-
-    try {
-      const zilliqaControl = new ZilliqaControl(
-        networkControl.provider
-      )
-
-      resultTx = await zilliqaControl.singTransaction(
-        transaction,
-        seedOrKey,
-        accountID,
-        lastNonce
-      )
-    } catch (err) {
-      sendResponse({ reject: err.message })
-
-      return null
-    }
-
-    const { result, req, error } = resultTx
-
-    if (result) {
-      await accountControl.zilliqa.rmForSingTransaction()
-
-      let tx = result
-
-      tx.from = accountSelected.address
-
-      if (req && req.payload && req.payload.params && req.payload.params[0]) {
-        Object.assign(tx, req.payload.params[0])
-      }
-
-      await accountControl.zilliqa.addTransactionList(
-        tx, networkControl.selected
-      )
-
-      sendResponse({ resolve: tx })
-
-      if (transaction.uuid) {
-        Transaction.returnTx(
-          { resolve: tx }, transaction.uuid
-        )
-      }
-
-      this._transactionListing(tx.TranID)
-    } else {
-      if (transaction.uuid) {
-        Transaction.returnTx({ reject: error.message }, transaction.uuid)
-      }
-
-      sendResponse({ reject: error.message })
-    }
-  }
-
-  /**
-   * Just build tx don't send to node.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  async buildTxParams(sendResponse) {
-    const zilliqaControl = new ZilliqaControl(
-      networkControl.provider
-    )
-    const address = this.payload.from
-    const storage = new BrowserStorage()
-    let lastNonce = 0
-    let transactionsHistory = await storage.get(FIELDS.TRANSACTIONS)
-
-    if (transactionsHistory && transactionsHistory[address]) {
-      const lastTx = transactionsHistory[address][networkControl.selected]
-
-      if (lastTx.length > 0 && transactionsHistory[lastTx.length - 1]) {
-        lastNonce = transactionsHistory[lastTx.length - 1].nonce
-      }
-    }
-
-    try {
-      const { txParams } = await zilliqaControl.buildTxParams(
-        this.payload.txParams,
-        address,
-        lastNonce,
-        ''
-      )
-
-      txParams.amount = txParams.amount.toString()
-      txParams.gasLimit = txParams.gasLimit.toString()
-      txParams.gasPrice = txParams.gasPrice.toString()
-
-      sendResponse({ resolve: txParams })
     } catch (err) {
       sendResponse({ reject: err.message })
     }
@@ -335,6 +186,23 @@ export class Transaction {
       },
       timeInterval
     )
+  }
+
+  async signSendTx(sendResponse) {
+    // 1. Detect Account.
+    // 2. Detect Signature.
+    // 3. If has signature send via ZilliqaControl.
+    // 4. if hasn't signature try will to sign via detected account.
+    //
+    // 5. Tx has been sent.
+    // 5.1 call callback `sendResponse`.
+    // 5.2 Tx will be add to storage with `padding` status.
+    // 5.3 Tx call to listing for awaiting prey.
+    // 5.4 Tx has been mined out.
+    // 5.5 Tx will add to storage with result status.
+    // 5.6 Show notification that tx has been mined out.
+
+    return sendResponse({ resolve: this.payload })
   }
 
 }
