@@ -164,19 +164,19 @@ export default {
     ]),
 
     onEvent(event) {
-      if (EVENTS.create && this.tabs === 1) {
+      if (EVENTS.create === event && this.tabs === 1) {
         this.contactModal = true
 
         return null
       }
 
-      if (EVENTS.create && this.tabs === 0) {
+      if (EVENTS.create === event && this.tabs === 0) {
         this.onCreateAccount()
 
         return null
       }
 
-      if (EVENTS.import) {
+      if (EVENTS.import === event) {
         this.$router.push({
           name: ImportPage.name
         })

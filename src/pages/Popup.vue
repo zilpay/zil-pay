@@ -32,10 +32,16 @@
         @input="setCurrentGas"
       />
       <div :class="b('amount')">
-        <P :font="FONT_VARIANTS.bold">
+        <P
+          :font="FONT_VARIANTS.bold"
+          :variant="amountColor"
+        >
           {{ local.AMOUNT }}
         </P>
-        <P :font="FONT_VARIANTS.bold">
+        <P
+          :font="FONT_VARIANTS.bold"
+          :variant="amountColor"
+        >
           ZIL{{ getCurrent.amount | fromZil }}
         </P>
       </div>
@@ -106,12 +112,14 @@ import Separator from '@/components/Separator'
 import BottomBar from '@/components/BottomBar'
 import ArrowInCircle from '@/components/icons/ArrowInCircle'
 
-import viewblockMixin from '@/mixins/viewblock'
-
 import TxDataPage from '@/pages/popup/TxData'
+import HomePage from '@/pages/Home'
 
+import viewblockMixin from '@/mixins/viewblock'
+import CalcMixin from '@/mixins/calc'
 import { fromZil, toConversion, toAddress } from '@/filters'
 
+const { window } = global
 const BOTTOM_BAR_EVENTS = {
   confirm: uuid(),
   reject: uuid()
@@ -130,7 +138,7 @@ export default {
     BottomBar,
     ArrowInCircle
   },
-  mixins: [viewblockMixin],
+  mixins: [viewblockMixin, CalcMixin],
   filters: { fromZil, toConversion, toAddress },
   data() {
     return {
@@ -143,6 +151,9 @@ export default {
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapState(transactionsStore.STORE_NAME, [
+      transactionsStore.STATE_NAMES.confirmationTx
     ]),
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
@@ -158,44 +169,75 @@ export default {
     bottomBar() {
       return [
         {
-          value: this.local.CONFIRM,
-          event: BOTTOM_BAR_EVENTS.confirm,
-          size: SIZE_VARIANS.sm,
-          variant: COLOR_VARIANTS.primary
-        },
-        {
           value: this.local.REJECT,
           event: BOTTOM_BAR_EVENTS.reject,
           variant: COLOR_VARIANTS.primary,
           size: SIZE_VARIANS.sm
+        },
+        {
+          value: this.local.CONFIRM,
+          event: BOTTOM_BAR_EVENTS.confirm,
+          size: SIZE_VARIANS.sm,
+          variant: COLOR_VARIANTS.primary
         }
       ]
     },
-    icon() {
-      if (this.getCurrent && this.getCurrent.icon) {
-        return this.getCurrent.icon
+    amountColor() {
+      if (this.testAmount) {
+        return COLOR_VARIANTS.danger
       }
 
-      return ICON_VARIANTS.zilliqaLogo
+      return null
+    },
+    /**
+     * Testing for insufficient funds.
+     */
+    testAmount() {
+      const { gasLimit, gasPrice } = this.getCurrentGas
+
+      return this.calcIsInsufficientFunds(
+        this.getCurrent.amount,
+        gasLimit,
+        gasPrice,
+        this.getCurrentAccount.balance
+      )
     }
   },
   methods: {
     ...mapMutations(transactionsStore.STORE_NAME, [
-      transactionsStore.MUTATIONS_NAMES.setCurrentGas
+      transactionsStore.MUTATIONS_NAMES.setCurrentGas,
+      transactionsStore.MUTATIONS_NAMES.setEmpty
     ]),
 
+    /**
+     * Go to the viewblock address info.
+     */
     onTo() {
       this.onViewblockAddress(this.getCurrent.toAddr)
     },
     onFrom() {
       this.onViewblockAddress(this.getCurrentAccount.address)
     },
-    onReject() {
-      if (!this.confirmationTx || this.confirmationTx.length < 1) {
-        // console.log('close')
-      }
+    /**
+     * Go to the Details tx data.
+     */
+    onDetails() {
+      this.$router.push({ name: TxDataPage.name })
     },
+
+    /**
+     * When rejected tx.
+     */
+    onReject() {
+      this.popupClouse()
+    },
+    /**
+     * When confirmed tx.
+     */
     onConfirm() {},
+    /**
+     * Handle call event.
+     */
     onEvent(event) {
       switch (event) {
       case BOTTOM_BAR_EVENTS.reject:
@@ -208,8 +250,21 @@ export default {
         break
       }
     },
-    onDetails() {
-      this.$router.push({ name: TxDataPage.name })
+
+    /**
+     * To close popup.
+     */
+    popupClouse() {
+      if (!this.getCurrent.uuid) {
+        this.setEmpty()
+        this.$router.push({ name: HomePage.name })
+
+        return null
+      }
+
+      if (!this.confirmationTx || this.confirmationTx.length < 1) {
+        window.close()
+      }
     }
   }
 }

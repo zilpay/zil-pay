@@ -127,8 +127,8 @@ import Container from '@/components/Container'
 import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
 
-import { toAddress, toZIL } from '@/filters'
 import CalcMixin from '@/mixins/calc'
+import { toAddress, toZIL } from '@/filters'
 
 const EVENTS = {
   send: uuid(),
@@ -237,16 +237,15 @@ export default {
      * Testing for insufficient funds.
      */
     testAmount() {
+      const { gasLimit, gasPrice } = this.defaultGas
+      const amount = toZIL(this.amount.model)
+
       return this.calcIsInsufficientFunds(
-        this.amount.model,
-        this.getGasFee,
+        amount,
+        gasLimit,
+        gasPrice,
         this.getCurrentAccount.balance
       )
-    },
-    getGasFee() {
-      const { gasLimit, gasPrice } = this.defaultGas
-
-      return this.calcFee(gasLimit, gasPrice)
     }
   },
   methods: {
@@ -314,15 +313,19 @@ export default {
         gasPrice: units.toQa(gasPrice, units.Units.Li).toString(),
         gasLimit: gasLimit,
         code: '',
-        data: ''
+        data: '',
+        uuid: false
       }
 
       this.setConfirmationTx(txParams)
       this.$router.push({ name: PopupPage.name })
     },
     toMaxAmount() {
+      const { gasLimit, gasPrice } = this.defaultGas
+
       this.amount.model = this.calcMaxAmount(
-        this.getGasFee,
+        gasLimit,
+        gasPrice,
         this.getCurrentAccount.balance
       )
     }

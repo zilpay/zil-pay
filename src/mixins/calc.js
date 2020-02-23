@@ -8,7 +8,7 @@
  */
 import { BN } from '@zilliqa-js/util'
 
-import { toZIL, fromZil } from '@/filters'
+import { fromZil } from '@/filters'
 
 export default {
   methods: {
@@ -18,35 +18,33 @@ export default {
      * @param {String} fee Tx gas fee.
      * @param {String} balance Account balance.
      */
-    calcIsInsufficientFunds(amount, fee, balance) {
+    calcIsInsufficientFunds(amount, gasLimit, gasPrice, balance) {
       try {
-        const _amount = new BN(toZIL(amount))
+        const _gasLimit = new BN(gasLimit)
+        const _gasPrice = new BN(gasPrice)
+        const _fee = _gasLimit.mul(_gasPrice)
+        const _amount = new BN(amount)
         const _balance = new BN(balance)
-        const _fee = new BN(toZIL(fee))
         const _txAmount = _fee.add(_amount)
-        const _isInsufficientFunds = _balance.lt(_txAmount)
 
-        if (_isInsufficientFunds) {
-          return true
-        }
+        return _balance.lt(_txAmount)
       } catch (err) {
         return true
       }
-
-      return false
     },
     /**
      * Calculate the max amount for current account.
      * @param {String} fee Tx gas fee.
      * @param {String} balance Account balance.
      */
-    calcMaxAmount(fee, balance) {
+    calcMaxAmount(gasLimit, gasPrice, balance) {
       if (Number(balance) === 0) {
         return Number(balance)
       }
-
+      const _gasLimit = new BN(gasLimit)
+      const _gasPrice = new BN(gasPrice)
+      const _fee = _gasLimit.mul(_gasPrice)
       const _balance = new BN(balance)
-      const _fee = new BN(toZIL(fee))
       const _amount = _balance.sub(_fee)
 
       return fromZil(_amount, false)

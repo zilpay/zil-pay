@@ -15,7 +15,8 @@ const STATE_NAMES = {
 }
 const MUTATIONS_NAMES = {
   setCurrentGas: 'setCurrentGas',
-  setConfirmationTx: 'setConfirmationTx'
+  setConfirmationTx: 'setConfirmationTx',
+  setEmpty: 'setEmpty'
 }
 const ACTIONS_NAMES = { }
 const GETTERS_NAMES = {
@@ -76,6 +77,9 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setConfirmationTx](state, txParams) {
       state[STATE_NAMES.confirmationTx].push(txParams)
+    },
+    [MUTATIONS_NAMES.setEmpty](state) {
+      state[STATE_NAMES.confirmationTx] = []
     }
   },
   actions: {},
