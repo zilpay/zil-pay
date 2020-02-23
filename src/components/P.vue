@@ -124,6 +124,10 @@ export default {
     color: var(--accent-color-gray);
   }
 
+  &_variant-danger {
+    color: var(--accent-color-danger);
+  }
+
   &_copy {
     cursor: pointer;
 
