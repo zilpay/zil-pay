@@ -3,6 +3,7 @@
     <Network
       :width="width"
       :height="width"
+      :color="netIconColor"
       pointer
       @click="onNetwork"
     />
@@ -28,10 +29,13 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
 import uiStore from '@/store/ui'
+import walletStore from '@/store/wallet'
+
+import { COLOR_VARIANTS } from '@/config'
 
 import NetworkPage from '@/pages/settings/Networks'
 import ConnectionsPage from '@/pages/Connections'
@@ -55,6 +59,27 @@ export default {
     return {
       width: 20,
       height: 20
+    }
+  },
+  computed: {
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.network,
+      settingsStore.STATE_NAMES.networkConfig
+    ]),
+    ...mapState(walletStore.STORE_NAME, [
+      walletStore.STATE_NAMES.networkStatus
+    ]),
+
+    netIconColor() {
+      const mainnet = Object.keys(this.networkConfig)[0]
+
+      if (!this.networkStatus) {
+        return COLOR_VARIANTS.danger
+      } else if (mainnet === this.network) {
+        return null
+      }
+
+      return COLOR_VARIANTS.warning
     }
   },
   methods: {
