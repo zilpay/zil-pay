@@ -172,8 +172,6 @@ export class Background {
     const payload = { privKey }
     const result = await new Message({ type, payload }).send()
 
-    console.log(result)
-
     if (!result) {
       throw new Error(BG_ERROR)
     } else if (result.reject) {
