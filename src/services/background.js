@@ -162,4 +162,24 @@ export class Background {
 
     return result.resolve
   }
+
+  /**
+   * Import account via privateKey.
+   * @param {String} privKey ByteStr32 in Hex.
+   */
+  async importPrivKey(privKey) {
+    const type = MTypePopup.IMPORT_PRIVATE_KEY
+    const payload = { privKey }
+    const result = await new Message({ type, payload }).send()
+
+    console.log(result)
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
 }

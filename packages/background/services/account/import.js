@@ -28,58 +28,6 @@ export class AccountImporter extends AccountControl {
     throw new Error(errorsCode.DisableMethod)
   }
 
-  /**
-   * Import by Ledger device.
-   * @param {Object} payload - Account payload.
-   * @interface payload: {
-    pubAddr:String,
-    hwIndex: Number,
-    hwType: String,
-    publicKey: String
-   }
-  */
-  async importByHwAccount(payload) {
-    // Mandatory authentication test.
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
-    }
-
-    let wallet = await this._storage.get(FIELDS.WALLET)
-    wallet = wallet[FIELDS.WALLET]
-
-    wallet.identities.forEach(account => {
-      // Testing for a unique account.
-      if (account.address === payload.pubAddr) {
-        throw new Error(errorsCode.ImportUniqueWrong)
-      }
-    })
-
-    this.zilliqa = new ZilliqaControl(this.network.provider)
-
-    const { result } = await this.zilliqa.getBalance(payload.pubAddr)
-
-    wallet.identities.push({
-      balance: result,
-      address: payload.pubAddr,
-      index: payload.hwIndex,
-      hwType: payload.hwType,
-      pubKey: payload.publicKey
-    })
-    wallet.selectedAddress = wallet.identities.length - 1
-
-    await this._storage.set(
-      new BuildObject(FIELDS.WALLET, wallet)
-    )
-
-    return wallet
-  }
-
   async importAccountByPrivateKey(privateKey) {
     await this.auth.vaultSync()
 

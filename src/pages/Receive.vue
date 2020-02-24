@@ -74,7 +74,7 @@
           block
           @click="onExport"
         >
-          {{ local.EXPORT }} Private Key
+          {{ local.EXPORT }}
         </Button>
         <ViewblockLink
           :class="b('view-block')"

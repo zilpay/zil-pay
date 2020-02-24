@@ -82,10 +82,6 @@ export class Background {
       new Wallet(message.payload).importPrivateKey(sendResponse)
       break
 
-    case MTypePopup.IMPORT_BY_HARDWARE:
-      new Wallet(message.payload).ImportHwAccount(sendResponse)
-      break
-
     case MTypePopup.GET_RANDOM_SEED:
       new Popup().getRandomSeedPhrase(sendResponse)
       break

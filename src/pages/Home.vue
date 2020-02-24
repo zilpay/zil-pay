@@ -16,7 +16,6 @@
         <FastPanel />
         <Gear
           width="20"
-          height="20"
           pointer
           @click="onEvent(EVENTS.settings)"
         />

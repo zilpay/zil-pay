@@ -7,53 +7,50 @@
         :elements="radioGroup.elements"
       />
     </Container>
-    <Alert
-      v-show="radioGroup.model === RADIO_ELEMENTS[0]"
-      :class="b('info')"
-    >
-      <P>
-        {{ local.IMPORT }} {{ local.PRIVATEKEY }}
-      </P>
-      <Input
-        v-model="privateKey.model"
-        :placeholder="RADIO_ELEMENTS[0]"
-        :error="privateKey.error"
-        round
-        @input="privateKey.error = null"
-      />
+    <Alert v-show="radioGroup.model === RADIO_ELEMENTS[0]">
+      <Container :class="b('info')">
+        <P>
+          {{ local.IMPORT }} {{ local.PRIVATEKEY }}
+        </P>
+        <Input
+          v-model="privateKey.model"
+          :placeholder="RADIO_ELEMENTS[0]"
+          :error="privateKey.error"
+          round
+          @input="privateKey.error = null"
+        />
+      </Container>
     </Alert>
-    <Alert
-      v-show="radioGroup.model === RADIO_ELEMENTS[1]"
-      :class="b('info')"
-    >
-      <P>
-        {{ local.IMPORT_KEYSTORE }}
-      </P>
-      <Input
-        v-model="jsonFile.password"
-        :placeholder="local.PASSWORD"
-        :error="jsonFile.error"
-        round
-      />
-      <input
-        ref="json"
-        type="file"
-        accept="application/JSON"
-      >
+    <Alert v-show="radioGroup.model === RADIO_ELEMENTS[1]">
+      <Container :class="b('info')">
+        <P>
+          {{ local.IMPORT_KEYSTORE }}
+        </P>
+        <Input
+          v-model="jsonFile.password"
+          :placeholder="local.PASSWORD"
+          :error="jsonFile.error"
+          round
+        />
+        <input
+          ref="json"
+          type="file"
+          accept="application/JSON"
+        >
+      </Container>
     </Alert>
-    <Alert
-      v-show="radioGroup.model === RADIO_ELEMENTS[2]"
-      :class="b('info')"
-    >
-      <P>
-        {{ local.IMPORT_HW }}
-      </P>
-      <Input
-        v-model="ledger.index"
-        :placeholder="local.WALLET_ID"
-        :type="INPUT_TYPES.number"
-        round
-      />
+    <Alert v-show="radioGroup.model === RADIO_ELEMENTS[2]">
+      <Container :class="b('info')">
+        <P>
+          {{ local.IMPORT_HW }}
+        </P>
+        <Input
+          v-model="ledger.index"
+          :placeholder="local.WALLET_ID"
+          :type="INPUT_TYPES.number"
+          round
+        />
+      </Container>
     </Alert>
     <Button
       :class="b('btn')"
@@ -66,14 +63,14 @@
 </template>
 
 <script>
-import { isPrivateKey } from '@zilliqa-js/util/dist/validation'
-
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
+import accountsStore from '@/store/accounts'
 
 import { SIZE_VARIANS } from '@/config'
-import { LedgerControll } from '@/utils'
+
+import homePage from '@/pages/Home'
 
 import Alert from '@/components/Alert'
 import P from '@/components/P'
@@ -83,8 +80,9 @@ import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
+import { Background, walletUpdate, ledgerImportAccount } from '@/services'
+
 const { FileReader } = global
-const ledgerControll = new LedgerControll()
 const RADIO_ELEMENTS = [
   'PrivateKey',
   'JSON',
@@ -135,6 +133,16 @@ export default {
       walletStore.ACTIONS_NAMES.onLedgerAccount,
       walletStore.ACTIONS_NAMES.onKeyStore
     ]),
+    ...mapActions(accountsStore.STORE_NAME, [
+      accountsStore.ACTIONS_NAMES.onAddAccount
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+    ...mapMutations(accountsStore.STORE_NAME, [
+      accountsStore.MUTATIONS_NAMES.setAccount,
+      accountsStore.MUTATIONS_NAMES.setAccounts
+    ]),
 
     /**
      * Listing all events for import type/
@@ -157,9 +165,17 @@ export default {
     /**
      * When import type is PrivateKey.
      */
-    onPrivateKey() {
+    async onPrivateKey() {
+      const bg = new Background()
+
       try {
-        isPrivateKey(this.privateKey)
+        const result = await bg.importPrivKey(this.privateKey.model)
+
+        this.setAccount(result.selectedAddress)
+        this.setAccounts(result.identities)
+        walletUpdate(result)
+
+        this.$router.push({ name: homePage.name })
       } catch (err) {
         this.privateKey.error = this.local.INVALID_PRIVATEKEY
       }
@@ -186,18 +202,17 @@ export default {
      * When import type is ledger hardware wallet.
      */
     async onLedger() {
+      this.setLoad()
       try {
-        let { pubAddr, publicKey } = await ledgerControll.getAddresses(
-          this.ledger.index
-        )
+        const result = await ledgerImportAccount(this.ledger.index)
 
-        this.onLedgerAccount({
-          pubAddr,
-          publicKey,
-          hwIndex: this.ledger.index
-        })
+        await this.onAddAccount(result)
+
+        this.$router.push({ name: homePage.name })
       } catch (err) {
-        //
+        // Denied or any errors.
+      } finally {
+        this.setLoad()
       }
     }
   }
@@ -223,10 +238,12 @@ export default {
     line-height: 20px;
     font-size: 15px;
 
-    height: 150px;
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 
   &__btn {
+    margin-top: 15px;
     margin-left: 15px;
     min-width: 100px;
   }

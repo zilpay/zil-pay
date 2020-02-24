@@ -97,22 +97,6 @@ export class Wallet {
   }
 
   /**
-   * Import account via hardware wallet.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  async ImportHwAccount(sendResponse) {
-    const accountImporter = new AccountImporter(accountControl)
-
-    try {
-      const wallet = await accountImporter.importByHwAccount(this.payload)
-
-      sendResponse({ resolve: wallet })
-    } catch (err) {
-      sendResponse({ reject: err.message })
-    }
-  }
-
-  /**
    * Creating account via seed words and set to storage.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */

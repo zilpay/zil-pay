@@ -22,7 +22,8 @@ const MUTATIONS_NAMES = {
 }
 const ACTIONS_NAMES = {
   onRemoveAccount: 'onRemoveAccount',
-  updateCurrentAccount: 'updateCurrentAccount'
+  updateCurrentAccount: 'updateCurrentAccount',
+  onAddAccount: 'onAddAccount'
 }
 const GETTERS_NAMES = {
   getCurrentAccount: 'getCurrentAccount'
@@ -47,6 +48,7 @@ const STORE = {
       }
 
       state.selectedAddress = index
+
       walletUpdate(state)
     },
     [MUTATIONS_NAMES.setAccountName](state, value) {
@@ -83,6 +85,23 @@ const STORE = {
 
       commit(MUTATIONS_NAMES.setAccount, result.selectedAddress)
       commit(MUTATIONS_NAMES.setAccounts, result.identities)
+    },
+    [ACTIONS_NAMES.onAddAccount]({ state, commit }, payload) {
+      if (!payload) {
+        throw new Error('payload is', typeof payload)
+      }
+
+      const { identities } = state
+      const unique = identities.some(acc => acc.address === payload.address)
+
+      if (unique) {
+        throw new Error('Each address is unique')
+      }
+
+      identities.push(payload)
+
+      commit(MUTATIONS_NAMES.setAccount, identities.length - 1)
+      commit(MUTATIONS_NAMES.setAccounts, identities)
     }
   },
   getters: {
