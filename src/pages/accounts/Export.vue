@@ -13,18 +13,22 @@
       <RadioGroup
         v-model="radioGroupModel"
         :elements="radioGroupElements"
+        @input="content = null"
       />
       <form
-        v-show="!seedWords"
+        v-show="radioGroupModel && !content"
         :class="b('form')"
         @submit.prevent="onSubmit"
       >
         <Input
+          v-model="password.model"
           :placeholder="local.PASSWORD"
           :title="local.EXPORT_CAN_PASSWROD"
           :type="INPUT_TYPES.password"
+          :error="password.error"
           round
           required
+          @input="password.error = null"
         />
         <Button
           :class="b('next-btn')"
@@ -34,7 +38,7 @@
         </Button>
       </form>
     </Container>
-    <Alert v-show="seedWords">
+    <Alert v-show="content">
       <Container :class="b('warn-info')">
         <Icon
           :icon="ICON_VARIANTS.warn"
@@ -46,9 +50,9 @@
         </P>
       </Container>
     </Alert>
-    <Container v-show="seedWords">
+    <Container v-show="content">
       <Textarea
-        v-model="seedWords"
+        v-model="content"
         readonly
       />
     </Container>
@@ -76,6 +80,8 @@ import Input, { INPUT_TYPES } from '@/components/Input'
 import P from '@/components/P'
 import RadioGroup from '@/components/RadioGroup'
 
+import { Background } from '@/services'
+
 export default {
   name: 'Export',
   components: {
@@ -97,8 +103,12 @@ export default {
       SIZE_VARIANS,
       INPUT_TYPES,
 
-      radioGroupModel: 0,
-      seedWords: null
+      radioGroupModel: null,
+      content: null,
+      password: {
+        model: null,
+        error: null
+      }
     }
   },
   computed: {
@@ -115,7 +125,38 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.seedWords = true
+      const currenType = this.radioGroupModel.toLowerCase()
+      const privKey = this.local.PRIVATEKEY.toLowerCase()
+      const phrase = this.local.PHRASE.toLowerCase()
+
+      switch (currenType) {
+      case privKey:
+        this.onPrivateKey()
+        break
+      case phrase:
+        this.onSeed()
+        break
+      default:
+        break
+      }
+    },
+    async onSeed() {
+      const bg = new Background()
+
+      try {
+        this.content = await bg.exportSeed(this.password.model)
+      } catch (err) {
+        this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
+      }
+    },
+    async onPrivateKey() {
+      const bg = new Background()
+
+      try {
+        this.content = await bg.exportPrivKey(this.password.model)
+      } catch (err) {
+        this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
+      }
     }
   }
 }

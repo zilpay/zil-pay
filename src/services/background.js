@@ -116,10 +116,50 @@ export class Background {
     return result.resolve
   }
 
+  /**
+   * Send tx payload for sign and send to node.
+   * @param {Object} payload TxPartams.
+   */
   async sendToSignBroadcasting(payload) {
     const type = MTypePopup.SIGN_AND_SEND
     const result = await new Message({ type, payload }).send()
 
     console.log(result)
+  }
+
+  /**
+   * Decrypt vault and responce first seed phase.
+   * @param {String} password Unlock password.
+   */
+  async exportSeed(password) {
+    const type = MTypePopup.EXPORT_SEED
+    const payload = { password }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  /**
+   * Decrypt vault and responce privateKey for selected account.
+   * @param {String} password Unlock password.
+   */
+  async exportPrivKey(password) {
+    const type = MTypePopup.EXPORT_PRIVATE_KEY
+    const payload = { password }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
   }
 }
