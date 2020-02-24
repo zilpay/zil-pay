@@ -171,6 +171,10 @@ export default {
     name() {
       if (this.account.name) {
         return this.account.name
+      } else if (this.account.isImport) {
+        return `${this.local.IMPORTED} ${this.account.index}`
+      } else if (this.account.hwType) {
+        return `${this.account.hwType} ${this.account.index}`
       }
 
       return `${this.local.ACCOUNT} ${this.account.index}`

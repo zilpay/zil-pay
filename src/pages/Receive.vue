@@ -52,7 +52,7 @@
     <BottomModal v-model="accountInfo">
       <Container :class="b('account')">
         <Title :size="SIZE_VARIANS.sm">
-          {{ getCurrentAccount.name }}
+          {{ name }}
         </Title>
         <Icon
           v-if="qrcode"
@@ -200,6 +200,19 @@ export default {
       }
 
       return elements
+    },
+    name() {
+      if (!this.getCurrentAccount) {
+        return ''
+      } else if (this.getCurrentAccount.name) {
+        return this.getCurrentAccount.name
+      } else if (this.getCurrentAccount.isImport) {
+        return `${this.local.IMPORTED} ${this.getCurrentAccount.index}`
+      } else if (this.getCurrentAccount.hwType) {
+        return `${this.getCurrentAccount.hwType} ${this.getCurrentAccount.index}`
+      }
+
+      return `${this.local.ACCOUNT} ${this.getCurrentAccount.index}`
     }
   },
   methods: {

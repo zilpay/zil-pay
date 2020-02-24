@@ -61,6 +61,7 @@
     "TEST_FAUCET_DIS": "Get ZIL from a faucet for the test network.",
     "GET": "get",
     "EXPORT": "export",
+    "IMPORTED": "Imported",
 
     "PUBLIC": "public",
     "OR": "or",

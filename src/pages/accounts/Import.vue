@@ -173,6 +173,7 @@ export default {
 
         this.setAccount(result.selectedAddress)
         this.setAccounts(result.identities)
+
         walletUpdate(result)
 
         this.$router.push({ name: homePage.name })

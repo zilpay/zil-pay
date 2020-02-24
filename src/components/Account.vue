@@ -89,9 +89,13 @@ export default {
 
     name() {
       if (!this.getCurrentAccount) {
-        return null
+        return ''
       } else if (this.getCurrentAccount.name) {
         return this.getCurrentAccount.name
+      } else if (this.getCurrentAccount.isImport) {
+        return `${this.local.IMPORTED} ${this.getCurrentAccount.index}`
+      } else if (this.getCurrentAccount.hwType) {
+        return `${this.getCurrentAccount.hwType} ${this.getCurrentAccount.index}`
       }
 
       return `${this.local.ACCOUNT} ${this.getCurrentAccount.index}`
