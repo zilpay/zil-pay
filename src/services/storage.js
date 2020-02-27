@@ -1,4 +1,4 @@
-import { FIELDS } from 'config'
+import { FIELDS, ZILLIQA } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 
@@ -15,12 +15,16 @@ export async function getStorageData() {
   ])
 }
 
-export async function setSelectedNetwork(net) {
+export async function setSelectedNetwork(selectedNet) {
+  if (!(selectedNet in ZILLIQA)) {
+    throw new Error('selectedNet must be', Object.keys(ZILLIQA).join(','))
+  }
+
   await storage.set([
-    new BuildObject(FIELDS.SELECTED_NET, net)
+    new BuildObject(FIELDS.SELECTED_NET, selectedNet)
   ])
 
-  return net
+  return selectedNet
 }
 
 export async function walletUpdate(wallet) {
@@ -35,4 +39,48 @@ export async function walletUpdate(wallet) {
   ])
 
   return wallet
+}
+
+export async function updateStatic(object, isOverwrite = false) {
+  let stateData = await storage.get(FIELDS.STATIC)
+
+  if (new TypeChecker(stateData).isString) {
+    // it need for the firefox.
+    stateData = JSON.parse(stateData)
+  }
+
+  if (!stateData || Object.keys(stateData).length < 3 || isOverwrite) {
+    const data = {
+      currency: object.currency,
+      addressFormat: object.addressFormat,
+      defaultGas: object.defaultGas,
+      lockTime: object.lockTime,
+      dappsList: object.dappsList
+    }
+
+    await storage.set(new BuildObject(
+      FIELDS.STATIC,
+      JSON.stringify(data)
+    ))
+
+    return null
+  }
+
+  return Object.assign(object, stateData)
+}
+
+export async function updateNetworkConifg(config) {
+  if (!Object.keys(config).length < Object.keys(ZILLIQA).length) {
+    throw new Error('Shoud be have ', Object.keys(ZILLIQA).length, 'elements.')
+  }
+
+  Object.keys(config).forEach((key) => {
+    if (!(key in config)) {
+      throw new Error(key, 'is required')
+    }
+  })
+
+  await storage.set([
+    new BuildObject(FIELDS.CONFIG, config)
+  ])
 }

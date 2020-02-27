@@ -235,6 +235,8 @@ export default {
   &__list {
     display: grid;
     grid-gap: 15px;
+
+    padding-bottom: 50px;
   }
 }
 </style>

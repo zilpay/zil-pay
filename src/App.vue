@@ -23,7 +23,8 @@ export default {
   mixins: [LinkMixin],
   methods: {
     ...mapActions(settingsStore.STORE_NAME, [
-      settingsStore.ACTIONS_NAMES.updateRate
+      settingsStore.ACTIONS_NAMES.updateRate,
+      settingsStore.ACTIONS_NAMES.onUpdateSettings
     ]),
     ...mapActions(uiStore.STORE_NAME, [
       uiStore.ACTIONS_NAMES.onLocal
@@ -85,6 +86,7 @@ export default {
     await this.onLocal()
 
     this.updateRate()
+    this.onUpdateSettings()
 
     this.setLoad()
   }

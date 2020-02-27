@@ -13,7 +13,7 @@ import { TypeChecker } from '../../lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
-import { setSelectedNetwork } from '@/services'
+import { setSelectedNetwork, updateStatic, updateNetworkConifg } from '@/services'
 
 const STORE_NAME = 'settings'
 const STATE_NAMES = {
@@ -40,7 +40,8 @@ const MUTATIONS_NAMES = {
   setNetworkConfig: 'setNetworkConfig'
 }
 const ACTIONS_NAMES = {
-  updateRate: 'updateRate'
+  updateRate: 'updateRate',
+  onUpdateSettings: 'onUpdateSettings'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -78,29 +79,46 @@ const STORE = {
   mutations: {
     [MUTATIONS_NAMES.setCurrency](state, currency) {
       if (state.currencyItems.includes(currency)) {
+        if (state.currency !== currency) {
+          updateStatic(state, true)
+        }
+
         state.currency = currency
       }
     },
     [MUTATIONS_NAMES.setNetworkConfig](state, config) {
       if (config && new TypeChecker(config).isObject) {
+        updateNetworkConifg(config)
+
         state[STATE_NAMES.networkConfig] = config
       }
     },
     [MUTATIONS_NAMES.setAddressFormat](state, addressFormat) {
       if (state.addressFormatItems.includes(addressFormat)) {
+        if (state.addressFormat !== addressFormat) {
+          updateStatic(state, true)
+        }
+
         state.addressFormat = addressFormat
       }
     },
     [MUTATIONS_NAMES.setNetwork](state, network) {
       if ((network in state.networkConfig)) {
+        if (state.network !== network) {
+          setSelectedNetwork(network)
+        }
+
         state.network = network
-        setSelectedNetwork(network)
       }
     },
     [MUTATIONS_NAMES.setLockTime](state, time) {
       time = time.replace(' hours.', '')
 
       if (!isNaN(time)) {
+        if (state.lockTime !== time) {
+          updateStatic(state, true)
+        }
+
         state.lockTime = time
       }
     },
@@ -108,9 +126,13 @@ const STORE = {
       if (gasPrice && gasLimit) {
         state.defaultGas = { gasPrice, gasLimit }
       }
+
+      updateStatic(state, true)
     },
     [MUTATIONS_NAMES.setDefaultGas](state) {
       state.defaultGas = DEFAULT_GAS_FEE
+
+      updateStatic(state, true)
     },
     [MUTATIONS_NAMES.setRate](state, payload) {
       state[STATE_NAMES.currentRate] = payload
@@ -138,6 +160,15 @@ const STORE = {
       }
 
       commit(MUTATIONS_NAMES.setRate, rate)
+    },
+    async [ACTIONS_NAMES.onUpdateSettings]({ commit, state }) {
+      const newState = await updateStatic(state)
+
+      commit(MUTATIONS_NAMES.setGas, newState.defaultGas)
+      commit(MUTATIONS_NAMES.setLockTime, newState.lockTime)
+      commit(MUTATIONS_NAMES.setNetwork, newState.network)
+      commit(MUTATIONS_NAMES.setAddressFormat, newState.addressFormat)
+      commit(MUTATIONS_NAMES.setCurrency, newState.currency)
     }
   },
   getters: {
