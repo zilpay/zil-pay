@@ -84,3 +84,13 @@ export async function updateNetworkConifg(config) {
     new BuildObject(FIELDS.CONFIG, config)
   ])
 }
+
+export async function changeTheme(theme) {
+  if (!new TypeChecker(theme).isString) {
+    throw new Error('theme param must be string.')
+  }
+
+  await storage.set([
+    new BuildObject(FIELDS.THEME, theme)
+  ])
+}

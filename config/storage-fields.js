@@ -15,5 +15,6 @@ export const FIELDS = {
   TRANSACTIONS: 'transactions',
   CONFIRM_TX: 'confirm',
   STATIC: 'static',
-  CONNECT_DAPP: 'connect'
+  CONNECT_DAPP: 'connect',
+  THEME: 'theme'
 }

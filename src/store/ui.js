@@ -10,6 +10,7 @@ import fetch from 'cross-fetch'
 import { TypeChecker } from 'lib/type'
 
 import { CURRENCIES } from '@/config'
+import { changeTheme } from '@/services'
 
 const { document } = global
 const THEMES = [
@@ -54,6 +55,7 @@ const STORE = {
       if (state.themes.includes(theme)) {
         state.selectedTheme = theme
         document.body.setAttribute('theme', theme)
+        changeTheme(theme)
       }
     },
     [MUTATIONS_NAMES.setLocal](state, data) {

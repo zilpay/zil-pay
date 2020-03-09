@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { BrowserStorage } from 'lib/storage'
+import { FIELDS } from 'config'
 import { mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import settingsStore from '@/store/settings'
@@ -33,7 +35,8 @@ export default {
       walletStore.ACTIONS_NAMES.onInit
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
-      uiStore.MUTATIONS_NAMES.setLoad
+      uiStore.MUTATIONS_NAMES.setLoad,
+      uiStore.MUTATIONS_NAMES.setTheme
     ]),
     ...mapMutations(accountsStore.STORE_NAME, [
       accountsStore.MUTATIONS_NAMES.setAccounts,
@@ -79,8 +82,11 @@ export default {
   async beforeMount() {
     this.setLoad()
 
+    const storage = new BrowserStorage()
+    const theme = await storage.get(FIELDS.THEME)
     const authData = await this.onInit()
 
+    this.setTheme(theme)
     this.storeUpdate()
     this.authNavigation(authData)
     await this.onLocal()
