@@ -87,12 +87,13 @@ export default {
     const authData = await this.onInit()
 
     this.setTheme(theme)
-    this.storeUpdate()
-    this.authNavigation(authData)
+
+    await this.storeUpdate()
+    await this.authNavigation(authData)
     await this.onLocal()
 
-    this.updateRate()
-    this.onUpdateSettings()
+    await this.updateRate()
+    await this.onUpdateSettings()
 
     this.setLoad()
   }

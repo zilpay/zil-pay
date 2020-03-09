@@ -16,5 +16,6 @@ export const FIELDS = {
   CONFIRM_TX: 'confirm',
   STATIC: 'static',
   CONNECT_DAPP: 'connect',
-  THEME: 'theme'
+  THEME: 'theme',
+  CONTACTS: 'contacts'
 }

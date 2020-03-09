@@ -6,6 +6,11 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { FIELDS } from 'config'
+import { BrowserStorage } from 'lib/storage'
+import { changeContacts } from '@/services'
+
+const storage = new BrowserStorage()
 
 const STORE_NAME = 'contacts'
 const STATE_NAMES = {
@@ -16,27 +21,15 @@ const MUTATIONS_NAMES = {
 }
 const ACTIONS_NAMES = {
   onRemoveByIndex: 'onRemoveByIndex',
-  onAddedContact: 'onAddedContact'
+  onAddedContact: 'onAddedContact',
+  onUpdate: 'onUpdate'
 }
 const GETTERS_NAMES = { }
 
 const STORE = {
   namespaced: true,
   state: {
-    [STATE_NAMES.contactList]: [
-      {
-        name: 'Ark warden.',
-        address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
-      },
-      {
-        name: 'Terrorblade.',
-        address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
-      },
-      {
-        name: 'Doom.',
-        address: '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F'
-      }
-    ]
+    [STATE_NAMES.contactList]: []
   },
   mutations: {
     [MUTATIONS_NAMES.setContacts](state, contactList) {
@@ -45,6 +38,8 @@ const STORE = {
       }
 
       state.contactList = contactList
+
+      changeContacts(contactList)
     }
   },
   actions: {
@@ -62,6 +57,11 @@ const STORE = {
       const newList = [...state.contactList, payload]
 
       commit(MUTATIONS_NAMES.setContacts, newList)
+    },
+    async [ACTIONS_NAMES.onUpdate]({ commit }) {
+      const contacts = await storage.get(FIELDS.CONTACTS)
+
+      commit(MUTATIONS_NAMES.setContacts, contacts)
     }
   },
   getters: {}

@@ -94,3 +94,11 @@ export async function changeTheme(theme) {
     new BuildObject(FIELDS.THEME, theme)
   ])
 }
+
+export async function changeContacts(contacts) {
+  await storage.set([
+    new BuildObject(FIELDS.CONTACTS, contacts)
+  ])
+
+  return contacts
+}
