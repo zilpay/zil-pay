@@ -9,7 +9,7 @@
 import fetch from 'cross-fetch'
 
 import { DEFAULT, API } from 'config'
-import { TypeChecker } from '../../lib/type'
+import { TypeChecker } from 'lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
@@ -112,7 +112,9 @@ const STORE = {
       }
     },
     [MUTATIONS_NAMES.setLockTime](state, time) {
-      time = time.replace(' hours.', '')
+      if (new TypeChecker(time).isString) {
+        time = time.replace(' hours.', '')
+      }
 
       if (!isNaN(time)) {
         if (state.lockTime !== time) {
