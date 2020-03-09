@@ -18,6 +18,7 @@
       >
         <Input
           v-model="password"
+          :class="b('password')"
           :type="INPUT_TYPES.password"
           :size="SIZE_VARIANS.xs"
           :placeholder="local.PASSWORD"
@@ -130,6 +131,7 @@ export default {
   &__wrapper,
   &__form {
     min-width: 250px;
+    width: 300px;
   }
 
   &__wrapper {
@@ -141,8 +143,12 @@ export default {
 
   &__form {
     display: grid;
-    grid-gap: 11px;
-    justify-self: center;
+    grid-gap: 15px;
+    justify-content: center;
+  }
+
+  &__password {
+    width: 250px;
   }
 }
 </style>

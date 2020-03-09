@@ -143,7 +143,9 @@ export class Popup {
 
     try {
       await accountControl.auth.setPassword(password)
+
       const status = accountControl.auth.isEnable
+
       sendResponse({ resolve: status })
     } catch (err) {
       sendResponse({ reject: false })
