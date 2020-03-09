@@ -14,8 +14,13 @@
     z-index: 100;
     box-shadow: var(--default-box-shadow);
 
+    transition: opacity 1s cubic-bezier(.3,.17,.23,.96);
+
+    opacity: 1;
+
     &.vue-tooltip-hidden {
-      transform: translateX(-100000px) !important;
+        opacity: 0;
+        transform: translateX(-100000px) !important;
     }
 
     .vue-tooltip-content {
