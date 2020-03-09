@@ -36,7 +36,7 @@ const defaultManifest = {
   permissions: [
     'storage',
     'notifications',
-    'https://api.coinmarketcap.com/v1/ticker/*',
+    'https://api.coingecko.com/api/v3/simple/price',
     'https://api.zilliqa.com/',
     'https://dev-api.zilliqa.com/',
     'https://zilpay.xyz/*'
