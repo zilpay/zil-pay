@@ -331,7 +331,7 @@ export default {
     }
   },
   mounted() {
-    this.address = this.$router.currentRoute.params.address
+    this.recipientAddress.model = this.$router.currentRoute.params.address
   }
 }
 </script>
