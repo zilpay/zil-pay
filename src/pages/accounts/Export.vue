@@ -42,8 +42,8 @@
       <Container :class="b('warn-info')">
         <Icon
           :icon="ICON_VARIANTS.warn"
-          width="50"
-          height="60"
+          width="30"
+          height="40"
         />
         <P>
           {{ local.EXPORT_DANGER }}
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 
 import {
@@ -124,21 +124,29 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+
+    async onSubmit() {
+      this.setLoad()
+
       const currenType = this.radioGroupModel.toLowerCase()
       const privKey = this.local.PRIVATEKEY.toLowerCase()
       const phrase = this.local.PHRASE.toLowerCase()
 
       switch (currenType) {
       case privKey:
-        this.onPrivateKey()
+        await this.onPrivateKey()
         break
       case phrase:
-        this.onSeed()
+        await this.onSeed()
         break
       default:
         break
       }
+
+      this.setLoad()
     },
     async onSeed() {
       const bg = new Background()
@@ -189,6 +197,8 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    padding: 15px;
   }
 }
 </style>
