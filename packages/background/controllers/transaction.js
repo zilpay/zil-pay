@@ -94,13 +94,13 @@ export class Transaction {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async sendSignedTx(sendResponse) {
-    let resultTx
+    let resultTx = null
     const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     )
 
     try {
-      const { txParams } = await zilliqaControl.transactions.new(this.payload)
+      const { txParams } = zilliqaControl.transactions.new(this.payload)
 
       resultTx = await zilliqaControl.signedTxSend(txParams)
 
@@ -201,8 +201,8 @@ export class Transaction {
     // 5.4 Tx has been mined out.
     // 5.5 Tx will add to storage with result status.
     // 5.6 Show notification that tx has been mined out.
-
-    return sendResponse({ resolve: this.payload })
+    return sendResponse({ reject: 'fail sign' })
+    // return sendResponse({ resolve: this.payload })
   }
 
 }

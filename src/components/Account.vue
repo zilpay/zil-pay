@@ -32,7 +32,7 @@
         :class="b('amount-currency')"
         :size="FONT_VARIANTS.medium"
       >
-        {{ getCurrentAccount.balance | toConversion(getRate) }}
+        {{ currency }} {{ getCurrentAccount.balance | toConversion(getRate) }}
       </P>
     </div>
   </div>
@@ -78,7 +78,8 @@ export default {
       uiStore.STATE_NAMES.local
     ]),
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.addressFormat
+      settingsStore.STATE_NAMES.addressFormat,
+      settingsStore.STATE_NAMES.currency
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount

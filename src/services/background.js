@@ -124,7 +124,13 @@ export class Background {
     const type = MTypePopup.SIGN_AND_SEND
     const result = await new Message({ type, payload }).send()
 
-    console.log(result)
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
   }
 
   /**

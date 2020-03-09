@@ -6,7 +6,8 @@
       pointer,
       size,
       copy,
-      nowrap
+      nowrap,
+      centred
     })"
     @click="onCopyContent"
   >
@@ -56,6 +57,10 @@ export default {
       type: Boolean,
       required: false
     },
+    centred: {
+      type: Boolean,
+      required: false
+    },
     capitalize: {
       type: Boolean,
       required: false
@@ -102,6 +107,10 @@ export default {
 
   &_pointer {
     cursor: pointer;
+  }
+
+  &_centred {
+    text-align: center;
   }
 
   &_size-xs {

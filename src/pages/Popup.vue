@@ -47,6 +47,15 @@
       </div>
     </Container>
     <Separator />
+    <P
+      :class="b('error-msg')"
+      :variant="COLOR_VARIANTS.danger"
+      :font="FONT_VARIANTS.regular"
+      :size="SIZE_VARIANS.sm"
+      centred
+    >
+      {{ error }}
+    </P>
     <Container
       v-show="getCurrent.data"
       :class="b('details')"
@@ -147,7 +156,10 @@ export default {
       SIZE_VARIANS,
       FONT_VARIANTS,
       DEFAULT_GAS_FEE,
-      ICON_VARIANTS
+      COLOR_VARIANTS,
+      ICON_VARIANTS,
+
+      error: null
     }
   },
   computed: {
@@ -239,7 +251,11 @@ export default {
     async onConfirm() {
       const bg = new Background()
 
-      bg.sendToSignBroadcasting(this.getCurrent)
+      try {
+        await bg.sendToSignBroadcasting(this.getCurrent)
+      } catch (err) {
+        this.error = err.message
+      }
     },
     /**
      * Handle call event.
@@ -323,6 +339,10 @@ export default {
     position: fixed;
     bottom: 40px;
     z-index: 1;
+  }
+
+  &__error-msg {
+    padding-top: 5px;
   }
 }
 </style>
