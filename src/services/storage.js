@@ -70,7 +70,7 @@ export async function updateStatic(object, isOverwrite = false) {
 }
 
 export async function updateNetworkConifg(config) {
-  if (!Object.keys(config).length < Object.keys(ZILLIQA).length) {
+  if (Object.keys(config).length < Object.keys(ZILLIQA).length) {
     throw new Error('Shoud be have ', Object.keys(ZILLIQA).length, 'elements.')
   }
 
