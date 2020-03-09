@@ -74,11 +74,12 @@ export class Auth {
 
     let stateData = await storage.get(FIELDS.STATIC)
 
-    if (stateData) {
-      hours = stateData.lockTime
-    }
-
     try {
+      if (stateData) {
+        stateData = JSON.parse(stateData)
+        hours = stateData.lockTime
+      }
+
       const decryptSeed = this._guard.decrypt(this.encryptSeed)
       const decryptImported = this._guard.decryptJson(this.encryptImported)
 
