@@ -13,7 +13,7 @@
           :key="acc.address"
           :account="acc"
           :selected="index === selectedAddress"
-          :trash="acc.index > 0 || acc.isImport || acc.hwType"
+          :trash="Boolean(acc.index > 0 || acc.isImport || acc.hwType)"
           @selected="onSelectAccount(index)"
           @remove="onRemoveAccount(index)"
         />
