@@ -56,7 +56,8 @@ const STORE = {
     [STATE_NAMES.currency]: CURRENCIES.USD,
     [STATE_NAMES.currencyItems]: [
       CURRENCIES.BTC,
-      CURRENCIES.USD
+      CURRENCIES.USD,
+      CURRENCIES.ETH
     ],
 
     [STATE_NAMES.addressFormat]: ADDRESS_FORMAT_VARIANTS.bech32,
@@ -143,21 +144,23 @@ const STORE = {
   actions: {
     async [ACTIONS_NAMES.updateRate]({ commit }) {
       let rate = null
-      const url = `${API.COINMARKETCAP}/zilliqa`
+      const url = `${API.COIN_GECKO}?ids=zilliqa&vs_currencies=usd,btc,eth`
 
       try {
-        const response = await fetch(url, { method: 'GET' })
+        const response = await fetch(url)
 
         rate = await response.json()
 
         rate = {
-          USD: rate[0]['price_usd'],
-          BTC: rate[0]['price_btc']
+          USD: rate.zilliqa.usd,
+          BTC: rate.zilliqa.btc,
+          ETH: rate.zilliqa.eth
         }
       } catch (err) {
         rate = {
           BTC: 0,
-          USD: 0
+          USD: 0,
+          ETH: 0
         }
       }
 
