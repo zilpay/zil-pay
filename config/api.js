@@ -7,6 +7,6 @@
  * Copyright (c) 2019 ZilPay
  */
 export const API = {
-  COINMARKETCAP: 'https://api.coinmarketcap.com/v1/ticker',
+  COIN_GECKO: 'https://api.coingecko.com/api/v3/simple/price',
   EXPLORER: 'https://viewblock.io/zilliqa'
 }
