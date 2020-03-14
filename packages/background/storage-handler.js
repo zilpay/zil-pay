@@ -7,20 +7,31 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS } from 'config'
+import { Network, Wallet } from './controllers'
 
+const networkControl = new Network()
+const walletControl = new Wallet()
 /**
  * Store Handler call when window.chrome.storage.local has been changed.
  * @param {Object} store - Changed store
  * @interface { [key]: newValue, oldValue }
  */
 export function browserStorageHandler(store) {
-  for (const keyStore in store) {
-    if (!(keyStore in FIELDS)) {
-      return null
+  const keys = Object.keys(store)
+
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index]
+    const value = store[key]
+
+    switch (key) {
+    case FIELDS.WALLET:
+      walletControl.changeWallet(value.newValue)
+      break
+    case FIELDS.SELECTED_NET:
+      networkControl.changeNetwork(value.newValue)
+      break
+    default:
+      break
     }
-
-    const { newValue, oldValue } = store[keyStore]
-
-    console.log(newValue, oldValue)
   }
 }
