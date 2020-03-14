@@ -97,7 +97,7 @@
 <script>
 import { uuid } from 'uuidv4'
 
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
 import uiStore from '@/store/ui'
@@ -222,6 +222,12 @@ export default {
       transactionsStore.MUTATIONS_NAMES.setCurrentGas,
       transactionsStore.MUTATIONS_NAMES.setEmpty
     ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+    ...mapActions(transactionsStore.STORE_NAME, [
+      transactionsStore.ACTIONS_NAMES.onUpdateTransactions
+    ]),
 
     /**
      * Go to the viewblock address info.
@@ -252,9 +258,13 @@ export default {
       const bg = new Background()
 
       try {
+        this.setLoad()
         await bg.sendToSignBroadcasting(this.getCurrent)
       } catch (err) {
         this.error = err.message
+      } finally {
+        this.setLoad()
+        this.popupClouse()
       }
     },
     /**
@@ -279,6 +289,7 @@ export default {
     popupClouse() {
       if (!this.getCurrent.uuid) {
         this.setEmpty()
+        this.onUpdateTransactions()
         this.$router.push({ name: HomePage.name })
 
         return null
