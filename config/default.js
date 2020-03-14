@@ -14,7 +14,7 @@ export const DEFAULT = {
     2,
     3
   ],
-  MAX_TX_AMOUNT_LIST: 5,
+  MAX_TX_AMOUNT_LIST: 3,
   MIN_LENGTH_PASSWORD: 6,
   MAX_LENGTH_NAME: 10,
   POPUP_WIDTH: 360,
