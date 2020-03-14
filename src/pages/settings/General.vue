@@ -22,7 +22,9 @@
       <div :class="b('btns')">
         <Button
           :color="COLOR_VARIANTS.warning"
+          :disabled="Object.keys(transactions).length === 0"
           round
+          @click="setClearTxHistory"
         >
           {{ local.CLEAR }} {{ local.HISTORY }}
         </Button>
@@ -38,6 +40,7 @@
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import transactionsStore from '@/store/transactions'
 
 import { COLOR_VARIANTS } from '@/config'
 
@@ -70,12 +73,18 @@ export default {
       settingsStore.STATE_NAMES.currency,
       settingsStore.STATE_NAMES.addressFormatItems,
       settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapState(transactionsStore.STORE_NAME, [
+      transactionsStore.STATE_NAMES.transactions
     ])
   },
   methods: {
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setCurrency,
       settingsStore.MUTATIONS_NAMES.setAddressFormat
+    ]),
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setClearTxHistory
     ])
   }
 }
