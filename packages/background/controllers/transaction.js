@@ -7,12 +7,13 @@
  * Copyright (c) 2019 ZilPay
  */
 import { API } from 'config'
+
 import {
   ZilliqaControl,
   PromptService,
   NotificationsControl
 } from '../services'
-// import { BrowserStorage } from 'lib/storage'
+
 import { TypeChecker } from 'lib/type'
 import {
   accountControl,
@@ -143,66 +144,117 @@ export class Transaction {
   /**
    * Listing when tx was mined.
    * @param {String} txHash - Tx hash.
+   * @param {String} from - Sender address.
    */
-  async _transactionListing(txHash) {
+  async _transactionListing(txHash, from) {
     const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     )
     const net = `network=${networkControl.selected}`
-    const timeInterval = 4000
+    const timeInterval = 10000
     const countIntervl = 100
     const title = 'ZilPay Transactions'
     let k = 0
 
-    const interval = setInterval(
-      async() => {
+    const interval = setInterval(async() => {
+      try {
+        const { result } = await zilliqaControl
+          .blockchain
+          .getPendingTxn(txHash)
 
-        try {
-          await zilliqaControl
-            .blockchain
-            .getTransaction(txHash)
-
+        if (result.confirmed) {
           new NotificationsControl({
             url: `${API.EXPLORER}/tx/0x${txHash}?${net}`,
             title: title,
             message: 'Transactions send to shard done.'
           }).create()
 
+          accountControl.zilliqa.updateTransactionList(
+            { confirmed: true, error: null },
+            txHash,
+            networkControl.selected,
+            from
+          )
+
           clearInterval(interval)
 
           return null
-        } catch (err) {
-          if (k > countIntervl) {
-            clearInterval(interval)
-            return null
-          }
         }
+      } catch (err) {
+        accountControl.zilliqa.updateTransactionList(
+          { confirmed: true, error: true },
+          txHash,
+          networkControl.selected,
+          from
+        )
 
-        if (k > countIntervl) {
-          clearInterval(interval)
-        }
+        clearInterval(interval)
 
-        k++
-      },
-      timeInterval
-    )
+        return null
+      }
+
+      if (k > countIntervl) {
+        accountControl.zilliqa.updateTransactionList(
+          { confirmed: true, error: true },
+          txHash,
+          networkControl.selected,
+          from
+        )
+
+        clearInterval(interval)
+
+        return null
+      }
+
+      k++
+    }, timeInterval)
   }
 
   async signSendTx(sendResponse) {
-    // 1. Detect Account.
-    // 2. Detect Signature.
-    // 3. If has signature send via ZilliqaControl.
-    // 4. if hasn't signature try will to sign via detected account.
-    //
-    // 5. Tx has been sent.
-    // 5.1 call callback `sendResponse`.
-    // 5.2 Tx will be add to storage with `padding` status.
-    // 5.3 Tx call to listing for awaiting prey.
-    // 5.4 Tx has been mined out.
-    // 5.5 Tx will add to storage with result status.
-    // 5.6 Show notification that tx has been mined out.
-    return sendResponse({ reject: 'fail sign' })
-    // return sendResponse({ resolve: this.payload })
+    const zilliqa = new ZilliqaControl(networkControl.provider)
+
+    try {
+      const account = await accountControl.getCurrentAccount()
+      const payload = await zilliqa.buildTxParams(this.payload, account)
+      const { result, req, error } = await zilliqa.singTransaction(payload, account.privateKey)
+
+      if (!result || error) {
+        if (this.payload.uuid) {
+          Transaction.returnTx({ reject: error.message }, this.payload.uuid)
+        }
+
+        return sendResponse({ reject: error.message })
+      }
+
+      const block = await zilliqa.blockchain.getCurrentMiniEpoch()
+      let tx = {
+        ...result,
+        from: account.address,
+        confirmed: false,
+        block: block.result
+      }
+
+      if (req && req.payload && req.payload.params && req.payload.params[0]) {
+        tx = {
+          ...tx,
+          ...req.payload.params[0]
+        }
+      }
+
+      await accountControl.zilliqa.addTransactionList(tx, networkControl.selected)
+
+      if (this.payload.uuid) {
+        await accountControl.zilliqa.rmForSingTransaction()
+
+        Transaction.returnTx({ resolve: tx }, this.payload.uuid)
+      }
+
+      this._transactionListing(tx.TranID, account.address)
+
+      return sendResponse({ resolve: tx })
+    } catch (err) {
+      return sendResponse({ reject: err.message })
+    }
   }
 
 }
