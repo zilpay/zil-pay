@@ -161,8 +161,7 @@ export default {
       accountsStore.ACTIONS_NAMES.updateCurrentAccount
     ]),
     ...mapActions(contactsStore.STORE_NAME, [
-      contactsStore.ACTIONS_NAMES.onRemoveByIndex,
-      contactsStore.ACTIONS_NAMES.onUpdate
+      contactsStore.ACTIONS_NAMES.onRemoveByIndex
     ]),
 
     onEvent(event) {
@@ -220,9 +219,6 @@ export default {
         this.$router.push({ name: homePage.name })
       }
     }
-  },
-  mounted() {
-    this.onUpdate()
   }
 }
 </script>
