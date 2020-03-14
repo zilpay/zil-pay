@@ -7,6 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { LocalStream } from 'lib/stream'
+import { BrowserStorage } from 'lib/storage'
 import {
   Message,
   MTypePopup,
@@ -19,11 +20,13 @@ import {
   Transaction,
   Wallet
 } from './controllers'
+import { browserStorageHandler } from './storage-handler'
 
 export class Background {
 
   constructor() {
     this._watchInternalMessaging()
+    BrowserStorage.subscribe((store) => browserStorageHandler(store))
   }
 
   _watchInternalMessaging() {
@@ -111,7 +114,7 @@ export class Background {
     switch (message.type) {
 
     case MTypeTab.GET_WALLET_DATA:
-      Zilliqa.initZilPay(sendResponse, message.domain)
+      Zilliqa.initInpage(sendResponse, message.domain)
       break
 
     case MTypeTab.CONNECT_APP:
@@ -129,12 +132,3 @@ export class Background {
   }
 
 }
-// @TODO list of for delete don't needed func.
-// Zilliqa.rmAllTransactionList(sendResponse)
-// changeAccountName(sendResponse)
-// Transaction(message.payload).buildTransaction(sendResponse)
-// Zilliqa(message.payload).connectionToDapp(sendResponse)
-// Transaction.rmTransactionsConfirm(sendResponse)
-// NetworkHandler(message.payload).changeConfig(sendResponse)
-// Wallet(message.payload).changeAddress(sendResponse)
-// NetworkHandler(message.payload).changeNetwork(sendResponse)
