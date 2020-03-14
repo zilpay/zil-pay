@@ -10,8 +10,10 @@ import { FIELDS } from 'config'
 import { mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import settingsStore from '@/store/settings'
+import contactsStore from '@/store/contacts'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
+import transactionsStore from '@/store/transactions'
 
 import FirstPage from '@/pages/FirstStart'
 import LockPage from '@/pages/LockScreen'
@@ -45,6 +47,12 @@ export default {
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setNetwork,
       settingsStore.MUTATIONS_NAMES.setNetworkConfig
+    ]),
+    ...mapActions(contactsStore.STORE_NAME, [
+      contactsStore.ACTIONS_NAMES.onUpdate
+    ]),
+    ...mapActions(transactionsStore.STORE_NAME, [
+      transactionsStore.ACTIONS_NAMES.onUpdateTransactions
     ]),
 
     async authNavigation(authData) {
@@ -88,12 +96,14 @@ export default {
 
     this.setTheme(theme)
 
-    await this.storeUpdate()
-    await this.authNavigation(authData)
-    await this.onLocal()
+    this.storeUpdate()
+    this.authNavigation(authData)
+    this.onLocal()
+    this.onUpdate()
+    this.onUpdateTransactions()
 
-    await this.updateRate()
-    await this.onUpdateSettings()
+    this.updateRate()
+    this.onUpdateSettings()
 
     this.setLoad()
   }
