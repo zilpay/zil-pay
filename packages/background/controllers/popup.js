@@ -27,14 +27,18 @@ export class Popup {
   /**
    * Send new status about wallet to content.js > inpage.js.
    */
-  static walletStatusUpdate() {
+  static async walletStatusUpdate() {
+    const storage = new BrowserStorage()
     const type = MTypeTab.LOCK_STAUS
+    const wallet = await storage.get(FIELDS.WALLET)
+    const selectedAccount = wallet.identities[wallet.selectedAddress]
 
     return new TabsMessage({
       type,
       payload: {
         isEnable: accountControl.auth.isEnable,
-        isReady: accountControl.auth.isReady
+        isReady: accountControl.auth.isReady,
+        account: selectedAccount
       }
     }).send()
   }
@@ -126,7 +130,7 @@ export class Popup {
 
       const wallet = await storage.get(FIELDS.WALLET)
 
-      sendResponse({ resolve: wallet[FIELDS.WALLET] })
+      sendResponse({ resolve: wallet })
     } catch (err) {
       sendResponse({ reject: err.message })
     }
