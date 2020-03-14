@@ -128,8 +128,8 @@ export default {
           value: this.transaction.nonce
         },
         {
-          key: 'Epoch',
-          value: this.transaction.epoch
+          key: 'Block',
+          value: this.transaction.block
         }
       ]
     }
