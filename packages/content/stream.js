@@ -35,14 +35,17 @@ export class Stream {
   }
 
   _broadcastToSecure(msg) {
-    let toSecureMsg = msg.type
+    if (!this.tabStream.stream || !msg.type || !msg.payload) {
+      return null
+    }
 
+    const type = msg.type
     const recipient = MTypeTabContent.INJECTED
 
     new SecureMessage({
-      type: toSecureMsg,
+      type,
       payload: msg.payload
-    }).send(this.secureStream, recipient)
+    }).send(this.tabStream.stream, recipient)
   }
 
 }

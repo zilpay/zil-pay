@@ -21,16 +21,16 @@ import {
 export class Zilliqa {
 
   /**
-   * When tab has been loaded.
+   * Call when inpage script has been loaded.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    * @param {String} domain - Tab domain name.
    */
   static async initInpage(sendResponse, domain) {
+    await networkControl.netwrokSync()
+
     const storage = new BrowserStorage()
     const provider = networkControl.provider
     const isConnect = await accountControl.auth.isConnect(domain)
-
-    await networkControl.netwrokSync()
 
     let wallet = await storage.get(FIELDS.WALLET)
 

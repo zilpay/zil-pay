@@ -69,20 +69,26 @@ export default class Wallet {
     _subject.subscribe(msg => {
       switch (msg.type) {
 
-      case MTypeTab.STATUS_UPDATE:
-        _isEnable = msg.payload.isEnable
+      case MTypeTab.ADDRESS_CHANGED:
+        if (_isEnable) {
+          _defaultAccount = toAccountFormat(msg.payload.address)
+        }
         break
 
-      case MTypeTab.CONTENT_GET_WALLET_DATA:
-        this._setDefaultAccount(msg.payload.account)
-
-        _isEnable = msg.payload.isEnable
+      case MTypeTab.GET_WALLET_DATA:
         _isConnect = msg.payload.isConnect
+        _isEnable = msg.payload.isEnable
         _net = msg.payload.net
+        if (_isEnable) {
+          _defaultAccount = toAccountFormat(msg.payload.account.address)
+        }
         break
 
-      case MTypeTab.SET_ADDRESS:
-        this._setDefaultAccount(msg.payload)
+      case MTypeTab.LOCK_STAUS:
+        _isEnable = msg.payload.isEnable
+        if (_isEnable) {
+          _defaultAccount = toAccountFormat(msg.payload.account.address)
+        }
         break
 
       case MTypeTab.SET_NET:
@@ -114,8 +120,6 @@ export default class Wallet {
         switch (msg.type) {
         case MTypeTab.CONTENT_GET_WALLET_DATA:
           return toAccountFormat(msg.payload.account.address)
-        case MTypeTab.SET_ADDRESS:
-          return toAccountFormat(msg.payload.address)
         }
       }),
       filter(account => account && lastAccount !== account.base16),
@@ -208,21 +212,9 @@ export default class Wallet {
     ).toPromise()
 
     _isConnect = confirmPayload.isConfirm
-    this._setDefaultAccount(confirmPayload.account)
+    _defaultAccount = toAccountFormat(confirmPayload.account.address)
 
     return confirmPayload.isConfirm
-  }
-
-  _setDefaultAccount(account) {
-    if (!this.isEnable || !account || !this.isConnect) {
-      return null
-    } else if (_defaultAccount && account.address === _defaultAccount.base16) {
-      return _defaultAccount
-    }
-
-    _defaultAccount = toAccountFormat(account.address)
-
-    return _defaultAccount
   }
 
 }

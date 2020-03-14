@@ -30,7 +30,7 @@ export default class Handler {
    */
   _init() {
     this.stream = new TabStream(MTypeTabContent.INJECTED)
-    this.stream.listen().subscribe(msg => console.log('INJECTED', msg))
+    this.stream.listen().subscribe(msg => this.subjectStream.next(msg))
   }
 
   /**

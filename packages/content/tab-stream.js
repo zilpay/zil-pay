@@ -26,7 +26,7 @@ export class ContentTabStream {
 
   constructor() {
     stream = new TabStream(MTypeTabContent.CONTENT)
-    stream.listen().subscribe(msg => console.log('CONTENT', msg))
+    stream.listen().subscribe(msg => this.listener(msg))
   }
 
   listener(msg) {
@@ -40,6 +40,10 @@ export class ContentTabStream {
 
     case MTypeTab.GET_WALLET_DATA:
       this.onSyncAll()
+      break
+
+    case MTypeTab.ADDRESS_CHANGED:
+      new Message(msg).send()
       break
 
     case MTypeTab.CONNECT_APP:

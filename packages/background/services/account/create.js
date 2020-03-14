@@ -122,19 +122,6 @@ export class AccountControl {
   }
 
   /**
-   * Any update wallet store.
-   * @param {Object} wallet - Wallet object ZilPay type.
-   * @interface wallet: { identities: Array, selectedAddress: number };
-   */
-  async walletUpdate(wallet) {
-    wallet.identities = wallet.identities.filter(Boolean)
-
-    await this._storage.set(
-      new BuildObject(FIELDS.WALLET, wallet)
-    )
-  }
-
-  /**
    * Create and change account name.
    * @param {String} name - User account name.
    */
