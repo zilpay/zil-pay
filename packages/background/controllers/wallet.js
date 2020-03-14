@@ -8,7 +8,6 @@
  */
 import { FIELDS } from 'config'
 import { BrowserStorage } from 'lib/storage'
-import { TypeChecker } from 'lib/type'
 import {
   TabsMessage,
   MTypeTab
@@ -111,26 +110,19 @@ export class Wallet {
   }
 
   /**
-   * Change account via user popup.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   * When has been any change account.
+   * @param {Object} wallet - Wallet object with accounts.
    */
-  async changeAddress(sendResponse) {
-    const wallet = this.payload[FIELDS.WALLET]
+  changeWallet(wallet) {
     const account = wallet.identities[
       wallet.selectedAddress
     ]
     const type = MTypeTab.ADDRESS_CHANGED
 
-    await accountControl.walletUpdate(wallet)
-
     new TabsMessage({
       type,
       payload: account
     }).send()
-
-    if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse(true)
-    }
   }
 
   /**
