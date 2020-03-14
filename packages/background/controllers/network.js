@@ -6,7 +6,6 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from 'config'
 import { TypeChecker } from 'lib/type'
 import { networkControl } from './main'
 import {
@@ -19,17 +18,16 @@ import {
  */
 export class Network {
 
-  constructor(payload) {
-    this.payload = payload
-  }
-
   /**
    * When user change selected network through popup.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   * @param {String} selectednet - Network string.
    */
-  async changeNetwork(sendResponse) {
+  async changeNetwork(selectednet) {
+    if (!new TypeChecker(selectednet).isString) {
+      return null
+    }
+
     let payload = null
-    const selectednet = this.payload[FIELDS.SELECTED_NET]
     const type = MTypeTab.NETWORK_CHANGED
 
     try {
@@ -45,10 +43,6 @@ export class Network {
     }
 
     new TabsMessage({ type, payload }).send()
-
-    if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse(networkControl.status)
-    }
   }
 
 }
