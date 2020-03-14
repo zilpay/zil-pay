@@ -20,7 +20,7 @@
     "INSUFFICIENT_FUNDS": "Insufficient funds",
 
     "DEPLOY": "deploy",
-    "EPOCH":"epoch",
+    "EPOCH":"block",
     "ACCOUNTS": "accounts",
     "ACCOUNT": "Account",
     "CONTACTS": "contacts",
