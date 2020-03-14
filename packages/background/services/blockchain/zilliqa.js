@@ -59,12 +59,13 @@ export class ZilliqaControl extends Zilliqa {
   /**
    * Preparation transaction to send.
    * @param {Object} txData - some tx params.
-   * @param {String} from - Sender address.
-   * @param {Number} currentNonce - Transaction nonce.
-   * @param {String} pubKey - Sender publicKey.
+   * @param {Object} account - Full account object.
    */
-  async buildTxParams(txData, from, currentNonce, pubKey) {
-    const balance = await this.getBalance(from)
+  async buildTxParams(txData, account) {
+    const storage = new BrowserStorage()
+    const transactions = await storage.get(FIELDS.TRANSACTIONS)
+    const network = await storage.get(FIELDS.SELECTED_NET)
+    const historyTx = transactions && transactions[account.address] && transactions[account.address][network]
     let {
       amount, // Amount of zil. type Number.
       code, // Value contract code. type String.
@@ -80,19 +81,26 @@ export class ZilliqaControl extends Zilliqa {
       version = await this.version()
     }
 
-    if (isNaN(nonce)) {
+    if (historyTx) {
+      const lastTx = historyTx.pop()
+      const { result } = await this.blockchain.getPendingTxn(lastTx.TranID)
+
+      if (result.confirmed) {
+        const balance = await this.getBalance(account.address)
+        nonce = balance.nonce
+      } else {
+        nonce = lastTx.nonce
+      }
+    } else {
+      const balance = await this.getBalance(account.address)
       nonce = balance.nonce
     }
 
-    if (currentNonce > balance.nonce) {
-      nonce = currentNonce
-    }
+    nonce++
 
     amount = new BN(amount)
     gasPrice = new BN(gasPrice)
     gasLimit = Long.fromNumber(gasLimit)
-
-    nonce++
 
     return this.transactions.new({
       nonce,
@@ -101,55 +109,27 @@ export class ZilliqaControl extends Zilliqa {
       gasLimit,
       version,
       toAddr,
-      pubKey,
       code,
-      data
+      data,
+      pubKey: account.publicKey
     })
-  }
-
-  /**
-   * Send sing transaction to node via JsonRPC.
-   * @param {Object} payload - Signed transaction payload for send to node.
-   */
-  signedTxSend(payload) {
-    return this.provider.send(
-      RPCMethod.CreateTransaction, payload
-    )
   }
 
   /**
    * Sign transaction via privateKey.
    * @param {Object} txData - payload without signature.
-   * @param {String} seedOrPrivateKey - PrivateKey for sing.
+   * @param {String} privateKey - PrivateKey for sing.
    * @param {Number} index - ID in mnemonic seed phrase.
-   * @param {Number} currentNonce - Transaction nonce from storage.
    */
-  async singTransaction(txData, seedOrPrivateKey, index, currentNonce) {
+  async singTransaction(zilTxData, privateKey) {
     // importing account from private key or seed phrase. //
-    if (validation.isPrivateKey(seedOrPrivateKey)) {
-      this.wallet.addByPrivateKey(seedOrPrivateKey)
-    } else {
-      this.wallet.addByMnemonic(seedOrPrivateKey, index)
-    }
+    const address = this.wallet.addByPrivateKey(privateKey)
 
-    const zilTxData = await this.buildTxParams(
-      txData,
-      this.wallet.defaultAccount.address,
-      currentNonce,
-      this.wallet.defaultAccount.publicKey
-    )
+    this.wallet.setDefault(address)
     // Sign transaction by current account. //
-    const { txParams, payload } = await this.wallet.sign(zilTxData)
+    const { txParams } = await this.wallet.sign(zilTxData)
 
-    if (new TypeChecker(txData.isBroadcast).isBoolean) {
-      payload.Info = 'Non-broadcast'
-      payload.TranID = 'none'
-      payload.version = txParams.version
-
-      return { result: payload, req: null }
-    }
-
-    return await this.signedTxSend(txParams)
+    return this.provider.send(RPCMethod.CreateTransaction, txParams)
   }
 
   /**
@@ -287,9 +267,11 @@ export class ZilliqaControl extends Zilliqa {
     const data = {
       Info: tx.Info,
       TranID: tx.TranID,
+      confirmed: tx.confirmed,
       amount: tx.amount,
       toAddr: toChecksumAddress(tx.toAddr),
-      nonce: tx.nonce
+      nonce: tx.nonce,
+      block: tx.block
     }
 
     if (!net) {
@@ -298,16 +280,7 @@ export class ZilliqaControl extends Zilliqa {
       )
     }
 
-    Object.keys(data).forEach(key => {
-      if (!data[key]) {
-        throw new Error(
-          errorsCode.WrongRequiredparam + key
-        )
-      }
-    })
-
     try {
-      txsList = txsList[FIELDS.TRANSACTIONS]
       if (!txsList[from]) {
         txsList[from] = {}
         txsList[from][net] = []
@@ -324,9 +297,38 @@ export class ZilliqaControl extends Zilliqa {
       txsList[from][net].shift()
     }
 
-    await storage.set(
-      new BuildObject(FIELDS.TRANSACTIONS, txsList)
-    )
+    await storage.set(new BuildObject(FIELDS.TRANSACTIONS, txsList))
+  }
+
+  /**
+   * Use for transactionHistory status updateing
+   * @param {Object} assignData - Any data for add to storage.
+   * @param {String} hash - Transaction hash.
+   * @param {String} net - Current network.
+   * @param {String} from - Sender address.
+   */
+  async updateTransactionList(assignData, hash, net, from) {
+    const storage = new BrowserStorage()
+    let txsList = await storage.get(FIELDS.TRANSACTIONS)
+
+    if (!txsList || !txsList[from] || !txsList[from][net]) {
+      return null
+    } else if (!txsList[from][net].some((tx) => tx.TranID === hash)) {
+      return null
+    }
+
+    txsList[from][net] = txsList[from][net].map((tx) => {
+      if (tx.TranID === hash) {
+        return {
+          ...tx,
+          ...assignData
+        }
+      }
+
+      return tx
+    })
+
+    await storage.set(new BuildObject(FIELDS.TRANSACTIONS, txsList))
   }
 
   /**
