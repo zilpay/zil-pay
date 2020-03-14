@@ -102,3 +102,13 @@ export async function changeContacts(contacts) {
 
   return contacts
 }
+
+export function clearTransactionsHistory() {
+  return storage.set([
+    new BuildObject(FIELDS.TRANSACTIONS, {})
+  ])
+}
+
+export function getTransactionsHistory() {
+  return storage.get(FIELDS.TRANSACTIONS)
+}

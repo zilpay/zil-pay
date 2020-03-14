@@ -8,6 +8,10 @@
  */
 import { units, BN } from '@zilliqa-js/util'
 
+import { DEFAULT } from 'config'
+
+import { clearTransactionsHistory, getTransactionsHistory } from '@/services'
+
 const STORE_NAME = 'transactions'
 const STATE_NAMES = {
   transactions: STORE_NAME,
@@ -16,9 +20,13 @@ const STATE_NAMES = {
 const MUTATIONS_NAMES = {
   setCurrentGas: 'setCurrentGas',
   setConfirmationTx: 'setConfirmationTx',
-  setEmpty: 'setEmpty'
+  setEmpty: 'setEmpty',
+  setClearTxHistory: 'setClearTxHistory',
+  setTxHistory: 'setTxHistory'
 }
-const ACTIONS_NAMES = { }
+const ACTIONS_NAMES = {
+  onUpdateTransactions: 'onUpdateTransactions'
+}
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
   getCurrentGas: 'getCurrentGas',
@@ -28,39 +36,7 @@ const GETTERS_NAMES = {
 const STORE = {
   namespaced: true,
   state: {
-    [STATE_NAMES.transactions]: {
-      '0x119929d8c388DE3650Ea1B3DC7b9Fe0ceEFE862F': {
-        mainnet: [
-          {
-            Info: 'Contract Txn, Shards Match of the sender and reciever',
-            TranID: '8bd99abe0f280d5df9fd515eadd93870902ecf5a5c661cfc37bca22fc657f5fd',
-            amount: '10000000000000',
-            nonce: 55,
-            toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-            status: 'confirmed',
-            epoch: '113232'
-          },
-          {
-            Info: '',
-            TranID: 'aaf3ef4c1e5135ac112d55082d97c9c235385bf567c9005e0fc82cbfcd735730',
-            amount: '1000000000000',
-            nonce: 52,
-            toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-            status: 'rejected',
-            epoch: '113233'
-          },
-          {
-            Info: 'Contract Creation',
-            TranID: 'aaf3ef4c1e5135ac112d55082d27c9c235385bf517c9005e0fc82cbfcd735730',
-            amount: '23000000000000',
-            nonce: 56,
-            toAddr: '0xE8A997e359AC2A1e891dBDf7fc7558623bB0eaD2',
-            status: 'mining',
-            epoch: '32432'
-          }
-        ]
-      }
-    },
+    [STATE_NAMES.transactions]: { },
     [STATE_NAMES.confirmationTx]: []
   },
   mutations: {
@@ -80,9 +56,22 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setEmpty](state) {
       state[STATE_NAMES.confirmationTx] = []
+    },
+    [MUTATIONS_NAMES.setClearTxHistory](state) {
+      state[STATE_NAMES.transactions] = {}
+      clearTransactionsHistory()
+    },
+    [MUTATIONS_NAMES.setTxHistory](state, data) {
+      state[STATE_NAMES.transactions] = data
     }
   },
-  actions: {},
+  actions: {
+    async [ACTIONS_NAMES.onUpdateTransactions]({ commit }) {
+      const result = await getTransactionsHistory()
+
+      commit(MUTATIONS_NAMES.setTxHistory, result)
+    }
+  },
   getters: {
     [GETTERS_NAMES.getCurrent](state) {
       return state.confirmationTx[0]
@@ -101,8 +90,13 @@ const STORE = {
       try {
         const { address } = rootGetters['accounts/getCurrentAccount']
         const { network } = rootState.settings
+        const transactions = state.transactions[address][network] || []
 
-        return state.transactions[address][network] || []
+        if (transactions.length > DEFAULT.MAX_TX_AMOUNT_LIST) {
+          return transactions.slice(transactions.length - DEFAULT.MAX_TX_AMOUNT_LIST, transactions.length)
+        }
+
+        return transactions
       } catch (err) {
         return []
       }
