@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto'
 import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
@@ -158,6 +159,47 @@ export class AccountControl {
     await this._storage.set(
       new BuildObject(FIELDS.CONNECT_DAPP, payload)
     )
+  }
+
+  async getCurrentAccount() {
+    await this.auth.vaultSync()
+
+    if (!this.auth.isReady) {
+      throw new Error(
+        errorsCode.WalletIsNotReady + this.auth.isReady
+      )
+    } else if (!this.auth.isEnable) {
+      throw new Error(
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
+      )
+    }
+
+    let account = {
+      privateKey: null,
+      publicKey: null,
+      address: null,
+      index: null
+    }
+    const wallet = await this._storage.get(FIELDS.WALLET)
+    const selectedAccount = wallet.identities[wallet.selectedAddress]
+    const { decryptImported, decryptSeed } = this.auth.getWallet()
+
+    account.index = selectedAccount.index
+    account.address = selectedAccount.address
+
+    if (selectedAccount.isImport) {
+      const { privateKey } = decryptImported.find(
+        acc => acc.index === selectedAccount.index
+      )
+
+      account.privateKey = privateKey
+    } else if (new TypeChecker(selectedAccount.isImport, selectedAccount.hwType).isUndefined) {
+      account = await this.zilliqa.getAccountBySeed(decryptSeed, selectedAccount.index)
+    }
+
+    account.publicKey = getPubKeyFromPrivateKey(account.privateKey)
+
+    return account
   }
 
 }
