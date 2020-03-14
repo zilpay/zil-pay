@@ -32,7 +32,7 @@
           :variant="COLOR_VARIANTS.gray"
           @click="onSelectedCard"
         >
-          ZIL{{ account.balance | fromZil }}
+          ZIL {{ account.balance | fromZil }}
         </P>
         <P
           :class="b('currency')"
@@ -40,7 +40,7 @@
           :variant="COLOR_VARIANTS.gray"
           @click="onSelectedCard"
         >
-          {{ currency }}{{ account.balance | toConversion(getRate) }}
+          {{ currency }} {{ account.balance | toConversion(getRate) }}
         </P>
       </div>
       <Trash
