@@ -28,16 +28,23 @@ export class Popup {
    * Send new status about wallet to content.js > inpage.js.
    */
   static async walletStatusUpdate() {
-    const storage = new BrowserStorage()
+    const isEnable = accountControl.auth.isEnable
+    const isReady = accountControl.auth.isReady
     const type = MTypeTab.LOCK_STAUS
-    const wallet = await storage.get(FIELDS.WALLET)
-    const selectedAccount = wallet.identities[wallet.selectedAddress]
+    let selectedAccount = null
+
+    if (isEnable) {
+      const storage = new BrowserStorage()
+      const wallet = await storage.get(FIELDS.WALLET)
+
+      selectedAccount = wallet.identities[wallet.selectedAddress]
+    }
 
     return new TabsMessage({
       type,
       payload: {
-        isEnable: accountControl.auth.isEnable,
-        isReady: accountControl.auth.isReady,
+        isEnable,
+        isReady,
         account: selectedAccount
       }
     }).send()
