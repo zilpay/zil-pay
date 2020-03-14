@@ -32,7 +32,7 @@
     </Container>
     <Container :class="b('thirdly-line')">
       <div :class="b('time')">
-        {{ this.local.EPOCH }} {{ transaction.epoch}}
+        {{ this.local.EPOCH }}: {{ transaction.block}}
       </div>
       <P
         :class="b('amount')"
@@ -52,7 +52,6 @@ import {
   ICON_VARIANTS,
   FONT_VARIANTS,
   COLOR_VARIANTS,
-  TRANSACTION_STATUS,
   EVENTS
 } from '@/config'
 
@@ -101,16 +100,13 @@ export default {
       return this.local.SEND
     },
     statusIcon() {
-      switch (this.transaction.status) {
-      case TRANSACTION_STATUS.confirmed:
-        return ICON_VARIANTS.statusSuccess
-      case TRANSACTION_STATUS.rejected:
-        return ICON_VARIANTS.statusDanger
-      case TRANSACTION_STATUS.mining:
+      if (!this.transaction.confirmed) {
         return ICON_VARIANTS.statusPadding
-      default:
+      } else if (this.transaction.confirmed && this.transaction.error) {
         return ICON_VARIANTS.statusDanger
       }
+
+      return ICON_VARIANTS.statusSuccess
     }
   },
   methods: {
