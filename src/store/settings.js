@@ -13,7 +13,13 @@ import { TypeChecker } from 'lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
 
-import { setSelectedNetwork, updateStatic, updateNetworkConifg } from '@/services'
+import {
+  setSelectedNetwork,
+  updateStatic,
+  updateNetworkConifg,
+  getConnect,
+  removeConnect
+} from '@/services'
 
 const STORE_NAME = 'settings'
 const STATE_NAMES = {
@@ -37,11 +43,17 @@ const MUTATIONS_NAMES = {
   setGas: 'setGas',
   setDefaultGas: 'setDefaultGas',
   setRate: 'setRate',
-  setNetworkConfig: 'setNetworkConfig'
+  setNetworkConfig: 'setNetworkConfig',
+  setConnect: 'setConnect',
+  setDappList: 'setDappList',
+  setEmptyDappList: 'setEmptyDappList',
+  setRemoveDappList: 'setRemoveDappList'
 }
 const ACTIONS_NAMES = {
   updateRate: 'updateRate',
-  onUpdateSettings: 'onUpdateSettings'
+  onUpdateSettings: 'onUpdateSettings',
+  onUpdateConnection: 'onUpdateConnection',
+  onUpdateDappList: 'onUpdateDappList'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -139,6 +151,26 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setRate](state, payload) {
       state[STATE_NAMES.currentRate] = payload
+    },
+    [MUTATIONS_NAMES.setConnect](state, payload) {
+      if (!payload || !new TypeChecker(payload).isObject) {
+        return null
+      }
+
+      state[STATE_NAMES.connect] = payload
+    },
+    [MUTATIONS_NAMES.setEmptyDappList](state) {
+      state[STATE_NAMES.dappsList] = []
+
+      updateStatic(state, true)
+    },
+    [MUTATIONS_NAMES.setDappList](state, data) {
+      state[STATE_NAMES.dappsList] = state[STATE_NAMES.dappsList].concat(data)
+    },
+    [MUTATIONS_NAMES.setRemoveDappList](state, item) {
+      state[STATE_NAMES.dappsList] = state[STATE_NAMES.dappsList]
+        .filter((el) => el.domain !== item.domain)
+      updateStatic(state, true)
     }
   },
   actions: {
@@ -174,6 +206,31 @@ const STORE = {
       commit(MUTATIONS_NAMES.setNetwork, newState.network)
       commit(MUTATIONS_NAMES.setAddressFormat, newState.addressFormat)
       commit(MUTATIONS_NAMES.setCurrency, newState.currency)
+    },
+    async [ACTIONS_NAMES.onUpdateConnection]({ commit }) {
+      const connection = await getConnect()
+
+      commit(MUTATIONS_NAMES.setConnect, connection)
+    },
+    async [ACTIONS_NAMES.onUpdateDappList]({ state, commit }) {
+      const currentConnect = state[STATE_NAMES.connect]
+      const currentList = state[STATE_NAMES.dappsList]
+
+      await removeConnect()
+
+      for (let index = 0; index < currentList.length; index++) {
+        if (currentList[index].domain === currentConnect.domain) {
+          return null
+        }
+      }
+
+      delete currentConnect.uuid
+
+      currentList.push(currentConnect)
+
+      await updateStatic(state, true)
+
+      commit(MUTATIONS_NAMES.setDappList, currentList)
     }
   },
   getters: {

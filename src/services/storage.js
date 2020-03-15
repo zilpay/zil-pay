@@ -112,3 +112,17 @@ export function clearTransactionsHistory() {
 export function getTransactionsHistory() {
   return storage.get(FIELDS.TRANSACTIONS)
 }
+
+export function getToConfirmTxs() {
+  return storage.get(FIELDS.CONFIRM_TX)
+}
+
+export function getConnect() {
+  return storage.get(FIELDS.CONNECT_DAPP)
+}
+
+export function removeConnect() {
+  return storage.set([
+    new BuildObject(FIELDS.CONNECT_DAPP, {})
+  ])
+}
