@@ -1,6 +1,7 @@
 <template>
   <div :class="b()">
     <Alert
+      v-if="getCurrentAccount"
       :class="b('from')"
       pointer
       @click="onFrom"
@@ -15,7 +16,10 @@
         {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
       </P>
     </Alert>
-    <Container :class="b('wrapper')">
+    <Container
+      v-if="getCurrent"
+      :class="b('wrapper')"
+    >
       <Icon
         v-if="getCurrent.icon"
         :src="getCurrent.icon"
@@ -57,7 +61,7 @@
       {{ error }}
     </P>
     <Container
-      v-show="getCurrent.data"
+      v-if="getCurrent && getCurrent.data"
       :class="b('details')"
       @click="onDetails"
     >
@@ -73,6 +77,7 @@
       />
     </Container>
     <Alert
+      v-if="getCurrent"
       :class="b('to')"
       pointer
       @click="onTo"
@@ -207,26 +212,32 @@ export default {
      * Testing for insufficient funds.
      */
     testAmount() {
+      if (!this.getCurrentAccount) {
+        return null
+      }
+
       const { gasLimit, gasPrice } = this.getCurrentGas
 
       return this.calcIsInsufficientFunds(
         this.getCurrent.amount,
         gasLimit,
         gasPrice,
-        this.getCurrentAccount.balance
+        this.getCurrentAccount.balance || '0'
       )
     }
   },
   methods: {
     ...mapMutations(transactionsStore.STORE_NAME, [
       transactionsStore.MUTATIONS_NAMES.setCurrentGas,
-      transactionsStore.MUTATIONS_NAMES.setEmpty
+      transactionsStore.MUTATIONS_NAMES.setEmpty,
+      transactionsStore.MUTATIONS_NAMES.setPopConfirmTx
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(transactionsStore.STORE_NAME, [
-      transactionsStore.ACTIONS_NAMES.onUpdateTransactions
+      transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
+      transactionsStore.ACTIONS_NAMES.setRejectedLastTx
     ]),
 
     /**
@@ -248,8 +259,11 @@ export default {
     /**
      * When rejected tx.
      */
-    onReject() {
-      this.popupClouse()
+    async onReject() {
+      this.setLoad()
+      await this.setRejectedLastTx()
+      this.setLoad()
+      await this.popupClouse()
     },
     /**
      * When confirmed tx.
@@ -260,11 +274,11 @@ export default {
       try {
         this.setLoad()
         await bg.sendToSignBroadcasting(this.getCurrent)
+        this.popupClouse()
       } catch (err) {
         this.error = err.message
       } finally {
         this.setLoad()
-        this.popupClouse()
       }
     },
     /**
@@ -286,16 +300,17 @@ export default {
     /**
      * To close popup.
      */
-    popupClouse() {
-      if (!this.getCurrent.uuid) {
+    async popupClouse() {
+      if (this.getCurrent && !this.getCurrent.uuid) {
         this.setEmpty()
-        this.onUpdateTransactions()
         this.$router.push({ name: HomePage.name })
 
         return null
       }
 
-      if (!this.confirmationTx || this.confirmationTx.length < 1) {
+      this.setPopConfirmTx()
+
+      if (!this.confirmationTx || this.confirmationTx.length === 0) {
         window.close()
       }
     }
