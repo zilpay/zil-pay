@@ -186,4 +186,11 @@ export class Background {
 
     return result.resolve
   }
+
+  /**
+   * Rejected need to confirm tx and send to tabs.
+   */
+  async rejectTx() {
+    return Message.signal(MTypePopup.REJECT_CONFIRM_TX).send()
+  }
 }
