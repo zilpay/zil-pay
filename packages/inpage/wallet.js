@@ -70,7 +70,7 @@ export default class Wallet {
       switch (msg.type) {
 
       case MTypeTab.ADDRESS_CHANGED:
-        if (_isEnable) {
+        if (_isEnable && msg.payload.address) {
           _defaultAccount = toAccountFormat(msg.payload.address)
         }
         break
@@ -79,19 +79,19 @@ export default class Wallet {
         _isConnect = msg.payload.isConnect
         _isEnable = msg.payload.isEnable
         _net = msg.payload.net
-        if (_isEnable) {
+        if (_isEnable && msg.payload.account && msg.payload.account.address) {
           _defaultAccount = toAccountFormat(msg.payload.account.address)
         }
         break
 
       case MTypeTab.LOCK_STAUS:
         _isEnable = msg.payload.isEnable
-        if (_isEnable) {
+        if (_isEnable && msg.payload.account && msg.payload.account.address) {
           _defaultAccount = toAccountFormat(msg.payload.account.address)
         }
         break
 
-      case MTypeTab.SET_NET:
+      case MTypeTab.NETWORK_CHANGED:
         _net = msg.payload.net
         break
 
@@ -117,9 +117,10 @@ export default class Wallet {
           return _defaultAccount
         }
 
-        switch (msg.type) {
-        case MTypeTab.CONTENT_GET_WALLET_DATA:
-          return toAccountFormat(msg.payload.account.address)
+        if (msg.type === MTypeTab.GET_WALLET_DATA || msg.type === MTypeTab.LOCK_STAUS) {
+          _defaultAccount = toAccountFormat(msg.payload.account.address)
+        } else if (msg.type === MTypeTab.ADDRESS_CHANGED) {
+          _defaultAccount = toAccountFormat(msg.payload.address)
         }
       }),
       filter(account => account && lastAccount !== account.base16),
@@ -135,7 +136,7 @@ export default class Wallet {
    */
   observableNetwork() {
     return from(_subject).pipe(
-      filter(msg => msg && msg.type === MTypeTab.SET_NET),
+      filter(msg => msg && (msg.type === MTypeTab.NETWORK_CHANGED || msg.type === MTypeTab.GET_WALLET_DATA)),
       map(msg => msg.payload.net)
     )
   }
@@ -150,7 +151,7 @@ export default class Wallet {
       throw new Error('User is\'t connections.')
     }
 
-    const type = MTypeTab.CALL_SIGN_TX
+    const type = MTypeTab.CALL_TO_SIGN_TX
     const recipient = MTypeTabContent.CONTENT
     const uuid = uuidv4()
     let { payload } = tx
@@ -191,7 +192,7 @@ export default class Wallet {
    */
   async connect() {
     const type = MTypeTab.CONNECT_APP
-    const recipient = MTypeTab.CONNECT_APP
+    const recipient = MTypeTabContent.CONTENT
     const uuid = uuidv4()
     const title = window.document.title
     const domain = window.document.domain
