@@ -19,25 +19,32 @@ const { document, window } = global
  * Get the favicon from current tab.
  */
 export function getFavicon() {
+  const needAttribute = 'href'
   let favicon = null
   let nodeList = document.getElementsByTagName('link')
 
   for (let i = 0; i < nodeList.length; i++) {
-    if ((nodeList[i].getAttribute('rel') === 'icon')
-      || (nodeList[i].getAttribute('rel') === 'shortcut icon')) {
-      favicon = nodeList[i].getAttribute('href')
+    switch (nodeList[i].getAttribute('rel')) {
+    case 'icon':
+      favicon = nodeList[i].getAttribute(needAttribute)
+      break
+    case 'fluid-icon':
+      favicon = nodeList[i].getAttribute(needAttribute)
+      break
+    case 'shortcut icon':
+      favicon = nodeList[i].getAttribute(needAttribute)
+      break
+    default:
+      break
     }
   }
 
   if (!favicon) {
     return null
-  } else if (!favicon.includes(window.document.domain)) {
-    if (favicon[0] !== '/') {
-      favicon = window.location.origin + '/' + favicon
-    } else {
-      favicon = window.location.origin + favicon
-    }
+  } else if (favicon[0] === '/') {
+    favicon = window.location.origin + favicon
   }
+
   return favicon
 }
 
