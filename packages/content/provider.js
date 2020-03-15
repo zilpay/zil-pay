@@ -12,7 +12,9 @@ import {
   composeMiddleware
 } from '@zilliqa-js/core'
 
-const DEFAULT_HEADERS = { 'Content-Type': 'application/json' }
+const DEFAULT_HEADERS = {
+  'Content-Type': 'application/json'
+}
 
 /**
  * Override send method, have something problem with  FireFox.

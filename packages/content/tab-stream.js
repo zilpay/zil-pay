@@ -50,7 +50,7 @@ export class ContentTabStream {
       new Message(msg).send()
       break
 
-    case MTypeTab.CALL_SIGN_TX:
+    case MTypeTab.CALL_TO_SIGN_TX:
       new Message(msg).send()
       break
 
@@ -89,7 +89,7 @@ export class ContentTabStream {
 
     try {
       const { provider } = await Message.signal(
-        MTypeTab.CONTENT_GET_WALLET_DATA
+        MTypeTab.GET_WALLET_DATA
       ).send()
       const httpProvider = new HTTPProvider(provider)
 
