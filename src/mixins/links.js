@@ -19,6 +19,9 @@ export default {
     linksExpand() {
       extension.tabs.create({ url: DEFAULT.PROMT_PAGE })
       window.window.close()
+    },
+    linkToDomain(domain) {
+      extension.tabs.create({ url: domain })
     }
   }
 }
