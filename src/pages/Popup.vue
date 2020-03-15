@@ -261,9 +261,13 @@ export default {
      */
     async onReject() {
       this.setLoad()
-      await this.setRejectedLastTx()
-      this.setLoad()
+
+      if (this.getCurrent && this.getCurrent.uuid) {
+        await this.setRejectedLastTx()
+      }
+
       await this.popupClouse()
+      this.setLoad()
     },
     /**
      * When confirmed tx.
@@ -303,12 +307,13 @@ export default {
     async popupClouse() {
       if (this.getCurrent && !this.getCurrent.uuid) {
         this.setEmpty()
+        await this.onUpdateTransactions()
         this.$router.push({ name: HomePage.name })
 
         return null
       }
 
-      this.setPopConfirmTx()
+      await this.setPopConfirmTx()
 
       if (!this.confirmationTx || this.confirmationTx.length === 0) {
         window.close()
