@@ -120,7 +120,7 @@ export default {
     text-indent: 15px;
 
     height: 45px;
-    width: auto;
+    width: 100%;
   }
 
   &_pointer {
