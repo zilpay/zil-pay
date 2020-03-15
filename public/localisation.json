@@ -91,7 +91,7 @@
     "CHARS": "characters",
     "LONG": "long",
     "NOT_MATCH": "do not match. Please try again",
-    "CAN_EDIT": "can change:",
+    "CAN_EDIT": "change:",
 
     "IMPORT_PRIVATE_KEY": "You can access your wallet with private key.",
     "IMPORT_KEYSTORE": "You can access your wallet with your keystore file and passphrase.",
