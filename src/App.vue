@@ -7,7 +7,7 @@
 <script>
 import { BrowserStorage } from 'lib/storage'
 import { FIELDS } from 'config'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import uiStore from '@/store/ui'
 import settingsStore from '@/store/settings'
 import contactsStore from '@/store/contacts'
@@ -18,6 +18,8 @@ import transactionsStore from '@/store/transactions'
 import FirstPage from '@/pages/FirstStart'
 import LockPage from '@/pages/LockScreen'
 import homePage from '@/pages/Home'
+import PopupPage from '@/pages/Popup'
+import ConnectPage from '@/pages/Connect'
 
 import LinkMixin from '@/mixins/links'
 import { isExpand, getStorageData } from '@/services'
@@ -25,10 +27,19 @@ import { isExpand, getStorageData } from '@/services'
 export default {
   name: 'App',
   mixins: [LinkMixin],
+  computed: {
+    ...mapState(transactionsStore.STORE_NAME, [
+      transactionsStore.STATE_NAMES.confirmationTx
+    ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.connect
+    ])
+  },
   methods: {
     ...mapActions(settingsStore.STORE_NAME, [
       settingsStore.ACTIONS_NAMES.updateRate,
-      settingsStore.ACTIONS_NAMES.onUpdateSettings
+      settingsStore.ACTIONS_NAMES.onUpdateSettings,
+      settingsStore.ACTIONS_NAMES.onUpdateConnection
     ]),
     ...mapActions(uiStore.STORE_NAME, [
       uiStore.ACTIONS_NAMES.onLocal
@@ -52,7 +63,8 @@ export default {
       contactsStore.ACTIONS_NAMES.onUpdate
     ]),
     ...mapActions(transactionsStore.STORE_NAME, [
-      transactionsStore.ACTIONS_NAMES.onUpdateTransactions
+      transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
+      transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
 
     async authNavigation(authData) {
@@ -66,6 +78,14 @@ export default {
         return null
       } else if (!authData.isEnable) {
         this.$router.push({ name: LockPage.name })
+
+        return null
+      } else if (this.confirmationTx && this.confirmationTx.length > 0) {
+        this.$router.push({ name: PopupPage.name })
+
+        return null
+      } else if (this.connect && Object.keys(this.connect).length > 0) {
+        this.$router.push({ name: ConnectPage.name })
 
         return null
       }
@@ -92,9 +112,12 @@ export default {
 
     const storage = new BrowserStorage()
     const theme = await storage.get(FIELDS.THEME)
+    this.setTheme(theme)
+
     const authData = await this.onInit()
 
-    this.setTheme(theme)
+    await this.onUpdateToConfirmTxs()
+    await this.onUpdateConnection()
 
     this.storeUpdate()
     this.authNavigation(authData)

@@ -46,6 +46,8 @@
 import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
+import settingsStore from '@/store/settings'
+import transactionsStore from '@/store/transactions'
 
 import {
   ICON_VARIANTS,
@@ -54,6 +56,8 @@ import {
 } from '@/config'
 
 import HomePage from '@/pages/Home'
+import PopupPage from '@/pages/Popup'
+import ConnectPage from '@/pages/Connect'
 
 import Container from '@/components/Container'
 import Icon from '@/components/Icon'
@@ -94,6 +98,12 @@ export default {
     ...mapState(walletStore.STORE_NAME, [
       walletStore.STATE_NAMES.isReady,
       walletStore.STATE_NAMES.networkStatus
+    ]),
+    ...mapState(transactionsStore.STORE_NAME, [
+      transactionsStore.STATE_NAMES.confirmationTx
+    ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.connect
     ])
   },
   methods: {
@@ -112,6 +122,16 @@ export default {
           isReady: this.isReady,
           networkStatus: this.networkStatus
         })
+
+        if (this.confirmationTx && this.confirmationTx.length > 0) {
+          this.$router.push({ name: PopupPage.name })
+
+          return null
+        } else if (this.connect && Object.keys(this.connect).length > 0) {
+          this.$router.push({ name: ConnectPage.name })
+
+          return null
+        }
 
         this.$router.push({ name: HomePage.name })
       } catch (err) {
