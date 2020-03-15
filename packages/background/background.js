@@ -105,6 +105,10 @@ export class Background {
       new Domains(message.payload).getUdOwnerByDomain(sendResponse)
       break
 
+    case MTypePopup.REJECT_CONFIRM_TX:
+      Transaction.rmTransactionsConfirm(sendResponse)
+      break
+
     default:
       break
     }
