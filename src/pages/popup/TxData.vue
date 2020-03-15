@@ -3,7 +3,7 @@
     <TopBar />
     <Container :class="b('wrapper')">
       <div :class="b('switcher')">
-        <P>
+        <P capitalize>
           {{ local.CAN_EDIT }}
         </P>
         <SwitchBox v-model="options.modifiable"/>
