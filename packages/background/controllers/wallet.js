@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS } from 'config'
-import { BrowserStorage } from 'lib/storage'
+import { BrowserStorage, BuildObject } from 'lib/storage'
 import {
   TabsMessage,
   MTypeTab
@@ -141,7 +141,7 @@ export class Wallet {
 
       wallet.identities[wallet.selectedAddress].balance = result
 
-      await accountControl.walletUpdate(wallet)
+      await storage.set(new BuildObject(FIELDS.WALLET, wallet))
 
       sendResponse({ resolve: wallet })
     } catch (err) {
