@@ -1,9 +1,12 @@
 <template>
   <div :class="b()">
     <Alert>
-      <Container :class="b('account')">
+      <Container
+        v-if="getCurrentAccount"
+        :class="b('account')"
+      >
         <Title :size="SIZE_VARIANS.sm">
-          {{ getCurrentAccount.name }}
+          {{ name }}
         </Title>
           <P>
             {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
@@ -12,16 +15,16 @@
     </Alert>
     <Container :class="b('wrapper')">
       <Icon
-        :src="CONNECT_TEST.icon"
+        :src="connect.icon"
         :type="ICON_TYPE.auto"
         width="40"
         height="40"
       />
       <Title :size="SIZE_VARIANS.md">
-        {{ CONNECT_TEST.domain }}
+        {{ connect.domain }}
       </Title>
       <P>
-        {{ CONNECT_TEST.title }} {{ local.CONNECT_INFO }}
+        {{ connect.title }} {{ local.CONNECT_INFO }}
       </P>
     </Container>
     <Alert :class="b('about-connect')">
@@ -42,7 +45,7 @@
 <script>
 import { uuid } from 'uuidv4'
 
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
@@ -62,16 +65,12 @@ import BottomBar from '@/components/BottomBar'
 import Container from '@/components/Container'
 
 import { toAddress } from '@/filters'
+import { removeConnect } from '@/services'
 
+const { window } = global
 const EVENTS = {
   connect: uuid(),
   cancel: uuid()
-}
-const CONNECT_TEST = {
-  domain: 'rocketgame.io',
-  icon: 'https://rocketgame.io/favicon.ico',
-  title: 'RocketGame',
-  uuid: '574ed57d-08bf-4118-b372-014a45995a66'
 }
 export default {
   name: 'Connect',
@@ -89,8 +88,7 @@ export default {
       SIZE_VARIANS,
       COLOR_VARIANTS,
       FONT_VARIANTS,
-      ICON_TYPE,
-      CONNECT_TEST
+      ICON_TYPE
     }
   },
   computed: {
@@ -98,7 +96,8 @@ export default {
       uiStore.STATE_NAMES.local
     ]),
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.addressFormat
+      settingsStore.STATE_NAMES.addressFormat,
+      settingsStore.STATE_NAMES.connect
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
@@ -119,10 +118,50 @@ export default {
           size: SIZE_VARIANS.sm
         }
       ]
+    },
+    name() {
+      if (this.getCurrentAccount.name) {
+        return this.getCurrentAccount.name
+      } else if (this.getCurrentAccount.isImport) {
+        return `${this.local.IMPORTED} ${this.getCurrentAccount.index}`
+      } else if (this.getCurrentAccount.hwType) {
+        return `${this.getCurrentAccount.hwType} ${this.getCurrentAccount.index}`
+      }
+
+      return `${this.local.ACCOUNT} ${this.account.index}`
     }
   },
   methods: {
-    onEvent(event) {}
+    ...mapMutations(settingsStore.STORE_NAME, [
+      settingsStore.MUTATIONS_NAMES.setDappList,
+      settingsStore.MUTATIONS_NAMES.setConnect
+    ]),
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.onUpdateDappList
+    ]),
+
+    onReject() {
+      removeConnect()
+      this.setConnect({})
+      window.window.close()
+    },
+    async onConfirm() {
+      await this.onUpdateDappList()
+      window.window.close()
+    },
+
+    onEvent(event) {
+      switch (event) {
+      case EVENTS.connect:
+        this.onConfirm()
+        break
+      case EVENTS.cancel:
+        this.onReject()
+        break
+      default:
+        break
+      }
+    }
   }
 }
 </script>
