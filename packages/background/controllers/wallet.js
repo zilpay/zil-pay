@@ -8,20 +8,15 @@
  */
 import { FIELDS } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
-import {
-  TabsMessage,
-  MTypeTab
-} from 'lib/stream'
+import { TypeChecker } from 'lib/type'
+import { TabsMessage, MTypeTab } from 'lib/stream'
 import {
   AccountExporter,
   AccountImporter,
   ZilliqaControl,
   PromptService
 } from '../services'
-import {
-  accountControl,
-  networkControl
-} from './main'
+import { accountControl, networkControl } from './main'
 
 /**
  * wallet controler for import and export.
@@ -156,7 +151,26 @@ export class Wallet {
   async connectToDapp(sendResponse) {
     if (this.payload.domain && this.payload.domain.includes('zilpay.xyz')) {
       sendResponse({ resolve: true })
+
       return null
+    }
+
+    const isConnect = await accountControl.isConnection(this.payload.domain)
+
+    if (isConnect) {
+      const storage = new BrowserStorage()
+      const wallet = await storage.get(FIELDS.WALLET)
+      const account = wallet.identities[wallet.selectedAddress]
+      const type = MTypeTab.RESPONSE_TO_DAPP
+      const payload = {
+        ...this.payload,
+        account,
+        confirm: true
+      }
+
+      new TabsMessage({ type, payload }).send()
+
+      return sendResponse({ resolve: true })
     }
 
     try {
@@ -167,6 +181,38 @@ export class Wallet {
       sendResponse({ resolve: true })
     } catch (err) {
       sendResponse({ reject: err.message })
+    }
+  }
+
+  /**
+   * When popup confirm or reject dApp.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
+  async isConnectionDapp(sendResponse) {
+    let payload = this.payload
+    const storage = new BrowserStorage()
+    const type = MTypeTab.RESPONSE_TO_DAPP
+
+    if (!this.payload || !this.payload.confirm || !this.payload.uuid) {
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse(true)
+      }
+
+      return new TabsMessage({ type, payload }).send()
+    }
+
+    const wallet = await storage.get(FIELDS.WALLET)
+    const account = wallet.identities[wallet.selectedAddress]
+
+    payload = {
+      ...payload,
+      account
+    }
+
+    new TabsMessage({ type, payload }).send()
+
+    if (new TypeChecker(sendResponse).isFunction) {
+      sendResponse(true)
     }
   }
 }
