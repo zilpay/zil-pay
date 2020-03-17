@@ -126,6 +126,10 @@ export class Background {
       new Wallet(message.payload).connectToDapp(sendResponse)
       break
 
+    case MTypeTab.RESPONSE_TO_DAPP:
+      new Wallet(message.payload).isConnectionDapp(sendResponse)
+      break
+
     case MTypeTab.CALL_TO_SIGN_TX:
       message.payload.domain = message.domain
       new Transaction(message.payload).callTransaction(sendResponse)
