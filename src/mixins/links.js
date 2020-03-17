@@ -21,6 +21,10 @@ export default {
       window.window.close()
     },
     linkToDomain(domain) {
+      if (!domain.includes('http')) {
+        domain = `http://${domain}`
+      }
+
       extension.tabs.create({ url: domain })
     }
   }
