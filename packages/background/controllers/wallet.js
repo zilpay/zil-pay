@@ -149,12 +149,6 @@ export class Wallet {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async connectToDapp(sendResponse) {
-    if (this.payload.domain && this.payload.domain.includes('zilpay.xyz')) {
-      sendResponse({ resolve: true })
-
-      return null
-    }
-
     const isConnect = await accountControl.isConnection(this.payload.domain)
 
     if (isConnect) {

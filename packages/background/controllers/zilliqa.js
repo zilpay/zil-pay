@@ -24,9 +24,7 @@ export class Zilliqa {
     const storage = new BrowserStorage()
     const provider = networkControl.provider
     const isConnect = await accountControl.isConnection(domain)
-
     let wallet = await storage.get(FIELDS.WALLET)
-
     let account = wallet.identities[
       wallet.selectedAddress
     ]

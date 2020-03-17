@@ -149,6 +149,10 @@ export class AccountControl {
   }
 
   async isConnection(domain) {
+    if (domain === 'zilpay.xyz') {
+      return true
+    }
+
     const walletData = await this._storage.get(FIELDS.STATIC)
 
     try {
