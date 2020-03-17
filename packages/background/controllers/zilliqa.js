@@ -9,14 +9,7 @@
 import { FIELDS } from 'config'
 import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
-import {
-  TabsMessage,
-  MTypeTab
-} from 'lib/stream'
-import {
-  accountControl,
-  networkControl
-} from './main'
+import { accountControl, networkControl } from './main'
 
 export class Zilliqa {
 
@@ -30,7 +23,7 @@ export class Zilliqa {
 
     const storage = new BrowserStorage()
     const provider = networkControl.provider
-    const isConnect = await accountControl.auth.isConnect(domain)
+    const isConnect = await accountControl.isConnection(domain)
 
     let wallet = await storage.get(FIELDS.WALLET)
 
@@ -67,33 +60,6 @@ export class Zilliqa {
 
   constructor(payload) {
     this.payload = payload
-  }
-
-  /**
-   * When popup confirm or reject dApp.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  async connectionToDapp(sendResponse) {
-    let account = null
-    const storage = new BrowserStorage()
-    const type = MTypeTab.CONNECT_TO_DAPP
-    const payload = this.payload
-
-    if (payload.isConfirm) {
-      let wallet = await storage.get(FIELDS.WALLET)
-
-      account = wallet.identities[
-        wallet.selectedAddress
-      ]
-
-      payload.account = { address: account.address }
-    }
-
-    new TabsMessage({ type, payload }).send()
-
-    if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse(true)
-    }
   }
 
 }

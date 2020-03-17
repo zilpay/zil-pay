@@ -208,16 +208,18 @@ export default class Wallet {
     new SecureMessage({ type, payload }).send(_stream, recipient)
 
     const confirmPayload = await from(_subject).pipe(
-      filter(msg => msg.type === MTypeTab.CONNECT_APP),
+      filter(msg => msg.type === MTypeTab.RESPONSE_TO_DAPP),
       map(res => res.payload),
-      filter(res => res.uuid && res.uuid === uuid),
+      filter(data => data.uuid && data.uuid === uuid),
       take(1)
     ).toPromise()
 
-    _isConnect = confirmPayload.isConfirm
-    _defaultAccount = toAccountFormat(confirmPayload.account.address)
+    if (confirmPayload && confirmPayload.confirm) {
+      _isConnect = confirmPayload.confirm
+      _defaultAccount = toAccountFormat(confirmPayload.account.address)
+    }
 
-    return confirmPayload.isConfirm
+    return confirmPayload.confirm
   }
 
 }

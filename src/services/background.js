@@ -1,4 +1,4 @@
-import { Message, MTypePopup } from 'lib/stream'
+import { Message, MTypePopup, MTypeTab } from 'lib/stream'
 
 const { Promise, window } = global
 const BG_ERROR = 'Background script is not loaded.'
@@ -192,5 +192,16 @@ export class Background {
    */
   async rejectTx() {
     return Message.signal(MTypePopup.REJECT_CONFIRM_TX).send()
+  }
+
+  /**
+   * Send to tab information about app access.
+   * @param {Boolean} confirm
+   */
+  async sendResponseConnection(confirm, uuid) {
+    const type = MTypeTab.RESPONSE_TO_DAPP
+    const payload = { confirm, uuid }
+
+    return new Message({ type, payload }).send()
   }
 }

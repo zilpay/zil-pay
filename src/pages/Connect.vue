@@ -65,7 +65,7 @@ import BottomBar from '@/components/BottomBar'
 import Container from '@/components/Container'
 
 import { toAddress } from '@/filters'
-import { removeConnect } from '@/services'
+import { removeConnect, Background } from '@/services'
 
 const { window } = global
 const EVENTS = {
@@ -140,8 +140,13 @@ export default {
       settingsStore.ACTIONS_NAMES.onUpdateDappList
     ]),
 
-    onReject() {
-      removeConnect()
+    async onReject() {
+      console.log('onReject', this.connect.uuid)
+      const bg = new Background()
+
+      await bg.sendResponseConnection(false, this.connect.uuid)
+      await removeConnect()
+
       this.setConnect({})
       window.window.close()
     },

@@ -148,6 +148,24 @@ export class AccountControl {
     )
   }
 
+  async isConnection(domain) {
+    const walletData = await this._storage.get(FIELDS.STATIC)
+
+    try {
+      const { dappsList } = JSON.parse(walletData)
+
+      if (!dappsList || dappsList.length < 1) {
+        return false
+      }
+
+      return dappsList.some(
+        (app) => app.domain === domain
+      )
+    } catch (err) {
+      return false
+    }
+  }
+
   async getCurrentAccount() {
     await this.auth.vaultSync()
 

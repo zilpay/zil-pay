@@ -114,36 +114,6 @@ export class Auth {
   }
 
   /**
-   * Check access to dApp.
-   * @param {String} domain - Website domain name.
-   * @return Boolean.
-   */
-  async isConnect(domain) {
-    if (domain && domain.includes('zilpay.xyz')) {
-      return true
-    }
-
-    const storage = new BrowserStorage()
-    let dappList = await storage.get(FIELDS.STATIC)
-
-    try {
-      dappList = dappList[FIELDS.STATIC]
-
-      if (new TypeChecker(dappList).isString) {
-        dappList = JSON.parse(dappList)
-      }
-
-      dappList = dappList['dappsList'] || []
-
-      return dappList.filter(
-        dapp => dapp && dapp.domain.includes(domain)
-      ).length > 0
-    } catch (err) {
-      return false
-    }
-  }
-
-  /**
    * Synchronization with storage.
    */
   async vaultSync() {

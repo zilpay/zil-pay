@@ -18,7 +18,8 @@ import {
   updateStatic,
   updateNetworkConifg,
   getConnect,
-  removeConnect
+  removeConnect,
+  Background
 } from '@/services'
 
 const STORE_NAME = 'settings'
@@ -213,6 +214,7 @@ const STORE = {
       commit(MUTATIONS_NAMES.setConnect, connection)
     },
     async [ACTIONS_NAMES.onUpdateDappList]({ state, commit }) {
+      const bg = new Background()
       const currentConnect = state[STATE_NAMES.connect]
       const currentList = state[STATE_NAMES.dappsList]
 
@@ -223,6 +225,8 @@ const STORE = {
           return null
         }
       }
+
+      await bg.sendResponseConnection(true, currentConnect.uuid)
 
       delete currentConnect.uuid
 
