@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS } from 'config'
-import { Network, Wallet } from './controllers'
+import { Network, Wallet, Transaction } from './controllers'
 
 const networkControl = new Network()
 const walletControl = new Wallet()
@@ -26,9 +26,11 @@ export function browserStorageHandler(store) {
     switch (key) {
     case FIELDS.WALLET:
       walletControl.changeWallet(value.newValue)
+      new Transaction().checkAllTransaction()
       break
     case FIELDS.SELECTED_NET:
       networkControl.changeNetwork(value.newValue)
+      new Transaction().checkAllTransaction()
       break
     default:
       break

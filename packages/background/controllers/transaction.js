@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { API } from 'config'
+import { API, FIELDS } from 'config'
 
 import {
   ZilliqaControl,
@@ -15,14 +15,10 @@ import {
 } from '../services'
 
 import { TypeChecker } from 'lib/type'
-import {
-  accountControl,
-  networkControl
-} from './main'
-import {
-  TabsMessage,
-  MTypeTab
-} from 'lib/stream'
+import { accountControl, networkControl } from './main'
+import { TabsMessage, MTypeTab } from 'lib/stream'
+import { BrowserStorage, BuildObject } from 'lib/storage'
+import { Promise } from 'core-js'
 
 /**
  * Get or send tranasctions.
@@ -69,6 +65,64 @@ export class Transaction {
   }
 
   /**
+   * Just check all txs for confirmed.
+   */
+  async checkAllTransaction() {
+    await networkControl.netwrokSync()
+
+    const storage = new BrowserStorage()
+    const zilliqaControl = new ZilliqaControl(networkControl.provider)
+    const data = await storage.get([
+      FIELDS.TRANSACTIONS,
+      FIELDS.WALLET,
+      FIELDS.SELECTED_NET
+    ])
+
+    try {
+      let transactions = data[FIELDS.TRANSACTIONS]
+      const wallet = data[FIELDS.WALLET]
+      const net = data[FIELDS.SELECTED_NET]
+      const selectedAccount = wallet.identities[wallet.selectedAddress]
+      const currentTransaction = transactions[selectedAccount.address][net]
+
+      // If hasn't not confirmed tx.
+      if (!currentTransaction.some((tx) => !tx.confirmed)) {
+        return null
+      }
+
+      const checkList = currentTransaction.map(async(tx) => {
+        if (tx.confirmed) {
+          return tx
+        }
+
+        const { result } = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
+
+        if (result.confirmed) {
+          new NotificationsControl({
+            url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
+            title: 'ZilPay Transactions',
+            message: tx.Info
+          }).create()
+        }
+
+        return {
+          ...tx,
+          confirmed: result.confirmed
+        }
+      })
+      const provens = await Promise.all(checkList)
+
+      transactions[selectedAccount.address][net] = provens
+
+      await storage.set(
+        new BuildObject(FIELDS.TRANSACTIONS, transactions)
+      )
+    } catch (err) {
+      return null
+    }
+  }
+
+  /**
    * When DApp call the any tx.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
@@ -87,57 +141,6 @@ export class Transaction {
       sendResponse({ resolve: true })
     } catch (err) {
       sendResponse({ reject: err.message })
-    }
-  }
-
-  /**
-   * Just send signed tx.
-   * @param {Function} sendResponse - CallBack funtion for return response to sender.
-   */
-  async sendSignedTx(sendResponse) {
-    let resultTx = null
-    const zilliqaControl = new ZilliqaControl(
-      networkControl.provider
-    )
-
-    try {
-      const { txParams } = zilliqaControl.transactions.new(this.payload)
-
-      resultTx = await zilliqaControl.signedTxSend(txParams)
-
-      await Transaction.rmTransactionsConfirm()
-    } catch (err) {
-      sendResponse({ reject: err.message })
-
-      return null
-    }
-
-    const { result, req, error } = resultTx
-
-    if (result) {
-      let tx = Object.assign(result, req.payload.params[0])
-
-      tx.from = this.payload.from
-
-      await accountControl.zilliqa.addTransactionList(
-        tx, networkControl.selected
-      )
-
-      sendResponse({ resolve: tx })
-
-      if (this.payload.uuid) {
-        Transaction.returnTx(
-          { resolve: tx }, this.payload.uuid
-        )
-      }
-
-      this._transactionListing(tx.TranID)
-    } else {
-      if (this.payload.uuid) {
-        Transaction.returnTx({ reject: error.message }, this.payload.uuid)
-      }
-
-      sendResponse({ reject: error.message })
     }
   }
 
@@ -166,7 +169,7 @@ export class Transaction {
           new NotificationsControl({
             url: `${API.EXPLORER}/tx/0x${txHash}?${net}`,
             title: title,
-            message: 'Transactions send to shard done.'
+            message: result.info
           }).create()
 
           accountControl.zilliqa.updateTransactionList(

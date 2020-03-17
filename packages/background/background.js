@@ -27,6 +27,7 @@ export class Background {
   constructor() {
     this._watchInternalMessaging()
     BrowserStorage.subscribe((store) => browserStorageHandler(store))
+    new Transaction().checkAllTransaction()
   }
 
   _watchInternalMessaging() {
