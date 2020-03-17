@@ -113,7 +113,7 @@ export default class Wallet {
 
     return from(_subject).pipe(
       map(msg => {
-        if (lastAccount === null) {
+        if (lastAccount === null || !_isEnable || !_isConnect) {
           return _defaultAccount
         }
 
@@ -122,6 +122,8 @@ export default class Wallet {
         } else if (msg.type === MTypeTab.ADDRESS_CHANGED) {
           _defaultAccount = toAccountFormat(msg.payload.address)
         }
+
+        return _defaultAccount
       }),
       filter(account => account && lastAccount !== account.base16),
       map(account => {
