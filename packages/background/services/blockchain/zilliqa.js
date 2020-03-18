@@ -66,6 +66,7 @@ export class ZilliqaControl extends Zilliqa {
     const transactions = await storage.get(FIELDS.TRANSACTIONS)
     const network = await storage.get(FIELDS.SELECTED_NET)
     const historyTx = transactions && transactions[account.address] && transactions[account.address][network]
+    const balance = await this.getBalance(account.address)
     let {
       amount, // Amount of zil. type Number.
       code, // Value contract code. type String.
@@ -77,6 +78,8 @@ export class ZilliqaControl extends Zilliqa {
       version // Netowrk version. type Number.
     } = txData
 
+    nonce = balance.nonce
+
     if (!version) {
       version = await this.version()
     }
@@ -85,18 +88,14 @@ export class ZilliqaControl extends Zilliqa {
       const lastTx = historyTx.pop()
       const { result } = await this.blockchain.getPendingTxn(lastTx.TranID)
 
-      if (result.confirmed) {
-        const balance = await this.getBalance(account.address)
-        nonce = balance.nonce
-      } else {
+      if (!result.confirmed && lastTx.nonce > balance.nonce) {
         nonce = lastTx.nonce
       }
-    } else {
-      const balance = await this.getBalance(account.address)
-      nonce = balance.nonce
     }
 
-    nonce++
+    if (nonce !== 0) {
+      nonce++
+    }
 
     amount = new BN(amount)
     gasPrice = new BN(gasPrice)
@@ -329,17 +328,6 @@ export class ZilliqaControl extends Zilliqa {
     })
 
     await storage.set(new BuildObject(FIELDS.TRANSACTIONS, txsList))
-  }
-
-  /**
-   * Clear tranaction from storage.
-   */
-  async rmAllTransactionList() {
-    const storage = new BrowserStorage()
-
-    await storage.set(
-      new BuildObject(FIELDS.TRANSACTIONS, {})
-    )
   }
 
   /**

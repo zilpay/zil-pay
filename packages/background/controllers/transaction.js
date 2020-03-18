@@ -214,12 +214,15 @@ export class Transaction {
   }
 
   async signSendTx(sendResponse) {
-    const zilliqa = new ZilliqaControl(networkControl.provider)
+    await networkControl.netwrokSync()
 
     try {
+      const zilliqa = new ZilliqaControl(networkControl.provider)
       const account = await accountControl.getCurrentAccount()
       const payload = await zilliqa.buildTxParams(this.payload, account)
       const { result, req, error } = await zilliqa.singTransaction(payload, account.privateKey)
+
+      console.log(payload, result, req, error)
 
       if (!result || error) {
         if (this.payload.uuid) {
