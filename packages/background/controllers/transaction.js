@@ -220,9 +220,7 @@ export class Transaction {
       const zilliqa = new ZilliqaControl(networkControl.provider)
       const account = await accountControl.getCurrentAccount()
       const payload = await zilliqa.buildTxParams(this.payload, account)
-      const { result, req, error } = await zilliqa.singTransaction(payload, account.privateKey)
-
-      console.log(payload, result, req, error)
+      const { result, req, error } = await zilliqa.singTransaction(payload, account)
 
       if (!result || error) {
         if (this.payload.uuid) {
@@ -258,6 +256,28 @@ export class Transaction {
       this._transactionListing(tx.TranID, account.address)
 
       return sendResponse({ resolve: tx })
+    } catch (err) {
+      return sendResponse({ reject: err.message })
+    }
+  }
+
+  /**
+   * Build TxParams object.
+   * @param {Function} sendResponse
+   */
+  async buildTxParams(sendResponse) {
+    await networkControl.netwrokSync()
+
+    try {
+      const zilliqa = new ZilliqaControl(networkControl.provider)
+      const account = await accountControl.getCurrentAccount()
+      const { txParams } = await zilliqa.buildTxParams(this.payload, account)
+
+      txParams.amount = String(txParams.amount)
+      txParams.gasLimit = String(txParams.gasLimit)
+      txParams.gasPrice = String(txParams.gasPrice)
+
+      return sendResponse({ resolve: txParams })
     } catch (err) {
       return sendResponse({ reject: err.message })
     }

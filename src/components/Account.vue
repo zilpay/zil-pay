@@ -5,7 +5,7 @@
   >
     <Container>
       <Title
-        :value="name"
+        :value="getAccountName(getCurrentAccount)"
         :size="SIZE_VARIANS.md"
         changeable
         @input="setAccountName"
@@ -52,6 +52,7 @@ import {
 
 import { toAddress, fromZil, toConversion } from '@/filters'
 import CopyMixin from '@/mixins/copy'
+import AccountMixin from '@/mixins/account'
 
 import Title from '@/components/Title'
 import Container from '@/components/Container'
@@ -64,7 +65,7 @@ export default {
     P,
     Container
   },
-  mixins: [CopyMixin],
+  mixins: [CopyMixin, AccountMixin],
   filters: { toAddress, fromZil, toConversion },
   data() {
     return {
@@ -86,21 +87,7 @@ export default {
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
-    ]),
-
-    name() {
-      if (!this.getCurrentAccount) {
-        return ''
-      } else if (this.getCurrentAccount.name) {
-        return this.getCurrentAccount.name
-      } else if (this.getCurrentAccount.isImport) {
-        return `${this.local.IMPORTED} ${this.getCurrentAccount.index}`
-      } else if (this.getCurrentAccount.hwType) {
-        return `${this.getCurrentAccount.hwType} ${this.getCurrentAccount.index}`
-      }
-
-      return `${this.local.ACCOUNT} ${this.getCurrentAccount.index}`
-    }
+    ])
   },
   methods: {
     ...mapMutations(accountsStore.STORE_NAME, [

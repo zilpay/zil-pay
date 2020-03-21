@@ -1,5 +1,7 @@
 import { fromBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 import { LedgerControll } from '@/utils'
+import { HW_VARIANTS } from '@/config'
+import { Background } from './background'
 
 const ledgerControll = new LedgerControll()
 
@@ -10,7 +12,19 @@ export async function ledgerImportAccount(index) {
     index,
     balance: '0',
     address: fromBech32Address(payload.pubAddr),
-    hwType: 'ledger',
+    hwType: HW_VARIANTS.ledger,
     pubKey: payload.publicKey
+  }
+}
+
+export async function ledgerSendTransaction(index, payload) {
+  const bg = new Background()
+  const txParams = await bg.buildTxParams(payload)
+
+  txParams.signature = await ledgerControll.sendTransaction(index, txParams)
+
+  return {
+    ...payload,
+    ...txParams
   }
 }

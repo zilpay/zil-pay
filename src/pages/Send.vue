@@ -68,7 +68,7 @@
             :font="FONT_VARIANTS.light"
             :size="SIZE_VARIANS.sm"
           >
-            {{ Boolean(acc.name) ? acc.name : `${local.ACCOUNT} ${acc.index}` }}
+            {{ getAccountName(acc) }}
           </Title>
         </Item>
         <Separator v-show="index < identities.length - 1"/>
@@ -128,6 +128,7 @@ import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
 
 import CalcMixin from '@/mixins/calc'
+import AccountMixin from '@/mixins/account'
 import { toAddress, toZIL } from '@/filters'
 
 const EVENTS = {
@@ -138,7 +139,7 @@ const EVENTS = {
 }
 export default {
   name: 'Send',
-  mixins: [CalcMixin],
+  mixins: [CalcMixin, AccountMixin],
   components: {
     TopBar,
     BottomBar,

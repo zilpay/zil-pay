@@ -110,6 +110,10 @@ export class Background {
       Transaction.rmTransactionsConfirm(sendResponse)
       break
 
+    case MTypePopup.BUILD_TX_PARAMS:
+      new Transaction(message.payload).buildTxParams(sendResponse)
+      break
+
     default:
       break
     }

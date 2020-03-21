@@ -112,7 +112,8 @@ import {
   SIZE_VARIANS,
   FONT_VARIANTS,
   COLOR_VARIANTS,
-  ICON_VARIANTS
+  ICON_VARIANTS,
+  HW_VARIANTS
 } from '@/config'
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
 
@@ -133,7 +134,7 @@ import viewblockMixin from '@/mixins/viewblock'
 import CalcMixin from '@/mixins/calc'
 import { fromZil, toConversion, toAddress } from '@/filters'
 
-import { Background } from '@/services'
+import { Background, ledgerSendTransaction } from '@/services'
 
 const { window } = global
 const BOTTOM_BAR_EVENTS = {
@@ -222,7 +223,7 @@ export default {
         this.getCurrent.amount,
         gasLimit,
         gasPrice,
-        this.getCurrentAccount.balance || '0'
+        this.getCurrentAccount.balance
       )
     }
   },
@@ -238,6 +239,9 @@ export default {
     ...mapActions(transactionsStore.STORE_NAME, [
       transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
       transactionsStore.ACTIONS_NAMES.setRejectedLastTx
+    ]),
+    ...mapActions(accountsStore.STORE_NAME, [
+      accountsStore.ACTIONS_NAMES.updateCurrentAccount
     ]),
 
     /**
@@ -274,10 +278,18 @@ export default {
      */
     async onConfirm() {
       const bg = new Background()
+      const account = this.getCurrentAccount
+      let txParams = this.getCurrent
 
       try {
         this.setLoad()
-        await bg.sendToSignBroadcasting(this.getCurrent)
+
+        if (account.hwType && account.hwType === HW_VARIANTS.ledger) {
+          txParams = await ledgerSendTransaction(account.index, txParams)
+        }
+
+        await bg.sendToSignBroadcasting(txParams)
+
         this.popupClouse()
       } catch (err) {
         this.error = err.message
@@ -319,6 +331,12 @@ export default {
         window.close()
       }
     }
+  },
+  mounted() {
+    this.setLoad()
+    this
+      .updateCurrentAccount()
+      .then(() => this.setLoad())
   }
 }
 </script>

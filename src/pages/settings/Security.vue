@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import extension from 'extensionizer'
-
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
@@ -51,8 +49,11 @@ import Separator from '@/components/Separator'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
+import LinkMixin from '@/mixins/links'
+
 export default {
   name: 'Security',
+  mixins: [LinkMixin],
   components: {
     TopBar,
     Container,
@@ -83,9 +84,7 @@ export default {
     ]),
 
     onRestore() {
-      const url = `/${RestorePage.name}`
-
-      extension.tabs.create({ url })
+      this.internalLink(RestorePage.name)
     },
     onExport() {
       this.$router.push({

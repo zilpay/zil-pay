@@ -114,6 +114,10 @@ export class Wallet {
     ]
     const type = MTypeTab.ADDRESS_CHANGED
 
+    if (!account) {
+      return null
+    }
+
     new TabsMessage({
       type,
       payload: account

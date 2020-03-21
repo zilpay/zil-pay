@@ -196,6 +196,13 @@ export class AccountControl {
     account.index = selectedAccount.index
     account.address = selectedAccount.address
 
+    if (selectedAccount.hwType) {
+      return {
+        ...selectedAccount,
+        publicKey: selectedAccount.pubKey
+      }
+    }
+
     if (selectedAccount.isImport) {
       const { privateKey } = decryptImported.find(
         acc => acc.index === selectedAccount.index

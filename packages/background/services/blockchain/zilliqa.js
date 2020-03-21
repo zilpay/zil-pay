@@ -102,6 +102,7 @@ export class ZilliqaControl extends Zilliqa {
     gasLimit = Long.fromNumber(gasLimit)
 
     return this.transactions.new({
+      ...txData,
       nonce,
       gasPrice,
       amount,
@@ -110,19 +111,26 @@ export class ZilliqaControl extends Zilliqa {
       toAddr,
       code,
       data,
-      pubKey: account.publicKey
+      pubKey: account.publicKey || account.pubKey
     })
   }
 
   /**
    * Sign transaction via privateKey.
    * @param {Object} txData - payload without signature.
-   * @param {String} privateKey - PrivateKey for sing.
+   * @param {Object} account - Account for sign.
    * @param {Number} index - ID in mnemonic seed phrase.
    */
-  async singTransaction(zilTxData, privateKey) {
+  async singTransaction(zilTxData, account) {
+    // Singed tx just send.
+    if (account && account.hwType && zilTxData.signature) {
+      const { txParams } = this.transactions.new(zilTxData)
+
+      return this.provider.send(RPCMethod.CreateTransaction, txParams)
+    }
+
     // importing account from private key or seed phrase. //
-    const address = this.wallet.addByPrivateKey(privateKey)
+    const address = this.wallet.addByPrivateKey(account.privateKey)
 
     this.wallet.setDefault(address)
     // Sign transaction by current account. //

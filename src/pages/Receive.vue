@@ -52,7 +52,7 @@
     <BottomModal v-model="accountInfo">
       <Container :class="b('account')">
         <Title :size="SIZE_VARIANS.sm">
-          {{ name }}
+          {{ getAccountName(getCurrentAccount) }}
         </Title>
         <Icon
           v-if="qrcode"
@@ -115,6 +115,7 @@ import ViewblockLink from '@/components/ViewblockLink'
 
 import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
+import AccountMixin from '@/mixins/account'
 import LinksMixin from '@/mixins/links'
 
 const DEFAUL_IMG_SIZE = {
@@ -141,7 +142,7 @@ export default {
     ViewblockLink
   },
   filters: { toAddress },
-  mixins: [CopyMixin, LinksMixin],
+  mixins: [CopyMixin, LinksMixin, AccountMixin],
   data() {
     return {
       SIZE_VARIANS,
@@ -200,19 +201,6 @@ export default {
       }
 
       return elements
-    },
-    name() {
-      if (!this.getCurrentAccount) {
-        return ''
-      } else if (this.getCurrentAccount.name) {
-        return this.getCurrentAccount.name
-      } else if (this.getCurrentAccount.isImport) {
-        return `${this.local.IMPORTED} ${this.getCurrentAccount.index}`
-      } else if (this.getCurrentAccount.hwType) {
-        return `${this.getCurrentAccount.hwType} ${this.getCurrentAccount.index}`
-      }
-
-      return `${this.local.ACCOUNT} ${this.getCurrentAccount.index}`
     }
   },
   methods: {

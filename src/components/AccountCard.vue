@@ -12,7 +12,7 @@
       :class="b('name')"
       @click="onSelectedCard"
     >
-      {{ name }}
+      {{ getAccountName(account) }}
     </Title>
     <div :class="b('wrapper')">
       <div
@@ -81,13 +81,14 @@ import {
   EVENTS
 } from '@/config'
 
-import { fromZil, toConversion, toAddress } from '@/filters'
-import CopyMixin from '@/mixins/copy'
-
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Icon from '@/components/Icon'
 import Trash from '@/components/icons/Trash'
+
+import { fromZil, toConversion, toAddress } from '@/filters'
+import CopyMixin from '@/mixins/copy'
+import AccountMixin from '@/mixins/account'
 
 /**
  * Account card component show some information about [balance, address, type].
@@ -118,7 +119,7 @@ export default {
     Trash,
     P
   },
-  mixins: [CopyMixin],
+  mixins: [CopyMixin, AccountMixin],
   filters: { fromZil, toConversion, toAddress },
   props: {
     account: {
@@ -167,17 +168,6 @@ export default {
       }
 
       return this.ICON_VARIANTS.zilliqaWatermark
-    },
-    name() {
-      if (this.account.name) {
-        return this.account.name
-      } else if (this.account.isImport) {
-        return `${this.local.IMPORTED} ${this.account.index}`
-      } else if (this.account.hwType) {
-        return `${this.account.hwType} ${this.account.index}`
-      }
-
-      return `${this.local.ACCOUNT} ${this.account.index}`
     }
   },
   mounted() {

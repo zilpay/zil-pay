@@ -204,4 +204,21 @@ export class Background {
 
     return new Message({ type, payload }).send()
   }
+
+  /**
+   * Build non sign txParams for sign via HW wallet.
+   * @param {Object} payload
+   */
+  async buildTxParams(payload) {
+    const type = MTypePopup.BUILD_TX_PARAMS
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
 }
