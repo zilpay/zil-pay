@@ -106,7 +106,7 @@ export default {
           this.payload.address = await bg.getZNSAddress(this.payload.address)
           this.payload.name = domain
         } catch (err) {
-          // Skip
+          this.payload.error = this.local.NOT_FOUND_ZNS
         }
       }
     }

@@ -294,9 +294,13 @@ export default {
       const regExpDomain = new RegExp(REGX_PATTERNS.domain, 'gm')
 
       if (regExpDomain.test(this.recipientAddress.model)) {
-        const bg = new Background()
+        try {
+          const bg = new Background()
 
-        this.recipientAddress.model = await bg.getZNSAddress(this.recipientAddress.model)
+          this.recipientAddress.model = await bg.getZNSAddress(this.recipientAddress.model)
+        } catch (err) {
+          this.recipientAddress.error = this.local.NOT_FOUND_ZNS
+        }
       }
     },
     /**
