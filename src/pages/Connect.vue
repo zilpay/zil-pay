@@ -6,7 +6,7 @@
         :class="b('account')"
       >
         <Title :size="SIZE_VARIANS.sm">
-          {{ name }}
+          {{ getAccountName(getCurrentAccount) }}
         </Title>
           <P>
             {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
@@ -65,6 +65,7 @@ import BottomBar from '@/components/BottomBar'
 import Container from '@/components/Container'
 
 import { toAddress } from '@/filters'
+import AccountMixin from '@/mixins/account'
 import { removeConnect, Background } from '@/services'
 
 const { window } = global
@@ -74,6 +75,7 @@ const EVENTS = {
 }
 export default {
   name: 'Connect',
+  mixins: [AccountMixin],
   components: {
     Alert,
     Title,
@@ -118,17 +120,6 @@ export default {
           size: SIZE_VARIANS.sm
         }
       ]
-    },
-    name() {
-      if (this.getCurrentAccount.name) {
-        return this.getCurrentAccount.name
-      } else if (this.getCurrentAccount.isImport) {
-        return `${this.local.IMPORTED} ${this.getCurrentAccount.index}`
-      } else if (this.getCurrentAccount.hwType) {
-        return `${this.getCurrentAccount.hwType} ${this.getCurrentAccount.index}`
-      }
-
-      return `${this.local.ACCOUNT} ${this.account.index}`
     }
   },
   methods: {
@@ -141,7 +132,6 @@ export default {
     ]),
 
     async onReject() {
-      console.log('onReject', this.connect.uuid)
       const bg = new Background()
 
       await bg.sendResponseConnection(false, this.connect.uuid)

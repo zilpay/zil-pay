@@ -49,7 +49,8 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
 import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
-import { shuffle } from 'lib/utils'
+// import { shuffle } from 'lib/utils'
+import { shuffle } from '../../lib/utils'
 
 import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'

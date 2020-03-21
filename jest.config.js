@@ -4,5 +4,9 @@ module.exports = {
   verbose: true,
   notify: false,
   roots: ['<rootDir>'],
-  modulePaths: ['']
+  modulePaths: [''],
+  moduleNameMapper: {
+    '^config(.*)$': '<rootDir>/config$1',
+    '^lib(.*)$': '<rootDir>/lib$1'
+  }
 }

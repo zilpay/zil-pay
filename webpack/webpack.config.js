@@ -39,7 +39,8 @@ const defaultManifest = {
     'https://api.coingecko.com/api/v3/simple/price',
     'https://api.zilliqa.com/',
     'https://dev-api.zilliqa.com/',
-    'https://zilpay.xyz/*'
+    'https://zilpay.xyz/*',
+    'http://127.0.0.1/*'
   ],
   content_scripts: [
     {
@@ -75,7 +76,6 @@ manifest.hooks.transform.tap('packages', () => {
 })
 
 module.exports = {
-  // basePath: '',
   entry: {
     background: path.resolve(__dirname, '../packages/background/index.js'),
     inpage: path.resolve(__dirname, '../packages/inpage/index.js'),
