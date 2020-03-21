@@ -62,6 +62,7 @@
     "GET": "get",
     "EXPORT": "export",
     "IMPORTED": "Imported",
+    "NAME": "name",
 
     "PUBLIC": "public",
     "OR": "or",
@@ -88,6 +89,7 @@
     "REQUIRED": "required",
     "LOW_COMPLEXITY": "low complexity",
     "MUST_LEAST": "must be at least",
+    "MUST_BE_UNIQUE": "address must be unique",
     "CHARS": "characters",
     "LONG": "long",
     "NOT_MATCH": "do not match. Please try again",

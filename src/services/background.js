@@ -1,4 +1,6 @@
 import { Message, MTypePopup, MTypeTab } from 'lib/stream'
+import { toAddress } from '../filters'
+import { ADDRESS_FORMAT_VARIANTS } from '@/config'
 
 const { Promise, window } = global
 const BG_ERROR = 'Background script is not loaded.'
@@ -220,5 +222,23 @@ export class Background {
     }
 
     return result.resolve
+  }
+
+  /**
+   * Search address via ZNC service.
+   * @param {String} domain For example zilpay.zil
+   */
+  async getZNSAddress(domain) {
+    const type = MTypePopup.DOMAIN_RESOLVE
+    const payload = { domain }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return toAddress(result.resolve.owner, ADDRESS_FORMAT_VARIANTS.bech32, false)
   }
 }

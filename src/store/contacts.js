@@ -49,9 +49,11 @@ const STORE = {
         state.contactList.filter((_, i) => index !== i)
       )
     },
-    [ACTIONS_NAMES.onAddedContact]({ commit, state }, payload) {
+    [ACTIONS_NAMES.onAddedContact]({ commit, state, rootState }, payload) {
       if (!payload || !payload.address || !payload.name) {
         return null
+      } else if (state.contactList.some((contact) => contact.address === payload.address)) {
+        throw new Error(rootState.ui.local.MUST_BE_UNIQUE)
       }
 
       const newList = [...state.contactList, payload]

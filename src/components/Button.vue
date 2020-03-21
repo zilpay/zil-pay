@@ -153,6 +153,7 @@ export default {
 .Button {
   &[disabled="disabled"] {
     cursor: unset;
+    color: var(--accent-color-white);
     opacity: 0.5;
   }
 

@@ -74,7 +74,6 @@ import BottomModal from '@/components/BottomModal'
 import ContactCreater from '@/components/ContactCreater'
 
 import { toAddress } from '@/filters'
-
 import { Background } from '@/services'
 
 const EVENTS = {

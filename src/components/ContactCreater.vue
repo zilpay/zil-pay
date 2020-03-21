@@ -3,7 +3,9 @@
     <Input
       v-model="payload.address"
       :placeholder="placeholderAddress"
+      :error="payload.error"
       round
+      @input="fromZNS"
     />
     <Input
       v-model="payload.name"
@@ -22,14 +24,18 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { isBech32 } from '@zilliqa-js/util/dist/validation'
+import { mapActions, mapState } from 'vuex'
+import contactsStore from '@/store/contacts'
+import uiStore from '@/store/ui'
 
-import { DEFAULT } from 'config/default'
-import { EVENTS } from '@/config'
+import { EVENTS, REGX_PATTERNS } from '@/config'
 
 import Input from '@/components/Input'
 import Container from '@/components/Container'
 import Button from '@/components/Button'
+
+import { Background } from '@/services'
 
 /**
  * Contact form creater.
@@ -47,22 +53,62 @@ export default {
   },
   data() {
     return {
-      placeholderAddress: 'Select, public address (zil1), or ZNS',
-      placeholderName: `Select name(${DEFAULT.MAX_LENGTH_NAME} Length)`,
       payload: {
         address: null,
-        name: null
+        name: null,
+        error: null
       }
     }
   },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
+
+    placeholderAddress() {
+      return `${this.local.SELECT} ${this.local.PUBLIC} ${this.local.ADDRESS} (zil1), ${this.local.OR} ZNS`
+    },
+    placeholderName() {
+      return `${this.local.SELECT} ${this.local.NAME}.`
+    }
+  },
   methods: {
-    ...mapActions('contacts', [
-      'onAddedContact'
+    ...mapActions(contactsStore.STORE_NAME, [
+      contactsStore.ACTIONS_NAMES.onAddedContact
     ]),
 
     onAdded() {
-      this.onAddedContact(this.payload)
-      this.$emit(EVENTS.close)
+      try {
+        if (!isBech32(this.payload.address)) {
+          this.payload.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
+
+          return null
+        }
+
+        this.onAddedContact(this.payload)
+        this.$emit(EVENTS.close)
+      } catch (err) {
+        this.payload.error = err.message
+
+        return null
+      }
+    },
+    async fromZNS() {
+      this.payload.error = null
+
+      const regExpDomain = new RegExp(REGX_PATTERNS.domain, 'gm')
+
+      if (regExpDomain.test(this.payload.address)) {
+        try {
+          const bg = new Background()
+          const domain = this.payload.address
+
+          this.payload.address = await bg.getZNSAddress(this.payload.address)
+          this.payload.name = domain
+        } catch (err) {
+          // Skip
+        }
+      }
     }
   }
 }

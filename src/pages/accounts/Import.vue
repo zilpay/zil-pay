@@ -17,6 +17,7 @@
           :placeholder="RADIO_ELEMENTS[0]"
           :error="privateKey.error"
           round
+          autofocus
           @input="privateKey.error = null"
         />
       </Container>

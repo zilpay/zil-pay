@@ -11,7 +11,7 @@
         :error="recipientAddress.error"
         round
         autofocus
-        @input="recipientAddress.error = null"
+        @input="fromZNS"
       />
     </Alert>
     <Container v-for="(action, index) of transferTo" :key="index">
@@ -110,7 +110,8 @@ import {
   SIZE_VARIANS,
   COLOR_VARIANTS,
   FONT_VARIANTS,
-  ADDRESS_FORMAT_VARIANTS
+  ADDRESS_FORMAT_VARIANTS,
+  REGX_PATTERNS
 } from '@/config'
 
 import HomePage from '@/pages/Home'
@@ -130,6 +131,7 @@ import BottomModal from '@/components/BottomModal'
 import CalcMixin from '@/mixins/calc'
 import AccountMixin from '@/mixins/account'
 import { toAddress, toZIL } from '@/filters'
+import { Background } from '@/services'
 
 const EVENTS = {
   send: uuid(),
@@ -287,10 +289,20 @@ export default {
       this.accountModal = false
       this.contactModal = false
     },
+    async fromZNS() {
+      this.recipientAddress.error = null
+      const regExpDomain = new RegExp(REGX_PATTERNS.domain, 'gm')
+
+      if (regExpDomain.test(this.recipientAddress.model)) {
+        const bg = new Background()
+
+        this.recipientAddress.model = await bg.getZNSAddress(this.recipientAddress.model)
+      }
+    },
     /**
      * Send to BG and try sign via current account.
      */
-    onSend() {
+    async onSend() {
       if (!this.recipientAddress.model) {
         this.recipientAddress.error = `*${this.local.PASS_RECIPIENT_ADDR}`
 
