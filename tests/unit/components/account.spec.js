@@ -38,8 +38,4 @@ describe('components:Account', () => {
   it('Should can import', () => {
     expect(Account).toBeTruthy()
   })
-
-  it('Should be have some class', () => {
-    expect(wrapper.classes()).toEqual([Account.name])
-  })
 })

@@ -49,11 +49,11 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
 import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
+import { shuffle } from 'lib/utils'
 
 import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
 import P from '@/components/P'
-import { shuffle } from 'lib/utils'
 import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'

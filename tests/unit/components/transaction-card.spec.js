@@ -51,12 +51,8 @@ describe('components:TransactionCard', () => {
     expect(wrapper.props().transaction).toEqual(TEST_TRANASCTION)
   })
 
-  // it('Should can know tx type', () => {
-  //   expect(wrapper.vm.txType).toBe('trigger')
-  // })
-
   it('Should can know status', () => {
-    expect(wrapper.vm.statusIcon).toBe(ICON_VARIANTS.statusSuccess)
+    expect(wrapper.vm.statusIcon).toBe(ICON_VARIANTS.statusPadding)
   })
 
 })

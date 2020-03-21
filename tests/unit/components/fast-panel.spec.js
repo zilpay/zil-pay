@@ -6,18 +6,22 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import Vuex from 'vuex'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import FastPanel from 'src/components/FastPanel.vue'
 import { BEM_CONFIG } from 'src/config'
+import store from 'src/store'
 
 const localVue = createLocalVue()
 
 localVue.use(vueBemCn, { delimiters: BEM_CONFIG })
+localVue.use(Vuex)
 
 describe('components:FastPanel', () => {
   const wrapper = shallowMount(FastPanel, {
-    localVue
+    localVue,
+    store
   })
 
   it('Should can import', () => {

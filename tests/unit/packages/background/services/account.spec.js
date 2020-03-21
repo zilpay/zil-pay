@@ -70,19 +70,6 @@ describe('packages:background:services:AccountControl', () => {
 
     expect(wallet).toEqual(walletFromStorage)
   })
-
-  it('Should be able change wallet', async() => {
-    const walletForChange = await browserStorage.get(FIELDS.WALLET)
-
-    walletForChange.selectedAddress = 0
-
-    await accountControl.walletUpdate(walletForChange)
-
-    const walletAfterUpdated = await browserStorage.get(FIELDS.WALLET)
-
-    expect(walletAfterUpdated.selectedAddress).toBe(0)
-  })
-
 })
 
 describe('packages:background:services:AccountImporter', () => {
@@ -128,32 +115,6 @@ describe('packages:background:services:AccountExporter', () => {
 
     expect(accountExporter.auth.isEnable).toBeTruthy()
     expect(accountExporter.auth.isReady).toBeTruthy()
-  })
-
-  it('Should be able to exporting account via seed', async() => {
-    const wallet = await browserStorage.get(FIELDS.WALLET)
-
-    wallet.selectedAddress = 0
-
-    await accountControl.walletUpdate(wallet)
-
-    const account = await accountExporter.exportPrivateKeyFromSeed()
-
-    expect(account.index).toBe(0)
-    expect(account.privateKey).toBeTruthy()
-  })
-
-  it('Should be able to exporting account from imported', async() => {
-    const wallet = await browserStorage.get(FIELDS.WALLET)
-
-    wallet.selectedAddress = 2
-
-    await accountControl.walletUpdate(wallet)
-
-    const account = await accountExporter.exportAccountFromStore()
-
-    expect(account.index).toBe(0)
-    expect(account.privateKey).toEqual(PRIVATE_KEY)
   })
 
   it('Should be able to exporting seed words', async() => {
