@@ -28,7 +28,11 @@
         >
           {{ local.CLEAR }} {{ local.HISTORY }}
         </Button>
-        <Button round>
+        <Button
+          :disabled="(currency === currencyItems[0]) && (addressFormat === addressFormatItems[0])"
+          round
+          @click="onDefault"
+        >
           {{ local.DEFAULT }}
         </Button>
       </div>
@@ -85,7 +89,12 @@ export default {
     ]),
     ...mapMutations(transactionsStore.STORE_NAME, [
       transactionsStore.MUTATIONS_NAMES.setClearTxHistory
-    ])
+    ]),
+
+    onDefault() {
+      this.setAddressFormat(this.addressFormatItems[0])
+      this.setCurrency(this.currencyItems[0])
+    }
   }
 }
 </script>

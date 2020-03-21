@@ -19,7 +19,7 @@
       <Button
         :class="b('btn')"
         round
-        @click="setDefaultGas"
+        @click="onDefault"
       >
         default
       </Button>
@@ -73,7 +73,12 @@ export default {
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setDefaultGas,
       settingsStore.MUTATIONS_NAMES.setGas
-    ])
+    ]),
+
+    onDefault() {
+      this.setDefaultGas()
+      this.setTheme(this.themes[0])
+    }
   }
 }
 </script>

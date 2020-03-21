@@ -12,7 +12,9 @@ export const DEFAULT = {
   DEFAULT_HOURS_LOCK: [
     1,
     2,
-    3
+    3,
+    4,
+    5
   ],
   MAX_TX_AMOUNT_LIST: 3,
   MIN_LENGTH_PASSWORD: 6,

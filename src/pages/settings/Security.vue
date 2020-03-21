@@ -25,7 +25,11 @@
         >
           {{ local.RESTORE }}
         </Button>
-        <Button round>
+        <Button
+          :disabled="Number(lockTime) === Number(DEFAULT.TIME_BEFORE_LOCK)"
+          round
+          @click="onDefault"
+        >
           {{ local.DEFAULT }}
         </Button>
       </div>
@@ -39,6 +43,7 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS } from '@/config'
+import { DEFAULT } from 'config'
 
 import RestorePage from '@/pages/Restore'
 import ExportPage from '@/pages/accounts/Export'
@@ -63,7 +68,8 @@ export default {
   },
   data() {
     return {
-      COLOR_VARIANTS
+      COLOR_VARIANTS,
+      DEFAULT
     }
   },
   computed: {
@@ -83,6 +89,9 @@ export default {
       settingsStore.MUTATIONS_NAMES.setLockTime
     ]),
 
+    onDefault() {
+      this.setLockTime(DEFAULT.TIME_BEFORE_LOCK)
+    },
     onRestore() {
       this.internalLink(RestorePage.name)
     },
@@ -111,8 +120,6 @@ export default {
     justify-self: right;
     grid-gap: 15px;
     width: 175px;
-
-    margin-top: 120px;
   }
 }
 </style>
