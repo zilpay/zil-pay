@@ -7,6 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { units, BN } from '@zilliqa-js/util'
+import { TypeChecker } from 'lib/type'
 
 import { DEFAULT } from 'config'
 
@@ -79,7 +80,9 @@ const STORE = {
       clearTransactionsHistory()
     },
     [MUTATIONS_NAMES.setTxHistory](state, data) {
-      state[STATE_NAMES.transactions] = data
+      if (new TypeChecker(data).isObject) {
+        state[STATE_NAMES.transactions] = data
+      }
     },
     [MUTATIONS_NAMES.setPopConfirmTx](state) {
       state[STATE_NAMES.confirmationTx].pop()

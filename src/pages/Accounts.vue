@@ -34,6 +34,12 @@
           </Item>
           <Separator v-show="index < contactList.length - 1"/>
         </div>
+        <Title
+          v-show="tabs === 1 && contactList.length === 0"
+          :size="SIZE_VARIANS.sm"
+        >
+          {{ local.NOT_CONTACTS }}
+        </Title>
       </div>
     </div>
     <BottomBar
