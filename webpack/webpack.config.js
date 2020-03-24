@@ -21,6 +21,11 @@ const defaultManifest = {
   description: description,
   author: homepage,
   manifest_version: 2,
+  // applications: {
+  //   gecko: {
+  //       id: '@zilpay'
+  //   }
+  // },
   icons: {
     128: 'icon128.png',
     96: 'icon96.png',

@@ -101,7 +101,7 @@ const STORE = {
       }
     },
     [MUTATIONS_NAMES.setNetworkConfig](state, config) {
-      if (config && new TypeChecker(config).isObject) {
+      if (config && new TypeChecker(config).isObject && Object.keys(config).length > 1) {
         updateNetworkConifg(config)
 
         state[STATE_NAMES.networkConfig] = config

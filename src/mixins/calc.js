@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { BN } from '@zilliqa-js/util'
+import { BN, units } from '@zilliqa-js/util'
 
 import { fromZil } from '@/filters'
 
@@ -22,7 +22,7 @@ export default {
       try {
         const _gasLimit = new BN(gasLimit)
         const _gasPrice = new BN(gasPrice)
-        const _fee = _gasLimit.mul(_gasPrice)
+        const _fee = units.toQa(_gasLimit.mul(_gasPrice), units.Units.Li)
         const _amount = new BN(amount)
         const _balance = new BN(balance)
         const _txAmount = _fee.add(_amount)
@@ -43,7 +43,7 @@ export default {
       }
       const _gasLimit = new BN(gasLimit)
       const _gasPrice = new BN(gasPrice)
-      const _fee = _gasLimit.mul(_gasPrice)
+      const _fee = units.toQa(_gasLimit.mul(_gasPrice), units.Units.Li)
       const _balance = new BN(balance)
       const _amount = _balance.sub(_fee)
 

@@ -102,3 +102,9 @@ a {
 ::-webkit-scrollbar { 
   display: none; 
 }
+
+@media screen and (max-width: 360px) {
+  body, html {
+    max-width: 360px;
+  }
+}
