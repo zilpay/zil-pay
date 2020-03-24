@@ -37,6 +37,15 @@
         >
           {{ local.CONTINUE }}
         </Button>
+        <router-link :to="restorePageName">
+          <P
+            :font="FONT_VARIANTS.regular"
+            :size="SIZE_VARIANS.xs"
+            capitalize
+          >
+            {{ local.RESTORE }}
+          </P>
+        </router-link>
       </form>
     </Container>
   </div>
@@ -58,6 +67,7 @@ import {
 import HomePage from '@/pages/Home'
 import PopupPage from '@/pages/Popup'
 import ConnectPage from '@/pages/Connect'
+import RestorePage from '@/pages/Restore'
 
 import Container from '@/components/Container'
 import Icon from '@/components/Icon'
@@ -88,7 +98,8 @@ export default {
 
       // Locals:
       password: null,
-      error: null
+      error: null,
+      restorePageName: RestorePage.name
     }
   },
   computed: {

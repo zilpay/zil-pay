@@ -9,7 +9,7 @@
 import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
-import { toNodeAddress } from 'lib/utils'
+import { toNodeAddress } from 'lib/utils/to-node-address'
 
 import { Wallet, TransactionFactory } from '@zilliqa-js/account'
 import { Blockchain } from '@zilliqa-js/blockchain'

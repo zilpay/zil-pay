@@ -54,11 +54,8 @@ import Separator from '@/components/Separator'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
-import LinkMixin from '@/mixins/links'
-
 export default {
   name: 'Security',
-  mixins: [LinkMixin],
   components: {
     TopBar,
     Container,
@@ -93,7 +90,9 @@ export default {
       this.setLockTime(DEFAULT.TIME_BEFORE_LOCK)
     },
     onRestore() {
-      this.internalLink(RestorePage.name)
+      this.$router.push({
+        name: RestorePage.name
+      })
     },
     onExport() {
       this.$router.push({

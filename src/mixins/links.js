@@ -26,11 +26,6 @@ export default {
       }
 
       extension.tabs.create({ url: domain })
-    },
-    internalLink(pageName) {
-      const url = `${DEFAULT.PROMT_PAGE}/${pageName}`
-
-      extension.tabs.create({ url })
     }
   }
 }

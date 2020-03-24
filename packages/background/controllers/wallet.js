@@ -109,6 +109,12 @@ export class Wallet {
    * @param {Object} wallet - Wallet object with accounts.
    */
   changeWallet(wallet) {
+    if (!new TypeChecker(wallet.identities).isArray) {
+      return null
+    } else if (!new TypeChecker(wallet.selectedAddress).isInt) {
+      return null
+    }
+
     const account = wallet.identities[
       wallet.selectedAddress
     ]

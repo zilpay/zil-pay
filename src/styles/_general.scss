@@ -95,6 +95,10 @@ body {
   padding: 0;
 }
 
+a {
+  text-decoration: unset;
+}
+
 ::-webkit-scrollbar { 
   display: none; 
 }

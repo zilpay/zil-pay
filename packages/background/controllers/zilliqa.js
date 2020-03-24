@@ -25,12 +25,12 @@ export class Zilliqa {
     const provider = networkControl.provider
     const isConnect = await accountControl.isConnection(domain)
     let wallet = await storage.get(FIELDS.WALLET)
-    let account = wallet.identities[
-      wallet.selectedAddress
-    ]
+    let account = null
 
-    if (!isConnect) {
-      account = null
+    if (wallet && new TypeChecker(wallet.identities).isArray && isConnect) {
+      account = wallet.identities[
+        wallet.selectedAddress
+      ]
     }
 
     const data = {

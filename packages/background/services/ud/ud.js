@@ -31,7 +31,7 @@ export class UnstoppableDomains {
       'records',
       [domainHash]
     )
-    console.log(records)
+
     const [owner] = records[domainHash].arguments
 
     return {

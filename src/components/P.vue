@@ -7,6 +7,7 @@
       size,
       copy,
       nowrap,
+      capitalize,
       centred
     })"
     @click="onCopyContent"
@@ -146,9 +147,7 @@ export default {
   }
 
   &_capitalize {
-    &:first-letter {
-      text-transform: capitalize;
-    }
+    text-transform: capitalize;
   }
 }
 </style>
