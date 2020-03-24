@@ -99,20 +99,20 @@ extension.storage = {
       resolve()
 
       hasBeenChanged = true
-    },
-    onChanged: {
-      removeListener() {},
-      addListener(cb) {
-        global.setInterval(() => {
-          if (hasBeenChanged) {
-            cb(storeChanged)
-          }
-
-          hasBeenChanged = false
-        }, 100)
-      },
-    },
+    }
   },
+  onChanged: {
+    removeListener() {},
+    addListener(cb) {
+      global.setInterval(() => {
+        if (hasBeenChanged) {
+          cb(storeChanged)
+        }
+
+        hasBeenChanged = false
+      }, 100)
+    }
+  }
 }
 extension.browserAction = {
   setBadgeText() {
