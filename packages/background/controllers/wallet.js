@@ -136,9 +136,9 @@ export class Wallet {
 
     try {
       const { address } = wallet.identities[wallet.selectedAddress]
-      const { result } = await zilliqa.getBalance(address)
+      const { balance } = await zilliqa.getBalance(address)
 
-      wallet.identities[wallet.selectedAddress].balance = result
+      wallet.identities[wallet.selectedAddress].balance = balance
 
       await storage.set(new BuildObject(FIELDS.WALLET, wallet))
 

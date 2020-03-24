@@ -23,12 +23,6 @@
           round
         />
       </div>
-      <Button
-        :class="b('btn')"
-        round
-      >
-        {{ local.DEFAULT }}
-      </Button>
     </Container>
   </div>
 </template>
@@ -43,7 +37,6 @@ import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import Separator from '@/components/Separator'
 import Input from '@/components/Input'
-import Button from '@/components/Button'
 
 import { keys } from '@/filters'
 
@@ -54,8 +47,7 @@ export default {
     Container,
     RadioGroup,
     Separator,
-    Input,
-    Button
+    Input
   },
   filters: { keys },
   computed: {
@@ -88,13 +80,6 @@ export default {
 
     padding-left: 15px;
     padding-right: 15px;
-  }
-
-  &__btn {
-    justify-self: right;
-    width: 175px;
-
-    margin-top: 30px;
   }
 }
 </style>

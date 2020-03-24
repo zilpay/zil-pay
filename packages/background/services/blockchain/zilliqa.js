@@ -9,9 +9,11 @@
 import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
+import { toNodeAddress } from 'lib/utils'
 
-import { Zilliqa } from '@zilliqa-js/zilliqa'
-import { RPCMethod } from '@zilliqa-js/core'
+import { Wallet, TransactionFactory } from '@zilliqa-js/account'
+import { Blockchain } from '@zilliqa-js/blockchain'
+import { RPCMethod, HTTPProvider } from '@zilliqa-js/core'
 import {
   toChecksumAddress,
   fromBech32Address,
@@ -29,10 +31,12 @@ import {
 import { NotificationsControl } from '../browser/notifications'
 import errorsCode from './errors'
 
-export class ZilliqaControl extends Zilliqa {
+export class ZilliqaControl {
 
   constructor(provider) {
-    super(provider)
+    this.provider = new HTTPProvider(provider)
+    this.wallet = new Wallet(this.provider)
+    this.blockchain = new Blockchain(this.provider, this.wallet)
   }
 
   /**
@@ -40,20 +44,59 @@ export class ZilliqaControl extends Zilliqa {
    * @param {String} address - Account address.
    */
   async getBalance(address) {
-    // Get the balance by address. //
-    let { result } = await this.blockchain.getBalance(
-      address.replace('0x', '')
-    )
-    let nonce = 0
+    const method = RPCMethod.GetBalance
+    const params = toNodeAddress(address)
+    const { result, error } = await this.provider.send(method, params)
 
-    if (!result) {
-      result = 0
-    } else {
-      nonce = result ? result.nonce : 0
-      result = result.balance
+    if (error) {
+      return {
+        balance: '0',
+        nonce: 0
+      }
     }
 
-    return { result, nonce }
+    return result
+  }
+
+  /**
+   * See the pending status of transaction.
+   * @param {String} hash Tx id.
+   */
+  async getPendingTxn(hash) {
+    const method = RPCMethod.GetPendingTxn
+    const { result, error } = await this.provider.send(method, hash)
+
+    if (error) {
+      throw new Error(error)
+    }
+
+    return result
+  }
+
+  /**
+   * Queries the contract state, filtered by the variable names.
+   * This function is the filtered version of `getSmartContractState`.
+   * @param {String} address Zilliqa address.
+   * @param {String} variableName Smartcontract field name.
+   * @param {Array} indices Variable is of map type, you can specify an index.
+   */
+  async getSmartContractSubState(address, variableName, indices = []) {
+    const method = RPCMethod.GetSmartContractSubState
+
+    address = toNodeAddress(address)
+
+    const { result, error } = await this.provider.send(
+      method,
+      address,
+      variableName,
+      indices
+    )
+
+    if (error) {
+      throw new Error(error)
+    }
+
+    return result
   }
 
   /**
@@ -63,10 +106,11 @@ export class ZilliqaControl extends Zilliqa {
    */
   async buildTxParams(txData, account) {
     const storage = new BrowserStorage()
+    const transactionFactory = new TransactionFactory(this.provider, this.wallet)
     const transactions = await storage.get(FIELDS.TRANSACTIONS)
     const network = await storage.get(FIELDS.SELECTED_NET)
     const historyTx = transactions && transactions[account.address] && transactions[account.address][network]
-    const balance = await this.getBalance(account.address)
+    const addressInfo = await this.getBalance(account.address)
     let {
       amount, // Amount of zil. type Number.
       code, // Value contract code. type String.
@@ -78,7 +122,7 @@ export class ZilliqaControl extends Zilliqa {
       version // Netowrk version. type Number.
     } = txData
 
-    nonce = balance.nonce
+    nonce = addressInfo.nonce
 
     if (!version) {
       version = await this.version()
@@ -86,9 +130,9 @@ export class ZilliqaControl extends Zilliqa {
 
     if (historyTx) {
       const lastTx = historyTx.pop()
-      const { result } = await this.blockchain.getPendingTxn(lastTx.TranID)
+      const pendingTx = await this.getPendingTxn(lastTx.TranID)
 
-      if (!result.confirmed && lastTx.nonce > balance.nonce) {
+      if (!pendingTx.confirmed && lastTx.nonce > addressInfo.nonce) {
         nonce = lastTx.nonce
       }
     }
@@ -101,7 +145,7 @@ export class ZilliqaControl extends Zilliqa {
     gasPrice = new BN(gasPrice)
     gasLimit = Long.fromNumber(gasLimit)
 
-    return this.transactions.new({
+    return transactionFactory.new({
       ...txData,
       nonce,
       gasPrice,
@@ -122,19 +166,22 @@ export class ZilliqaControl extends Zilliqa {
    * @param {Number} index - ID in mnemonic seed phrase.
    */
   async singTransaction(zilTxData, account) {
+    const wallet = new Wallet(this.provider)
+    const transactionFactory = new TransactionFactory(this.provider, wallet)
+
     // Singed tx just send.
     if (account && account.hwType && zilTxData.signature) {
-      const { txParams } = this.transactions.new(zilTxData)
+      const { txParams } = transactionFactory.new(zilTxData)
 
       return this.provider.send(RPCMethod.CreateTransaction, txParams)
     }
 
     // importing account from private key or seed phrase. //
-    const address = this.wallet.addByPrivateKey(account.privateKey)
+    const address = wallet.addByPrivateKey(account.privateKey)
 
-    this.wallet.setDefault(address)
+    wallet.setDefault(address)
     // Sign transaction by current account. //
-    const { txParams } = await this.wallet.sign(zilTxData)
+    const { txParams } = await wallet.sign(zilTxData)
 
     return this.provider.send(RPCMethod.CreateTransaction, txParams)
   }
@@ -145,7 +192,12 @@ export class ZilliqaControl extends Zilliqa {
    * @param {Number} msgVerison - `MSG_VERSION` chain.
    */
   async version(msgVerison = 1) {
-    const { result } = await this.network.GetNetworkId()
+    const method = RPCMethod.GetNetworkId
+    const { result, error } = await this.provider.send(method)
+
+    if (error) {
+      throw new Error(error)
+    }
 
     return bytes.pack(result, msgVerison)
   }
@@ -160,18 +212,22 @@ export class ZilliqaControl extends Zilliqa {
       throw new Error(errorsCode.WrongParams)
     }
 
-    this.wallet.addByMnemonic(seed, index)
+    const wallet = new Wallet(this.provider)
+
+    wallet.addByMnemonic(seed, index)
 
     const {
       address,
       publicKey,
       privateKey
-    } = this.wallet.defaultAccount
-    const { result } = await this.getBalance(address)
+    } = wallet.defaultAccount
+    const { balance } = await this.getBalance(address)
 
     return {
-      index, publicKey, privateKey,
-      balance: result,
+      index,
+      publicKey,
+      privateKey,
+      balance,
       address: toChecksumAddress(address)
     }
   }
@@ -191,14 +247,14 @@ export class ZilliqaControl extends Zilliqa {
       publicKey: getPubKeyFromPrivateKey(importPrivateKey),
       address: getAddressFromPrivateKey(importPrivateKey)
     }
-    const { result } = await this.getBalance(account.address)
+    const { balance } = await this.getBalance(account.address)
 
     account.address = toChecksumAddress(account.address)
 
     return {
       ...account,
       index,
-      balance: result
+      balance
     }
   }
 

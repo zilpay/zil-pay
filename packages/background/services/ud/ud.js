@@ -9,7 +9,7 @@
 import { ZILLIQA, DEFAULT } from 'config'
 
 import namehash from 'namicorn/build/zns/namehash'
-import { Zilliqa } from '@zilliqa-js/zilliqa'
+import { ZilliqaControl } from '../blockchain/zilliqa'
 
 const { UD_CONTRACT_ADDRESS } = DEFAULT
 const { PROVIDER } = ZILLIQA.mainnet
@@ -21,16 +21,17 @@ const { PROVIDER } = ZILLIQA.mainnet
 export class UnstoppableDomains {
 
   constructor() {
-    this.zilliqa = new Zilliqa(PROVIDER)
-    this.contract = this.zilliqa.contracts.at(UD_CONTRACT_ADDRESS)
+    this.zilliqa = new ZilliqaControl(PROVIDER)
   }
 
   async getAddressByDomain(domain) {
     const domainHash = namehash(domain)
-    const result = await this
-      .contract
-      .getSubState('records', [domainHash])
-    const { records } = result
+    const { records } = await this.zilliqa.getSmartContractSubState(
+      UD_CONTRACT_ADDRESS,
+      'records',
+      [domainHash]
+    )
+    console.log(records)
     const [owner] = records[domainHash].arguments
 
     return {
