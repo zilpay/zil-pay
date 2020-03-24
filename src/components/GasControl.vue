@@ -90,10 +90,12 @@ export default {
     return {
       FONT_VARIANTS,
       INPUT_TYPES,
+
       range: [
         this.DEFAULT.gasLimit,
         MAX_RANGE
-      ]
+      ],
+      startedGas: null
     }
   },
   computed: {
@@ -107,8 +109,8 @@ export default {
     onFactor() {
       const [limit, price] = this.range
       const gas = {
-        gasLimit: Math.round(this.DEFAULT.gasLimit * limit),
-        gasPrice: Math.round(this.DEFAULT.gasPrice * ((MAX_RANGE + 1) - price))
+        gasLimit: Math.round(this.startedGas.gasLimit * limit),
+        gasPrice: Math.round(this.startedGas.gasPrice * ((MAX_RANGE + 1) - price))
       }
 
       this.$emit(EVENTS.input, gas)
@@ -125,6 +127,9 @@ export default {
         gasLimit: Number(value)
       })
     }
+  },
+  mounted() {
+    this.startedGas = this.value
   }
 }
 </script>
