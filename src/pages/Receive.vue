@@ -182,7 +182,7 @@ export default {
       if (mainnet === this.network) {
         elements.push({
           icon: false,
-          title: `${this.local.BUY} ZIL ${this.local.BUY_ON}.`,
+          title: `${this.local.BUY} ${this.local.BUY_ON}.`,
           text: this.local.BUY_DIS,
           button: `${this.local.BUY} ZIL`,
           event: EVENTS.buy
