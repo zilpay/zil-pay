@@ -30,30 +30,44 @@ Voor dApp-ontwikkelaars:
 ### installeren
 
 ```bash
-$ npm install         # afhankelijkheden installeren
-```
+# Install dependencies
+$ npm install
 
-### Gebouw
+# Serve all files extension.
+$ npm run dev
 
-* Voor ontwikkelen
-```bash
-$ npm run content     # build content.js
-$ npm run inpage      # build inpage.js
-$ npm run background  # build background.js
-$ npm run scripts     # build content.js & inpage.js & background.js
-$ npm run all:firefox # alle scripts gebouwd voor firefox-platform.
-$ npm run all:chrome  # alle scripts gebouwd voor Chrome-platform.
+# Serve vue app files to dist.
+$ npm run serve:ui
+
+# Serve extension (background.js) and any extensiong files to dist.
+$ npm run serve:extension
+
+# Serve web on 8080 port.
+$ npm run serve:web
 ```
 
 * Voor productie:
 ```bash
-$ npm run build:prod:firefox
-$ npm run build:prod:chrome
+# Build all app and extension files and optimizing it.
+$ npm run build
+
+# Build only UI files and optimizing it.
+$ npm run build:ui
+
+# Build only extension files and optimizing it.
+$ npm run build:extension
 ```
 
 ### De tests uitvoeren
 ```bash
-$ npm run test # testen uitvoeren
+# run unit tests
+$ npm test:unit
+
+# Watch testing for dev.
+$ npm run test:watch
+
+# Check lint ts,vue files.
+$ npm run lint
 ```
 
 ## Gebouwd met

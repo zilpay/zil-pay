@@ -30,30 +30,44 @@ dApp 개발자의 경우 :
 ### 설치
 
 ```bash
-$ npm install         # 의존성 설치
-```
+# Install dependencies
+$ npm install
 
-### 건물
+# Serve all files extension.
+$ npm run dev
 
-* 개발
-```bash
-$ npm run content     # content.js 빌드
-$ npm run inpage      # inpage.js 빌드
-$ npm run background  # background.js 빌드
-$ npm run scripts     # content.js 및 inpage.js 및 background.js 빌드
-$ npm run all:firefox # 모든 스크립트는 파이어 폭스 플랫폼 용으로 빌드됩니다.
-$ npm run all:chrome  # 모든 스크립트는 크롬 플랫폼을 위해 빌드됩니다.
+# Serve vue app files to dist.
+$ npm run serve:ui
+
+# Serve extension (background.js) and any extensiong files to dist.
+$ npm run serve:extension
+
+# Serve web on 8080 port.
+$ npm run serve:web
 ```
 
 * 생산의 경우 :
 ```bash
-$ npm run build:prod:firefox
-$ npm run build:prod:chrome
+# Build all app and extension files and optimizing it.
+$ npm run build
+
+# Build only UI files and optimizing it.
+$ npm run build:ui
+
+# Build only extension files and optimizing it.
+$ npm run build:extension
 ```
 
 ### 테스트 실행
 ```bash
-$ npm run test # 테스트 실행
+# run unit tests
+$ npm test:unit
+
+# Watch testing for dev.
+$ npm run test:watch
+
+# Check lint ts,vue files.
+$ npm run lint
 ```
 
 ## 내장

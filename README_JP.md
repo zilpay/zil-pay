@@ -37,23 +37,44 @@ $ npm install         # 依存関係をインストールする
 
 * 開発のため
 ```bash
-$ npm run content     # content.jsをビルドします
-$ npm run inpage      # inpage.jsをビルドします
-$ npm run background  # background.jsをビルドします
-$ npm run scripts     # content.jsとinpage.jsとbackground.jsをビルドします
-$ npm run all:firefox # すべてのスクリプトは、firefoxプラットフォーム用にビルドされます。
-$ npm run all:chrome  # すべてのスクリプトはchromeプラットフォーム用に構築されます。
+# Install dependencies
+$ npm install
+
+# Serve all files extension.
+$ npm run dev
+
+# Serve vue app files to dist.
+$ npm run serve:ui
+
+# Serve extension (background.js) and any extensiong files to dist.
+$ npm run serve:extension
+
+# Serve web on 8080 port.
+$ npm run serve:web
 ```
 
 * 本番用：
 ```bash
-$ npm run build:prod:firefox
-$ npm run build:prod:chrome
+# Build all app and extension files and optimizing it.
+$ npm run build
+
+# Build only UI files and optimizing it.
+$ npm run build:ui
+
+# Build only extension files and optimizing it.
+$ npm run build:extension
 ```
 
 ### テストを実行する
 ```bash
-$ npm run test # テストを実行する
+# run unit tests
+$ npm test:unit
+
+# Watch testing for dev.
+$ npm run test:watch
+
+# Check lint ts,vue files.
+$ npm run lint
 ```
 
 ## 作り付け
