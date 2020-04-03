@@ -82,11 +82,9 @@ export class Popup {
       Popup.logOut()
     }
 
-    await accountControl.auth.vaultSync()
-    await networkControl.netwrokSync()
-
-    if (networkControl.status === null) {
-      await networkControl.checkProvider()
+    if (!accountControl.auth.isEnable) {
+      await accountControl.auth.vaultSync()
+      await networkControl.netwrokSync()
     }
 
     if (!accountControl.auth.isReady) {
@@ -105,7 +103,9 @@ export class Popup {
     }
 
     try {
-      await accountControl.auth.getWallet()
+      if (!accountControl.auth.isEnable) {
+        await accountControl.auth.getWallet()
+      }
     } catch (err) {
       /* */
     }
