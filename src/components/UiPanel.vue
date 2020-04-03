@@ -2,20 +2,20 @@
   <div :class="b()">
     <div :class="b('theme')">
       <Icon
-        v-show="selectedTheme === themes[0]"
+        v-show="selectedTheme === themes[1]"
         :icon="ICON_VARIANTS.moon"
         height="40"
         width="40"
         pointer
-        @click="setTheme(themes[1])"
+        @click="setTheme(themes[2])"
       />
       <Icon
-        v-show="selectedTheme === themes[1]"
+        v-show="selectedTheme === themes[2]"
         :icon="ICON_VARIANTS.sun"
         height="40"
         width="40"
         pointer
-        @click="setTheme(themes[0])"
+        @click="setTheme(themes[1])"
       />
     </div>
   </div>
