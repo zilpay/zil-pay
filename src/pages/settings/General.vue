@@ -26,7 +26,7 @@
           round
           @click="setClearTxHistory"
         >
-          {{ local.CLEAR }} {{ local.HISTORY }}
+          {{ local.CLEAR }} {{ local.TX_FULL }}
         </Button>
         <Button
           :disabled="(currency === currencyItems[0]) && (addressFormat === addressFormatItems[0])"

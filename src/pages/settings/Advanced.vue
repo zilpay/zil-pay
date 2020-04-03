@@ -14,14 +14,14 @@
         :elements="themes"
         @input="setTheme"
       >
-        {{ local.THEME }}
+        {{ local.THEME }}:
       </RadioGroup>
       <Button
         :class="b('btn')"
         round
         @click="onDefault"
       >
-        default
+        {{ local.DEFAULT }}
       </Button>
     </Container>
   </div>
@@ -95,7 +95,6 @@ export default {
   }
 
   &__btn {
-    margin-top: 130px;
     justify-self: right;
     width: 175px;
   }
