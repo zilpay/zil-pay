@@ -82,10 +82,8 @@ export class Popup {
       Popup.logOut()
     }
 
-    if (!accountControl.auth.isEnable) {
-      await accountControl.auth.vaultSync()
-      await networkControl.netwrokSync()
-    }
+    await accountControl.auth.vaultSync()
+    await networkControl.netwrokSync()
 
     if (!accountControl.auth.isReady) {
       await networkControl.changeConfig(ZILLIQA)
@@ -103,9 +101,7 @@ export class Popup {
     }
 
     try {
-      if (!accountControl.auth.isEnable) {
-        await accountControl.auth.getWallet()
-      }
+      await accountControl.auth.getWallet()
     } catch (err) {
       /* */
     }
