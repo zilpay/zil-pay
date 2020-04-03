@@ -31,7 +31,7 @@ const defaultManifest = {
     96: 'icon96.png',
     48: 'icon48.png',
     38: 'icon38.png',
-    39: 'icon19.png',
+    39: 'icon39.png',
     19: 'icon19.png',
     16: 'icon16.png'
   },
@@ -73,7 +73,7 @@ const defaultManifest = {
       'extension/background.js'
     ]
   },
-  content_security_policy: 'script-src \'self\' object-src \'self\''
+  content_security_policy: 'script-src \'self\'; object-src \'self\''
 }
 
 manifest.hooks.transform.tap('packages', () => {
@@ -86,7 +86,7 @@ module.exports = {
     inpage: path.resolve(__dirname, '../packages/inpage/index.js'),
     content: path.resolve(__dirname, '../packages/content/index.js')
   },
-  devtool: mode === development ? 'source-map' : false,
+  devtool: mode === development ? 'source-map' : '#cheap-module-eval-source-map',
   target: 'web',
   watch: mode === development,
   module: {
