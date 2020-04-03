@@ -14,6 +14,7 @@ import { changeTheme } from '@/services'
 
 const { document } = global
 const THEMES = [
+  'auto',
   'light',
   'dark'
 ]
@@ -54,6 +55,18 @@ const STORE = {
     [MUTATIONS_NAMES.setTheme](state, theme) {
       if (state.themes.includes(theme)) {
         state.selectedTheme = theme
+
+        if (theme === THEMES[0]) {
+          const hours = new Date().getHours()
+          const detected = hours >= 20 ? THEMES[2] : THEMES[1]
+
+          document.body.setAttribute('theme', detected)
+
+          changeTheme(theme)
+
+          return null
+        }
+
         document.body.setAttribute('theme', theme)
         changeTheme(theme)
       }
