@@ -6,7 +6,7 @@
         :value="network"
         :title="local.NETWORKS"
         :elements="networkConfig | keys"
-        @input="setNetwork"
+        @input="onChangeNetwork"
       >
         {{ local.NETWORKS }}:
       </RadioGroup>
@@ -28,9 +28,10 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import walletStore from '@/store/wallet'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
@@ -66,7 +67,24 @@ export default {
   methods: {
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setNetwork
-    ])
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+    ...mapActions(walletStore.STORE_NAME, [
+      walletStore.ACTIONS_NAMES.checkProvider
+    ]),
+
+    async onChangeNetwork(net) {
+      this.setLoad()
+      const { PROVIDER } = this.networkConfig[net]
+
+      await this.checkProvider(PROVIDER)
+
+      this.setNetwork(net)
+
+      this.setLoad()
+    }
   }
 }
 </script>

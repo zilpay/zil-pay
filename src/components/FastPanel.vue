@@ -92,6 +92,9 @@ export default {
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
+    ...mapActions(walletStore.STORE_NAME, [
+      walletStore.ACTIONS_NAMES.checkProvider
+    ]),
 
     onNetwork() {
       this.$router.push({ name: NetworkPage.name })
@@ -104,6 +107,7 @@ export default {
 
       try {
         await this.updateRate()
+        await this.checkProvider()
         await this.updateCurrentAccount()
       } catch (err) {
         //

@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import fetch from 'cross-fetch'
 import { Background } from '@/services'
 
 const bgScript = new Background()
@@ -18,12 +19,12 @@ const STATE_NAMES = {
 }
 const MUTATIONS_NAMES = {
   setAuth: 'setAuth',
-  setVerifly: 'setVerifly'
+  setVerifly: 'setVerifly',
+  setNetStatus: 'setNetStatus'
 }
 const ACTIONS_NAMES = {
-  onLedgerAccount: 'onLedgerAccount',
-  onKeyStore: 'onKeyStore',
-  onInit: 'onInit'
+  onInit: 'onInit',
+  checkProvider: 'checkProvider'
 }
 const GETTERS_NAMES = { }
 const STORE = {
@@ -42,15 +43,12 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setVerifly](state, seed) {
       state[STATE_NAMES.verifly] = seed
+    },
+    [MUTATIONS_NAMES.setNetStatus](state, status) {
+      state[STATE_NAMES.networkStatus] = status
     }
   },
   actions: {
-    [ACTIONS_NAMES.onLedgerAccount]({ state }, payload) {
-      // console.log(payload)
-    },
-    [ACTIONS_NAMES.onKeyStore]({ state }, payload) {
-      // console.log(payload)
-    },
     async [ACTIONS_NAMES.onInit]({ commit }) {
       let data = null
 
@@ -63,6 +61,25 @@ const STORE = {
       commit(MUTATIONS_NAMES.setAuth, data)
 
       return data
+    },
+    async [ACTIONS_NAMES.checkProvider]({ state, commit }, provider) {
+      if (!provider) {
+        return null
+      }
+
+      let status = state[STATE_NAMES.networkStatus]
+
+      try {
+        const res = await fetch(provider, {
+          method: 'OPTIONS'
+        })
+
+        status = res.ok
+      } catch (err) {
+        status = false
+      } finally {
+        commit(MUTATIONS_NAMES.setNetStatus, status)
+      }
     }
   },
   getters: {}
