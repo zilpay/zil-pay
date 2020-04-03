@@ -8,7 +8,7 @@
  */
 import { ZILLIQA, DEFAULT } from 'config'
 
-import namehash from 'namicorn/build/zns/namehash'
+import namehash from '@unstoppabledomains/resolution/build/zns/namehash'
 import { ZilliqaControl } from '../blockchain/zilliqa'
 
 const { UD_CONTRACT_ADDRESS } = DEFAULT
