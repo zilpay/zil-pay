@@ -30,7 +30,7 @@
     "CLEAR": "clear",
     "GENERAL": "general",
     "PRINT": "print",
-    "CUR_CONVER": "currency conversion",
+    "CUR_CONVER": "currency",
     "ADDR_FORMATS": "address formats",
     "HISTORY": "history",
     "DEFAULT": "default",
