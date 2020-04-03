@@ -180,8 +180,11 @@ export default {
   }
 
   &__info {
+    text-align: center;
+
     line-height: 18px;
     font-size: 15px;
+    margin-top: 15px;
   }
 
   &__about-connect {
