@@ -192,7 +192,7 @@ export default {
     },
     onSelectAccount(index) {
       this.setAccount(index)
-      this.updateCurrentAccount()
+      this.$router.push({ name: homePage.name })
     },
     onSelectContact(contact) {
       this.$router.push({
