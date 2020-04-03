@@ -4,7 +4,7 @@
     <Container :class="b('wrapper')">
       <Icon :icon="ICON_VARIANTS.zilPayLogo"/>
       <Title :size="SIZE_VARIANS.sm">
-        ZilPay Version 0.3.6
+        ZilPay Version {{ version }}
       </Title>
       <Title :size="SIZE_VARIANS.sm">
         Thanks for your donats.
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import extension from 'extensionizer'
 import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
@@ -74,6 +75,7 @@ export default {
     return {
       ICON_VARIANTS,
       SIZE_VARIANS,
+      version: extension.runtime.getManifest().version,
       owner: {
         name: 'Rinat',
         url: 'https://github.com/lich666dead'
