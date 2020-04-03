@@ -86,7 +86,7 @@ module.exports = {
     inpage: path.resolve(__dirname, '../packages/inpage/index.js'),
     content: path.resolve(__dirname, '../packages/content/index.js')
   },
-  devtool: mode === development ? 'source-map' : '#cheap-module-eval-source-map',
+  devtool: mode === development ? 'source-map' : false,
   target: 'web',
   watch: mode === development,
   module: {
