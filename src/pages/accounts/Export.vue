@@ -2,11 +2,11 @@
   <div :class="b()">
     <TopBar close/>
     <Alert>
-      <P :class="b('info')">
-        {{ local.EXPORT_INFO }}
-      </P>
       <P :font="FONT_VARIANTS.medium">
         {{ local.EXPORT_WARNING }}
+      </P>
+      <P :class="b('info')">
+        {{ local.EXPORT_INFO }}
       </P>
     </Alert>
     <Container :class="b('wrapper')">
@@ -191,6 +191,8 @@ export default {
   &__info {
     font-size: 15px;
     line-height: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
   }
 
   &__warn-info {
