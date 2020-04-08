@@ -9,7 +9,7 @@
     </Container>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[0]">
       <Container :class="b('info')">
-        <P>
+        <P capitalize>
           {{ local.IMPORT }} {{ local.PRIVATEKEY }}
         </P>
         <Input
@@ -24,7 +24,7 @@
     </Alert>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[1]">
       <Container :class="b('info')">
-        <P>
+        <P capitalize>
           {{ local.IMPORT_KEYSTORE }}
         </P>
         <Input
@@ -42,14 +42,16 @@
     </Alert>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[2]">
       <Container :class="b('info')">
-        <P>
+        <P capitalize>
           {{ local.IMPORT_HW }}
         </P>
         <Input
           v-model="ledger.index"
+          :error="ledger.error"
           :placeholder="local.WALLET_ID"
           :type="INPUT_TYPES.number"
           round
+          @input="ledger.error = null"
         />
       </Container>
     </Alert>
@@ -69,6 +71,7 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 
+import AccountErrors from 'packages/background/services/account/errors'
 import { SIZE_VARIANS } from '@/config'
 
 import homePage from '@/pages/Home'
@@ -120,7 +123,8 @@ export default {
         error: null
       },
       ledger: {
-        index: 0
+        index: 0,
+        error: null
       }
     }
   },
@@ -170,6 +174,8 @@ export default {
       const bg = new Background()
 
       try {
+        this.setLoad()
+
         const result = await bg.importPrivKey(this.privateKey.model)
 
         this.setAccount(result.selectedAddress)
@@ -179,7 +185,15 @@ export default {
 
         this.$router.push({ name: homePage.name })
       } catch (err) {
+        if (err.message === AccountErrors.ImportUniqueWrong) {
+          this.privateKey.error = this.local.UNIQUE_IMPORT_ERR
+
+          return null
+        }
+
         this.privateKey.error = this.local.INVALID_PRIVATEKEY
+      } finally {
+        this.setLoad()
       }
     },
     /**
@@ -212,6 +226,7 @@ export default {
 
         this.$router.push({ name: homePage.name })
       } catch (err) {
+        this.ledger.error = err
         // Denied or any errors.
       } finally {
         this.setLoad()

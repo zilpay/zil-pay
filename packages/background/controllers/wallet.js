@@ -77,12 +77,11 @@ export class Wallet {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async importPrivateKey(sendResponse) {
-    let wallet = null
     const { privKey } = this.payload
     const accountImporter = new AccountImporter(accountControl)
 
     try {
-      wallet = await accountImporter.importAccountByPrivateKey(privKey)
+      const wallet = await accountImporter.importAccountByPrivateKey(privKey)
 
       sendResponse({ resolve: wallet })
     } catch (err) {

@@ -18,6 +18,8 @@
     "SEED_REQUIRED": "*Wallet seed words is required!",
     "DEPLOY": "deploy",
     "EPOCH": "block",
+    "UNIQUE_IMPORT_ERR": "*Such address already exists or has been imported!",
+    "INVALID_PRIVATEKEY": "*Invalid private key format",
     "ACCOUNTS": "accounts",
     "ACCOUNT": "Account",
     "CONTACTS": "contacts",

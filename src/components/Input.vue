@@ -113,10 +113,9 @@ export default {
     width: 100%;
 
     text-indent: 15px;
-    text-transform: capitalize;
     text-align: left;
 
-    font-family: var(--font-family-light);
+    font-family: var(--font-family-medium);
     color: var(--theme-color-font);
     font-size: var(--size-xs-font);
 
