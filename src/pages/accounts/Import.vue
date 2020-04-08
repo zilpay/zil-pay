@@ -9,7 +9,10 @@
     </Container>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[0]">
       <Container :class="b('info')">
-        <P capitalize>
+        <P
+          :class="b('info-title')"
+          capitalize
+        >
           {{ local.IMPORT }} {{ local.PRIVATEKEY }}
         </P>
         <Input
@@ -24,7 +27,10 @@
     </Alert>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[1]">
       <Container :class="b('info')">
-        <P capitalize>
+        <P
+          :class="b('info-title')"
+          capitalize
+        >
           {{ local.IMPORT_KEYSTORE }}
         </P>
         <Input
@@ -34,6 +40,7 @@
           round
         />
         <input
+          :class="b('json')"
           ref="json"
           type="file"
           accept="application/JSON"
@@ -42,7 +49,10 @@
     </Alert>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[2]">
       <Container :class="b('info')">
-        <P capitalize>
+        <P
+          :class="b('info-title')"
+          capitalize
+        >
           {{ local.IMPORT_HW }}
         </P>
         <Input
@@ -259,10 +269,18 @@ export default {
     padding-bottom: 15px;
   }
 
+  &__info-title {
+    margin-bottom: 15px;
+  }
+
   &__btn {
     margin-top: 15px;
     margin-left: 15px;
     min-width: 100px;
+  }
+
+  &__json {
+    margin-top: 15px;
   }
 }
 </style>
