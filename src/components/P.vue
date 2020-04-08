@@ -81,8 +81,9 @@ export default {
 <style lang="scss">
 .P {
   color: var(--theme-color-font);
-
   letter-spacing: -0.139803px;
+
+  transition: all 0.5s linear;
 
   &_nowrap {
     white-space: nowrap;
@@ -143,6 +144,7 @@ export default {
 
     &:hover {
       cursor: pointer;
+      text-shadow: 0 0 0.5em var(--accent-color-gray);
     }
   }
 
