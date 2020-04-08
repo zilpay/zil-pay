@@ -73,7 +73,7 @@ const defaultManifest = {
       'extension/background.js'
     ]
   },
-  content_security_policy: 'script-src \'self\'; object-src \'self\''
+  content_security_policy: mode === development ? 'script-src \'self\' \'unsafe-eval\'; object-src \'self\'' : undefined
 }
 
 manifest.hooks.transform.tap('packages', () => {

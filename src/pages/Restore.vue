@@ -14,8 +14,10 @@
       </P>
       <div>
         <Textarea
-          v-model="seed"
+          v-model="seed.model"
+          :error="seed.error"
           round
+          @input="seed.error = null"
         />
         <PasswordForm
           :btn="local.RESTORE"
@@ -64,7 +66,10 @@ export default {
       COLOR_VARIANTS,
       SIZE_VARIANS,
 
-      seed: null
+      seed: {
+        model: null,
+        error: null
+      }
     }
   },
   computed: {
@@ -74,11 +79,21 @@ export default {
   },
   methods: {
     async restore(password) {
-      await bgScript.createWallet({
-        password,
-        seed: this.seed
-      })
-      window.close()
+      if (!this.seed.model) {
+        this.seed.error = this.local.SEED_REQUIRED
+
+        return null
+      }
+
+      try {
+        await bgScript.createWallet({
+          password,
+          seed: this.seed.model
+        })
+        window.close()
+      } catch (err) {
+        this.seed.error = this.local.SEED_INCORRECT
+      }
     }
   }
 }

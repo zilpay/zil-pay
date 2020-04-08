@@ -46,7 +46,7 @@ export class AccountControl {
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
     if (!this.zilliqa.wallet.isValidMnemonic(decryptSeed)) {
-      throw new Error(errorsCodeGuard.WrongDecryptSeed)
+      throw new Error(errorsCodeGuard.MnemonicWrong)
     } else if (!this.auth._guard) {
       throw new Error(errorsCodeGuard.GuardWrong)
     }

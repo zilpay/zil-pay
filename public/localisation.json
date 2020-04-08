@@ -2,15 +2,11 @@
   "en": {
     "FIRSTSTART_TITLE": "Welcome to ZilPay",
     "FIRSTSTART_DIS": "Connecting you to Zilliqa and the Decentralized Web. We’re happy to see you.",
-
     "CREATE_TITLE": "Your recovery phrase.",
     "CREATE_DIS": "Remember your 12 words.",
-
     "VERIFY_DIS": "Verify your recovery phrase.",
-
     "RESTORE_TITLE": "Restore your Account.",
     "RESTORE_DIS": "Enter your secret word phrase here to restore your vault.",
-
     "BALANCE": "balance",
     "TX_FULL": "transactions",
     "TRIGGER": "trigger",
@@ -18,9 +14,10 @@
     "PASS_RECIPIENT_ADDR": "Pass the recipient address.",
     "INCORRECT_ADDR_FORMAT": "Incorrect address format.",
     "INSUFFICIENT_FUNDS": "Insufficient funds",
-
+    "SEED_INCORRECT": "Your initial phrase is invalid.",
+    "SEED_REQUIRED": "*Wallet seed words is required!",
     "DEPLOY": "deploy",
-    "EPOCH":"block",
+    "EPOCH": "block",
     "ACCOUNTS": "accounts",
     "ACCOUNT": "Account",
     "CONTACTS": "contacts",
@@ -47,7 +44,6 @@
     "ADD": "add",
     "RECIPIENT": "recipient",
     "NOT_CONTACTS": "You have not any contacts yet.",
-
     "RECEIVE": "receive",
     "DEPOSIT": "deposit",
     "RECEIVE_DEPOSIT_DIS": "To interact with decentralized applications using ZilPay, you’ll need ZIL coin in your wallet.",
@@ -64,7 +60,6 @@
     "EXPORT": "export",
     "IMPORTED": "Imported",
     "NAME": "name",
-
     "PUBLIC": "public",
     "OR": "or",
     "BETWEEN": "between",
@@ -79,11 +74,9 @@
     "DETAILS": "details",
     "INCORRECT": "incorrect",
     "NOT_FOUND_ZNS": "ZNS address not found.",
-
     "CONNECT": "connect",
     "CONNECT_INFO": "would like to connect to your account.",
     "CONNECT_DIS": "This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.",
-
     "CONTINUE": "continue",
     "WELCOME_BACK": "Welcome back",
     "PASSWORD": "password",
@@ -96,7 +89,6 @@
     "LONG": "long",
     "NOT_MATCH": "do not match. Please try again",
     "CAN_EDIT": "change:",
-
     "IMPORT_PRIVATE_KEY": "You can access your wallet with private key.",
     "IMPORT_KEYSTORE": "You can access your wallet with your keystore file and passphrase.",
     "IMPORT_HW": "Manage your crypto, with the security of your hardware wallet",

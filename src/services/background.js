@@ -64,7 +64,7 @@ export class Background {
     const wallet = await new Message({ type, payload }).send()
 
     if (wallet.reject) {
-      return Promise.reject(wallet.reject)
+      throw new Error(wallet.reject)
     }
   }
 

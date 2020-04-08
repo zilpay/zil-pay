@@ -9,13 +9,7 @@
       block
       @click="onClick(el)"
     >
-      <Icon
-        v-if="el.icon"
-        :class="b('icon')"
-        :icon="el.icon"
-        height="15"
-        width="15"
-      />
+      <Icon v-if="el.icon" :class="b('icon')" :icon="el.icon" height="15" width="15" />
       {{ el.value }}
     </Buttom>
   </div>
