@@ -6,7 +6,7 @@
     <Input
       v-model="password"
       :type="INPUT_TYPES.password"
-      :title="local.PASSWORD"
+      :placeholder="local.PASSWORD"
       :error="error"
       round
       autocomplete=off
@@ -15,8 +15,8 @@
     <Input
       v-model="confirmPassword"
       :type="INPUT_TYPES.password"
-      :title="local.CONFIRM + ' ' + local.PASSWORD"
       :error="errorConfirm"
+      :placeholder="local.CONFIRM + ' ' + local.PASSWORD"
       autocomplete=off
       round
       @input="onReset"

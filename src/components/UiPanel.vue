@@ -2,7 +2,7 @@
   <div :class="b()">
     <div :class="b('theme')">
       <Icon
-        v-show="selectedTheme === themes[1]"
+        v-show="selectedTheme === themes[1] || selectedTheme === themes[0]"
         :icon="ICON_VARIANTS.moon"
         height="40"
         width="40"

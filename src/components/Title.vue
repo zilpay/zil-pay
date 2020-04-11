@@ -69,6 +69,7 @@ export default {
 <style lang="scss">
 .Title {
   color: var(--theme-color-font);
+  transition: all 0.5s linear;
 
   &__input {
     max-width: fit-content;
