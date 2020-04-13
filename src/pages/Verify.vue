@@ -150,7 +150,9 @@ export default {
         password,
         seed: this.verifyWords.join(' ')
       })
+
       window.close()
+      window.location.reload()
     }
   },
   mounted() {

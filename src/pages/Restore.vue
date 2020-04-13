@@ -91,6 +91,7 @@ export default {
           seed: this.seed.model
         })
         window.close()
+        window.location.reload()
       } catch (err) {
         this.seed.error = this.local.SEED_INCORRECT
       }
