@@ -79,6 +79,7 @@ export default {
 .RadioGroup {
   display: block;
   width: 100%;
+  max-width: 360px;
 
   border-right: 1px solid var(--accent-color-success);
 

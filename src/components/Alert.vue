@@ -40,6 +40,7 @@ export default {
   grid-template-rows: 1px 1fr 1px;
 
   width: 100%;
+  max-width: 360px;
 
   background-color: var(--theme-color-alert);
 

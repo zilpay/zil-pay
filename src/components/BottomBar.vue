@@ -118,5 +118,9 @@ export default {
   &__icon {
     padding-right: 5px;
   }
+
+  @media (min-width: 361px) {
+    position: relative;
+  }
 }
 </style>

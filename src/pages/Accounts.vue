@@ -233,8 +233,10 @@ export default {
   &__wrapper {
     display: grid;
     justify-items: center;
-    align-items: center;
+    align-items: baseline;
     grid-template-rows: 80px auto;
+    grid-template-rows: 80px auto;
+    min-height: 500px;
   }
 
   &__list {

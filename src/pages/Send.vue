@@ -364,6 +364,7 @@ export default {
   }
 
   &__item-action {
+    width: inherit;
     font-size: 15px;
   }
 

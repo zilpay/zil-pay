@@ -100,7 +100,7 @@ export default {
   align-items: center;
 
   min-height: 65px;
-  max-width: 600px;
+  width: 360px;
 
   &__back-wrapper {
     display: flex;
