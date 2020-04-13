@@ -70,6 +70,10 @@ export class Background {
   _popupDispenseMessage(sendResponse, message) {
     switch (message.type) {
 
+    case MTypePopup.SET_PROXY_STORAGE:
+      new Popup(message.payload).setDataFromPopup(sendResponse)
+      break
+
     case MTypePopup.POPUP_INIT:
       new Popup().initPopup(sendResponse)
       break

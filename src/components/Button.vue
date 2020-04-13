@@ -74,6 +74,8 @@ export default {
   outline: none;
 
   box-shadow: var(--default-box-shadow);
+
+  transition: all 0.5s ease-out;
 }
 
 .Button {

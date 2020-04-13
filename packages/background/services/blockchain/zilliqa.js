@@ -110,7 +110,7 @@ export class ZilliqaControl {
     const transactions = await storage.get(FIELDS.TRANSACTIONS)
     const network = await storage.get(FIELDS.SELECTED_NET)
     const historyTx = transactions && transactions[account.address] && transactions[account.address][network]
-    const addressInfo = await this.getBalance(account.address)
+    let { nonce } = await this.getBalance(account.address)
     let {
       amount, // Amount of zil. type Number.
       code, // Value contract code. type String.
@@ -118,11 +118,8 @@ export class ZilliqaControl {
       gasLimit,
       gasPrice,
       toAddr, // Recipient address. type String.
-      nonce,
       version // Netowrk version. type Number.
     } = txData
-
-    nonce = addressInfo.nonce
 
     if (!version) {
       version = await this.version()
@@ -132,14 +129,12 @@ export class ZilliqaControl {
       const lastTx = historyTx.pop()
       const pendingTx = await this.getPendingTxn(lastTx.TranID)
 
-      if (!pendingTx.confirmed && lastTx.nonce > addressInfo.nonce) {
+      if (!pendingTx.confirmed && lastTx.nonce > nonce) {
         nonce = lastTx.nonce
       }
     }
 
-    if (nonce !== 0) {
-      nonce++
-    }
+    nonce++
 
     amount = new BN(amount)
     gasPrice = new BN(gasPrice)

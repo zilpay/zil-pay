@@ -1,4 +1,5 @@
 import { FIELDS, ZILLIQA } from 'config'
+import { Message, MTypePopup } from 'lib/stream'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 
@@ -34,9 +35,10 @@ export async function walletUpdate(wallet) {
     return null
   }
 
-  await storage.set([
-    new BuildObject(FIELDS.WALLET, wallet)
-  ])
+  const type = MTypePopup.SET_PROXY_STORAGE
+  const payload = new BuildObject(FIELDS.WALLET, wallet)
+
+  await new Message({ type, payload }).send()
 
   return wallet
 }
@@ -80,9 +82,10 @@ export async function updateNetworkConifg(config) {
     }
   })
 
-  await storage.set([
-    new BuildObject(FIELDS.CONFIG, config)
-  ])
+  const type = MTypePopup.SET_PROXY_STORAGE
+  const payload = new BuildObject(FIELDS.CONFIG, config)
+
+  await new Message({ type, payload }).send()
 }
 
 export async function changeTheme(theme) {
@@ -96,9 +99,10 @@ export async function changeTheme(theme) {
 }
 
 export async function changeContacts(contacts) {
-  await storage.set([
-    new BuildObject(FIELDS.CONTACTS, contacts)
-  ])
+  const type = MTypePopup.SET_PROXY_STORAGE
+  const payload = new BuildObject(FIELDS.CONTACTS, contacts)
+
+  await new Message({ type, payload }).send()
 
   return contacts
 }

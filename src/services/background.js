@@ -1,5 +1,5 @@
 import { Message, MTypePopup, MTypeTab } from 'lib/stream'
-import { toAddress } from '../filters'
+import { toAddress } from '@/filters'
 import { ADDRESS_FORMAT_VARIANTS } from '@/config'
 
 const { Promise, window } = global

@@ -190,4 +190,16 @@ export class Popup {
       sendResponse({ reject: err.message })
     }
   }
+
+  async setDataFromPopup(sendResponse) {
+    const storage = new BrowserStorage()
+
+    try {
+      await storage.set([this.payload])
+
+      sendResponse({ resolve: true })
+    } catch (err) {
+      sendResponse({ reject: false })
+    }
+  }
 }
