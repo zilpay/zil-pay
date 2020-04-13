@@ -27,6 +27,7 @@
     "IMPORT": "import",
     "CONNECTIONS": "connections",
     "CLEAR": "clear",
+    "INCORRECT_KEYSTORE": "Incorrect keystore file or password.",
     "GENERAL": "general",
     "PRINT": "print",
     "CUR_CONVER": "currency",

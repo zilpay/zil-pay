@@ -26,7 +26,7 @@ const ACTIONS_NAMES = {
   onInit: 'onInit',
   checkProvider: 'checkProvider'
 }
-const GETTERS_NAMES = { }
+const GETTERS_NAMES = {}
 const STORE = {
   namespaced: true,
   state: {

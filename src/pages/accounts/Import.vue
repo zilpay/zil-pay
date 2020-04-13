@@ -37,6 +37,7 @@
           v-model="jsonFile.password"
           :placeholder="local.PASSWORD"
           :error="jsonFile.error"
+          :type="INPUT_TYPES.password"
           round
         />
         <input
@@ -145,8 +146,7 @@ export default {
   },
   methods: {
     ...mapActions(walletStore.STORE_NAME, [
-      walletStore.ACTIONS_NAMES.onLedgerAccount,
-      walletStore.ACTIONS_NAMES.onKeyStore
+      walletStore.ACTIONS_NAMES.onLedgerAccount
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
       accountsStore.ACTIONS_NAMES.onAddAccount
@@ -156,7 +156,8 @@ export default {
     ]),
     ...mapMutations(accountsStore.STORE_NAME, [
       accountsStore.MUTATIONS_NAMES.setAccount,
-      accountsStore.MUTATIONS_NAMES.setAccounts
+      accountsStore.MUTATIONS_NAMES.setAccounts,
+      accountsStore.MUTATIONS_NAMES.setWallet
     ]),
 
     /**
@@ -188,8 +189,8 @@ export default {
 
         const result = await bg.importPrivKey(this.privateKey.model)
 
-        this.setAccount(result.selectedAddress)
         this.setAccounts(result.identities)
+        this.setAccount(result.selectedAddress)
 
         walletUpdate(result)
 
@@ -197,11 +198,9 @@ export default {
       } catch (err) {
         if (err.message === AccountErrors.ImportUniqueWrong) {
           this.privateKey.error = this.local.UNIQUE_IMPORT_ERR
-
-          return null
+        } else {
+          this.privateKey.error = this.local.INVALID_PRIVATEKEY
         }
-
-        this.privateKey.error = this.local.INVALID_PRIVATEKEY
       } finally {
         this.setLoad()
       }
@@ -214,12 +213,30 @@ export default {
       const reader = new FileReader()
       const path = this.$refs.json.files[0].name
 
-      reader.onload = e => {
-        this.onKeyStore({
-          name: path.split('.')[0],
-          content: e.target.result,
-          password: this.jsonFile.password
-        })
+      reader.onload = async(e) => {
+        const bg = new Background()
+
+        try {
+          this.setLoad()
+
+          const wallet = await bg.importKeystore({
+            name: path.split('.')[0],
+            content: e.target.result,
+            password: this.jsonFile.password
+          })
+
+          this.setWallet(wallet)
+
+          this.$router.push({ name: homePage.name })
+        } catch (err) {
+          if (err.message === AccountErrors.ImportUniqueWrong) {
+            this.jsonFile.error = this.local.UNIQUE_IMPORT_ERR
+          } else {
+            this.jsonFile.error = this.local.INCORRECT_KEYSTORE
+          }
+        } finally {
+          this.setLoad()
+        }
       }
 
       reader.readAsText(file)

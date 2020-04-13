@@ -18,7 +18,8 @@ const STATE_NAMES = {
 const MUTATIONS_NAMES = {
   setAccounts: 'setAccounts',
   setAccount: 'setAccount',
-  setAccountName: 'setAccountName'
+  setAccountName: 'setAccountName',
+  setWallet: 'setWallet'
 }
 const ACTIONS_NAMES = {
   onRemoveAccount: 'onRemoveAccount',
@@ -61,6 +62,10 @@ const STORE = {
       identities[selectedAddress].name = value
 
       walletUpdate(state)
+    },
+    [MUTATIONS_NAMES.setWallet](state, wallet) {
+      state.identities = wallet.identities
+      state.selectedAddress = wallet.selectedAddress
     }
   },
   actions: {

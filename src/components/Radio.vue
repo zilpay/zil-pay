@@ -61,6 +61,7 @@ export default {
 <style lang="scss">
 .Radio {
   display: flex;
+  transition: all 0.5s ease-out;
 
   &__radio {
     position: absolute;

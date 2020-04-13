@@ -190,6 +190,23 @@ export class Background {
   }
 
   /**
+   * Use for Import by keystore file.
+   * @param {Object} payload KeyStore payload.
+   */
+  async importKeystore(payload) {
+    const type = MTypePopup.IMPORT_KEYSTORE
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  /**
    * Rejected need to confirm tx and send to tabs.
    */
   async rejectTx() {

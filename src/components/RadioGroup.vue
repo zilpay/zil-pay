@@ -57,7 +57,7 @@ export default {
     },
     value: {
       type: [Number, String],
-      required: true
+      required: false
     }
   },
   data() {

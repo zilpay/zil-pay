@@ -89,6 +89,21 @@ export class Wallet {
     }
   }
 
+  async importKeyStore(sendResponse) {
+    const accountImporter = new AccountImporter(accountControl)
+    const { content, name, password } = this.payload
+
+    try {
+      const wallet = await accountImporter.importAccountByKeyStore(
+        content, name, password
+      )
+
+      sendResponse({ resolve: wallet })
+    } catch (err) {
+      sendResponse({ reject: err.message })
+    }
+  }
+
   /**
    * Creating account via seed words and set to storage.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.

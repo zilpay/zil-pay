@@ -90,6 +90,10 @@ export class Background {
       new Wallet(message.payload).importPrivateKey(sendResponse)
       break
 
+    case MTypePopup.IMPORT_KEYSTORE:
+      new Wallet(message.payload).importKeyStore(sendResponse)
+      break
+
     case MTypePopup.GET_RANDOM_SEED:
       new Popup().getRandomSeedPhrase(sendResponse)
       break

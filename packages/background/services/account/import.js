@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from 'config'
+import { FIELDS, DEFAULT } from 'config'
 import { BuildObject } from 'lib/storage'
 
 import { AccountControl } from './create'
@@ -50,8 +50,8 @@ export class AccountImporter extends AccountControl {
 
     // If found privateKey in Imported Object than replace this account.
     const isFound = decryptImported.find(acc => {
-      const somePrivateKey = acc.privateKey.toLocaleLowerCase()
-      const forImportPrivateKey = privateKey.toLocaleLowerCase()
+      const somePrivateKey = acc.privateKey.toLowerCase()
+      const forImportPrivateKey = privateKey.toLowerCase()
       return somePrivateKey === forImportPrivateKey
     })
     const index = isFound ? isFound.index : decryptImported.length
@@ -59,11 +59,11 @@ export class AccountImporter extends AccountControl {
     if (isFound) {
       // If account is found then replace it.
       decryptImported = decryptImported.map(acc => {
-        const somePrivateKey = acc.privateKey.toLocaleLowerCase()
-        const forImportPrivateKey = privateKey.toLocaleLowerCase()
+        const somePrivateKey = acc.privateKey.toLowerCase()
+        const forImportPrivateKey = privateKey.toLowerCase()
 
         if (somePrivateKey === forImportPrivateKey) {
-          acc.privateKey = privateKey.toLocaleLowerCase()
+          acc.privateKey = privateKey.toLowerCase()
         }
 
         return acc
@@ -71,7 +71,7 @@ export class AccountImporter extends AccountControl {
     } else {
       decryptImported.push({
         index,
-        privateKey: privateKey.toLocaleLowerCase()
+        privateKey: privateKey.toLowerCase()
       })
     }
 
@@ -93,6 +93,66 @@ export class AccountImporter extends AccountControl {
       index,
       address: account.address,
       balance: account.balance,
+      isImport: true
+    })
+
+    await this.auth.updateImported(decryptImported)
+    await this._storage.set(
+      new BuildObject(FIELDS.WALLET, wallet)
+    )
+
+    return wallet
+  }
+
+
+  async importAccountByKeyStore(keystore, name, password) {
+    await this.auth.vaultSync()
+
+    // Mandatory authentication test.
+    if (!this.auth.isReady) {
+      throw new Error(
+        errorsCode.WalletIsNotReady + this.auth.isReady
+      )
+    } else if (!this.auth.isEnable) {
+      throw new Error(
+        errorsCode.WalletIsNotEnable + this.auth.isEnable
+      )
+    }
+
+    this.zilliqa = new ZilliqaControl(this.network.provider)
+    await this.zilliqa.wallet.addByKeystore(keystore, password)
+
+    let { decryptImported } = await this.auth.getWallet()
+    let wallet = await this._storage.get(FIELDS.WALLET)
+    const index = decryptImported.length
+    const account = this.zilliqa.wallet.defaultAccount
+    const hasAccount = wallet.identities.find(
+      (acc) => acc.address.toLowerCase() === account.address.toLowerCase()
+    )
+
+    if (hasAccount) {
+      throw new Error(errorsCode.ImportUniqueWrong)
+    }
+
+    if (!name || name.length > DEFAULT.MAX_LENGTH_NAME) {
+      name = `keystore ${index}`
+    }
+
+    decryptImported = decryptImported.filter(
+      (acc) => account.privateKey.toLowerCase() !== acc.privateKey.toLowerCase()
+    )
+
+    decryptImported.push({
+      index,
+      privateKey: account.privateKey.toLowerCase()
+    })
+
+    wallet.selectedAddress = wallet.identities.length
+    wallet.identities.push({
+      index,
+      name,
+      address: account.address,
+      balance: '0',
       isImport: true
     })
 
