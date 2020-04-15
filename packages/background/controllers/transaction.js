@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { API, FIELDS } from 'config'
+import { API, FIELDS, DEFAULT } from 'config'
 
 import {
   ZilliqaControl,
@@ -103,18 +103,33 @@ export class Transaction {
         }
 
         const { result } = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
+        const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
+        let block = tx.block
+        let error = null
 
         if (result.confirmed) {
           new NotificationsControl({
             url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
-            title: 'ZilPay Transactions',
+            title: 'ZilPay confirmed',
             message: tx.Info
           }).create()
+
+          block = socketControl.blockNumber
+        } else if (!result.confirmed && blockForskel >= DEFAULT.BLOCKS_FOR_CONFIRM) {
+          new NotificationsControl({
+            url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
+            title: 'ZilPay rejected',
+            message: tx.Info
+          }).create()
+
+          error = true
+          result.confirmed = true
         }
 
         return {
           ...tx,
-          block: socketControl.blockNumber,
+          block,
+          error,
           confirmed: result.confirmed
         }
       })

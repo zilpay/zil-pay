@@ -102,7 +102,7 @@ export default {
     statusIcon() {
       if (!this.transaction.confirmed) {
         return ICON_VARIANTS.statusPadding
-      } else if (this.transaction.confirmed && this.transaction.error) {
+      } else if (this.transaction.error) {
         return ICON_VARIANTS.statusDanger
       }
 

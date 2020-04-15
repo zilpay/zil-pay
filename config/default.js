@@ -16,6 +16,7 @@ export const DEFAULT = {
     4,
     5
   ],
+  BLOCKS_FOR_CONFIRM: 3,
   MAX_TX_AMOUNT_LIST: 3,
   MIN_LENGTH_PASSWORD: 6,
   MAX_LENGTH_NAME: 10,
