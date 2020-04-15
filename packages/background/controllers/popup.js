@@ -37,6 +37,10 @@ export class Popup {
       const storage = new BrowserStorage()
       const wallet = await storage.get(FIELDS.WALLET)
 
+      if (!wallet || !wallet.identities || wallet.identities.length === 0) {
+        return null
+      }
+
       selectedAccount = wallet.identities[wallet.selectedAddress]
     }
 
