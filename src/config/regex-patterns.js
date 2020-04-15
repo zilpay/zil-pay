@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /*
  * Project: ZilPay-wallet
  * Author: Rinat(lich666dead)
@@ -8,5 +9,7 @@
  */
 export const REGX_PATTERNS = {
   password: /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])./,
-  domain: /.*\w.zil/gm
+  domain: /.*\w.zil/gm,
+  // eslint-disable-next-line max-len
+  url: /(?:(?:https?|http|ws|wss):\/\/)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/
 }

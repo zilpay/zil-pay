@@ -52,6 +52,7 @@ const MUTATIONS_NAMES = {
 }
 const ACTIONS_NAMES = {
   updateRate: 'updateRate',
+  onUpdateNetworkConfig: 'onUpdateNetworkConfig',
   onUpdateSettings: 'onUpdateSettings',
   onUpdateConnection: 'onUpdateConnection',
   onUpdateDappList: 'onUpdateDappList'
@@ -101,10 +102,9 @@ const STORE = {
       }
     },
     [MUTATIONS_NAMES.setNetworkConfig](state, config) {
-      if (config && new TypeChecker(config).isObject && Object.keys(config).length > 1) {
-        updateNetworkConifg(config)
-
-        state[STATE_NAMES.networkConfig] = config
+      state[STATE_NAMES.networkConfig] = {
+        ...ZILLIQA,
+        ...config
       }
     },
     [MUTATIONS_NAMES.setAddressFormat](state, addressFormat) {
@@ -175,6 +175,14 @@ const STORE = {
     }
   },
   actions: {
+    async [ACTIONS_NAMES.onUpdateNetworkConfig]({ commit }, config) {
+      await updateNetworkConifg({
+        ...ZILLIQA,
+        ...config
+      })
+
+      commit(MUTATIONS_NAMES.setNetworkConfig, config)
+    },
     async [ACTIONS_NAMES.updateRate]({ commit }) {
       let rate = null
       const url = `${API.COIN_GECKO}?ids=zilliqa&vs_currencies=usd,btc,eth`

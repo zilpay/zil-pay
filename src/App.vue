@@ -105,6 +105,7 @@ export default {
 
       this.setAccounts(wallet.identities)
       this.setAccount(wallet.selectedAddress)
+
       this.setNetwork(selectednet)
       this.setNetworkConfig(config)
     }

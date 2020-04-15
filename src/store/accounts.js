@@ -84,15 +84,7 @@ const STORE = {
 
       walletUpdate(state)
     },
-    async [ACTIONS_NAMES.updateCurrentAccount]({ state, commit }) {
-
-      if (state[STATE_NAMES.identities].length === 0) {
-        const bg = new Background()
-        const result = await bg.createAccount()
-
-        commit(MUTATIONS_NAMES.setAccounts, result.identities)
-      }
-
+    async [ACTIONS_NAMES.updateCurrentAccount]({ commit }) {
       const bg = new Background()
       const result = await bg.balanceUpdate()
 

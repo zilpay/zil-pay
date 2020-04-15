@@ -29,7 +29,7 @@ export async function setSelectedNetwork(selectedNet) {
 }
 
 export async function walletUpdate(wallet) {
-  if (!wallet.identities || wallet.identities.lenght < 1) {
+  if (!wallet || !wallet.identities || wallet.identities.length === 0) {
     return null
   } else if (!new TypeChecker(wallet.selectedAddress).isInt) {
     return null

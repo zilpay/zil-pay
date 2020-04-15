@@ -61,7 +61,6 @@ export default {
 <style lang="scss">
 .Radio {
   display: flex;
-  transition: all 0.5s ease-out;
 
   &__radio {
     position: absolute;
@@ -104,6 +103,7 @@ export default {
 
     &:hover {
       .Radio__check {
+        transition: all 0.5s ease-out;
         border: 3px solid var(--accent-color-info);
       }
     }
