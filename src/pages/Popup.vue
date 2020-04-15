@@ -343,6 +343,8 @@ export default {
 
 <style lang="scss">
 .Popup {
+  min-width: 360px;
+
   &__from,
   &__to {
     display: flex;

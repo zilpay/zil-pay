@@ -44,7 +44,7 @@
 <script>
 const { Set } = global
 
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
@@ -125,6 +125,9 @@ export default {
   },
   methods: {
     shuffle,
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
     /**
      * Added phrase to verifyWords Set array.
      */
@@ -146,12 +149,12 @@ export default {
       )
     },
     async onSubmit(password) {
+      this.setLoad()
       await bgScript.createWallet({
         password,
         seed: this.verifyWords.join(' ')
       })
 
-      window.close()
       window.location.reload()
     }
   },

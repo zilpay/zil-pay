@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
@@ -78,6 +78,9 @@ export default {
     ])
   },
   methods: {
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
     async restore(password) {
       if (!this.seed.model) {
         this.seed.error = this.local.SEED_REQUIRED
@@ -85,15 +88,19 @@ export default {
         return null
       }
 
+      this.setLoad()
+
       try {
         await bgScript.createWallet({
           password,
           seed: this.seed.model
         })
-        window.close()
+
         window.location.reload()
       } catch (err) {
         this.seed.error = this.local.SEED_INCORRECT
+      } finally {
+        this.setLoad()
       }
     }
   }
