@@ -42,6 +42,10 @@ export class SocketControl {
         this.observer.next(this.blockNumber)
       })
 
+      this._subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
+        this._running = false
+      })
+
       await this._subscriber.start()
     } catch (err) {
       this._pollingInterval()
