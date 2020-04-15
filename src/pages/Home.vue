@@ -87,6 +87,9 @@ export default {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ]),
+    ...mapState(accountsStore.STORE_NAME, [
+      accountsStore.STATE_NAMES.identities
+    ]),
 
     bottomBar() {
       return [
