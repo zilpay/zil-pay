@@ -9,14 +9,17 @@
 export const ZILLIQA = {
   mainnet: {
     PROVIDER: 'https://api.zilliqa.com',
+    WS: 'wss://api-ws.zilliqa.com',
     MSG_VERSION: 1
   },
   testnet: {
     PROVIDER: 'https://dev-api.zilliqa.com',
+    WS: 'wss://dev-ws.zilliqa.com',
     MSG_VERSION: 1
   },
   private: {
     PROVIDER: 'http://127.0.0.1:4200',
+    WS: 'ws://127.0.0.1:4200',
     MSG_VERSION: 1
   }
 }
