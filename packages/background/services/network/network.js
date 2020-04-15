@@ -49,6 +49,12 @@ export class NetworkControl {
       throw new Error(
         `${errorsCode.changeNetwork}`
       )
+    } else if (selected === this.selected) {
+      return {
+        selected,
+        config: this.config,
+        provider: this.provider
+      }
     }
 
     await this._storage.set(
