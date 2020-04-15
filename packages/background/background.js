@@ -27,6 +27,7 @@ export class Background {
   constructor() {
     this._watchInternalMessaging()
     BrowserStorage.subscribe((store) => browserStorageHandler(store))
+    Transaction.listingBlockchain()
     new Transaction().checkAllTransaction()
   }
 

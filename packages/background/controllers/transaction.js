@@ -12,13 +12,14 @@ import {
   ZilliqaControl,
   PromptService,
   NotificationsControl
-} from '../services'
+} from 'packages/background/services'
 
 import { TypeChecker } from 'lib/type'
-import { accountControl, networkControl } from './main'
+import { accountControl, networkControl, socketControl } from './main'
 import { TabsMessage, MTypeTab } from 'lib/stream'
 import { BrowserStorage, BuildObject } from 'lib/storage'
-import { Promise } from 'core-js'
+
+const { Promise } = global
 
 /**
  * Get or send tranasctions.
@@ -58,6 +59,12 @@ export class Transaction {
     if (new TypeChecker(sendResponse).isFunction) {
       sendResponse(true)
     }
+  }
+
+  static listingBlockchain() {
+    socketControl.observer.subscribe(async() => {
+      new Transaction().checkAllTransaction()
+    })
   }
 
   constructor(payload) {
@@ -107,6 +114,7 @@ export class Transaction {
 
         return {
           ...tx,
+          block: socketControl.blockNumber,
           confirmed: result.confirmed
         }
       })
@@ -142,75 +150,6 @@ export class Transaction {
     } catch (err) {
       sendResponse({ reject: err.message })
     }
-  }
-
-  /**
-   * Listing when tx was mined.
-   * @param {String} txHash - Tx hash.
-   * @param {String} from - Sender address.
-   */
-  async _transactionListing(txHash, from) {
-    const zilliqaControl = new ZilliqaControl(
-      networkControl.provider
-    )
-    const net = `network=${networkControl.selected}`
-    const timeInterval = 10000
-    const countIntervl = 100
-    const title = 'ZilPay Transactions'
-    let k = 0
-
-    const interval = setInterval(async() => {
-      try {
-        const { result } = await zilliqaControl
-          .blockchain
-          .getPendingTxn(txHash)
-
-        if (result.confirmed) {
-          new NotificationsControl({
-            url: `${API.EXPLORER}/tx/0x${txHash}?${net}`,
-            title: title,
-            message: result.info
-          }).create()
-
-          accountControl.zilliqa.updateTransactionList(
-            { confirmed: true, error: null },
-            txHash,
-            networkControl.selected,
-            from
-          )
-
-          clearInterval(interval)
-
-          return null
-        }
-      } catch (err) {
-        accountControl.zilliqa.updateTransactionList(
-          { confirmed: true, error: true },
-          txHash,
-          networkControl.selected,
-          from
-        )
-
-        clearInterval(interval)
-
-        return null
-      }
-
-      if (k > countIntervl) {
-        accountControl.zilliqa.updateTransactionList(
-          { confirmed: true, error: true },
-          txHash,
-          networkControl.selected,
-          from
-        )
-
-        clearInterval(interval)
-
-        return null
-      }
-
-      k++
-    }, timeInterval)
   }
 
   async signSendTx(sendResponse) {
@@ -252,8 +191,6 @@ export class Transaction {
 
         Transaction.returnTx({ resolve: tx }, this.payload.uuid)
       }
-
-      this._transactionListing(tx.TranID, account.address)
 
       return sendResponse({ resolve: tx })
     } catch (err) {

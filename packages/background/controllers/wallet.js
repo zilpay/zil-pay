@@ -112,9 +112,17 @@ export class Wallet {
     try {
       const wallet = await accountControl.newAccountBySeed()
 
-      sendResponse({ resolve: wallet })
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ resolve: wallet })
+      } else {
+        return wallet
+      }
     } catch (err) {
-      sendResponse({ reject: err.message })
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ reject: err.message })
+      } else {
+        throw new Error(err.message)
+      }
     }
   }
 
@@ -153,6 +161,10 @@ export class Wallet {
     const zilliqa = new ZilliqaControl(networkControl.provider)
 
     let wallet = await storage.get(FIELDS.WALLET)
+
+    if (!wallet || !wallet.identities || wallet.identities.lenght === 0) {
+      wallet = await this.createAccountBySeed()
+    }
 
     try {
       const { address } = wallet.identities[wallet.selectedAddress]

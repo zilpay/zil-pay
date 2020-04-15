@@ -7,12 +7,13 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS, ZILLIQA } from 'config'
-import { MnemonicControl } from '../services'
+import { MnemonicControl } from 'packages/background/services/auth'
 import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import {
   accountControl,
-  networkControl
+  networkControl,
+  socketControl
 } from './main'
 import {
   TabsMessage,
@@ -42,6 +43,10 @@ export class Popup {
       }
 
       selectedAccount = wallet.identities[wallet.selectedAddress]
+
+      socketControl.start()
+    } else {
+      socketControl.stop()
     }
 
     return new TabsMessage({

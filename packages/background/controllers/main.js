@@ -6,12 +6,14 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { AccountControl, NetworkControl } from 'packages/background/services'
+import { AccountControl, NetworkControl, SocketControl } from 'packages/background/services'
 
 let accountControl = new AccountControl()
 let networkControl = new NetworkControl()
+let socketControl = new SocketControl(networkControl)
 
 export {
   accountControl,
-  networkControl
+  networkControl,
+  socketControl
 }

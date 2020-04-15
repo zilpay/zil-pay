@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { TypeChecker } from 'lib/type'
-import { networkControl } from './main'
+import { networkControl, socketControl } from './main'
 import {
   TabsMessage,
   MTypeTab
@@ -40,6 +40,9 @@ export class Network {
       }
     } catch (err) {
       payload = { reject: err.message }
+    } finally {
+      await socketControl.stop()
+      await socketControl.start()
     }
 
     new TabsMessage({ type, payload }).send()

@@ -99,15 +99,17 @@ export class AccountControl {
     let wallet = await this._storage.get(FIELDS.WALLET)
     let index = 0
 
-    if (wallet && wallet.identities && wallet.identities.length > 0) {
+    if (wallet && wallet.identities && wallet.identities.length !== 0) {
       // Get a new index account, but excluding a hardware wallet
       // and importd by private key.
       index = wallet.identities.filter(
         el => !el.isImport && !el.hwType
       ).length
     } else {
-      wallet.selectedAddress = index
-      wallet.identities = []
+      wallet = {
+        selectedAddress: index,
+        identities: []
+      }
     }
 
     const account = await this.zilliqa.getAccountBySeed(

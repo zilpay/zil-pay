@@ -25,6 +25,13 @@ export class NetworkControl {
   }
 
   /**
+   * Get WS provider.
+   */
+  get wsProvider() {
+    return this.config[this.selected].WS
+  }
+
+  /**
    * @return Number, blockchain version.
    */
   get version() {
@@ -87,7 +94,10 @@ export class NetworkControl {
       new BuildObject(FIELDS.CONFIG, config)
     )
 
-    this.config = config
+    this.config = {
+      ...ZILLIQA,
+      ...config
+    }
 
     await this.checkProvider()
 

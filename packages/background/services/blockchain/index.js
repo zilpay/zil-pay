@@ -8,3 +8,4 @@
  */
 export * from './errors'
 export * from './zilliqa'
+export * from './socket'
