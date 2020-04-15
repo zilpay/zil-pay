@@ -43,7 +43,9 @@ export class Popup {
       }
 
       selectedAccount = wallet.identities[wallet.selectedAddress]
+    }
 
+    if (isEnable && isReady) {
       socketControl.start()
     } else {
       socketControl.stop()

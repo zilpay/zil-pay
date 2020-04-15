@@ -26,22 +26,22 @@ export class SocketControl {
       return null
     }
 
-    await this._networkControl.netwrokSync()
-
-    this._subscriber = this._subscriptionBuilder.buildNewBlockSubscriptions(
-      this._networkControl.wsProvider
-    )
-
-    this._subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
-      if (isNaN(event.value.TxBlock.header.BlockNum)) {
-        return null
-      }
-
-      this.blockNumber = Number(event.value.TxBlock.header.BlockNum)
-      this.observer.next(this.blockNumber)
-    })
-
     try {
+      await this._networkControl.netwrokSync()
+
+      this._subscriber = this._subscriptionBuilder.buildNewBlockSubscriptions(
+        this._networkControl.wsProvider
+      )
+
+      this._subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
+        if (isNaN(event.value.TxBlock.header.BlockNum)) {
+          return null
+        }
+
+        this.blockNumber = Number(event.value.TxBlock.header.BlockNum)
+        this.observer.next(this.blockNumber)
+      })
+
       await this._subscriber.start()
     } catch (err) {
       this._pollingInterval()

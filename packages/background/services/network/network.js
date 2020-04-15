@@ -28,7 +28,13 @@ export class NetworkControl {
    * Get WS provider.
    */
   get wsProvider() {
-    return this.config[this.selected].WS
+    const ws = this.config[this.selected].WS
+
+    if (!ws) {
+      return ZILLIQA[this.selected].WS
+    }
+
+    return ws
   }
 
   /**
