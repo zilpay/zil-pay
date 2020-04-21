@@ -66,7 +66,6 @@ function getPlugins() {
       cleanStaleWebpackAssets: false
     }),
     new webpack.DefinePlugin({
-      global: 'window',
       ENVIRONMENT: JSON.stringify(mode)
     }),
     new VueLoaderPlugin(),

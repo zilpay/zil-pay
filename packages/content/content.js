@@ -13,6 +13,6 @@ export class BrowserContent extends Stream {
   constructor() {
     super()
 
-    this._inject = new Inject('extension/inpage.js')
+    this._inject = new Inject('inpage.js')
   }
 }

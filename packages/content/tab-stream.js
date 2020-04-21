@@ -16,6 +16,7 @@ import {
 
 import HTTPProvider from './provider'
 
+const { window } = global
 let stream = null
 
 export class ContentTabStream {
@@ -34,7 +35,7 @@ export class ContentTabStream {
       return null
     }
 
-    msg.domain = global.window.document.domain
+    msg.domain = window.document.domain
 
     switch (msg.type) {
 

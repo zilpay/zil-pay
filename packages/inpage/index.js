@@ -9,6 +9,8 @@
 import Handler from './handler'
 import { ZilPay } from './zil-pay'
 
+const { window } = global
+
 // Create handler stream.
 const handler = new Handler()
 // Init ZilPay object with some methods and properties.
@@ -20,4 +22,4 @@ handler.initialized()
 // Nobody can change this object.
 Object.freeze(zilPay)
 // Init zilPay in some tab.
-global.window.zilPay = zilPay
+window.zilPay = zilPay

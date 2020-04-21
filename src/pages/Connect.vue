@@ -68,6 +68,7 @@ import { toAddress } from '@/filters'
 import AccountMixin from '@/mixins/account'
 import { removeConnect, Background } from '@/services'
 
+const { window } = global
 const EVENTS = {
   connect: uuid(),
   cancel: uuid()
@@ -137,11 +138,11 @@ export default {
       await removeConnect()
 
       this.setConnect({})
-      global.window.close()
+      window.close()
     },
     async onConfirm() {
       await this.onUpdateDappList()
-      global.window.close()
+      window.close()
     },
 
     onEvent(event) {

@@ -58,6 +58,7 @@ import UiPanel from '@/components/UiPanel'
 
 import { Background } from '@/services'
 
+const { window, Set } = global
 const bgScript = new Background()
 
 export default {
@@ -129,7 +130,7 @@ export default {
      * Added phrase to verifyWords Set array.
      */
     add(phrase) {
-      const uniqueItems = new global.Set(this.verifyWords)
+      const uniqueItems = new Set(this.verifyWords)
 
       if (phrase && this.randomItems.includes(phrase)) {
         uniqueItems.add(phrase)
@@ -152,7 +153,7 @@ export default {
         seed: this.verifyWords.join(' ')
       })
 
-      global.location.reload()
+      window.location.reload()
     }
   },
   mounted() {

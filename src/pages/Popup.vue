@@ -136,6 +136,7 @@ import { fromZil, toConversion, toAddress } from '@/filters'
 
 import { Background, ledgerSendTransaction } from '@/services'
 
+const { window } = global
 const BOTTOM_BAR_EVENTS = {
   confirm: uuid(),
   reject: uuid()
@@ -327,7 +328,7 @@ export default {
       await this.setPopConfirmTx()
 
       if (!this.confirmationTx || this.confirmationTx.length === 0) {
-        global.close()
+        window.close()
       }
     }
   },

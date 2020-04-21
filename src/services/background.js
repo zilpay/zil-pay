@@ -2,6 +2,7 @@ import { Message, MTypePopup, MTypeTab } from 'lib/stream'
 import { toAddress } from '@/filters'
 import { ADDRESS_FORMAT_VARIANTS } from '@/config'
 
+const { window, Promise } = global
 const BG_ERROR = 'Background script is not loaded.'
 
 export class Background {
@@ -18,7 +19,7 @@ export class Background {
     if (!data) {
       throw new Error(BG_ERROR)
     } else if (data.reject) {
-      return global.Promise.reject(data.reject)
+      return Promise.reject(data.reject)
     }
 
     return data.resolve
@@ -36,7 +37,7 @@ export class Background {
     if (!randomMnemonic) {
       throw new Error(BG_ERROR)
     } else if (randomMnemonic.reject) {
-      return global.Promise.reject(randomMnemonic.reject)
+      return Promise.reject(randomMnemonic.reject)
     }
 
     return randomMnemonic.resolve
@@ -47,7 +48,7 @@ export class Background {
    */
   async logOut() {
     Message.signal(MTypePopup.LOG_OUT).send()
-    global.window.close()
+    window.close()
   }
 
   /**

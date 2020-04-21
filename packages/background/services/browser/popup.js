@@ -9,6 +9,8 @@
 import { DEFAULT } from 'config'
 import extension from 'extensionizer'
 
+const { window, Promise } = global
+
 export class PromptService {
 
   constructor() {
@@ -29,7 +31,7 @@ export class PromptService {
       screenY,
       outerWidth,
       outerHeight
-    } = global.window
+    } = window
     const notificationTop = Math.round(
       screenY + (outerHeight / 2) - (this._height / 2)
     )
@@ -62,7 +64,7 @@ export class PromptService {
   }
 
   _getPopup() {
-    return new global.Promise(resolve => {
+    return new Promise(resolve => {
       extension.windows.getAll({}, tabs => {
         resolve(
           tabs.filter(tab => tab.type === this._type)

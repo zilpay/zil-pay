@@ -22,6 +22,6 @@ export const DEFAULT = {
   MAX_LENGTH_NAME: 10,
   POPUP_WIDTH: 360,
   POPUP_HEIGHT: 600,
-  PROMT_PAGE: 'index.html',
+  PROMT_PAGE: 'popup.html',
   UD_CONTRACT_ADDRESS: 'zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz'
 }

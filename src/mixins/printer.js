@@ -6,6 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+
+const { window, document } = global
+
 // this method was copied from zillet wallet "https://zillet.io";
 const printMnemonic = phrase => {
   return `<html id="print-wallet">
@@ -102,11 +105,11 @@ export default {
       }
 
       const paperWallet = printMnemonic(this.words)
-      const paperBody = global.document.createElement('BODY')
+      const paperBody = document.createElement('BODY')
 
       paperBody.innerHTML = paperWallet
 
-      const win = global.open('about:blank', '_blank')
+      const win = window.open('about:blank', '_blank')
 
       win.document.body = paperBody
 
