@@ -46,7 +46,6 @@ import UiPanel from '@/components/UiPanel'
 
 import { Background } from '@/services'
 
-const { window } = global
 const bgScript = new Background()
 
 export default {
@@ -96,7 +95,7 @@ export default {
           seed: this.seed.model
         })
 
-        window.location.reload()
+        global.location.reload()
       } catch (err) {
         this.seed.error = this.local.SEED_INCORRECT
       } finally {

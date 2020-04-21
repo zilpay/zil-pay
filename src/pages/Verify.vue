@@ -42,8 +42,6 @@
 </template>
 
 <script>
-const { Set } = global
-
 import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
@@ -60,7 +58,6 @@ import UiPanel from '@/components/UiPanel'
 
 import { Background } from '@/services'
 
-const { window } = global
 const bgScript = new Background()
 
 export default {
@@ -132,7 +129,7 @@ export default {
      * Added phrase to verifyWords Set array.
      */
     add(phrase) {
-      const uniqueItems = new Set(this.verifyWords)
+      const uniqueItems = new global.Set(this.verifyWords)
 
       if (phrase && this.randomItems.includes(phrase)) {
         uniqueItems.add(phrase)
@@ -155,7 +152,7 @@ export default {
         seed: this.verifyWords.join(' ')
       })
 
-      window.location.reload()
+      global.location.reload()
     }
   },
   mounted() {

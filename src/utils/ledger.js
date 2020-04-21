@@ -2,7 +2,6 @@ import { uuid } from 'uuidv4'
 import { Subject, from } from 'rxjs'
 import { filter, take, map } from 'rxjs/operators'
 
-const { window } = global
 const BRIDGE_URL = 'https://zilpay.github.io/ledger-bridge/'
 const subjectStream = new Subject() // Create event listing.
 const TYPES = {
@@ -23,12 +22,12 @@ export class LedgerControll {
 
   constructor() {
     this.isBridgeReady = false
-    this.bridge = window.document.createElement('iframe')
+    this.bridge = global.document.createElement('iframe')
     this.bridge.src = BRIDGE_URL
 
-    window.document.head.appendChild(this.bridge)
+    global.document.head.appendChild(this.bridge)
 
-    window.addEventListener(
+    global.addEventListener(
       'message',
       msg => this._messageHandler(msg)
     )

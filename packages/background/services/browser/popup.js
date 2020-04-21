@@ -6,10 +6,8 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { DEFAULT } from '../../../../config'
+import { DEFAULT } from 'config'
 import extension from 'extensionizer'
-
-const { Promise, window } = global
 
 export class PromptService {
 
@@ -31,7 +29,7 @@ export class PromptService {
       screenY,
       outerWidth,
       outerHeight
-    } = window
+    } = global.window
     const notificationTop = Math.round(
       screenY + (outerHeight / 2) - (this._height / 2)
     )
@@ -64,7 +62,7 @@ export class PromptService {
   }
 
   _getPopup() {
-    return new Promise(resolve => {
+    return new global.Promise(resolve => {
       extension.windows.getAll({}, tabs => {
         resolve(
           tabs.filter(tab => tab.type === this._type)

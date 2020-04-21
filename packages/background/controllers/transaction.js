@@ -19,8 +19,6 @@ import { accountControl, networkControl, socketControl } from './main'
 import { TabsMessage, MTypeTab } from 'lib/stream'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 
-const { Promise } = global
-
 /**
  * Get or send tranasctions.
  */
@@ -133,7 +131,7 @@ export class Transaction {
           confirmed: result.confirmed
         }
       })
-      const provens = await Promise.all(checkList)
+      const provens = await global.Promise.all(checkList)
 
       transactions[selectedAccount.address][net] = provens
 
