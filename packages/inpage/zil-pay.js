@@ -9,7 +9,7 @@
 import * as zilUtils from '@zilliqa-js/util/dist/index'
 import { Blockchain } from '@zilliqa-js/blockchain/dist/chain'
 import { TransactionFactory } from '@zilliqa-js/account/dist/transactionFactory'
-import { Contract } from '@zilliqa-js/contract/dist/contract'
+import { Contracts } from '@zilliqa-js/contract/dist/factory'
 import { toChecksumAddress, isValidChecksumAddress } from '@zilliqa-js/crypto/dist/util'
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 
@@ -34,7 +34,7 @@ export class ZilPay {
     this.wallet = new Wallet(subjectStream, stream)
 
     this.blockchain = new Blockchain(this.provider, this.wallet)
-    this.contracts = new Contract(this.provider, this.wallet)
+    this.contracts = new Contracts(this.provider, this.wallet)
     this.transactions = new TransactionFactory(this.provider, this.wallet)
 
     this.utils = zilUtils
