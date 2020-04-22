@@ -7,13 +7,10 @@
  * Copyright (c) 2019 ZilPay
  */
 import uuidv4 from 'uuid/v4'
-import { RPCMethod } from '@zilliqa-js/core'
+import { RPCMethod } from '@zilliqa-js/core/dist/net'
+
 import { from } from 'rxjs'
-import {
-  filter,
-  take,
-  map
-} from 'rxjs/operators'
+import { filter, take, map } from 'rxjs/operators'
 
 import { TypeChecker } from 'lib/type'
 import {

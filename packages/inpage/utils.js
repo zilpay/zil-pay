@@ -6,11 +6,10 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import {
-  toBech32Address,
-  toChecksumAddress
-} from '@zilliqa-js/crypto'
-import { validation } from '@zilliqa-js/util'
+import { toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
+import { toChecksumAddress } from '@zilliqa-js/crypto/dist/util'
+
+import { validation } from '@zilliqa-js/util/dist/index'
 
 
 const { document, window } = global
