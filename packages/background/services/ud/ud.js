@@ -9,7 +9,7 @@
 import { ZILLIQA, DEFAULT } from 'config'
 
 import namehash from '@unstoppabledomains/resolution/build/zns/namehash'
-import { ZilliqaControl } from '../blockchain/zilliqa'
+import { ZilliqaControl } from 'packages/background/services/blockchain'
 
 const { UD_CONTRACT_ADDRESS } = DEFAULT
 const { PROVIDER } = ZILLIQA.mainnet

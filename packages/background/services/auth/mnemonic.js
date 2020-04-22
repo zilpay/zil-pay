@@ -9,7 +9,7 @@
 import {
   generateMnemonic,
   validateMnemonic
-} from 'bip39'
+} from 'bip39/index'
 
 export class MnemonicControl {
 

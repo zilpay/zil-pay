@@ -6,9 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from '../../../../config'
+import { FIELDS } from 'config'
 import { AccountControl } from './create'
-import { ZilliqaControl } from '../blockchain/zilliqa'
+import { ZilliqaControl } from 'packages/background/services/blockchain'
 import errorsCode from './errors'
 
 export class AccountExporter extends AccountControl {

@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS, ZILLIQA } from 'config'
-import { MnemonicControl } from 'packages/background/services/auth'
+import { MnemonicControl } from 'packages/background/services'
 import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import {

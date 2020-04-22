@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { UnstoppableDomains } from '../services'
+import { UnstoppableDomains } from 'packages/background/services'
 
 /**
  * Crypro domains controller.

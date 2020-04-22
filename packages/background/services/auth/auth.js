@@ -10,7 +10,7 @@ import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 
-import { CryptoGuard } from '../crypto/guard'
+import { CryptoGuard } from 'packages/background/services/crypto/guard'
 import errorsCode from './errors'
 
 /**

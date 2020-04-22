@@ -15,7 +15,7 @@ import {
   AccountImporter,
   ZilliqaControl,
   PromptService
-} from '../services'
+} from 'packages/background/services'
 import { accountControl, networkControl } from './main'
 
 /**

@@ -10,7 +10,7 @@ import { FIELDS, DEFAULT } from 'config'
 import { BuildObject } from 'lib/storage'
 
 import { AccountControl } from './create'
-import { ZilliqaControl } from '../blockchain/zilliqa'
+import { ZilliqaControl } from 'packages/background/services/blockchain'
 import errorsCode from './errors'
 
 export class AccountImporter extends AccountControl {

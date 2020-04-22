@@ -8,10 +8,7 @@
  */
 import { TypeChecker } from 'lib/type'
 import { networkControl, socketControl } from './main'
-import {
-  TabsMessage,
-  MTypeTab
-} from 'lib/stream'
+import { TabsMessage, MTypeTab } from 'lib/stream'
 
 /**
  * Network actions for popup.

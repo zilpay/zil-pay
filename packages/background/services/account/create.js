@@ -6,15 +6,15 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto'
 import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
+import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto/dist/util'
 
-import { Auth } from '../auth/index'
-import { ZilliqaControl } from '../blockchain/zilliqa'
-import { NetworkControl } from '../network/index'
-import errorsCodeGuard from '../auth/errors'
+import { Auth } from 'packages/background/services/auth'
+import { ZilliqaControl } from 'packages/background/services/blockchain'
+import { NetworkControl } from 'packages/background/services/network'
+import errorsCodeGuard from 'packages/background/services/auth/errors'
 
 import errorsCode from './errors'
 

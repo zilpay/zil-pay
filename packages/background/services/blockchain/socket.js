@@ -1,6 +1,8 @@
 import { Subject } from 'rxjs'
-import { RPCMethod, HTTPProvider } from '@zilliqa-js/core'
-import { SubscriptionBuilder, MessageType } from '@zilliqa-js/subscriptions'
+import { RPCMethod } from '@zilliqa-js/core/dist/net'
+import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
+import { SubscriptionBuilder } from '@zilliqa-js/subscriptions/dist/builder'
+import { MessageType } from '@zilliqa-js/subscriptions/dist/types'
 
 import { NetworkControl } from 'packages/background/services/network'
 

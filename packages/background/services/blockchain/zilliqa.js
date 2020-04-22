@@ -11,24 +11,26 @@ import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { toNodeAddress } from 'lib/utils/to-node-address'
 
-import { Wallet, TransactionFactory } from '@zilliqa-js/account'
-import { Blockchain } from '@zilliqa-js/blockchain'
-import { RPCMethod, HTTPProvider } from '@zilliqa-js/core'
+import { Wallet } from '@zilliqa-js/account/dist/wallet'
+import { TransactionFactory } from '@zilliqa-js/account/dist/transactionFactory'
+import { Blockchain } from '@zilliqa-js/blockchain/dist/chain'
+import { RPCMethod } from '@zilliqa-js/core/dist/net'
+import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
+import { fromBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 import {
   toChecksumAddress,
-  fromBech32Address,
   verifyPrivateKey,
   getAddressFromPrivateKey,
   getPubKeyFromPrivateKey
-} from '@zilliqa-js/crypto'
+} from '@zilliqa-js/crypto/dist/util'
 import {
   Long,
   BN,
   bytes,
   validation
-} from '@zilliqa-js/util'
+} from '@zilliqa-js/util/dist/index'
 
-import { NotificationsControl } from '../browser/notifications'
+import { NotificationsControl } from 'packages/background/services/browser'
 import errorsCode from './errors'
 
 export class ZilliqaControl {
