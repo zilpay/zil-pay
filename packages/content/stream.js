@@ -8,10 +8,7 @@
  */
 import { ContentBackgroundStream } from './local-stream'
 import { ContentTabStream } from './tab-stream'
-import {
-  SecureMessage,
-  MTypeTabContent
-} from 'lib/stream'
+import { SecureMessage, MTypeTabContent } from 'lib/stream'
 
 export class Stream {
 

@@ -7,10 +7,8 @@
  * Copyright (c) 2019 ZilPay
  */
 import fetch from 'cross-fetch'
-import {
-  HTTPProvider,
-  composeMiddleware
-} from '@zilliqa-js/core'
+import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
+import { composeMiddleware } from '@zilliqa-js/core/dist/util'
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json'

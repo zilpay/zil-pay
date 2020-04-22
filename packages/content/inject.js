@@ -8,20 +8,16 @@
  */
 import { extension } from 'extensionizer'
 
-import { TypeChecker } from 'lib/type'
+const { document } = global
 
 export class Inject {
 
   constructor(name) {
-    if (!new TypeChecker(name).isString) {
-      throw new Error('Argument name must be string.')
-    }
-
     this._name = name
     this._injectscript()
   }
 
-  _injectscript () {
+  _injectscript() {
     // Create new script tag in the document head.
     const container = (document.head || document.documentElement)
     const scriptTag = document.createElement('script')
@@ -36,8 +32,7 @@ export class Inject {
   _getUrlExtension() {
     try {
       return extension.getURL(`/${this._name}`)
-    } catch(err) {
-      // log.error('URL extension Error', err)
+    } catch (err) {
       return null
     }
   }
@@ -45,8 +40,8 @@ export class Inject {
   _injectToHtml(container, injectionSite) {
     try {
       injectionSite.insertBefore(container, injectionSite.children[0])
-    } catch(err) {
-      // log.error('Script injection failed', err)
+    } catch (err) {
+      //
     }
   }
 }

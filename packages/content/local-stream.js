@@ -7,10 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { TypeChecker } from 'lib/type'
-import {
-  LocalStream,
-  SecureMessage
-} from 'lib/stream'
+import { LocalStream, SecureMessage } from 'lib/stream'
 
 export class ContentBackgroundStream {
 
