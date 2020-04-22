@@ -157,6 +157,8 @@ export class Wallet {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async balanceUpdate(sendResponse) {
+    await networkControl.netwrokSync()
+
     const storage = new BrowserStorage()
     const zilliqa = new ZilliqaControl(networkControl.provider)
 

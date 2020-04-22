@@ -5,7 +5,7 @@
   "shortName": "ZilPay Zilliqa wallet",
   "private": false,
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --hide-modules",
+    "build": "npm run test:unit && cross-env NODE_ENV=production webpack --hide-modules",
     "test:unit": "vue-cli-service test:unit",
     "serve": "cross-env NODE_ENV=development webpack --hide-module",
     "test:watch": "vue-cli-service test:unit --watch",

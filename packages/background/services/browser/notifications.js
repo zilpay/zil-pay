@@ -44,7 +44,7 @@ export class NotificationsControl {
     const data = {
       type: 'basic',
       title: this.title,
-      iconUrl: extension.extension.getURL('/icon128.png'),
+      iconUrl: extension.extension.getURL('icons/icon128.png'),
       message: this.message
     }
 
