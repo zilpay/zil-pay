@@ -131,7 +131,7 @@ export class ZilliqaControl {
       const lastTx = historyTx.pop()
       const pendingTx = await this.getPendingTxn(lastTx.TranID)
 
-      if (!pendingTx.confirmed && lastTx.nonce > nonce) {
+      if (!pendingTx.error && !pendingTx.confirmed && lastTx.nonce > nonce) {
         nonce = lastTx.nonce
       }
     }
