@@ -10,7 +10,6 @@ import uuidv4 from 'uuid/v4'
 import { filter, take, map } from 'rxjs/operators'
 import { from } from 'rxjs'
 
-import { TypeChecker } from 'lib/type'
 import {
   SecureMessage,
   MTypeTabContent,
@@ -28,7 +27,6 @@ let _defaultAccount = null
 let _isConnect = false
 let _isEnable = false
 let _net = null
-let _broadcastingTransaction = false
 // Private variables. //
 
 
@@ -48,18 +46,6 @@ export default class Wallet {
 
   get defaultAccount() {
     return _defaultAccount
-  }
-
-  get broadcasting() {
-    return _broadcastingTransaction
-  }
-
-  set broadcasting(value) {
-    if (!new TypeChecker(value).isBoolean) {
-      throw new Error('value must be boolean type')
-    }
-
-    _broadcastingTransaction = value
   }
 
   constructor(subjectStream, stream) {
@@ -158,14 +144,16 @@ export default class Wallet {
     const uuid = uuidv4()
     let { payload } = tx
 
+    // This is required for only for Category III transactions,
+    // but it can be used for other transaction categories too.
+    payload.priority = tx.toDS
+
     // Transaction id.
     payload.uuid = uuid
     // Current tab title.
     payload.title = window.document.title
     // Url on favicon by current tab.
     payload.icon = getFavicon()
-    // if true then ZilPay will not send to blockchain this tx.
-    payload.isBroadcast = _broadcastingTransaction
 
     // Send transaction to content.js > background.js.
     new SecureMessage({ type, payload }).send(_stream, recipient)

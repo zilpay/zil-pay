@@ -10,7 +10,7 @@ import fromZil from './from-zil'
 
 export function toConversion(value, rate) {
   if (isNaN(rate)) {
-    throw new Error('Rate is ', typeof rate)
+    return ''
   }
 
   if (value <= 0) {

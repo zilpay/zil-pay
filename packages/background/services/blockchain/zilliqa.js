@@ -153,7 +153,7 @@ export class ZilliqaControl {
       code,
       data,
       pubKey: account.publicKey || account.pubKey
-    })
+    }, Boolean(txData.priority))
   }
 
   /**
@@ -170,6 +170,8 @@ export class ZilliqaControl {
     if (account && account.hwType && zilTxData.signature) {
       const { txParams } = transactionFactory.new(zilTxData)
 
+      txParams.priority = zilTxData.toDS
+
       return this.provider.send(RPCMethod.CreateTransaction, txParams)
     }
 
@@ -177,8 +179,11 @@ export class ZilliqaControl {
     const address = wallet.addByPrivateKey(account.privateKey)
 
     wallet.setDefault(address)
+
     // Sign transaction by current account. //
     const { txParams } = await wallet.sign(zilTxData)
+
+    txParams.priority = zilTxData.toDS
 
     return this.provider.send(RPCMethod.CreateTransaction, txParams)
   }
