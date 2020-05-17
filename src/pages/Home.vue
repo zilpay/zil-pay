@@ -147,7 +147,7 @@ export default {
   display: grid;
   justify-content: center;
   align-items: center;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 310px 1fr;
 
   &__wrapper,
   &__nav-bar {

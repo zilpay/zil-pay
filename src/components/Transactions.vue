@@ -17,7 +17,7 @@
       </Title>
       <div
         v-for="(tx, index) of getCurrentTransactions"
-        :key="tx.TranID"
+        :key="index"
         @click="onSelect(index)"
       >
         <TransactionCard :transaction="tx"/>
@@ -94,6 +94,7 @@ export default {
 .Transactions {
   min-width: 360px;
   min-height: 250px;
+  margin-bottom: 40px;
 
   &__title {
     height: 16px;
