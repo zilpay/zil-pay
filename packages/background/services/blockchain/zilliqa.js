@@ -122,16 +122,19 @@ export class ZilliqaControl {
       toAddr, // Recipient address. type String.
       version // Netowrk version. type Number.
     } = txData
+    const hasPendingTx = historyTx && historyTx
+      .filter((tx) => Boolean(!tx.error && !tx.confirmed))
+      .sort((txA, txB) => txA.nonce - txB.nonce)
 
     if (!version) {
       version = await this.version()
     }
 
-    if (historyTx) {
-      const lastTx = historyTx.pop()
+    if (hasPendingTx && hasPendingTx.length !== 0) {
+      const lastTx = hasPendingTx.lastItem
       const pendingTx = await this.getPendingTxn(lastTx.TranID)
 
-      if (!pendingTx.error && !pendingTx.confirmed && lastTx.nonce > nonce) {
+      if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
         nonce = lastTx.nonce
       }
     }
