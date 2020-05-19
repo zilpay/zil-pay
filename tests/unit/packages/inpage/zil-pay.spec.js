@@ -44,6 +44,27 @@ describe('lib:packages:inpage', () => {
     expect(new TypeChecker(observableNetwork).isFunction).toBeTruthy()
   })
 
+  it('should have observableTransaction in wallet', () => {
+    const { observableTransaction } = window.zilPay.wallet
+
+    expect(observableTransaction).toBeTruthy()
+    expect(new TypeChecker(observableTransaction).isFunction).toBeTruthy()
+  })
+
+  it('should have observableBlock in wallet', () => {
+    const { observableBlock } = window.zilPay.wallet
+
+    expect(observableBlock).toBeTruthy()
+    expect(new TypeChecker(observableBlock).isFunction).toBeTruthy()
+  })
+
+  it('should have addTransactionsQueue in wallet', () => {
+    const { addTransactionsQueue } = window.zilPay.wallet
+
+    expect(addTransactionsQueue).toBeTruthy()
+    expect(new TypeChecker(addTransactionsQueue).isFunction).toBeTruthy()
+  })
+
   it('should have connect in wallet', () => {
     const { connect } = window.zilPay.wallet
 
