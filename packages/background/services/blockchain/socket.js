@@ -6,7 +6,7 @@ import { MessageType } from '@zilliqa-js/subscriptions/dist/types'
 
 import { NetworkControl } from 'packages/background/services/network'
 
-const HALF_MINUTE = 10000
+const HALF_MINUTE = 30000
 
 export class SocketControl {
 
@@ -38,10 +38,12 @@ export class SocketControl {
       this._subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
         if (isNaN(event.value.TxBlock.header.BlockNum)) {
           return null
+        } else if (Number(this.blockNumber) === Number(event.value.TxBlock.header.BlockNum)) {
+          return null
         }
 
         this.blockNumber = Number(event.value.TxBlock.header.BlockNum)
-        this.observer.next(this.blockNumber)
+        this.observer.next(event.value)
       })
 
       this._subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
@@ -95,6 +97,6 @@ export class SocketControl {
     }
 
     this.blockNumber = newBlockNumber
-    this.observer.next(this.blockNumber)
+    this.observer.next(result)
   }
 }

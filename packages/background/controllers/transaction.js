@@ -62,7 +62,14 @@ export class Transaction {
   }
 
   static listingBlockchain() {
-    socketControl.observer.subscribe(async() => {
+    socketControl.observer.subscribe(async(block) => {
+      const type = MTypeTab.NEW_BLOCK
+
+      new TabsMessage({
+        type,
+        payload: { block }
+      }).send()
+
       new Transaction().checkAllTransaction()
     })
   }

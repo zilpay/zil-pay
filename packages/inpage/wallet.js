@@ -17,10 +17,12 @@ import {
 } from 'lib/stream'
 
 import { getFavicon, toAccountFormat } from './utils'
+import ERRORS from './errors'
 
 const { window, Promise, Set } = global
 
 // Private variables. //
+const _paddingTransactions = new Set()
 let _stream = null // Stream instance.
 let _subject = null // Listener instance.
 let _defaultAccount = null
@@ -91,8 +93,10 @@ export default class Wallet {
    * Subscribe on all account change.
    */
   observableAccount() {
-    if (!this.isConnect) {
-      throw new Error('ZilPay is\'t connection to dApp')
+    if (!this.isEnable) {
+      throw ERRORS.Disabled
+    } else if (!this.isConnect) {
+      throw ERRORS.Connect
     }
 
     let lastAccount = null
@@ -123,21 +127,61 @@ export default class Wallet {
    * Subscribe on all network change.
    */
   observableNetwork() {
+    if (!this.isEnable) {
+      throw ERRORS.Disabled
+    } else if (!this.isConnect) {
+      throw ERRORS.Connect
+    }
+
     return from(_subject).pipe(
       filter(msg => msg && (msg.type === MTypeTab.NETWORK_CHANGED || msg.type === MTypeTab.GET_WALLET_DATA)),
       map(msg => msg.payload.net)
     )
   }
 
+  /**
+   * Observable for new block was created.
+   */
   observableBlock() {
+    if (!this.isEnable) {
+      throw ERRORS.Disabled
+    } else if (!this.isConnect) {
+      throw ERRORS.Connect
+    }
+
+    return from(_subject).pipe(
+      filter((msg) => msg && (msg.type === MTypeTab.NEW_BLOCK)),
+      map((msg) => msg.payload.block)
+    )
   }
 
   observableTransaction(...txns) {
-    const uniqueTxns = new Set(txns)
-    // const type = MTypeTab.CALL_TO_SIGN_TX
-    // const recipient = MTypeTabContent.CONTENT
-    // const uuid = uuidv4()
-    console.log(uniqueTxns)
+    if (!this.isEnable) {
+      throw ERRORS.Disabled
+    } else if (!this.isConnect) {
+      throw ERRORS.Connect
+    }
+
+    if (txns && txns.length !== 0) {
+      this.addTransactionsQueue(...txns)
+    }
+
+    return this.observableBlock().pipe(
+      filter((msg) => msg && msg.TxHashes && Array.isArray(msg.TxHashes) && msg.TxHashes.length !== 0),
+      map((msg) => msg.TxHashes.filter((txns) => txns.length !== 0)),
+      map((txns) => txns.reduce((acc, value) => acc.concat(value))),
+      map((txns) => Array.from(new Set(txns))),
+      map((txns) => txns.filter((hash) => _paddingTransactions.delete(hash))),
+      filter((txns) => txns.length !== 0)
+    )
+  }
+
+  addTransactionsQueue(...txns) {
+    for (let index = 0; index < txns.length; index++) {
+      _paddingTransactions.add(txns[index])
+    }
+
+    return Array.from(_paddingTransactions)
   }
 
   /**
@@ -145,9 +189,9 @@ export default class Wallet {
    */
   sign(tx) {
     if (!this.isEnable) {
-      throw new Error('ZilPay is disabled.')
+      throw ERRORS.Disabled
     } else if (!this.isConnect) {
-      throw new Error('User is\'t connections.')
+      throw ERRORS.Connect
     }
 
     const type = MTypeTab.CALL_TO_SIGN_TX
