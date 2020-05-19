@@ -9,6 +9,7 @@
 import 'tests/extension-sinnon'
 import 'packages/inpage'
 
+import { uuid } from 'uuidv4'
 import { TypeChecker } from 'lib/type'
 
 const { window } = global
@@ -63,6 +64,13 @@ describe('lib:packages:inpage', () => {
 
     expect(addTransactionsQueue).toBeTruthy()
     expect(new TypeChecker(addTransactionsQueue).isFunction).toBeTruthy()
+  })
+
+  it('try call addTransactionsQueue in wallet', () => {
+    const { addTransactionsQueue } = window.zilPay.wallet
+    const args = [uuid(), uuid(), uuid()]
+
+    expect(addTransactionsQueue(...args)).toEqual(args)
   })
 
   it('should have connect in wallet', () => {
