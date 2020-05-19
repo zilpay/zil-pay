@@ -18,7 +18,7 @@ import {
 
 import { getFavicon, toAccountFormat } from './utils'
 
-const { window, Promise } = global
+const { window, Promise, Set } = global
 
 // Private variables. //
 let _stream = null // Stream instance.
@@ -127,6 +127,17 @@ export default class Wallet {
       filter(msg => msg && (msg.type === MTypeTab.NETWORK_CHANGED || msg.type === MTypeTab.GET_WALLET_DATA)),
       map(msg => msg.payload.net)
     )
+  }
+
+  observableBlock() {
+  }
+
+  observableTransaction(...txns) {
+    const uniqueTxns = new Set(txns)
+    // const type = MTypeTab.CALL_TO_SIGN_TX
+    // const recipient = MTypeTabContent.CONTENT
+    // const uuid = uuidv4()
+    console.log(uniqueTxns)
   }
 
   /**

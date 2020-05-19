@@ -38,11 +38,11 @@ export class Network {
     } catch (err) {
       payload = { reject: err.message }
     } finally {
+      new TabsMessage({ type, payload }).send()
+
       await socketControl.stop()
       await socketControl.start()
     }
-
-    new TabsMessage({ type, payload }).send()
   }
 
 }
