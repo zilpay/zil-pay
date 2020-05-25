@@ -20,6 +20,9 @@
     "https://api.coingecko.com/api/v3/simple/price",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
+    "wss://api-ws.zilliqa.com",
+    "wss://dev-ws.zilliqa.com",
+    "ws://127.0.0.1:4200",
     "https://zilpay.xyz/*",
     "http://127.0.0.1/*"
   ],
