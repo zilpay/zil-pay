@@ -3,7 +3,7 @@
     <input
       v-bind="$attrs"
       :value="value"
-      :class="b('input')"
+      :class="b('input', { checked: value })"
       type="checkbox"
       @input="onInput"
     >
@@ -49,7 +49,7 @@ export default {
     width: 0;
     height: 0;
 
-    &:checked + .SwitchBox__slider:before {
+    &_checked + .SwitchBox__slider:before {
       transform: translateX(23px);
       background-color: var(--accent-color-success);
     }
