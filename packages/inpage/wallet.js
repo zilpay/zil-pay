@@ -187,7 +187,7 @@ export default class Wallet {
   /**
    * Call popup for confirm Transaction.
    */
-  sign(tx) {
+  sign(payload) {
     if (!this.isEnable) {
       throw ERRORS.Disabled
     } else if (!this.isConnect) {
@@ -197,11 +197,7 @@ export default class Wallet {
     const type = MTypeTab.CALL_TO_SIGN_TX
     const recipient = MTypeTabContent.CONTENT
     const uuid = uuidv4()
-    let { payload } = tx
 
-    // This is required for only for Category III transactions,
-    // but it can be used for other transaction categories too.
-    payload.priority = tx.toDS
 
     // Transaction id.
     payload.uuid = uuid
@@ -213,7 +209,7 @@ export default class Wallet {
     // Send transaction to content.js > background.js.
     new SecureMessage({ type, payload }).send(_stream, recipient)
 
-    tx.confirm = () => from(_subject).pipe(
+    return from(_subject).pipe(
       // Waiting an answer by uuid.
       filter(res => res.type === MTypeTab.TX_RESULT),
       map(res => res.payload),
@@ -222,13 +218,11 @@ export default class Wallet {
         if (res.reject) {
           throw res.reject
         } else if (res.resolve) {
-          return Object.assign(tx, res.resolve)
+          return Object.assign(payload, res.resolve)
         }
       }),
       take(1)
     ).toPromise()
-
-    return tx
   }
 
   /**
