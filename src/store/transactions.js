@@ -32,7 +32,8 @@ const MUTATIONS_NAMES = {
   setEmpty: 'setEmpty',
   setClearTxHistory: 'setClearTxHistory',
   setTxHistory: 'setTxHistory',
-  setPopConfirmTx: 'setPopConfirmTx'
+  setPopConfirmTx: 'setPopConfirmTx',
+  setPriority: 'setPriority'
 }
 const ACTIONS_NAMES = {
   onUpdateTransactions: 'onUpdateTransactions',
@@ -86,6 +87,9 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setPopConfirmTx](state) {
       state[STATE_NAMES.confirmationTx].pop()
+    },
+    [MUTATIONS_NAMES.setPriority](state, value) {
+      state[STATE_NAMES.confirmationTx][0].priority = value
     }
   },
   actions: {
