@@ -39,6 +39,10 @@
     "connect": {
       "title": "data for connection to dApps",
       "type": "object"
+    },
+    "contacts": {
+      "title": "data for connection to dApps",
+      "type": "array"
     }
   }
 }
