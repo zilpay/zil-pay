@@ -49,6 +49,15 @@
           ZIL{{ getCurrent.amount | fromZil }}
         </P>
       </div>
+      <Container :class="b('to-ds')">
+        <P :font="FONT_VARIANTS.bold">
+          TODS
+        </P>
+        <SwitchBox
+          :value="getCurrent.priority"
+          @input="setPriority"
+        />
+      </Container>
     </Container>
     <Separator />
     <P
@@ -126,6 +135,7 @@ import GasControl from '@/components/GasControl'
 import Separator from '@/components/Separator'
 import BottomBar from '@/components/BottomBar'
 import ArrowInCircle from '@/components/icons/ArrowInCircle'
+import SwitchBox from '@/components/SwitchBox'
 
 import TxDataPage from '@/pages/popup/TxData'
 import HomePage from '@/pages/Home'
@@ -153,7 +163,8 @@ export default {
     Container,
     Separator,
     BottomBar,
-    ArrowInCircle
+    ArrowInCircle,
+    SwitchBox
   },
   mixins: [viewblockMixin, CalcMixin],
   filters: { fromZil, toConversion, toAddress },
@@ -231,6 +242,7 @@ export default {
     ...mapMutations(transactionsStore.STORE_NAME, [
       transactionsStore.MUTATIONS_NAMES.setCurrentGas,
       transactionsStore.MUTATIONS_NAMES.setEmpty,
+      transactionsStore.MUTATIONS_NAMES.setPriority,
       transactionsStore.MUTATIONS_NAMES.setPopConfirmTx
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
@@ -363,14 +375,26 @@ export default {
     padding: 15px 30px 30px 30px;
   }
 
+  &__amount,
+  &__to-ds {
+    font-size: 15px;
+    line-height: 0;
+  }
+
   &__amount {
     display: flex;
     justify-content: space-between;
 
     width: 100%;
     max-width: 250px;
-    font-size: 15px;
-    line-height: 0;
+  }
+
+  &__to-ds {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 250px;
   }
 
   &__details {
