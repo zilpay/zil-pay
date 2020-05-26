@@ -41,8 +41,12 @@
       "type": "object"
     },
     "contacts": {
-      "title": "data for connection to dApps",
+      "title": "storing users contacts.",
       "type": "array"
+    },
+    "theme": {
+      "title": "current theme",
+      "type": "string"
     }
   }
 }
