@@ -1,6 +1,7 @@
 {
   "name": "ZilPay",
-  "author": "https://zilpay.xyz/",
+  "author": "Rinat",
+  "homepage_url": "https://zilpay.xyz",
   "manifest_version": 2,
   "icons": {
     "16": "icons/icon16.png",
@@ -14,15 +15,23 @@
   "storage": {
     "managed_schema": "schema.json"
   },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "chromeos": "Alt+Shift+Z",
+        "linux": "Alt+Shift+Z",
+        "mac": "Alt+Shift+Z",
+        "windows": "Alt+Shift+Z"
+      }
+    }
+  },
   "permissions": [
     "storage",
     "notifications",
+    "webRequest",
     "https://api.coingecko.com/api/v3/simple/price",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
-    "wss://api-ws.zilliqa.com",
-    "wss://dev-ws.zilliqa.com",
-    "ws://127.0.0.1:4200",
     "https://zilpay.xyz/*",
     "http://127.0.0.1/*"
   ],

@@ -42,7 +42,10 @@
     },
     "contacts": {
       "title": "storing users contacts.",
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
     },
     "theme": {
       "title": "current theme",
