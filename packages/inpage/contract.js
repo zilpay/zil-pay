@@ -8,15 +8,18 @@
  */
 import { normaliseAddress } from '@zilliqa-js/crypto/dist/util'
 import { TransactionFactory } from './transaction'
+import { CryptoUtils } from './crypto'
 
 import ERRORS from './errors'
 
 const NIL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-class Contract {
+const utils = new CryptoUtils()
+
+export class Contract {
 
   get _contractAddress() {
-    return this.address.replace('0x', '').toLowerCase()
+    return utils.toHex(this.address)
   }
 
   constructor(transactions, address, code, init) {

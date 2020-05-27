@@ -1,12 +1,21 @@
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(lich666dead)
+ * -----
+ * Modified By: the developer formerly known as Rinat(lich666dead) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2019 ZilPay
+ */
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { validation } from '@zilliqa-js/util/dist/index'
 import HTTPProvider from './provider'
+import { CryptoUtils } from './crypto'
 import Wallet from './wallet'
 import ERRORS from './errors'
 
 export class Transaction {
   get _toAddr() {
-    return this.toAddr.replace('0x', '').toLowerCase()
+    return new CryptoUtils().toHex(this.toAddr)
   }
 
   constructor(params, priority = false) {

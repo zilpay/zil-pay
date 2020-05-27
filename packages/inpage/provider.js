@@ -49,6 +49,9 @@ export default class HTTPProvider {
     _subject = subjectStream
 
     this.RPCMethod = RPCMethod
+
+    this.RPCMethod.GetMinerInfo = 'GetMinerInfo'
+    this.RPCMethod.GetPendingTxns = 'GetPendingTxns'
   }
 
   send(method, ...params) {

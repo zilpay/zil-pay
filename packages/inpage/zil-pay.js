@@ -6,16 +6,14 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import * as zilUtils from '@zilliqa-js/util/dist/index'
-import { Blockchain } from '@zilliqa-js/blockchain/dist/chain'
-import { toChecksumAddress, isValidChecksumAddress } from '@zilliqa-js/crypto/dist/util'
-import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
-
 import HTTPProvider from './provider'
 import Wallet from './wallet'
 import { ContractControl } from './contract'
 import { TransactionFactory } from './transaction'
+import { Blockchain } from './blockchain'
+import { ZilliqaUtils, CryptoUtils } from './crypto'
 
+import './crypto'
 /**
  * ZipPay Object which will be create in some tab.
  * @param {Object} subjectStream Listener instance.
@@ -37,12 +35,7 @@ export class ZilPay {
     this.transactions = new TransactionFactory(this.provider, this.wallet)
     this.contracts = new ContractControl(this.transactions)
 
-    this.utils = zilUtils
-    this.crypto = {
-      fromBech32Address,
-      toBech32Address,
-      isValidChecksumAddress,
-      toChecksumAddress
-    }
+    this.utils = new ZilliqaUtils()
+    this.crypto = new CryptoUtils()
   }
 }

@@ -7,6 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 export default {
+  EpochRequired: new Error('epoch is required'),
   InitParams: new Error('Cannot deploy without code or initialisation parameters.'),
   ShouldArray: new Error('should be array'),
   VariableNameRequired: new Error('Variable name required'),
@@ -14,6 +15,7 @@ export default {
   HTTPProviderInstance: new Error('should be HTTPProvider instance.'),
   WalletInstance: new Error('should be Wallet instance.'),
   TransactionFactoryInstance: new Error('should be TransactionFactory instance.'),
+  TransactionInstance: new Error('should be Transaction instance.'),
   Connect: new Error('User is\'t connections.'),
   DisabledMethod: new Error('This method not allowed in ZIlPay'),
   Disabled: new Error('ZilPay is disabled.'),
