@@ -7,12 +7,14 @@
  * Copyright (c) 2019 ZilPay
  */
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
+import { TransactionError } from '@zilliqa-js/core/dist/types'
 import HTTPProvider from './provider'
 import { CryptoUtils, ZilliqaUtils } from './crypto'
 import Wallet from './wallet'
 import ERRORS from './errors'
 
 const utils = new ZilliqaUtils()
+
 
 export class Transaction {
   get payload() {
@@ -30,6 +32,20 @@ export class Transaction {
       version: this.version,
       signature: this.signature
     }
+  }
+
+  get errors() {
+    if (!this.receipt || !this.receipt.errors) {
+      return []
+    }
+    const errors = []
+    const values = Object.values(this.receipt.errors)
+
+    values.forEach((e) => {
+      Array.from(e).forEach((n) => errors.push(TransactionError[n]))
+    })
+
+    return errors
   }
 
   get exceptions() {
@@ -90,6 +106,20 @@ export class Transaction {
       this.epoch = this.receipt.epoch_num
       this.cumulativeGas = this.receipt.cumulative_gas
       this.success = this.receipt.success
+    }
+
+    if (this.data && Array.isArray(this.data)) {
+      this.data = this.data.map((arg, index) => {
+        try {
+          if (arg && arg.type === 'ByStr20' && utils.validation.isBech32(arg.value)) {
+            arg.value = new CryptoUtils().fromBech32Address(arg.value)
+          }
+        } catch (err) {
+          throw new Error(`${err.message} in param ${index}, type: ${arg.type}, value: ${arg.value}`)
+        }
+
+        return arg
+      })
     }
 
     this.txParams = this.payload

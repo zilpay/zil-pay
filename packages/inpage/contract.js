@@ -42,7 +42,7 @@ export class Contract {
       priority,
       toAddr: NIL_ADDRESS,
       code: this.code,
-      data: JSON.stringify(this.data),
+      data: JSON.stringify(this.init),
       ...params
     })
 
