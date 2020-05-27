@@ -187,7 +187,7 @@ export default class Wallet {
   /**
    * Call popup for confirm Transaction.
    */
-  sign(payload) {
+  sign(tx) {
     if (!this.isEnable) {
       throw ERRORS.Disabled
     } else if (!this.isConnect) {
@@ -197,7 +197,7 @@ export default class Wallet {
     const type = MTypeTab.CALL_TO_SIGN_TX
     const recipient = MTypeTabContent.CONTENT
     const uuid = uuidv4()
-
+    const { payload } = tx
 
     // Transaction id.
     payload.uuid = uuid

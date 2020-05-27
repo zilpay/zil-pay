@@ -7,35 +7,82 @@
  * Copyright (c) 2019 ZilPay
  */
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
-import { validation } from '@zilliqa-js/util/dist/index'
 import HTTPProvider from './provider'
-import { CryptoUtils } from './crypto'
+import { CryptoUtils, ZilliqaUtils } from './crypto'
 import Wallet from './wallet'
 import ERRORS from './errors'
 
+const utils = new ZilliqaUtils()
+
 export class Transaction {
-  get _toAddr() {
-    return new CryptoUtils().toHex(this.toAddr)
+  get payload() {
+    const address = new CryptoUtils().fromBech32Address(this.toAddr)
+
+    return {
+      amount: String(this.amount),
+      gasPrice: String(this.gasPrice),
+      gasLimit: String(this.gasLimit),
+      code: this.code,
+      data: this.data ? JSON.stringify(this.data) : '',
+      nonce: this.nonce,
+      priority: this.priority,
+      toAddr: new CryptoUtils().toHex(address),
+      version: this.version
+    }
+  }
+
+  get exceptions() {
+    if (!this.receipt || !this.receipt.exceptions) {
+      return []
+    }
+
+    return this.receipt.exceptions
+  }
+
+  get eventLogs() {
+    if (!this.receipt || !this.receipt.event_logs) {
+      return []
+    }
+
+    return this.receipt.event_logs
   }
 
   constructor(params, priority = false) {
     this.version = params.version
     this.toAddr = params.toAddr
-    this.nonce = params.nonce
-    this.amount = String(params.amount || 0)
+    this.nonce = Number(params.nonce || 0)
+    this.amount = new utils.BN(params.amount || 0)
     this.code = params.code || ''
     this.data = params.data || ''
     this.signature = params.signature
-    this.gasPrice = String(params.gasPrice || DEFAULT_GAS_FEE.gasPrice ** 3)
-    this.gasLimit = String(params.gasLimit || DEFAULT_GAS_FEE.gasLimit)
+
+    this.gasPrice = new utils.BN(params.gasPrice || DEFAULT_GAS_FEE.gasPrice ** 3)
+    this.gasLimit = utils.Long.fromNumber(params.gasLimit || DEFAULT_GAS_FEE.gasLimit)
+
     this.priority = params.priority
+    this.receipt = params.receipt
+
+    if (!this.toAddr) {
+      throw ERRORS.IncorectAddress
+    }
+
+    if (utils.validation.isAddress(this.toAddr)) {
+      this.toAddr = new CryptoUtils().toChecksumAddress(this.toAddr)
+      this.toAddr = new CryptoUtils().toBech32Address(this.toAddr)
+    }
 
     if (priority) {
       this.priority = true
     }
 
-    if (!this.toAddr || !validation.isAddress(this.toAddr)) {
-      throw ERRORS.IncorectAddress
+    if (this.data) {
+      this.data = JSON.parse(this.data)
+    }
+
+    if (this.receipt) {
+      this.epoch = this.receipt.epoch_num
+      this.cumulativeGas = this.receipt.cumulative_gas
+      this.success = this.receipt.success
     }
   }
 }

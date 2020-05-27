@@ -32,7 +32,7 @@ export class Contract {
     this.init = init
   }
 
-  deploy(params, priority = false) {
+  async deploy(params, priority = false) {
     if (!this.code || !this.init) {
       throw ERRORS.InitParams
     }
@@ -46,7 +46,9 @@ export class Contract {
       ...params
     })
 
-    return wallet.sign(tx)
+    const result = await wallet.sign(tx)
+
+    return [result, this]
   }
 
   call(_tag, args, params, priority = false) {
@@ -59,6 +61,7 @@ export class Contract {
       _tag,
       params: args
     })
+
     const tx = this.transactions.new({
       data,
       priority,
