@@ -27,7 +27,8 @@ export class Transaction {
       nonce: this.nonce,
       priority: this.priority,
       toAddr: new CryptoUtils().toHex(address),
-      version: this.version
+      version: this.version,
+      signature: this.signature
     }
   }
 
@@ -55,6 +56,12 @@ export class Transaction {
     this.code = params.code || ''
     this.data = params.data || ''
     this.signature = params.signature
+    this.ContractAddress = params.ContractAddress
+    this.ID = params.TranID || params.ID
+    this.TranID = this.ID
+    this.from = params.from || params.senderAddress
+    this.Info = params.Info
+    this.pubKey = params.pubKey
 
     this.gasPrice = new utils.BN(params.gasPrice || DEFAULT_GAS_FEE.gasPrice ** 3)
     this.gasLimit = utils.Long.fromNumber(params.gasLimit || DEFAULT_GAS_FEE.gasLimit)
@@ -84,6 +91,8 @@ export class Transaction {
       this.cumulativeGas = this.receipt.cumulative_gas
       this.success = this.receipt.success
     }
+
+    this.txParams = this.payload
   }
 }
 

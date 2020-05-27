@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import { normaliseAddress } from '@zilliqa-js/crypto/dist/util'
-import { TransactionFactory } from './transaction'
+import { TransactionFactory, Transaction } from './transaction'
 import { CryptoUtils } from './crypto'
 
 import ERRORS from './errors'
@@ -48,10 +48,10 @@ export class Contract {
 
     const result = await wallet.sign(tx)
 
-    return [result, this]
+    return [new Transaction(result), this]
   }
 
-  call(_tag, args, params, priority = false) {
+  async call(_tag, args, params, priority = false) {
     if (!this.address) {
       throw ERRORS.ContractHasntDeployed
     }
@@ -68,8 +68,9 @@ export class Contract {
       toAddr: this._contractAddress,
       ...params
     })
+    const result = await wallet.sign(tx)
 
-    return wallet.sign(tx)
+    return new Transaction(result)
   }
 
   async getState() {
