@@ -123,6 +123,8 @@ class Contract {
       throw new Error(error)
     }
 
+    this.init = result
+
     return result
   }
 
@@ -140,6 +142,8 @@ class Contract {
     if (error) {
       throw new Error(error)
     }
+
+    this.code = result.code
 
     return result
   }
@@ -159,5 +163,7 @@ export class ContractControl {
     return new Contract(this.transactions, address, code)
   }
 
-  new(code, init) {}
+  new(code, init) {
+    return new Contract(this.transactions, null, code, init)
+  }
 }
