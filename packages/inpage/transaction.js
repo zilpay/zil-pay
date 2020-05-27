@@ -113,6 +113,7 @@ export class Transaction {
         try {
           if (arg && arg.type === 'ByStr20' && utils.validation.isBech32(arg.value)) {
             arg.value = new CryptoUtils().fromBech32Address(arg.value)
+            arg.value = new CryptoUtils().toHex(arg.value)
           }
         } catch (err) {
           throw new Error(`${err.message} in param ${index}, type: ${arg.type}, value: ${arg.value}`)
