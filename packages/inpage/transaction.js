@@ -111,9 +111,20 @@ export class Transaction {
     if (this.data && Array.isArray(this.data)) {
       this.data = this.data.map((arg, index) => {
         try {
-          if (arg && arg.type === 'ByStr20' && utils.validation.isBech32(arg.value)) {
+          if (arg && arg.type === 'ByStr20' && arg.value && utils.validation.isBech32(arg.value)) {
             arg.value = new CryptoUtils().fromBech32Address(arg.value)
-            arg.value = new CryptoUtils().toHex(arg.value)
+          }
+
+          if (arg && arg.type === 'List (ByStr20)' && Array.isArray(arg.value)) {
+            arg.value = arg.value.map((address) => {
+              if (!utils.validation.isBech32(address)) {
+                return address
+              }
+
+              address = new CryptoUtils().fromBech32Address(address)
+
+              return address
+            })
           }
         } catch (err) {
           throw new Error(`${err.message} in param ${index}, type: ${arg.type}, value: ${arg.value}`)
