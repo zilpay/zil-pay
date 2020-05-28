@@ -30,43 +30,28 @@ dApp 개발자의 경우 :
 ### 설치
 
 ```bash
-# Install dependencies
+# 의존성 설치
 $ npm install
 
-# Serve all files extension.
-$ npm run dev
-
-# Serve vue app files to dist.
-$ npm run serve:ui
-
-# Serve extension (background.js) and any extensiong files to dist.
-$ npm run serve:extension
-
-# Serve web on 8080 port.
-$ npm run serve:web
+# 모든 파일 확장자를 제공하십시오.
+$ npm run serve
 ```
 
 * 생산의 경우 :
 ```bash
-# Build all app and extension files and optimizing it.
+# 모든 앱 및 확장 파일을 빌드하고 최적화하십시오.
 $ npm run build
-
-# Build only UI files and optimizing it.
-$ npm run build:ui
-
-# Build only extension files and optimizing it.
-$ npm run build:extension
 ```
 
 ### 테스트 실행
 ```bash
-# run unit tests
+# 단위 테스트 실행
 $ npm test:unit
 
-# Watch testing for dev.
+# 개발자 테스트를 시청하십시오.
 $ npm run test:watch
 
-# Check lint ts,vue files.
+# 린트 TS, VUE 파일을 확인하십시오.
 $ npm run lint
 ```
 

@@ -30,30 +30,31 @@ ZilPay - это браузерный кошелек для блокчейна Zi
 ### Установка
 
 ```bash
-$ npm install         # установить зависимости
+$ npm install # установить зависимости
 ```
 
 ### Сборка
 
 * For develop
 ```bash
-$ npm run content     # собрать content.js
-$ npm run inpage      # собрать inpage.js
-$ npm run background  # собрать background.js
-$ npm run scripts     # собрать content.js & inpage.js & background.js
-$ npm run all:firefox # Все скрипты создаются для платформы Firefox.
-$ npm run all:chrome  # Все скрипты создаются для платформы Chrome.
+$ npm run serve # Запустить разширение для разработки.
 ```
 
 * Для production:
 ```bash
-$ npm run build:prod:firefox
-$ npm run build:prod:chrome
+$ npm run build # Создать production билд.
 ```
 
 ### Запуск тестов
 ```bash
-$ npm run test # run testing
+# Запустить все тесты.
+$ npm test:unit
+
+# Запустить тесты для разработки.
+$ npm run test:watch
+
+# Проверить код на lint.
+$ npm run lint
 ```
 
 ## Построен с помощью:

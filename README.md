@@ -38,14 +38,8 @@ $ npm install
 # Serve all files extension.
 $ npm run dev
 
-# Serve vue app files to dist.
-$ npm run serve:ui
-
-# Serve extension (background.js) and any extensiong files to dist.
-$ npm run serve:extension
-
-# Serve web on 8080 port.
-$ npm run serve:web
+# run serve extension.
+$ npm run serve
 ```
 
 ---
@@ -69,12 +63,6 @@ For production builing and deploy.
 ``` bash
 # Build all app and extension files and optimizing it.
 $ npm run build
-
-# Build only UI files and optimizing it.
-$ npm run build:ui
-
-# Build only extension files and optimizing it.
-$ npm run build:extension
 ```
 
 ## Built With

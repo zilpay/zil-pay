@@ -29,31 +29,39 @@ ZilPay是Zilliqa区块链的浏览器钱包。 开发人员可以将ZilPay集成
 
 ### 正在安装
 
-```bash
-$ npm install         # 安装依赖
+为发展建设和服务。
+``` bash
+# 安装依赖
+$ npm install
+
+# 服务所有文件扩展名。
+$ npm run dev
+
+# 运行服务扩展。
+$ npm run serve
 ```
 
-### Building
+---
 
-* For develop
-```bash
-$ npm run content     # 建立content.js
-$ npm run inpage      # 建立inpage.js
-$ npm run background  # 建立background.js
-$ npm run scripts     # 构建content.js＆inpage.js＆background.js
-$ npm run all:firefox # 所有脚本均针对firefox平台构建。
-$ npm run all:chrome  # 所有脚本均针对chrome平台构建。
+测试项目。
+``` bash
+# 运行单元测试
+$ npm test:unit
+
+# 观看开发测试。
+$ npm run test:watch
+
+# 检查lint js，vue文件。
+$ npm run lint
+
 ```
 
-* 用于生产:
-```bash
-$ npm run build:prod:firefox
-$ npm run build:prod:chrome
-```
+---
 
-### 运行测试
-```bash
-$ npm run test # run testing
+敌人生产建设和部署。
+``` bash
+# 构建所有应用程序和扩展文件并对其进行优化。
+$ npm run build
 ```
 
 ## 建于

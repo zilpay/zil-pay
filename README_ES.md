@@ -29,51 +29,32 @@ Para desarrolladores de dApp:
 
 ### Instalando
 
-```bash
-$ npm install         # instalar dependencias
-```
-
 ### edificio
 
 * Para desarrollar
 ```bash
-# Install dependencies
+# Instalu dependojn
 $ npm install
 
-# Serve all files extension.
-$ npm run dev
-
-# Serve vue app files to dist.
-$ npm run serve:ui
-
-# Serve extension (background.js) and any extensiong files to dist.
-$ npm run serve:extension
-
-# Serve web on 8080 port.
-$ npm run serve:web
+Serve all files extension.
+$ npm run serve
 ```
 
 * Para la producción:
 ```bash
-# Build all app and extension files and optimizing it.
+# Konstruu ĉiujn dosierojn kaj etendajn dosierojn kaj optimumigante ĝin.
 $ npm run build
-
-# Build only UI files and optimizing it.
-$ npm run build:ui
-
-# Build only extension files and optimizing it.
-$ npm run build:extension
 ```
 
 ### Ejecutando las pruebas
 ```bash
-# run unit tests
+# aranĝu ekzemplerojn
 $ npm test:unit
 
-# Watch testing for dev.
+# Rigardi provadon por dev.
 $ npm run test:watch
 
-# Check lint ts,vue files.
+# Kontrolu lint ts, vue dosierojn.
 $ npm run lint
 ```
 

@@ -29,51 +29,32 @@ dApp開発者向け：
 
 ### インストール中
 
-```bash
-$ npm install         # 依存関係をインストールする
-```
-
 ### 建物
 
 * 開発のため
 ```bash
-# Install dependencies
+# 依存関係をインストールする
 $ npm install
 
-# Serve all files extension.
+# すべてのファイル拡張子を提供します。
 $ npm run dev
-
-# Serve vue app files to dist.
-$ npm run serve:ui
-
-# Serve extension (background.js) and any extensiong files to dist.
-$ npm run serve:extension
-
-# Serve web on 8080 port.
-$ npm run serve:web
 ```
 
 * 本番用：
 ```bash
-# Build all app and extension files and optimizing it.
+# すべてのアプリと拡張機能ファイルを作成し、最適化します。
 $ npm run build
-
-# Build only UI files and optimizing it.
-$ npm run build:ui
-
-# Build only extension files and optimizing it.
-$ npm run build:extension
 ```
 
 ### テストを実行する
 ```bash
-# run unit tests
+# 単体テストを実行する
 $ npm test:unit
 
-# Watch testing for dev.
+# 開発者向けのテストを見る。
 $ npm run test:watch
 
-# Check lint ts,vue files.
+# lint ts、vueファイルを確認してください。
 $ npm run lint
 ```
 
