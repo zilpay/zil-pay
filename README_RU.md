@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*Прочитайте это на других языках: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](README_NL), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
+*Прочитайте это на других языках: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](README_NL.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
 
 ZilPay - это браузерный кошелек для блокчейна Zilliqa. Разработчики могут интегрировать ZilPay в свой веб-сайт для создания децентрализованных приложений.
 

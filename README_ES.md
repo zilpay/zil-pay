@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*Lee esto en otros idiomas: [English](README.md), [简体中文](README_ZH-CN.md), [Nederlands](README_NL), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
+*Lee esto en otros idiomas: [English](README.md), [简体中文](README_ZH-CN.md), [Nederlands](README_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
 
 ZilPay es una billetera de navegador para Zilliqa blockchain. Los desarrolladores pueden integrar ZilPay en su sitio web para crear aplicaciones descentralizadas.
 

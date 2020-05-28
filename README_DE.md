@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*Lesen Sie dies in anderen Sprachen: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](README_NL), [Русский](README_RU.md), [日本語](README_JP.md), [Korean](README_KR.md).*
+*Lesen Sie dies in anderen Sprachen: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](README_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Korean](README_KR.md).*
 
 ZilPay ist eine Browserbrieftasche für die Zilliqa-Blockchain. Entwickler können ZilPay in ihre Website integrieren, um dezentrale Apps zu erstellen.
 
