@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*다른 언어로 읽어보십시오: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md).*
+*다른 언어로 읽어보십시오: [English](README.md), [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](README_NL), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md).*
 
 ZilPay는 Zilliqa 블록 체인 용 브라우저 지갑입니다. 개발자는 ZilPay를 웹 사이트에 통합하여 분산 앱을 만들 수 있습니다.
 

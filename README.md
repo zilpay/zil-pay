@@ -6,7 +6,7 @@
 [![LoC](https://tokei.rs/b1/github/zilpay/zil-pay?category=lines)](https://github.com/zilpay/zil-pay)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*Read this in other languages: [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
+*Read this in other languages: [简体中文](README_ZH-CN.md), [Español](README_ES.md), [Nederlands](README_NL), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
 
 ZilPay is a browser wallet for Zilliqa blockchain. Developers can integrate ZilPay into their website to create Decentralised Apps.
 

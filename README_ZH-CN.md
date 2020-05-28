@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Zilliqa/scilla/blob/master/LICENSE)
 [![Gitter chat](http://img.shields.io/badge/chat-on%20gitter-077a8f.svg)](https://gitter.im/Zilliqa/General)
 
-*用其他语言阅读: [English](README.md), [Español](README_ES.md), [Nederlands](intro_NL.md), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
+*用其他语言阅读: [English](README.md), [Español](README_ES.md), [Nederlands](README_NL), [Русский](README_RU.md), [日本語](README_JP.md), [Deutsch](README_DE.md), [Korean](README_KR.md).*
 
 ZilPay是Zilliqa区块链的浏览器钱包。 开发人员可以将ZilPay集成到他们的网站中以创建去中心化应用程序。
 
