@@ -37,7 +37,7 @@ dApp開発者向け：
 $ npm install
 
 # すべてのファイル拡張子を提供します。
-$ npm run dev
+$ npm run serve
 ```
 
 * 本番用：

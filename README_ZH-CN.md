@@ -35,11 +35,7 @@ ZilPay是Zilliqa区块链的浏览器钱包。 开发人员可以将ZilPay集成
 $ npm install
 
 # 服务所有文件扩展名。
-$ npm run dev
-
-# 运行服务扩展。
 $ npm run serve
-```
 
 ---
 

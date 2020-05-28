@@ -35,9 +35,6 @@ For Develop building and serve.
 # Install dependencies
 $ npm install
 
-# Serve all files extension.
-$ npm run dev
-
 # run serve extension.
 $ npm run serve
 ```
