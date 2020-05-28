@@ -27,16 +27,21 @@ export class Validator {
 
 export class CryptoUtils {
 
-  constructor() {
-    this.fromBech32Address = fromBech32Address
-    this.toBech32Address = toBech32Address
-    this.isValidChecksumAddress = isValidChecksumAddress
-    this.toChecksumAddress = toChecksumAddress
-    this.normaliseAddress = normaliseAddress
+  isValidChecksumAddress = isValidChecksumAddress
+  toChecksumAddress = toChecksumAddress
+  normaliseAddress = normaliseAddress
+  fromBech32Address = fromBech32Address
+
+  toHex(hexString) {
+    return String(hexString).replace('0x', '').toLowerCase()
   }
 
-  toHex(sum) {
-    return String(sum).replace('0x', '').toLowerCase()
+  toBech32Address(address) {
+    if (new Validator().isBech32(address)) {
+      return address
+    }
+
+    return toBech32Address(address)
   }
 }
 
