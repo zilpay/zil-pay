@@ -14,6 +14,7 @@ import {
   normaliseAddress
 } from '@zilliqa-js/crypto/dist/util'
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
+import ERRORS from './errors'
 
 export class Validator {
   constructor() {
@@ -22,6 +23,10 @@ export class Validator {
     this.isBN = isBN
     this.isLong = isLong
     this.isString = isString
+  }
+
+  isBase58() {
+    throw ERRORS.DisabledMethod
   }
 }
 
@@ -42,6 +47,10 @@ export class CryptoUtils {
     }
 
     return toBech32Address(address)
+  }
+
+  decodeBase58() {
+    throw ERRORS.DisabledMethod
   }
 }
 
