@@ -209,6 +209,10 @@ export class Blockchain {
    * @returns {Promise<RPCResponse<TxBlockObj, string>>}
    */
   getTxBlock(blockNum) {
+    if (isNaN(blockNum)) {
+      throw new Error('blockNum is required')
+    }
+
     const { RPCMethod } = this.provider
 
     return this.provider.send(RPCMethod.GetTxBlock, String(blockNum))
@@ -265,6 +269,10 @@ export class Blockchain {
    * @returns {Promise<RPCResponse<BlockList, string>>}
    */
   getTxBlockListing(max) {
+    if (isNaN(max)) {
+      throw new Error('max is required')
+    }
+
     const { RPCMethod } = this.provider
 
     return this.provider.send(RPCMethod.TxBlockListing, String(max))
