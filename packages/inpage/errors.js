@@ -7,7 +7,7 @@
  * Copyright (c) 2019 ZilPay
  */
 export default {
-  EpochRequired: new Error('epoch is required'),
+  RequiredVar: (varName) => new Error(`${varName} is required`),
   InitParams: new Error('Cannot deploy without code or initialisation parameters.'),
   ShouldArray: new Error('should be array'),
   VariableNameRequired: new Error('Variable name required'),
