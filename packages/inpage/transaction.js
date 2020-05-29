@@ -146,8 +146,10 @@ export class TransactionFactory {
     } else if (!(wallet instanceof Wallet)) {
       throw new InstanceError('wallet', Wallet)
     }
+
     this.provider = provider
     this.wallet = wallet
+    this.Transaction = Transaction
   }
 
   new(...args) {
