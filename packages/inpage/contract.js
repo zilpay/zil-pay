@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { TypeChecker } from 'lib/type'
 import { TransactionFactory, Transaction } from './transaction'
 import { CryptoUtils } from './crypto'
 
@@ -13,6 +14,7 @@ import {
   InstanceError,
   ArgumentError,
   ERROR_MSGS,
+  FormatError,
   RPCError,
   ShouldArrayError
 } from './errors'
@@ -59,6 +61,10 @@ export class Contract {
   async call(_tag, args, params, priority = false) {
     if (!this.address) {
       throw new ArgumentError('contract', ERROR_MSGS.CONTRACT_HASN_TDEPLOYED)
+    } else if (!_tag) {
+      throw new ArgumentError('_tag', ERROR_MSGS.REQUIRED)
+    } else if (!new TypeChecker(_tag).isString) {
+      throw new FormatError('_tag')
     }
 
     const { wallet } = this.transactions
