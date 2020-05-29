@@ -17,7 +17,7 @@ import {
 } from 'lib/stream'
 
 import { getFavicon, toAccountFormat } from './utils'
-import ERRORS from './errors'
+import { AccessError, ERROR_MSGS } from './errors'
 
 const { window, Promise, Set } = global
 
@@ -94,9 +94,9 @@ export default class Wallet {
    */
   observableAccount() {
     if (!this.isEnable) {
-      throw ERRORS.Disabled
+      throw new AccessError(ERROR_MSGS.DISABLED)
     } else if (!this.isConnect) {
-      throw ERRORS.Connect
+      throw new AccessError(ERROR_MSGS.CONNECT)
     }
 
     let lastAccount = null
@@ -128,9 +128,9 @@ export default class Wallet {
    */
   observableNetwork() {
     if (!this.isEnable) {
-      throw ERRORS.Disabled
+      throw new AccessError(ERROR_MSGS.DISABLED)
     } else if (!this.isConnect) {
-      throw ERRORS.Connect
+      throw new AccessError(ERROR_MSGS.CONNECT)
     }
 
     return from(_subject).pipe(
@@ -144,9 +144,9 @@ export default class Wallet {
    */
   observableBlock() {
     if (!this.isEnable) {
-      throw ERRORS.Disabled
+      throw new AccessError(ERROR_MSGS.DISABLED)
     } else if (!this.isConnect) {
-      throw ERRORS.Connect
+      throw new AccessError(ERROR_MSGS.CONNECT)
     }
 
     return from(_subject).pipe(
@@ -157,9 +157,9 @@ export default class Wallet {
 
   observableTransaction(...txns) {
     if (!this.isEnable) {
-      throw ERRORS.Disabled
+      throw new AccessError(ERROR_MSGS.DISABLED)
     } else if (!this.isConnect) {
-      throw ERRORS.Connect
+      throw new AccessError(ERROR_MSGS.CONNECT)
     }
 
     if (txns && txns.length !== 0) {
@@ -189,9 +189,9 @@ export default class Wallet {
    */
   sign(tx) {
     if (!this.isEnable) {
-      throw ERRORS.Disabled
+      throw new AccessError(ERROR_MSGS.DISABLED)
     } else if (!this.isConnect) {
-      throw ERRORS.Connect
+      throw new AccessError(ERROR_MSGS.CONNECT)
     }
 
     const type = MTypeTab.CALL_TO_SIGN_TX

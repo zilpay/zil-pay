@@ -12,17 +12,18 @@ import { Transaction } from './transaction'
 import Wallet from './wallet'
 import { CryptoUtils } from './crypto'
 
-import ERRORS from './errors'
+import { RPCError, InstanceError, ArgumentError, ERROR_MSGS } from './errors'
 
 const cryptoUtils = new CryptoUtils()
 
 export class Blockchain {
   constructor(provider, wallet) {
     if (!(provider instanceof HTTPProvider)) {
-      throw ERRORS.HTTPProviderInstance
+      throw new InstanceError('provider', HTTPProvider)
     } else if (!(wallet instanceof Wallet)) {
-      throw ERRORS.WalletInstance
+      throw new InstanceError('wallet', Wallet)
     }
+
     this.provider = provider
     this.wallet = wallet
   }
@@ -42,7 +43,7 @@ export class Blockchain {
   */
   createTransaction(tx, priority = false) {
     if (!(tx instanceof Transaction)) {
-      throw ERRORS.TransactionInstance
+      throw new InstanceError('tx', Transaction)
     }
 
     if (priority) {
@@ -65,7 +66,7 @@ export class Blockchain {
    */
   async getTransaction(hash) {
     if (!hash) {
-      throw ERRORS.RequiredVar('hash')
+      throw new ArgumentError('hash', ERROR_MSGS.REQUIRED)
     }
 
     const fixedhash = cryptoUtils.toHex(hash)
@@ -77,7 +78,7 @@ export class Blockchain {
     )
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     return new Transaction(result)
@@ -106,7 +107,7 @@ export class Blockchain {
    */
   getTransactionsForTxBlock(txBlock) {
     if (isNaN(txBlock)) {
-      throw ERRORS.RequiredVar('txBlock')
+      throw new ArgumentError('txBlock', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -149,7 +150,7 @@ export class Blockchain {
    */
   getDSBlock(blockNum) {
     if (isNaN(blockNum)) {
-      throw ERRORS.RequiredVar('blockNum')
+      throw new ArgumentError('blockNum', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -208,7 +209,7 @@ export class Blockchain {
    */
   getDSBlockListing(max) {
     if (isNaN(max)) {
-      throw ERRORS.RequiredVar('max')
+      throw new ArgumentError('max', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -226,7 +227,7 @@ export class Blockchain {
    */
   getTxBlock(blockNum) {
     if (isNaN(blockNum)) {
-      throw ERRORS.RequiredVar('blockNum')
+      throw new ArgumentError('blockNum', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -286,7 +287,7 @@ export class Blockchain {
    */
   getTxBlockListing(max) {
     if (isNaN(max)) {
-      throw ERRORS.RequiredVar('max')
+      throw new ArgumentError('max', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -396,7 +397,7 @@ export class Blockchain {
    */
   getMinerInfo(dsBlockNumber) {
     if (isNaN(dsBlockNumber)) {
-      throw ERRORS.RequiredVar('max')
+      throw new ArgumentError('dsBlockNumber', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -414,7 +415,7 @@ export class Blockchain {
    */
   getNumTxnsTxEpoch(epoch) {
     if (isNaN(epoch)) {
-      throw ERRORS.RequiredVar('epoch')
+      throw new ArgumentError('epoch', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -432,7 +433,7 @@ export class Blockchain {
    */
   getNumTxnsDSEpoch(epoch) {
     if (isNaN(epoch)) {
-      throw ERRORS.RequiredVar('epoch')
+      throw new ArgumentError('epoch', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -460,7 +461,7 @@ export class Blockchain {
    */
   getPendingTxn(hash) {
     if (!hash) {
-      throw ERRORS.RequiredVar('hash')
+      throw new ArgumentError('hash', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider
@@ -498,7 +499,7 @@ export class Blockchain {
    */
   getBalance(addr) {
     if (!addr) {
-      throw ERRORS.RequiredVar('addr')
+      throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
@@ -515,7 +516,7 @@ export class Blockchain {
    */
   getSmartContractCode(addr) {
     if (!addr) {
-      throw ERRORS.RequiredVar('addr')
+      throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
@@ -532,7 +533,7 @@ export class Blockchain {
    */
   getSmartContractInit(addr) {
     if (!addr) {
-      throw ERRORS.RequiredVar('addr')
+      throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
@@ -549,7 +550,7 @@ export class Blockchain {
    */
   getSmartContractState(addr) {
     if (!addr) {
-      throw ERRORS.RequiredVar('addr')
+      throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
@@ -571,17 +572,13 @@ export class Blockchain {
    */
   getSmartContractSubState(addr, variableName, indices = []) {
     if (!addr) {
-      throw ERRORS.RequiredVar('addr')
+      throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     } else if (!variableName) {
-      throw ERRORS.RequiredVar('variableName')
+      throw new ArgumentError('variableName', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
     const { RPCMethod } = this.provider
-
-    if (!variableName) {
-      throw ERRORS.VariableNameRequired
-    }
 
     return this.provider.send(
       RPCMethod.GetSmartContractSubState,
@@ -599,7 +596,7 @@ export class Blockchain {
    */
   getSmartContracts(addr) {
     if (!addr) {
-      throw ERRORS.RequiredVar('addr')
+      throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
@@ -616,7 +613,7 @@ export class Blockchain {
    */
   getContractAddressFromTransactionID(hash) {
     if (!hash) {
-      throw ERRORS.RequiredVar('hash')
+      throw new ArgumentError('hash', ERROR_MSGS.REQUIRED)
     }
 
     const { RPCMethod } = this.provider

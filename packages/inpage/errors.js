@@ -7,25 +7,18 @@
  * Copyright (c) 2019 ZilPay
  */
 export const ERROR_MSGS = {
+  REQUIRED: 'is required',
   INIT_PARAMS: 'Cannot deploy without code or initialisation parameters.',
   CONNECT: 'User is\'t connections.',
   DISABLE_DMETHOD: 'this method not allowed in ZIlPay',
   DISABLED: 'ZilPay is disabled.',
-  CONTRACT_HASN_TDEPLOYED: 'Contract has not been deployed!',
-  ARGS_OBSERVABLE_TRANSACTION: 'Set arguments as zilPay.wallet.observableTransaction(hash, hash, hash)'
+  CONTRACT_HASN_TDEPLOYED: 'Contract has not been deployed!'
 }
 
 export class InstanceError extends Error {
 
   constructor(varName, object, msg) {
     super(`${varName} should be: ${object} ${msg}`)
-  }
-}
-
-export class RequiredVariableError extends Error {
-
-  constructor(varName, msg) {
-    super(`${varName} is required ${msg}`)
   }
 }
 
@@ -51,6 +44,13 @@ export class FormatError extends TypeError {
 }
 
 export class AccessError extends Error {
+
+  constructor(msg) {
+    super(msg)
+  }
+}
+
+export class RPCError extends Error {
 
   constructor(msg) {
     super(msg)

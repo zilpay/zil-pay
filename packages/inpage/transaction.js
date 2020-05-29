@@ -11,7 +11,7 @@ import { TransactionError } from '@zilliqa-js/core/dist/types'
 import HTTPProvider from './provider'
 import { CryptoUtils, ZilliqaUtils } from './crypto'
 import Wallet from './wallet'
-import ERRORS from './errors'
+import { FormatError, InstanceError, AccessError, ERROR_MSGS } from './errors'
 
 const utils = new ZilliqaUtils()
 
@@ -86,7 +86,7 @@ export class Transaction {
     this.receipt = params.receipt
 
     if (!this.toAddr) {
-      throw ERRORS.IncorectAddress
+      throw new FormatError('toAddr', ERROR_MSGS)
     }
 
     if (utils.validation.isAddress(this.toAddr)) {
@@ -127,7 +127,7 @@ export class Transaction {
             })
           }
         } catch (err) {
-          throw new Error(`${err.message} in param ${index}, type: ${arg.type}, value: ${arg.value}`)
+          throw new FormatError(`${err.message} in param ${index}, type: ${arg.type}, value: ${arg.value}`)
         }
 
         return arg
@@ -142,9 +142,9 @@ export class TransactionFactory {
 
   constructor(provider, wallet) {
     if (!(provider instanceof HTTPProvider)) {
-      throw ERRORS.HTTPProviderInstance
+      throw new InstanceError('provider', HTTPProvider)
     } else if (!(wallet instanceof Wallet)) {
-      throw ERRORS.WalletInstance
+      throw new InstanceError('wallet', Wallet)
     }
     this.provider = provider
     this.wallet = wallet
@@ -155,6 +155,6 @@ export class TransactionFactory {
   }
 
   payment() {
-    throw ERRORS.DisabledMethod
+    throw new AccessError(ERROR_MSGS.DISABLE_DMETHOD)
   }
 }

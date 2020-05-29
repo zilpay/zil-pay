@@ -6,11 +6,16 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { normaliseAddress } from '@zilliqa-js/crypto/dist/util'
 import { TransactionFactory, Transaction } from './transaction'
 import { CryptoUtils } from './crypto'
 
-import ERRORS from './errors'
+import {
+  InstanceError,
+  ArgumentError,
+  ERROR_MSGS,
+  RPCError,
+  ShouldArrayError
+} from './errors'
 
 const NIL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -24,7 +29,7 @@ export class Contract {
 
   constructor(transactions, address, code, init) {
     if (address) {
-      this.address = normaliseAddress(address)
+      this.address = new CryptoUtils().normaliseAddress(address)
     }
 
     this.transactions = transactions
@@ -34,7 +39,7 @@ export class Contract {
 
   async deploy(params, priority = false) {
     if (!this.code || !this.init) {
-      throw ERRORS.InitParams
+      throw new ArgumentError('code, init', ERROR_MSGS.INIT_PARAMS)
     }
 
     const { wallet } = this.transactions
@@ -53,7 +58,7 @@ export class Contract {
 
   async call(_tag, args, params, priority = false) {
     if (!this.address) {
-      throw ERRORS.ContractHasntDeployed
+      throw new ArgumentError('contract', ERROR_MSGS.CONTRACT_HASN_TDEPLOYED)
     }
 
     const { wallet } = this.transactions
@@ -75,7 +80,7 @@ export class Contract {
 
   async getState() {
     if (!this.address) {
-      throw ERRORS.ContractHasntDeployed
+      throw new ArgumentError('contract', ERROR_MSGS.CONTRACT_HASN_TDEPLOYED)
     }
 
     const { RPCMethod } = this.transactions.provider
@@ -85,7 +90,7 @@ export class Contract {
     )
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     return result
@@ -93,11 +98,11 @@ export class Contract {
 
   async getSubState(variableName, indices = []) {
     if (!this.address) {
-      throw ERRORS.ContractHasntDeployed
+      throw new ArgumentError('contract', ERROR_MSGS.CONTRACT_HASN_TDEPLOYED)
     } else if (!variableName) {
-      throw ERRORS.VariableNameRequired
+      throw new ArgumentError('variableName', ERROR_MSGS.REQUIRED)
     } else if (!Array.isArray(indices)) {
-      throw ERRORS.ShouldArray
+      throw new ShouldArrayError('indices')
     }
 
     const { RPCMethod } = this.transactions.provider
@@ -109,7 +114,7 @@ export class Contract {
     )
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     return result
@@ -117,7 +122,7 @@ export class Contract {
 
   async getInit() {
     if (!this.address) {
-      throw ERRORS.ContractHasntDeployed
+      throw new ArgumentError('contract', ERROR_MSGS.CONTRACT_HASN_TDEPLOYED)
     }
 
     const { RPCMethod } = this.transactions.provider
@@ -127,7 +132,7 @@ export class Contract {
     )
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     this.init = result
@@ -137,7 +142,7 @@ export class Contract {
 
   async getCode() {
     if (!this.address) {
-      throw ERRORS.ContractHasntDeployed
+      throw new ArgumentError('contract', ERROR_MSGS.CONTRACT_HASN_TDEPLOYED)
     }
 
     const { RPCMethod } = this.transactions.provider
@@ -147,7 +152,7 @@ export class Contract {
     )
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     this.code = result.code
@@ -160,7 +165,7 @@ export class ContractControl {
 
   constructor(transactions) {
     if (!(transactions instanceof TransactionFactory)) {
-      throw ERRORS.TransactionFactoryInstance
+      throw new InstanceError('transactions', TransactionFactory)
     }
 
     this.transactions = transactions
