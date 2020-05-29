@@ -23,10 +23,6 @@ describe('lib:packages:inpage:Blockchain', () => {
     expect(Blockchain).toBeTruthy()
   })
 
-  // it('Should can send createTransaction method', async () => {
-  //   blockchain.createTransaction
-  // })
-
   it('Should can send getBalance method', async() => {
     const rpcRequest0 = await blockchain.getBalance(TEST_ADDRESS_BECH32)
     const rpcRequest1 = await blockchain.getBalance(TESTE_ADDRESS_BASE16)
