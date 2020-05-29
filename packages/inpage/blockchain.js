@@ -48,15 +48,9 @@ export class Blockchain {
   * broadcasted to the network.
   */
   createTransaction(tx, priority = false) {
-    if (!(tx instanceof Transaction)) {
-      throw new InstanceError('tx', Transaction)
-    }
+    const transaction = new Transaction(tx, priority)
 
-    if (priority) {
-      tx.priority = priority
-    }
-
-    return this.wallet.sign(tx)
+    return this.wallet.sign(transaction)
   }
 
   /**

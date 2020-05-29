@@ -55,6 +55,8 @@ export class Contract {
 
     const result = await wallet.sign(tx)
 
+    this.address = new CryptoUtils().normaliseAddress(result.ContractAddress)
+
     return [new Transaction(result), this]
   }
 
