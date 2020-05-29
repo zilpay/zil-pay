@@ -5,8 +5,7 @@ import {
   isAddress,
   isBech32,
   isBN,
-  isLong,
-  isString
+  isLong
 } from '@zilliqa-js/util/dist/validation'
 import {
   toChecksumAddress,
@@ -22,7 +21,6 @@ export class Validator {
     this.isBech32 = isBech32
     this.isBN = isBN
     this.isLong = isLong
-    this.isString = isString
   }
 
   isBase58() {
@@ -33,8 +31,6 @@ export class Validator {
 export class CryptoUtils {
 
   isValidChecksumAddress = isValidChecksumAddress
-  toChecksumAddress = toChecksumAddress
-  normaliseAddress = normaliseAddress
   fromBech32Address = fromBech32Address
 
   toHex(hexString) {
@@ -47,6 +43,22 @@ export class CryptoUtils {
     }
 
     return toBech32Address(address)
+  }
+
+  normaliseAddress(address) {
+    if (new Validator().isAddress(address)) {
+      address = this.toChecksumAddress(address)
+    }
+
+    return normaliseAddress(address)
+  }
+
+  toChecksumAddress(address) {
+    if (new Validator().isBech32(address)) {
+      address = this.fromBech32Address(address)
+    }
+
+    return toChecksumAddress(address)
   }
 
   decodeBase58() {

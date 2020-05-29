@@ -1,5 +1,5 @@
 import { uuid } from 'uuidv4'
-import { ContractControl, Contract } from '../../../../packages/inpage/contract'
+import { ContractControl, Contract } from 'packages/inpage/contract'
 import Wallet from 'packages/inpage/wallet'
 import Handler from 'packages/inpage/handler'
 import { TransactionFactory } from 'packages/inpage/transaction'
