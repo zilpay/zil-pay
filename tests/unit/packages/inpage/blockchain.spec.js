@@ -3,6 +3,7 @@ import { Blockchain } from '../../../../packages/inpage/blockchain'
 import Wallet from 'packages/inpage/wallet'
 import Handler from 'packages/inpage/handler'
 import { CryptoUtils } from 'packages/inpage/crypto'
+import { ShouldArrayError, ArgumentError, ERROR_MSGS } from 'packages/inpage/errors'
 
 import { HTTPProviderTest } from './test-provider'
 
@@ -35,6 +36,12 @@ describe('lib:packages:inpage:Blockchain', () => {
 
     expect(rpcRequest0).toEqual(shouldBe)
     expect(rpcRequest1).toEqual(shouldBe)
+
+    try {
+      await blockchain.getBalance()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('addr', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getBlockChainInfo method', async() => {
@@ -59,6 +66,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getContractAddressFromTransactionID()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('hash', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getCurrentDSEpoch method', async() => {
@@ -96,6 +109,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getDSBlock()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('blockNum', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getDSBlockListing method', async() => {
@@ -109,6 +128,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getDSBlockListing()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('max', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getDSBlockRate method', async() => {
@@ -158,6 +183,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getMinerInfo()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('dsBlockNumber', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getMinimumGasPrice method', async() => {
@@ -219,6 +250,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getNumTxnsDSEpoch()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('epoch', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getNumTxnsTxEpoch method', async() => {
@@ -232,6 +269,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getNumTxnsTxEpoch()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('epoch', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getPendingTxn method', async() => {
@@ -244,6 +287,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getPendingTxn()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('hash', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getPendingTxns method', async() => {
@@ -316,6 +365,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getSmartContractCode()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('addr', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getSmartContractInit method', async() => {
@@ -328,6 +383,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getSmartContractInit()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('addr', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getSmartContractInit method', async() => {
@@ -340,6 +401,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getSmartContractState()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('addr', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getSmartContractSubState method', async() => {
@@ -362,6 +429,28 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getSmartContractSubState()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('addr', ERROR_MSGS.REQUIRED))
+    }
+
+    try {
+      await blockchain.getSmartContractSubState(TEST_CONTRACT_ADDRESS)
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('variableName', ERROR_MSGS.REQUIRED))
+    }
+
+    try {
+      await blockchain.getSmartContractSubState(
+        TEST_CONTRACT_ADDRESS,
+        variableName,
+        ''
+      )
+    } catch (err) {
+      expect(err).toEqual(new ShouldArrayError('indices'))
+    }
   })
 
   it('Should can send getSmartContracts method', async() => {
@@ -376,6 +465,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getSmartContracts()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('addr', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getTotalCoinSupply method', async() => {
@@ -413,6 +508,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getTransactionsForTxBlock()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('txBlock', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getTxBlock method', async() => {
@@ -426,6 +527,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getTxBlock()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('blockNum', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getTxBlockListing method', async() => {
@@ -439,6 +546,12 @@ describe('lib:packages:inpage:Blockchain', () => {
     }
 
     expect(rpcRequest).toEqual(shouldBe)
+
+    try {
+      await blockchain.getTxBlockListing()
+    } catch (err) {
+      expect(err).toEqual(new ArgumentError('max', ERROR_MSGS.REQUIRED))
+    }
   })
 
   it('Should can send getTxBlockRate method', async() => {

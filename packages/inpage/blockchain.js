@@ -12,7 +12,13 @@ import { Transaction } from './transaction'
 import Wallet from './wallet'
 import { CryptoUtils } from './crypto'
 
-import { RPCError, InstanceError, ArgumentError, ERROR_MSGS } from './errors'
+import {
+  ShouldArrayError,
+  RPCError,
+  InstanceError,
+  ArgumentError,
+  ERROR_MSGS
+} from './errors'
 
 const cryptoUtils = new CryptoUtils()
 
@@ -575,6 +581,8 @@ export class Blockchain {
       throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     } else if (!variableName) {
       throw new ArgumentError('variableName', ERROR_MSGS.REQUIRED)
+    } else if (!Array.isArray(indices)) {
+      throw new ShouldArrayError('indices')
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
