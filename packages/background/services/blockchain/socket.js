@@ -35,6 +35,20 @@ export class SocketControl {
         this._networkControl.wsProvider
       )
 
+      this._subscriber.websocket.onerror = () => {
+        this._pollingInterval()
+
+        this._running = true
+
+        throw new Error('Socket: Connection establishment')
+      }
+
+      this._subscriber.websocket.onopen = async() => {
+        await this._subscriber.start()
+        this._running = true
+        this._networkControl.status = true
+      }
+
       this._subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
         if (isNaN(event.value.TxBlock.header.BlockNum)) {
           return null
@@ -49,11 +63,8 @@ export class SocketControl {
       this._subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
         this._running = false
       })
-
-      await this._subscriber.start()
     } catch (err) {
       this._pollingInterval()
-    } finally {
       this._running = true
     }
   }
@@ -97,19 +108,25 @@ export class SocketControl {
   async _getBlockchainInfo() {
     const provider = new HTTPProvider(this._networkControl.provider)
     const method = RPCMethod.GetLatestTxBlock
-    const { result } = await provider.send(method, [])
-    const newBlockNumber = Number(result.header.BlockNum)
 
-    if (this.blockNumber === newBlockNumber) {
-      return null
+    try {
+      const { result } = await provider.send(method)
+      const newBlockNumber = Number(result.header.BlockNum)
+
+      if (this.blockNumber === newBlockNumber) {
+        return null
+      }
+
+      const lastRecentTransactions = await this._getRecentTransactions()
+
+      this.blockNumber = newBlockNumber
+      this.observer.next({
+        TxBlock: result,
+        TxHashes: [lastRecentTransactions]
+      })
+      this._networkControl.status = true
+    } catch (err) {
+      this._networkControl.status = false
     }
-
-    const lastRecentTransactions = await this._getRecentTransactions()
-
-    this.blockNumber = newBlockNumber
-    this.observer.next({
-      TxBlock: result,
-      TxHashes: [lastRecentTransactions]
-    })
   }
 }
