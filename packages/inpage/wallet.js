@@ -17,6 +17,7 @@ import {
 } from 'lib/stream'
 
 import { getFavicon, toAccountFormat } from './utils'
+import { CryptoUtils } from './crypto'
 import { AccessError, ERROR_MSGS } from './errors'
 
 const { window, Promise, Set } = global
@@ -171,6 +172,7 @@ export default class Wallet {
       map((msg) => msg.TxHashes.filter((txns) => txns.length !== 0)),
       map((txns) => txns.reduce((acc, value) => acc.concat(value))),
       map((txns) => Array.from(new Set(txns))),
+      map((txns) => txns.map((tx) => new CryptoUtils().toHex(tx))),
       map((txns) => txns.filter((hash) => _paddingTransactions.delete(hash))),
       filter((txns) => txns.length !== 0)
     )
@@ -178,7 +180,9 @@ export default class Wallet {
 
   addTransactionsQueue(...txns) {
     for (let index = 0; index < txns.length; index++) {
-      _paddingTransactions.add(txns[index])
+      const tx = new CryptoUtils().toHex(txns[index])
+
+      _paddingTransactions.add(tx)
     }
 
     return Array.from(_paddingTransactions)

@@ -86,17 +86,30 @@ export class SocketControl {
     )
   }
 
+  async _getRecentTransactions() {
+    const provider = new HTTPProvider(this._networkControl.provider)
+    const method = RPCMethod.GetRecentTransactions
+    const { result } = await provider.send(method, [])
+
+    return result.TxnHashes
+  }
+
   async _getBlockchainInfo() {
     const provider = new HTTPProvider(this._networkControl.provider)
-    const method = RPCMethod.GetBlockchainInfo
+    const method = RPCMethod.GetLatestTxBlock
     const { result } = await provider.send(method, [])
-    const newBlockNumber = Number(result.CurrentMiniEpoch)
+    const newBlockNumber = Number(result.header.BlockNum)
 
     if (this.blockNumber === newBlockNumber) {
       return null
     }
 
+    const lastRecentTransactions = await this._getRecentTransactions()
+
     this.blockNumber = newBlockNumber
-    this.observer.next(result)
+    this.observer.next({
+      TxBlock: result,
+      TxHashes: [lastRecentTransactions]
+    })
   }
 }
