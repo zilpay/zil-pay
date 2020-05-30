@@ -2,7 +2,7 @@ import { Subject } from 'rxjs'
 import { RPCMethod } from '@zilliqa-js/core/dist/net'
 import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
 import { SubscriptionBuilder } from '@zilliqa-js/subscriptions/dist/builder'
-import { MessageType } from '@zilliqa-js/subscriptions/dist/types'
+import { MessageType, SocketConnect } from '@zilliqa-js/subscriptions/dist/types'
 
 import { NetworkControl } from 'packages/background/services/network'
 
@@ -15,7 +15,6 @@ export class SocketControl {
       throw new Error('networkControl must be instance of NetworkControl')
     }
 
-    this._subscriptionBuilder = new SubscriptionBuilder()
     this._networkControl = networkControl
     this._running = false
 
@@ -31,17 +30,14 @@ export class SocketControl {
     try {
       await this._networkControl.netwrokSync()
 
-      this._subscriber = this._subscriptionBuilder.buildNewBlockSubscriptions(
+      this._subscriber = new SubscriptionBuilder().buildNewBlockSubscriptions(
         this._networkControl.wsProvider
       )
 
-      this._subscriber.websocket.onerror = () => {
-        this._pollingInterval()
-
-        this._running = true
-
-        throw new Error('Socket: Connection establishment')
-      }
+      this._subscriber.addEventListener(SocketConnect.ERROR, () => {
+        this._subscriber.websocket.onclose = () => null
+        this._subscriber.removeEventListener(SocketConnect.ERROR)
+      })
 
       this._subscriber.websocket.onopen = async() => {
         await this._subscriber.start()
@@ -75,8 +71,11 @@ export class SocketControl {
     }
 
     try {
+      this._subscriber.unsubscribe()
       await this._subscriber.stop()
       this._subscriber.removeAllSocketListeners()
+      this._subscriber.removeEventListener()
+      this._subscriber.websocket.close()
     } catch (err) {
       //
     }
@@ -127,6 +126,7 @@ export class SocketControl {
       this._networkControl.status = true
     } catch (err) {
       this._networkControl.status = false
+      this.stop()
     }
   }
 }
