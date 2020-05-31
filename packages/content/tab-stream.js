@@ -15,6 +15,7 @@ import {
 } from 'lib/stream'
 
 import HTTPProvider from './provider'
+import { AccessError, ERROR_MSGS } from './errors'
 
 const { window } = global
 let stream = null
@@ -89,10 +90,17 @@ export class ContentTabStream {
     const recipient = MTypeTabContent.INJECTED
 
     try {
-      const { provider } = await Message.signal(
+      const userData = await Message.signal(
         MTypeTab.GET_WALLET_DATA
       ).send()
-      const httpProvider = new HTTPProvider(provider)
+
+      if (!userData.isEnable) {
+        throw new AccessError(ERROR_MSGS.DISABLED)
+      } else if (!userData.isConnect) {
+        throw new AccessError(ERROR_MSGS.CONNECT)
+      }
+
+      const httpProvider = new HTTPProvider(userData.provider)
 
       result = await httpProvider.send(method, params)
     } catch (err) {

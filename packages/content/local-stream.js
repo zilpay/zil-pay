@@ -9,11 +9,13 @@
 import { TypeChecker } from 'lib/type'
 import { LocalStream, SecureMessage } from 'lib/stream'
 
+import { ERROR_MSGS } from './errors'
+
 export class ContentBackgroundStream {
 
   _watchTabMessaging(cb) {
     if (!new TypeChecker(cb).isFunction) {
-      throw new Error('cb must be callback function!')
+      throw new TypeError(`cb ${ERROR_MSGS.MUST_BE_CALLBACK}`)
     }
 
     LocalStream.watch((request, response) => {

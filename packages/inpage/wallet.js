@@ -203,8 +203,6 @@ export default class Wallet {
     const uuid = uuidv4()
     const { payload } = tx
 
-    payload.nonce = undefined
-
     // Transaction id.
     payload.uuid = uuid
     // Current tab title.

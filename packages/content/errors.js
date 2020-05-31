@@ -7,21 +7,15 @@
  * Copyright (c) 2019 ZilPay
  */
 import {
-  REQUIRED,
-  INIT_PARAMS,
   CONNECT,
-  DISABLE_DMETHOD,
   DISABLED,
-  CONTRACT_HASN_TDEPLOYED
+  MUST_BE_CALLBACK
 } from 'lib/errors/annotations'
 
 export const ERROR_MSGS = {
-  REQUIRED,
-  INIT_PARAMS,
   CONNECT,
-  DISABLE_DMETHOD,
   DISABLED,
-  CONTRACT_HASN_TDEPLOYED
+  MUST_BE_CALLBACK
 }
 
 export * from 'lib/errors'
