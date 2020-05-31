@@ -18,6 +18,7 @@ import {
 } from 'packages/background/services'
 import { accountControl, networkControl } from './main'
 import { Transaction } from './transaction'
+import { ERROR_MSGS } from 'packages/background/errors'
 
 /**
  * wallet controler for import and export.
@@ -33,8 +34,13 @@ export class Wallet {
 
     try {
       const zilliqa = new ZilliqaControl(networkControl.provider)
+      const payload = await zilliqa.rmForSingTransaction()
       const account = await accountControl.getCurrentAccount()
-      const signature = await zilliqa.signMessage(this.payload.message, account)
+      const signature = await zilliqa.signMessage(payload.message, account)
+
+      Transaction.returnTx({
+        resolve: String(signature)
+      }, payload.uuid)
 
       return sendResponse({ resolve: signature })
     } catch (err) {
@@ -264,9 +270,23 @@ export class Wallet {
   }
 
   async signMessage() {
-    await networkControl.netwrokSync()
+    const isConnect = await accountControl.isConnection(this.payload.domain)
+
+    if (!isConnect) {
+      return Transaction.returnTx(
+        { reject: ERROR_MSGS.CONNECT },
+        this.payload.uuid
+      )
+    } else if (!accountControl.auth.isEnable || !accountControl.auth.isReady) {
+      return Transaction.returnTx(
+        { reject: ERROR_MSGS.DISABLED },
+        this.payload.uuid
+      )
+    }
 
     try {
+      await networkControl.netwrokSync()
+
       const zilliqa = new ZilliqaControl(networkControl.provider)
 
       await zilliqa.addForSignMessage(this.payload)

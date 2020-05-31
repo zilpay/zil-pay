@@ -148,10 +148,12 @@ export class Background {
       break
 
     case MTypeTab.CALL_TO_SIGN_TX:
+      message.payload.domain = message.domain
       new Transaction(message.payload).callTransaction()
       break
 
     case MTypeTab.SIGN_MESSAGE:
+      message.payload.domain = message.domain
       new Wallet(message.payload).signMessage()
       break
 

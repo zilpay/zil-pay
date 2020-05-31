@@ -3,29 +3,47 @@
     <Alert>
       <Container
         v-if="getCurrentAccount"
-        :class="b('account')"
+        :class="b('header')"
       >
         <Title :size="SIZE_VARIANS.md">
-          Signature Request
+          {{ local.SIGN_REQ }}
         </Title>
-        <P>
-          {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
+        <P nowrap>
+          {{ getCurrentAccount.address | toAddress(addressFormat, true) }}
         </P>
       </Container>
     </Alert>
     <Container :class="b('wrapper')">
       <Icon
-        :src="connect.icon"
+        v-if="getCurrent.icon"
+        :src="getCurrent.icon"
         :type="ICON_TYPE.auto"
+        :class="b('icon')"
         width="40"
         height="40"
       />
       <Title :size="SIZE_VARIANS.md">
-        {{ connect.domain }}
+        {{ getCurrent.title }}
       </Title>
       <P>
-        Your signature is being requested
+        {{ local.SIGN_DESC }}
       </P>
+    </Container>
+    <P
+      :class="b('error-msg')"
+      :variant="COLOR_VARIANTS.danger"
+      :font="FONT_VARIANTS.regular"
+      :size="SIZE_VARIANS.sm"
+      centred
+    >
+      {{ error }}
+    </P>
+    <Container>
+      <Textarea
+        :class="b('msg')"
+        :value="getCurrent.message"
+        readonly
+      />
     </Container>
     <BottomBar
       :elements="bottomBar"
@@ -44,22 +62,29 @@ import {
   FONT_VARIANTS
 } from '@/config'
 
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import transactionsStore from '@/store/transactions'
+
+import Popup from '@/pages/Popup'
 
 import Icon from '@/components/Icon'
 import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
+import Textarea from '@/components/Textarea'
 import BottomBar from '@/components/BottomBar'
 import Container from '@/components/Container'
 
+import { Background } from '@/services'
 import { toAddress } from '@/filters'
 
+const { window } = global
+
 const EVENTS = {
-  connect: uuid(),
+  sign: uuid(),
   cancel: uuid()
 }
 export default {
@@ -70,7 +95,8 @@ export default {
     P,
     BottomBar,
     Container,
-    Icon
+    Icon,
+    Textarea
   },
   filters: { toAddress },
   data() {
@@ -78,12 +104,17 @@ export default {
       SIZE_VARIANS,
       COLOR_VARIANTS,
       FONT_VARIANTS,
-      ICON_TYPE
+      ICON_TYPE,
+
+      error: null
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapState(transactionsStore.STORE_NAME, [
+      transactionsStore.STATE_NAMES.confirmationTx
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat,
@@ -91,6 +122,9 @@ export default {
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
+    ]),
+    ...mapGetters(transactionsStore.STORE_NAME, [
+      transactionsStore.GETTERS_NAMES.getCurrent
     ]),
 
     bottomBar() {
@@ -102,8 +136,8 @@ export default {
           variant: COLOR_VARIANTS.primary
         },
         {
-          value: this.local.CONNECT,
-          event: EVENTS.connect,
+          value: this.local.SIGN,
+          event: EVENTS.sign,
           variant: COLOR_VARIANTS.primary,
           size: SIZE_VARIANS.sm
         }
@@ -111,17 +145,64 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setPopConfirmTx
+    ]),
+    ...mapActions(transactionsStore.STORE_NAME, [
+      transactionsStore.ACTIONS_NAMES.setRejectedLastTx
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+
+    async onReject() {
+      this.setLoad()
+
+      if (this.getCurrent && this.getCurrent.uuid) {
+        await this.setRejectedLastTx()
+      }
+
+      await this.popupClouse()
+      this.setLoad()
+    },
+    async onConfirm() {
+      const bg = new Background()
+
+      try {
+        this.setLoad()
+
+        await bg.sendForConfirmMessage(this.getCurrent)
+
+        this.popupClouse()
+      } catch (err) {
+        this.error = err.message
+      } finally {
+        this.setLoad()
+      }
+    },
+    async popupClouse() {
+      await this.setPopConfirmTx()
+
+      if (!this.confirmationTx || this.confirmationTx.length === 0) {
+        window.close()
+      }
+    },
     onEvent(event) {
       switch (event) {
-      case EVENTS.connect:
-        console.log('connect')
+      case EVENTS.sign:
+        this.onConfirm()
         break
       case EVENTS.cancel:
-        console.log('cancel')
+        this.onReject()
         break
       default:
         break
       }
+    }
+  },
+  updated() {
+    if (this.getCurrent && !this.getCurrent.message) {
+      this.$router.push({ name: Popup.name })
     }
   }
 }
@@ -129,5 +210,35 @@ export default {
 
 <style lang="scss">
 .SignMessage {
+  min-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__header {
+    margin: 10px;
+  }
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 10%;
+    margin-bottom: 10%;
+  }
+
+  &__msg {
+    min-width: 360px;
+  }
+
+  &__icon {
+    margin-top: 10%;
+    margin-bottom: 10%;
+  }
+
+  &__error-msg {
+    margin-bottom: 5%;
+  }
 }
 </style>

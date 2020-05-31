@@ -19,7 +19,8 @@ import { TypeChecker } from 'lib/type'
 
 import { getFavicon, toAccountFormat } from './utils'
 import { CryptoUtils } from './crypto'
-import { AccessError, ERROR_MSGS } from './errors'
+import { InstanceError, AccessError, ERROR_MSGS } from './errors'
+import { Transaction } from './transaction'
 
 const { window, Promise, Set } = global
 
@@ -42,15 +43,21 @@ function _answer(payload, uuid) {
     map(res => {
       if (res.reject) {
         throw res.reject
-      } else if (res.resolve) {
+      } else if (res.resolve && new TypeChecker(res.resolve).isObject) {
         return Object.assign(payload, res.resolve)
       }
+
+      return res.resolve
     }),
     take(1)
   ).toPromise()
 }
 
 function _transaction(tx) {
+  if (!(tx instanceof Transaction)) {
+    return Promise.reject(new InstanceError('tx', Transaction))
+  }
+
   const type = MTypeTab.CALL_TO_SIGN_TX
   const recipient = MTypeTabContent.CONTENT
   const uuid = uuidv4()

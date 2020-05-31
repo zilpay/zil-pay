@@ -136,6 +136,23 @@ export class Background {
   }
 
   /**
+  * Send to background for sign some message.
+  * @param {Object} payload message params.
+  */
+  async sendForConfirmMessage(payload) {
+    const type = MTypePopup.CONFIRM_SIGN_MSG
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  /**
    * Decrypt vault and responce first seed phase.
    * @param {String} password Unlock password.
    */

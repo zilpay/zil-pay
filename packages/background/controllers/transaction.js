@@ -165,7 +165,7 @@ export class Transaction {
         { reject: ERROR_MSGS.CONNECT },
         this.payload.uuid
       )
-    } else if (!accountControl.isEnable || !accountControl.isReady) {
+    } else if (!accountControl.auth.isEnable || !accountControl.auth.isReady) {
       return Transaction.returnTx(
         { reject: ERROR_MSGS.DISABLED },
         this.payload.uuid

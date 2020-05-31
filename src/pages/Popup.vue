@@ -139,6 +139,7 @@ import SwitchBox from '@/components/SwitchBox'
 
 import TxDataPage from '@/pages/popup/TxData'
 import HomePage from '@/pages/Home'
+import SignMessage from '@/pages/SignMessage'
 
 import viewblockMixin from '@/mixins/viewblock'
 import CalcMixin from '@/mixins/calc'
@@ -349,6 +350,11 @@ export default {
     this
       .updateCurrentAccount()
       .then(() => this.setLoad())
+  },
+  updated() {
+    if (this.getCurrent.message) {
+      this.$router.push({ name: SignMessage.name })
+    }
   }
 }
 </script>
