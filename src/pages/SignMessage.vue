@@ -59,7 +59,8 @@ import {
   SIZE_VARIANS,
   COLOR_VARIANTS,
   ICON_TYPE,
-  FONT_VARIANTS
+  FONT_VARIANTS,
+  HW_VARIANTS
 } from '@/config'
 
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
@@ -78,7 +79,7 @@ import Textarea from '@/components/Textarea'
 import BottomBar from '@/components/BottomBar'
 import Container from '@/components/Container'
 
-import { Background } from '@/services'
+import { Background, ledgerSignMessage } from '@/services'
 import { toAddress } from '@/filters'
 
 const { window } = global
@@ -166,12 +167,23 @@ export default {
       this.setLoad()
     },
     async onConfirm() {
+      let signature = null
       const bg = new Background()
 
       try {
         this.setLoad()
 
-        await bg.sendForConfirmMessage(this.getCurrent)
+        const account = this.getCurrentAccount
+        const { message } = this.getCurrent
+
+        if (account.hwType && account.hwType === HW_VARIANTS.ledger) {
+          signature = await ledgerSignMessage(account.index, message)
+        }
+
+        await bg.sendForConfirmMessage({
+          ...this.getCurrent,
+          signature
+        })
 
         this.popupClouse()
       } catch (err) {

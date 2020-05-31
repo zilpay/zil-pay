@@ -32,6 +32,14 @@ export class Wallet {
   async confirmSignMsg(sendResponse) {
     await networkControl.netwrokSync()
 
+    if (this.payload.signature) {
+      Transaction.returnTx({
+        resolve: String(this.payload.signature)
+      }, this.payload.uuid)
+
+      return sendResponse({ resolve: this.payload.signature })
+    }
+
     try {
       const zilliqa = new ZilliqaControl(networkControl.provider)
       const payload = await zilliqa.rmForSingTransaction()

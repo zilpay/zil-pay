@@ -28,3 +28,7 @@ export async function ledgerSendTransaction(index, payload) {
     ...txParams
   }
 }
+
+export function ledgerSignMessage(index, message) {
+  return ledgerControll.signMessage(index, message)
+}
