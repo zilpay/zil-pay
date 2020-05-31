@@ -8,4 +8,3 @@
  */
 export * from './auth'
 export * from './mnemonic'
-export * from './errors'

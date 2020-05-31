@@ -9,7 +9,7 @@
 import { FIELDS } from 'config'
 import { AccountControl } from './create'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
-import errorsCode from './errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
 
 export class AccountExporter extends AccountControl {
 
@@ -18,11 +18,11 @@ export class AccountExporter extends AccountControl {
   }
 
   initWallet() {
-    throw new Error(errorsCode.DisableMethod)
+    throw new AccessError(ERROR_MSGS.DISABLE_DMETHOD)
   }
 
   newAccountBySeed() {
-    throw new Error(errorsCode.DisableMethod)
+    throw new AccessError(ERROR_MSGS.DISABLE_DMETHOD)
   }
 
   /**
@@ -33,14 +33,8 @@ export class AccountExporter extends AccountControl {
     await this.auth.vaultSync()
 
     // Mandatory authentication test.
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new AccessError(ERROR_MSGS.DISABLED)
     }
     // Get the decrypt seed phase.
     const { decryptSeed } = this.auth.getWallet()
@@ -53,7 +47,7 @@ export class AccountExporter extends AccountControl {
 
     // Chek account type.
     if (selectedAccount.isImport || selectedAccount.hwType) {
-      throw new Error(errorsCode.AccountIsImported)
+      throw new TypeError(`account ${ERROR_MSGS.TYPE_ERR}`)
     }
 
     const index = selectedAccount.index
@@ -75,14 +69,8 @@ export class AccountExporter extends AccountControl {
     await this.auth.vaultSync()
 
     // Mandatory authentication test.
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new AccessError(ERROR_MSGS.DISABLED)
     }
 
     const { decryptImported } = await this.auth.getWallet()
@@ -98,7 +86,7 @@ export class AccountExporter extends AccountControl {
     )
 
     if (!account) {
-      throw new Error(errorsCode.WrongIndex)
+      throw new ArgumentError('index')
     }
 
     return account

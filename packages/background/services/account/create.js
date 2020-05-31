@@ -14,9 +14,7 @@ import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto/dist/util'
 import { Auth } from 'packages/background/services/auth'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
 import { NetworkControl } from 'packages/background/services/network'
-import errorsCodeGuard from 'packages/background/services/auth/errors'
-
-import errorsCode from './errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
 
 const { MAX_LENGTH_NAME, ZERO } = DEFAULT
 
@@ -46,9 +44,9 @@ export class AccountControl {
     this.zilliqa = new ZilliqaControl(this.network.provider)
 
     if (!this.zilliqa.wallet.isValidMnemonic(decryptSeed)) {
-      throw new Error(errorsCodeGuard.MnemonicWrong)
+      throw new ArgumentError('decryptSeed')
     } else if (!this.auth._guard) {
-      throw new Error(errorsCodeGuard.GuardWrong)
+      throw new ArgumentError('guard')
     }
 
     const selectedAddress = ZERO
@@ -84,14 +82,8 @@ export class AccountControl {
     const { decryptSeed } = this.auth.getWallet()
 
     // Mandatory authentication test.
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new AccessError(ERROR_MSGS.DISABLED)
     }
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
@@ -136,7 +128,7 @@ export class AccountControl {
    */
   async changeAccountName(name) {
     if (!new TypeChecker(name).isString || name.length > MAX_LENGTH_NAME) {
-      throw new Error(errorsCode.WrongName)
+      throw new ArgumentError(`name ${ERROR_MSGS.MUST_BE_STRING}`)
     }
 
     let wallet = await this._storage.get(FIELDS.WALLET)
@@ -182,14 +174,9 @@ export class AccountControl {
   async getCurrentAccount() {
     await this.auth.vaultSync()
 
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
+    // Mandatory authentication test.
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new AccessError(ERROR_MSGS.DISABLED)
     }
 
     let account = {

@@ -6,12 +6,10 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import fetch from 'cross-fetch'
 import { FIELDS, ZILLIQA } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
-
-import fetch from 'cross-fetch'
-
-import errorsCode from './errors'
+import { ArgumentError } from 'packages/errors'
 
 const defaultSelected = Object.keys(ZILLIQA)[0]
 
@@ -59,9 +57,7 @@ export class NetworkControl {
    */
   async changeNetwork(selected = defaultSelected) {
     if (!(selected in this.config)) {
-      throw new Error(
-        `${errorsCode.changeNetwork}`
-      )
+      throw new ArgumentError('selected')
     } else if (selected === this.selected) {
       return {
         selected,
@@ -90,10 +86,8 @@ export class NetworkControl {
    * @param {Object} config - Zilliqa config object.
    */
   async changeConfig(config) {
-    if (new TypeError(config).isUndefined) {
-      throw new Error(
-        `${errorsCode.changeNetwork} config type is ${typeof ZILLIQA}`
-      )
+    if (!config) {
+      throw new ArgumentError('config')
     }
 
     await this._storage.set(

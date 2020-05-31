@@ -11,7 +11,7 @@ import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 
 import { CryptoGuard } from 'packages/background/services/crypto/guard'
-import errorsCode from './errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
 
 /**
  * Added new method for Date instance.
@@ -99,9 +99,9 @@ export class Auth {
    */
   getWallet() {
     if (!this._guard || !this.isReady) {
-      throw new Error(errorsCode.GuardWrong)
+      throw new AccessError(`guard or isReady ${ERROR_MSGS.UNAUTHORIZED}`)
     } else if (!this.encryptSeed) {
-      throw new Error(errorsCode.SyncWrong)
+      throw new ArgumentError('encryptSeed')
     }
 
     const decryptSeed = this._guard.decrypt(this.encryptSeed)
@@ -144,7 +144,7 @@ export class Auth {
    */
   async updateImported(decryptImported) {
     if (!new TypeChecker(decryptImported).isObject) {
-      throw new Error(errorsCode.WrongImported)
+      throw new ArgumentError('decryptImported', ERROR_MSGS.MUST_BE_OBJECT)
     }
 
     const encryptImported = this._guard.encryptJson(decryptImported)
@@ -161,9 +161,9 @@ export class Auth {
    */
   static encryptWallet(decryptSeed, decryptImported, password) {
     if (!new TypeChecker(decryptSeed).isString) {
-      throw new Error(errorsCode.WrongSeed)
+      throw new ArgumentError('decryptSeed', ERROR_MSGS.MUST_BE_STRING)
     } else if (!new TypeChecker(decryptImported).isObject) {
-      throw new Error(errorsCode.WrongImported)
+      throw new ArgumentError('decryptImported', ERROR_MSGS.MUST_BE_OBJECT)
     }
 
     const guard = new CryptoGuard(password)

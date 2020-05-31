@@ -29,9 +29,9 @@ import {
   bytes,
   validation
 } from '@zilliqa-js/util/dist/index'
+import { RPCError, ArgumentError, ERROR_MSGS } from 'packages/errors'
 
 import { NotificationsControl } from 'packages/background/services/browser'
-import errorsCode from './errors'
 
 export class ZilliqaControl {
 
@@ -69,7 +69,7 @@ export class ZilliqaControl {
     const { result, error } = await this.provider.send(method, hash)
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     return result
@@ -95,7 +95,7 @@ export class ZilliqaControl {
     )
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     return result
@@ -201,7 +201,7 @@ export class ZilliqaControl {
     const { result, error } = await this.provider.send(method)
 
     if (error) {
-      throw new Error(error)
+      throw new RPCError(error)
     }
 
     return bytes.pack(result, msgVerison)
@@ -213,8 +213,10 @@ export class ZilliqaControl {
    * @param {Number} index - ID in mnemonic seed phrase.
    */
   async getAccountBySeed(seed, index) {
-    if (!new TypeChecker(seed).isString || isNaN(index)) {
-      throw new Error(errorsCode.WrongParams)
+    if (!new TypeChecker(seed).isString) {
+      throw new ArgumentError('seed', ERROR_MSGS.MUST_BE_STRING)
+    } else if (isNaN(index)) {
+      throw new ArgumentError('index', ERROR_MSGS.MUST_BE_INT)
     }
 
     const wallet = new Wallet(this.provider)
@@ -244,7 +246,7 @@ export class ZilliqaControl {
    */
   async getAccountByPrivateKey(importPrivateKey, index = 0) {
     if (!verifyPrivateKey(importPrivateKey)) {
-      throw new Error(errorsCode.WrongPrivateKey)
+      throw new ArgumentError('importPrivateKey')
     }
 
     const account = {
@@ -277,9 +279,7 @@ export class ZilliqaControl {
       const param = neededParams[index]
 
       if (!(param in payload)) {
-        throw new Error(
-          errorsCode.WrongRequiredparam + param
-        )
+        throw new ArgumentError(param, ERROR_MSGS.REQUIRED)
       }
     }
 
@@ -343,9 +343,7 @@ export class ZilliqaControl {
     }
 
     if (!net) {
-      throw new Error(
-        errorsCode.WrongRequiredparam + 'net'
-      )
+      throw new ArgumentError('net', ERROR_MSGS.REQUIRED)
     }
 
     try {

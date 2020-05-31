@@ -6,6 +6,5 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-export * from './errors'
 export * from './zilliqa'
 export * from './socket'

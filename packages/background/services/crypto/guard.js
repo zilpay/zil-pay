@@ -10,16 +10,16 @@ import { DEFAULT } from 'config'
 import { TypeChecker } from 'lib/type'
 import { AES } from 'lib/crypto'
 
-import errorsCode from './errors'
+import { ArgumentError, ERROR_MSGS } from 'packages/errors'
 
 export class CryptoGuard {
 
   constructor(password) {
     // Check on the correctness password.
     if (!new TypeChecker(password).isString) {
-      throw new Error(errorsCode.WrongParam)
+      throw new ArgumentError('password', ERROR_MSGS.MUST_BE_STRING)
     } else if (!password || password.length < DEFAULT.MIN_LENGTH_PASSWORD) {
-      throw new Error(errorsCode.WrongPassword + DEFAULT.MIN_LENGTH_PASSWORD)
+      throw new ArgumentError('password', `min is ${DEFAULT.MIN_LENGTH_PASSWORD}`)
     }
     // Init Crypto utils.
     this._crypto = new AES()
@@ -34,7 +34,7 @@ export class CryptoGuard {
    */
   encrypt(data) {
     if (!new TypeChecker(data).isString) {
-      throw new Error(errorsCode.WrongParam)
+      throw new ArgumentError('data', ERROR_MSGS.MUST_BE_STRING)
     }
 
     return this._crypto.encrypt(data, this.pwdHash)
@@ -47,7 +47,7 @@ export class CryptoGuard {
    */
   encryptJson(object) {
     if (!new TypeChecker(object).isObject) {
-      throw new Error(errorsCode.WrongParam)
+      throw new ArgumentError('object', ERROR_MSGS.MUST_BE_OBJECT)
     }
 
     return this._crypto.encrypt(
@@ -62,7 +62,7 @@ export class CryptoGuard {
    */
   decrypt(data) {
     if (!new TypeChecker(data).isString) {
-      throw new Error(errorsCode.WrongParam)
+      throw new ArgumentError('data', ERROR_MSGS.MUST_BE_STRING)
     }
 
     return this._crypto.decrypt(data, this.pwdHash)
@@ -75,7 +75,7 @@ export class CryptoGuard {
    */
   decryptJson(encryptJson) {
     if (!new TypeChecker(encryptJson).isString) {
-      throw new Error(errorsCode.WrongParam)
+      throw new ArgumentError('encryptJson', ERROR_MSGS.MUST_BE_STRING)
     }
 
     return JSON.parse(

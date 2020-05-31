@@ -7,6 +7,5 @@
  * Copyright (c) 2019 ZilPay
  */
 export * from './create'
-export * from './errors'
 export * from './export'
 export * from './import'

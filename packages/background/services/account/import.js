@@ -11,7 +11,7 @@ import { BuildObject } from 'lib/storage'
 
 import { AccountControl } from './create'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
-import errorsCode from './errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
 
 export class AccountImporter extends AccountControl {
 
@@ -21,25 +21,19 @@ export class AccountImporter extends AccountControl {
   }
 
   initWallet() {
-    throw new Error(errorsCode.DisableMethod)
+    throw new AccessError(ERROR_MSGS.DISABLE_DMETHOD)
   }
 
   newAccountBySeed() {
-    throw new Error(errorsCode.DisableMethod)
+    throw new AccessError(ERROR_MSGS.DISABLE_DMETHOD)
   }
 
   async importAccountByPrivateKey(privateKey) {
     await this.auth.vaultSync()
 
     // Mandatory authentication test.
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new AccessError(ERROR_MSGS.DISABLED)
     }
 
     let { decryptImported } = await this.auth.getWallet()
@@ -84,7 +78,7 @@ export class AccountImporter extends AccountControl {
       const acc = wallet.identities[index]
 
       if (acc.address === account.address) {
-        throw new Error(errorsCode.ImportUniqueWrong)
+        throw new ArgumentError('account', ERROR_MSGS.UNIQUE)
       }
     }
 
@@ -109,14 +103,8 @@ export class AccountImporter extends AccountControl {
     await this.auth.vaultSync()
 
     // Mandatory authentication test.
-    if (!this.auth.isReady) {
-      throw new Error(
-        errorsCode.WalletIsNotReady + this.auth.isReady
-      )
-    } else if (!this.auth.isEnable) {
-      throw new Error(
-        errorsCode.WalletIsNotEnable + this.auth.isEnable
-      )
+    if (!this.auth.isReady || !this.auth.isEnable) {
+      throw new AccessError(ERROR_MSGS.DISABLED)
     }
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
@@ -131,7 +119,7 @@ export class AccountImporter extends AccountControl {
     )
 
     if (hasAccount) {
-      throw new Error(errorsCode.ImportUniqueWrong)
+      throw new ArgumentError('account', ERROR_MSGS.UNIQUE)
     }
 
     if (!name || name.length > DEFAULT.MAX_LENGTH_NAME) {
