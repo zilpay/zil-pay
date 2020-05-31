@@ -18,6 +18,7 @@ import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl, socketControl } from './main'
 import { TabsMessage, MTypeTab } from 'lib/stream'
 import { BrowserStorage, BuildObject } from 'lib/storage'
+import { ERROR_MSGS } from 'packages/background/errors'
 
 const { Promise } = global
 
@@ -52,7 +53,7 @@ export class Transaction {
       .rmForSingTransaction()
 
     Transaction.returnTx(
-      { reject: 'User rejected' },
+      { reject: ERROR_MSGS.USER_REJECTED },
       removed.uuid
     )
 
@@ -156,22 +157,30 @@ export class Transaction {
    * When DApp call the any tx.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
-  async callTransaction(sendResponse) {
+  async callTransaction() {
+    const isConnect = await accountControl.isConnection(this.payload.domain)
+
+    if (!isConnect) {
+      return Transaction.returnTx(
+        { reject: ERROR_MSGS.CONNECT },
+        this.payload.uuid
+      )
+    } else if (!accountControl.isEnable || !accountControl.isReady) {
+      return Transaction.returnTx(
+        { reject: ERROR_MSGS.DISABLED },
+        this.payload.uuid
+      )
+    }
+
     const zilliqaControl = new ZilliqaControl(
       networkControl.provider
     )
 
-    try {
-      await zilliqaControl.addForSingTransaction(
-        this.payload
-      )
+    await zilliqaControl.addForSingTransaction(
+      this.payload
+    )
 
-      new PromptService().open()
-
-      sendResponse({ resolve: true })
-    } catch (err) {
-      sendResponse({ reject: err.message })
-    }
+    new PromptService().open()
   }
 
   async signSendTx(sendResponse) {

@@ -6,7 +6,16 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-export const messageErrors = {
-  MESSAGE_TYPE_ERR: 'msg argument is incorrect type',
-  REQUIRED_MSG: 'msg is required param'
+import {
+  CONNECT,
+  DISABLED,
+  USER_REJECTED
+} from 'lib/errors/annotations'
+
+export const ERROR_MSGS = {
+  CONNECT,
+  DISABLED,
+  USER_REJECTED
 }
+
+export * from 'lib/errors'

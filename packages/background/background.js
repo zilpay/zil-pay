@@ -144,8 +144,7 @@ export class Background {
       break
 
     case MTypeTab.CALL_TO_SIGN_TX:
-      message.payload.domain = message.domain
-      new Transaction(message.payload).callTransaction(sendResponse)
+      new Transaction(message.payload).callTransaction()
       break
 
     default:
