@@ -6,14 +6,15 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { TypeChecker } from 'lib/type'
 import HTTPProvider from './provider'
 import Wallet from './wallet'
 import { ContractControl } from './contract'
 import { TransactionFactory } from './transaction'
 import { Blockchain } from './blockchain'
 import { ZilliqaUtils, CryptoUtils } from './crypto'
+import { ERROR_MSGS } from './errors'
 
-import './crypto'
 /**
  * ZipPay Object which will be create in some tab.
  * @param {Object} subjectStream Listener instance.
@@ -37,5 +38,8 @@ export class ZilPay {
 
     this.utils = new ZilliqaUtils()
     this.crypto = new CryptoUtils()
+
+    this.TypeChecker = TypeChecker
+    this.ERRORS = ERROR_MSGS
   }
 }

@@ -15,6 +15,7 @@ import {
   MTypeTabContent,
   MTypeTab
 } from 'lib/stream'
+import { TypeChecker } from 'lib/type'
 
 import { getFavicon, toAccountFormat } from './utils'
 import { CryptoUtils } from './crypto'
@@ -32,6 +33,56 @@ let _isEnable = false
 let _net = null
 // Private variables. //
 
+function _answer(payload, uuid) {
+  return from(_subject).pipe(
+    // Waiting an answer by uuid.
+    filter(res => res.type === MTypeTab.TX_RESULT),
+    map(res => res.payload),
+    filter(res => res.uuid && res.uuid === uuid),
+    map(res => {
+      if (res.reject) {
+        throw res.reject
+      } else if (res.resolve) {
+        return Object.assign(payload, res.resolve)
+      }
+    }),
+    take(1)
+  ).toPromise()
+}
+
+function _transaction(tx) {
+  const type = MTypeTab.CALL_TO_SIGN_TX
+  const recipient = MTypeTabContent.CONTENT
+  const uuid = uuidv4()
+  const { payload } = tx
+
+  // Transaction id.
+  payload.uuid = uuid
+  // Current tab title.
+  payload.title = window.document.title
+  // Url on favicon by current tab.
+  payload.icon = getFavicon()
+
+  // Send transaction to content.js > background.js.
+  new SecureMessage({ type, payload }).send(_stream, recipient)
+
+  return _answer(payload, uuid)
+}
+
+function _message(message) {
+  const recipient = MTypeTabContent.CONTENT
+  const uuid = uuidv4()
+  const title = window.document.title
+  const icon = getFavicon()
+  const payload = {
+    message,
+    uuid,
+    title,
+    icon
+  }
+
+  console.log(payload, recipient)
+}
 
 export default class Wallet {
 
@@ -191,42 +242,22 @@ export default class Wallet {
   /**
    * Call popup for confirm Transaction.
    */
-  sign(tx) {
+  sign(payload) {
     if (!this.isEnable) {
       throw new AccessError(ERROR_MSGS.DISABLED)
     } else if (!this.isConnect) {
       throw new AccessError(ERROR_MSGS.CONNECT)
     }
 
-    const type = MTypeTab.CALL_TO_SIGN_TX
-    const recipient = MTypeTabContent.CONTENT
-    const uuid = uuidv4()
-    const { payload } = tx
+    if (new TypeChecker(payload).isString) {
+      return _message(payload)
+    } else if (new TypeChecker(payload).isObject) {
+      return _transaction(payload)
+    }
 
-    // Transaction id.
-    payload.uuid = uuid
-    // Current tab title.
-    payload.title = window.document.title
-    // Url on favicon by current tab.
-    payload.icon = getFavicon()
-
-    // Send transaction to content.js > background.js.
-    new SecureMessage({ type, payload }).send(_stream, recipient)
-
-    return from(_subject).pipe(
-      // Waiting an answer by uuid.
-      filter(res => res.type === MTypeTab.TX_RESULT),
-      map(res => res.payload),
-      filter(res => res.uuid && res.uuid === uuid),
-      map(res => {
-        if (res.reject) {
-          throw res.reject
-        } else if (res.resolve) {
-          return Object.assign(payload, res.resolve)
-        }
-      }),
-      take(1)
-    ).toPromise()
+    return Promise.reject(
+      new TypeError(`payload ${ERROR_MSGS.MUST_BE_OBJECT} or ${ERROR_MSGS.MUST_BE_STRING}`)
+    )
   }
 
   /**

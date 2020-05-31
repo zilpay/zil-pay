@@ -12,7 +12,9 @@ import {
   CONNECT,
   DISABLE_DMETHOD,
   DISABLED,
-  CONTRACT_HASN_TDEPLOYED
+  CONTRACT_HASN_TDEPLOYED,
+  MUST_BE_OBJECT,
+  MUST_BE_STRING
 } from 'lib/errors/annotations'
 
 export const ERROR_MSGS = {
@@ -21,7 +23,9 @@ export const ERROR_MSGS = {
   CONNECT,
   DISABLE_DMETHOD,
   DISABLED,
-  CONTRACT_HASN_TDEPLOYED
+  CONTRACT_HASN_TDEPLOYED,
+  MUST_BE_OBJECT,
+  MUST_BE_STRING
 }
 
 export * from 'lib/errors'

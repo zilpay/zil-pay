@@ -82,7 +82,6 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 
-import AccountErrors from 'packages/background/services/account/errors'
 import { SIZE_VARIANS } from '@/config'
 
 import homePage from '@/pages/Home'
@@ -197,7 +196,7 @@ export default {
 
         this.$router.push({ name: homePage.name })
       } catch (err) {
-        if (err.message === AccountErrors.ImportUniqueWrong) {
+        if (err.message.includes(UNIQUE)) {
           this.privateKey.error = this.local.UNIQUE_IMPORT_ERR
         } else {
           this.privateKey.error = this.local.INVALID_PRIVATEKEY
