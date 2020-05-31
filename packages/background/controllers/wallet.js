@@ -17,6 +17,7 @@ import {
   PromptService
 } from 'packages/background/services'
 import { accountControl, networkControl } from './main'
+import { Transaction } from './transaction'
 
 /**
  * wallet controler for import and export.
@@ -25,6 +26,20 @@ export class Wallet {
 
   constructor(payload) {
     this.payload = payload
+  }
+
+  async confirmSignMsg(sendResponse) {
+    await networkControl.netwrokSync()
+
+    try {
+      const zilliqa = new ZilliqaControl(networkControl.provider)
+      const account = await accountControl.getCurrentAccount()
+      const signature = await zilliqa.signMessage(this.payload.message, account)
+
+      return sendResponse({ resolve: signature })
+    } catch (err) {
+      sendResponse({ reject: err.message })
+    }
   }
 
   /**
@@ -251,10 +266,16 @@ export class Wallet {
   async signMessage() {
     await networkControl.netwrokSync()
 
-    const zilliqa = new ZilliqaControl(networkControl.provider)
+    try {
+      const zilliqa = new ZilliqaControl(networkControl.provider)
 
-    await zilliqa.addForSignMessage(this.payload)
+      await zilliqa.addForSignMessage(this.payload)
 
-    new PromptService().open()
+      new PromptService().open()
+    } catch (err) {
+      Transaction.returnTx({
+        reject: err.message
+      }, this.payload.uuid)
+    }
   }
 }

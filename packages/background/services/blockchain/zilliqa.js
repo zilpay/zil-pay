@@ -334,7 +334,7 @@ export class ZilliqaControl {
       const param = txParams[index]
 
       if (msg.message.includes(param)) {
-        throw new ArgumentError(param)
+        throw new ArgumentError(param, ERROR_MSGS.FORBIDDEN_TO_USE)
       }
     }
 

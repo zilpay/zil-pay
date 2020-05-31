@@ -119,6 +119,10 @@ export class Background {
       Transaction.rmTransactionsConfirm(sendResponse)
       break
 
+    case MTypePopup.CONFIRM_SIGN_MSG:
+      new Wallet(message.payload).confirmSignMsg(sendResponse)
+      break
+
     case MTypePopup.BUILD_TX_PARAMS:
       new Transaction(message.payload).buildTxParams(sendResponse)
       break
