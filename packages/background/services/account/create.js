@@ -14,7 +14,7 @@ import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto/dist/util'
 import { Auth } from 'packages/background/services/auth'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
 import { NetworkControl } from 'packages/background/services/network'
-import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/background/errors'
 
 const { MAX_LENGTH_NAME, ZERO } = DEFAULT
 

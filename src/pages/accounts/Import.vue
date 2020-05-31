@@ -96,6 +96,7 @@ import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
 import { Background, walletUpdate, ledgerImportAccount } from '@/services'
+import { UNIQUE } from 'lib/errors/annotations'
 
 const { FileReader } = global
 const RADIO_ELEMENTS = [
@@ -229,7 +230,7 @@ export default {
 
           this.$router.push({ name: homePage.name })
         } catch (err) {
-          if (err.message === AccountErrors.ImportUniqueWrong) {
+          if (err.message.includes(UNIQUE)) {
             this.jsonFile.error = this.local.UNIQUE_IMPORT_ERR
           } else {
             this.jsonFile.error = this.local.INCORRECT_KEYSTORE

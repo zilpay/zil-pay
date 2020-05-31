@@ -11,7 +11,7 @@ import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 
 import { CryptoGuard } from 'packages/background/services/crypto/guard'
-import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/background/errors'
 
 /**
  * Added new method for Date instance.

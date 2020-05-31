@@ -10,7 +10,7 @@ import { DEFAULT } from 'config'
 import { TypeChecker } from 'lib/type'
 import { AES } from 'lib/crypto'
 
-import { ArgumentError, ERROR_MSGS } from 'packages/errors'
+import { ArgumentError, ERROR_MSGS } from 'packages/background/errors'
 
 export class CryptoGuard {
 

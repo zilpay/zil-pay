@@ -11,7 +11,7 @@ import { BuildObject } from 'lib/storage'
 
 import { AccountControl } from './create'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
-import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/background/errors'
 
 export class AccountImporter extends AccountControl {
 

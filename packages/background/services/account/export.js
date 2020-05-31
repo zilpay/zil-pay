@@ -9,7 +9,7 @@
 import { FIELDS } from 'config'
 import { AccountControl } from './create'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
-import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/errors'
+import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/background/errors'
 
 export class AccountExporter extends AccountControl {
 

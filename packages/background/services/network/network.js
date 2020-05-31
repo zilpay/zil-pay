@@ -9,7 +9,7 @@
 import fetch from 'cross-fetch'
 import { FIELDS, ZILLIQA } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
-import { ArgumentError } from 'packages/errors'
+import { ArgumentError } from 'packages/background/errors'
 
 const defaultSelected = Object.keys(ZILLIQA)[0]
 

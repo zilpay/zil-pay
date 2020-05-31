@@ -29,7 +29,7 @@ import {
   bytes,
   validation
 } from '@zilliqa-js/util/dist/index'
-import { RPCError, ArgumentError, ERROR_MSGS } from 'packages/errors'
+import { RPCError, ArgumentError, ERROR_MSGS } from 'packages/background/errors'
 
 import { NotificationsControl } from 'packages/background/services/browser'
 
