@@ -19,6 +19,7 @@ import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
 import LockScreen from '@/pages/LockScreen'
 import Popup from '@/pages/Popup'
+import SignMessage from '@/pages/SignMessage'
 import Receive from '@/pages/Receive'
 import Send from '@/pages/Send'
 import Settings from '@/pages/Settings'
@@ -103,6 +104,12 @@ const routes = [
     path: `/${Connect.name.toLowerCase()}`,
     name: Connect.name,
     component: Connect,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${SignMessage.name.toLowerCase()}`,
+    name: SignMessage.name,
+    component: SignMessage,
     meta: { requiresAuth: true }
   },
   {
