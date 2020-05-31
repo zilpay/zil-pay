@@ -180,6 +180,8 @@ export default {
           signature = await ledgerSignMessage(account.index, message)
         }
 
+        console.log(signature)
+
         await bg.sendForConfirmMessage({
           ...this.getCurrent,
           signature

@@ -6,8 +6,8 @@ import { ArgumentError } from 'lib/errors'
 import { MUST_BE_INT, MUST_BE_OBJECT, MUST_BE_STRING } from 'lib/errors/annotations'
 
 const { window } = global
-// const BRIDGE_URL = 'https://zilpay.github.io/ledger-bridge/'
-const BRIDGE_URL = 'https://127.0.0.1:8080'
+const BRIDGE_URL = 'https://zilpay.github.io/ledger-bridge/'
+// const BRIDGE_URL = 'https://127.0.0.1:8080'
 const subjectStream = new Subject() // Create event listing.
 const TYPES = {
   init: 'ledger_bridge_ready',
