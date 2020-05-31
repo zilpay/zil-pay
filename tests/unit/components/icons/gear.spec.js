@@ -35,10 +35,6 @@ describe('components:Gear', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('checks the props', () => {
     expect(wrapper.props().pointer).toEqual(true)
     expect(wrapper.props().color).toEqual(COLOR_VARIANTS.primary)

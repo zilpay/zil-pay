@@ -51,10 +51,6 @@ describe('components:BottomBar', () => {
     }
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('Should can imported', () => {
     expect(BottomBar).toBeTruthy()
   })

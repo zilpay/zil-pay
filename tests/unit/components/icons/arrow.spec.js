@@ -35,10 +35,6 @@ describe('components:Arrow', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('checks the props', () => {
     expect(wrapper.props().height).toBe(300)
     expect(wrapper.props().width).toBe(10)

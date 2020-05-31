@@ -22,10 +22,6 @@ describe('components:Separator', () => {
     localVue
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('Should can import', () => {
     expect(Separator).toBeTruthy()
   })

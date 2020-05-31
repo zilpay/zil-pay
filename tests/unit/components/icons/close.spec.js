@@ -35,10 +35,6 @@ describe('components:Close', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('checks the props', () => {
     expect(wrapper.props().size).toEqual(SIZE_VARIANS.xs)
     expect(wrapper.props().pointer).toEqual(true)

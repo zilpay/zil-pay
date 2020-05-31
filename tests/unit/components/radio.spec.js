@@ -31,10 +31,6 @@ describe('components:Radio', () => {
     expect(Radio).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('Should be mount', () => {
     expect(wrapper).toBeTruthy()
   })

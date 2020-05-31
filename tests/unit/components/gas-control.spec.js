@@ -38,10 +38,6 @@ describe('components:GasControl', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('Should have some props', () => {
     expect(wrapper.props().value).toEqual(TEST_VALUE)
     expect(wrapper.props().DEFAULT).toEqual(DEFAULT_GAS_FEE)

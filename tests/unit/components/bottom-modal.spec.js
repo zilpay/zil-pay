@@ -25,10 +25,6 @@ describe('components:BottomModal', () => {
     }
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('Should can imported', () => {
     expect(BottomModal).toBeTruthy()
   })

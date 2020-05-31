@@ -31,10 +31,6 @@ describe('components:DoubleRange', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('checks the props', () => {
     expect(wrapper.props().value).toEqual([0, 100])
   })

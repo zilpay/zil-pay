@@ -32,10 +32,6 @@ describe('components:Title', () => {
     }
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('Should can import', () => {
     expect(Title).toBeTruthy()
   })

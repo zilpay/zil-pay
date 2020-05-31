@@ -39,10 +39,6 @@ describe('components:Icon', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('checks the props', () => {
     expect(wrapper.props().icon).toEqual(ICON_VARIANTS.zilliqaLogo)
     expect(wrapper.props().type).toEqual(ICON_TYPE.svg)

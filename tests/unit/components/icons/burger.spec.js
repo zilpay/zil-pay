@@ -34,10 +34,6 @@ describe('components:Burger', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  it('Should be vue instance', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
-
   it('checks the props', () => {
     expect(wrapper.props().height).toBe(13)
     expect(wrapper.props().width).toBe(19)
