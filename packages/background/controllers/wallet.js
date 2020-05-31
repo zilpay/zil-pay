@@ -247,4 +247,14 @@ export class Wallet {
       sendResponse(true)
     }
   }
+
+  async signMessage() {
+    await networkControl.netwrokSync()
+
+    const zilliqa = new ZilliqaControl(networkControl.provider)
+
+    await zilliqa.addForSignMessage(this.payload)
+
+    new PromptService().open()
+  }
 }

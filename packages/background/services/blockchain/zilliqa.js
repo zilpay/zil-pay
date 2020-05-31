@@ -13,10 +13,12 @@ import { toNodeAddress } from 'lib/utils/to-node-address'
 
 import { Wallet } from '@zilliqa-js/account/dist/wallet'
 import { TransactionFactory } from '@zilliqa-js/account/dist/transactionFactory'
+import { Account } from '@zilliqa-js/account/dist/account'
 import { Blockchain } from '@zilliqa-js/blockchain/dist/chain'
 import { RPCMethod } from '@zilliqa-js/core/dist/net'
 import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
 import { fromBech32Address } from '@zilliqa-js/crypto/dist/bech32'
+import { ZilliqaMessage } from '@zilliqa-js/proto/dist/index'
 import {
   toChecksumAddress,
   verifyPrivateKey,
@@ -32,6 +34,8 @@ import {
 import { RPCError, ArgumentError, ERROR_MSGS } from 'packages/background/errors'
 
 import { NotificationsControl } from 'packages/background/services/browser'
+
+const { Uint8Array } = global
 
 export class ZilliqaControl {
 
@@ -191,6 +195,19 @@ export class ZilliqaControl {
     return this.provider.send(RPCMethod.CreateTransaction, txParams)
   }
 
+  signMessage(message, { privateKey }) {
+    const account = new Account(privateKey)
+    const msg = {
+      data: Uint8Array.from([...message].map((c) => c.charCodeAt(0)))
+    }
+    const serialised = ZilliqaMessage.ProtoTransactionCoreInfo.create(msg)
+    const msgBuffer = Buffer.from(
+      ZilliqaMessage.ProtoTransactionCoreInfo.encode(serialised).finish()
+    )
+
+    return account.signTransaction(msgBuffer)
+  }
+
   /**
    * The decimal conversion of the
    * bitwise concatenation of `CHAIN_ID` and `MSG_VERSION` parameters.
@@ -296,6 +313,35 @@ export class ZilliqaControl {
       forConfirm.push(payload)
     } catch (err) {
       forConfirm = [payload]
+    }
+
+    await storage.set(
+      new BuildObject(FIELDS.CONFIRM_TX, forConfirm)
+    )
+
+    this.notificationsCounter(forConfirm)
+  }
+
+  async addForSignMessage(msg) {
+    const storage = new BrowserStorage()
+    let forConfirm = await storage.get(FIELDS.CONFIRM_TX)
+    const txParams = [
+      'amount',
+      'toAddr'
+    ]
+
+    for (let index = 0; index < txParams.length; index++) {
+      const param = txParams[index]
+
+      if (msg.message.includes(param)) {
+        throw new ArgumentError(param)
+      }
+    }
+
+    try {
+      forConfirm.push(msg)
+    } catch (err) {
+      forConfirm = [msg]
     }
 
     await storage.set(

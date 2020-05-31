@@ -70,6 +70,7 @@ function _transaction(tx) {
 }
 
 function _message(message) {
+  const type = MTypeTab.SIGN_MESSAGE
   const recipient = MTypeTabContent.CONTENT
   const uuid = uuidv4()
   const title = window.document.title
@@ -81,7 +82,10 @@ function _message(message) {
     icon
   }
 
-  console.log(payload, recipient)
+  // Send transaction to content.js > background.js.
+  new SecureMessage({ type, payload }).send(_stream, recipient)
+
+  return _answer(payload, uuid)
 }
 
 export default class Wallet {
@@ -244,9 +248,9 @@ export default class Wallet {
    */
   sign(payload) {
     if (!this.isEnable) {
-      throw new AccessError(ERROR_MSGS.DISABLED)
+      return Promise.reject(new AccessError(ERROR_MSGS.DISABLED))
     } else if (!this.isConnect) {
-      throw new AccessError(ERROR_MSGS.CONNECT)
+      return Promise.reject(new AccessError(ERROR_MSGS.CONNECT))
     }
 
     if (new TypeChecker(payload).isString) {

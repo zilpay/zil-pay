@@ -56,6 +56,10 @@ export class ContentTabStream {
       new Message(msg).send()
       break
 
+    case MTypeTab.SIGN_MESSAGE:
+      new Message(msg).send()
+      break
+
     case MTypeTab.CONTENT_PROXY_MEHTOD:
       this.proxyMethod(msg.payload)
       break

@@ -147,6 +147,10 @@ export class Background {
       new Transaction(message.payload).callTransaction()
       break
 
+    case MTypeTab.SIGN_MESSAGE:
+      new Wallet(message.payload).signMessage()
+      break
+
     default:
       break
     }
