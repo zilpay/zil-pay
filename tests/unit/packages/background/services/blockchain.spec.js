@@ -7,19 +7,21 @@
  * Copyright (c) 2019 ZilPay
  */
 import 'tests/extension-sinnon'
-
 import { generateMnemonic } from 'bip39'
 import {
   toChecksumAddress,
   verifyPrivateKey,
   schnorr
 } from '@zilliqa-js/crypto'
+import { ZilliqaMessage } from '@zilliqa-js/proto/dist/index'
 import { FIELDS } from 'config'
 
 import { BrowserStorage } from 'lib/storage'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
 import { NetworkControl } from 'packages/background/services/network'
+import { uuid } from 'uuidv4'
 
+const { Uint8Array } = global
 const SEED = generateMnemonic(128)
 const PRIVATE_KEY = schnorr.generatePrivateKey()
 
@@ -36,6 +38,48 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
     zilliqaControl = new ZilliqaControl(networkControl.provider)
 
     expect(zilliqaControl).toBeTruthy()
+  })
+
+  it('Should have got some methods', () => {
+    zilliqaControl = new ZilliqaControl(networkControl.provider)
+
+    expect(zilliqaControl.getBalance).toBeTruthy()
+    expect(zilliqaControl.getPendingTxn).toBeTruthy()
+    expect(zilliqaControl.getSmartContractSubState).toBeTruthy()
+    expect(zilliqaControl.buildTxParams).toBeTruthy()
+    expect(zilliqaControl.singTransaction).toBeTruthy()
+    expect(zilliqaControl.signMessage).toBeTruthy()
+    expect(zilliqaControl.version).toBeTruthy()
+    expect(zilliqaControl.getAccountBySeed).toBeTruthy()
+    expect(zilliqaControl.getAccountByPrivateKey).toBeTruthy()
+    expect(zilliqaControl.addForSingTransaction).toBeTruthy()
+    expect(zilliqaControl.addForSignMessage).toBeTruthy()
+    expect(zilliqaControl.rmForSingTransaction).toBeTruthy()
+    expect(zilliqaControl.addTransactionList).toBeTruthy()
+    expect(zilliqaControl.updateTransactionList).toBeTruthy()
+    expect(zilliqaControl.notificationsCounter).toBeTruthy()
+  })
+
+  it('test signMessage method', async() => {
+    const index = 0
+    const account = await zilliqaControl.getAccountBySeed(
+      SEED, index
+    )
+    const message = uuid()
+    const msg = Uint8Array.from([...message].map((c) => c.charCodeAt(0)))
+    const serialised = ZilliqaMessage.ByteArray.create(msg)
+    const msgBuffer = Buffer.from(
+      ZilliqaMessage.ByteArray.encode(serialised).finish()
+    )
+    const signature0 = zilliqaControl.signMessage(message, account)
+    const signature = schnorr.toSignature(signature0)
+    const verify = schnorr.verify(
+      msgBuffer,
+      signature,
+      Buffer.from(account.publicKey, 'hex')
+    )
+
+    expect(verify).toBeTruthy()
   })
 
   it('Should be able get account by seed words', async() => {

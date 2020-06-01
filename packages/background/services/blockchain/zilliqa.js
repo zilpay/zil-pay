@@ -197,10 +197,8 @@ export class ZilliqaControl {
 
   signMessage(message, { privateKey }) {
     const account = new Account(privateKey)
-    const msg = {
-      data: Uint8Array.from([...message].map((c) => c.charCodeAt(0)))
-    }
-    const serialised = ZilliqaMessage.ProtoTransactionCoreInfo.create(msg)
+    const msg = Uint8Array.from([...message].map((c) => c.charCodeAt(0)))
+    const serialised = ZilliqaMessage.ByteArray.create(msg)
     const msgBuffer = Buffer.from(
       ZilliqaMessage.ByteArray.encode(serialised).finish()
     )
