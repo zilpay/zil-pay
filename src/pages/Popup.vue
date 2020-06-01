@@ -117,6 +117,7 @@ import accountsStore from '@/store/accounts'
 import uiStore from '@/store/ui'
 import transactionsStore from '@/store/transactions'
 
+import { DEFAULT } from 'config'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -346,6 +347,7 @@ export default {
     }
   },
   mounted() {
+    setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
     this.setLoad()
     this
       .updateCurrentAccount()

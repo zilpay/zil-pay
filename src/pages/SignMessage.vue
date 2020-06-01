@@ -55,6 +55,7 @@
 <script>
 import { uuid } from 'uuidv4'
 
+import { DEFAULT } from 'config'
 import {
   SIZE_VARIANS,
   COLOR_VARIANTS,
@@ -180,8 +181,6 @@ export default {
           signature = await ledgerSignMessage(account.index, message)
         }
 
-        console.log(signature)
-
         await bg.sendForConfirmMessage({
           ...this.getCurrent,
           signature
@@ -218,6 +217,9 @@ export default {
     if (this.getCurrent && !this.getCurrent.message) {
       this.$router.push({ name: Popup.name })
     }
+  },
+  mounted() {
+    setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
   }
 }
 </script>

@@ -50,6 +50,7 @@ import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
+import { DEFAULT } from 'config'
 import {
   SIZE_VARIANS,
   COLOR_VARIANTS,
@@ -157,6 +158,9 @@ export default {
         break
       }
     }
+  },
+  mounted() {
+    setTimeout(() => this.onReject(), DEFAULT.POPUP_CALL_TIMEOUT)
   }
 }
 </script>
