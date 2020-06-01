@@ -47,10 +47,11 @@ export class Blockchain {
   * @returns {Promise<Transaction>} - the Transaction that has been signed and
   * broadcasted to the network.
   */
-  createTransaction(tx, priority = false) {
+  async createTransaction(tx, priority = false) {
     const transaction = new Transaction(tx, priority)
+    const result = await this.wallet.sign(transaction)
 
-    return this.wallet.sign(transaction)
+    return new Transaction(result)
   }
 
   /**

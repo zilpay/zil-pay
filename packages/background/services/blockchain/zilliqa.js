@@ -202,7 +202,7 @@ export class ZilliqaControl {
     }
     const serialised = ZilliqaMessage.ProtoTransactionCoreInfo.create(msg)
     const msgBuffer = Buffer.from(
-      ZilliqaMessage.ProtoTransactionCoreInfo.encode(serialised).finish()
+      ZilliqaMessage.ByteArray.encode(serialised).finish()
     )
 
     return account.signTransaction(msgBuffer)
