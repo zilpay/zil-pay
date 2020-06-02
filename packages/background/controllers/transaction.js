@@ -123,7 +123,7 @@ export class Transaction {
           }).create()
 
           block = socketControl.blockNumber
-        } else if (!result.confirmed && blockForskel >= DEFAULT.BLOCKS_FOR_CONFIRM) {
+        } else if (!result.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
           new NotificationsControl({
             url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
             title: 'ZilPay rejected',
