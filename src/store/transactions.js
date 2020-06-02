@@ -32,7 +32,6 @@ const MUTATIONS_NAMES = {
   setEmpty: 'setEmpty',
   setClearTxHistory: 'setClearTxHistory',
   setTxHistory: 'setTxHistory',
-  setPopConfirmTx: 'setPopConfirmTx',
   setPriority: 'setPriority'
 }
 const ACTIONS_NAMES = {
@@ -61,14 +60,14 @@ const STORE = {
       const { gasPrice, gasLimit } = gas
       const gasInQa = units.toQa(gasPrice, units.Units.Li)
 
-      state[STATE_NAMES.confirmationTx][0].gasPrice = String(gasInQa)
-      state[STATE_NAMES.confirmationTx][0].gasLimit = gasLimit
+      state[STATE_NAMES.confirmationTx][state.confirmationTx.length - 1].gasPrice = String(gasInQa)
+      state[STATE_NAMES.confirmationTx][state.confirmationTx.length - 1].gasLimit = gasLimit
     },
     [MUTATIONS_NAMES.setConfirmationTx](state, txParams) {
       state[STATE_NAMES.confirmationTx].push(txParams)
     },
     [MUTATIONS_NAMES.setNeedConfirmTxs](state, txs) {
-      if (!Array.isArray(txs) || txs.length === 0) {
+      if (!Array.isArray(txs)) {
         return null
       }
       state[STATE_NAMES.confirmationTx] = txs
@@ -85,11 +84,8 @@ const STORE = {
         state[STATE_NAMES.transactions] = data
       }
     },
-    [MUTATIONS_NAMES.setPopConfirmTx](state) {
-      state[STATE_NAMES.confirmationTx].pop()
-    },
     [MUTATIONS_NAMES.setPriority](state, value) {
-      state[STATE_NAMES.confirmationTx][0].priority = value
+      state[STATE_NAMES.confirmationTx][state.confirmationTx.length - 1].priority = value
     }
   },
   actions: {
@@ -102,25 +98,26 @@ const STORE = {
       const neetConfirmTxs = await getToConfirmTxs()
 
       commit(MUTATIONS_NAMES.setNeedConfirmTxs, neetConfirmTxs)
-    },
-    async [ACTIONS_NAMES.setRejectedLastTx]({ commit}) {
-      await bg.rejectTx()
 
-      commit(MUTATIONS_NAMES.setPopConfirmTx)
+      return neetConfirmTxs
     },
+    async [ACTIONS_NAMES.setRejectedLastTx]() {
+      await bg.rejectTx()
+    }
   },
   getters: {
     [GETTERS_NAMES.getCurrent](state) {
-      return state.confirmationTx[0]
+      return state.confirmationTx[state.confirmationTx.length - 1]
     },
     [GETTERS_NAMES.getCurrentGas](state) {
-      const gasPrice = units.fromQa(
-        new BN(state.confirmationTx[0].gasPrice), units.Units.Li
-      ).toString()
+      const lastIndex = state.confirmationTx.length - 1
+      const currentGasPrice = state.confirmationTx[lastIndex].gasPrice
+      const { gasLimit } = state.confirmationTx[lastIndex]
+      const gasPrice = String(units.fromQa(new BN(currentGasPrice), units.Units.Li))
 
       return {
         gasPrice,
-        gasLimit: state.confirmationTx[0].gasLimit
+        gasLimit
       }
     },
     [GETTERS_NAMES.getCurrentTransactions](state, _, rootState, rootGetters) {

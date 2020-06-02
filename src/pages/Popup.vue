@@ -244,15 +244,15 @@ export default {
     ...mapMutations(transactionsStore.STORE_NAME, [
       transactionsStore.MUTATIONS_NAMES.setCurrentGas,
       transactionsStore.MUTATIONS_NAMES.setEmpty,
-      transactionsStore.MUTATIONS_NAMES.setPriority,
-      transactionsStore.MUTATIONS_NAMES.setPopConfirmTx
+      transactionsStore.MUTATIONS_NAMES.setPriority
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(transactionsStore.STORE_NAME, [
       transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
-      transactionsStore.ACTIONS_NAMES.setRejectedLastTx
+      transactionsStore.ACTIONS_NAMES.setRejectedLastTx,
+      transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
       accountsStore.ACTIONS_NAMES.updateCurrentAccount
@@ -281,7 +281,7 @@ export default {
       this.setLoad()
 
       if (this.getCurrent && this.getCurrent.uuid) {
-        await this.setRejectedLastTx()
+        await this.setRejectedLastTx(this.getCurrent.uuid)
       }
 
       await this.popupClouse()
@@ -331,6 +331,8 @@ export default {
      * To close popup.
      */
     async popupClouse() {
+      await this.onUpdateToConfirmTxs()
+
       if (this.getCurrent && !this.getCurrent.uuid) {
         this.setEmpty()
         await this.onUpdateTransactions()
@@ -339,9 +341,13 @@ export default {
         return null
       }
 
-      await this.setPopConfirmTx()
+      if (this.getCurrent && this.getCurrent.message) {
+        this.$router.push({ name: SignMessage.name })
 
-      if (!this.confirmationTx || this.confirmationTx.length === 0) {
+        return null
+      }
+
+      if (this.confirmationTx.length === 0) {
         window.close()
       }
     }
@@ -354,7 +360,7 @@ export default {
       .then(() => this.setLoad())
   },
   updated() {
-    if (this.getCurrent.message) {
+    if (this.getCurrent && this.getCurrent.message) {
       this.$router.push({ name: SignMessage.name })
     }
   }

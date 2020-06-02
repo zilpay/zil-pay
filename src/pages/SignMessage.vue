@@ -147,11 +147,9 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(transactionsStore.STORE_NAME, [
-      transactionsStore.MUTATIONS_NAMES.setPopConfirmTx
-    ]),
     ...mapActions(transactionsStore.STORE_NAME, [
-      transactionsStore.ACTIONS_NAMES.setRejectedLastTx
+      transactionsStore.ACTIONS_NAMES.setRejectedLastTx,
+      transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
@@ -194,9 +192,15 @@ export default {
       }
     },
     async popupClouse() {
-      await this.setPopConfirmTx()
+      await this.onUpdateToConfirmTxs()
 
-      if (!this.confirmationTx || this.confirmationTx.length === 0) {
+      if (this.getCurrent && this.getCurrent.toAddr) {
+        this.$router.push({ name: Popup.name })
+
+        return null
+      }
+
+      if (this.confirmationTx.length === 0) {
         window.close()
       }
     },
