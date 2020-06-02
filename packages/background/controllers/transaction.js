@@ -157,30 +157,40 @@ export class Transaction {
    * When DApp call the any tx.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
-  async callTransaction() {
+  async callTransaction(sendResponse) {
     const isConnect = await accountControl.isConnection(this.payload.domain)
 
     if (!isConnect) {
+      sendResponse({ reject: ERROR_MSGS.CONNECT })
+
       return Transaction.returnTx(
         { reject: ERROR_MSGS.CONNECT },
         this.payload.uuid
       )
     } else if (!accountControl.auth.isEnable || !accountControl.auth.isReady) {
+      sendResponse({ reject: ERROR_MSGS.DISABLED })
+
       return Transaction.returnTx(
         { reject: ERROR_MSGS.DISABLED },
         this.payload.uuid
       )
     }
 
-    const zilliqaControl = new ZilliqaControl(
-      networkControl.provider
-    )
+    try {
+      const zilliqaControl = new ZilliqaControl(
+        networkControl.provider
+      )
 
-    await zilliqaControl.addForSingTransaction(
-      this.payload
-    )
+      await zilliqaControl.addForSingTransaction(
+        this.payload
+      )
 
-    new PromptService().open()
+      new PromptService().open()
+
+      return sendResponse({ resolve: true })
+    } catch (err) {
+      return sendResponse({ reject: err.message })
+    }
   }
 
   async signSendTx(sendResponse) {

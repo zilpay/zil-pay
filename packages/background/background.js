@@ -149,12 +149,12 @@ export class Background {
 
     case MTypeTab.CALL_TO_SIGN_TX:
       message.payload.domain = message.domain
-      new Transaction(message.payload).callTransaction()
+      new Transaction(message.payload).callTransaction(sendResponse)
       break
 
     case MTypeTab.SIGN_MESSAGE:
       message.payload.domain = message.domain
-      new Wallet(message.payload).signMessage()
+      new Wallet(message.payload).signMessage(sendResponse)
       break
 
     default:

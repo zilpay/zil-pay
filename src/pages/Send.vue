@@ -327,10 +327,11 @@ export default {
       const txParams = {
         toAddr: this.recipientAddress.model,
         amount: toZIL(this.amount.model),
-        gasPrice: units.toQa(gasPrice, units.Units.Li).toString(),
+        gasPrice: String(units.toQa(gasPrice, units.Units.Li)),
         gasLimit: gasLimit,
         code: '',
         data: '',
+        priority: false,
         uuid: false
       }
 

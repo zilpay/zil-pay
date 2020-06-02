@@ -178,7 +178,8 @@ export default {
       COLOR_VARIANTS,
       ICON_VARIANTS,
 
-      error: null
+      error: null,
+      lastTx: null
     }
   },
   computed: {
@@ -331,9 +332,11 @@ export default {
      * To close popup.
      */
     async popupClouse() {
+      this.lastTx = this.getCurrent
+
       await this.onUpdateToConfirmTxs()
 
-      if (this.getCurrent && !this.getCurrent.uuid) {
+      if (this.lastTx && !this.lastTx.uuid) {
         this.setEmpty()
         await this.onUpdateTransactions()
         this.$router.push({ name: HomePage.name })

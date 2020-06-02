@@ -278,15 +278,19 @@ export class Wallet {
     }
   }
 
-  async signMessage() {
+  async signMessage(sendResponse) {
     const isConnect = await accountControl.isConnection(this.payload.domain)
 
     if (!isConnect) {
+      sendResponse({ reject: ERROR_MSGS.CONNECT })
+
       return Transaction.returnTx(
         { reject: ERROR_MSGS.CONNECT },
         this.payload.uuid
       )
     } else if (!accountControl.auth.isEnable || !accountControl.auth.isReady) {
+      sendResponse({ reject: ERROR_MSGS.DISABLED })
+
       return Transaction.returnTx(
         { reject: ERROR_MSGS.DISABLED },
         this.payload.uuid
@@ -301,8 +305,12 @@ export class Wallet {
       await zilliqa.addForSignMessage(this.payload)
 
       new PromptService().open()
+
+      return sendResponse({ resolve: true })
     } catch (err) {
-      Transaction.returnTx({
+      sendResponse({ reject: err.message })
+
+      return Transaction.returnTx({
         reject: err.message
       }, this.payload.uuid)
     }
