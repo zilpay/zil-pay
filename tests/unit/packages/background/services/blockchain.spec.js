@@ -13,15 +13,14 @@ import {
   verifyPrivateKey,
   schnorr
 } from '@zilliqa-js/crypto'
-import { ZilliqaMessage } from '@zilliqa-js/proto/dist/index'
 import { FIELDS } from 'config'
 
 import { BrowserStorage } from 'lib/storage'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
 import { NetworkControl } from 'packages/background/services/network'
 import { uuid } from 'uuidv4'
+import { AES } from 'lib/crypto'
 
-const { Uint8Array } = global
 const SEED = generateMnemonic(128)
 const PRIVATE_KEY = schnorr.generatePrivateKey()
 
@@ -66,15 +65,12 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
       SEED, index
     )
     const message = uuid()
-    const msg = Uint8Array.from([...message].map((c) => c.charCodeAt(0)))
-    const serialised = ZilliqaMessage.ByteArray.create(msg)
-    const msgBuffer = Buffer.from(
-      ZilliqaMessage.ByteArray.encode(serialised).finish()
-    )
+    const hashStr = new AES().hash(message)
+    const hashBytes = Buffer.from(hashStr, 'hex')
     const signature0 = zilliqaControl.signMessage(message, account)
     const signature = schnorr.toSignature(signature0)
     const verify = schnorr.verify(
-      msgBuffer,
+      hashBytes,
       signature,
       Buffer.from(account.publicKey, 'hex')
     )

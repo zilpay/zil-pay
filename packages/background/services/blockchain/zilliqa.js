@@ -9,6 +9,7 @@
 import { FIELDS, DEFAULT } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
+import { AES } from 'lib/crypto'
 import { toNodeAddress } from 'lib/utils/to-node-address'
 
 import { Wallet } from '@zilliqa-js/account/dist/wallet'
@@ -18,7 +19,6 @@ import { Blockchain } from '@zilliqa-js/blockchain/dist/chain'
 import { RPCMethod } from '@zilliqa-js/core/dist/net'
 import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
 import { fromBech32Address } from '@zilliqa-js/crypto/dist/bech32'
-import { ZilliqaMessage } from '@zilliqa-js/proto/dist/index'
 import {
   toChecksumAddress,
   verifyPrivateKey,
@@ -34,8 +34,6 @@ import {
 import { RPCError, ArgumentError, ERROR_MSGS } from 'packages/background/errors'
 
 import { NotificationsControl } from 'packages/background/services/browser'
-
-const { Uint8Array } = global
 
 export class ZilliqaControl {
 
@@ -197,13 +195,10 @@ export class ZilliqaControl {
 
   signMessage(message, { privateKey }) {
     const account = new Account(privateKey)
-    const msg = Uint8Array.from([...message].map((c) => c.charCodeAt(0)))
-    const serialised = ZilliqaMessage.ByteArray.create(msg)
-    const msgBuffer = Buffer.from(
-      ZilliqaMessage.ByteArray.encode(serialised).finish()
-    )
+    const hashStr = new AES().hash(message)
+    const hashBytes = Buffer.from(hashStr, 'hex')
 
-    return account.signTransaction(msgBuffer)
+    return account.signTransaction(hashBytes)
   }
 
   /**
