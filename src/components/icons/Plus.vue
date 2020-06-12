@@ -45,28 +45,39 @@ export default {
 .Plus {
   position: relative;
 
+  border: 2px solid var(--accent-color-primary);
+  border-radius: 50%;
+
+  padding: 10px;
+
+  transition: all 0.5s linear;
+
   &:before,
   &:after {
     content: "";
     position: absolute;
-    background-color: var(--theme-color-font);
+    background-color: var(--accent-color-primary);
     border-radius: var(--default-border-radius);
+
+    transition: all 0.5s linear;
   }
 
   /* Vertical line */
   &:before{
-    top: 0;
+    top: 20%;
+    bottom: 20%;
     left: 50%;
     width: 3px;
-    height: 100%;
+    height: auto;
     margin-left: -2px;
   }
 
   /* horizontal line */
   &:after{
     top: 50%;
-    left: 0;
-    width: 100%;
+    left: 20%;
+    right: 20%;
+    width: auto;
     height: 3px;
     margin-top: -2px;
   }
