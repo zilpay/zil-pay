@@ -25,7 +25,6 @@
         />
       </div>
     </Container>
-    <Wave />
   </div>
 </template>
 
@@ -40,7 +39,6 @@ import Textarea from '@/components/Textarea'
 import TopBar from '@/components/TopBar'
 import P from '@/components/P'
 import Container from '@/components/Container'
-import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
 
@@ -55,7 +53,6 @@ export default {
     Title,
     P,
     Container,
-    Wave,
     Textarea,
     TopBar,
     PasswordForm,

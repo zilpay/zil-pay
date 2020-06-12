@@ -46,7 +46,6 @@
         </Button>
       </div>
     </div>
-    <Wave />
   </div>
 </template>
 
@@ -71,7 +70,6 @@ import Title from '@/components/Title'
 import P from '@/components/P'
 import Button from '@/components/Button'
 import Refresh from '@/components/icons/Refresh'
-import Wave from '@/components/Wave'
 import UiPanel from '@/components/UiPanel'
 import Printer from '@/mixins/printer'
 
@@ -89,7 +87,6 @@ export default {
     Title,
     Button,
     Refresh,
-    Wave,
     UiPanel
   },
   data() {

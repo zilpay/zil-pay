@@ -72,39 +72,26 @@
 }
 
 body, html {
-  min-width: 360px;
-  min-height: 600px;
-
-	overflow-x: hidden;
+	// overflow-x: hidden;
 }
 
 body {
-  background-color: var(--app-background-color);
+  // background-color: var(--app-background-color);
 
-  font-family: var(--font-family-Poppins-Regular), sans-serif;
+  // font-family: var(--font-family-Poppins-Regular), sans-serif;
 
-  font-style: normal;
-  font-weight: normal;
+  // font-style: normal;
+  // font-weight: normal;
 
-  font-size: 20px;
-  line-height: 28px;
+  // font-size: 20px;
+  // line-height: 28px;
 
-  overflow: hidden;
+  // overflow: hidden;
 
-  margin: 0;
-  padding: 0;
-}
-
-a {
-  text-decoration: unset;
+  // margin: 0;
+  // padding: 0;
 }
 
 ::-webkit-scrollbar { 
   display: none; 
-}
-
-@media screen and (max-width: 360px) {
-  body, html {
-    max-width: 360px;
-  }
 }

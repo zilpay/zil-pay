@@ -37,7 +37,6 @@
         </Chip>
       </div>
     </div>
-    <Wave />
   </div>
 </template>
 
@@ -52,7 +51,6 @@ import { shuffle } from 'lib/utils/shuffle'
 import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
 import P from '@/components/P'
-import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
 
@@ -67,7 +65,6 @@ export default {
     TopBar,
     P,
     Chip,
-    Wave,
     PasswordForm,
     UiPanel
   },
