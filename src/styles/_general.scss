@@ -51,10 +51,12 @@
 
   --default-border-radius: #{$default-border-radius};
   --default-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  --opacity-bg-element: #{$opacity-bg-element-white};
 }
 
 * {
   @include no-select;
+  transition: all 0.2s linear;
 }
 
 // Enable document.body.setAttribute('theme', 'dark');
@@ -69,6 +71,7 @@
 
   --theme-color-alert: #{$alert-ui-dark};
   --theme-color-alert-border: #{$alert-ui-dark-border};
+  --opacity-bg-element: #{$opacity-bg-element-black};
 }
 
 body, html {

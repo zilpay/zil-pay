@@ -28,7 +28,7 @@
           </P>
         </router-link>
         <router-link
-          :class="b('btn')"
+          :class="b('btn', { cloud: true })"
           :to="LINKS.restore"
         >
           <P uppercase>
@@ -130,14 +130,23 @@ export default {
 
     margin-top: 20%;
 
-    background: rgba(19, 19, 19, 0.8);
+    background: var(--opacity-bg-element);
     border: 2px solid var(--accent-color-primary);
     border-radius: 32px;
 
-    transition: all 0.2s linear;
+    &_cloud:before {
+      content: url(/icons/cloud.svg);
+      position:relative;
+    }
 
     & > * {
       color: var(--accent-color-primary);
+    }
+
+    &_cloud:hover {
+      &:before {
+        content: url(/icons/cloud_black.svg);
+      }
     }
 
     &:hover {
