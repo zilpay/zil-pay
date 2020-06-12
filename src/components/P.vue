@@ -8,6 +8,7 @@
       copy,
       nowrap,
       capitalize,
+      uppercase,
       centred
     })"
     @click="onCopyContent"
@@ -63,6 +64,10 @@ export default {
       required: false
     },
     capitalize: {
+      type: Boolean,
+      required: false
+    },
+    uppercase: {
       type: Boolean,
       required: false
     }
@@ -150,6 +155,10 @@ export default {
 
   &_capitalize {
     text-transform: capitalize;
+  }
+
+  &_uppercase {
+    text-transform: uppercase;
   }
 }
 </style>
