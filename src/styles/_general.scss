@@ -59,7 +59,7 @@
 
 // Enable document.body.setAttribute('theme', 'dark');
 [theme="dark"] {
-  --app-background-color: #{$dark};
+  --app-background-color: #{$black};
 
   --theme-color-font: #{$white};
 
@@ -72,7 +72,17 @@
 }
 
 body, html {
+  margin: 0;
+  padding: 0;
 	// overflow-x: hidden;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: initial;
 }
 
 body {
