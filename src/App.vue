@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <div :class="b()">
-      <router-view/>
-    </div>
+    <router-view/>
   </div>
 </template>
 
@@ -139,8 +137,13 @@ export default {
 <style lang="scss">
 @import "./styles/general";
 
-.App {
-  display: grid;
-  justify-content: center;
+#app {
+  width: 100vw;
+  height: 100vh;
+
+  & > div {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
