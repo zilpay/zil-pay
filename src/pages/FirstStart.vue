@@ -1,64 +1,63 @@
 <template>
   <Container :class="b()">
     <UiPanel />
+    <Icon
+      :class="b('logo')"
+      :icon="ICON_VARIANTS.zilPayLogo"
+    />
     <div :class="b('wrapper')">
-      <Icon
-        :icon="ICON_VARIANTS.zilPayLogo"
-        width="148"
-        height="148"
-      />
-      <Title>
-        {{ local.FIRSTSTART_TITLE }}
-      </Title>
-      <P>
-        {{ local.FIRSTSTART_DIS }}
-      </P>
+      <Container>
+        <Title>
+          {{ local.FIRSTSTART_TITLE }}
+        </Title>
+        <P>
+          {{ local.FIRSTSTART_DIS }}
+        </P>
+      </Container>
       <div :class="b('actions')">
-        <div
-          v-for="action of actions"
-          :key="action.uuid"
-          :class="b('action')"
+        <router-link
+          :class="b('btn')"
+          :to="LINKS.create"
         >
-          <Icon
-            :icon="action.icon"
-            width="80"
-            height="80"
+          <Plus
+            height="50"
+            width="50"
           />
-          <Button
-            :size="SIZE_VARIANS.xs"
-            :color="action.color"
-            block
-            round
-            @click="$router.push({ name: action.toLink })"
-          >
-            {{ action.name }}
-          </Button>
-        </div>
+          <P uppercase>
+            {{ local.CREATE }}
+          </P>
+        </router-link>
+        <router-link
+          :class="b('btn')"
+          :to="LINKS.restore"
+        >
+          <P uppercase>
+            {{ local.RESTORE }}
+          </P>
+        </router-link>
       </div>
     </div>
   </Container>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
 import {
   ICON_VARIANTS,
-  SIZE_VARIANS,
-  COLOR_VARIANTS
+  SIZE_VARIANS
 } from '@/config'
+
+import CreateAcc from '@/pages/Create'
+import Restore from '@/pages/Restore'
 
 import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import P from '@/components/P'
-import Button from '@/components/Button'
 import Container from '@/components/Container'
-import CreateAcc from '@/pages/Create'
-import Restore from '@/pages/Restore'
 import UiPanel from '@/components/UiPanel'
+import Plus from '@/components/icons/Plus'
 
 export default {
   name: 'FirstStart',
@@ -66,86 +65,97 @@ export default {
     Icon,
     Title,
     P,
-    Button,
     Container,
-    UiPanel
+    UiPanel,
+    Plus
   },
   data() {
     return {
       // Proxy constants:
       ICON_VARIANTS,
-      SIZE_VARIANS
+      SIZE_VARIANS,
+      LINKS: {
+        restore: Restore.name,
+        create: CreateAcc.name
+      }
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
-    ]),
-
-    actions() {
-      return [
-        {
-          uuid: uuid(),
-          name: this.local.CREATE,
-          icon: ICON_VARIANTS.add,
-          toLink: CreateAcc.name,
-          color: COLOR_VARIANTS.success
-        },
-        {
-          uuid: uuid(),
-          name: this.local.RESTORE,
-          icon: ICON_VARIANTS.download,
-          toLink: Restore.name,
-          color: COLOR_VARIANTS.primary
-        }
-      ]
-    }
+    ])
   }
 }
 </script>
 
 <style lang="scss">
 .FirstStart {
-  display: grid;
-
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  height: 70vh;
+  text-align: center;
+
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vh;
+  }
 
   &__wrapper {
-    display: grid;
-    grid-gap: 30px;
+    display: flex;
+    flex-direction: column;
 
-    justify-items: center;
-    text-align: center;
+    height: 70vh;
+    z-index: 1;
   }
 
   &__actions {
     display: flex;
-
-    flex-wrap: wrap;
     justify-content: space-around;
-
-    width: 100%;
+    flex-wrap: wrap;
   }
 
-  &__action {
-    display: grid;
-    grid-gap: 15px;
+  &__btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: inherit;
+    align-items: center;
 
-    justify-items: center;
+    min-width: 200px;
+    min-height: 200px;
 
-    min-width: 175px;
-  }
+    margin-top: 20%;
 
-  &__wave {
-    position: fixed;
-    z-index: -1;
-    bottom: 0;
+    background: rgba(19, 19, 19, 0.8);
+    border: 2px solid var(--accent-color-primary);
+    border-radius: 32px;
 
-    width: 100%;
-    max-width: 100vw;
+    transition: all 0.2s linear;
+
+    & > * {
+      color: var(--accent-color-primary);
+    }
+
+    &:hover {
+      background: var(--accent-color-primary);
+
+      & > * {
+        color: var(--accent-color-black);
+      }
+
+      & > .Plus {
+        border: 2px solid var(--accent-color-black);
+
+          &:before,
+          &:after {
+            background-color: var(--accent-color-black);
+          }
+      }
+    }
   }
 }
 </style>
