@@ -137,7 +137,7 @@ export default {
 
     background: var(--opacity-bg-element);
     border: 2px solid var(--accent-color-primary);
-    border-radius: 32px;
+    border-radius: var(--default-border-radius);
 
     & > * {
       color: var(--accent-color-primary);
