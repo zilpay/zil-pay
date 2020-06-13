@@ -131,6 +131,11 @@ export default {
     color: var(--accent-color-primary);
     background: transparent;
     border: 1px solid var(--accent-color-primary);
+
+    &:hover {
+      background: var(--accent-color-primary);
+      color: var(--accent-color-black);
+    }
   }
 }
 

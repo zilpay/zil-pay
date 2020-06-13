@@ -6,6 +6,7 @@
     <Input
       v-model="password"
       :type="INPUT_TYPES.password"
+      :size="SIZE_VARIANS.md"
       :placeholder="local.PASSWORD"
       :error="error"
       round
@@ -15,6 +16,7 @@
     <Input
       v-model="confirmPassword"
       :type="INPUT_TYPES.password"
+      :size="SIZE_VARIANS.md"
       :error="errorConfirm"
       :placeholder="local.CONFIRM + ' ' + local.PASSWORD"
       autocomplete=off
@@ -23,8 +25,8 @@
     />
     <Button
       :class="b('btn')"
-      :size="SIZE_VARIANS.xs"
-      :color="COLOR_VARIANTS.warning"
+      :size="SIZE_VARIANS.md"
+      :color="COLOR_VARIANTS.transparent"
       round
     >
       {{ btn }}
@@ -125,7 +127,15 @@ export default {
 <style lang="scss">
 .PasswordForm {
   display: grid;
-  grid-gap: 15px;
-  max-width: 250px;
+  grid-gap: 20px;
+
+  width: 100%;
+  max-width: 320px;
+
+  &__btn {
+    justify-self: center;
+    width: 100%;
+    margin-top: 20px;
+  }
 }
 </style>

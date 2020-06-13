@@ -99,12 +99,6 @@ export default {
 
 <style lang="scss">
 .Input {
-  display: grid;
-
-  justify-items: left;
-}
-
-.Input {
   &__title,
   &__error {
     display: flex;
@@ -134,9 +128,10 @@ export default {
     border: 0;
     text-indent: 15px;
 
-    background: var(--theme-color-input);
+    color: var(--accent-color-primary);
 
-    color: var(--theme-color-font);
+    background: var(--opacity-bg-element);
+    border: 2px solid var(--accent-color-primary);
 
     &_error {
       border: 1px solid var(--accent-color-danger);
@@ -148,7 +143,7 @@ export default {
     }
 
     &_round {
-      border-radius: 5px;
+      border-radius: calc(var(--default-border-radius) - 12px);
     }
 
     &:focus {
