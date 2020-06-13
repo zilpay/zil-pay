@@ -9,7 +9,8 @@
       nowrap,
       capitalize,
       uppercase,
-      centred
+      centred,
+      left
     })"
     @click="onCopyContent"
   >
@@ -60,6 +61,10 @@ export default {
       required: false
     },
     centred: {
+      type: Boolean,
+      required: false
+    },
+    left: {
       type: Boolean,
       required: false
     },
@@ -118,6 +123,10 @@ export default {
 
   &_centred {
     text-align: center;
+  }
+
+  &_left {
+    text-align: left;
   }
 
   &_size-xs {
