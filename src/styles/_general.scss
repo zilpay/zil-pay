@@ -17,22 +17,17 @@
   --app-background-color: #{$white};
 
   --theme-color-font: #{$black};
-  --theme-color-input: #{$input-ui-light};
-
-  --theme-color-alert: #{$alert-ui-light};
-  --theme-color-alert-border: #{$gray};
-
-  --theme-color-separator: #{$separator-ui-light};
+  
 
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
   --accent-color-gray:  #{$gray};
 
-  --accent-color-primary: #{$primary};
-  --accent-color-success: #{$success};
-  --accent-color-info: #{$info};
-  --accent-color-warning: #{$warning};
-  --accent-color-danger: #{$danger};
+  --accent-color-primary: #{$primary-light};
+  --accent-color-success: #{$success-light};
+  --accent-color-info: #{$info-light};
+  --accent-color-warning: #{$warning-light};
+  --accent-color-danger: #{$danger-light};
 
   --font-family-medium: #{$font-family-Medium};
   --font-family-regular: #{$font-family-Regular};
@@ -51,6 +46,7 @@
 
   --default-border-radius: #{$default-border-radius};
   --default-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
   --opacity-bg-element: #{$opacity-bg-element-white};
 }
 
@@ -65,13 +61,13 @@
 
   --theme-color-font: #{$white};
 
-  --theme-color-input: #{$input-ui-dark};
-
-  --theme-color-separator: #{$separator-ui-dark};
-
-  --theme-color-alert: #{$alert-ui-dark};
-  --theme-color-alert-border: #{$alert-ui-dark-border};
   --opacity-bg-element: #{$opacity-bg-element-black};
+
+  --accent-color-primary: #{$primary-dark};
+  --accent-color-success: #{$success-dark};
+  --accent-color-info: #{$info-dark};
+  --accent-color-warning: #{$warning-dark};
+  --accent-color-danger: #{$danger-dark};
 }
 
 body, html {

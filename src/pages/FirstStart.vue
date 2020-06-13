@@ -1,9 +1,9 @@
 <template>
   <Container :class="b()">
     <UiPanel />
-    <Icon
+    <SvgInject
       :class="b('logo')"
-      :icon="ICON_VARIANTS.zilPayLogo"
+      :variant="ICON_VARIANTS.zilPayLogo"
     />
     <div :class="b('wrapper')">
       <Container>
@@ -19,9 +19,10 @@
           :class="b('btn')"
           :to="LINKS.create"
         >
-          <Plus
-            height="50"
-            width="50"
+          <SvgInject
+            :variant="ICON_VARIANTS.add"
+            height="88"
+            width="88"
           />
           <P uppercase>
             {{ local.CREATE }}
@@ -31,6 +32,11 @@
           :class="b('btn', { cloud: true })"
           :to="LINKS.restore"
         >
+          <SvgInject
+            :variant="ICON_VARIANTS.cloud"
+            height="88"
+            width="88"
+          />
           <P uppercase>
             {{ local.RESTORE }}
           </P>
@@ -52,22 +58,20 @@ import {
 import CreateAcc from '@/pages/Create'
 import Restore from '@/pages/Restore'
 
-import Icon from '@/components/Icon'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Container from '@/components/Container'
 import UiPanel from '@/components/UiPanel'
-import Plus from '@/components/icons/Plus'
+import SvgInject from '@/components/SvgInject'
 
 export default {
   name: 'FirstStart',
   components: {
-    Icon,
     Title,
     P,
     Container,
     UiPanel,
-    Plus
+    SvgInject
   },
   data() {
     return {
@@ -110,6 +114,7 @@ export default {
     flex-direction: column;
 
     height: 70vh;
+    width: 1024px;
     z-index: 1;
   }
 
@@ -128,25 +133,14 @@ export default {
     min-width: 200px;
     min-height: 200px;
 
-    margin-top: 20%;
+    margin-top: 10%;
 
     background: var(--opacity-bg-element);
     border: 2px solid var(--accent-color-primary);
     border-radius: 32px;
 
-    &_cloud:before {
-      content: url(/icons/cloud.svg);
-      position:relative;
-    }
-
     & > * {
       color: var(--accent-color-primary);
-    }
-
-    &_cloud:hover {
-      &:before {
-        content: url(/icons/cloud_black.svg);
-      }
     }
 
     &:hover {
@@ -156,13 +150,8 @@ export default {
         color: var(--accent-color-black);
       }
 
-      & > .Plus {
-        border: 2px solid var(--accent-color-black);
-
-          &:before,
-          &:after {
-            background-color: var(--accent-color-black);
-          }
+      & > svg > path {
+        fill: var(--accent-color-black);
       }
     }
   }

@@ -13,6 +13,7 @@
     "lint:fix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "@iconfu/svg-inject": "^1.2.3",
     "@unstoppabledomains/resolution": "^1.4.0",
     "@zilliqa-js/zilliqa": "^0.10.1",
     "clipboard-copy": "^3.1.0",

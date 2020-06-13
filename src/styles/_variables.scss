@@ -42,17 +42,24 @@ $input-ui-light:   #ececec !default;
 $input-ui-dark:    #003D61 !default;
 
 $alert-ui-dark:           #001C2C !default;
-$alert-ui-dark-border:    #001826 !default;
+$alert-ui-dark-border:    #009BDD !default;
 $alert-ui-light:          #FBFBFB !default;
 
 $separator-ui-light:      #CECECE !default;
 $separator-ui-dark:       #003D61 !default;
 
+// new 
 $opacity-bg-element-black: #131313cc;
-$opacity-bg-element-white: #ffffffe3;
+$opacity-bg-element-white: #ffffffe6;
 
-$primary:         #00F8BC !default;
-$success:         #2FA84F !default; //
-$info:            #00B2FF !default; //
-$warning:         #FD9630 !default; //
-$danger:          #FA5D50 !default; //
+$primary-light:         #009BDD !default;
+$success-light:         #2FA84F !default;
+$info-light:            #00B2FF !default;
+$warning-light:         #FD9630 !default;
+$danger-light:          #FA5D50 !default;
+
+$primary-dark:         #00F8BC !default;
+$success-dark:         #2FA84F !default;
+$info-dark:            #00B2FF !default;
+$warning-dark:         #FD9630 !default;
+$danger-dark:          #FA5D50 !default;
