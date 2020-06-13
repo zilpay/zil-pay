@@ -1,5 +1,11 @@
 <template>
   <Container :class="b()">
+    <P
+      :class="b('title')"
+      left
+    >
+      {{ title }}
+    </P>
     <textarea
       v-bind="$attrs"
       :class="b('element', { round, error: Boolean(error) })"
@@ -17,11 +23,13 @@
 <script>
 import { EVENTS } from '@/config'
 import Container from '@/components/Container'
+import P from '@/components/P'
 
 export default {
   name: 'Textarea',
   components: {
-    Container
+    Container,
+    P
   },
   props: {
     value: {
@@ -29,6 +37,10 @@ export default {
       required: false
     },
     error: {
+      type: [String, Number],
+      required: false
+    },
+    title: {
       type: [String, Number],
       required: false
     },
@@ -49,20 +61,24 @@ export default {
 
 <style lang="scss">
 .Textarea {
+  display: grid;
+  grid-template-rows: min-content auto min-content;
+  grid-template-columns: minmax(250px, 50vh);
+  justify-content: center;
+
   &__element {
-    display: inline-block;
+    min-height: 100px;
 
-    width: 100%;
-    height: 100px;
-
-    padding-left: 15px;
-    padding-top: 15px;
+    padding: 15px;
 
     border: 0;
 
     font-size: var(--size-sm-font);
     color: var(--theme-color-font);
-    background-color: var(--theme-color-input);
+
+    background: var(--opacity-bg-element);
+    border: 2px solid var(--accent-color-primary);
+    border-radius: var(--default-border-radius);
 
     outline: none;
     resize: none;
@@ -75,6 +91,11 @@ export default {
     &_error {
       border: 1px solid var(--accent-color-danger);
     }
+  }
+
+  &__error,
+  &__title {
+    margin-left: calc(var(--default-border-radius) - 5px);
   }
 
   &__error {
