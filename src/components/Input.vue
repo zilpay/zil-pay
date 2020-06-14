@@ -134,6 +134,7 @@ export default {
     border: 2px solid var(--accent-color-primary);
 
     &_error {
+      color: var(--accent-color-danger);
       border: 2px solid var(--accent-color-danger);
     }
 
@@ -180,7 +181,7 @@ export default {
 
     .Input__title,
     .Input__error {
-      font-size: calc(var(--size-sm-font) - 10px);
+      font-size: calc(var(--size-sm-font) - 5px);
     }
   }
 }

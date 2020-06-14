@@ -109,6 +109,17 @@ export default {
     color: var(--accent-color-block);
   }
 
+  &_color-negative {
+    background-color: var(--app-background-color);
+    color: var(--accent-color-primary);
+    border: 1px solid var(--accent-color-primary);
+
+    &:hover {
+      background: var(--accent-color-primary);
+      color: var(--theme-negative);
+    }
+  }
+
   &_color-gray {
     background-color: var(--accent-color-gray);
     color: var(--accent-color-white);

@@ -31,7 +31,7 @@
       </div>
       <div :class="b('btns')">
         <Button
-          :color="COLOR_VARIANTS.transparent"
+          :color="COLOR_VARIANTS.negative"
           block
           round
           uppercase
@@ -40,7 +40,7 @@
           {{ local.PRINT }}
         </Button>
         <Button
-          :color="COLOR_VARIANTS.transparent"
+          :color="COLOR_VARIANTS.negative"
           :size="SIZE_VARIANS.md"
           block
           round
@@ -185,7 +185,7 @@ export default {
 
     width: 264px;
     height: 100px;
-    margin-top: 50px;
+    margin-top: 100px;
   }
 }
 </style>

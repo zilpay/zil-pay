@@ -26,7 +26,7 @@
     <Button
       :class="b('btn')"
       :size="SIZE_VARIANS.md"
-      :color="COLOR_VARIANTS.transparent"
+      :color="COLOR_VARIANTS.negative"
       round
       uppercase
     >
