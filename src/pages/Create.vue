@@ -168,7 +168,7 @@ export default {
     z-index: 1;
     height: 50vh;
 
-    max-width: 650px;
+    max-width: 700px;
   }
 
   &__words {

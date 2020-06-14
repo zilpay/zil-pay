@@ -10,6 +10,7 @@
     "TX_FULL": "transactions",
     "TRIGGER": "trigger",
     "SEND": "send",
+    "VERIFY_PICK": "Pick these words in order to form your phrase",
     "SIGN_REQ": "Signature Request",
     "SIGN_DESC": "Your signature is being requested",
     "PASS_RECIPIENT_ADDR": "Pass the recipient address.",

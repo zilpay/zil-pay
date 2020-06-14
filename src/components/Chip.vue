@@ -3,7 +3,10 @@
     :class="b({ pointer, size })"
     @click="onClick"
   >
-    <span :class="b('circle', { color })">
+    <span
+      v-if="circle"
+      :class="b('circle', { color })"
+    >
       {{ circle }}
     </span>
     <span :class="b('content')">
@@ -81,6 +84,8 @@ $default-padding: 10px;
   align-items: center;
 
   padding: $default-padding - 5px;
+  min-width: 100px;
+  min-height: 20px;
 
   border-radius: var(--default-border-radius);
   background-color: var(--opacity-bg-element-1);
@@ -96,6 +101,10 @@ $default-padding: 10px;
 
     width: 25px;
     height: 25px;
+
+    &_color-danger {
+      background-color: var(--accent-color-danger);
+    }
   }
 
   &__content {
@@ -105,6 +114,10 @@ $default-padding: 10px;
 
   &__close {
     margin-right: $default-padding;
+  }
+
+  &_pointer {
+    cursor: pointer;
   }
 }
 </style>
