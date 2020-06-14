@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <UiPanel />
+    <UiPanel arrow />
     <SvgInject
       :class="b('logo')"
       :variant="ICON_VARIANTS.zilPayLogo"
@@ -27,6 +27,7 @@
       </div>
       <PasswordForm
         v-show="isVerify"
+        :class="b('form')"
         :btn="local.CONTINUE"
         @submit="onSubmit"
       />
@@ -196,6 +197,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: center;
 
     height: 45vh;
     max-width: 765px;
@@ -213,6 +215,10 @@ export default {
     align-items: center;
 
     min-height: 100px;
+  }
+
+  &__form {
+    margin: 50px;
   }
 }
 </style>
