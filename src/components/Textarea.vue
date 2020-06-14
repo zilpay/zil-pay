@@ -98,6 +98,11 @@ export default {
     margin-left: calc(var(--default-border-radius) - 5px);
   }
 
+  &__title {
+    margin-bottom: 5px;
+    font-family: var(--font-family-bold);
+  }
+
   &__error {
     text-align: left;
 

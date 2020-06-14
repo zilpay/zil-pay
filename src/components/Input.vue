@@ -134,7 +134,7 @@ export default {
     border: 2px solid var(--accent-color-primary);
 
     &_error {
-      border: 1px solid var(--accent-color-danger);
+      border: 2px solid var(--accent-color-danger);
     }
 
     &_centred {
@@ -180,29 +180,7 @@ export default {
 
     .Input__title,
     .Input__error {
-      font-size: var(--size-sm-font);
-    }
-  }
-
-  &_size-md {
-    .Input__element {
-      height: var(--size-md);
-    }
-
-    .Input__title,
-    .Input__error {
-      font-size: var(--size-md-font);
-    }
-  }
-
-  &_size-lg {
-    .Input__element {
-      height: var(--size-lg);
-    }
-
-    .Input__title,
-    .Input__error {
-      font-size: var(--size-lg-font);
+      font-size: calc(var(--size-sm-font) - 10px);
     }
   }
 }

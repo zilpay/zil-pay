@@ -7,26 +7,26 @@
  * Copyright (c) 2019 ZilPay
  */
 @font-face {
-	font-family: Poppins-Bold;
-	src: url('/fonts/Poppins-Bold.ttf');
+	font-family: AvenirNextLTPro-Bold;
+	src: url('/fonts/AvenirNextLTPro-Bold.otf');
 }
 
 @font-face {
-	font-family: Poppins-Light;
-	src: url('/fonts/Poppins-Light.ttf');
+	font-family: AvenirNextLTPro-Demi;
+	src: url('/fonts/AvenirNextLTPro-Demi.otf');
 }
 
 @font-face {
-	font-family: Poppins-Medium;
-	src: url('/fonts/Poppins-Medium.ttf');
+	font-family: AvenirNextLTPro-Medium;
+	src: url('/fonts/AvenirNextLTPro-MediumCn.otf');
 }
 
 @font-face {
-	font-family: Poppins-Regular;
-	src: url('/fonts/Poppins-Regular.ttf');
+	font-family: AvenirNextLTPro-Regular;
+	src: url('/fonts/AvenirNextLTPro-Regular.otf');
 }
 
-$font-family-Bold:    Poppins-Bold    !default;
-$font-family-Medium:  Poppins-Medium  !default;
-$font-family-Regular: Poppins-Regular !default;
-$font-family-Light:   Poppins-Light   !default;
+$font-family-Bold:    AvenirNextLTPro-Bold    !default;
+$font-family-Medium:  AvenirNextLTPro-Medium  !default;
+$font-family-Regular: AvenirNextLTPro-Regular !default;
+$font-family-Light:   AvenirNextLTPro-Demi    !default;

@@ -1,7 +1,7 @@
 <template>
   <button
     v-bind="$attrs"
-    :class="b({ round, block, size, color })"
+    :class="b({ round, block, size, color, uppercase })"
     :disabled="disabled"
     @click="onClick"
   >
@@ -50,6 +50,10 @@ export default {
     block: {
       type: Boolean,
       default: false
+    },
+    uppercase: {
+      type: Boolean,
+      required: false
     }
   },
   methods: {
@@ -150,10 +154,15 @@ export default {
 
   &_size-md {
     height: var(--size-md);
+    font-size: 20px;
   }
 
   &_size-lg {
     height: var(--size-lg);
+  }
+
+  &_uppercase {
+    text-transform: uppercase;
   }
 }
 

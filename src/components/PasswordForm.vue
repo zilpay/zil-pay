@@ -6,7 +6,7 @@
     <Input
       v-model="password"
       :type="INPUT_TYPES.password"
-      :size="SIZE_VARIANS.md"
+      :size="SIZE_VARIANS.sm"
       :placeholder="local.PASSWORD"
       :error="error"
       round
@@ -16,7 +16,7 @@
     <Input
       v-model="confirmPassword"
       :type="INPUT_TYPES.password"
-      :size="SIZE_VARIANS.md"
+      :size="SIZE_VARIANS.sm"
       :error="errorConfirm"
       :placeholder="local.CONFIRM + ' ' + local.PASSWORD"
       autocomplete=off
@@ -28,6 +28,7 @@
       :size="SIZE_VARIANS.md"
       :color="COLOR_VARIANTS.transparent"
       round
+      uppercase
     >
       {{ btn }}
     </Button>
