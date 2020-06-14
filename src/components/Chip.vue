@@ -12,7 +12,7 @@
       </P>
     </span>
     <span
-      v-show="!close"
+      v-show="close"
       :class="b('close')"
     >
       <CloseIcon

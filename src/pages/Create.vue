@@ -6,12 +6,14 @@
       :variant="ICON_VARIANTS.zilPayLogo"
     />
     <div :class="b('wrapper')">
-      <Title :size="SIZE_VARIANS.md">
-        {{ local.CREATE_TITLE }}
-      </Title>
-      <P :variant="COLOR_VARIANTS.gray">
-        {{ local.CREATE_DIS }}
-      </P>
+      <div>
+        <Title :size="SIZE_VARIANS.lg">
+          {{ local.CREATE_TITLE }}
+        </Title>
+        <P :size="SIZE_VARIANS.md">
+          {{ local.CREATE_DIS }}
+        </P>
+      </div>
       <div
         :class="b('reset-icon')"
         @click="refreshWords"
@@ -27,7 +29,7 @@
           {{ el.word }}
         </Chip>
       </div>
-      <div :class="b('actions')">
+      <div :class="b('btns')">
         <Button
           :color="COLOR_VARIANTS.transparent"
           block
@@ -154,12 +156,36 @@ export default {
   }
 
   &__reset-icon {
+    justify-self: right;
     cursor: pointer;
   }
 
   &__wrapper {
+    display: grid;
+    justify-items: center;
+    grid-template-rows: max-content min-content 100px 50px;
+
     z-index: 1;
-    height: 42vh;
+    height: 50vh;
+
+    max-width: 650px;
+  }
+
+  &__words {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__btns {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    width: 264px;
+    height: 100px;
+    margin-top: 50px;
   }
 }
 </style>
