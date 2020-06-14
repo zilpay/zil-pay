@@ -17,7 +17,7 @@
   --app-background-color: #{$white};
 
   --theme-color-font: #{$black};
-  
+  --theme-negative: #{$black};
 
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
@@ -59,6 +59,7 @@
 [theme="dark"] {
   --app-background-color: #{$black};
 
+  --theme-negative: #{$white};
   --theme-color-font: #{$white};
 
   --opacity-bg-element: #{$opacity-bg-element-black};

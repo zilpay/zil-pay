@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <UiPanel />
+    <UiPanel arrow />
     <SvgInject
       :class="b('logo')"
       :variant="ICON_VARIANTS.zilPayLogo"

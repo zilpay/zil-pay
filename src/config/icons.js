@@ -11,11 +11,11 @@ export const ICON_VARIANTS = {
   zilPayLogo: 'zilpay_logo',
   zilliqaLogo: 'zilliqa_logo',
   cloud: 'cloud',
+  arrow: 'arrow',
 
   zilliqaWatermark: 'zilliqa_logo_watermark',
   ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',
-  arrowRight: 'arrow_right',
   cancel: 'cancel',
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',
