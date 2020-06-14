@@ -48,6 +48,7 @@
   --default-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   --opacity-bg-element: #{$opacity-bg-element-white};
+  --opacity-bg-element-1: #{$opacity-bg-element-white-1};
 }
 
 * {
@@ -63,6 +64,7 @@
   --theme-color-font: #{$white};
 
   --opacity-bg-element: #{$opacity-bg-element-black};
+  --opacity-bg-element-1: #{$opacity-bg-element-black-1};
 
   --accent-color-primary: #{$primary-dark};
   --accent-color-success: #{$success-dark};

@@ -12,6 +12,7 @@ export const ICON_VARIANTS = {
   zilliqaLogo: 'zilliqa_logo',
   cloud: 'cloud',
   arrow: 'arrow',
+  refresh: 'refresh',
 
   zilliqaWatermark: 'zilliqa_logo_watermark',
   ledgerWatermark: 'ledger_logo_watermark',

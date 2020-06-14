@@ -1,24 +1,23 @@
 <template>
   <div :class="b()">
-    <UiPanel />
+    <UiPanel arrow />
+    <SvgInject
+      :class="b('logo')"
+      :variant="ICON_VARIANTS.zilPayLogo"
+    />
     <div :class="b('wrapper')">
-      <TopBar
-        :route="false"
-        back
-      />
       <Title :size="SIZE_VARIANS.md">
         {{ local.CREATE_TITLE }}
       </Title>
       <P :variant="COLOR_VARIANTS.gray">
         {{ local.CREATE_DIS }}
       </P>
-      <Refresh
+      <div
         :class="b('reset-icon')"
-        width="30"
-        height="30"
-        pointer
         @click="refreshWords"
-      />
+      >
+        <SvgInject :variant="ICON_VARIANTS.refresh" />
+      </div>
       <div :class="b('words')">
         <Chip
           v-for="(el, index) of wrdsAsArray"
@@ -30,16 +29,20 @@
       </div>
       <div :class="b('actions')">
         <Button
-          :color="COLOR_VARIANTS.success"
+          :color="COLOR_VARIANTS.transparent"
           block
           round
+          uppercase
           @click="prinntWords"
         >
           {{ local.PRINT }}
         </Button>
         <Button
+          :color="COLOR_VARIANTS.transparent"
+          :size="SIZE_VARIANS.md"
           block
           round
+          uppercase
           @click="setWords"
         >
           {{ local.CONTINUE }}
@@ -64,14 +67,13 @@ import {
 
 import Verify from '@/pages/Verify'
 
-import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Button from '@/components/Button'
-import Refresh from '@/components/icons/Refresh'
 import UiPanel from '@/components/UiPanel'
 import Printer from '@/mixins/printer'
+import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
@@ -82,12 +84,11 @@ export default {
   mixins: [Printer],
   components: {
     Chip,
-    TopBar,
     P,
     Title,
     Button,
-    Refresh,
-    UiPanel
+    UiPanel,
+    SvgInject
   },
   data() {
     return {
@@ -137,36 +138,28 @@ export default {
 
 <style lang="scss">
 .Create {
-  display: grid;
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  &__wrapper {
-    display: inline-grid;
-    align-items: center;
-    grid-template-rows: auto 50px 60px 50px 1fr 90px;
+  text-align: center;
 
-    min-width: 250px;
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vh;
   }
 
   &__reset-icon {
-    justify-self: right;
+    cursor: pointer;
   }
 
-  &__words {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(6, 40px);
-    grid-auto-flow: column;
-    grid-column-gap: 30px;
-    grid-row-gap: 10px;
-  }
-
-  &__actions {
-    display: grid;
-    grid-template-columns: minmax(90px, 100px) minmax(90px, 100px);
-    justify-content: space-between;
-    grid-gap: 30px;
+  &__wrapper {
+    z-index: 1;
+    height: 42vh;
   }
 }
 </style>
