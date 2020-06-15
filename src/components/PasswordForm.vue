@@ -42,7 +42,6 @@ import uiStore from '@/store/ui'
 import { DEFAULT } from 'config'
 import {
   EVENTS,
-  REGX_PATTERNS,
   COLOR_VARIANTS,
   SIZE_VARIANS
 } from '@/config'
@@ -102,9 +101,6 @@ export default {
     onSubmit() {
       if (!this.password) {
         this.error = `*${this.local.PASSWORD} ${this.local.IS} ${this.local.REQUIRED}!`
-        return null
-      } else if (!new RegExp(REGX_PATTERNS).test(this.password)) {
-        this.error = `*${this.local.PASSWORD} ${this.local.LOW_COMPLEXITY}`
         return null
       } else if (this.password.length < DEFAULT.MIN_LENGTH_PASSWORD) {
         this.error = `*${this.local.PASSWORD} ${this.local.MUST_LEAST}` +

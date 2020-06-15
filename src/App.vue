@@ -16,6 +16,10 @@ import accountsStore from '@/store/accounts'
 import transactionsStore from '@/store/transactions'
 
 import FirstPage from '@/pages/FirstStart'
+import Verify from '@/pages/Verify'
+import Restore from '@/pages/Restore'
+import Create from '@/pages/Create'
+
 import LockPage from '@/pages/LockScreen'
 import homePage from '@/pages/Home'
 import PopupPage from '@/pages/Popup'
@@ -73,8 +77,16 @@ export default {
           this.linksExpand()
         }
 
-        this.$router.push({ name: FirstPage.name })
+        const currentRouteName = this.$router.history.current.name
+        const skipRouters = [
+          Verify.name,
+          Restore.name,
+          Create.name
+        ]
 
+        if (!skipRouters.includes(currentRouteName)) {
+          this.$router.push({ name: FirstPage.name })
+        }
         return null
       } else if (!authData.isEnable) {
         this.$router.push({ name: LockPage.name })

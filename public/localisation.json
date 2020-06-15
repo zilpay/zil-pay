@@ -92,7 +92,6 @@
     "PASSWORD": "password",
     "IS": "is",
     "REQUIRED": "required",
-    "LOW_COMPLEXITY": "low complexity",
     "MUST_LEAST": "must be at least",
     "MUST_BE_UNIQUE": "address must be unique",
     "CHARS": "characters",

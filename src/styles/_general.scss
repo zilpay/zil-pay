@@ -49,6 +49,9 @@
 
   --opacity-bg-element: #{$opacity-bg-element-white};
   --opacity-bg-element-1: #{$opacity-bg-element-white-1};
+
+  --logo-gradient-0: #{$logo-gradient-white-0};
+  --logo-gradient-1: #{$logo-gradient-white-1};
 }
 
 * {
@@ -71,6 +74,9 @@
   --accent-color-info: #{$info-dark};
   --accent-color-warning: #{$warning-dark};
   --accent-color-danger: #{$danger-dark};
+
+  --logo-gradient-0: #{$logo-gradient-dark-0};
+  --logo-gradient-1: #{$logo-gradient-dark-1};
 }
 
 body, html {
