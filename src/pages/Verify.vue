@@ -60,6 +60,8 @@ import walletStore from '@/store/wallet'
 import { SIZE_VARIANS, COLOR_VARIANTS, ICON_VARIANTS } from '@/config'
 import { shuffle } from 'lib/utils/shuffle'
 
+import Create from '@/pages/Create'
+
 import Chip from '@/components/Chip'
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -169,6 +171,12 @@ export default {
     }
   },
   mounted() {
+    if (!this.verifly) {
+      this.$router.push({ name: Create.name })
+
+      return null
+    }
+
     const words = this.verifly.split(' ')
 
     this.randomItems = this.shuffle(words)
