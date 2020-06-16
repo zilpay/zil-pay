@@ -9,12 +9,11 @@
 export const ICON_VARIANTS = {
   add: 'add',
   zilPayLogo: 'zilpay_logo',
-  zilliqaLogo: 'zilliqa_logo',
   cloud: 'cloud',
   arrow: 'arrow',
   refresh: 'refresh',
+  net: 'net',
 
-  zilliqaWatermark: 'zilliqa_logo_watermark',
   ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',
   cancel: 'cancel',

@@ -104,11 +104,12 @@ export default {
   }
 
   &__error {
+    margin-top: 5px;
     text-align: left;
 
     font-family: var(--font-family-regular);
     color: var(--accent-color-danger);
-    font-size: var(--size-xs-font);
+    font-size: var(--size-sm-font);
   }
 }
 </style>
