@@ -13,6 +13,8 @@ export const ICON_VARIANTS = {
   arrow: 'arrow',
   refresh: 'refresh',
   net: 'net',
+  burger: 'burger',
+  user: 'user',
 
   ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',

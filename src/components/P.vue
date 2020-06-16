@@ -153,6 +153,10 @@ export default {
     color: var(--accent-color-danger);
   }
 
+  &_variant-primary {
+    color: var(--accent-color-primary);
+  }
+
   &_copy {
     cursor: pointer;
 

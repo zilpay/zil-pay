@@ -49,20 +49,20 @@ export default {
 .Top {
   display: flex;
   align-items: center;
-  padding-left: 20px;
 
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
 
+  width: 100%;
   height: 33px;
+
+  max-width: 100vw;
 
   background-color: var(--accent-color-dark);
 
   &__net {
     display: flex;
     align-items: center;
+
+    margin-left: 20px;
 
     svg {
       margin-right: 5px;

@@ -120,6 +120,11 @@ export default {
     font-size: var(--size-lg-font);
   }
 
+  &_variant-primary,
+  &__input_variant-success {
+    color: var(--accent-color-primary);
+  }
+
   &_variant-success,
   &__input_variant-success {
     color: var(--accent-color-success);

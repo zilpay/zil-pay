@@ -6,6 +6,9 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+
+import copy from 'clipboard-copy'
+
 const DEFAULT_TIMER = 1000
 const COPY_FORMS = {
   copy: 'copy',
@@ -27,7 +30,11 @@ export default {
     }
   },
   methods: {
-    onCopyMixin() {
+    onCopyMixin(content) {
+      if (content) {
+        copy(content)
+      }
+
       this.copytitle = COPY_FORMS.copied
 
       setTimeout(
