@@ -35,7 +35,10 @@
         <span>
           {{ getCurrentAccount.balance | fromZil }} ZIL
         </span>
-        <div class="pointer">
+        <div
+          class="pointer"
+          @click="onRefresh"
+        >
           <SvgInject :variant="ICON_VARIANTS.refresh"/>
         </div>
       </Title>
@@ -47,10 +50,11 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import walletStore from '@/store/wallet'
 
 import { ICON_VARIANTS, COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
@@ -94,7 +98,33 @@ export default {
     ])
   },
   methods: {
-    toAddress
+    toAddress,
+
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.updateRate
+    ]),
+    ...mapActions(accountsStore.STORE_NAME, [
+      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ]),
+    ...mapActions(walletStore.STORE_NAME, [
+      walletStore.ACTIONS_NAMES.checkProvider
+    ]),
+
+    async onRefresh() {
+      this.setLoad()
+      try {
+        await this.updateRate()
+        await this.checkProvider()
+        await this.updateCurrentAccount()
+      } catch (err) {
+        //
+      } finally {
+        this.setLoad()
+      }
+    }
   }
 }
 </script>
