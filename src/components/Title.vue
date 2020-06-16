@@ -121,8 +121,13 @@ export default {
   }
 
   &_variant-primary,
-  &__input_variant-success {
+  &__input_variant-primary {
     color: var(--accent-color-primary);
+  }
+
+  &_variant-gray,
+  &__input_variant-gray {
+    color: var(--accent-color-gray);
   }
 
   &_variant-success,

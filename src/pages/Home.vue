@@ -2,8 +2,8 @@
   <div :class="b()">
     <Top />
     <div :class="b('wrapper')">
-      <HomeAccount />
-      <Transactions />
+      <HomeAccount :class="b('account')"/>
+      <Transactions :class="b('txns')"/>
     </div>
   </div>
 </template>
@@ -80,5 +80,10 @@ export default {
 <style lang="scss">
 .Home {
   background-color: var(--app-background-color);
+
+  &__account,
+  &__txns {
+    margin-top: 10px;
+  }
 }
 </style>

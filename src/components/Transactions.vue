@@ -1,19 +1,19 @@
 <template>
-  <Alert :class="b()">
+  <div :class="b()">
     <div :class="b('wrapper')">
       <Title
         :class="b('title')"
-        :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.medium"
       >
-        Transactions:
+        Recent Transactions:
       </Title>
       <Title
         v-show="getCurrentTransactions.length === 0"
         :size="SIZE_VARIANS.sm"
         :font="FONT_VARIANTS.regular"
+        :variant="COLOR_VARIANTS.gray"
       >
-        You don’t have any transactions yet.
+        No Transactions Yet
       </Title>
       <div
         v-for="(tx, index) of getCurrentTransactions"
@@ -31,7 +31,7 @@
         :transaction="selectedTx"
       />
     </BottomModal>
-  </Alert>
+  </div>
 </template>
 
 <script>
@@ -40,9 +40,8 @@ import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
 import transactionsStore from '@/store/transactions'
 
-import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
+import { SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 
-import Alert from '@/components/Alert'
 import TransactionCard from '@/components/TransactionCard'
 import Separator from '@/components/Separator'
 import Title from '@/components/Title'
@@ -52,7 +51,6 @@ import TransactionDetails from '@/components/TransactionDetails'
 export default {
   name: 'Transactions',
   components: {
-    Alert,
     TransactionCard,
     Separator,
     Title,
@@ -63,6 +61,8 @@ export default {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
+      COLOR_VARIANTS,
+
       info: false,
       selected: null
     }
@@ -92,17 +92,17 @@ export default {
 
 <style lang="scss">
 .Transactions {
-  min-width: 360px;
-  min-height: 250px;
-  margin-bottom: 40px;
-
-  &__title {
-    height: 16px;
-  }
+  display: flex;
+  justify-content: center;
 
   &__wrapper {
-    display: grid;
-    grid-gap: 5px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  &__title {
+    margin-bottom: 10px;
+    font-size: 14px;
   }
 }
 </style>
