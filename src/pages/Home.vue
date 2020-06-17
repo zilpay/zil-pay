@@ -4,11 +4,16 @@
     <div :class="b('wrapper')">
       <HomeAccount :class="b('account')"/>
       <Transactions :class="b('txns')"/>
+      <Tabs
+        :class="b('tabs')"
+        :elements="tabsElements"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { uuid } from 'uuidv4'
 import { mapState, mapActions } from 'vuex'
 import uiStore from '@/store/ui'
 import accountsStore from '@/store/accounts'
@@ -23,13 +28,20 @@ import {
 import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
 import HomeAccount from '@/components/HomeAccount'
+import Tabs from '@/components/Tabs'
+
+const EVENTS = {
+  receive: uuid(),
+  send: uuid()
+}
 
 export default {
   name: 'Home',
   components: {
     Top,
     HomeAccount,
-    Transactions
+    Transactions,
+    Tabs
   },
   data() {
     return {
@@ -45,7 +57,20 @@ export default {
     ]),
     ...mapState(accountsStore.STORE_NAME, [
       accountsStore.STATE_NAMES.identities
-    ])
+    ]),
+
+    tabsElements() {
+      return [
+        {
+          name: this.local.RECEIVE,
+          event: EVENTS.receive
+        },
+        {
+          name: this.local.SEND,
+          event: EVENTS.send
+        }
+      ]
+    }
   },
   methods: {
     ...mapActions(accountsStore.STORE_NAME, [
@@ -82,7 +107,8 @@ export default {
   background-color: var(--app-background-color);
 
   &__account,
-  &__txns {
+  &__txns,
+  &__tabs {
     margin-top: 10px;
   }
 }

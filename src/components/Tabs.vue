@@ -53,11 +53,14 @@ export default {
       default: 0
     }
   },
+  data() {
+    return { }
+  },
   computed: {
     tabs() {
       return this.elements.map((el, index) => ({
         ...el,
-        variant: index === this.value ? COLOR_VARIANTS.primary : COLOR_VARIANTS.transparent
+        variant: COLOR_VARIANTS.transparent
       }))
     }
   },
@@ -72,8 +75,14 @@ export default {
 <style lang="scss">
 .Tabs {
   display: flex;
+  justify-content: center;
 
-  width: 260px;
+  width: 100%;
+
+  button {
+    font-size: 14px;
+    max-width: 90px;
+  }
 
   :first-of-type {
     border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
