@@ -12,7 +12,7 @@
         :class="b('account')"
         @click="onCopyMixin(toAddress(getCurrentAccount.address, addressFormat, false))"
       >
-        <Title :size="SIZE_VARIANS.sm">
+        <Title :class="b('a-name')">
           {{ getAccountName(getCurrentAccount) }}
         </Title>
         <P
@@ -42,8 +42,12 @@
           <SvgInject :variant="ICON_VARIANTS.refresh"/>
         </div>
       </Title>
-      <P :variant="COLOR_VARIANTS.gray">
-        {{ currency }} {{ getCurrentAccount.balance | toConversion(getRate) }}
+      <P
+        :variant="COLOR_VARIANTS.gray"
+        :size="SIZE_VARIANS.xs"
+        :font="FONT_VARIANTS.light"
+      >
+        {{ getCurrentAccount.balance | toConversion(getRate) }} {{ currency }}
       </P>
     </div>
   </div>
@@ -56,7 +60,7 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
-import { ICON_VARIANTS, COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
+import { ICON_VARIANTS, COLOR_VARIANTS, SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
 import SvgInject from '@/components/SvgInject'
 import P from '@/components/P'
@@ -79,7 +83,8 @@ export default {
     return {
       ICON_VARIANTS,
       COLOR_VARIANTS,
-      SIZE_VARIANS
+      SIZE_VARIANS,
+      FONT_VARIANTS
     }
   },
   computed: {
@@ -141,7 +146,7 @@ export default {
     align-items: center;
 
     width: 100%;
-    max-width: 340px;
+    max-width: 300px;
   }
 
   &__account {
@@ -158,6 +163,10 @@ export default {
     }
   }
 
+  &__a-name {
+    font-size: 14px;
+  }
+
   &__balance {
     display: grid;
     grid-template-columns: 1fr 26px;
@@ -167,8 +176,8 @@ export default {
 
     max-width: 340px;
     min-width: 200px;
-    padding: 8px;
-    margin-top: 40px;
+    padding: 5px;
+    margin-top: 30px;
     border-radius: 8px;
     border: 1px solid var(--accent-color-primary);
 
@@ -187,7 +196,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 110px;
+    height: 85px;
   }
 }
 </style>

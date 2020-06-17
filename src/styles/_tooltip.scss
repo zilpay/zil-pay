@@ -1,5 +1,5 @@
 .vue-tooltip {
-    background-color: var(--theme-color-alert);
+    background-color: var(--opacity-bg-element-1);
     box-sizing: border-box;
     color: var(--theme-color-font);
     letter-spacing: -0.139803px;
@@ -46,7 +46,7 @@
         
         .tooltip-arrow {
             border-width: 0 5px 5px 5px;
-            border-bottom-color: var(--theme-color-alert);
+            border-bottom-color: var(--opacity-bg-element-1);
             border-top-color: transparent;
             border-left-color: transparent;
             border-right-color: transparent;
@@ -61,7 +61,7 @@
         
         .tooltip-arrow {
             border-width: 5px 5px 0 5px;
-            border-top-color: var(--theme-color-alert);
+            border-top-color: var(--opacity-bg-element-1);
             bottom: -5px;
             margin-top: 0;
             margin-bottom: 0;
@@ -73,7 +73,7 @@
         
         .tooltip-arrow {
             border-width: 5px 5px 5px 0;
-            border-right-color: var(--theme-color-alert);
+            border-right-color: var(--opacity-bg-element-1);
             left: -5px;
             margin-left: 0;
             margin-right: 0;
@@ -85,7 +85,7 @@
         
         .tooltip-arrow {
             border-width: 5px 0 5px 5px;
-            border-left-color: var(--theme-color-alert);
+            border-left-color: var(--opacity-bg-element-1);
             right: -5px;
             margin-left: 0;
             margin-right: 0;

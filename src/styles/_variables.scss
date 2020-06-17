@@ -28,14 +28,14 @@ $md: 50px !default;
 $lg: 60px !default;
 
 $xs-font: 10px !default;
-$sm-font: 20px !default;
+$sm-font: 15px !default;
 $md-font: 22px !default;
 $lg-font: 32px !default;
 
 // Color system
 $black:     #131313 !default;
 $white:     #FFFFFF !default;
-$gray:      #B8B8B8 !default;
+$gray:      #666666 !default;
 $dark:      #000    !default;
 
 // new 
@@ -43,7 +43,7 @@ $opacity-bg-element-black: #131313cc;
 $opacity-bg-element-white: #ffffffe6;
 
 $opacity-bg-element-black-1: #00000080;
-$opacity-bg-element-white-1: #d6d6d6;
+$opacity-bg-element-white-1: #EEEEEE;
 
 $primary-light:         #29CCC4 !default;
 $success-light:         #2FA84F !default;
@@ -60,5 +60,5 @@ $danger-dark:          #FA5D50 !default;
 $logo-gradient-white-0: #00c2ff73;
 $logo-gradient-white-1: #eaf7ff00;
 
-$logo-gradient-dark-0: rgba(0, 248, 188, 0.87);
-$logo-gradient-dark-1: rgba(179, 179, 179, 0);
+$logo-gradient-dark-0: #00c2ff73;
+$logo-gradient-dark-1: #eaf7ff00;

@@ -5,7 +5,7 @@
       :to="{ name: LINKS.networkPage }"
     >
       <SvgInject :variant="ICON_VARIANTS.net"/>
-      <P>
+      <P :variant="COLOR_VARIANTS.gray">
         {{ network }}
       </P>
     </router-link>
@@ -16,7 +16,7 @@
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 
-import { ICON_VARIANTS } from '@/config'
+import { ICON_VARIANTS, COLOR_VARIANTS } from '@/config'
 
 import NetworkPage from '@/pages/settings/Networks'
 
@@ -32,6 +32,8 @@ export default {
   data() {
     return {
       ICON_VARIANTS,
+      COLOR_VARIANTS,
+
       LINKS: {
         networkPage: NetworkPage.name
       }

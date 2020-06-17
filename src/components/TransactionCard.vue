@@ -3,62 +3,62 @@
     :class="b()"
     @click="onClick"
   >
-    <Container :class="b('first-line')">
-      <P
-        :class="b('send')"
-        :font="FONT_VARIANTS.bold"
-      >
-        {{ txType }}
-      </P>
-      <P
-        :class="b('amount')"
-        :font="FONT_VARIANTS.regular"
-      >
-        -ZIL{{ transaction.amount | fromZil }}
-      </P>
-    </Container>
-    <Container :class="b('second-line')">
-      <Icon
-        :icon="statusIcon"
-        height="15"
-        width="15"
-      />
-      <Arrow
-        :color="COLOR_VARIANTS.primary"
-        height="10"
-        width="2"
-        right
-      />
-    </Container>
-    <Container :class="b('thirdly-line')">
-      <div :class="b('time')">
-        {{ this.local.EPOCH }}: {{ transaction.block}}
-      </div>
-      <P
-        :class="b('amount')"
-        :font="FONT_VARIANTS.regular"
-      >
-        -${{ transaction.amount | toConversion('0.001') }}
-      </P>
-    </Container>
+    <Icon
+      :icon="statusIcon"
+      height="15"
+      width="15"
+    />
+    <div :class="b('wrapper')">
+      <Container :class="b('first-line')">
+        <P
+          :class="b('send')"
+          :font="FONT_VARIANTS.bold"
+        >
+          {{ txType }}
+        </P>
+        <P
+          :class="b('zil')"
+          :font="FONT_VARIANTS.light"
+        >
+          -ZIL{{ transaction.amount | fromZil }}
+        </P>
+      </Container>
+      <Container :class="b('thirdly-line')">
+        <P
+          :class="b('time')"
+          :variant="COLOR_VARIANTS.gray"
+          :font="FONT_VARIANTS.regular"
+        >
+          {{ this.local.EPOCH }}: {{ transaction.block}}
+        </P>
+        <P
+          :class="b('amount')"
+          :variant="COLOR_VARIANTS.gray"
+          :font="FONT_VARIANTS.regular"
+        >
+          -${{ transaction.amount | toConversion(getRate) }}
+        </P>
+      </Container>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
+import settingsStore from '@/store/settings'
 
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
   COLOR_VARIANTS,
+  SIZE_VARIANS,
   EVENTS
 } from '@/config'
 
 import P from '@/components/P'
 import Container from '@/components/Container'
 import Icon from '@/components/Icon'
-import Arrow from '@/components/icons/Arrow'
 
 import { fromZil, toConversion } from '@/filters'
 
@@ -67,7 +67,6 @@ export default {
   components: {
     P,
     Icon,
-    Arrow,
     Container
   },
   filters: { fromZil, toConversion },
@@ -81,13 +80,18 @@ export default {
     return {
       ICON_VARIANTS,
       FONT_VARIANTS,
-      COLOR_VARIANTS
+      COLOR_VARIANTS,
+      SIZE_VARIANS
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ]),
+    ...mapGetters(settingsStore.STORE_NAME, [
+      settingsStore.GETTERS_NAMES.getRate
+    ]),
+
     txType() {
       const { Info } = this.transaction
 
@@ -132,8 +136,21 @@ export default {
 
 <style lang="scss">
 .TransactionCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   cursor: pointer;
-  height: 70px;
+
+  border-radius: 7px;
+  background-color: var(--opacity-bg-element-1);
+  padding: 8px;
+
+  max-height: 40px;
+
+  &__wrapper {
+    width: 100%;
+  }
 
   &__first-line,
   &__second-line,
@@ -150,20 +167,16 @@ export default {
     padding-right: 15px;
   }
 
-  &__send {
-    font-size: 10px;
+  &__send,
+  &__zil {
+    font-size: 14px;
     line-height: 25px;
   }
 
-  &__amount {
-    font-size: 10px;
-    line-height: 20px;
-  }
-
+  &__amount,
   &__time {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 20px;
-    color: var(--theme-color-font);
   }
 }
 </style>
