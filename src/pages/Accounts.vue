@@ -38,10 +38,6 @@
         </Title>
       </div>
     </div>
-    <BottomBar
-      :elements="bottomBar"
-      @click="onEvent"
-    />
   </div>
 </template>
 
@@ -60,7 +56,6 @@ import ImportPage from '@/pages/accounts/Import'
 import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
-import BottomBar from '@/components/BottomBar'
 import AccountCard from '@/components/AccountCard'
 import Item from '@/components/Item'
 import Title from '@/components/Title'
@@ -78,7 +73,6 @@ export default {
   name: 'Accounts',
   components: {
     TopBar,
-    BottomBar,
     AccountCard,
     Item,
     Title
