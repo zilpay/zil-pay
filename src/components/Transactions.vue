@@ -123,7 +123,7 @@ export default {
     margin-top: 10px;
 
     overflow-y: scroll;
-    height: 253px;
+    height: calc(100vh - 306px);
   }
 
   &__title {
