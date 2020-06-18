@@ -21,6 +21,7 @@
     "cross-fetch": "^3.0.4",
     "crypto": "^1.0.1",
     "extensionizer": "^1.0.1",
+    "jazzicon": "^1.5.0",
     "qrcode": "^1.4.4",
     "rxjs": "^6.5.5",
     "uuidv4": "^6.1.0",
