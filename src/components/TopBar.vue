@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
+import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Title from '@/components/Title'
 import Arrow from '@/components/icons/Arrow'
@@ -24,8 +24,6 @@ import Arrow from '@/components/icons/Arrow'
 /**
  * ToBar is bar for navigate by UI.
  * @param route Show current router name.
- * @param close Show close button.
- * @event close When cleck to close button.
  * @example
  * import TopBar from '@/components/TopBar'
  * <TopBar/>
@@ -60,10 +58,6 @@ export default {
   methods: {
     goBack() {
       this.$router.go(-1)
-    },
-    onCancel() {
-      this.$router.push({ path: '/home' })
-      this.$emit(EVENTS.close)
     }
   }
 }
