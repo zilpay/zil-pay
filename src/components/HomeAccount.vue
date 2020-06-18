@@ -144,9 +144,6 @@ export default {
 </script>
 
 <style lang="scss">
-#jazzicon {
-  cursor: pointer;
-}
 .HomeAccount {
   display: flex;
   flex-direction: column;
@@ -159,6 +156,10 @@ export default {
 
     width: 100%;
     max-width: 300px;
+
+    & > * {
+      cursor: pointer;
+    }
   }
 
   &__account {
@@ -166,7 +167,6 @@ export default {
     flex-direction: column;
     align-items: center;
 
-    cursor: pointer;
     padding: 10px;
     border-radius: 10px;
 

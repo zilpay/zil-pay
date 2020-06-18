@@ -1,11 +1,7 @@
 <template>
   <div :class="b()">
-    <TopBar />
+    <TopBar v-if="route"/>
     <div :class="b('wrapper')">
-      <Tabs
-        v-model="tabs"
-        :elements="tabsElements"
-      />
       <div :class="b('list')">
         <AccountCard
           v-show="tabs === 0"
@@ -63,7 +59,7 @@ import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
-import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS } from '@/config'
 
 import SendPage from '@/pages/Send'
 import ImportPage from '@/pages/accounts/Import'
@@ -71,7 +67,6 @@ import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
-import Tabs from '@/components/Tabs'
 import AccountCard from '@/components/AccountCard'
 import Item from '@/components/Item'
 import Title from '@/components/Title'
@@ -92,7 +87,6 @@ export default {
   components: {
     TopBar,
     BottomBar,
-    Tabs,
     AccountCard,
     Item,
     Title,
@@ -122,33 +116,14 @@ export default {
       accountsStore.STATE_NAMES.selectedAddress
     ]),
 
-    bottomBar() {
-      return [
-        {
-          value: this.local.CREATE,
-          event: EVENTS.create,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
-        },
-        {
-          value: this.local.IMPORT,
-          event: EVENTS.import,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
-        }
-      ]
-    },
-    tabsElements() {
-      return [
-        {
-          name: this.local.ACCOUNTS,
-          event: EVENTS.accounts
-        },
-        {
-          name: this.local.CONTACTS,
-          event: EVENTS.contacts
-        }
-      ]
+    route() {
+      const currentName = this.$router.history.current.name
+
+      if (currentName === this.$options.name) {
+        return true
+      }
+
+      return false
     }
   },
   methods: {

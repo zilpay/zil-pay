@@ -1,16 +1,19 @@
 <template>
   <div :class="b()">
     <Top />
-    <SettingsList />
     <div :class="b('wrapper')">
-      <HomeAccount :class="b('account')"/>
-      <Transactions :class="b('txns')"/>
-      <Tabs
-        :class="b('tabs')"
-        :elements="tabsElements"
-        @input="onEvent"
-      />
-      <BottomBar />
+      <SettingsList />
+      <div :class="b('main')">
+        <HomeAccount :class="b('account')"/>
+        <Transactions :class="b('txns')"/>
+        <Tabs
+          :class="b('tabs')"
+          :elements="tabsElements"
+          @input="onEvent"
+        />
+        <BottomBar />
+      </div>
+      <Accounts />
     </div>
   </div>
 </template>
@@ -30,6 +33,7 @@ import {
 
 import Receive from '@/pages/Receive'
 import Send from '@/pages/Send'
+import Accounts from '@/pages/Accounts'
 
 import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
@@ -51,7 +55,8 @@ export default {
     Transactions,
     Tabs,
     BottomBar,
-    SettingsList
+    SettingsList,
+    Accounts
   },
   data() {
     return {
@@ -88,7 +93,6 @@ export default {
     ]),
 
     onEvent(event) {
-      console.log(event)
       switch (event) {
       case 0:
         this.$router.push({ name: Receive.name })
@@ -122,6 +126,15 @@ export default {
 <style lang="scss">
 .Home {
   background-color: var(--app-background-color);
+
+  &__wrapper {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &__main {
+    width: 100%;
+  }
 
   &__account,
   &__txns,

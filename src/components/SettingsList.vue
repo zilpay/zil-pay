@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <Title>
+    <Title :size="SIZE_VARIANS.md">
       {{ local.SETTINGS }}
     </Title>
     <ul :class="b('wrapper')">
@@ -88,12 +88,16 @@ export default {
 
 <style lang="scss">
 .SettingsList {
+  padding: 20px;
+
   &__wrapper {
     display: grid;
     grid-gap: 25px;
 
     margin: 0;
     padding: 0;
+    margin-top: 30px;
+    width: min-content;
   }
 
   &__item {
@@ -105,7 +109,7 @@ export default {
       align-items: center;
 
       .P {
-        margin-left: 10px;
+        margin-left: 25px;
       }
     }
   }
