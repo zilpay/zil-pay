@@ -42,12 +42,6 @@
       :elements="bottomBar"
       @click="onEvent"
     />
-    <BottomModal v-model="contactModal">
-      <ContactCreater
-        v-if="contactModal"
-        @close="contactModal = false"
-      />
-    </BottomModal>
   </div>
 </template>
 
@@ -70,8 +64,6 @@ import BottomBar from '@/components/BottomBar'
 import AccountCard from '@/components/AccountCard'
 import Item from '@/components/Item'
 import Title from '@/components/Title'
-import BottomModal from '@/components/BottomModal'
-import ContactCreater from '@/components/ContactCreater'
 
 import { toAddress } from '@/filters'
 import { Background } from '@/services'
@@ -89,9 +81,7 @@ export default {
     BottomBar,
     AccountCard,
     Item,
-    Title,
-    BottomModal,
-    ContactCreater
+    Title
   },
   data() {
     return {
