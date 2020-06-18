@@ -7,7 +7,9 @@
       <Tabs
         :class="b('tabs')"
         :elements="tabsElements"
+        @input="onEvent"
       />
+      <BottomBar />
     </div>
   </div>
 </template>
@@ -25,10 +27,14 @@ import {
   SIZE_VARIANS
 } from '@/config'
 
+import Receive from '@/pages/Receive'
+import Send from '@/pages/Send'
+
 import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
 import HomeAccount from '@/components/HomeAccount'
 import Tabs from '@/components/Tabs'
+import BottomBar from '@/components/BottomBar'
 
 const EVENTS = {
   receive: uuid(),
@@ -41,7 +47,8 @@ export default {
     Top,
     HomeAccount,
     Transactions,
-    Tabs
+    Tabs,
+    BottomBar
   },
   data() {
     return {
@@ -78,7 +85,14 @@ export default {
     ]),
 
     onEvent(event) {
+      console.log(event)
       switch (event) {
+      case 0:
+        this.$router.push({ name: Receive.name })
+        break
+      case 1:
+        this.$router.push({ name: Send.name })
+        break
       // case EVENTS.send:
       //   this.$router.push({ name: Send.name })
       //   break

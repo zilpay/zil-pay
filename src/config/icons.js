@@ -15,6 +15,9 @@ export const ICON_VARIANTS = {
   net: 'net',
   burger: 'burger',
   user: 'user',
+  home: 'home',
+  chip: 'chip',
+  contact: 'contact',
 
   ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',
@@ -22,10 +25,7 @@ export const ICON_VARIANTS = {
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',
   statusSuccess: 'status_success',
-  send: 'send',
-  receive: 'receive',
   selected: 'selected',
-  drop: 'drop',
   moon: 'moon',
   sun: 'sun',
   warn: 'warn'
