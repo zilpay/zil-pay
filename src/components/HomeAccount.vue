@@ -22,7 +22,10 @@
           {{ getCurrentAccount.address | toAddress(addressFormat) }}
         </P>
       </div>
-      <div id="jazzicon"/>
+      <router-link
+        :to="LINKS.accounts"
+        id="jazzicon"
+      />
     </div>
     <div :class="b('info')">
       <Title
@@ -60,6 +63,8 @@ import walletStore from '@/store/wallet'
 
 import { ICON_VARIANTS, COLOR_VARIANTS, SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
+import Accounts from '@/pages/Accounts'
+
 import SvgInject from '@/components/SvgInject'
 import P from '@/components/P'
 import Title from '@/components/Title'
@@ -83,7 +88,11 @@ export default {
       ICON_VARIANTS,
       COLOR_VARIANTS,
       SIZE_VARIANS,
-      FONT_VARIANTS
+      FONT_VARIANTS,
+
+      LINKS: {
+        accounts: Accounts.name
+      }
     }
   },
   computed: {
