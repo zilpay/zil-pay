@@ -22,9 +22,7 @@
           {{ getCurrentAccount.address | toAddress(addressFormat) }}
         </P>
       </div>
-      <div :class="b('drop')">
-        <SvgInject :variant="ICON_VARIANTS.user"/>
-      </div>
+      <div id="jazzicon"/>
     </div>
     <div :class="b('info')">
       <Title
@@ -68,11 +66,12 @@ import Title from '@/components/Title'
 
 import AccountMixin from '@/mixins/account'
 import CopyMixin from '@/mixins/copy'
+import JazziconMixin from '@/mixins/jazzicon'
 import { toAddress, fromZil, toConversion } from '@/filters'
 
 export default {
   name: 'HomeAccount',
-  mixins: [AccountMixin, CopyMixin],
+  mixins: [AccountMixin, CopyMixin, JazziconMixin],
   filters: { toAddress, fromZil, toConversion },
   components: {
     SvgInject,
@@ -130,11 +129,24 @@ export default {
         this.setLoad()
       }
     }
+  },
+  watch: {
+    getCurrentAccount(value) {
+      if (value && value.address) {
+        this.jazziconCreate(
+          'jazzicon',
+          value.address
+        )
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss">
+#jazzicon {
+  cursor: pointer;
+}
 .HomeAccount {
   display: flex;
   flex-direction: column;

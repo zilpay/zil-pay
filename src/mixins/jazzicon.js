@@ -14,7 +14,12 @@ export default {
   methods: {
     jazziconCreate(id, address) {
       let ctx = window.document.querySelector('#' + id)
-      let el = Jazzicon(45, this.jsNumberForAddress(address))
+
+      if (!ctx) {
+        return null
+      }
+
+      let el = Jazzicon(30, this.jsNumberForAddress(address))
 
       if (ctx.children.length > 0) {
         ctx.children[0].remove()
