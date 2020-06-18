@@ -1,6 +1,7 @@
 <template>
   <div :class="b()">
     <Top />
+    <SettingsList />
     <div :class="b('wrapper')">
       <HomeAccount :class="b('account')"/>
       <Transactions :class="b('txns')"/>
@@ -35,6 +36,7 @@ import Top from '@/components/Top'
 import HomeAccount from '@/components/HomeAccount'
 import Tabs from '@/components/Tabs'
 import BottomBar from '@/components/BottomBar'
+import SettingsList from '@/components/SettingsList'
 
 const EVENTS = {
   receive: uuid(),
@@ -48,7 +50,8 @@ export default {
     HomeAccount,
     Transactions,
     Tabs,
-    BottomBar
+    BottomBar,
+    SettingsList
   },
   data() {
     return {
