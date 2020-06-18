@@ -1,20 +1,10 @@
 <template>
   <div :class="b()">
-    <div
-      :class="b('back-wrapper')"
+    <Arrow
+      :class="b('back-icon')"
+      pointer
       @click="goBack"
-    >
-      <Arrow
-        :class="b('back-icon')"
-        pointer
-      />
-      <Title
-        v-if="back"
-        :size="SIZE_VARIANS.sm"
-      >
-        back
-      </Title>
-    </div>
+    />
     <Title
       v-show="route"
       :class="b('current-page')"
@@ -22,13 +12,6 @@
     >
       {{ currentRouter.name }}
     </Title>
-    <Close
-      v-show="close"
-      :class="b('cancel-icon')"
-      :size="SIZE_VARIANS.lg"
-      pointer
-      @click="onCancel"
-    />
   </div>
 </template>
 
@@ -37,7 +20,6 @@ import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
 
 import Title from '@/components/Title'
 import Arrow from '@/components/icons/Arrow'
-import Close from '@/components/icons/Close'
 
 /**
  * ToBar is bar for navigate by UI.
@@ -52,17 +34,12 @@ export default {
   name: 'TopBar',
   components: {
     Title,
-    Arrow,
-    Close
+    Arrow
   },
   props: {
     route: {
       type: Boolean,
       default: true
-    },
-    back: {
-      type: Boolean,
-      required: false
     },
     close: {
       type: Boolean,
@@ -94,35 +71,16 @@ export default {
 
 <style lang="scss">
 .TopBar {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
   align-items: center;
+  justify-content: center;
 
-  min-height: 65px;
-  width: 360px;
-
-  &__back-wrapper {
-    display: flex;
-    align-items: center;
-
-    text-indent: 10px;
-
-    cursor: pointer;
-  }
+  width: 100%;
+  height: 40px;
 
   &__back-icon {
-    padding-left: 15px;
-    justify-self: left;
-  }
-
-  &__current-page {
-    justify-self: center;
-  }
-
-  &__cancel-icon {
-    padding-right: 15px;
-    justify-self: right;
+    position: absolute;
+    left: 30px;
   }
 }
 </style>

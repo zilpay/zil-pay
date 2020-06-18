@@ -2,18 +2,16 @@
   <div :class="b()">
     <TopBar v-if="route"/>
     <div :class="b('wrapper')">
-      <div :class="b('list')">
-        <AccountCard
-          v-show="tabs === 0"
-          v-for="(acc, index) of identities"
-          :key="acc.address"
-          :account="acc"
-          :selected="index === selectedAddress"
-          :trash="Boolean(acc.index > 0 || acc.isImport || acc.hwType)"
-          @selected="onSelectAccount(index)"
-          @remove="onRemoveAccount(index)"
-        />
-      </div>
+      <AccountCard
+        v-show="tabs === 0"
+        v-for="(acc, index) of identities"
+        :key="acc.address"
+        :account="acc"
+        :selected="index === selectedAddress"
+        :trash="Boolean(acc.index > 0 || acc.isImport || acc.hwType)"
+        @selected="onSelectAccount(index)"
+        @remove="onRemoveAccount(index)"
+      />
     </div>
   </div>
 </template>
