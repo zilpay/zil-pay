@@ -64,7 +64,6 @@ import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 
 import P from '@/components/P'
 import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import ViewblockLink from '@/components/ViewblockLink'
 import Arrow from '@/components/icons/Arrow'
 
@@ -84,7 +83,6 @@ export default {
   name: 'TransactionDetails',
   components: {
     Container,
-    Separator,
     Arrow,
     P,
     ViewblockLink

@@ -50,7 +50,6 @@ import { COLOR_VARIANTS } from '@/config'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
@@ -60,7 +59,6 @@ export default {
     TopBar,
     RadioGroup,
     Container,
-    Separator,
     Button
   },
   data() {

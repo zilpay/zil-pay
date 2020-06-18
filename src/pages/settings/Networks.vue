@@ -79,7 +79,6 @@ import { COLOR_VARIANTS, REGX_PATTERNS } from '@/config'
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
-import Separator from '@/components/Separator'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
 
@@ -93,7 +92,6 @@ export default {
     TopBar,
     Container,
     RadioGroup,
-    Separator,
     Input,
     Button
   },

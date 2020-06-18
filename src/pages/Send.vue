@@ -125,7 +125,6 @@ import Button from '@/components/Button'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Item from '@/components/Item'
 import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
 
 import CalcMixin from '@/mixins/calc'
@@ -150,7 +149,6 @@ export default {
     Title,
     Input,
     Item,
-    Separator,
     Button,
     Container
   },

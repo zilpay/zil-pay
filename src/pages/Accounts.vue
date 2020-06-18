@@ -74,7 +74,6 @@ import BottomBar from '@/components/BottomBar'
 import Tabs from '@/components/Tabs'
 import AccountCard from '@/components/AccountCard'
 import Item from '@/components/Item'
-import Separator from '@/components/Separator'
 import Title from '@/components/Title'
 import BottomModal from '@/components/BottomModal'
 import ContactCreater from '@/components/ContactCreater'
@@ -96,7 +95,6 @@ export default {
     Tabs,
     AccountCard,
     Item,
-    Separator,
     Title,
     BottomModal,
     ContactCreater

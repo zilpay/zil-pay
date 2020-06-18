@@ -109,7 +109,6 @@ import P from '@/components/P'
 import Icon from '@/components/Icon'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import BottomModal from '@/components/BottomModal'
 import ViewblockLink from '@/components/ViewblockLink'
 
@@ -137,7 +136,6 @@ export default {
     Icon,
     Button,
     Container,
-    Separator,
     BottomModal,
     ViewblockLink
   },

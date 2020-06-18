@@ -50,7 +50,6 @@ import ExportPage from '@/pages/accounts/Export'
 
 import TopBar from '@/components/TopBar'
 import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
@@ -59,7 +58,6 @@ export default {
   components: {
     TopBar,
     Container,
-    Separator,
     RadioGroup,
     Button
   },

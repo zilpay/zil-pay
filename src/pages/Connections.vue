@@ -46,7 +46,6 @@ import {
 import TopBar from '@/components/TopBar'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import P from '@/components/P'
 import Item from '@/components/Item'
 
@@ -60,8 +59,7 @@ export default {
     Button,
     Container,
     Item,
-    P,
-    Separator
+    P
   },
   data() {
     return {

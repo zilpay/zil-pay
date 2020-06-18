@@ -133,7 +133,6 @@ import P from '@/components/P'
 import Icon from '@/components/Icon'
 import Container from '@/components/Container'
 import GasControl from '@/components/GasControl'
-import Separator from '@/components/Separator'
 import BottomBar from '@/components/BottomBar'
 import ArrowInCircle from '@/components/icons/ArrowInCircle'
 import SwitchBox from '@/components/SwitchBox'
@@ -163,7 +162,6 @@ export default {
     Icon,
     GasControl,
     Container,
-    Separator,
     BottomBar,
     ArrowInCircle,
     SwitchBox

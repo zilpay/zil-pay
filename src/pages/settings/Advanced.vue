@@ -38,7 +38,6 @@ import TopBar from '@/components/TopBar'
 import GasControl from '@/components/GasControl'
 import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
-import Separator from '@/components/Separator'
 import Button from '@/components/Button'
 
 export default {
@@ -47,7 +46,6 @@ export default {
     TopBar,
     GasControl,
     Container,
-    Separator,
     RadioGroup,
     Button
   },
