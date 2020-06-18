@@ -14,7 +14,6 @@ export const ICON_VARIANTS = {
   refresh: 'refresh',
   net: 'net',
   burger: 'burger',
-  user: 'user',
   home: 'home',
   chip: 'chip',
   contact: 'contact',

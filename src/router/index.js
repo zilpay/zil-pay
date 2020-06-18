@@ -22,7 +22,6 @@ import Popup from '@/pages/Popup'
 import SignMessage from '@/pages/SignMessage'
 import Receive from '@/pages/Receive'
 import Send from '@/pages/Send'
-import Settings from '@/pages/Settings'
 
 // Settings children pages.
 import About from '@/pages/settings/About'
@@ -146,12 +145,6 @@ const routes = [
     path: `/${Send.name.toLowerCase()}/:?address`,
     name: Send.name,
     component: Send,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Settings.name.toLowerCase()}`,
-    name: Settings.name,
-    component: Settings,
     meta: { requiresAuth: true }
   },
   {
