@@ -17,6 +17,11 @@ export const ICON_VARIANTS = {
   home: 'home',
   chip: 'chip',
   contact: 'contact',
+  gear: 'gear',
+  setup: 'setup',
+  link: 'link',
+  security: 'security',
+  about: 'about',
 
   ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',
