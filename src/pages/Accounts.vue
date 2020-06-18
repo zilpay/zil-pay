@@ -13,36 +13,12 @@
           @selected="onSelectAccount(index)"
           @remove="onRemoveAccount(index)"
         />
-        <div
-          v-show="tabs === 1"
-          v-for="(contact, index) of contactList"
-          :key="index"
-        >
-          <Item
-            trash
-            pointer
-            @click="onSelectContact(contact)"
-            @remove="onRemoveByIndex(index)"
-          >
-            <Title :size="SIZE_VARIANS.sm">
-              {{ contact.name }}
-            </Title>
-          </Item>
-          <Separator v-show="index < contactList.length - 1"/>
-        </div>
-        <Title
-          v-show="tabs === 1 && contactList.length === 0"
-          :size="SIZE_VARIANS.sm"
-        >
-          {{ local.NOT_CONTACTS }}
-        </Title>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
 import { mapState, mapMutations, mapActions } from 'vuex'
 import contactsStore from '@/store/contacts'
 import accountsStore from '@/store/accounts'
@@ -52,30 +28,19 @@ import uiStore from '@/store/ui'
 import { SIZE_VARIANS } from '@/config'
 
 import SendPage from '@/pages/Send'
-import ImportPage from '@/pages/accounts/Import'
 import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
 import AccountCard from '@/components/AccountCard'
-import Item from '@/components/Item'
-import Title from '@/components/Title'
 
 import { toAddress } from '@/filters'
 import { Background } from '@/services'
 
-const EVENTS = {
-  create: uuid(),
-  import: uuid(),
-  contacts: uuid(),
-  accounts: uuid()
-}
 export default {
   name: 'Accounts',
   components: {
     TopBar,
-    AccountCard,
-    Item,
-    Title
+    AccountCard
   },
   data() {
     return {
@@ -125,28 +90,6 @@ export default {
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
     ]),
-
-    onEvent(event) {
-      if (EVENTS.create === event && this.tabs === 1) {
-        this.contactModal = true
-
-        return null
-      }
-
-      if (EVENTS.create === event && this.tabs === 0) {
-        this.onCreateAccount()
-
-        return null
-      }
-
-      if (EVENTS.import === event) {
-        this.$router.push({
-          name: ImportPage.name
-        })
-
-        return null
-      }
-    },
     onSelectAccount(index) {
       this.setAccount(index)
       this.$router.push({ name: homePage.name })
@@ -187,13 +130,13 @@ export default {
 
 <style lang="scss">
 .Accounts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
   &__wrapper {
-    display: grid;
-    justify-items: center;
-    align-items: baseline;
-    grid-template-rows: 80px auto;
-    grid-template-rows: 80px auto;
-    min-height: 500px;
   }
 
   &__list {
