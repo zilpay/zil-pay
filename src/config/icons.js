@@ -22,6 +22,7 @@ export const ICON_VARIANTS = {
   link: 'link',
   security: 'security',
   about: 'about',
+  close: 'close',
 
   ledgerWatermark: 'ledger_logo_watermark',
   arrowLefrt: 'arrow_lefrt',

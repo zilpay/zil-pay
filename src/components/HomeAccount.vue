@@ -4,7 +4,7 @@
     :class="b()"
   >
     <div :class="b('header')">
-      <div>
+      <div @click="onBurgerMenu">
         <SvgInject :variant="ICON_VARIANTS.burger"/>
       </div>
       <div
@@ -61,7 +61,13 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
-import { ICON_VARIANTS, COLOR_VARIANTS, SIZE_VARIANS, FONT_VARIANTS } from '@/config'
+import {
+  ICON_VARIANTS,
+  COLOR_VARIANTS,
+  SIZE_VARIANS,
+  FONT_VARIANTS,
+  EVENTS
+} from '@/config'
 
 import Accounts from '@/pages/Accounts'
 
@@ -137,6 +143,9 @@ export default {
       } finally {
         this.setLoad()
       }
+    },
+    onBurgerMenu() {
+      this.$emit(EVENTS.click)
     }
   },
   watch: {

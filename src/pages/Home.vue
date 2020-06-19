@@ -2,9 +2,12 @@
   <div :class="b()">
     <Top />
     <div :class="b('wrapper')">
-      <SettingsList />
+      <SettingsList v-model="settingsModal"/>
       <div :class="b('main')">
-        <HomeAccount :class="b('account')"/>
+        <HomeAccount
+          :class="b('account')"
+          @click="settingsModal = true"
+        />
         <Transactions :class="b('txns')"/>
         <Tabs
           :class="b('tabs')"
@@ -13,7 +16,6 @@
         />
         <BottomBar />
       </div>
-      <Accounts />
     </div>
   </div>
 </template>
@@ -33,7 +35,6 @@ import {
 
 import Receive from '@/pages/Receive'
 import Send from '@/pages/Send'
-import Accounts from '@/pages/Accounts'
 
 import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
@@ -55,15 +56,16 @@ export default {
     Transactions,
     Tabs,
     BottomBar,
-    SettingsList,
-    Accounts
+    SettingsList
   },
   data() {
     return {
       ICON_TYPE,
       ICON_VARIANTS,
       COLOR_VARIANTS,
-      SIZE_VARIANS
+      SIZE_VARIANS,
+
+      settingsModal: false
     }
   },
   computed: {

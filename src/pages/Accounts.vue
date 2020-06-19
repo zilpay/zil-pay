@@ -1,5 +1,6 @@
 <template>
   <div :class="b()">
+    <Top />
     <TopBar v-if="route"/>
     <div :class="b('wrapper')">
       <AccountCard
@@ -30,6 +31,7 @@ import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
 import AccountCard from '@/components/AccountCard'
+import Top from '@/components/Top'
 
 import { toAddress } from '@/filters'
 import { Background } from '@/services'
@@ -38,7 +40,8 @@ export default {
   name: 'Accounts',
   components: {
     TopBar,
-    AccountCard
+    AccountCard,
+    Top
   },
   data() {
     return {
