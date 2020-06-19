@@ -28,7 +28,6 @@ export const ICON_VARIANTS = {
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',
   statusSuccess: 'status_success',
-  selected: 'selected',
   moon: 'moon',
   sun: 'sun',
   warn: 'warn'
