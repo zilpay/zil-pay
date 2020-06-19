@@ -176,6 +176,10 @@ export default {
     .P {
       margin-left: 20px;
     }
+
+    svg > g > path {
+      fill: var(--accent-color-primary);
+    }
   }
 }
 </style>
