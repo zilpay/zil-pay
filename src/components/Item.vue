@@ -21,12 +21,6 @@
       pointer
       @click="onRemove"
     />
-    <Arrow
-      v-if="arrow"
-      right
-      height="12"
-      width="2"
-    />
   </div>
 </template>
 
@@ -41,7 +35,6 @@ import {
 import Icon from '@/components/Icon'
 
 import Trash from '@/components/icons/Trash'
-import Arrow from '@/components/icons/Arrow'
 
 /**
  * List item
@@ -61,8 +54,7 @@ export default {
   name: 'Item',
   components: {
     Icon,
-    Trash,
-    Arrow
+    Trash
   },
   props: {
     src: {

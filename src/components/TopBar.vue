@@ -1,10 +1,11 @@
 <template>
   <div :class="b()">
-    <Arrow
+    <div
       :class="b('back-icon')"
-      pointer
       @click="goBack"
-    />
+    >
+      <SvgInject :variant="ICON_VARIANTS.arrow"/>
+    </div>
     <Title
       v-show="route"
       :class="b('current-page')"
@@ -19,7 +20,7 @@
 import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Title from '@/components/Title'
-import Arrow from '@/components/icons/Arrow'
+import SvgInject from '@/components/SvgInject'
 
 /**
  * ToBar is bar for navigate by UI.
@@ -32,7 +33,7 @@ export default {
   name: 'TopBar',
   components: {
     Title,
-    Arrow
+    SvgInject
   },
   props: {
     route: {
@@ -70,9 +71,10 @@ export default {
   justify-content: center;
 
   width: 100%;
-  height: 40px;
+  height: 60px;
 
   &__back-icon {
+    cursor: pointer;
     position: absolute;
     left: 30px;
   }

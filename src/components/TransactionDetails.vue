@@ -10,11 +10,11 @@
       >
         {{ account.address | toAddress(addressFormat) }}
       </P>
-      <Arrow
+      <!-- <Arrow
         height="10"
         width="2"
         right
-      />
+      /> -->
       <P
         v-tooltip="copytitle"
         :size="SIZE_VARIANS.xs"
@@ -65,7 +65,6 @@ import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 import P from '@/components/P'
 import Container from '@/components/Container'
 import ViewblockLink from '@/components/ViewblockLink'
-import Arrow from '@/components/icons/Arrow'
 
 import { toAddress, fromZil, toConversion } from '@/filters'
 import CopyMixin from '@/mixins/copy'
@@ -83,7 +82,6 @@ export default {
   name: 'TransactionDetails',
   components: {
     Container,
-    Arrow,
     P,
     ViewblockLink
   },
