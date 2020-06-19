@@ -1,68 +1,22 @@
 <template>
-  <div :class="b()" :style="color">
-    <Icon
-      v-show="selected"
-      :class="b('selected')"
-      :icon="ICON_VARIANTS.selected"
-      width="14"
-      height="14"
-      @click="onSelectedCard"
-    />
-    <Title
-      :class="b('name')"
-      @click="onSelectedCard"
-    >
-      {{ getAccountName(account) }}
-    </Title>
+  <div :class="b({ selected })">
+    <div id="jazzicon" />
     <div :class="b('wrapper')">
-      <div
-        :class="b('balance')"
-        @click="onSelectedCard"
+      <Title
+        :variant="COLOR_VARIANTS.primary"
+        :size="SIZE_VARIANS.sm"
       >
-        <Icon
-          :class="b('zil-watermark')"
-          :icon="watermarkIcon"
-          width="25"
-          height="35"
-          @click="onSelectedCard"
-        />
-        <P
-          :class="b('zil')"
-          :font="FONT_VARIANTS.medium"
+        {{ getAccountName(account) }}
+      </Title>
+      <div>
+        <Title
           :variant="COLOR_VARIANTS.gray"
-          @click="onSelectedCard"
+          :size="SIZE_VARIANS.xs"
         >
           ZIL {{ account.balance | fromZil }}
-        </P>
-        <P
-          :class="b('currency')"
-          :font="FONT_VARIANTS.medium"
-          :variant="COLOR_VARIANTS.gray"
-          @click="onSelectedCard"
-        >
-          {{ currency }} {{ account.balance | toConversion(getRate) }}
-        </P>
+        </Title>
       </div>
-      <Trash
-        v-show="trash"
-        :class="b('remove')"
-        width="13"
-        height="16"
-        @click="onRemove"
-      />
     </div>
-    <P
-      v-tooltip="copytitle"
-      :class="b('address')"
-      :size="SIZE_VARIANS.xs"
-      :font="FONT_VARIANTS.medium"
-      :variant="COLOR_VARIANTS.gray"
-      :content="account.address | toAddress(addressFormat, false)"
-      copy
-      @copy="onCopyMixin"
-    >
-      {{ account.address | toAddress(addressFormat, false) }}
-    </P>
   </div>
 </template>
 
@@ -82,13 +36,14 @@ import {
 } from '@/config'
 
 import Title from '@/components/Title'
-import P from '@/components/P'
-import Icon from '@/components/Icon'
-import Trash from '@/components/icons/Trash'
+// import P from '@/components/P'
+// import Icon from '@/components/Icon'
+// import Trash from '@/components/icons/Trash'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 import AccountMixin from '@/mixins/account'
+import JazziconMixin from '@/mixins/jazzicon'
 
 /**
  * Account card component show some information about [balance, address, type].
@@ -115,11 +70,11 @@ export default {
   name: 'AccountCard',
   components: {
     Title,
-    Icon,
-    Trash,
-    P
+    // Icon,
+    // Trash,
+    // P
   },
-  mixins: [CopyMixin, AccountMixin],
+  mixins: [CopyMixin, AccountMixin, JazziconMixin],
   filters: { fromZil, toConversion, toAddress },
   props: {
     account: {
@@ -157,11 +112,6 @@ export default {
       settingsStore.GETTERS_NAMES.getRate
     ]),
 
-    color() {
-      return {
-        backgroundColor: this.addressToColor(this.account.address)
-      }
-    },
     watermarkIcon() {
       if (this.account.hwType === this.HW_VARIANTS.ledger) {
         return this.ICON_VARIANTS.ledgerWatermark
@@ -180,6 +130,11 @@ export default {
         throw new Error(`Property ${key} is required.`)
       }
     })
+
+    this.jazziconCreate(
+      'jazzicon',
+      this.account.address
+    )
   },
   methods: {
     onSelectedCard() {
@@ -187,89 +142,27 @@ export default {
     },
     onRemove() {
       this.$emit(EVENTS.remove, this.account)
-    },
-
-    addressToColor(hex) {
-      let rgb = this.hexToRgb(hex.slice(-6))
-
-      rgb.r = rgb.r > 150 ? 150 : rgb.r
-      rgb.g = rgb.g > 200 ? 200 : rgb.g
-      rgb.b = rgb.b > 100 ? 100 : rgb.b
-
-      return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
-    },
-    hexToRgb(hex) {
-      const bigint = parseInt(hex, 16)
-      const r = (bigint >> 16) & 255
-      const g = (bigint >> 8) & 255
-      const b = bigint & 255
-
-      return { r, g, b }
     }
   }
 }
 </script>
 
 <style lang="scss">
-$watermark-color: rgba(0, 0, 0, 0.25);
-
 .AccountCard {
   cursor: pointer;
 
-  width: 330px;
-  height: 85px;
+  display: flex;
+  align-items: center;
 
-  box-shadow: var(--default-box-shadow);
-  border-radius: var(--default-border-radius);
+  width: 250px;
 
-  &__wrapper {
-    display: grid;
-    grid-template-columns: 1fr 30px;
-    align-items: center;
-  }
+  padding: 15px;
 
-  &__selected {
-    position: absolute;
-    margin: 5px;
-  }
+  background-color: var(--accent-color-second);
+  border-radius: 10px;
 
-  &__name {
-    color: $watermark-color;
-    font-size: 20px;
-    line-height: 23px;
-    text-indent: 45px;
-    padding-top: 5px;
-  }
-
-  &__balance {
-    display: grid;
-    grid-template-columns: 35px 1fr 1fr 30px;
-    justify-items: center;
-    align-items: center;
-
-    font-size: 15px;
-  }
-
-  &__currency,
-  &__zil,
-  &__address,
-  &__remove {
-    opacity: 0.7;
-  }
-
-  &__zil-watermark,
-  &__currency {
-    justify-self: right;
-  }
-
-  &__zil {
-    text-indent: 10px;
-    justify-self: left;
-  }
-
-  &__address {
-    line-height: 20px;
-    text-indent: 10px;
+  &_selected {
+    border: 1px solid var(--accent-color-primary);
   }
 }
 </style>

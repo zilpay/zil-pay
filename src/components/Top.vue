@@ -58,7 +58,7 @@ export default {
 
   max-width: 100vw;
 
-  background-color: var(--accent-color-dark);
+  background-color: var(--opacity-bg-element-1);
 
   &__net {
     display: flex;
