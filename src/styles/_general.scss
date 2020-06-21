@@ -85,7 +85,9 @@
 body, html {
   margin: 0;
   padding: 0;
-	// overflow-x: hidden;
+
+  min-width: 320px;
+  min-height: 560px;
 }
 
 a:link,
@@ -97,20 +99,7 @@ a:active {
 }
 
 body {
-  // background-color: var(--app-background-color);
-
   font-family: var(--font-family-light);
-
-  // font-style: normal;
-  // font-weight: normal;
-
-  // font-size: 20px;
-  // line-height: 28px;
-
-  // overflow: hidden;
-
-  // margin: 0;
-  // padding: 0;
 }
 
 ::-webkit-scrollbar { 
