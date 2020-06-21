@@ -61,6 +61,7 @@ import { SIZE_VARIANS, COLOR_VARIANTS, ICON_VARIANTS } from '@/config'
 import { shuffle } from 'lib/utils/shuffle'
 
 import Create from '@/pages/Create'
+import Congratulation from '@/pages/Congratulation'
 
 import Chip from '@/components/Chip'
 import Title from '@/components/Title'
@@ -71,7 +72,7 @@ import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
-const { window, Set } = global
+const { Set } = global
 const bgScript = new Background()
 
 export default {
@@ -167,7 +168,7 @@ export default {
         seed: this.verifyWords.join(' ')
       })
 
-      window.location.reload()
+      this.$router.push({ name: Congratulation.name })
     }
   },
   mounted() {

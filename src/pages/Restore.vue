@@ -27,6 +27,8 @@ import uiStore from '@/store/ui'
 
 import { COLOR_VARIANTS, SIZE_VARIANS, ICON_VARIANTS } from '@/config'
 
+import Congratulation from '@/pages/Congratulation'
+
 import Textarea from '@/components/Textarea'
 import Container from '@/components/Container'
 import PasswordForm from '@/components/PasswordForm'
@@ -35,7 +37,6 @@ import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
-const { window } = global
 const bgScript = new Background()
 
 export default {
@@ -83,7 +84,7 @@ export default {
           seed: this.seed.model
         })
 
-        window.location.reload()
+        this.$router.push({ name: Congratulation.name })
       } catch (err) {
         this.seed.error = this.local.SEED_INCORRECT
       } finally {
