@@ -1,6 +1,12 @@
 <template>
   <div :class="b()">
     <TopBar close/>
+    <P
+      :class="b('reset', 'pointer')"
+      @click="onDefault"
+    >
+      {{ local.RESET }}
+    </P>
     <div :class="b('wrapper')">
       <RadioGroup
         :value="currency"
@@ -18,15 +24,6 @@
       >
         {{ local.ADDR_FORMATS }}:
       </RadioGroup>
-      <div :class="b('btns')">
-        <Button
-          :disabled="(currency === currencyItems[0]) && (addressFormat === addressFormatItems[0])"
-          round
-          @click="onDefault"
-        >
-          {{ local.DEFAULT }}
-        </Button>
-      </div>
     </div>
   </div>
 </template>
@@ -41,14 +38,14 @@ import { COLOR_VARIANTS } from '@/config'
 
 import TopBar from '@/components/TopBar'
 import RadioGroup from '@/components/RadioGroup'
-import Button from '@/components/Button'
+import P from '@/components/P'
 
 export default {
   name: 'General',
   components: {
     TopBar,
     RadioGroup,
-    Button
+    P
   },
   data() {
     return {
@@ -91,17 +88,22 @@ export default {
 
   background-color: var(--app-background-color);
 
+  &__reset {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    text-decoration: underline;
+  }
+
   &__wrapper {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 50vh;
 
-    width: 40vw;
-    min-width: 300px;
-    min-height: 400px;
+    min-height: 300px;
 
-    padding-left: 100px;
+    padding-right: 100px;
   }
 }
 </style>

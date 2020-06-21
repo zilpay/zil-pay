@@ -82,6 +82,8 @@ export default {
       if (this.copy && this.content) {
         copy(this.content)
         this.$emit(EVENTS.copy)
+      } else {
+        this.$emit(EVENTS.click)
       }
     }
   }

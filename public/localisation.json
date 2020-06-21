@@ -22,6 +22,7 @@
       "If you need to back up your secret phrase again, you can find it in Security",
       "If you ever have a question or see something fishy, contact us."
     ],
+    "RESET": "Reset",
     "SETTINGS": "Settings",
     "VERIFY_PICK": "Pick these words in order to form your phrase",
     "SIGN_REQ": "Signature Request",
@@ -48,7 +49,6 @@
     "CUR_CONVER": "currency",
     "ADDR_FORMATS": "address formats",
     "HISTORY": "history",
-    "DEFAULT": "default",
     "ADVANCED": "advanced",
     "THEME": "theme",
     "NETWORKS": "networks",
