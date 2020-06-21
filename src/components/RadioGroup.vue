@@ -84,7 +84,7 @@ export default {
   max-width: 360px;
 
   &__title {
-    font-size: 15px;
+    font-size: 20px;
 
     &:first-letter {
       text-transform: capitalize;

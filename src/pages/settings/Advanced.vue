@@ -1,28 +1,26 @@
 <template>
   <div :class="b()">
-    <TopBar close/>
+    <TopBar/>
+    <P
+      :class="b('reset', 'pointer')"
+      @click="onDefault"
+    >
+      {{ local.RESET }}
+    </P>
     <Container :class="b('wrapper')">
       <GasControl
         :value="defaultGas"
         :DEFAULT="DEFAULT_GAS_FEE"
         @input="setGas"
       />
-      <Separator />
       <RadioGroup
-        :value="selectedTheme"
-        :title="local.THEME"
-        :elements="themes"
-        @input="setTheme"
+        :value="addressFormat"
+        :title="local.ADDR_FORMATS"
+        :elements="addressFormatItems"
+        @input="setAddressFormat"
       >
-        {{ local.THEME }}:
+        {{ local.ADDR_FORMATS }}:
       </RadioGroup>
-      <Button
-        :class="b('btn')"
-        round
-        @click="onDefault"
-      >
-        {{ local.DEFAULT }}
-      </Button>
     </Container>
   </div>
 </template>
@@ -38,7 +36,7 @@ import TopBar from '@/components/TopBar'
 import GasControl from '@/components/GasControl'
 import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
-import Button from '@/components/Button'
+import P from '@/components/P'
 
 export default {
   name: 'Advanced',
@@ -47,7 +45,7 @@ export default {
     GasControl,
     Container,
     RadioGroup,
-    Button
+    P
   },
   data() {
     return {
@@ -56,26 +54,24 @@ export default {
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
-      uiStore.STATE_NAMES.selectedTheme,
-      uiStore.STATE_NAMES.themes,
       uiStore.STATE_NAMES.local
     ]),
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.defaultGas
+      settingsStore.STATE_NAMES.defaultGas,
+      settingsStore.STATE_NAMES.addressFormatItems,
+      settingsStore.STATE_NAMES.addressFormat
     ])
   },
   methods: {
-    ...mapMutations(uiStore.STORE_NAME, [
-      uiStore.MUTATIONS_NAMES.setTheme
-    ]),
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setDefaultGas,
-      settingsStore.MUTATIONS_NAMES.setGas
+      settingsStore.MUTATIONS_NAMES.setGas,
+      settingsStore.MUTATIONS_NAMES.setAddressFormat
     ]),
 
     onDefault() {
       this.setDefaultGas()
-      this.setTheme(this.themes[0])
+      this.setAddressFormat(this.addressFormatItems[0])
     }
   }
 }
@@ -83,18 +79,29 @@ export default {
 
 <style lang="scss">
 .Advanced {
-  &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    padding-left: 15px;
-    padding-right: 15px;
+  background-color: var(--app-background-color);
+
+  &__reset {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    text-decoration: underline;
   }
 
-  &__btn {
-    justify-self: right;
-    width: 175px;
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    min-height: 300px;
+
+    & > .RadioGroup {
+      margin-top: 30px;
+    }
   }
 }
 </style>

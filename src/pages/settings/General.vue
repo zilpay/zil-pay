@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <TopBar close/>
+    <TopBar/>
     <P
       :class="b('reset', 'pointer')"
       @click="onDefault"
@@ -17,12 +17,12 @@
         {{ local.CUR_CONVER }}:
       </RadioGroup>
       <RadioGroup
-        :value="addressFormat"
-        :title="local.ADDR_FORMATS"
-        :elements="addressFormatItems"
-        @input="setAddressFormat"
+        :value="selectedTheme"
+        :title="local.THEME"
+        :elements="themes"
+        @input="setTheme"
       >
-        {{ local.ADDR_FORMATS }}:
+        {{ local.THEME }}:
       </RadioGroup>
     </div>
   </div>
@@ -32,7 +32,6 @@
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
-import transactionsStore from '@/store/transactions'
 
 import { COLOR_VARIANTS } from '@/config'
 
@@ -54,26 +53,25 @@ export default {
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
-      uiStore.STATE_NAMES.local
+      uiStore.STATE_NAMES.local,
+      uiStore.STATE_NAMES.selectedTheme,
+      uiStore.STATE_NAMES.themes
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.currencyItems,
-      settingsStore.STATE_NAMES.currency,
-      settingsStore.STATE_NAMES.addressFormatItems,
-      settingsStore.STATE_NAMES.addressFormat
-    ]),
-    ...mapState(transactionsStore.STORE_NAME, [
-      transactionsStore.STATE_NAMES.transactions
+      settingsStore.STATE_NAMES.currency
     ])
   },
   methods: {
     ...mapMutations(settingsStore.STORE_NAME, [
-      settingsStore.MUTATIONS_NAMES.setCurrency,
-      settingsStore.MUTATIONS_NAMES.setAddressFormat
+      settingsStore.MUTATIONS_NAMES.setCurrency
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setTheme
     ]),
 
     onDefault() {
-      this.setAddressFormat(this.addressFormatItems[0])
+      this.setTheme(this.themes[0])
       this.setCurrency(this.currencyItems[0])
     }
   }
@@ -99,11 +97,14 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 50vh;
 
     min-height: 300px;
 
     padding-right: 100px;
+
+    & > .RadioGroup {
+      margin-top: 30px;
+    }
   }
 }
 </style>
