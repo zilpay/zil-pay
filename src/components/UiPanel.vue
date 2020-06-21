@@ -6,7 +6,7 @@
     >
       <SvgInject
         v-show="arrow"
-        :variant="ICON_VARIANTS.arrow"
+        :variant="ICON_VARIANTS.arrowLong"
       />
     </div>
     <div :class="b('theme')">

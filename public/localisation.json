@@ -12,6 +12,17 @@
     "HOS_NOT_TX": "No Transactions Yet",
     "TRIGGER": "Triggered",
     "SEND": "Sent",
+    "CONGRATULATION_LINK": "USE EXTENSION",
+    "CONGRATULATION_TITLE": "Your secret phrase",
+    "CONGRATULATION_DESCRIPTION": "Your account has been created - Keep your secret phase safe, it’s your responsibility!",
+    "CONGRATULATION_SUBTITLE": "Tips on storing it safely",
+    "CONGRATULATION_LIST": [
+      "Save a backup in multiple places",
+      "Never share the phrase with anyone",
+      "Be careful of phising! ZilPay will never spontaneously ask for your secret phrase",
+      "If you need to back up your secret phrase again, you can find it in Security",
+      "If you ever have a question or see something fishy, contact us."
+    ],
     "SETTINGS": "Settings",
     "VERIFY_PICK": "Pick these words in order to form your phrase",
     "SIGN_REQ": "Signature Request",

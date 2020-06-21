@@ -19,6 +19,7 @@ import FirstPage from '@/pages/FirstStart'
 import Verify from '@/pages/Verify'
 import Restore from '@/pages/Restore'
 import Create from '@/pages/Create'
+import Congratulation from '@/pages/Congratulation'
 
 import LockPage from '@/pages/LockScreen'
 import homePage from '@/pages/Home'
@@ -81,7 +82,8 @@ export default {
         const skipRouters = [
           Verify.name,
           Restore.name,
-          Create.name
+          Create.name,
+          Congratulation.name
         ]
 
         if (!skipRouters.includes(currentRouteName)) {

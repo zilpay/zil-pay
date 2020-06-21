@@ -11,6 +11,7 @@ export const ICON_VARIANTS = {
   zilPayLogo: 'zilpay_logo',
   cloud: 'cloud',
   arrow: 'arrow',
+  arrowLong: 'arrow_long',
   refresh: 'refresh',
   net: 'net',
   burger: 'burger',
