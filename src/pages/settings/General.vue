@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <TopBar close/>
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <RadioGroup
         :value="currency"
         :title="local.CUR_CONVER"
@@ -10,7 +10,6 @@
       >
         {{ local.CUR_CONVER }}:
       </RadioGroup>
-      <Separator />
       <RadioGroup
         :value="addressFormat"
         :title="local.ADDR_FORMATS"
@@ -21,14 +20,6 @@
       </RadioGroup>
       <div :class="b('btns')">
         <Button
-          :color="COLOR_VARIANTS.warning"
-          :disabled="Object.keys(transactions).length === 0"
-          round
-          @click="setClearTxHistory"
-        >
-          {{ local.CLEAR }} {{ local.TX_FULL }}
-        </Button>
-        <Button
           :disabled="(currency === currencyItems[0]) && (addressFormat === addressFormatItems[0])"
           round
           @click="onDefault"
@@ -36,7 +27,7 @@
           {{ local.DEFAULT }}
         </Button>
       </div>
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -49,7 +40,6 @@ import transactionsStore from '@/store/transactions'
 import { COLOR_VARIANTS } from '@/config'
 
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
@@ -58,7 +48,6 @@ export default {
   components: {
     TopBar,
     RadioGroup,
-    Container,
     Button
   },
   data() {
@@ -85,9 +74,6 @@ export default {
       settingsStore.MUTATIONS_NAMES.setCurrency,
       settingsStore.MUTATIONS_NAMES.setAddressFormat
     ]),
-    ...mapMutations(transactionsStore.STORE_NAME, [
-      transactionsStore.MUTATIONS_NAMES.setClearTxHistory
-    ]),
 
     onDefault() {
       this.setAddressFormat(this.addressFormatItems[0])
@@ -99,21 +85,23 @@ export default {
 
 <style lang="scss">
 .General {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
   &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50vh;
 
-    padding-left: 15px;
-    padding-right: 15px;
-  }
+    width: 40vw;
+    min-width: 300px;
+    min-height: 400px;
 
-  &__btns {
-    display: grid;
-    justify-self: right;
-    grid-gap: 15px;
-
-    width: 175px;
+    padding-left: 100px;
   }
 }
 </style>

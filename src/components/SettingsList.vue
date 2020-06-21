@@ -126,7 +126,10 @@ export default {
   width: 100%;
   z-index: 2;
 
-  background-color: #b8b8b8e6;
+  background-color: var(--opacity-bg-element-2);
+
+  animation: fadeFull 0.2s;
+  animation-timing-function: cubic-bezier(.3,.17,.23,.96);
 
   &__wrapper {
     display: flex;
@@ -143,6 +146,8 @@ export default {
 
     animation: backInLeft 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+
+    opacity: 1;
   }
 
   &__clsoe-btn {
