@@ -14,6 +14,7 @@ import Accounts from '@/pages/Accounts'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
 import Verify from '@/pages/Verify'
+import Congratulation from '@/pages/Congratulation'
 import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
 import LockScreen from '@/pages/LockScreen'
@@ -59,6 +60,12 @@ const routes = [
     path: `/${Create.name.toLowerCase()}`,
     name: Create.name,
     component: Create,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: `/${Congratulation.name.toLowerCase()}`,
+    name: Congratulation.name,
+    component: Congratulation,
     meta: { requiresAuth: false }
   },
   {
