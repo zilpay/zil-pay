@@ -219,6 +219,10 @@ export default {
     & > span {
       margin-left: 35px;
     }
+
+    & > .pointer {
+      height: 22px;
+    }
   }
 
   &__info {

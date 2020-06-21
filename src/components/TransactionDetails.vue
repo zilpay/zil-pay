@@ -25,7 +25,6 @@
         {{ transaction.toAddr | toAddress(addressFormat) }}
       </P>
     </div>
-    <Separator />
     <ul :class="b('info-list')">
       <li
         v-for="(el, index) of infoList"
