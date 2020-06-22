@@ -27,7 +27,7 @@ import PopupPage from '@/pages/Popup'
 import ConnectPage from '@/pages/Connect'
 
 import LinkMixin from '@/mixins/links'
-import { isExpand, getStorageData } from '@/services'
+import { getStorageData } from '@/services'
 
 export default {
   name: 'App',
@@ -88,11 +88,7 @@ export default {
         return null
       }
 
-      if (!authData.isReady) {
-        if (isExpand()) {
-          this.linksExpand()
-        }
-
+      if (!authData.isReady && !test) {
         this.$router.push({ name: FirstPage.name })
 
         return null

@@ -1,17 +1,6 @@
 <template>
   <div :class="b()">
     <TopBar />
-    <Container :class="b('wrapper')">
-      <Button
-        :color="COLOR_VARIANTS.warning"
-        :disabled="!dappsList || dappsList.length < 1"
-        round
-        block
-        @click="setEmptyDappList"
-      >
-        Clear
-      </Button>
-    </Container>
     <div
       v-for="(item, index) of dapps"
       :key="index"
@@ -28,8 +17,16 @@
           {{ item.title }}
         </P>
       </Item>
-      <Separator v-show="index < dapps.length - 1"/>
     </div>
+    <Button
+      :color="COLOR_VARIANTS.warning"
+      :disabled="!dappsList || dappsList.length < 1"
+      round
+      block
+      @click="setEmptyDappList"
+    >
+      delete all
+    </Button>
   </div>
 </template>
 
@@ -45,7 +42,6 @@ import {
 
 import TopBar from '@/components/TopBar'
 import Button from '@/components/Button'
-import Container from '@/components/Container'
 import P from '@/components/P'
 import Item from '@/components/Item'
 
@@ -57,7 +53,6 @@ export default {
   components: {
     TopBar,
     Button,
-    Container,
     Item,
     P
   },
