@@ -246,6 +246,10 @@ export default {
   &__wrapper {
     width: 100%;
     max-width: 300px;
+
+    .Input {
+      padding: 25px;
+    }
   }
 
   &__btn {
