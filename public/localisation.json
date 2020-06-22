@@ -22,6 +22,9 @@
       "If you need to back up your secret phrase again, you can find it in Security",
       "If you ever have a question or see something fishy, contact us."
     ],
+    "FEE": "Fee",
+    "GAS_LIMIT": "Gas Limit",
+    "GAS_PRICE": "Gas Price (Li)",
     "RESET": "Reset",
     "SETTINGS": "Settings",
     "VERIFY_PICK": "Pick these words in order to form your phrase",

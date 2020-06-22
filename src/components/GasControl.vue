@@ -1,27 +1,29 @@
 <template>
   <Container :class="b()">
     <div :class="b('fee')">
-      <Input
-        :value="value.gasLimit"
-        :type="INPUT_TYPES.number"
-        :step="DEFAULT.gasLimit"
-        :min="DEFAULT.gasLimit"
-        title="Gas Limit"
-        block
-        round
-        @input="onGasLimit"
-      />
+      <label>
+        {{ local.GAS_LIMIT }}
+        <input
+          :value="value.gasLimit"
+          :type="INPUT_TYPES.number"
+          :step="DEFAULT.gasLimit"
+          :min="DEFAULT.gasLimit"
+          @input="onGasLimit"
+        >
+      </label>
       <hr :class="b('hr')"/>
-      <Input
-        :value="value.gasPrice"
-        :type="INPUT_TYPES.number"
-        :step="DEFAULT.gasPrice"
-        :min="DEFAULT.gasPrice"
-        title="Gas Price (Li)"
-        block
-        round
-        @input="onGasPrice"
-      />
+      <label>
+        {{ local.GAS_PRICE }}
+        <input
+          :value="value.gasPrice"
+          :type="INPUT_TYPES.number"
+          :step="DEFAULT.gasPrice"
+          :min="DEFAULT.gasPrice"
+          block
+          round
+          @input="onGasPrice"
+        >
+      </label>
     </div>
     <DoubleRange
       v-model="range"
@@ -30,7 +32,7 @@
     />
     <div :class="b('info')">
       <P :font="FONT_VARIANTS.bold">
-        Fee
+        {{ local.FEE }}
       </P>
       <P :font="FONT_VARIANTS.bold">
         {{ fee }}
@@ -40,10 +42,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import { FONT_VARIANTS, EVENTS } from '@/config'
 
 import Container from '@/components/Container'
-import Input, { INPUT_TYPES } from '@/components/Input'
+import { INPUT_TYPES } from '@/components/Input'
 import DoubleRange from '@/components/DoubleRange'
 import P from '@/components/P'
 
@@ -72,7 +77,6 @@ export default {
   mixins: [CalcMixin],
   components: {
     Container,
-    Input,
     DoubleRange,
     P
   },
@@ -99,6 +103,10 @@ export default {
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
+
     fee() {
       const { gasLimit, gasPrice } = this.value
 
@@ -144,10 +152,26 @@ export default {
     grid-template-columns: 100px 50px 100px;
     align-items: center;
     justify-items: center;
+
+    & > label {
+      color: var(--accent-color-primary);
+      font-size: var(--size-xs-font);
+    }
+
+    & > label > input {
+      display: block;
+      width: 100%;
+      max-width: 80px;
+      border: 0;
+      padding: 8px;
+      background-color: var(--opacity-bg-element-2);
+      color: var(--theme-color-font);
+      border-radius: 5px;
+    }
   }
 
   &__hr {
-    margin-top: 12px;
+    margin-top: 20px;
     width: 40px;
     color: var(--accent-color-second);
   }
