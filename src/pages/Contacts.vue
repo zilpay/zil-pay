@@ -1,6 +1,7 @@
 <template>
   <div :class="b()">
     <Top />
+    <AddMenu />
     <div :class="b('wrapper')">
       <Title :size="SIZE_VARIANS.md">
         {{ $options.name }}
@@ -35,12 +36,14 @@ import { SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 
 import Top from '@/components/Top'
 import Title from '@/components/Title'
+import AddMenu from '@/components/AddMenu'
 
 export default {
   name: 'Contacts',
   components: {
     Top,
-    Title
+    Title,
+    AddMenu
   },
   data() {
     return {
