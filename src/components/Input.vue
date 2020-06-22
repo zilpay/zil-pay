@@ -5,7 +5,7 @@
     </div>
     <input
       v-bind="$attrs"
-      :class="b('element', { round, centred, error: Boolean(error) })"
+      :class="b('element', { round, centred, second, error: Boolean(error) })"
       :value="value"
       :autofocus="autofocus"
       ref="input"
@@ -52,6 +52,10 @@ export default {
     size: {
       type: String,
       default: SIZE_VARIANS.xs
+    },
+    second: {
+      type: Boolean,
+      default: false
     },
     round: {
       type: Boolean,
@@ -145,6 +149,12 @@ export default {
 
     &_round {
       border-radius: calc(var(--default-border-radius) - 15px);
+    }
+
+    &_second {
+      border: 0;
+      background-color: var(--opacity-bg-element-2);
+      border-radius: 10px;
     }
 
     &:focus {
