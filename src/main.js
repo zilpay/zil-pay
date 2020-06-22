@@ -16,11 +16,15 @@ import vueBemCn from 'vue-bem-cn'
 
 import { BEM_CONFIG } from '@/config'
 
+import BottomBar from '@/components/BottomBar'
+
 Vue.config.productionTip = false
 
 Vue.use(vueBemCn, { delimiters: BEM_CONFIG })
 Vue.use(Tooltip)
 Vue.use(TreeView)
+
+Vue.component('BottomBar', BottomBar)
 
 new Vue({
   router,

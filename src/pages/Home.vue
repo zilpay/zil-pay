@@ -40,7 +40,6 @@ import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
 import HomeAccount from '@/components/HomeAccount'
 import Tabs from '@/components/Tabs'
-import BottomBar from '@/components/BottomBar'
 import SettingsList from '@/components/SettingsList'
 
 const EVENTS = {
@@ -55,7 +54,6 @@ export default {
     HomeAccount,
     Transactions,
     Tabs,
-    BottomBar,
     SettingsList
   },
   data() {
@@ -102,18 +100,6 @@ export default {
       case 1:
         this.$router.push({ name: Send.name })
         break
-      // case EVENTS.send:
-      //   this.$router.push({ name: Send.name })
-      //   break
-      // case EVENTS.receive:
-      //   this.$router.push({ name: Receive.name })
-      //   break
-      // case EVENTS.accounts:
-      //   this.$router.push({ name: Accounts.name })
-      //   break
-      // case EVENTS.settings:
-      //   this.$router.push({ name: Settings.name })
-      //   break
       default:
         break
       }

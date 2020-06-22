@@ -1,15 +1,24 @@
 <template>
   <div :class="b()">
     <div :class="b('wrapper')">
-      <i :class="b('icon', { enable: (currentName === LINKS.home) })">
+      <router-link
+        :class="b('icon', { enable: (currentName === LINKS.home) })"
+        :to="LINKS.home"
+      >
         <SvgInject :variant="ICON_VARIANTS.home" />
-      </i>
-      <i :class="b('icon')">
+      </router-link>
+      <router-link
+        :class="b('icon')"
+        :to="LINKS.tokens"
+      >
         <SvgInject :variant="ICON_VARIANTS.chip" />
-      </i>
-      <i :class="b('icon', { enable: (currentName === LINKS.contacts) })">
+      </router-link>
+      <router-link
+        :class="b('icon', { enable: (currentName === LINKS.contacts) })"
+        :to="LINKS.contacts"
+      >
         <SvgInject :variant="ICON_VARIANTS.contact" />
-      </i>
+      </router-link>
     </div>
   </div>
 </template>
@@ -18,7 +27,7 @@
 import { ICON_VARIANTS } from '@/config'
 
 import Home from '@/pages/Home'
-import Accounts from '@/pages/Accounts'
+import Contacts from '@/pages/Contacts'
 
 import SvgInject from '@/components/SvgInject'
 
@@ -33,7 +42,8 @@ export default {
 
       LINKS: {
         home: Home.name,
-        contacts: Accounts.name
+        tokens: '',
+        contacts: Contacts.name
       }
     }
   },

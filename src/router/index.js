@@ -11,6 +11,7 @@ import VueRouter from 'vue-router'
 import guard from './guard'
 
 import Accounts from '@/pages/Accounts'
+import Contacts from '@/pages/Contacts'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
 import Verify from '@/pages/Verify'
@@ -92,6 +93,12 @@ const routes = [
     path: `/${Accounts.name.toLowerCase()}`,
     name: Accounts.name,
     component: Accounts,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Contacts.name.toLowerCase()}`,
+    name: Contacts.name,
+    component: Contacts,
     meta: { requiresAuth: true }
   },
   {
