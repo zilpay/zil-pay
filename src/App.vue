@@ -73,24 +73,30 @@ export default {
     ]),
 
     async authNavigation(authData) {
+      const currentRouteName = String(this.$router.history.current.name).toLowerCase()
+      const skipRouters = [
+        String(Verify.name).toLowerCase(),
+        String(Restore.name).toLowerCase(),
+        String(Create.name).toLowerCase(),
+        String(Congratulation.name).toLowerCase(),
+        String(LockPage.name).toLowerCase(),
+        String(FirstPage.name).toLowerCase()
+      ]
+      const test = skipRouters.includes(currentRouteName)
+
+      if (test) {
+        return null
+      }
+
       if (!authData.isReady) {
         if (isExpand()) {
           this.linksExpand()
         }
 
-        const currentRouteName = this.$router.history.current.name
-        const skipRouters = [
-          Verify.name,
-          Restore.name,
-          Create.name,
-          Congratulation.name
-        ]
+        this.$router.push({ name: FirstPage.name })
 
-        if (!skipRouters.includes(currentRouteName)) {
-          this.$router.push({ name: FirstPage.name })
-        }
         return null
-      } else if (!authData.isEnable) {
+      } else if (authData.isReady && !authData.isEnable && !currentRouteName) {
         this.$router.push({ name: LockPage.name })
 
         return null
