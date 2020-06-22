@@ -44,8 +44,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import uiStore from '@/store/ui'
+import settingsStore from '@/store/settings'
+import contactsStore from '@/store/contacts'
+import accountsStore from '@/store/accounts'
+import transactionsStore from '@/store/transactions'
+import walletStore from '@/store/wallet'
 
 import { SIZE_VARIANS, COLOR_VARIANTS, ICON_VARIANTS } from '@/config'
 
@@ -54,6 +59,8 @@ import Home from '@/pages/Home'
 import SvgInject from '@/components/SvgInject'
 import Title from '@/components/Title'
 import P from '@/components/P'
+
+import { getStorageData } from '@/services'
 
 export default {
   name: 'Congratulation',
@@ -77,6 +84,61 @@ export default {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ])
+  },
+  methods: {
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+    ...mapMutations(accountsStore.STORE_NAME, [
+      accountsStore.MUTATIONS_NAMES.setAccounts,
+      accountsStore.MUTATIONS_NAMES.setAccount
+    ]),
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.updateRate,
+      settingsStore.ACTIONS_NAMES.onUpdateSettings
+    ]),
+    ...mapMutations(settingsStore.STORE_NAME, [
+      settingsStore.MUTATIONS_NAMES.setNetwork,
+      settingsStore.MUTATIONS_NAMES.setNetworkConfig
+    ]),
+    ...mapActions(walletStore.STORE_NAME, [
+      walletStore.ACTIONS_NAMES.onInit
+    ]),
+    ...mapActions(contactsStore.STORE_NAME, [
+      contactsStore.ACTIONS_NAMES.onUpdate
+    ]),
+    ...mapActions(transactionsStore.STORE_NAME, [
+      transactionsStore.ACTIONS_NAMES.onUpdateTransactions
+    ]),
+
+    async storeUpdate() {
+      const storageData = await getStorageData()
+
+      if (!storageData) {
+        return null
+      }
+
+      const { wallet, config, selectednet } = storageData
+
+      this.setAccounts(wallet.identities)
+      this.setAccount(wallet.selectedAddress)
+
+      this.setNetwork(selectednet)
+      this.setNetworkConfig(config)
+    }
+  },
+  async beforeMount() {
+    this.setLoad()
+
+    await this.onInit()
+    await this.storeUpdate()
+    await this.onUpdate()
+    await this.onUpdateTransactions()
+
+    await this.updateRate()
+    await this.onUpdateSettings()
+
+    this.setLoad()
   }
 }
 </script>

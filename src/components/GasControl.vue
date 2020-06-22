@@ -147,9 +147,9 @@ export default {
   }
 
   &__hr {
-    margin-top: 35px;
+    margin-top: 12px;
     width: 40px;
-    color: var(--theme-color-separator);
+    color: var(--accent-color-second);
   }
 
   &__info {

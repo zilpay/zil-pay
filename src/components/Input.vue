@@ -131,7 +131,7 @@ export default {
     color: var(--accent-color-primary);
 
     background: var(--opacity-bg-element);
-    border: 2px solid var(--accent-color-primary);
+    border: 1px solid var(--accent-color-primary);
 
     &_error {
       color: var(--accent-color-danger);
@@ -144,7 +144,7 @@ export default {
     }
 
     &_round {
-      border-radius: calc(var(--default-border-radius) - 12px);
+      border-radius: calc(var(--default-border-radius) - 15px);
     }
 
     &:focus {
