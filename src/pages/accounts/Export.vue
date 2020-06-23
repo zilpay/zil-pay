@@ -1,15 +1,15 @@
 <template>
   <div :class="b()">
     <TopBar close/>
-    <Alert>
+    <div :class="b('alert')">
       <P :font="FONT_VARIANTS.medium">
         {{ local.EXPORT_WARNING }}
       </P>
       <P :class="b('info')">
         {{ local.EXPORT_INFO }}
       </P>
-    </Alert>
-    <Container :class="b('wrapper')">
+    </div>
+    <div :class="b('wrapper')">
       <RadioGroup
         v-model="radioGroupModel"
         :elements="radioGroupElements"
@@ -17,7 +17,6 @@
       />
       <form
         v-show="radioGroupModel && !content"
-        :class="b('form')"
         @submit.prevent="onSubmit"
       >
         <Input
@@ -28,34 +27,37 @@
           :error="password.error"
           round
           required
+          second
           @input="password.error = null"
         />
         <Button
           :class="b('next-btn')"
+          :color="COLOR_VARIANTS.negative"
+          :size="SIZE_VARIANS.md"
           round
         >
           {{ local.NEXT }}
         </Button>
       </form>
-    </Container>
-    <Alert v-show="content">
-      <Container :class="b('warn-info')">
-        <Icon
-          :icon="ICON_VARIANTS.warn"
-          width="30"
-          height="40"
-        />
-        <P>
-          {{ local.EXPORT_DANGER }}
-        </P>
-      </Container>
-    </Alert>
-    <Container v-show="content">
-      <Textarea
-        v-model="content"
-        readonly
+    </div>
+    <div
+      v-show="content"
+      :class="b('warn-info')"
+    >
+      <Icon
+        :icon="ICON_VARIANTS.warn"
+        width="30"
+        height="40"
       />
-    </Container>
+      <P>
+        {{ local.EXPORT_DANGER }}
+      </P>
+    </div>
+    <Textarea
+      v-show="content"
+      v-model="content"
+      readonly
+    />
   </div>
 </template>
 
@@ -67,13 +69,12 @@ import {
   ICON_TYPE,
   ICON_VARIANTS,
   FONT_VARIANTS,
-  SIZE_VARIANS
+  SIZE_VARIANS,
+  COLOR_VARIANTS
 } from '@/config'
 
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
 import Button from '@/components/Button'
-import Alert from '@/components/Alert'
 import Textarea from '@/components/Textarea'
 import Icon from '@/components/Icon'
 import Input, { INPUT_TYPES } from '@/components/Input'
@@ -86,10 +87,8 @@ export default {
   name: 'Export',
   components: {
     TopBar,
-    Container,
     Button,
     Input,
-    Alert,
     Icon,
     Textarea,
     P,
@@ -102,6 +101,7 @@ export default {
       FONT_VARIANTS,
       SIZE_VARIANS,
       INPUT_TYPES,
+      COLOR_VARIANTS,
 
       radioGroupModel: null,
       content: null,
@@ -166,26 +166,47 @@ export default {
         this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
       }
     }
+  },
+  beforeMount() {
+    if (this.$route.query && this.$route.query.type) {
+      this.radioGroupModel = this.radioGroupElements[Number(this.$route.query.type)]
+    }
   }
 }
 </script>
 
 <style lang="scss">
 .Export {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
   &__wrapper {
-    /* top | right | bottom | left */
-    padding: 30px 15px 30px 15px;
+    min-width: 300px;
+
+    & > form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      margin-top: 30px;
+
+      & > .Input {
+        min-width: 250px;
+      }
+    }
+  }
+
+  &__alert {
+    min-width: 300px;
+    padding-left: 20px;
   }
 
   &__next-btn {
-    width: 175px;
-  }
-
-  &__form {
-    display: grid;
-    grid-gap: 15px;
-
-    padding-top: 30px;
+    min-width: 260px;
+    margin-top: 15px;
   }
 
   &__info {
@@ -197,10 +218,13 @@ export default {
 
   &__warn-info {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
     padding: 15px;
+
+    & > .P {
+      margin-left: 5px;
+    }
   }
 }
 </style>

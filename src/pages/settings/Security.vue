@@ -77,15 +77,15 @@ export default {
     onExportPrivateKey() {
       this.$router.push({
         name: ExportPage.name,
-        params: {
-          type: 2
+        query: {
+          type: 0
         }
       })
     },
     onExportPhrase() {
       this.$router.push({
         name: ExportPage.name,
-        params: {
+        query: {
           type: 1
         }
       })
@@ -96,6 +96,12 @@ export default {
 
 <style lang="scss">
 .Security {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
   &__wrapper {
     display: flex;
     flex-direction: column;
@@ -106,7 +112,7 @@ export default {
     padding-right: 30px;
 
     & > .Button {
-      min-width: 250px;
+      min-width: 260px;
       min-height: 46px;
       font-size: 18px;
     }
