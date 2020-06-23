@@ -1,6 +1,6 @@
 <template>
   <div :class="b()">
-    <TopBar close />
+    <TopBar />
     <div :class="b('wrapper')">
       <RadioGroup
         :value="getCurrent"

@@ -149,7 +149,7 @@ export default {
     }
   },
   watch: {
-    getCurrentAccount(value) {
+    getCurrentAccount(value, oldValue) {
       if (value && value.address) {
         this.jazziconCreate(
           'jazzicon',
