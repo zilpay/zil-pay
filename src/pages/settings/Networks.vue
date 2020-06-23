@@ -77,6 +77,7 @@ import TopBar from '@/components/TopBar'
 import RadioGroup from '@/components/RadioGroup'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
+import P from '@/components/P'
 
 import { keys } from '@/filters'
 
@@ -88,6 +89,7 @@ export default {
     TopBar,
     RadioGroup,
     Input,
+    P,
     Button
   },
   filters: { keys },
@@ -240,6 +242,7 @@ export default {
   &__reset {
     position: absolute;
     right: 20px;
+    top: 20px;
     text-decoration: underline;
   }
 

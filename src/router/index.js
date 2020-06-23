@@ -12,6 +12,7 @@ import guard from './guard'
 
 import Accounts from '@/pages/Accounts'
 import Contacts from '@/pages/Contacts'
+import Tokens from '@/pages/Tokens'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
 import Verify from '@/pages/Verify'
@@ -99,6 +100,12 @@ const routes = [
     path: `/${Contacts.name.toLowerCase()}`,
     name: Contacts.name,
     component: Contacts,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Tokens.name.toLowerCase()}`,
+    name: Tokens.name,
+    component: Tokens,
     meta: { requiresAuth: true }
   },
   {

@@ -3,19 +3,19 @@
     <div :class="b('wrapper')">
       <router-link
         :class="b('icon', { enable: (currentName === LINKS.home) })"
-        :to="LINKS.home"
+        :to="{ name: LINKS.home }"
       >
         <SvgInject :variant="ICON_VARIANTS.home" />
       </router-link>
       <router-link
-        :class="b('icon')"
-        :to="LINKS.tokens"
+        :class="b('icon', { enable: (currentName === LINKS.tokens) })"
+        :to="{ name: LINKS.tokens }"
       >
         <SvgInject :variant="ICON_VARIANTS.chip" />
       </router-link>
       <router-link
         :class="b('icon', { enable: (currentName === LINKS.contacts) })"
-        :to="LINKS.contacts"
+        :to="{ name: LINKS.contacts }"
       >
         <SvgInject :variant="ICON_VARIANTS.contact" />
       </router-link>
@@ -28,6 +28,7 @@ import { ICON_VARIANTS } from '@/config'
 
 import Home from '@/pages/Home'
 import Contacts from '@/pages/Contacts'
+import Tokens from '@/pages/Tokens'
 
 import SvgInject from '@/components/SvgInject'
 
@@ -42,7 +43,7 @@ export default {
 
       LINKS: {
         home: Home.name,
-        tokens: '',
+        tokens: Tokens.name,
         contacts: Contacts.name
       }
     }

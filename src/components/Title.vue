@@ -95,6 +95,11 @@ export default {
     font-family: var(--font-family-bold);
   }
 
+  &_font-regular,
+  &__input_font-regular {
+    font-family: var(--font-family-regular);
+  }
+
   &_font-light,
   &__input_font-light {
     font-family: var(--font-family-light);
