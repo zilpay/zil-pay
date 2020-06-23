@@ -15,17 +15,6 @@ import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 import transactionsStore from '@/store/transactions'
 
-import FirstPage from '@/pages/FirstStart'
-import Verify from '@/pages/Verify'
-import Restore from '@/pages/Restore'
-import Create from '@/pages/Create'
-import Congratulation from '@/pages/Congratulation'
-
-import LockPage from '@/pages/LockScreen'
-import homePage from '@/pages/Home'
-import PopupPage from '@/pages/Popup'
-import ConnectPage from '@/pages/Connect'
-
 import LinkMixin from '@/mixins/links'
 import { getStorageData } from '@/services'
 
@@ -72,42 +61,6 @@ export default {
       transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
 
-    async authNavigation(authData) {
-      const currentRouteName = String(this.$router.history.current.name).toLowerCase()
-      const skipRouters = [
-        String(Verify.name).toLowerCase(),
-        String(Restore.name).toLowerCase(),
-        String(Create.name).toLowerCase(),
-        String(Congratulation.name).toLowerCase(),
-        String(LockPage.name).toLowerCase(),
-        String(FirstPage.name).toLowerCase()
-      ]
-      const test = skipRouters.includes(currentRouteName)
-
-      if (test) {
-        return null
-      }
-
-      if (!authData.isReady && !test) {
-        this.$router.push({ name: FirstPage.name })
-
-        return null
-      } else if (authData.isReady && !authData.isEnable && !currentRouteName) {
-        this.$router.push({ name: LockPage.name })
-
-        return null
-      } else if (this.confirmationTx && this.confirmationTx.length > 0) {
-        this.$router.push({ name: PopupPage.name })
-
-        return null
-      } else if (this.connect && Object.keys(this.connect).length > 0) {
-        this.$router.push({ name: ConnectPage.name })
-
-        return null
-      }
-
-      this.$router.push({ name: homePage.name })
-    },
     async storeUpdate() {
       const storageData = await getStorageData()
 
@@ -131,13 +84,12 @@ export default {
     const theme = await storage.get(FIELDS.THEME)
     this.setTheme(theme)
 
-    const authData = await this.onInit()
+    await this.onInit()
 
     await this.onUpdateToConfirmTxs()
     await this.onUpdateConnection()
 
     this.storeUpdate()
-    this.authNavigation(authData)
     this.onLocal()
     this.onUpdate()
     this.onUpdateTransactions()

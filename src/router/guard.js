@@ -8,8 +8,13 @@
  */
 import LockScreen from '@/pages/LockScreen'
 import FirstPage from '@/pages/FirstStart'
+import HomePage from '@/pages/Home'
 
 import walletStore from '@/store/wallet'
+
+import { Background } from '@/services'
+
+const bgScript = new Background()
 
 /**
  * Common guard for routers.
@@ -19,20 +24,39 @@ import walletStore from '@/store/wallet'
  * @param {Function} next this function must be called to resolve the hook.
  * The action depends on the arguments provided to.
  */
-export default function guard(to, from, next) {
-  const { isReady, isEnable } = walletStore.STORE.state
+export default async function guard(to, from, next) {
+  let { isReady, isEnable } = walletStore.STORE.state
 
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (isReady === null || isEnable === null) {
+    let data = null
 
+    try {
+      data = await bgScript.getAuthData()
+    } catch (rejectedData) {
+      data = rejectedData
+    }
+
+    isReady = data.isReady
+    isEnable = data.isEnable
+  }
+
+  if (to.matched.some(record => record.meta.requiresAuth) || !to.name) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    if (!isReady && isReady !== null) {
+    if (to.name && isReady && isEnable) {
+      return next()
+    }
+    if (isReady && isEnable) {
       return next({
-        path: `/${FirstPage.name.toLowerCase()}`
+        name: HomePage.name
       })
-    } else if (!isEnable && isReady !== null) {
+    } else if (!isReady) {
       return next({
-        path: `/${LockScreen.name.toLowerCase()}`
+        name: FirstPage.name
+      })
+    } else if (!isEnable) {
+      return next({
+        name: LockScreen.name
       })
     }
   }
