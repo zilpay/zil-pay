@@ -36,9 +36,6 @@ import {
 } from '@/config'
 
 import Title from '@/components/Title'
-// import P from '@/components/P'
-// import Icon from '@/components/Icon'
-// import Trash from '@/components/icons/Trash'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'

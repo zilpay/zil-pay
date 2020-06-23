@@ -1,31 +1,54 @@
 <template>
   <div :class="b()">
     <TopBar />
-    <div
-      v-for="(item, index) of dapps"
-      :key="index"
-      :class="b('list')"
-    >
-      <Item
-        :src="item.icon"
-        :trash="!item.default"
-        pointer
-        @click="linkToDomain(item.domain)"
-        @remove="setRemoveDappList(item)"
+    <ul :class="b('scroll')">
+      <li
+        v-for="(item, index) of dappsList"
+        :key="index"
       >
-        <P :size="SIZE_VARIANS.xs">
-          {{ item.title }}
-        </P>
-      </Item>
-    </div>
+        <Icon
+          :type="ICON_TYPE.auto"
+          :src="item.icon"
+          @click="linkToDomain(item.domain)"
+        />
+        <div @click="linkToDomain(item.domain)">
+          <P
+            :class="b('info')"
+            :size="SIZE_VARIANS.sm"
+            :font="FONT_VARIANTS.bold"
+          >
+            {{ item.title }}
+          </P>
+          <P
+            :class="b('info')"
+            :size="SIZE_VARIANS.xs"
+            nowrap
+          >
+            {{ item.description }}
+          </P>
+        </div>
+        <div @click="setRemoveDappList(item)">
+          <SvgInject :variant="ICON_VARIANTS.trash"/>
+        </div>
+      </li>
+      <li v-show="!dappsList || dappsList.length === 0">
+        <Title
+          :size="SIZE_VARIANS.sm"
+          :font="FONT_VARIANTS.regular"
+          :variant="COLOR_VARIANTS.gray"
+        >
+          {{ local.HAS_NOT_CONNECTIONS }}
+        </Title>
+      </li>
+    </ul>
     <Button
-      :color="COLOR_VARIANTS.warning"
-      :disabled="!dappsList || dappsList.length < 1"
+      v-show="dappsList && dappsList.length > 0"
+      :color="COLOR_VARIANTS.negative"
       round
       block
       @click="setEmptyDappList"
     >
-      delete all
+      {{ local.DELETE_ALL }}
     </Button>
   </div>
 </template>
@@ -33,17 +56,22 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import {
   SIZE_VARIANS,
   COLOR_VARIANTS,
-  ICON_TYPE
+  ICON_TYPE,
+  ICON_VARIANTS,
+  FONT_VARIANTS
 } from '@/config'
 
 import TopBar from '@/components/TopBar'
 import Button from '@/components/Button'
 import P from '@/components/P'
-import Item from '@/components/Item'
+import Title from '@/components/Title'
+import Icon from '@/components/Icon'
+import SvgInject from '@/components/SvgInject'
 
 import LinkMixin from '@/mixins/links'
 
@@ -53,45 +81,27 @@ export default {
   components: {
     TopBar,
     Button,
-    Item,
-    P
+    P,
+    Icon,
+    SvgInject,
+    Title
   },
   data() {
     return {
       SIZE_VARIANS,
       COLOR_VARIANTS,
       ICON_TYPE,
-
-      defaultList: [
-        {
-          domain: 'https://zilpay.xyz/app/unstoppabledomains',
-          icon: '/icons/unstoppable-logo.svg',
-          title: 'Blockchain domains',
-          default: true
-        },
-        {
-          domain: 'https://zilpay.xyz/app/Editor',
-          icon: '/icons/scilla-logo.png',
-          title: 'Scilla IDE',
-          default: true
-        },
-        {
-          domain: 'https://zilpay.xyz/app/roll',
-          icon: '/icons/roll.svg',
-          title: 'Roll game',
-          default: true
-        }
-      ]
+      ICON_VARIANTS,
+      FONT_VARIANTS
     }
   },
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.dappsList
     ]),
-
-    dapps() {
-      return this.defaultList.concat(this.dappsList)
-    }
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ])
   },
   methods: {
     ...mapMutations(settingsStore.STORE_NAME, [
@@ -104,20 +114,42 @@ export default {
 
 <style lang="scss">
 .Connections {
-  &__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
+  &__scroll {
     display: grid;
-    justify-items: center;
-    padding-top: 15px;
-    padding-bottom: 30px;
+    grid-gap: 10px;
+
+    margin-top: 10px;
+    padding: 0;
+    padding: 10px;
+
+    overflow-y: scroll;
+    height: calc(100vh - 306px);
+    min-width: 300px;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      list-style: none;
+      max-height: 52px;
+      cursor: pointer;
+
+      img {
+        width: 30px;
+        height: auto;
+      }
+    }
   }
 
-  &__list {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-
-    width: 360px;
-    height: 60px;
+  &__info {
+    width: 200px;
   }
 }
 </style>
