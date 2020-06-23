@@ -16,16 +16,33 @@
             :src="t.icon"
           />
           <div>
-            <Title
-              :size="SIZE_VARIANS.md"
-              :font="FONT_VARIANTS.regular"
-            >
-              {{ t.balance }}
-            </Title>
-            <P :font="FONT_VARIANTS.bold">
-              {{ t.symbol }}
-            </P>
+            <div :class="b('balance')">
+              <Title
+                :size="SIZE_VARIANS.md"
+                :font="FONT_VARIANTS.regular"
+              >
+                {{ t.balance }}
+              </Title>
+              <P :font="FONT_VARIANTS.bold">
+                {{ t.symbol }}
+              </P>
+            </div>
+            <div :class="b('balance')">
+              <Title
+                :size="SIZE_VARIANS.sm"
+                :font="FONT_VARIANTS.regular"
+              >
+                {{ t.balance | toConversion(getRate) }}
+              </Title>
+              <P
+                :size="SIZE_VARIANS.sm"
+                :font="FONT_VARIANTS.bold"
+              >
+                {{ currency }}
+              </P>
+            </div>
           </div>
+          <SvgInject :variant="ICON_VARIANTS.arrow" />
         </li>
       </ul>
     </div>
@@ -34,19 +51,33 @@
 </template>
 
 <script>
-import { COLOR_VARIANTS, FONT_VARIANTS, SIZE_VARIANS, ICON_TYPE } from '@/config'
+import { mapState, mapGetters } from 'vuex'
+import settingsStore from '@/store/settings'
+
+import {
+  COLOR_VARIANTS,
+  FONT_VARIANTS,
+  SIZE_VARIANS,
+  ICON_TYPE,
+  ICON_VARIANTS
+} from '@/config'
 
 import Top from '@/components/Top'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Icon from '@/components/Icon'
+import SvgInject from '@/components/SvgInject'
+
+import { toConversion } from '@/filters'
 
 export default {
   name: 'Tokens',
+  filters: { toConversion },
   components: {
     Top,
     Title,
     Icon,
+    SvgInject,
     P
   },
   data() {
@@ -55,6 +86,7 @@ export default {
       ICON_TYPE,
       COLOR_VARIANTS,
       FONT_VARIANTS,
+      ICON_VARIANTS,
 
       tokens: [
         {
@@ -65,6 +97,14 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.currency
+    ]),
+    ...mapGetters(settingsStore.STORE_NAME, [
+      settingsStore.GETTERS_NAMES.getRate
+    ])
   }
 }
 </script>
@@ -87,12 +127,39 @@ export default {
 
   &__item {
     display: flex;
-    max-height: 70px;
+    align-items: center;
+    justify-content: space-between;
+
+    max-height: 60px;
     padding: 10px;
+
+    background-color: var(--accent-color-second);
+    border-radius: 10px;
+    cursor: pointer;
 
     img {
       max-width: 30px;
       height: auto;
+    }
+
+    svg {
+      transform: rotate(180deg);
+
+      path {
+        stroke: var(--accent-color-primary);
+      }
+    }
+  }
+
+  &__balance {
+    width: 150px;
+    display: flex;
+    align-items: center;
+
+    font-size: 18px;
+
+    & > .P {
+      margin-left: 5px;
     }
   }
 
@@ -100,10 +167,11 @@ export default {
     display: grid;
     grid-gap: 10px;
 
+    padding: 0;
     margin-top: 10px;
 
     overflow-y: scroll;
-    height: calc(100vh - 306px);
+    height: calc(100vh - 250px);
     min-width: 300px;
   }
 }

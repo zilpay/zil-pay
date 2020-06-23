@@ -66,10 +66,7 @@ import JazziconMixin from '@/mixins/jazzicon'
 export default {
   name: 'AccountCard',
   components: {
-    Title,
-    // Icon,
-    // Trash,
-    // P
+    Title
   },
   mixins: [CopyMixin, AccountMixin, JazziconMixin],
   filters: { fromZil, toConversion, toAddress },

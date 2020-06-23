@@ -83,7 +83,7 @@ export default {
     margin-top: 10px;
 
     overflow-y: scroll;
-    height: calc(100vh - 306px);
+    height: calc(100vh - 250px);
     min-width: 300px;
   }
 
