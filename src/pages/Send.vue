@@ -123,7 +123,6 @@ import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import Button from '@/components/Button'
 import Input, { INPUT_TYPES } from '@/components/Input'
-import Item from '@/components/Item'
 import Container from '@/components/Container'
 import BottomModal from '@/components/BottomModal'
 
@@ -148,7 +147,6 @@ export default {
     Alert,
     Title,
     Input,
-    Item,
     Button,
     Container
   },
