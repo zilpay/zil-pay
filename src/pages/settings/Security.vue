@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <TopBar close />
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <RadioGroup
         :value="getCurrent"
         :elements="getHours"
@@ -9,31 +9,21 @@
       >
         {{ local.AUTO_LOGOUT_HOURS }} ({{ local.HOURS }})
       </RadioGroup>
-      <Separator />
-      <div :class="b('btns')">
-        <Button
-          :color="COLOR_VARIANTS.warning"
-          round
-          @click="onExport"
-        >
-          {{ local.EXPORT }}
-        </Button>
-        <Button
-          :color="COLOR_VARIANTS.warning"
-          round
-          @click="onRestore"
-        >
-          {{ local.RESTORE }}
-        </Button>
-        <Button
-          :disabled="Number(lockTime) === Number(DEFAULT.TIME_BEFORE_LOCK)"
-          round
-          @click="onDefault"
-        >
-          {{ local.DEFAULT }}
-        </Button>
-      </div>
-    </Container>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="onExportPrivateKey"
+      >
+        {{ local.REVEAL_KEY }}
+      </Button>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="onExportPhrase"
+      >
+        {{ local.REVEAL_PHRASE }}
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -45,11 +35,9 @@ import uiStore from '@/store/ui'
 import { COLOR_VARIANTS } from '@/config'
 import { DEFAULT } from 'config'
 
-import RestorePage from '@/pages/Restore'
 import ExportPage from '@/pages/accounts/Export'
 
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
@@ -57,7 +45,6 @@ export default {
   name: 'Security',
   components: {
     TopBar,
-    Container,
     RadioGroup,
     Button
   },
@@ -87,14 +74,20 @@ export default {
     onDefault() {
       this.setLockTime(DEFAULT.TIME_BEFORE_LOCK)
     },
-    onRestore() {
+    onExportPrivateKey() {
       this.$router.push({
-        name: RestorePage.name
+        name: ExportPage.name,
+        params: {
+          type: 2
+        }
       })
     },
-    onExport() {
+    onExportPhrase() {
       this.$router.push({
-        name: ExportPage.name
+        name: ExportPage.name,
+        params: {
+          type: 1
+        }
       })
     }
   }
@@ -104,19 +97,19 @@ export default {
 <style lang="scss">
 .Security {
   &__wrapper {
-    display: grid;
-    grid-gap: 30px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: space-around;
+    min-height: 400px;
+    padding-left: 30px;
+    padding-right: 30px;
 
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  &__btns {
-    display: grid;
-    justify-self: right;
-    grid-gap: 15px;
-    width: 175px;
+    & > .Button {
+      min-width: 250px;
+      min-height: 46px;
+      font-size: 18px;
+    }
   }
 }
 </style>

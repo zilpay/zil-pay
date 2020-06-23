@@ -91,6 +91,8 @@
     "HAS_NOT_CONNECTIONS": "No connections yet",
     "TO": "to",
     "DELETE_ALL": "delete all",
+    "REVEAL_KEY": "Reveal Private Key",
+    "REVEAL_PHRASE": "Reveal Secret Phrase",
     "CANCEL": "cancel",
     "AMOUNT": "amount",
     "FROM": "from",
