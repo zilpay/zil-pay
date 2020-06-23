@@ -129,7 +129,7 @@ export default {
     padding: 10px;
 
     overflow-y: scroll;
-    height: calc(100vh - 306px);
+    height: calc(100vh - 150px);
     min-width: 300px;
 
     li {
