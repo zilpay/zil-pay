@@ -68,8 +68,6 @@
     "RECIPIENT": "recipient",
     "NOT_CONTACTS": "You have not any contacts yet.",
     "RECEIVE": "receive",
-    "DEPOSIT": "deposit",
-    "RECEIVE_DEPOSIT_DIS": "To interact with decentralized applications using ZilPay, you’ll need ZIL coin in your wallet.",
     "TRANSFER": "transfer",
     "TRANSFER_DIS": "The easiest way to get ZIL is to simply transfer it from another address.",
     "SHOW": "show",
