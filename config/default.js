@@ -21,8 +21,8 @@ export const DEFAULT = {
   MIN_LENGTH_PASSWORD: 6,
   MAX_LENGTH_NAME: 10,
   POPUP_CALL_TIMEOUT: 120000,
-  POPUP_WIDTH: 360,
-  POPUP_HEIGHT: 600,
+  POPUP_WIDTH: 320,
+  POPUP_HEIGHT: 560,
   PROMT_PAGE: 'popup.html',
   UD_CONTRACT_ADDRESS: 'zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz'
 }
