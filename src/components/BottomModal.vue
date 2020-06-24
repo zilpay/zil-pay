@@ -57,12 +57,30 @@ export default {
   &__social {
     z-index: 10;
 
+    top: 40vh;
+    bottom: 40vh;
+    left: 30%;
+    right: 30%;
+
     background-color: var(--app-background-color);
 
-    height: fit-content;
+    border-radius: var(--default-border-radius);
 
     animation: fadeInUp 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+
+    @media (max-width: 700px) {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: auto;
+
+      border-radius: 0;
+
+      height: fit-content;
+      border-top-right-radius: var(--default-border-radius);
+      border-top-left-radius: var(--default-border-radius);
+    }
   }
 
   &__close {
