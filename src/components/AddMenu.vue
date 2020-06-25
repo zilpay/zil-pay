@@ -1,23 +1,46 @@
 <template>
-  <div :class="b()"></div>
+  <div
+    :class="b()"
+    @click="onClick"
+  >
+    <SvgInject :variant="ICON_VARIANTS.add" />
+  </div>
 </template>
 
 <script>
+import SvgInject from '@/components/SvgInject'
+
+import { ICON_VARIANTS, EVENTS } from '@/config'
+
 export default {
-  name: 'AddMenu'
+  name: 'AddMenu',
+  components: {
+    SvgInject
+  },
+  data() {
+    return {
+      ICON_VARIANTS
+    }
+  },
+  methods: {
+    onClick() {
+      this.$emit(EVENTS.click)
+    }
+  }
 }
 </script>
 
 <style lang="scss">
-.Add {
-  right: 15px;
-  z-index: 1;
-  width: 45px;
-  bottom: 15px;
-  height: 45px;
-  display: block;
+.AddMenu {
+  cursor: pointer;
+
   position: absolute;
-  line-height: 45px;
-  border-radius: 50%;
+  bottom: 60px;
+  right: 30px;
+
+  svg {
+    width: 36px;
+    height: 36px;
+  }
 }
 </style>

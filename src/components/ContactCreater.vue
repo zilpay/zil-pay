@@ -13,12 +13,12 @@
       round
     />
     <Button
-      :class="b('btn')"
+      :color="COLOR_VARIANTS.negative"
       block
       round
       @click="onAdded"
     >
-      Create
+      {{ local.CREATE }}
     </Button>
   </Container>
 </template>
@@ -29,7 +29,7 @@ import { mapActions, mapState } from 'vuex'
 import contactsStore from '@/store/contacts'
 import uiStore from '@/store/ui'
 
-import { EVENTS, REGX_PATTERNS } from '@/config'
+import { EVENTS, REGX_PATTERNS, COLOR_VARIANTS } from '@/config'
 
 import Input from '@/components/Input'
 import Container from '@/components/Container'
@@ -53,6 +53,8 @@ export default {
   },
   data() {
     return {
+      COLOR_VARIANTS,
+
       payload: {
         address: null,
         name: null,
@@ -118,12 +120,17 @@ export default {
 .ContactCreater {
   display: grid;
   grid-gap: 15px;
+  justify-items: center;
 
   /* top | right | bottom | left */
   padding: 15px;
 
-  &__btn {
-    max-width: 150px;
+  & > .Button {
+    max-width: 100px;
+  }
+
+  & > .Input {
+    width: 100%;
   }
 }
 </style>

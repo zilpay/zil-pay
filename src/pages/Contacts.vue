@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <Top />
-    <AddMenu />
+    <AddMenu @click="contactModal = true"/>
     <div :class="b('wrapper')">
       <Title :size="SIZE_VARIANS.md">
         {{ $options.name }}
@@ -24,6 +24,12 @@
       </div>
       <BottomBar />
     </div>
+    <BottomModal v-model="contactModal">
+      <ContactCreater
+        v-if="contactModal"
+        @close="contactModal = false"
+      />
+    </BottomModal>
   </div>
 </template>
 
@@ -37,19 +43,25 @@ import { SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 import Top from '@/components/Top'
 import Title from '@/components/Title'
 import AddMenu from '@/components/AddMenu'
+import BottomModal from '@/components/BottomModal'
+import ContactCreater from '@/components/ContactCreater'
 
 export default {
   name: 'Contacts',
   components: {
     Top,
     Title,
-    AddMenu
+    AddMenu,
+    BottomModal,
+    ContactCreater
   },
   data() {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
-      COLOR_VARIANTS
+      COLOR_VARIANTS,
+
+      contactModal: false
     }
   },
   computed: {
