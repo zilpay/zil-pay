@@ -1,6 +1,15 @@
 <template>
   <div id="app">
     <router-view/>
+    <BottomModal>
+      <Receive />
+    </BottomModal>
+    <BottomModal>
+      <Send />
+    </BottomModal>
+    <BottomModal>
+      <Account />
+    </BottomModal>
   </div>
 </template>
 
@@ -14,6 +23,11 @@ import contactsStore from '@/store/contacts'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 import transactionsStore from '@/store/transactions'
+import BottomModal from '@/components/BottomModal'
+
+import Receive from '@/views/Receive'
+import Account from '@/views/Account'
+import Send from '@/views/Send'
 
 import LinkMixin from '@/mixins/links'
 import { getStorageData } from '@/services'
@@ -21,6 +35,12 @@ import { getStorageData } from '@/services'
 export default {
   name: 'App',
   mixins: [LinkMixin],
+  components: {
+    BottomModal,
+    Receive,
+    Send,
+    Account
+  },
   computed: {
     ...mapState(transactionsStore.STORE_NAME, [
       transactionsStore.STATE_NAMES.confirmationTx
