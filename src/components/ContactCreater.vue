@@ -1,7 +1,7 @@
 <template>
   <form
     :class="b()"
-    @submit="onAdded"
+    @submit.prevent="onAdded"
   >
     <Input
       v-model="payload.address"
@@ -102,7 +102,7 @@ export default {
 
     onAdded() {
       try {
-        if (!isBech32(this.payload.address)) {
+        if (!this.payload.address || !isBech32(this.payload.address)) {
           this.payload.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
 
           return null
