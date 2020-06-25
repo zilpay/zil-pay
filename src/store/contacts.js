@@ -22,6 +22,7 @@ const MUTATIONS_NAMES = {
 const ACTIONS_NAMES = {
   onRemoveByIndex: 'onRemoveByIndex',
   onAddedContact: 'onAddedContact',
+  onUpdateContact: 'onUpdateContact',
   onUpdate: 'onUpdate'
 }
 const GETTERS_NAMES = { }
@@ -57,6 +58,13 @@ const STORE = {
       }
 
       const newList = [...state.contactList, payload]
+
+      commit(MUTATIONS_NAMES.setContacts, newList)
+    },
+    [ACTIONS_NAMES.onUpdateContact]({ commit, state }, { payload, index }) {
+      const newList = state.contactList
+
+      newList[index] = payload
 
       commit(MUTATIONS_NAMES.setContacts, newList)
     },

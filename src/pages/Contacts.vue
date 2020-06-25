@@ -17,7 +17,10 @@
           <P :font="FONT_VARIANTS.regular">
             {{ contact.name }}
           </P>
-          <DropDown :items="dropDownItems" />
+          <DropDown
+            :items="dropDownItems"
+            @selected="onDropDownSelected($event, contact, index)"
+          />
         </li>
         <Title
           v-show="!contactList || contactList.length === 0"
@@ -36,10 +39,21 @@
         @close="contactModal = false"
       />
     </BottomModal>
+    <BottomModal v-model="editContactModal">
+      <ContactCreater
+        v-if="editContactModal"
+        :contactIndex="contactIndex"
+        edit
+        @close="editContactModal = false"
+      />
+    </BottomModal>
   </div>
 </template>
 
 <script>
+import { uuid } from 'uuidv4'
+import copy from 'clipboard-copy'
+
 import { mapState, mapActions } from 'vuex'
 import contactsStore from '@/store/contacts'
 import uiStore from '@/store/ui'
@@ -60,6 +74,12 @@ import ContactCreater from '@/components/ContactCreater'
 import DropDown from '@/components/DropDown'
 import SvgInject from '@/components/SvgInject'
 
+const DROP_DOWN_EVENTS = {
+  copy: uuid(),
+  edit: uuid(),
+  delete: uuid()
+}
+
 export default {
   name: 'Contacts',
   components: {
@@ -79,7 +99,9 @@ export default {
       COLOR_VARIANTS,
       ICON_VARIANTS,
 
-      contactModal: false
+      contactModal: false,
+      editContactModal: false,
+      contactIndex: null
     }
   },
   computed: {
@@ -94,15 +116,18 @@ export default {
       return [
         {
           icon: ICON_VARIANTS.copy,
-          text: this.local.COPY
+          text: this.local.COPY,
+          event: DROP_DOWN_EVENTS.copy
         },
         {
           icon: ICON_VARIANTS.edit,
-          text: this.local.EDIT
+          text: this.local.EDIT,
+          event: DROP_DOWN_EVENTS.edit
         },
         {
           icon: ICON_VARIANTS.trash,
-          text: this.local.DELETE
+          text: this.local.DELETE,
+          event: DROP_DOWN_EVENTS.delete
         }
       ]
     }
@@ -111,6 +136,24 @@ export default {
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
     ]),
+
+    onDropDownSelected(event, contact, index) {
+      switch (event.el.event) {
+      case DROP_DOWN_EVENTS.copy:
+        copy(contact.address)
+        break
+      case DROP_DOWN_EVENTS.edit:
+        this.contactIndex = index
+        this.editContactModal = true
+        break
+      case DROP_DOWN_EVENTS.delete:
+        this.onRemoveByIndex(index)
+        break
+
+      default:
+        break
+      }
+    },
 
     onSelectContact(contact) {
       // this.$router.push({

@@ -82,6 +82,8 @@ export default {
         el,
         index
       })
+      this.show = !this.show
+      this.$emit(EVENTS.input, !this.value)
     }
   }
 }

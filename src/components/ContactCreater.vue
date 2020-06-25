@@ -18,7 +18,7 @@
       round
       @click="onAdded"
     >
-      {{ local.CREATE }}
+      {{ buttonText }}
     </Button>
   </Container>
 </template>
@@ -51,6 +51,16 @@ export default {
     Container,
     Button
   },
+  props: {
+    edit: {
+      type: Boolean,
+      default: false
+    },
+    contactIndex: {
+      type: Number,
+      required: false
+    }
+  },
   data() {
     return {
       COLOR_VARIANTS,
@@ -66,7 +76,17 @@ export default {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ]),
+    ...mapState(contactsStore.STORE_NAME, [
+      contactsStore.STATE_NAMES.contactList
+    ]),
 
+    buttonText() {
+      if (this.edit) {
+        return this.local.UPDATE
+      }
+
+      return this.local.CREATE
+    },
     placeholderAddress() {
       return `${this.local.SELECT} ${this.local.PUBLIC} ${this.local.ADDRESS} (zil1), ${this.local.OR} ZNS`
     },
@@ -76,7 +96,8 @@ export default {
   },
   methods: {
     ...mapActions(contactsStore.STORE_NAME, [
-      contactsStore.ACTIONS_NAMES.onAddedContact
+      contactsStore.ACTIONS_NAMES.onAddedContact,
+      contactsStore.ACTIONS_NAMES.onUpdateContact
     ]),
 
     onAdded() {
@@ -87,7 +108,15 @@ export default {
           return null
         }
 
-        this.onAddedContact(this.payload)
+        if (this.edit) {
+          this.onUpdateContact({
+            payload: this.payload,
+            index: this.contactIndex
+          })
+        } else {
+          this.onAddedContact(this.payload)
+        }
+
         this.$emit(EVENTS.close)
       } catch (err) {
         this.payload.error = err.message
@@ -111,6 +140,11 @@ export default {
           this.payload.error = this.local.NOT_FOUND_ZNS
         }
       }
+    }
+  },
+  mounted() {
+    if (this.edit && this.contactList && this.contactList.length > 0) {
+      this.payload = this.contactList[this.contactIndex]
     }
   }
 }
