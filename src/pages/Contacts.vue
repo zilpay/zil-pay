@@ -17,12 +17,7 @@
           <P :font="FONT_VARIANTS.regular">
             {{ contact.name }}
           </P>
-          <DropDown>
-            <div>asdsadsa</div>
-            <div>asdsadsa</div>
-            <div>asdsadsa</div>
-            <div>asdsadsa</div>
-          </DropDown>
+          <DropDown :items="dropDownItems" />
         </li>
         <Title
           v-show="!contactList || contactList.length === 0"
@@ -93,7 +88,24 @@ export default {
     ]),
     ...mapState(contactsStore.STORE_NAME, [
       contactsStore.STATE_NAMES.contactList
-    ])
+    ]),
+
+    dropDownItems() {
+      return [
+        {
+          icon: ICON_VARIANTS.copy,
+          text: this.local.COPY
+        },
+        {
+          icon: ICON_VARIANTS.edit,
+          text: this.local.EDIT
+        },
+        {
+          icon: ICON_VARIANTS.trash,
+          text: this.local.DELETE
+        }
+      ]
+    }
   },
   methods: {
     ...mapActions(contactsStore.STORE_NAME, [
@@ -135,6 +147,11 @@ export default {
     overflow-y: scroll;
     height: calc(100vh - 250px);
     min-width: 300px;
+  }
+
+  &__drop-i {
+    font-size: 12px;
+    display: flex;
   }
 
   &__item {

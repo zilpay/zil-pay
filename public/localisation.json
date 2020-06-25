@@ -23,6 +23,7 @@
       "If you need to back up your secret phrase again, you can find it in Security",
       "If you ever have a question or see something fishy, contact us."
     ],
+    "COPY": "Copy",
     "FEE": "Fee",
     "GAS_LIMIT": "Gas Limit",
     "GAS_PRICE": "Gas Price (Li)",
@@ -89,6 +90,7 @@
     "HAS_NOT_CONNECTIONS": "No connections yet",
     "TO": "to",
     "DELETE_ALL": "delete all",
+    "DELETE": "Delete",
     "REVEAL_KEY": "Reveal Private Key",
     "REVEAL_PHRASE": "Reveal Secret Phrase",
     "CANCEL": "cancel",
@@ -118,6 +120,7 @@
     "LONG": "long",
     "NOT_MATCH": "do not match. Please try again",
     "CAN_EDIT": "change:",
+    "EDIT": "Edit",
     "IMPORT_PRIVATE_KEY": "You can access your wallet with private key.",
     "IMPORT_KEYSTORE": "You can access your wallet with your keystore file and passphrase.",
     "IMPORT_HW": "Manage your crypto, with the security of your hardware wallet",
