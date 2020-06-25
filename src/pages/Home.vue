@@ -22,8 +22,9 @@
 
 <script>
 import { uuid } from 'uuidv4'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
+import modalStore from '@/store/modal'
 import accountsStore from '@/store/accounts'
 
 import {
@@ -32,9 +33,6 @@ import {
   COLOR_VARIANTS,
   SIZE_VARIANS
 } from '@/config'
-
-import Receive from '@/pages/Receive'
-import Send from '@/pages/Send'
 
 import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
@@ -91,14 +89,18 @@ export default {
     ...mapActions(accountsStore.STORE_NAME, [
       accountsStore.ACTIONS_NAMES.updateCurrentAccount
     ]),
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.setShowSendModal,
+      modalStore.MUTATIONS_NAMES.setShowReceiveModal
+    ]),
 
     onEvent(event) {
       switch (event) {
       case 0:
-        this.$router.push({ name: Receive.name })
+        this.setShowReceiveModal()
         break
       case 1:
-        this.$router.push({ name: Send.name })
+        this.setShowSendModal()
         break
       default:
         break

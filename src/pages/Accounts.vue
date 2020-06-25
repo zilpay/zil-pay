@@ -26,14 +26,12 @@ import uiStore from '@/store/ui'
 
 import { SIZE_VARIANS } from '@/config'
 
-import SendPage from '@/pages/Send'
 import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
 import AccountCard from '@/components/AccountCard'
 import Top from '@/components/Top'
 
-import { toAddress } from '@/filters'
 import { Background } from '@/services'
 
 export default {
@@ -94,18 +92,6 @@ export default {
     onSelectAccount(index) {
       this.setAccount(index)
       this.$router.push({ name: homePage.name })
-    },
-    onSelectContact(contact) {
-      this.$router.push({
-        name: SendPage.name,
-        params: {
-          address: toAddress(
-            contact.address,
-            this.addressFormat,
-            false
-          )
-        }
-      })
     },
     async onCreateAccount() {
       const bg = new Background()

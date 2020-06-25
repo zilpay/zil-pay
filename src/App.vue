@@ -1,13 +1,25 @@
 <template>
   <div id="app">
     <router-view/>
-    <BottomModal>
+    <BottomModal
+      v-show="receiveModal.show"
+      :value="receiveModal.show"
+      @input="setShowReceiveModal"
+    >
       <Receive />
     </BottomModal>
-    <BottomModal>
+    <BottomModal
+      v-show="sendModal.show"
+      :value="sendModal.show"
+      @input="setShowSendModal"
+    >
       <Send />
     </BottomModal>
-    <BottomModal>
+    <BottomModal
+      v-show="accountModal.show"
+      :value="accountModal.show"
+      @input="setShowAccountModal"
+    >
       <Account />
     </BottomModal>
   </div>
@@ -18,6 +30,7 @@ import { BrowserStorage } from 'lib/storage'
 import { FIELDS } from 'config'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import uiStore from '@/store/ui'
+import modalStore from '@/store/modal'
 import settingsStore from '@/store/settings'
 import contactsStore from '@/store/contacts'
 import walletStore from '@/store/wallet'
@@ -47,6 +60,11 @@ export default {
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.connect
+    ]),
+    ...mapState(modalStore.STORE_NAME, [
+      modalStore.STATE_NAMES.sendModal,
+      modalStore.STATE_NAMES.receiveModal,
+      modalStore.STATE_NAMES.accountModal
     ])
   },
   methods: {
@@ -79,6 +97,11 @@ export default {
     ...mapActions(transactionsStore.STORE_NAME, [
       transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
       transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
+    ]),
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.setShowSendModal,
+      modalStore.MUTATIONS_NAMES.setShowReceiveModal,
+      modalStore.MUTATIONS_NAMES.setShowAccountModal
     ]),
 
     async storeUpdate() {
@@ -128,10 +151,5 @@ export default {
 #app {
   width: 100vw;
   height: 100vh;
-
-  & > div {
-    width: 100%;
-    height: 100%;
-  }
 }
 </style>

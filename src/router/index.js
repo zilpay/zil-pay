@@ -22,8 +22,6 @@ import Home from '@/pages/Home'
 import LockScreen from '@/pages/LockScreen'
 import Popup from '@/pages/Popup'
 import SignMessage from '@/pages/SignMessage'
-import Receive from '@/pages/Receive'
-import Send from '@/pages/Send'
 
 // Settings children pages.
 import About from '@/pages/settings/About'
@@ -154,18 +152,6 @@ const routes = [
     path: `/${TxData.name.toLowerCase()}`,
     name: TxData.name,
     component: TxData,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Receive.name.toLowerCase()}`,
-    name: Receive.name,
-    component: Receive,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Send.name.toLowerCase()}/:?address`,
-    name: Send.name,
-    component: Send,
     meta: { requiresAuth: true }
   },
   {
