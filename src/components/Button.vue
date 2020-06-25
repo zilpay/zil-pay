@@ -77,8 +77,6 @@ export default {
   border: 0;
   outline: none;
 
-  box-shadow: var(--default-box-shadow);
-
   transition: all 0.5s ease-out;
 }
 

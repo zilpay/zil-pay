@@ -25,6 +25,7 @@ export const ICON_VARIANTS = {
   about: 'about',
   close: 'close',
   trash: 'trash',
+  profile: 'profile',
 
   ledgerWatermark: 'ledger_logo_watermark',
   statusPadding: 'status_padding',

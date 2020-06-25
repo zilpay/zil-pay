@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import { EVENTS } from '@/config'
+
 /**
  * Modal which show from bottom.
  * @example
@@ -32,13 +34,9 @@ export default {
       default: true
     }
   },
-  data() {
-    return {
-    }
-  },
   methods: {
     onModal() {
-      this.$emit('input', !this.value)
+      this.$emit(EVENTS.input, !this.value)
     }
   }
 }
