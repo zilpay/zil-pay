@@ -1,5 +1,8 @@
 <template>
-  <Container :class="b()">
+  <form
+    :class="b()"
+    @submit="onAdded"
+  >
     <Input
       v-model="payload.address"
       :placeholder="placeholderAddress"
@@ -16,11 +19,10 @@
       :color="COLOR_VARIANTS.negative"
       block
       round
-      @click="onAdded"
     >
       {{ buttonText }}
     </Button>
-  </Container>
+  </form>
 </template>
 
 <script>
@@ -32,7 +34,6 @@ import uiStore from '@/store/ui'
 import { EVENTS, REGX_PATTERNS, COLOR_VARIANTS } from '@/config'
 
 import Input from '@/components/Input'
-import Container from '@/components/Container'
 import Button from '@/components/Button'
 
 import { Background } from '@/services'
@@ -48,7 +49,6 @@ export default {
   name: 'ContactCreater',
   components: {
     Input,
-    Container,
     Button
   },
   props: {
