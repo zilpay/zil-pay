@@ -1,27 +1,29 @@
 <template>
   <div id="app">
     <router-view/>
-    <BottomModal
-      v-show="receiveModal.show"
-      :value="receiveModal.show"
-      @input="setShowReceiveModal"
-    >
-      <Receive />
-    </BottomModal>
-    <BottomModal
-      v-show="sendModal.show"
-      :value="sendModal.show"
-      @input="setShowSendModal"
-    >
-      <Send />
-    </BottomModal>
-    <BottomModal
-      v-show="accountModal.show"
-      :value="accountModal.show"
-      @input="setShowAccountModal"
-    >
-      <Account />
-    </BottomModal>
+    <footer>
+      <BottomModal
+        v-show="receiveModal.show"
+        :value="receiveModal.show"
+        @input="setShowReceiveModal"
+      >
+        <Receive />
+      </BottomModal>
+      <BottomModal
+        v-show="sendModal.show"
+        :value="sendModal.show"
+        @input="setShowSendModal"
+      >
+        <Send />
+      </BottomModal>
+      <BottomModal
+        v-show="accountModal.show"
+        :value="accountModal.show"
+        @input="setShowAccountModal"
+      >
+        <Account />
+      </BottomModal>
+    </footer>
   </div>
 </template>
 
@@ -151,5 +153,10 @@ export default {
 #app {
   width: 100vw;
   height: 100vh;
+
+  & > div {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

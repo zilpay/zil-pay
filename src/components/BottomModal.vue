@@ -55,12 +55,12 @@ export default {
   &__social {
     z-index: 10;
 
-    top: 40vh;
-    bottom: 40vh;
+    top: 30%;
+    bottom: inherit;
     left: 30%;
     right: 30%;
 
-    background-color: var(--app-background-color);
+    background-color: var(--accent-color-second);
 
     border-radius: var(--default-border-radius);
 

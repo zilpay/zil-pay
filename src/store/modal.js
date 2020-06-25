@@ -41,12 +41,18 @@ const STORE = {
   },
   mutations: {
     [MUTATIONS_NAMES.setShowSendModal](state) {
+      state[STATE_NAMES.receiveModal].show = false
+      state[STATE_NAMES.accountModal].show = false
       state[STATE_NAMES.sendModal].show = !state[STATE_NAMES.sendModal].show
     },
     [MUTATIONS_NAMES.setShowReceiveModal](state) {
+      state[STATE_NAMES.sendModal].show = false
+      state[STATE_NAMES.accountModal].show = false
       state[STATE_NAMES.receiveModal].show = !state[STATE_NAMES.receiveModal].show
     },
     [MUTATIONS_NAMES.setShowAccountModal](state) {
+      state[STATE_NAMES.receiveModal].show = false
+      state[STATE_NAMES.sendModal].show = false
       state[STATE_NAMES.accountModal].show = !state[STATE_NAMES.accountModal].show
     }
   },
