@@ -44,6 +44,8 @@ import Receive from '@/views/Receive'
 import Account from '@/views/Account'
 import Send from '@/views/Send'
 
+import Popup from '@/pages/Popup'
+
 import LinkMixin from '@/mixins/links'
 import { getStorageData } from '@/services'
 
@@ -131,7 +133,12 @@ export default {
 
     await this.onInit()
 
-    await this.onUpdateToConfirmTxs()
+    const forConfirm = await this.onUpdateToConfirmTxs()
+
+    if (forConfirm) {
+      this.$router.push({ name: Popup.name })
+    }
+
     await this.onUpdateConnection()
 
     this.storeUpdate()
