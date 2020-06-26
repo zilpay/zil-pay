@@ -109,7 +109,6 @@ export default {
     align-items: center;
 
     width: 100%;
-    height: 20px;
 
     text-indent: 15px;
     text-align: left;

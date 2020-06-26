@@ -247,17 +247,16 @@ export default {
   }
 
   &__wrapper {
-    width: 100%;
-    max-width: 300px;
+    margin-top: 30px;
 
-    .Input {
+    & > .Input {
       padding: 25px;
     }
   }
 
   &__btn {
-    min-width: 300px;
-    margin-top: 30px;
+    min-width: 250px;
+    margin-top: 10px;
   }
 }
 </style>
