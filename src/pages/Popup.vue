@@ -12,11 +12,11 @@
       >
         {{ local.ADDRESS }} {{ local.FROM }}:
       </Title>
-      <P>
+      <P :size="SIZE_VARIANS.xs">
         {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
       </P>
     </Alert>
-    <Container
+    <div
       v-if="getCurrent"
       :class="b('wrapper')"
     >
@@ -35,7 +35,7 @@
         :DEFAULT="DEFAULT_GAS_FEE"
         @input="setCurrentGas"
       />
-      <div :class="b('amount')">
+      <div :class="b('item')">
         <P
           :font="FONT_VARIANTS.bold"
           :variant="amountColor"
@@ -49,7 +49,7 @@
           ZIL{{ getCurrent.amount | fromZil }}
         </P>
       </div>
-      <Container :class="b('to-ds')">
+      <div :class="b('item')">
         <P :font="FONT_VARIANTS.bold">
           TODS
         </P>
@@ -57,9 +57,8 @@
           :value="getCurrent.priority"
           @input="setPriority"
         />
-      </Container>
-    </Container>
-    <Separator />
+      </div>
+    </div>
     <P
       :class="b('error-msg')"
       :variant="COLOR_VARIANTS.danger"
@@ -69,25 +68,16 @@
     >
       {{ error }}
     </P>
-    <Container
+    <router-link
       v-if="getCurrent && getCurrent.data"
-      :class="b('details')"
-      @click="onDetails"
+      :to="{ name: LINKS.detail }"
     >
-      <Title
-        :size="SIZE_VARIANS.md"
-        :font="FONT_VARIANTS.regular"
-      >
-        {{ local.VIEW }} {{ local.DETAILS }}
-      </Title>
-      <ArrowInCircle
-        width="40"
-        height="40"
-      />
-    </Container>
+      <P :class="b('details')">
+        {{ local.VIEW }} {{ local.DETAILS }} >>
+      </P>
+    </router-link>
     <Alert
       v-if="getCurrent"
-      :class="b('to')"
       pointer
       @click="onTo"
     >
@@ -97,20 +87,18 @@
       >
         {{ local.ADDRESS }} {{ local.TO }}:
       </Title>
-      <P>
+      <P :size="SIZE_VARIANS.xs">
         {{ getCurrent.toAddr | toAddress(addressFormat, false) }}
       </P>
     </Alert>
-    <BottomBar
-      :elements="bottomBar"
-      @click="onEvent"
+    <Tabs
+      :elements="tabElements"
+      @input="onEvent"
     />
   </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
@@ -131,11 +119,9 @@ import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Icon from '@/components/Icon'
-import Container from '@/components/Container'
 import GasControl from '@/components/GasControl'
-import BottomBar from '@/components/BottomBar'
-import ArrowInCircle from '@/components/icons/ArrowInCircle'
 import SwitchBox from '@/components/SwitchBox'
+import Tabs from '@/components/Tabs'
 
 import TxDataPage from '@/pages/popup/TxData'
 import HomePage from '@/pages/Home'
@@ -148,10 +134,6 @@ import { fromZil, toConversion, toAddress } from '@/filters'
 import { Background, ledgerSendTransaction } from '@/services'
 
 const { window } = global
-const BOTTOM_BAR_EVENTS = {
-  confirm: uuid(),
-  reject: uuid()
-}
 
 export default {
   name: 'Popup',
@@ -161,10 +143,8 @@ export default {
     P,
     Icon,
     GasControl,
-    Container,
-    BottomBar,
-    ArrowInCircle,
-    SwitchBox
+    SwitchBox,
+    Tabs
   },
   mixins: [viewblockMixin, CalcMixin],
   filters: { fromZil, toConversion, toAddress },
@@ -175,6 +155,9 @@ export default {
       DEFAULT_GAS_FEE,
       COLOR_VARIANTS,
       ICON_VARIANTS,
+      LINKS: {
+        detail: TxDataPage.name
+      },
 
       error: null,
       lastTx: null
@@ -198,19 +181,13 @@ export default {
       transactionsStore.GETTERS_NAMES.getCurrentGas
     ]),
 
-    bottomBar() {
+    tabElements() {
       return [
         {
-          value: this.local.REJECT,
-          event: BOTTOM_BAR_EVENTS.reject,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
+          name: this.local.REJECT
         },
         {
-          value: this.local.CONFIRM,
-          event: BOTTOM_BAR_EVENTS.confirm,
-          size: SIZE_VARIANS.sm,
-          variant: COLOR_VARIANTS.primary
+          name: this.local.CONFIRM
         }
       ]
     },
@@ -267,13 +244,6 @@ export default {
       this.onViewblockAddress(this.getCurrentAccount.address)
     },
     /**
-     * Go to the Details tx data.
-     */
-    onDetails() {
-      this.$router.push({ name: TxDataPage.name })
-    },
-
-    /**
      * When rejected tx.
      */
     async onReject() {
@@ -314,11 +284,12 @@ export default {
      * Handle call event.
      */
     onEvent(event) {
+      console.log(event)
       switch (event) {
-      case BOTTOM_BAR_EVENTS.reject:
+      case 0:
         this.onReject()
         break
-      case BOTTOM_BAR_EVENTS.confirm:
+      case 1:
         this.onConfirm()
         break
       default:
@@ -351,6 +322,8 @@ export default {
       if (this.confirmationTx.length === 0) {
         window.close()
       }
+
+      this.$router.push({ name: HomePage.name })
     }
   },
   mounted() {
@@ -370,69 +343,50 @@ export default {
 
 <style lang="scss">
 .Popup {
-  min-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  &__from,
-  &__to {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 80px;
-    font-size: 13px;
-  }
+  // padding-top: 30px;
+  // padding-bottom: 30px;
+
+  text-align: center;
+
+  background-color: var(--app-background-color);
 
   &__wrapper {
-    display: grid;
-    grid-gap: 15px;
-    align-items: center;
-    justify-items: center;
-
-    padding: 15px 30px 30px 30px;
-  }
-
-  &__amount,
-  &__to-ds {
-    font-size: 15px;
-    line-height: 0;
-  }
-
-  &__amount {
-    display: flex;
-    justify-content: space-between;
-
-    width: 100%;
-    max-width: 250px;
-  }
-
-  &__to-ds {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 250px;
+    margin-top: 30px;
+    margin-bottom: 30px;
   }
 
   &__details {
-    position: fixed;
-    bottom: 130px;
-    right: 30px;
-
-    cursor: pointer;
-
-    display: grid;
-    align-items: center;
-    grid-template-columns: 1fr 40px;
-    grid-gap: 10px;
+    text-decoration-line: underline;
+    letter-spacing: -0.139803px;
+    font-size: 15px;
+    line-height: 18px;
   }
 
-  &__to {
-    position: fixed;
-    bottom: 40px;
-    z-index: 1;
+  &__from {
+    margin-top: 20px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__error-msg {
-    padding-top: 5px;
+    min-height: 40px;
+  }
+
+  & > a {
+    min-width: 250px;
+    text-align: right;
+  }
+
+  & > .Tabs {
+    margin-top: 20px;
   }
 }
 </style>
