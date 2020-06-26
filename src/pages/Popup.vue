@@ -346,9 +346,6 @@ export default {
   flex-direction: column;
   align-items: center;
 
-  // padding-top: 30px;
-  // padding-bottom: 30px;
-
   text-align: center;
 
   background-color: var(--app-background-color);

@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <Alert>
-      <Container
+      <div
         v-if="getCurrentAccount"
         :class="b('header')"
       >
@@ -11,9 +11,9 @@
         <P nowrap>
           {{ getCurrentAccount.address | toAddress(addressFormat, true) }}
         </P>
-      </Container>
+      </div>
     </Alert>
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <Icon
         v-if="getCurrent.icon"
         :src="getCurrent.icon"
@@ -28,33 +28,29 @@
       <P>
         {{ local.SIGN_DESC }}
       </P>
-    </Container>
-    <P
-      :class="b('error-msg')"
-      :variant="COLOR_VARIANTS.danger"
-      :font="FONT_VARIANTS.regular"
-      :size="SIZE_VARIANS.sm"
-      centred
-    >
-      {{ error }}
-    </P>
-    <Container>
+      <P
+        :class="b('error-msg')"
+        :variant="COLOR_VARIANTS.danger"
+        :font="FONT_VARIANTS.regular"
+        :size="SIZE_VARIANS.sm"
+        centred
+      >
+        {{ error }}
+      </P>
       <Textarea
         :class="b('msg')"
         :value="getCurrent.message"
         readonly
       />
-    </Container>
-    <BottomBar
-      :elements="bottomBar"
-      @click="onEvent"
+    </div>
+    <Tabs
+      :elements="tabElements"
+      @input="onEvent"
     />
   </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { DEFAULT } from 'config'
 import {
   SIZE_VARIANS,
@@ -71,33 +67,28 @@ import uiStore from '@/store/ui'
 import transactionsStore from '@/store/transactions'
 
 import Popup from '@/pages/Popup'
+import HomePage from '@/pages/Home'
 
 import Icon from '@/components/Icon'
 import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Textarea from '@/components/Textarea'
-import BottomBar from '@/components/BottomBar'
-import Container from '@/components/Container'
+import Tabs from '@/components/Tabs'
 
 import { Background, ledgerSignMessage } from '@/services'
 import { toAddress } from '@/filters'
 
 const { window } = global
 
-const EVENTS = {
-  sign: uuid(),
-  cancel: uuid()
-}
 export default {
   name: 'SignMessage',
   components: {
     Alert,
     Title,
     P,
-    BottomBar,
-    Container,
     Icon,
+    Tabs,
     Textarea
   },
   filters: { toAddress },
@@ -129,19 +120,13 @@ export default {
       transactionsStore.GETTERS_NAMES.getCurrent
     ]),
 
-    bottomBar() {
+    tabElements() {
       return [
         {
-          value: this.local.CANCEL,
-          event: EVENTS.cancel,
-          size: SIZE_VARIANS.sm,
-          variant: COLOR_VARIANTS.primary
+          name: this.local.CANCEL
         },
         {
-          value: this.local.SIGN,
-          event: EVENTS.sign,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
+          name: this.local.SIGN
         }
       ]
     }
@@ -203,13 +188,14 @@ export default {
       if (this.confirmationTx.length === 0) {
         window.close()
       }
+      this.$router.push({ name: HomePage.name })
     },
     onEvent(event) {
       switch (event) {
-      case EVENTS.sign:
+      case 1:
         this.onConfirm()
         break
-      case EVENTS.cancel:
+      case 0:
         this.onReject()
         break
       default:
@@ -230,10 +216,13 @@ export default {
 
 <style lang="scss">
 .SignMessage {
-  min-width: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  text-align: center;
+
+  background-color: var(--app-background-color);
 
   &__header {
     margin: 10px;
@@ -243,13 +232,6 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    margin-top: 10%;
-    margin-bottom: 10%;
-  }
-
-  &__msg {
-    min-width: 360px;
   }
 
   &__icon {
@@ -259,6 +241,10 @@ export default {
 
   &__error-msg {
     margin-bottom: 5%;
+  }
+
+  & > .Alert {
+    margin-top: 30px;
   }
 }
 </style>
