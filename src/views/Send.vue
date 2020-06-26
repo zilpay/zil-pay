@@ -462,8 +462,8 @@ export default {
 
     &_accounts,
     &_contacts {
-      display: grid;
-      grid-gap: 10px;
+      display: flex;
+      flex-direction: column;
       align-items: baseline;
       justify-content: normal;
 
@@ -471,6 +471,11 @@ export default {
       padding-right: 20px;
 
       overflow-y: scroll;
+
+      & > li {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
     }
   }
 }

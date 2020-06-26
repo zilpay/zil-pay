@@ -12,22 +12,26 @@
           {{ local.CLEAR_ALL }}
         </a>
       </Title>
-      <div :class="b('scroll')">
-        <Title
-          v-show="getCurrentTransactions.length === 0"
-          :size="SIZE_VARIANS.sm"
-          :font="FONT_VARIANTS.regular"
-          :variant="COLOR_VARIANTS.gray"
-        >
-          {{ local.HOS_NOT_TX }}
-        </Title>
-        <TransactionCard
+      <ul :class="b('scroll')">
+        <li v-show="getCurrentTransactions.length === 0">
+          <Title
+            :size="SIZE_VARIANS.sm"
+            :font="FONT_VARIANTS.regular"
+            :variant="COLOR_VARIANTS.gray"
+          >
+            {{ local.HOS_NOT_TX }}
+          </Title>
+        </li>
+        <li
           v-for="(tx, index) of getCurrentTransactions"
           :key="index"
-          :transaction="tx"
-          @click="onSelect(index)"
-        />
-      </div>
+        >
+          <TransactionCard
+            :transaction="tx"
+            @click="onSelect(index)"
+          />
+        </li>
+      </ul>
     </div>
     <BottomModal v-model="info">
       <TransactionDetails
@@ -116,13 +120,19 @@ export default {
   }
 
   &__scroll {
-    display: grid;
-    grid-gap: 10px;
+    display: flex;
+    flex-direction: column;
 
     margin-top: 10px;
+    padding: 0;
+    list-style: none;
 
     overflow-y: scroll;
-    height: calc(100vh - 306px);
+    height: calc(100vh - 320px);
+
+    & > li {
+      margin-top: 10px;
+    }
   }
 
   &__title {

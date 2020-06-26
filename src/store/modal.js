@@ -19,7 +19,9 @@ const MUTATIONS_NAMES = {
 
   setNextStep: 'setNextStep',
   setPreviousStep: 'setPreviousStep',
-  setNumberStep: 'setNumberStep'
+  setNumberStep: 'setNumberStep',
+
+  setSendModalPayload: 'setSendModalPayload'
 }
 const ACTIONS_NAMES = {
 }
@@ -49,6 +51,10 @@ const STORE = {
       state[STATE_NAMES.accountModal].show = false
       state[STATE_NAMES.sendModal].show = !state[STATE_NAMES.sendModal].show
       state[STATE_NAMES.sendModal].step = 0
+
+      if (!state[STATE_NAMES.sendModal].show) {
+        state[STATE_NAMES.sendModal].payload = {}
+      }
     },
     [MUTATIONS_NAMES.setShowReceiveModal](state) {
       state[STATE_NAMES.sendModal].show = false
@@ -88,6 +94,9 @@ const STORE = {
       } else if (state[STATE_NAMES.accountModal].show) {
         state[STATE_NAMES.accountModal].step = value
       }
+    },
+    [MUTATIONS_NAMES.setSendModalPayload](state, value) {
+      state[STATE_NAMES.sendModal].payload = value
     }
   },
   actions: {

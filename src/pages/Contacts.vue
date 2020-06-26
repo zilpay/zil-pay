@@ -54,9 +54,11 @@
 import { uuid } from 'uuidv4'
 import copy from 'clipboard-copy'
 
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import contactsStore from '@/store/contacts'
 import uiStore from '@/store/ui'
+import modalStore from '@/store/modal'
+import settingsStore from '@/store/settings'
 
 import {
   SIZE_VARIANS,
@@ -73,6 +75,8 @@ import BottomModal from '@/components/BottomModal'
 import ContactCreater from '@/components/ContactCreater'
 import DropDown from '@/components/DropDown'
 import SvgInject from '@/components/SvgInject'
+
+import { toAddress } from '@/filters'
 
 const DROP_DOWN_EVENTS = {
   copy: uuid(),
@@ -111,6 +115,9 @@ export default {
     ...mapState(contactsStore.STORE_NAME, [
       contactsStore.STATE_NAMES.contactList
     ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat
+    ]),
 
     dropDownItems() {
       return [
@@ -136,6 +143,10 @@ export default {
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
     ]),
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.setSendModalPayload,
+      modalStore.MUTATIONS_NAMES.setShowSendModal
+    ]),
 
     onDropDownSelected(event, contact, index) {
       switch (event.el.event) {
@@ -156,16 +167,16 @@ export default {
     },
 
     onSelectContact(contact) {
-      // this.$router.push({
-      //   name: SendPage.name,
-      //   params: {
-      //     address: toAddress(
-      //       contact.address,
-      //       this.addressFormat,
-      //       false
-      //     )
-      //   }
-      // })
+      const payload = {
+        address: toAddress(
+          contact.address,
+          this.addressFormat,
+          false
+        )
+      }
+
+      this.setSendModalPayload(payload)
+      this.setShowSendModal()
     }
   }
 }
@@ -180,16 +191,20 @@ export default {
   background-color: var(--app-background-color);
 
   &__scroll {
-    display: grid;
-    grid-gap: 10px;
+    display: flex;
+    flex-direction: column;
 
     padding: 0;
-    margin-top: 10px;
     list-style: none;
 
     overflow-y: scroll;
     height: calc(100vh - 250px);
     min-width: 300px;
+
+    & > li {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
   }
 
   &__drop-i {
