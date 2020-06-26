@@ -148,7 +148,7 @@ export default {
     }
 
     &_round {
-      border-radius: calc(var(--default-border-radius) - 15px);
+      border-radius: calc(var(--default-border-radius) - 18px);
     }
 
     &_second {
