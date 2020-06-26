@@ -109,13 +109,14 @@ export default {
     align-items: center;
 
     width: 100%;
+    height: 20px;
 
     text-indent: 15px;
     text-align: left;
 
     font-family: var(--font-family-medium);
     color: var(--theme-color-font);
-    font-size: var(--size-xs-font);
+    font-size: 12px;
 
     &__enable {
       height: 20px;

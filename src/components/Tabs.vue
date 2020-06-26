@@ -90,5 +90,9 @@ export default {
   :last-of-type {
     border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0;
   }
+
+  & > .Button {
+    min-width: 70px;
+  }
 }
 </style>

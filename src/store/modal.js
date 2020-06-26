@@ -15,7 +15,11 @@ const STATE_NAMES = {
 const MUTATIONS_NAMES = {
   setShowSendModal: 'setShowSendModal',
   setShowReceiveModal: 'setShowReceiveModal',
-  setShowAccountModal: 'setShowAccountModal'
+  setShowAccountModal: 'setShowAccountModal',
+
+  setNextStep: 'setNextStep',
+  setPreviousStep: 'setPreviousStep',
+  setNumberStep: 'setNumberStep'
 }
 const ACTIONS_NAMES = {
 }
@@ -44,16 +48,46 @@ const STORE = {
       state[STATE_NAMES.receiveModal].show = false
       state[STATE_NAMES.accountModal].show = false
       state[STATE_NAMES.sendModal].show = !state[STATE_NAMES.sendModal].show
+      state[STATE_NAMES.sendModal].step = 0
     },
     [MUTATIONS_NAMES.setShowReceiveModal](state) {
       state[STATE_NAMES.sendModal].show = false
       state[STATE_NAMES.accountModal].show = false
       state[STATE_NAMES.receiveModal].show = !state[STATE_NAMES.receiveModal].show
+      state[STATE_NAMES.receiveModal].step = 0
     },
     [MUTATIONS_NAMES.setShowAccountModal](state) {
       state[STATE_NAMES.receiveModal].show = false
       state[STATE_NAMES.sendModal].show = false
       state[STATE_NAMES.accountModal].show = !state[STATE_NAMES.accountModal].show
+      state[STATE_NAMES.accountModal].step = 0
+    },
+    [MUTATIONS_NAMES.setNextStep](state) {
+      if (state[STATE_NAMES.sendModal].show) {
+        state[STATE_NAMES.sendModal].step++
+      } else if (state[STATE_NAMES.receiveModal].show) {
+        state[STATE_NAMES.receiveModal].step++
+      } else if (state[STATE_NAMES.accountModal].show) {
+        state[STATE_NAMES.accountModal].step++
+      }
+    },
+    [MUTATIONS_NAMES.setPreviousStep](state) {
+      if (state[STATE_NAMES.sendModal].show) {
+        state[STATE_NAMES.sendModal].step--
+      } else if (state[STATE_NAMES.receiveModal].show) {
+        state[STATE_NAMES.receiveModal].step--
+      } else if (state[STATE_NAMES.accountModal].show) {
+        state[STATE_NAMES.accountModal].step--
+      }
+    },
+    [MUTATIONS_NAMES.setNumberStep](state, value) {
+      if (state[STATE_NAMES.sendModal].show) {
+        state[STATE_NAMES.sendModal].step = value
+      } else if (state[STATE_NAMES.receiveModal].show) {
+        state[STATE_NAMES.receiveModal].step = value
+      } else if (state[STATE_NAMES.accountModal].show) {
+        state[STATE_NAMES.accountModal].step = value
+      }
     }
   },
   actions: {
