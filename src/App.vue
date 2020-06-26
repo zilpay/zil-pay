@@ -45,6 +45,7 @@ import Account from '@/views/Account'
 import Send from '@/views/Send'
 
 import Popup from '@/pages/Popup'
+import ConnectPage from '@/pages/Connect'
 
 import LinkMixin from '@/mixins/links'
 import { getStorageData } from '@/services'
@@ -145,6 +146,10 @@ export default {
     this.onLocal()
     this.onUpdate()
     this.onUpdateTransactions()
+
+    if (this.connect && Object.keys(this.connect).length > 0) {
+      this.$router.push({ name: ConnectPage.name })
+    }
 
     this.updateRate()
     this.onUpdateSettings()

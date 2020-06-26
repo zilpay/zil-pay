@@ -121,8 +121,8 @@ export default {
   background-color: var(--app-background-color);
 
   &__scroll {
-    display: grid;
-    grid-gap: 10px;
+    display: flex;
+    flex-direction: column;
 
     margin-top: 10px;
     padding: 0;
@@ -139,6 +139,8 @@ export default {
 
       list-style: none;
       max-height: 52px;
+      margin-top: 10px;
+
       cursor: pointer;
 
       img {
