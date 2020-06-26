@@ -1,5 +1,7 @@
 <template>
-  <div :class="b()"></div>
+  <div :class="b()">
+
+  </div>
 </template>
 
 <script>

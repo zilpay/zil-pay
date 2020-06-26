@@ -1,13 +1,10 @@
 <template>
   <div :class="b()">
-    <div :class="b('step', { back: receiveModal.step > 0 })">
-      <a @click="onStep">
-        <SvgInject :variant="ICON_VARIANTS.arrow"/>
-      </a>
-      <Title :size="SIZE_VARIANS.md">
-        {{ $options.name }}
-      </Title>
-    </div>
+    <BackModal
+      :name="$options.name"
+      :back="receiveModal.step > 0"
+      @click="onStep"
+    />
     <div :class="b('wrapper')">
       <P
         :font="FONT_VARIANTS.light"
@@ -55,7 +52,7 @@ import { ICON_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/co
 
 import Title from '@/components/Title'
 import P from '@/components/P'
-import SvgInject from '@/components/SvgInject'
+import BackModal from '@/components/BackModal'
 
 import { toAddress } from '@/filters'
 import LinksMixin from '@/mixins/links'
@@ -71,7 +68,7 @@ export default {
   components: {
     Title,
     P,
-    SvgInject
+    BackModal
   },
   mixins: [LinksMixin],
   data() {
@@ -196,33 +193,6 @@ export default {
         & > * {
           color: var(--accent-color-black);
         }
-      }
-    }
-  }
-
-  &__step {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50px;
-
-    & > .Title {
-      min-width: 250px;
-      text-align: center;
-      margin-right: 20px;
-    }
-
-    & > a > svg {
-      transform: rotate(270deg);
-    }
-
-    & > a {
-      cursor: pointer;
-    }
-
-    &_back {
-      & > a > svg {
-        transform: rotate(0);
       }
     }
   }
