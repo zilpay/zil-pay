@@ -447,7 +447,7 @@ export default {
     align-items: center;
 
     margin-bottom: 30px;
-    min-height: 170px;
+    min-height: 140px;
 
     list-style: none;
     padding: 0;

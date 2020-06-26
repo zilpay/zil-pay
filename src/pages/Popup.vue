@@ -284,7 +284,6 @@ export default {
      * Handle call event.
      */
     onEvent(event) {
-      console.log(event)
       switch (event) {
       case 0:
         this.onReject()
