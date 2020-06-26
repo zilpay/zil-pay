@@ -332,6 +332,7 @@ export default {
         gasLimit: gasLimit,
         code: '',
         data: '',
+        icon: '/icons/icon128.png',
         priority: false,
         uuid: false
       }
