@@ -21,13 +21,12 @@
         >
           {{ local.HOS_NOT_TX }}
         </Title>
-        <div
+        <TransactionCard
           v-for="(tx, index) of getCurrentTransactions"
           :key="index"
+          :transaction="tx"
           @click="onSelect(index)"
-        >
-          <TransactionCard :transaction="tx"/>
-        </div>
+        />
       </div>
     </div>
     <BottomModal v-model="info">
