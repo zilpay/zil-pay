@@ -135,7 +135,7 @@ export default {
 
     const forConfirm = await this.onUpdateToConfirmTxs()
 
-    if (forConfirm) {
+    if (forConfirm && forConfirm.length !== 0) {
       this.$router.push({ name: Popup.name })
     }
 
