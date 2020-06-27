@@ -2,21 +2,21 @@
   <div :class="b()">
     <Top />
     <TopBar v-if="route"/>
-    <AddMenu
-      modal
-    />
-    <div :class="b('wrapper')">
-      <AccountCard
-        v-show="tabs === 0"
+    <AddMenu @click="onCreateAccount" />
+    <ul :class="b('scroll')">
+      <li
         v-for="(acc, index) of identities"
         :key="acc.address"
-        :account="acc"
-        :selected="index === selectedAddress"
-        :trash="Boolean(acc.index > 0 || acc.isImport || acc.hwType)"
-        @selected="onSelectAccount(index)"
-        @remove="onRemoveAccount(index)"
-      />
-    </div>
+      >
+        <AccountCard
+          :account="acc"
+          :selected="index === selectedAddress"
+          :trash="Boolean(acc.index > 0 || acc.isImport || acc.hwType)"
+          @selected="onSelectAccount(index)"
+          @remove="onRemoveAccount(index)"
+        />
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -48,10 +48,7 @@ export default {
   },
   data() {
     return {
-      SIZE_VARIANS,
-
-      tabs: 0,
-      contactModal: false
+      SIZE_VARIANS
     }
   },
   computed: {
@@ -128,14 +125,22 @@ export default {
 
   background-color: var(--app-background-color);
 
-  &__wrapper {
-  }
+  &__scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-  &__list {
-    display: grid;
-    grid-gap: 15px;
+    padding: 0;
+    list-style: none;
 
-    padding-bottom: 50px;
+    overflow-y: scroll;
+    height: calc(100vh - 250px);
+    min-width: 300px;
+
+    & > li {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
   }
 }
 </style>

@@ -13,7 +13,7 @@ const { window } = global
 export default {
   methods: {
     jazziconCreate(id, address) {
-      let ctx = window.document.querySelector('#' + id)
+      let ctx = window.document.getElementById(id)
 
       if (!ctx) {
         return null

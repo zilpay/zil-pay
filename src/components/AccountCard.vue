@@ -1,7 +1,7 @@
 <template>
   <div :class="b({ selected })">
     <div
-      id="jazzicon"
+      :id="account.address"
       @click="onSelectedCard"
     />
     <div :class="b('wrapper')">
@@ -160,7 +160,7 @@ export default {
     })
 
     this.jazziconCreate(
-      'jazzicon',
+      this.account.address,
       this.account.address
     )
   },
@@ -182,7 +182,7 @@ export default {
   display: flex;
   align-items: center;
 
-  width: 250px;
+  width: 260px;
 
   padding-left: 10px;
   padding-right: 10px;
@@ -207,7 +207,7 @@ export default {
     cursor: pointer;
 
     position: absolute;
-    transform: translate(1670%, -100%);
+    transform: translate(1750%, -100%);
 
     & > svg {
       height: 15px;
