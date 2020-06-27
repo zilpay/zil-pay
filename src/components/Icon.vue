@@ -52,7 +52,7 @@ export default {
         return this.$attrs.src
       }
 
-      if (!this.icon) {
+      if (!this.icon && !this.src) {
         return null
       }
 

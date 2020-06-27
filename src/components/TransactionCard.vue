@@ -20,7 +20,7 @@
           :class="b('zil')"
           :font="FONT_VARIANTS.light"
         >
-          -ZIL{{ transaction.amount | fromZil }}
+          -{{ transaction.amount | fromZil }} ZIL
         </P>
       </div>
       <div :class="b('thirdly-line')">
