@@ -1,21 +1,53 @@
 <template>
   <div :class="b({ selected })">
-    <div id="jazzicon" />
+    <div
+      id="jazzicon"
+      @click="onSelectedCard"
+    />
     <div :class="b('wrapper')">
       <Title
         :variant="COLOR_VARIANTS.primary"
         :size="SIZE_VARIANS.sm"
+        @click="onSelectedCard"
       >
         {{ getAccountName(account) }}
       </Title>
-      <div>
+      <div
+        :class="b('balance')"
+        @click="onSelectedCard"
+      >
         <Title
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          ZIL {{ account.balance | fromZil }}
+          {{ account.balance | fromZil }} ZIL
+        </Title>
+        <Title
+          :variant="COLOR_VARIANTS.gray"
+          :size="SIZE_VARIANS.xs"
+        >
+          {{ account.balance | toConversion(getRate) }} {{ currency }}
         </Title>
       </div>
+      <P
+        v-tooltip="copytitle"
+        :class="b('address')"
+        :size="SIZE_VARIANS.xs"
+        :font="FONT_VARIANTS.medium"
+        :variant="COLOR_VARIANTS.gray"
+        :content="account.address | toAddress(addressFormat, false)"
+        copy
+        @copy="onCopyMixin"
+      >
+        {{ account.address | toAddress(addressFormat) }}
+      </P>
+    </div>
+    <div
+      v-show="trash"
+      :class="b('close')"
+      @click="onRemove"
+    >
+      <SvgInject :variant="ICON_VARIANTS.close"/>
     </div>
   </div>
 </template>
@@ -36,6 +68,7 @@ import {
 } from '@/config'
 
 import Title from '@/components/Title'
+import SvgInject from '@/components/SvgInject'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
@@ -66,7 +99,8 @@ import JazziconMixin from '@/mixins/jazzicon'
 export default {
   name: 'AccountCard',
   components: {
-    Title
+    Title,
+    SvgInject
   },
   mixins: [CopyMixin, AccountMixin, JazziconMixin],
   filters: { fromZil, toConversion, toAddress },
@@ -150,10 +184,47 @@ export default {
 
   width: 250px;
 
-  padding: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 
   background-color: var(--accent-color-second);
   border-radius: 10px;
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    width: 100%;
+    height: 60px;
+
+    margin-left: 10px;
+  }
+
+  &__close {
+    cursor: pointer;
+
+    position: absolute;
+    transform: translate(1670%, -100%);
+
+    & > svg {
+      height: 15px;
+      width: auto;
+    }
+  }
+
+  &__balance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__address {
+    padding: 0;
+    margin: 0;
+  }
 
   &_selected {
     border: 1px solid var(--accent-color-primary);
