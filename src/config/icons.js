@@ -28,8 +28,9 @@ export const ICON_VARIANTS = {
   profile: 'profile',
   copy: 'copy',
   edit: 'edit',
+  zilliqaLogo: 'zilliqa_logo',
+  coinswitch: 'coinswitch',
 
-  ledgerWatermark: 'ledger_logo_watermark',
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',
   statusSuccess: 'status_success',

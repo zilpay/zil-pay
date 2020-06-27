@@ -24,6 +24,10 @@
           :key="index"
           @click="onItem(el.event)"
         >
+          <Icon
+            :icon="el.icon"
+            :type="el.type"
+          />
           <Title :size="SIZE_VARIANS.sm">
             {{ el.title }}
           </Title>
@@ -48,11 +52,12 @@ import uiStore from '@/store/ui'
 import modalStore from '@/store/modal'
 import accountsStore from '@/store/accounts'
 
-import { ICON_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
+import { ICON_TYPE, ICON_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
 import BackModal from '@/components/BackModal'
+import Icon from '@/components/Icon'
 
 import { toAddress } from '@/filters'
 import LinksMixin from '@/mixins/links'
@@ -68,7 +73,8 @@ export default {
   components: {
     Title,
     P,
-    BackModal
+    BackModal,
+    Icon
   },
   mixins: [LinksMixin],
   data() {
@@ -100,13 +106,17 @@ export default {
       const elements = [{
         title: `${this.local.TRANSFER} $ZIL.`,
         text: this.local.TRANSFER_DES,
-        event: EVENTS.transfer
+        event: EVENTS.transfer,
+        icon: ICON_VARIANTS.zilliqaLogo,
+        type: ICON_TYPE.svg
       }]
       if (mainnet === this.network) {
         elements.push({
           title: `${this.local.BUY} ${this.local.BUY_ON}.`,
           text: this.local.BUY_DES,
-          event: EVENTS.buy
+          event: EVENTS.buy,
+          icon: ICON_VARIANTS.coinswitch,
+          type: ICON_TYPE.png
         })
       } else {
         elements.push({
@@ -173,7 +183,7 @@ export default {
 
   &__btns {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
 
     width: 100%;
     padding: 0;
@@ -186,6 +196,11 @@ export default {
       text-align: center;
       border-radius: var(--default-border-radius);
       border: 2px solid var(--accent-color-primary);
+
+      & > img {
+        height: 60px;
+        width: auto;
+      }
 
       &:hover {
         background-color: var(--accent-color-primary);
