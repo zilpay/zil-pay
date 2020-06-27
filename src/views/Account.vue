@@ -109,8 +109,15 @@ export default {
     ...mapMutations(accountsStore.STORE_NAME, [
       accountsStore.MUTATIONS_NAMES.setAccountName
     ]),
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.setShowAccountModal
+    ]),
 
-    onStep() {},
+    onStep() {
+      if (this.accountModal.step === 0) {
+        this.setShowAccountModal()
+      }
+    },
     async qrcodeGenerate() {
       if (!this.getCurrentAccount || !this.getCurrentAccount.address) {
         return null

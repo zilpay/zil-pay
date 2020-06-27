@@ -194,6 +194,8 @@ export default {
   }
 
   &__item > a {
+    cursor: pointer;
+
     display: flex;
 
     .P {
