@@ -54,7 +54,7 @@ export default {
   min-height: 50px;
 
   & > .Title {
-    min-width: 250px;
+    min-width: 80%;
     text-align: center;
     margin-right: 20px;
   }
