@@ -2,10 +2,13 @@
   <div :class="b()">
     <TopBar close/>
     <div :class="b('alert')">
-      <P :font="FONT_VARIANTS.medium">
+      <P :font="FONT_VARIANTS.regular">
         {{ local.EXPORT_WARNING }}
       </P>
-      <P :class="b('info')">
+      <P
+        :class="b('info')"
+        :font="FONT_VARIANTS.regular"
+      >
         {{ local.EXPORT_INFO }}
       </P>
     </div>
@@ -33,7 +36,7 @@
         <Button
           :class="b('next-btn')"
           :color="COLOR_VARIANTS.negative"
-          :size="SIZE_VARIANS.md"
+          :size="SIZE_VARIANS.sm"
           round
         >
           {{ local.NEXT }}
