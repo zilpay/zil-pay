@@ -56,7 +56,7 @@ export default {
   & > .Title {
     min-width: 80%;
     text-align: center;
-    margin-right: 20px;
+    margin-right: 23px;
   }
 
   & > a > svg {

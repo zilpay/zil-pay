@@ -255,6 +255,7 @@ export default {
     onStep() {
       if (this.sendModal.step === 0) {
         this.setShowSendModal()
+        this.recipientAddress.error = null
 
         return null
       }
@@ -356,16 +357,11 @@ export default {
 
 <style lang="scss">
 .Send {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
   &__wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    max-width: 300px;
 
     margin-bottom: 30px;
   }
