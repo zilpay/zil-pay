@@ -227,7 +227,7 @@ export default {
   }
 
   &_selected {
-    border: 1px solid var(--accent-color-primary);
+    border: 2px solid var(--accent-color-primary);
   }
 }
 </style>

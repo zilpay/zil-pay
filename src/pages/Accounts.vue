@@ -2,6 +2,9 @@
   <div :class="b()">
     <Top />
     <TopBar v-if="route"/>
+    <AddMenu
+      modal
+    />
     <div :class="b('wrapper')">
       <AccountCard
         v-show="tabs === 0"
@@ -29,6 +32,7 @@ import { SIZE_VARIANS } from '@/config'
 import homePage from '@/pages/Home'
 
 import TopBar from '@/components/TopBar'
+import AddMenu from '@/components/AddMenu'
 import AccountCard from '@/components/AccountCard'
 import Top from '@/components/Top'
 
@@ -39,7 +43,8 @@ export default {
   components: {
     TopBar,
     AccountCard,
-    Top
+    Top,
+    AddMenu
   },
   data() {
     return {
