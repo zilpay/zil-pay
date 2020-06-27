@@ -2,7 +2,6 @@
   <div :class="b()">
     <Alert
       v-if="getCurrentAccount"
-      :class="b('from')"
       pointer
       @click="onFrom"
     >
@@ -39,18 +38,23 @@
         <P
           :font="FONT_VARIANTS.bold"
           :variant="amountColor"
+          :size="SIZE_VARIANS.sm"
         >
           {{ local.AMOUNT }}
         </P>
         <P
           :font="FONT_VARIANTS.bold"
           :variant="amountColor"
+          :size="SIZE_VARIANS.sm"
         >
-          ZIL{{ getCurrent.amount | fromZil }}
+          {{ getCurrent.amount | fromZil }}ZIL
         </P>
       </div>
       <div :class="b('item')">
-        <P :font="FONT_VARIANTS.bold">
+        <P
+          :font="FONT_VARIANTS.bold"
+          :size="SIZE_VARIANS.sm"
+        >
           TODS
         </P>
         <SwitchBox
@@ -326,6 +330,10 @@ export default {
     }
   },
   mounted() {
+    if (!this.getCurrent) {
+      this.$router.push({ name: HomePage.name })
+    }
+
     setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
     this.setLoad()
     this
@@ -345,6 +353,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   text-align: center;
 
@@ -362,14 +371,14 @@ export default {
     line-height: 18px;
   }
 
-  &__from {
-    margin-top: 20px;
-  }
-
   &__item {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    & > .P {
+      line-height: 30px;
+    }
   }
 
   &__error-msg {
