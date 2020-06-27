@@ -1,25 +1,28 @@
 <template>
-  <div
-    :class="b()"
+  <Button
+    :size="SIZE_VARIANS.sm"
+    :color="COLOR_VARIANTS.transparent"
+    round
     @click="onView"
   >
-    <Title :size="SIZE_VARIANS.sm">
-      Viewblock
-    </Title>
     <Icon
-      src="/illustrations/viewblock-logo.png"
+      :icon="ICON_VARIANTS.viewblockLogo"
       height="40"
       width="40"
-      :type="ICON_TYPE.auto"
+      :type="ICON_TYPE.png"
     />
-  </div>
+    {{ local.VIEW }} {{ local.ON }} ViewBlock
+  </Button>
 </template>
 
 <script>
-import { SIZE_VARIANS, ICON_TYPE } from '@/config'
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
 
-import Title from '@/components/Title'
+import { COLOR_VARIANTS, SIZE_VARIANS, ICON_TYPE, ICON_VARIANTS } from '@/config'
+
 import Icon from '@/components/Icon'
+import Button from '@/components/Button'
 
 import viewblockMixin from '@/mixins/viewblock'
 
@@ -47,15 +50,22 @@ export default {
     }
   },
   components: {
-    Title,
+    Button,
     Icon
   },
   mixins: [viewblockMixin],
   data() {
     return {
       SIZE_VARIANS,
-      ICON_TYPE
+      ICON_TYPE,
+      ICON_VARIANTS,
+      COLOR_VARIANTS
     }
+  },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ])
   },
   methods: {
     onView() {
@@ -68,16 +78,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.ViewblockLink {
-  display: flex;
-  align-items: center;
-  float: right;
-
-  cursor: pointer;
-
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-</style>

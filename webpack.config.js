@@ -79,7 +79,6 @@ function getPlugins() {
       { from: 'public/popup.html', to: 'popup.html' },
       { from: 'public/icons', to: 'icons' },
       { from: 'public/fonts', to: 'fonts' },
-      { from: 'public/illustrations', to: 'illustrations' },
       { from: 'public/localisation.json', to: 'localisation.json' },
       { from: 'public/schema.json', to: 'schema.json' },
       { from: 'public/spinner.css', to: 'spinner.css' },

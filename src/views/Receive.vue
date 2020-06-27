@@ -122,7 +122,9 @@ export default {
         elements.push({
           title: this.local.TEST_FAUCET,
           text: this.local.TEST_FAUCET_DES,
-          event: EVENTS.faucet
+          event: EVENTS.faucet,
+          icon: ICON_VARIANTS.zilliqaLogo,
+          type: ICON_TYPE.svg
         })
       }
       return elements

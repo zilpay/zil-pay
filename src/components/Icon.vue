@@ -52,10 +52,6 @@ export default {
         return this.$attrs.src
       }
 
-      if (!this.icon && !this.$attrs.src) {
-        return null
-      }
-
       return `/icons/${this.icon}.${this.type}`
     }
   },
