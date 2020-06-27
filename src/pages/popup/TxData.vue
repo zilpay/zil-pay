@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <TopBar />
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <div :class="b('switcher')">
         <P capitalize>
           {{ local.CAN_EDIT }}
@@ -12,7 +12,7 @@
         :data="data"
         :options="options"
       />
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -24,7 +24,6 @@ import uiStore from '@/store/ui'
 import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
 
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
 import P from '@/components/P'
 import SwitchBox from '@/components/SwitchBox'
 
@@ -32,7 +31,6 @@ export default {
   name: 'Data',
   components: {
     TopBar,
-    Container,
     P,
     SwitchBox
   },

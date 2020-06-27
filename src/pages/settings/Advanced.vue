@@ -7,7 +7,7 @@
     >
       {{ local.RESET }}
     </P>
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <GasControl
         :value="defaultGas"
         :DEFAULT="DEFAULT_GAS_FEE"
@@ -21,7 +21,7 @@
       >
         {{ local.ADDR_FORMATS }}:
       </RadioGroup>
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -34,7 +34,6 @@ import { DEFAULT_GAS_FEE } from 'config/zilliqa'
 
 import TopBar from '@/components/TopBar'
 import GasControl from '@/components/GasControl'
-import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import P from '@/components/P'
 
@@ -43,7 +42,6 @@ export default {
   components: {
     TopBar,
     GasControl,
-    Container,
     RadioGroup,
     P
   },

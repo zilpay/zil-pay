@@ -1,5 +1,5 @@
 <template>
-  <Container :class="b()">
+  <div :class="b()">
     <P
       :class="b('title')"
       left
@@ -17,18 +17,16 @@
     <div :class="b('error')">
       {{ error }}
     </div>
-  </Container>
+  </div>
 </template>
 
 <script>
 import { EVENTS } from '@/config'
-import Container from '@/components/Container'
 import P from '@/components/P'
 
 export default {
   name: 'Textarea',
   components: {
-    Container,
     P
   },
   props: {

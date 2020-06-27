@@ -13,7 +13,7 @@
         {{ local.NEW_WALLET }}
       </P>
     </a>
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <Title
         :font="FONT_VARIANTS.bold"
         :size="SIZE_VARIANS.md"
@@ -53,7 +53,7 @@
           </P>
         </router-link>
       </form>
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -77,7 +77,6 @@ import ConnectPage from '@/pages/Connect'
 import RestorePage from '@/pages/Restore'
 import FirstStart from '@/pages/FirstStart'
 
-import Container from '@/components/Container'
 import SvgInject from '@/components/SvgInject'
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -95,8 +94,7 @@ export default {
     P,
     SvgInject,
     Input,
-    Button,
-    Container
+    Button
   },
   data() {
     return {

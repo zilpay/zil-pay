@@ -178,6 +178,10 @@ export default {
     & > * {
       cursor: pointer;
     }
+
+    & > div > svg {
+      min-width: 30px;
+    }
   }
 
   &__account {

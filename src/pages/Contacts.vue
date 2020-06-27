@@ -222,6 +222,10 @@ export default {
     height: min-content;
     min-height: 30px;
     font-size: 18px;
+
+    & > .P {
+      width: 80%;
+    }
   }
 
   &__wrapper {

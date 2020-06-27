@@ -1,14 +1,14 @@
 <template>
   <div :class="b()">
     <TopBar close/>
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <RadioGroup
         v-model="radioGroup.model"
         :elements="radioGroup.elements"
       />
-    </Container>
+    </div>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[0]">
-      <Container :class="b('info')">
+      <div :class="b('info')">
         <P
           :class="b('info-title')"
           capitalize
@@ -23,10 +23,10 @@
           autofocus
           @input="privateKey.error = null"
         />
-      </Container>
+      </div>
     </Alert>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[1]">
-      <Container :class="b('info')">
+      <div :class="b('info')">
         <P
           :class="b('info-title')"
           capitalize
@@ -46,10 +46,10 @@
           type="file"
           accept="application/JSON"
         >
-      </Container>
+      </div>
     </Alert>
     <Alert v-show="radioGroup.model === RADIO_ELEMENTS[2]">
-      <Container :class="b('info')">
+      <div :class="b('info')">
         <P
           :class="b('info-title')"
           capitalize
@@ -64,7 +64,7 @@
           round
           @input="ledger.error = null"
         />
-      </Container>
+      </div>
     </Alert>
     <Button
       :class="b('btn')"
@@ -90,7 +90,6 @@ import Alert from '@/components/Alert'
 import P from '@/components/P'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
@@ -108,7 +107,6 @@ export default {
   name: 'Import',
   components: {
     TopBar,
-    Container,
     RadioGroup,
     Alert,
     P,

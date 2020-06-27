@@ -1,5 +1,5 @@
 <template>
-  <Container :class="b()">
+  <div :class="b()">
     <div :class="b('fee')">
       <label>
         {{ local.GAS_LIMIT }}
@@ -38,7 +38,7 @@
         {{ fee }}
       </P>
     </div>
-  </Container>
+  </div>
 </template>
 
 <script>
@@ -47,7 +47,6 @@ import uiStore from '@/store/ui'
 
 import { FONT_VARIANTS, EVENTS } from '@/config'
 
-import Container from '@/components/Container'
 import { INPUT_TYPES } from '@/components/Input'
 import DoubleRange from '@/components/DoubleRange'
 import P from '@/components/P'
@@ -76,7 +75,6 @@ export default {
   name: 'GasControl',
   mixins: [CalcMixin],
   components: {
-    Container,
     DoubleRange,
     P
   },

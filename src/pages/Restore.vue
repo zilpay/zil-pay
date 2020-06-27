@@ -5,7 +5,7 @@
       :class="b('logo')"
       :variant="ICON_VARIANTS.zilPayLogo"
     />
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <Textarea
         v-model="seed.model"
         :error="seed.error"
@@ -17,7 +17,7 @@
         :btn="local.RESTORE"
         @submit="restore"
       />
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -30,7 +30,6 @@ import { COLOR_VARIANTS, SIZE_VARIANS, ICON_VARIANTS } from '@/config'
 import Congratulation from '@/pages/Congratulation'
 
 import Textarea from '@/components/Textarea'
-import Container from '@/components/Container'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
 import SvgInject from '@/components/SvgInject'
@@ -42,7 +41,6 @@ const bgScript = new Background()
 export default {
   name: 'Restore',
   components: {
-    Container,
     Textarea,
     PasswordForm,
     UiPanel,

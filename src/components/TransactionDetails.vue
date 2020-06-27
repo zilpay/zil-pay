@@ -1,5 +1,5 @@
 <template>
-  <Container :class="b()">
+  <div :class="b()">
     <div :class="b('sender-recipient')">
       <P
         v-tooltip="copytitle"
@@ -52,7 +52,7 @@
       </li>
     </ul>
     <ViewblockLink :hash="transaction.TranID"/>
-  </Container>
+  </div>
 </template>
 
 <script>
@@ -62,7 +62,6 @@ import settingsStore from '@/store/settings'
 import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 
 import P from '@/components/P'
-import Container from '@/components/Container'
 import ViewblockLink from '@/components/ViewblockLink'
 
 import { toAddress, fromZil, toConversion } from '@/filters'
@@ -80,7 +79,6 @@ import CopyMixin from '@/mixins/copy'
 export default {
   name: 'TransactionDetails',
   components: {
-    Container,
     P,
     ViewblockLink
   },

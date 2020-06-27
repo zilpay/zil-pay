@@ -1,19 +1,19 @@
 <template>
-  <Container :class="b()">
+  <div :class="b()">
     <UiPanel />
     <SvgInject
       :class="b('logo')"
       :variant="ICON_VARIANTS.zilPayLogo"
     />
     <div :class="b('wrapper')">
-      <Container>
+      <div>
         <Title>
           {{ local.FIRSTSTART_TITLE }}
         </Title>
         <P>
           {{ local.FIRSTSTART_DIS }}
         </P>
-      </Container>
+      </div>
       <div :class="b('actions')">
         <router-link
           :class="b('btn')"
@@ -43,7 +43,7 @@
         </router-link>
       </div>
     </div>
-  </Container>
+  </div>
 </template>
 
 <script>
@@ -60,7 +60,6 @@ import Restore from '@/pages/Restore'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
-import Container from '@/components/Container'
 import UiPanel from '@/components/UiPanel'
 import SvgInject from '@/components/SvgInject'
 
@@ -69,7 +68,6 @@ export default {
   components: {
     Title,
     P,
-    Container,
     UiPanel,
     SvgInject
   },

@@ -9,7 +9,7 @@
       width="15"
     />
     <div :class="b('wrapper')">
-      <Container :class="b('first-line')">
+      <div :class="b('first-line')">
         <P
           :class="b('send')"
           :font="FONT_VARIANTS.bold"
@@ -22,8 +22,8 @@
         >
           -ZIL{{ transaction.amount | fromZil }}
         </P>
-      </Container>
-      <Container :class="b('thirdly-line')">
+      </div>
+      <div :class="b('thirdly-line')">
         <P
           :class="b('time')"
           :variant="COLOR_VARIANTS.gray"
@@ -38,7 +38,7 @@
         >
           -${{ transaction.amount | toConversion(getRate) }}
         </P>
-      </Container>
+      </div>
     </div>
   </div>
 </template>
@@ -57,7 +57,6 @@ import {
 } from '@/config'
 
 import P from '@/components/P'
-import Container from '@/components/Container'
 import Icon from '@/components/Icon'
 
 import { fromZil, toConversion } from '@/filters'
@@ -66,8 +65,7 @@ export default {
   name: 'TransactionCard',
   components: {
     P,
-    Icon,
-    Container
+    Icon
   },
   filters: { fromZil, toConversion },
   props: {
