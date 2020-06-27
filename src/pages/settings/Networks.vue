@@ -48,7 +48,7 @@
         v-show="MAINNET !== this.network"
         :class="b('btn')"
         :color="COLOR_VARIANTS.negative"
-        :size="SIZE_VARIANS.md"
+        :size="SIZE_VARIANS.sm"
         :name="buttons.change"
         :value="buttons.change"
         round
@@ -248,6 +248,7 @@ export default {
 
   &__wrapper {
     margin-top: 30px;
+    min-width: 250px;
 
     & > .Input {
       padding: 25px;

@@ -177,11 +177,6 @@ export default {
     .Input__element {
       height: var(--size-xs);
     }
-
-    .Input__title,
-    .Input__error {
-      font-size: var(--size-xs-font);
-    }
   }
 
   &_size-sm {
