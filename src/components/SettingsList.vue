@@ -182,7 +182,11 @@ export default {
       margin-left: 20px;
     }
 
-    svg > g > path {
+    & > svg {
+      min-width: 22px;
+    }
+
+    & > svg > g > path {
       fill: var(--accent-color-primary);
     }
   }
