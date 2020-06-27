@@ -176,7 +176,8 @@ export default {
         model: 0,
         error: null
       },
-      defaultGasFee: ''
+      defaultGasFee: '',
+      unwatch: null
     }
   },
   computed: {

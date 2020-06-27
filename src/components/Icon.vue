@@ -1,5 +1,6 @@
 <template>
   <img
+    v-if="src"
     :class="b({ pointer })"
     :src="src"
     :height="height"
@@ -49,6 +50,10 @@ export default {
         }
 
         return this.$attrs.src
+      }
+
+      if (!this.icon) {
+        return null
       }
 
       return `/icons/${this.icon}.${this.type}`
