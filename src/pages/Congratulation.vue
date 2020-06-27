@@ -130,13 +130,17 @@ export default {
   async beforeMount() {
     this.setLoad()
 
-    await this.onInit()
-    await this.storeUpdate()
-    await this.onUpdate()
-    await this.onUpdateTransactions()
+    try {
+      await this.onInit()
+      await this.storeUpdate()
+      await this.onUpdate()
+      await this.onUpdateTransactions()
 
-    await this.updateRate()
-    await this.onUpdateSettings()
+      await this.updateRate()
+      await this.onUpdateSettings()
+    } catch (err) {
+      console.warn(err)
+    }
 
     this.setLoad()
   }

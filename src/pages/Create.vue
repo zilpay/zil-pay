@@ -32,6 +32,7 @@
       <div :class="b('btns')">
         <Button
           :color="COLOR_VARIANTS.negative"
+          :size="SIZE_VARIANS.md"
           block
           round
           uppercase
@@ -169,6 +170,11 @@ export default {
     height: 50vh;
 
     max-width: 700px;
+
+    @media (max-width: 700px) {
+      height: 80vh;
+      grid-template-rows: max-content min-content 200px 50px;
+    }
   }
 
   &__words {
@@ -184,8 +190,8 @@ export default {
     justify-content: space-between;
 
     width: 264px;
-    height: 100px;
-    margin-top: 100px;
+    height: 120px;
+    margin-top: 50px;
   }
 }
 </style>
