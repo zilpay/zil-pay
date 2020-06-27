@@ -95,6 +95,7 @@
         </P>
       </div>
       <Tabs
+        v-show="sendModal.step === 0 || sendModal.step === 4"
         :class="b('tabs')"
         :elements="tabsElements"
         @input="onEvent"
@@ -374,6 +375,7 @@ export default {
 
     display: flex;
     justify-content: space-between;
+    align-items: center;
     min-width: 260px;
 
     padding: 10px;
