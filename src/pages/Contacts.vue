@@ -11,10 +11,14 @@
           v-for="(contact, index) of contactList"
           :key="index"
           :class="b('item')"
-          @click="onSelectContact(contact)"
         >
-          <SvgInject :variant="ICON_VARIANTS.profile"/>
-          <P :font="FONT_VARIANTS.regular">
+          <div @click="onSelectContact(contact)">
+            <SvgInject :variant="ICON_VARIANTS.profile"/>
+          </div>
+          <P
+            :font="FONT_VARIANTS.regular"
+            @click="onSelectContact(contact)"
+          >
             {{ contact.name }}
           </P>
           <DropDown
