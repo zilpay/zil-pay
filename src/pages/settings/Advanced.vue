@@ -96,6 +96,7 @@ export default {
     justify-content: space-between;
 
     min-height: 300px;
+    margin-top: 40px;
 
     & > .RadioGroup {
       margin-top: 30px;
