@@ -135,6 +135,7 @@
     "TOKEN_SYMBOL": "Token Symbol",
     "TOKEN_DECIMALS": "Token Decimals",
     "ENTER_AMOUTNT": "Enter Amount",
+    "ADD_TOKEN": "Add Custom Token",
     "RECEIVE_DEPOSIT_DIS": "To interact with decentralized applications using ZilPay, you’ll need ZIL coin in your wallet.",
     "EXPORT_CAN_PASSWROD": "Enter password to continue.",
     "EXPORT_DANGER": "DO NOT share this with anyone!",

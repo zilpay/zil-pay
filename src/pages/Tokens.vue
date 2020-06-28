@@ -22,12 +22,19 @@
     </div>
     <BottomBar />
     <BottomModal v-model="tokenModal">
+      <BackModal
+        :name="local.ADD_TOKEN"
+        @click="tokenModal = false"
+      />
       <TokenCreater />
     </BottomModal>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import uiStore from '@/store/ui'
+
 import {
   COLOR_VARIANTS,
   FONT_VARIANTS,
@@ -42,6 +49,7 @@ import AddMenu from '@/components/AddMenu'
 import TokenCard from '@/components/TokenCard'
 import TokenCreater from '@/components/TokenCreater'
 import BottomModal from '@/components/BottomModal'
+import BackModal from '@/components/BackModal'
 
 export default {
   name: 'Tokens',
@@ -51,6 +59,7 @@ export default {
     TokenCard,
     TokenCreater,
     BottomModal,
+    BackModal,
     AddMenu
   },
   data() {
@@ -71,6 +80,11 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ])
   }
 }
 </script>
