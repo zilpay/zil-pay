@@ -16,6 +16,18 @@
       "title": "current network name",
       "type": "string"
     },
+    "selectedcoin": {
+      "title": "current coin(token) symbol",
+      "type": "string"
+    },
+    "tokens": {
+      "title": "storing tokens info.",
+      "type": "array",
+      "items": {
+        "title": "The main token information (name, symbol, balance, decimals)",
+        "type": "object"
+      }
+    },
     "transactions": {
       "title": "transaction execution",
       "type": "object"
