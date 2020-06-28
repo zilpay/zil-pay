@@ -39,7 +39,7 @@
         copy
         @copy="onCopyMixin"
       >
-        {{ account.address | toAddress(addressFormat) }}
+        {{ account.address | toAddress(addressFormat, false) }}
       </P>
     </div>
     <div
@@ -68,6 +68,7 @@ import {
 } from '@/config'
 
 import Title from '@/components/Title'
+import P from '@/components/P'
 import SvgInject from '@/components/SvgInject'
 
 import { fromZil, toConversion, toAddress } from '@/filters'
@@ -100,7 +101,8 @@ export default {
   name: 'AccountCard',
   components: {
     Title,
-    SvgInject
+    SvgInject,
+    P
   },
   mixins: [CopyMixin, AccountMixin, JazziconMixin],
   filters: { fromZil, toConversion, toAddress },

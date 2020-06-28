@@ -79,6 +79,7 @@ export default {
   },
   methods: {
     onCopyContent() {
+      console.log(this.copy, this.content)
       if (this.copy && this.content) {
         copy(this.content)
         this.$emit(EVENTS.copy)
