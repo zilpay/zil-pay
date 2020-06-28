@@ -24,7 +24,7 @@
       "title": "storing tokens info.",
       "type": "array",
       "items": {
-        "title": "The main token information (name, symbol, balance, decimals)",
+        "title": "The main token information (icon, name, symbol, balance, decimals)",
         "type": "object"
       }
     },
