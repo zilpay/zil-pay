@@ -27,6 +27,7 @@
 
 <script>
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
+
 import { mapActions, mapState } from 'vuex'
 import contactsStore from '@/store/contacts'
 import uiStore from '@/store/ui'
