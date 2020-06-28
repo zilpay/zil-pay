@@ -1,6 +1,7 @@
 <template>
   <div :class="b()">
     <Top />
+    <AddMenu @click="tokenModal = true" />
     <div :class="b('wrapper')">
       <Title :size="SIZE_VARIANS.md">
         {{ $options.name }}
@@ -11,49 +12,22 @@
           :key="index"
           :class="b('item')"
         >
-          <Icon
-            :type="ICON_TYPE.auto"
-            :src="t.icon"
+          <TokenCard
+            :icon="t.icon"
+            :balance="t.balance"
+            :symbol="t.symbol"
           />
-          <div>
-            <div :class="b('balance')">
-              <Title
-                :size="SIZE_VARIANS.md"
-                :font="FONT_VARIANTS.regular"
-              >
-                {{ t.balance }}
-              </Title>
-              <P :font="FONT_VARIANTS.bold">
-                {{ t.symbol }}
-              </P>
-            </div>
-            <div :class="b('balance')">
-              <Title
-                :size="SIZE_VARIANS.sm"
-                :font="FONT_VARIANTS.regular"
-              >
-                {{ t.balance | toConversion(getRate) }}
-              </Title>
-              <P
-                :size="SIZE_VARIANS.sm"
-                :font="FONT_VARIANTS.bold"
-              >
-                {{ currency }}
-              </P>
-            </div>
-          </div>
-          <SvgInject :variant="ICON_VARIANTS.arrow" />
         </li>
       </ul>
     </div>
     <BottomBar />
+    <BottomModal v-model="tokenModal">
+      <TokenCreater />
+    </BottomModal>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
-import settingsStore from '@/store/settings'
-
 import {
   COLOR_VARIANTS,
   FONT_VARIANTS,
@@ -64,21 +38,20 @@ import {
 
 import Top from '@/components/Top'
 import Title from '@/components/Title'
-import P from '@/components/P'
-import Icon from '@/components/Icon'
-import SvgInject from '@/components/SvgInject'
-
-import { toConversion } from '@/filters'
+import AddMenu from '@/components/AddMenu'
+import TokenCard from '@/components/TokenCard'
+import TokenCreater from '@/components/TokenCreater'
+import BottomModal from '@/components/BottomModal'
 
 export default {
   name: 'Tokens',
-  filters: { toConversion },
   components: {
     Top,
     Title,
-    Icon,
-    SvgInject,
-    P
+    TokenCard,
+    TokenCreater,
+    BottomModal,
+    AddMenu
   },
   data() {
     return {
@@ -88,6 +61,7 @@ export default {
       FONT_VARIANTS,
       ICON_VARIANTS,
 
+      tokenModal: false,
       tokens: [
         {
           symbol: 'ZIL',
@@ -97,14 +71,6 @@ export default {
         }
       ]
     }
-  },
-  computed: {
-    ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.currency
-    ]),
-    ...mapGetters(settingsStore.STORE_NAME, [
-      settingsStore.GETTERS_NAMES.getRate
-    ])
   }
 }
 </script>
@@ -122,44 +88,6 @@ export default {
 
     & > .Title {
       text-align: center;
-    }
-  }
-
-  &__item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    max-height: 60px;
-    padding: 10px;
-
-    background-color: var(--accent-color-second);
-    border-radius: 10px;
-    cursor: pointer;
-
-    img {
-      max-width: 30px;
-      height: auto;
-    }
-
-    svg {
-      transform: rotate(180deg);
-
-      path {
-        stroke: var(--accent-color-primary);
-      }
-    }
-  }
-
-  &__balance {
-    width: 150px;
-    display: flex;
-    align-items: center;
-
-    font-size: 18px;
-
-    & > .P {
-      margin-left: 5px;
     }
   }
 
