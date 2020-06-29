@@ -11,8 +11,8 @@ import copy from 'clipboard-copy'
 
 const DEFAULT_TIMER = 1000
 const COPY_FORMS = {
-  copy: 'copy',
-  copied: 'copied'
+  copy: 'Copy',
+  copied: 'Copied'
 }
 /**
  * Mixin for useing P component copy with `v-tooltip`.

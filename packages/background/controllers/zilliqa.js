@@ -64,21 +64,19 @@ export class Zilliqa {
 
   async getZRCTokenInfo(sendResponse) {
     const { address } = this.payload
-    const props = ['name', 'symbol', 'decimals']
-    const token = {}
+    const token = {
+      address
+    }
     const zilliqa = new ZilliqaControl(networkControl.provider)
 
     try {
       const { blockchain } = zilliqa
-
       const { result } = await blockchain.getSmartContractInit(address)
 
       for (let index = 0; index < result.length; index++) {
         const element = result[index]
 
-        if (props.includes(element.vname)) {
-          token[element.vname] = element.value
-        }
+        token[element.vname] = element.value
       }
 
     } catch (err) {

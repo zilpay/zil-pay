@@ -7,25 +7,25 @@
       v-model="contract.model"
       :title="local.TOKEN_CONTRACT"
       :error="contract.error"
-      placeholder="zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace"
+      placeholder="zil1whrkchln60sxedk04jw09x92vss5hvyjmrvlz6"
       round
+      @input="onFindToken"
     />
-    <Input
-      v-model="symbol.model"
-      :title="local.TOKEN_SYMBOL"
-      :error="symbol.error"
-      placeholder="ZWT"
-      round
-    />
-    <Input
-      v-model="decimals.model"
-      :title="local.TOKEN_DECIMALS"
-      :error="decimals.error"
-      :type="INPUT_TYPES.number"
-      placeholder="18"
-      round
-    />
+    <ul :class="b('details')">
+      <li
+        v-for="(el, index) of this.payload"
+        :key="index"
+      >
+        <P>
+          {{ el.title }}
+        </P>
+        <P>
+          {{ el.value }}
+        </P>
+      </li>
+    </ul>
     <Button
+      v-show="payload && payload.length > 0"
       :color="COLOR_VARIANTS.negative"
       block
       round
@@ -38,20 +38,25 @@
 <script>
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
 
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
+import settingsStore from '@/store/settings'
 
 import { COLOR_VARIANTS } from '@/config'
 
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
+import P from '@/components/P'
 
 import { Background } from '@/services'
+import { toAddress } from '@/filters'
 
 export default {
   name: 'TokenCreater',
+  filters: { toAddress },
   components: {
     Input,
+    P,
     Button
   },
   data() {
@@ -63,23 +68,23 @@ export default {
         model: null,
         error: null
       },
-      symbol: {
-        model: null,
-        error: null
-      },
-      decimals: {
-        model: null,
-        error: null
-      }
+      payload: []
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.addressFormat
     ])
   },
   methods: {
-    async onSave() {
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+
+    async onFindToken() {
       if (!this.contract.model || !isBech32(this.contract.model)) {
         this.contract.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
 
@@ -88,13 +93,44 @@ export default {
 
       const bg = new Background()
 
-      try {
-        const contract = await bg.getTokenInfo(this.contract.model)
+      this.setLoad()
 
-        console.log(contract)
+      try {
+        const result = await bg.getTokenInfo(this.contract.model)
+
+        this.payload = [
+          {
+            title: this.local.TOKEN_SYMBOL,
+            value: result.symbol
+          },
+          {
+            title: this.local.TOKEN_NAME,
+            value: result.name
+          },
+          {
+            title: this.local.TOKEN_OWNER,
+            value: toAddress(result.init_owner, this.addressFormat)
+          },
+          {
+            title: this.local.TOKEN_DECIMALS,
+            value: result.decimals
+          },
+          {
+            title: this.local.TOKEN_PROXY,
+            value: toAddress(result.proxy_address, this.addressFormat)
+          },
+          {
+            title: this.local.EPOCH,
+            value: result._creation_block
+          }
+        ]
       } catch (err) {
-        console.error(err)
+        this.contract.error = err.message
       }
+
+      this.setLoad()
+    },
+    async onSave() {
     }
   }
 }
@@ -109,6 +145,17 @@ export default {
 
   min-height: 250px;
   padding: 10px;
+
+  &__details {
+    padding: 0;
+    list-style: none;
+
+    & > li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
 
   & > .Input {
     width: 90%;
