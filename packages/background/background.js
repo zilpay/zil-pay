@@ -75,6 +75,11 @@ export class Background {
       new Popup(message.payload).setDataFromPopup(sendResponse)
       break
 
+    case MTypePopup.GET_TOKEN_INFO:
+      console.log(message.payload)
+      // new Popup(message.payload)
+      break
+
     case MTypePopup.POPUP_INIT:
       new Popup().initPopup(sendResponse)
       break

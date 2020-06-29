@@ -291,6 +291,6 @@ export class Background {
       throw new Error(result.reject)
     }
 
-    return
+    return result
   }
 }

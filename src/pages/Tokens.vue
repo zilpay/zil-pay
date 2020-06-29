@@ -15,6 +15,7 @@
           <TokenCard
             :icon="t.icon"
             :balance="t.balance"
+            :name="t.name"
             :symbol="t.symbol"
           />
         </li>
