@@ -10,6 +10,8 @@ import { FIELDS } from 'config'
 import { BrowserStorage } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
+import { ZilliqaControl } from 'packages/background/services'
+import { ERROR_MSGS } from 'packages/background/errors'
 
 export class Zilliqa {
 
@@ -58,6 +60,36 @@ export class Zilliqa {
 
   constructor(payload) {
     this.payload = payload
+  }
+
+  async getZRCTokenInfo(sendResponse) {
+    const { address } = this.payload
+    const props = ['name', 'symbol', 'decimals']
+    const token = {}
+    const zilliqa = new ZilliqaControl(networkControl.provider)
+
+    try {
+      const { blockchain } = zilliqa
+
+      const { result } = await blockchain.getSmartContractInit(address)
+
+      for (let index = 0; index < result.length; index++) {
+        const element = result[index]
+
+        if (props.includes(element.vname)) {
+          token[element.vname] = element.value
+        }
+      }
+
+    } catch (err) {
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })
+      }
+    }
+
+    if (new TypeChecker(sendResponse).isFunction) {
+      sendResponse({ resolve: token })
+    }
   }
 
 }

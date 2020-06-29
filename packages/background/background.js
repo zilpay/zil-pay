@@ -76,8 +76,7 @@ export class Background {
       break
 
     case MTypePopup.GET_TOKEN_INFO:
-      console.log(message.payload)
-      // new Popup(message.payload)
+      new Zilliqa(message.payload).getZRCTokenInfo(sendResponse)
       break
 
     case MTypePopup.POPUP_INIT:

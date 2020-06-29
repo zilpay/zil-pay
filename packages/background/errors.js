@@ -17,7 +17,8 @@ import {
   MUST_BE_INT,
   UNIQUE,
   UNAUTHORIZED,
-  FORBIDDEN_TO_USE
+  FORBIDDEN_TO_USE,
+  BAD_CONTRACT_ADDRESS
 } from 'lib/errors/annotations'
 
 export const ERROR_MSGS = {
@@ -31,7 +32,8 @@ export const ERROR_MSGS = {
   TYPE_ERR,
   UNIQUE,
   UNAUTHORIZED,
-  FORBIDDEN_TO_USE
+  FORBIDDEN_TO_USE,
+  BAD_CONTRACT_ADDRESS
 }
 
 export * from 'lib/errors'
