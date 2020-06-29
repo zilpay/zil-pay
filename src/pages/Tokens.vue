@@ -75,6 +75,7 @@ export default {
         {
           symbol: 'ZIL',
           balance: '300',
+          amount: '1000000',
           icon: 'https://static.tildacdn.com/tild3838-3839-4431-a330-396431353063/mmenu_logos-02.svg',
           name: 'Zilliqa coin'
         }
