@@ -49,7 +49,7 @@ import Button from '@/components/Button'
 import P from '@/components/P'
 
 import { Background } from '@/services'
-import { toAddress } from '@/filters'
+import { toAddress, fromZil } from '@/filters'
 
 export default {
   name: 'TokenCreater',
@@ -85,6 +85,8 @@ export default {
     ]),
 
     async onFindToken() {
+      this.contract.error = null
+
       if (!this.contract.model || !isBech32(this.contract.model)) {
         this.contract.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
 
@@ -100,6 +102,10 @@ export default {
 
         this.payload = [
           {
+            title: this.local.BALANCE,
+            value: fromZil(result.balance)
+          },
+          {
             title: this.local.TOKEN_SYMBOL,
             value: result.symbol
           },
@@ -108,12 +114,16 @@ export default {
             value: result.name
           },
           {
-            title: this.local.TOKEN_OWNER,
-            value: toAddress(result.init_owner, this.addressFormat)
+            title: this.local.TOTAL_SUPPLY,
+            value: result.totalSupply
           },
           {
             title: this.local.TOKEN_DECIMALS,
             value: result.decimals
+          },
+          {
+            title: this.local.TOKEN_OWNER,
+            value: toAddress(result.init_owner, this.addressFormat)
           },
           {
             title: this.local.TOKEN_PROXY,
@@ -150,10 +160,14 @@ export default {
     padding: 0;
     list-style: none;
 
+    width: 100%;
+
     & > li {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      line-height: 20px;
     }
   }
 

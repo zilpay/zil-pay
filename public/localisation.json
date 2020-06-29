@@ -41,6 +41,7 @@
     "DEPLOY": "Deployed",
     "CLEAR_ALL": "Clear all",
     "EPOCH": "block",
+    "TOTAL_SUPPLY": "Total Supply",
     "UNIQUE_IMPORT_ERR": "*Such address already exists or has been imported!",
     "INVALID_PRIVATEKEY": "*Invalid private key format",
     "ACCOUNTS": "accounts",

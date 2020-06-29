@@ -63,9 +63,17 @@ export class Zilliqa {
   }
 
   async getZRCTokenInfo(sendResponse) {
+    await networkControl.netwrokSync()
+
+    const storage = new BrowserStorage()
+    const wallet = await storage.get(FIELDS.WALLET)
     const { address } = this.payload
+    const account = wallet.identities[
+      wallet.selectedAddress
+    ]
     const token = {
-      address
+      address,
+      balance: '0'
     }
     const zilliqa = new ZilliqaControl(networkControl.provider)
 
@@ -79,6 +87,16 @@ export class Zilliqa {
         token[element.vname] = element.value
       }
 
+      const totalSupplyResult = await blockchain
+        .getSmartContractSubState(token.proxy_address, 'totalSupply')
+      const balanceResult = await blockchain
+        .getSmartContractSubState(token.proxy_address, 'balances', account.address)
+
+      token.totalSupply = totalSupplyResult.result.totalSupply
+
+      if (balanceResult.result && balanceResult.result.balances && balanceResult.result.balances[account.address]) {
+        token.balance = balanceResult.result.balances[account.address]
+      }
     } catch (err) {
       if (new TypeChecker(sendResponse).isFunction) {
         sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })
