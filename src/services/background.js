@@ -275,4 +275,22 @@ export class Background {
 
     return toAddress(result.resolve.owner, ADDRESS_FORMAT_VARIANTS.bech32, false)
   }
+
+  /**
+   * Get the token information by contract address.
+   * @param {String} address - Contract address.
+   */
+  async getTokenInfo(address) {
+    const type = MTypePopup.GET_TOKEN_INFO
+    const payload = { address }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return
+  }
 }
