@@ -46,6 +46,8 @@ import { COLOR_VARIANTS } from '@/config'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
 
+import { Background } from '@/services'
+
 export default {
   name: 'TokenCreater',
   components: {
@@ -77,11 +79,21 @@ export default {
     ])
   },
   methods: {
-    onSave() {
+    async onSave() {
       if (!this.contract.model || !isBech32(this.contract.model)) {
         this.contract.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
 
         return null
+      }
+
+      const bg = new Background()
+
+      try {
+        const contract = await bg.getTokenInfo(this.contract.model)
+
+        console.log(contract)
+      } catch (err) {
+        console.error(err)
       }
     }
   }
