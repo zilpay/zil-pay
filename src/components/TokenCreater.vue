@@ -124,14 +124,6 @@ export default {
           {
             title: this.local.TOKEN_OWNER,
             value: toAddress(result.init_owner, this.addressFormat)
-          },
-          {
-            title: this.local.TOKEN_PROXY,
-            value: toAddress(result.proxy_address, this.addressFormat)
-          },
-          {
-            title: this.local.EPOCH,
-            value: result._creation_block
           }
         ]
       } catch (err) {
