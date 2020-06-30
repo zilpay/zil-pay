@@ -10,7 +10,6 @@
         <li
           v-for="(t, index) of tokens"
           :key="index"
-          :class="b('item')"
         >
           <TokenCard
             :balance="t.balance"
@@ -104,15 +103,19 @@ export default {
   }
 
   &__scroll {
-    display: grid;
-    grid-gap: 10px;
+    display: flex;
+    flex-direction: column;
 
     padding: 0;
-    margin-top: 10px;
+    list-style: none;
 
     overflow-y: scroll;
     height: calc(100vh - 250px);
     min-width: 300px;
+
+    & > li {
+      margin-top: 10px;
+    }
   }
 }
 </style>
