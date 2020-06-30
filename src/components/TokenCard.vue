@@ -1,5 +1,5 @@
 <template>
-  <div :class="b()">
+  <div :class="b({ selected })">
     <Icon
       :type="ICON_TYPE.auto"
       :src="tokenImage"
@@ -65,6 +65,10 @@ export default {
     Title
   },
   props: {
+    selected: {
+      type: Boolean,
+      default: false
+    },
     balance: {
       type: String,
       required: true
@@ -138,6 +142,10 @@ export default {
     & > .P {
       margin-left: 5px;
     }
+  }
+
+  &_selected {
+    border: 2px solid var(--accent-color-primary);
   }
 }
 </style>

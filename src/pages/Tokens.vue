@@ -15,6 +15,7 @@
             :balance="t.balance"
             :name="t.name"
             :symbol="t.symbol"
+            :selected="t.symbol === selectedcoin"
           />
         </li>
       </ul>
