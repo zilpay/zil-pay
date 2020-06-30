@@ -33,7 +33,6 @@
         v-tooltip="copytitle"
         :class="b('address')"
         :size="SIZE_VARIANS.xs"
-        :font="FONT_VARIANTS.medium"
         :variant="COLOR_VARIANTS.gray"
         :content="account.address | toAddress(addressFormat, false)"
         copy
