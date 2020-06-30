@@ -13,7 +13,6 @@
           :class="b('item')"
         >
           <TokenCard
-            :icon="t.icon"
             :balance="t.balance"
             :name="t.name"
             :symbol="t.symbol"
@@ -24,10 +23,11 @@
     <BottomBar />
     <BottomModal v-model="tokenModal">
       <BackModal
+        v-if="tokenModal"
         :name="local.ADD_TOKEN"
         @click="tokenModal = false"
       />
-      <TokenCreater />
+      <TokenCreater v-if="tokenModal" />
     </BottomModal>
   </div>
 </template>
@@ -35,6 +35,7 @@
 <script>
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 
 import {
   COLOR_VARIANTS,
@@ -71,21 +72,16 @@ export default {
       FONT_VARIANTS,
       ICON_VARIANTS,
 
-      tokenModal: false,
-      tokens: [
-        {
-          symbol: 'ZIL',
-          balance: '300',
-          amount: '1000000',
-          icon: 'https://static.tildacdn.com/tild3838-3839-4431-a330-396431353063/mmenu_logos-02.svg',
-          name: 'Zilliqa coin'
-        }
-      ]
+      tokenModal: false
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapState(tokenStore.STORE_NAME, [
+      tokenStore.STATE_NAMES.tokens,
+      tokenStore.STATE_NAMES.selectedcoin
     ])
   }
 }

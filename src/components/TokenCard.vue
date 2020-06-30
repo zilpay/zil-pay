@@ -2,7 +2,7 @@
   <div :class="b()">
     <Icon
       :type="ICON_TYPE.auto"
-      :src="icon"
+      :src="tokenImage"
     />
     <div>
       <div>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { API } from 'config'
+
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 
@@ -63,10 +65,6 @@ export default {
     Title
   },
   props: {
-    icon: {
-      type: String,
-      required: true
-    },
     balance: {
       type: String,
       required: true
@@ -81,7 +79,8 @@ export default {
       FONT_VARIANTS,
       ICON_VARIANTS,
       ICON_TYPE,
-      SIZE_VARIANS
+      SIZE_VARIANS,
+      API
     }
   },
   computed: {
@@ -90,7 +89,11 @@ export default {
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
-    ])
+    ]),
+
+    tokenImage() {
+      return `${this.API.ZRC2_API}/${this.symbol}.png`.toLowerCase()
+    }
   }
 }
 </script>
@@ -119,6 +122,10 @@ export default {
     path {
       stroke: var(--accent-color-primary);
     }
+  }
+
+  & > div {
+    width: 200px;
   }
 
   & > div > div {
