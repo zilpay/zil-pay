@@ -36,11 +36,12 @@
 <script>
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
 
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import uiStore from '@/store/ui'
 import settingsStore from '@/store/settings'
+import tokenStore from '@/store/token'
 
-import { COLOR_VARIANTS } from '@/config'
+import { COLOR_VARIANTS, EVENTS } from '@/config'
 
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
@@ -80,6 +81,9 @@ export default {
   methods: {
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
+    ]),
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onAddToken
     ]),
 
     async onFindToken() {
@@ -134,9 +138,9 @@ export default {
       this.setLoad()
 
       try {
-        const bg = new Background()
+        await this.onAddToken(this.contract.model)
 
-        await bg.setToken(this.contract.model)
+        this.$emit(EVENTS.input)
       } catch (err) {
         this.contract.error = err.message
       } finally {

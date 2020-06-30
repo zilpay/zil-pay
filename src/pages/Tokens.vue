@@ -27,7 +27,10 @@
         :name="local.ADD_TOKEN"
         @click="tokenModal = false"
       />
-      <TokenCreater v-if="tokenModal" />
+      <TokenCreater
+        v-if="tokenModal"
+        @input="tokenModal = false"
+      />
     </BottomModal>
   </div>
 </template>
