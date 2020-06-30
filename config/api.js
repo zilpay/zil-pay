@@ -8,5 +8,6 @@
  */
 export const API = {
   COIN_GECKO: 'https://api.coingecko.com/api/v3/simple/price',
-  EXPLORER: 'https://viewblock.io/zilliqa'
+  EXPLORER: 'https://viewblock.io/zilliqa',
+  ZRC2_API: 'https://raw.githubusercontent.com/zillet/zrc2-tokens/master/images'
 }
