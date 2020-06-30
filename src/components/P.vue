@@ -164,7 +164,7 @@ export default {
 
     &:hover {
       cursor: pointer;
-      text-shadow: 0 0 0.5em var(--accent-color-gray);
+      text-shadow: 0 0 0.1em var(--theme-negative);
     }
   }
 
