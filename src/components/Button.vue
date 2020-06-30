@@ -70,7 +70,7 @@ export default {
   max-width: 250px;
 
   box-sizing: border-box;
-  font-family: var(--font-family-medium);
+  font-family: var(--font-family-light);
 
   font-size: 12px;
 

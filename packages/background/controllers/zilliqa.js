@@ -133,10 +133,8 @@ export class Zilliqa {
     if (!tokens || !tokens[FIELDS.TOKENS]) {
       tokens[FIELDS.TOKENS] = []
     }
-    if (!tokens || !tokens[FIELDS.SELECTED_COIN]) {
-      tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
-    }
 
+    tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
     tokens[FIELDS.TOKENS].push({
       ...zrcToken,
       address: zrcToken._this_address,
