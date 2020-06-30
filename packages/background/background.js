@@ -79,6 +79,10 @@ export class Background {
       new Zilliqa(message.payload).getZRCTokenInfo(sendResponse)
       break
 
+    case MTypePopup.SET_TOKEN:
+      new Zilliqa(message.payload).addZRCToken(sendResponse)
+      break
+
     case MTypePopup.POPUP_INIT:
       new Popup().initPopup(sendResponse)
       break

@@ -293,4 +293,22 @@ export class Background {
 
     return result.resolve
   }
+
+  /**
+   * Write to storage new token.
+   * @param {String} address - contract address of token.
+   */
+  async setToken(address) {
+    const type = MTypePopup.SET_TOKEN
+    const payload = { address }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
 }

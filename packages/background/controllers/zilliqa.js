@@ -7,11 +7,13 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS } from 'config'
-import { BrowserStorage } from 'lib/storage'
+import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
 import { ZilliqaControl } from 'packages/background/services'
 import { ERROR_MSGS } from 'packages/background/errors'
+
+const { Promise } = global
 
 export class Zilliqa {
 
@@ -62,6 +64,10 @@ export class Zilliqa {
     this.payload = payload
   }
 
+  /**
+   * Get some ZRC token informations.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
   async getZRCTokenInfo(sendResponse) {
     await networkControl.netwrokSync()
 
@@ -101,10 +107,47 @@ export class Zilliqa {
       if (new TypeChecker(sendResponse).isFunction) {
         sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })
       }
+
+      return Promise.reject(err)
     }
 
     if (new TypeChecker(sendResponse).isFunction) {
       sendResponse({ resolve: token })
+    }
+
+    return Promise.resolve(token)
+  }
+
+  async addZRCToken(sendResponse) {
+    const storage = new BrowserStorage()
+    const tokens = await storage.get([
+      FIELDS.TOKENS,
+      FIELDS.SELECTED_COIN
+    ])
+    const zrcToken = await this.getZRCTokenInfo()
+
+    if (!tokens || !tokens[FIELDS.TOKENS]) {
+      tokens[FIELDS.TOKENS] = []
+    }
+    if (!tokens || !tokens[FIELDS.SELECTED_COIN]) {
+      tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
+    }
+
+    tokens[FIELDS.TOKENS].push({
+      ...zrcToken,
+      address: zrcToken._this_address,
+      _creation_block: undefined,
+      _scilla_version: undefined,
+      _this_address: undefined
+    })
+
+    await storage.set([
+      new BuildObject(FIELDS.TOKENS, tokens[FIELDS.TOKENS]),
+      new BuildObject(FIELDS.SELECTED_COIN, tokens[FIELDS.SELECTED_COIN])
+    ])
+
+    if (new TypeChecker(sendResponse).isFunction) {
+      sendResponse({ resolve: tokens })
     }
   }
 

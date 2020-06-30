@@ -1,8 +1,5 @@
 <template>
-  <form
-    :class="b()"
-    @submit.prevent="onSave"
-  >
+  <div :class="b()">
     <Input
       v-model="contract.model"
       :title="local.TOKEN_CONTRACT"
@@ -29,10 +26,11 @@
       :color="COLOR_VARIANTS.negative"
       block
       round
+      @click="onSave"
     >
       {{ local.SAVE_TOKEN }}
     </Button>
-  </form>
+  </div>
 </template>
 
 <script>
@@ -133,6 +131,17 @@ export default {
       this.setLoad()
     },
     async onSave() {
+      this.setLoad()
+
+      try {
+        const bg = new Background()
+
+        await bg.setToken(this.contract.model)
+      } catch (err) {
+        this.contract.error = err.message
+      } finally {
+        this.setLoad()
+      }
     }
   }
 }
