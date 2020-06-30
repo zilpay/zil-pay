@@ -118,6 +118,10 @@ export class Zilliqa {
     return Promise.resolve(token)
   }
 
+  /**
+   * Add to storage tokens info.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
   async addZRCToken(sendResponse) {
     const storage = new BrowserStorage()
     const tokens = await storage.get([
@@ -149,6 +153,16 @@ export class Zilliqa {
     if (new TypeChecker(sendResponse).isFunction) {
       sendResponse({ resolve: tokens })
     }
+  }
+
+  async toDefaulTokens(sendResponse) {
+    const data = await accountControl.initCoin()
+
+    if (new TypeChecker(sendResponse).isFunction) {
+      sendResponse({ resolve: data })
+    }
+
+    return data
   }
 
 }

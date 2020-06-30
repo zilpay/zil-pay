@@ -2,6 +2,7 @@ import { FIELDS, ZILLIQA } from 'config'
 import { Message, MTypePopup } from 'lib/stream'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
+import { Background } from './background'
 
 const storage = new BrowserStorage()
 
@@ -131,9 +132,17 @@ export function removeConnect() {
   ])
 }
 
-export function getTokens() {
-  return storage.get([
+export async function getTokens() {
+  const tokensData = await storage.get([
     FIELDS.TOKENS,
     FIELDS.SELECTED_COIN
   ])
+
+  if (!tokensData || !tokensData[FIELDS.TOKENS] || !tokensData[FIELDS.SELECTED_COIN]) {
+    const bg = new Background()
+
+    return bg.toDefaultCoinsList()
+  }
+
+  return tokensData
 }

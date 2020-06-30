@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT } from 'config'
+import { FIELDS, DEFAULT, DEFAULT_TOKEN } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto/dist/util'
@@ -71,6 +71,24 @@ export class AccountControl {
     ])
 
     return account
+  }
+
+  /**
+   * Set Zilliqa coin as defaul selected token.
+   */
+  async initCoin() {
+    const tokens = [DEFAULT_TOKEN]
+    const selectedCoin = DEFAULT_TOKEN.symbol
+
+    await this._storage.set([
+      new BuildObject(FIELDS.TOKENS, tokens),
+      new BuildObject(FIELDS.SELECTED_COIN, selectedCoin)
+    ])
+
+    return {
+      selectedCoin,
+      tokens
+    }
   }
 
   /**
