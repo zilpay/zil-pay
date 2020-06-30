@@ -170,6 +170,9 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-evenly;
+
+    min-height: 330px;
 
     padding-left: 20px;
     padding-right: 20px;
