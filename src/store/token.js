@@ -15,7 +15,9 @@ const MUTATIONS_NAMES = {
 }
 const ACTIONS_NAMES = {
 }
-const GETTERS_NAMES = {}
+const GETTERS_NAMES = {
+  getSelectedToken: 'getSelectedToken'
+}
 const STORE = {
   namespaced: true,
   state: {
@@ -26,7 +28,13 @@ const STORE = {
   },
   actions: {
   },
-  getters: {}
+  getters: {
+    [GETTERS_NAMES.getSelectedToken](state) {
+      const { tokenList, selectedcoin } = state
+
+      return tokenList.find((t) => t.symbol === selectedcoin)
+    }
+  }
 }
 
 export default {
