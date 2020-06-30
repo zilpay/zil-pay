@@ -110,7 +110,7 @@ export default {
 
     width: 100%;
 
-    text-indent: 15px;
+    text-indent: 7px;
     text-align: left;
 
     font-family: var(--font-family-medium);
