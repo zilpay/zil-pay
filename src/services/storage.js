@@ -130,3 +130,10 @@ export function removeConnect() {
     new BuildObject(FIELDS.CONNECT_DAPP, {})
   ])
 }
+
+export function getTokens() {
+  return storage.get([
+    FIELDS.TOKENS,
+    FIELDS.SELECTED_COIN
+  ])
+}

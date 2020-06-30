@@ -37,7 +37,9 @@ import settingsStore from '@/store/settings'
 import contactsStore from '@/store/contacts'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
+import tokensStore from '@/store/token'
 import transactionsStore from '@/store/transactions'
+
 import BottomModal from '@/components/BottomModal'
 
 import Receive from '@/views/Receive'
@@ -80,6 +82,9 @@ export default {
     ]),
     ...mapActions(uiStore.STORE_NAME, [
       uiStore.ACTIONS_NAMES.onLocal
+    ]),
+    ...mapActions(tokensStore.STORE_NAME, [
+      tokensStore.ACTIONS_NAMES.onUpdateTokensStore
     ]),
     ...mapActions(walletStore.STORE_NAME, [
       walletStore.ACTIONS_NAMES.onInit
@@ -143,6 +148,7 @@ export default {
     await this.onUpdateConnection()
 
     this.storeUpdate()
+    this.onUpdateTokensStore()
     this.onLocal()
     this.onUpdate()
     this.onUpdateTransactions()

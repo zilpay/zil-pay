@@ -6,14 +6,19 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { getTokens } from '@/services'
+
 const STORE_NAME = 'token'
 const STATE_NAMES = {
-  tokenList: 'tokenList',
+  tokens: 'tokens',
   selectedcoin: 'selectedcoin'
 }
 const MUTATIONS_NAMES = {
+  setTokens: 'setTokens',
+  setSelectedCoin: 'setSelectedCoin'
 }
 const ACTIONS_NAMES = {
+  onUpdateTokensStore: 'onUpdateTokensStore'
 }
 const GETTERS_NAMES = {
   getSelectedToken: 'getSelectedToken'
@@ -21,18 +26,36 @@ const GETTERS_NAMES = {
 const STORE = {
   namespaced: true,
   state: {
-    [STATE_NAMES.tokenList]: [],
+    [STATE_NAMES.tokens]: [],
     [STATE_NAMES.selectedcoin]: 'ZIL'
   },
   mutations: {
+    [MUTATIONS_NAMES.setSelectedCoin](state, value) {
+      state[STATE_NAMES.selectedcoin] = value
+    },
+    [MUTATIONS_NAMES.setTokens](state, values) {
+      state[STATE_NAMES.tokens] = values
+    }
   },
   actions: {
+    async [ACTIONS_NAMES.onUpdateTokensStore]({ commit }) {
+      const data = await getTokens()
+
+      if (data && data[STATE_NAMES.selectedcoin]) {
+        commit(MUTATIONS_NAMES.setSelectedCoin, data[STATE_NAMES.selectedcoin])
+      }
+      if (data && data[STATE_NAMES.tokens]) {
+        commit(MUTATIONS_NAMES.setTokens, data[STATE_NAMES.tokens])
+      }
+
+      return data
+    }
   },
   getters: {
     [GETTERS_NAMES.getSelectedToken](state) {
-      const { tokenList, selectedcoin } = state
+      const { tokens, selectedcoin } = state
 
-      return tokenList.find((t) => t.symbol === selectedcoin)
+      return tokens.find((t) => t.symbol === selectedcoin)
     }
   }
 }
