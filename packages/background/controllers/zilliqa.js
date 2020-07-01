@@ -95,14 +95,9 @@ export class Zilliqa {
 
       const totalSupplyResult = await blockchain
         .getSmartContractSubState(token.proxy_address, 'totalSupply')
-      const balanceResult = await blockchain
-        .getSmartContractSubState(token.proxy_address, 'balances', account.address)
 
       token.totalSupply = totalSupplyResult.result.totalSupply
-
-      if (balanceResult.result && balanceResult.result.balances && balanceResult.result.balances[account.address]) {
-        token.balance = balanceResult.result.balances[account.address]
-      }
+      token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)
     } catch (err) {
       if (new TypeChecker(sendResponse).isFunction) {
         sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })

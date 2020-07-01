@@ -63,6 +63,23 @@ export class ZilliqaControl {
   }
 
   /**
+   * Get the balance of ZRC token.
+   * @param {String} proxyAddress - ZRC proxy contract address.
+   * @param {Object} account - Default account object.
+   */
+  async getZRCBalance(proxyAddress, account) {
+    const balanceResult = await this
+      .blockchain
+      .getSmartContractSubState(proxyAddress, 'balances', account.address)
+
+    if (!balanceResult.result || !balanceResult.result.balances || !balanceResult.result.balances[account.address]) {
+      return '0'
+    }
+
+    return balanceResult.result.balances[account.address]
+  }
+
+  /**
    * See the pending status of transaction.
    * @param {String} hash Tx id.
    */
