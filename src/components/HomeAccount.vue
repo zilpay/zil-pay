@@ -34,7 +34,7 @@
         :variant="COLOR_VARIANTS.primary"
       >
         <span>
-          {{ getCurrentAccount.balance | fromZil }} ZIL
+          {{ getSelectedToken.balance | fromZil }} {{ getSelectedToken.symbol }}
         </span>
         <div
           class="pointer"
@@ -48,7 +48,7 @@
         :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.light"
       >
-        {{ getCurrentAccount.balance | toConversion(getRate) }} {{ currency }}
+        {{ getSelectedToken.balance | toConversion(getRate) }} {{ currency }}
       </P>
     </div>
   </div>
@@ -59,6 +59,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 import walletStore from '@/store/wallet'
 
 import {
@@ -114,6 +115,9 @@ export default {
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
     ])
   },
   methods: {
