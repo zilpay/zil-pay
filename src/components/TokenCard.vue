@@ -130,10 +130,12 @@ export default {
   justify-content: space-between;
 
   max-height: 60px;
-  padding: 10px;
+  min-height: 70px;
+  padding-left: 10px;
 
   background-color: var(--accent-color-second);
   border-radius: 10px;
+
   cursor: pointer;
 
   img {
@@ -166,8 +168,13 @@ export default {
     }
   }
 
-  &__rm > svg {
-    height: 15px;
+  &__rm {
+    width: 30px;
+    height: 55px;
+
+    & > svg {
+      height: 15px;
+    }
   }
 
   &_selected {

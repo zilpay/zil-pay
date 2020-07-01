@@ -129,6 +129,16 @@ export class Zilliqa {
       tokens[FIELDS.TOKENS] = []
     }
 
+    const hasToken = tokens[FIELDS.TOKENS].some((t) => t.symbol === zrcToken.symbol)
+
+    if (hasToken) {
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ reject: ERROR_MSGS.UNIQUE })
+      }
+
+      return Promise.reject(new Error(ERROR_MSGS.UNIQUE))
+    }
+
     tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
     tokens[FIELDS.TOKENS].push({
       ...zrcToken,
