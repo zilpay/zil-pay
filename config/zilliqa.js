@@ -31,7 +31,7 @@ export const DEFAULT_GAS_FEE = {
 
 export const DEFAULT_TOKEN = {
   balance: '0',
-  decimals: '6',
+  decimals: '12',
   name: 'Zilliqa',
   symbol: 'ZIL'
 }
