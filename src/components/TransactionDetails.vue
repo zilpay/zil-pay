@@ -64,7 +64,7 @@ import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 import P from '@/components/P'
 import ViewblockLink from '@/components/ViewblockLink'
 
-import { toAddress, fromZil, toConversion } from '@/filters'
+import { toAddress, toConversion } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 
 /**
@@ -83,7 +83,7 @@ export default {
     ViewblockLink
   },
   mixins: [CopyMixin],
-  filters: { toAddress, fromZil, toConversion },
+  filters: { toAddress, toConversion },
   props: {
     account: {
       type: Object,

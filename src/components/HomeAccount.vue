@@ -34,7 +34,7 @@
         :variant="COLOR_VARIANTS.primary"
       >
         <span v-if="getSelectedToken">
-          {{ getSelectedToken.balance | fromZil }} {{ getSelectedToken.symbol }}
+          {{ getSelectedToken.balance | fromZil(getSelectedToken.decimals) }} {{ getSelectedToken.symbol }}
         </span>
         <div
           class="pointer"

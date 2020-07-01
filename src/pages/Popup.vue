@@ -47,7 +47,7 @@
           :variant="amountColor"
           :size="SIZE_VARIANS.sm"
         >
-          {{ getCurrent.amount | fromZil }}ZIL
+          {{ getCurrent.amount | fromZi(getSelectedToken.decimals) }}ZIL
         </P>
       </div>
       <div :class="b('item')">
@@ -184,6 +184,9 @@ export default {
     ...mapGetters(transactionsStore.STORE_NAME, [
       transactionsStore.GETTERS_NAMES.getCurrent,
       transactionsStore.GETTERS_NAMES.getCurrentGas
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
     ]),
 
     tabElements() {

@@ -15,6 +15,7 @@
             :balance="t.balance"
             :name="t.name"
             :symbol="t.symbol"
+            :decimals="t.decimals"
             :selected="t.symbol === selectedcoin"
             @click="onSelectedToken(t)"
           />

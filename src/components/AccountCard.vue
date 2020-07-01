@@ -20,7 +20,7 @@
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          {{ account.balance | fromZil }} ZIL
+          {{ account.balance | fromZil(getSelectedToken.decimals) }} ZIL
         </Title>
         <Title
           :variant="COLOR_VARIANTS.gray"
@@ -55,6 +55,7 @@
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 
 import {
   FONT_VARIANTS,
@@ -139,6 +140,9 @@ export default {
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
     ]),
 
     watermarkIcon() {

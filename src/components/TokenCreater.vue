@@ -36,7 +36,7 @@
 <script>
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
 
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
 import settingsStore from '@/store/settings'
 import tokenStore from '@/store/token'
@@ -76,6 +76,9 @@ export default {
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
     ])
   },
   methods: {
@@ -105,7 +108,7 @@ export default {
         this.payload = [
           {
             title: this.local.BALANCE,
-            value: fromZil(result.balance)
+            value: fromZil(result.balance, this.getSelectedToken.decimals)
           },
           {
             title: this.local.TOKEN_SYMBOL,

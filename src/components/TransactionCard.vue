@@ -20,7 +20,7 @@
           :class="b('zil')"
           :font="FONT_VARIANTS.light"
         >
-          -{{ transaction.amount | fromZil }} ZIL
+          -{{ transaction.amount | fromZil(getSelectedToken.decimals) }} ZIL
         </P>
       </div>
       <div :class="b('thirdly-line')">
@@ -46,6 +46,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 import settingsStore from '@/store/settings'
 
 import {
@@ -88,6 +89,9 @@ export default {
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
     ]),
 
     txType() {
