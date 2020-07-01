@@ -107,6 +107,7 @@ import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 import transactionsStore from '@/store/transactions'
 
 import { DEFAULT } from 'config'
@@ -234,8 +235,8 @@ export default {
       transactionsStore.ACTIONS_NAMES.setRejectedLastTx,
       transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
-    ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
 
     /**
@@ -337,7 +338,7 @@ export default {
     setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
     this.setLoad()
     this
-      .updateCurrentAccount()
+      .onBalanceUpdate()
       .then(() => this.setLoad())
   },
   updated() {

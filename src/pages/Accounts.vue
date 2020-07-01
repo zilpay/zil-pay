@@ -26,6 +26,7 @@ import contactsStore from '@/store/contacts'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 
 import { SIZE_VARIANS } from '@/config'
 
@@ -85,8 +86,10 @@ export default {
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.onRemoveAccount,
-      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+      accountsStore.ACTIONS_NAMES.onRemoveAccount
+    ]),
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
@@ -105,7 +108,7 @@ export default {
 
         this.setAccounts(result.identities)
         this.setAccount(result.selectedAddress)
-        this.updateCurrentAccount()
+        this.onBalanceUpdate()
       } catch (err) {
         //
       } finally {

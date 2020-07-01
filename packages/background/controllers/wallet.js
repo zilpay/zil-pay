@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from 'config'
+import { FIELDS, DEFAULT_TOKEN } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { TabsMessage, MTypeTab } from 'lib/stream'
@@ -191,22 +191,34 @@ export class Wallet {
 
     const storage = new BrowserStorage()
     const zilliqa = new ZilliqaControl(networkControl.provider)
+    let { wallet, selectedcoin, tokens } = await storage.get([
+      FIELDS.WALLET,
+      FIELDS.SELECTED_COIN,
+      FIELDS.TOKENS
+    ])
+    const foundIndex = tokens.findIndex((t) => t.symbol === selectedcoin)
+    const account = wallet.identities[wallet.selectedAddress]
 
-    let wallet = await storage.get(FIELDS.WALLET)
-
-    if (!wallet || !wallet.identities || wallet.identities.lenght === 0) {
+    if (!wallet || !wallet.identities || wallet.identities.length === 0) {
       wallet = await this.createAccountBySeed()
     }
 
     try {
       const { address } = wallet.identities[wallet.selectedAddress]
-      const { balance } = await zilliqa.getBalance(address)
 
-      wallet.identities[wallet.selectedAddress].balance = balance
+      if (selectedcoin === DEFAULT_TOKEN.symbol) {
+        const { balance } = await zilliqa.getBalance(address)
 
-      await storage.set(new BuildObject(FIELDS.WALLET, wallet))
+        tokens[foundIndex].balance = balance
+      } else {
+        const { proxy_address } = tokens[foundIndex]
 
-      sendResponse({ resolve: wallet })
+        tokens[foundIndex].balance = await zilliqa.getZRCBalance(proxy_address, account)
+      }
+
+      await storage.set(new BuildObject(FIELDS.TOKENS, tokens))
+
+      sendResponse({ resolve: tokens })
     } catch (err) {
       sendResponse({ reject: err.message })
     }

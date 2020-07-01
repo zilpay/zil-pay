@@ -8,7 +8,7 @@
  */
 import { DEFAULT } from 'config/default'
 import { TypeChecker } from 'lib/type'
-import { Background, walletUpdate } from '@/services'
+import { walletUpdate } from '@/services'
 
 const STORE_NAME = 'accounts'
 const STATE_NAMES = {
@@ -23,7 +23,6 @@ const MUTATIONS_NAMES = {
 }
 const ACTIONS_NAMES = {
   onRemoveAccount: 'onRemoveAccount',
-  updateCurrentAccount: 'updateCurrentAccount',
   onAddAccount: 'onAddAccount'
 }
 const GETTERS_NAMES = {
@@ -83,13 +82,6 @@ const STORE = {
       commit(MUTATIONS_NAMES.setAccounts, identities.filter((_, i) => i !== index))
 
       walletUpdate(state)
-    },
-    async [ACTIONS_NAMES.updateCurrentAccount]({ commit }) {
-      const bg = new Background()
-      const result = await bg.balanceUpdate()
-
-      commit(MUTATIONS_NAMES.setAccount, result.selectedAddress)
-      commit(MUTATIONS_NAMES.setAccounts, result.identities)
     },
     [ACTIONS_NAMES.onAddAccount]({ state, commit }, payload) {
       if (!payload) {

@@ -20,7 +20,8 @@ const MUTATIONS_NAMES = {
 const ACTIONS_NAMES = {
   onUpdateTokensStore: 'onUpdateTokensStore',
   onAddToken: 'onAddToken',
-  onSelectToken: 'onSelectToken'
+  onSelectToken: 'onSelectToken',
+  onBalanceUpdate: 'onBalanceUpdate'
 }
 const GETTERS_NAMES = {
   getSelectedToken: 'getSelectedToken'
@@ -65,6 +66,14 @@ const STORE = {
       await setSelectedCoin(symbol)
 
       commit(MUTATIONS_NAMES.setSelectedCoin, symbol)
+    },
+    async [ACTIONS_NAMES.onBalanceUpdate]({ commit }) {
+      const bg = new Background()
+      const tokens = await bg.balanceUpdate()
+
+      commit(MUTATIONS_NAMES.setTokens, tokens)
+
+      return tokens
     }
   },
   getters: {

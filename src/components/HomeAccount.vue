@@ -130,8 +130,8 @@ export default {
     ...mapActions(settingsStore.STORE_NAME, [
       settingsStore.ACTIONS_NAMES.updateRate
     ]),
-    ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
     ...mapActions(walletStore.STORE_NAME, [
       walletStore.ACTIONS_NAMES.checkProvider
@@ -142,7 +142,7 @@ export default {
       try {
         await this.updateRate()
         await this.checkProvider()
-        await this.updateCurrentAccount()
+        await this.onBalanceUpdate()
       } catch (err) {
         //
       } finally {

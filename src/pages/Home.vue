@@ -25,6 +25,7 @@ import { uuid } from 'uuidv4'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import modalStore from '@/store/modal'
+import tokenStore from '@/store/token'
 import accountsStore from '@/store/accounts'
 
 import {
@@ -86,8 +87,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
     ...mapMutations(modalStore.STORE_NAME, [
       modalStore.MUTATIONS_NAMES.setShowSendModal,
@@ -108,7 +109,7 @@ export default {
     }
   },
   mounted() {
-    this.updateCurrentAccount()
+    this.onBalanceUpdate()
   }
 }
 </script>
