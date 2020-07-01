@@ -38,7 +38,7 @@
         copy
         @copy="onCopyMixin"
       >
-        {{ account.address | toAddress(addressFormat, false) }}
+        {{ account.address | toAddress(addressFormat, true) }}
       </P>
     </div>
     <div
