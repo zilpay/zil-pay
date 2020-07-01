@@ -68,15 +68,16 @@ export class ZilliqaControl {
    * @param {Object} account - Default account object.
    */
   async getZRCBalance(proxyAddress, account) {
+    const address = String(account.address).toLowerCase()
     const balanceResult = await this
       .blockchain
-      .getSmartContractSubState(proxyAddress, 'balances', account.address)
+      .getSmartContractSubState(proxyAddress, 'balances', [address])
 
-    if (!balanceResult.result || !balanceResult.result.balances || !balanceResult.result.balances[account.address]) {
+    if (!balanceResult.result || !balanceResult.result.balances || !balanceResult.result.balances[address]) {
       return '0'
     }
 
-    return balanceResult.result.balances[account.address]
+    return balanceResult.result.balances[address]
   }
 
   /**

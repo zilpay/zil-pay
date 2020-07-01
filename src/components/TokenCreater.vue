@@ -108,7 +108,7 @@ export default {
         this.payload = [
           {
             title: this.local.BALANCE,
-            value: fromZil(result.balance, this.getSelectedToken.decimals)
+            value: fromZil(result.balance, result.decimals)
           },
           {
             title: this.local.TOKEN_SYMBOL,
