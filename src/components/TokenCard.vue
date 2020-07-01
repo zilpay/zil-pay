@@ -1,5 +1,8 @@
 <template>
-  <div :class="b({ selected })">
+  <div
+    :class="b({ selected })"
+    @click="onSelected"
+  >
     <Icon
       :type="ICON_TYPE.auto"
       :src="tokenImage"
@@ -45,7 +48,8 @@ import {
   FONT_VARIANTS,
   SIZE_VARIANS,
   ICON_VARIANTS,
-  ICON_TYPE
+  ICON_TYPE,
+  EVENTS
 } from '@/config'
 
 import Title from '@/components/Title'
@@ -97,6 +101,11 @@ export default {
 
     tokenImage() {
       return `${this.API.ZRC2_API}/${this.symbol}.png`.toLowerCase()
+    }
+  },
+  methods: {
+    onSelected() {
+      this.$emit(EVENTS.click)
     }
   }
 }

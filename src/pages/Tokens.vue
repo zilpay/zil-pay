@@ -16,6 +16,7 @@
             :name="t.name"
             :symbol="t.symbol"
             :selected="t.symbol === selectedcoin"
+            @click="onSelectedToken(t)"
           />
         </li>
       </ul>
@@ -36,7 +37,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 
@@ -47,6 +48,8 @@ import {
   ICON_TYPE,
   ICON_VARIANTS
 } from '@/config'
+
+import Home from '@/pages/Home'
 
 import Top from '@/components/Top'
 import Title from '@/components/Title'
@@ -86,6 +89,15 @@ export default {
       tokenStore.STATE_NAMES.tokens,
       tokenStore.STATE_NAMES.selectedcoin
     ])
+  },
+  methods: {
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onSelectToken
+    ]),
+    async onSelectedToken(token) {
+      await this.onSelectToken(token.symbol)
+      this.$router.push({ name: Home.name })
+    }
   }
 }
 </script>

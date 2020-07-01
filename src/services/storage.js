@@ -29,6 +29,14 @@ export async function setSelectedNetwork(selectedNet) {
   return selectedNet
 }
 
+export async function setSelectedCoin(symbol) {
+  await storage.set([
+    new BuildObject(FIELDS.SELECTED_COIN, symbol)
+  ])
+
+  return symbol
+}
+
 export async function walletUpdate(wallet) {
   if (!wallet || !wallet.identities || wallet.identities.length === 0) {
     return null
