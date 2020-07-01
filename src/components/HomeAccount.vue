@@ -33,7 +33,7 @@
         :size="SIZE_VARIANS.sm"
         :variant="COLOR_VARIANTS.primary"
       >
-        <span>
+        <span v-if="getSelectedToken">
           {{ getSelectedToken.balance | fromZil }} {{ getSelectedToken.symbol }}
         </span>
         <div
@@ -44,6 +44,7 @@
         </div>
       </Title>
       <P
+        v-if="getSelectedToken"
         :variant="COLOR_VARIANTS.gray"
         :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.light"
