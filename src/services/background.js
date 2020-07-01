@@ -324,4 +324,22 @@ export class Background {
 
     return result.resolve
   }
+
+  /**
+   * Removeing token item from store.
+   * @param {String} symbol - Symbol of token.
+   */
+  async removeToken(symbol) {
+    const type = MTypePopup.RM_TOKEN
+    const payload = { symbol }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
 }

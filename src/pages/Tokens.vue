@@ -18,6 +18,7 @@
             :decimals="t.decimals"
             :selected="t.symbol === selectedcoin"
             @click="onSelectedToken(t)"
+            @remove="onRemoveToken(t)"
           />
         </li>
       </ul>
@@ -93,8 +94,10 @@ export default {
   },
   methods: {
     ...mapActions(tokenStore.STORE_NAME, [
-      tokenStore.ACTIONS_NAMES.onSelectToken
+      tokenStore.ACTIONS_NAMES.onSelectToken,
+      tokenStore.ACTIONS_NAMES.onRemoveToken
     ]),
+
     async onSelectedToken(token) {
       await this.onSelectToken(token.symbol)
       this.$router.push({ name: Home.name })

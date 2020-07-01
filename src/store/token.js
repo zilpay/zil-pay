@@ -6,7 +6,11 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { getTokens, setSelectedCoin, Background } from '@/services'
+import {
+  getTokens,
+  setSelectedCoin,
+  Background
+} from '@/services'
 
 const STORE_NAME = 'token'
 const STATE_NAMES = {
@@ -21,7 +25,8 @@ const ACTIONS_NAMES = {
   onUpdateTokensStore: 'onUpdateTokensStore',
   onAddToken: 'onAddToken',
   onSelectToken: 'onSelectToken',
-  onBalanceUpdate: 'onBalanceUpdate'
+  onBalanceUpdate: 'onBalanceUpdate',
+  onRemoveToken: 'onRemoveToken'
 }
 const GETTERS_NAMES = {
   getSelectedToken: 'getSelectedToken'
@@ -74,6 +79,15 @@ const STORE = {
       commit(MUTATIONS_NAMES.setTokens, tokens)
 
       return tokens
+    },
+    async [ACTIONS_NAMES.onRemoveToken]({ commit }, token) {
+      const bg = new Background()
+      const data = await bg.removeToken(token.symbol)
+
+      commit(MUTATIONS_NAMES.setSelectedCoin, data[STATE_NAMES.selectedcoin])
+      commit(MUTATIONS_NAMES.setTokens, data[STATE_NAMES.tokens])
+
+      return data
     }
   },
   getters: {

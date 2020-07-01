@@ -1,13 +1,11 @@
 <template>
-  <div
-    :class="b({ selected })"
-    @click="onSelected"
-  >
+  <div :class="b({ selected })">
     <Icon
       :type="ICON_TYPE.auto"
       :src="tokenImage"
+      @click="onSelected"
     />
-    <div>
+    <div @click="onSelected">
       <div>
         <Title
           :size="SIZE_VARIANS.md"
@@ -34,12 +32,18 @@
         </P>
       </div>
     </div>
-    <SvgInject :variant="ICON_VARIANTS.arrow" />
+    <span
+      v-show="DEFAULT_TOKEN.symbol !== symbol"
+      :class="b('rm')"
+      @click="onRemove"
+    >
+      <SvgInject :variant="ICON_VARIANTS.close"/>
+    </span>
   </div>
 </template>
 
 <script>
-import { API } from 'config'
+import { API, DEFAULT_TOKEN } from 'config'
 
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
@@ -92,7 +96,8 @@ export default {
       ICON_VARIANTS,
       ICON_TYPE,
       SIZE_VARIANS,
-      API
+      API,
+      DEFAULT_TOKEN
     }
   },
   computed: {
@@ -110,6 +115,9 @@ export default {
   methods: {
     onSelected() {
       this.$emit(EVENTS.click)
+    },
+    onRemove() {
+      this.$emit(EVENTS.remove)
     }
   }
 }
@@ -142,7 +150,8 @@ export default {
   }
 
   & > div {
-    width: 200px;
+    width: 100%;
+    margin-left: 10px;
   }
 
   & > div > div {
@@ -155,6 +164,10 @@ export default {
     & > .P {
       margin-left: 5px;
     }
+  }
+
+  &__rm > svg {
+    height: 15px;
   }
 
   &_selected {

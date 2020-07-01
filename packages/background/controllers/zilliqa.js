@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS } from 'config'
+import { FIELDS, DEFAULT_TOKEN } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
@@ -156,6 +156,31 @@ export class Zilliqa {
     }
 
     return data
+  }
+
+  async rmZRCToken(sendResponse) {
+    const { symbol } = this.payload
+    const storage = new BrowserStorage()
+    const tokens = await storage.get(FIELDS.TOKENS)
+
+    if (symbol === DEFAULT_TOKEN.symbol) {
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ resolve: tokens })
+      }
+
+      return Promise.resolve(tokens)
+    }
+
+    const filtredTokens = tokens.filter((t) => t.symbol !== symbol)
+
+    await storage.set([
+      new BuildObject(FIELDS.TOKENS, filtredTokens),
+      new BuildObject(FIELDS.SELECTED_COIN, DEFAULT_TOKEN.symbol)
+    ])
+
+    if (new TypeChecker(sendResponse).isFunction) {
+      sendResponse({ resolve: filtredTokens })
+    }
   }
 
 }
