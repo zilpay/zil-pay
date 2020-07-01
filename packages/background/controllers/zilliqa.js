@@ -179,7 +179,12 @@ export class Zilliqa {
     ])
 
     if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse({ resolve: filtredTokens })
+      sendResponse({
+        resolve: {
+          tokens: filtredTokens,
+          selectedcoin: DEFAULT_TOKEN.symbol
+        }
+      })
     }
   }
 
