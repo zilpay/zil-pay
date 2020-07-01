@@ -119,6 +119,7 @@ import {
 
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 import contactsStore from '@/store/contacts'
 import modalStore from '@/store/modal'
 import settingsStore from '@/store/settings'
@@ -196,8 +197,8 @@ export default {
     ...mapState(contactsStore.STORE_NAME, [
       contactsStore.STATE_NAMES.contactList
     ]),
-    ...mapGetters(accountsStore.STORE_NAME, [
-      accountsStore.GETTERS_NAMES.getCurrentAccount
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
     ]),
 
     placeholder() {
@@ -238,7 +239,7 @@ export default {
         amount,
         gasLimit,
         gasPrice,
-        this.getCurrentAccount.balance
+        this.getSelectedToken.balance
       )
     }
   },
@@ -349,7 +350,8 @@ export default {
       this.amount.model = this.calcMaxAmount(
         gasLimit,
         gasPrice,
-        this.getCurrentAccount.balance
+        this.getSelectedToken.balance,
+        this.getSelectedToken.decimals
       )
     }
   }

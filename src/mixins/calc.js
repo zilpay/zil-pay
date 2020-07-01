@@ -37,17 +37,18 @@ export default {
      * @param {String} fee Tx gas fee.
      * @param {String} balance Account balance.
      */
-    calcMaxAmount(gasLimit, gasPrice, balance) {
+    calcMaxAmount(gasLimit, gasPrice, balance, decimals) {
       if (Number(balance) === 0) {
         return Number(balance)
       }
+
       const _gasLimit = new BN(gasLimit)
       const _gasPrice = new BN(gasPrice)
       const _fee = units.toQa(_gasLimit.mul(_gasPrice), units.Units.Li)
       const _balance = new BN(balance)
       const _amount = _balance.sub(_fee)
 
-      return fromZil(_amount, false)
+      return fromZil(_amount, decimals, false)
     },
     /**
      * Calculate gas fee amount.
