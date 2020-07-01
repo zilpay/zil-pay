@@ -5,6 +5,7 @@
       <SettingsList v-model="settingsModal"/>
       <div :class="b('main')">
         <HomeAccount
+          v-if="identities && identities.length > 0"
           :class="b('account')"
           @click="settingsModal = true"
         />

@@ -156,13 +156,6 @@ export default {
       this.jazziconCreate('jazzicon', address)
     }
   },
-  watch: {
-    getCurrentAccount(value, oldValue) {
-      if (value && value.address) {
-        this.setJazzicon(value.address)
-      }
-    }
-  },
   mounted() {
     if (this.getCurrentAccount && this.getCurrentAccount.address) {
       this.setJazzicon(this.getCurrentAccount.address)
