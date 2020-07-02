@@ -47,7 +47,7 @@
           :variant="amountColor"
           :size="SIZE_VARIANS.sm"
         >
-          {{ getCurrent.amount | fromZil(getSelectedToken.decimals) }} {{ getSelectedToken.symbol }}
+          {{ amount | fromZil(getSelectedToken.decimals) }} {{ symbol }}
         </P>
       </div>
       <div :class="b('item')">
@@ -92,7 +92,7 @@
         {{ local.ADDRESS }} {{ local.TO }}:
       </Title>
       <P :size="SIZE_VARIANS.xs">
-        {{ getCurrent.toAddr | toAddress(addressFormat, false) }}
+        {{ addressTo | toAddress(addressFormat, false) }}
       </P>
     </Alert>
     <Tabs
@@ -211,7 +211,7 @@ export default {
      * Testing for insufficient funds.
      */
     testAmount() {
-      if (!this.getCurrentAccount) {
+      if (!this.getSelectedToken) {
         return null
       }
 
@@ -221,8 +221,31 @@ export default {
         this.getCurrent.amount,
         gasLimit,
         gasPrice,
-        this.getCurrentAccount.balance
+        this.getSelectedToken.balance,
+        this.getSelectedToken.symbol,
+        this.getSelectedToken.decimals
       )
+    },
+    addressTo() {
+      if (this.getCurrent.symbol !== DEFAULT_TOKEN.symbol) {
+        return JSON.parse(this.getCurrent.data).params[0].value
+      }
+
+      return this.getCurrent.toAddr
+    },
+    amount() {
+      if (this.getCurrent.symbol !== DEFAULT_TOKEN.symbol) {
+        return JSON.parse(this.getCurrent.data).params[1].value
+      }
+
+      return this.getCurrent.amount
+    },
+    symbol() {
+      if (this.getCurrent.symbol !== DEFAULT_TOKEN.symbol) {
+        return this.getCurrent.symbol
+      }
+
+      return DEFAULT_TOKEN.symbol
     }
   },
   methods: {

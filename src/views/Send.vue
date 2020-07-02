@@ -107,7 +107,6 @@
 <script>
 import { uuid } from 'uuidv4'
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
-import { units } from '@zilliqa-js/util'
 
 import {
   SIZE_VARIANS,
@@ -138,7 +137,7 @@ import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
-import { toAddress, toZIL, trim } from '@/filters'
+import { toAddress, trim } from '@/filters'
 import CalcMixin from '@/mixins/calc'
 import AccountMixin from '@/mixins/account'
 
@@ -331,17 +330,12 @@ export default {
       // Default gasLimit and gasPrice.
       const { gasLimit, gasPrice } = this.defaultGas
       // Generate tx params.
-      const txParams = {
+      const txParams = this.buildTxParams({
+        gasLimit,
+        gasPrice,
         toAddr: this.recipientAddress.model,
-        amount: toZIL(this.amount.model),
-        gasPrice: String(units.toQa(gasPrice, units.Units.Li)),
-        gasLimit: gasLimit,
-        code: '',
-        data: '',
-        icon: '/icons/icon128.png',
-        priority: false,
-        uuid: false
-      }
+        amount: this.amount.model
+      }, this.getSelectedToken)
 
       this.setConfirmationTx(txParams)
       this.$router.push({ name: PopupPage.name })

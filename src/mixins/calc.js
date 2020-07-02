@@ -7,10 +7,13 @@
  * Copyright (c) 2019 ZilPay
  */
 import Big from 'big.js'
+import { isBech32 } from '@zilliqa-js/util/dist/validation'
+import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
+
 import { DEFAULT_TOKEN } from 'config'
 import { fromZil } from '@/filters'
 
-
+const DEFAULT_ICON = '/icons/icon128.png'
 const _li = Big(10 ** 6)
 
 function gasFee(gasPrice, gasLimit) {
@@ -84,6 +87,72 @@ export default {
      */
     calcFee(gasLimit, gasPrice) {
       return String(gasFee(gasPrice, gasLimit).fee)
+    },
+    /**
+     * Build transaction params for send.
+     * @param {Object} data - Transaction data.
+     * @param {Object} token - Object of token.
+     */
+    buildPaymentTx(data, _amount) {
+      const _gasPrice = Big(data.gasPrice).round()
+
+      return {
+        toAddr: data.toAddr,
+        amount: String(_amount),
+        gasPrice: String(_gasPrice.mul(_li)),
+        gasLimit: String(data.gasLimit),
+        code: '',
+        data: '',
+        icon: DEFAULT_ICON,
+        priority: false,
+        uuid: false
+      }
+    },
+    /**
+     * Build token transfer params.
+     * @param {Object} param0 - txObject.
+     * @param {Object} token - Object of token.
+     */
+    buildTokenTxParams({ toAddr }, token, _amount) {
+      const data = JSON.stringify({
+        _tag: 'Transfer',
+        params: [
+          {
+            vname: 'to',
+            type: 'ByStr20',
+            value: isBech32(toAddr) ? fromBech32Address(toAddr).toLowerCase() : toAddr.toLowerCase()
+          },
+          {
+            vname: 'amount',
+            type: 'Uint128',
+            value: String(_amount)
+          }
+        ]
+      })
+
+      return {
+        data,
+        toAddr: toBech32Address(token.address),
+        symbol: token.symbol,
+        amount: String(0),
+        gasPrice: String(1000000000),
+        gasLimit: String(9000),
+        code: '',
+        icon: DEFAULT_ICON,
+        priority: false,
+        uuid: false
+      }
+    },
+    buildTxParams(data, token) {
+      const _qa = Big(10 ** token.decimals)
+      const _Famount = Big(data.amount)
+      const _amount = _Famount.mul(_qa).round()
+
+      if (DEFAULT_TOKEN.symbol === token.symbol) {
+        return this.buildPaymentTx(data, _amount)
+      }
+
+      return this.buildTokenTxParams(data, token, _amount)
     }
   }
 }
