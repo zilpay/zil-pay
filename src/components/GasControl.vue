@@ -31,11 +31,17 @@
       @input="onFactor"
     />
     <div :class="b('info')">
-      <P :font="FONT_VARIANTS.bold">
+      <P
+        :font="FONT_VARIANTS.bold"
+        :size="SIZE_VARIANS.sm"
+      >
         {{ local.FEE }}
       </P>
-      <P :font="FONT_VARIANTS.bold">
-        {{ fee }}
+      <P
+        :font="FONT_VARIANTS.bold"
+        :size="SIZE_VARIANS.sm"
+      >
+        {{ fee }} {{ DEFAULT_TOKEN.symbol }}
       </P>
     </div>
   </div>
@@ -45,7 +51,8 @@
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { FONT_VARIANTS, EVENTS } from '@/config'
+import { DEFAULT_TOKEN } from 'config'
+import { FONT_VARIANTS, EVENTS, SIZE_VARIANS } from '@/config'
 
 import { INPUT_TYPES } from '@/components/Input'
 import DoubleRange from '@/components/DoubleRange'
@@ -92,6 +99,8 @@ export default {
     return {
       FONT_VARIANTS,
       INPUT_TYPES,
+      DEFAULT_TOKEN,
+      SIZE_VARIANS,
 
       range: [
         this.DEFAULT.gasLimit,
