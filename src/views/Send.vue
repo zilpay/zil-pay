@@ -234,12 +234,14 @@ export default {
      */
     testAmount() {
       const { gasLimit, gasPrice } = this.defaultGas
-      const amount = toZIL(this.amount.model)
+
       return this.calcIsInsufficientFunds(
-        amount,
+        this.amount.model,
         gasLimit,
         gasPrice,
-        this.getSelectedToken.balance
+        this.getSelectedToken.balance,
+        this.getSelectedToken.symbol,
+        this.getSelectedToken.decimals
       )
     }
   },
@@ -347,12 +349,13 @@ export default {
     },
     toMaxAmount() {
       const { gasLimit, gasPrice } = this.defaultGas
+
       this.amount.model = this.calcMaxAmount(
         gasLimit,
         gasPrice,
         this.getSelectedToken.balance,
         this.getSelectedToken.decimals
-      )
+      ).toString()
     }
   }
 }
@@ -449,11 +452,13 @@ export default {
 
     margin-bottom: 30px;
     min-height: 140px;
+    width: 90%;
 
     list-style: none;
     padding: 0;
 
     & > .Input {
+      width: 100%;
       min-width: 260px;
     }
 
@@ -465,7 +470,7 @@ export default {
     &_contacts {
       display: flex;
       flex-direction: column;
-      align-items: baseline;
+      align-items: center;
       justify-content: normal;
 
       padding-left: 20px;
