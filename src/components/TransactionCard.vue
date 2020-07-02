@@ -97,9 +97,11 @@ export default {
     ]),
 
     txType() {
-      const { Info } = this.transaction
+      const { Info, symbol, decimals } = this.transaction
 
-      if (Info.includes('Contract Txn')) {
+      if (symbol && decimals) {
+        return this.local.TRANSFER
+      } else if (Info.includes('Contract Txn')) {
         return this.local.TRIGGER
       } else if (Info.includes('Contract Creation')) {
         return this.local.DEPLOY

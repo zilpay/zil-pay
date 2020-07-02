@@ -397,7 +397,9 @@ export class ZilliqaControl {
       amount: tx.amount,
       toAddr: toChecksumAddress(tx.toAddr),
       nonce: tx.nonce,
-      block: tx.block
+      block: tx.block,
+      decimals: tx.decimals,
+      symbol: tx.symbol
     }
 
     if (!net) {

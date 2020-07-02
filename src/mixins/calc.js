@@ -155,6 +155,7 @@ export default {
         gasPrice: String(1000000000),
         gasLimit: String(9000),
         code: '',
+        decimals: token.decimals,
         icon: DEFAULT_ICON,
         priority: false,
         uuid: false

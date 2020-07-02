@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { API, FIELDS, DEFAULT } from 'config'
+import { API, FIELDS, DEFAULT, DEFAULT_TOKEN } from 'config'
 
 import {
   ZilliqaControl,
@@ -213,7 +213,9 @@ export class Transaction {
         ...result,
         from: account.address,
         confirmed: false,
-        block: block.result
+        block: block.result,
+        symbol: this.payload.symbol || null,
+        decimals: this.payload.decimals || null
       }
 
       if (req && req.payload && req.payload.params && req.payload.params[0]) {
@@ -221,6 +223,10 @@ export class Transaction {
           ...tx,
           ...req.payload.params[0]
         }
+      }
+
+      if (this.payload.symbol && this.payload.symbol !== DEFAULT_TOKEN.symbol) {
+        tx.amount = JSON.parse(this.payload.data).params[1].value
       }
 
       await accountControl.zilliqa.addTransactionList(tx, networkControl.selected)
