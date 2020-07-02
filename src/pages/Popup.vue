@@ -47,7 +47,7 @@
           :variant="amountColor"
           :size="SIZE_VARIANS.sm"
         >
-          {{ getCurrent.amount | fromZi(getSelectedToken.decimals) }}ZIL
+          {{ getCurrent.amount | fromZil(getSelectedToken.decimals) }} {{ getSelectedToken.symbol }}
         </P>
       </div>
       <div :class="b('item')">
@@ -55,7 +55,7 @@
           :font="FONT_VARIANTS.bold"
           :size="SIZE_VARIANS.sm"
         >
-          TODS
+          tods
         </P>
         <SwitchBox
           :value="getCurrent.priority"
@@ -110,7 +110,7 @@ import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 import transactionsStore from '@/store/transactions'
 
-import { DEFAULT } from 'config'
+import { DEFAULT, DEFAULT_TOKEN } from 'config'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -160,6 +160,7 @@ export default {
       DEFAULT_GAS_FEE,
       COLOR_VARIANTS,
       ICON_VARIANTS,
+      DEFAULT_TOKEN,
       LINKS: {
         detail: TxDataPage.name
       },
@@ -338,7 +339,10 @@ export default {
       this.$router.push({ name: HomePage.name })
     }
 
-    setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
+    if (this.getCurrent && this.getCurrent.uuid) {
+      setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
+    }
+
     this.setLoad()
     this
       .onBalanceUpdate()
