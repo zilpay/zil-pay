@@ -132,7 +132,7 @@ export default {
 
       return {
         data,
-        toAddr: toBech32Address(token.address),
+        toAddr: toBech32Address(token.proxy_address),
         symbol: token.symbol,
         amount: String(0),
         gasPrice: String(1000000000),
