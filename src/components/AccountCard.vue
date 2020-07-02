@@ -20,7 +20,7 @@
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          {{ account.balance | fromZil(getSelectedToken.decimals) }} ZIL
+          {{ account.balance | fromZil(DEFAULT_TOKEN.decimals) }} ZIL
         </Title>
         <Title
           :variant="COLOR_VARIANTS.gray"
@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import { DEFAULT_TOKEN } from 'config'
+
 import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
@@ -127,7 +129,8 @@ export default {
       ICON_VARIANTS,
       COLOR_VARIANTS,
       HW_VARIANTS,
-      ADDRESS_FORMAT_VARIANTS
+      ADDRESS_FORMAT_VARIANTS,
+      DEFAULT_TOKEN
     }
   },
   computed: {

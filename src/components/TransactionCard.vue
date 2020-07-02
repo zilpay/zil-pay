@@ -20,7 +20,7 @@
           :class="b('zil')"
           :font="FONT_VARIANTS.light"
         >
-          -{{ transaction.amount | fromZil(getSelectedToken.decimals) }} ZIL
+          -{{ transaction.amount | fromZil(token.decimals) }} {{ token.symbol }}
         </P>
       </div>
       <div :class="b('thirdly-line')">
@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { DEFAULT_TOKEN } from 'config'
+
 import { mapState, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
@@ -104,6 +106,18 @@ export default {
       }
 
       return this.local.SEND
+    },
+    token() {
+      const { symbol, decimals } = this.transaction
+
+      if (symbol) {
+        return {
+          symbol,
+          decimals
+        }
+      }
+
+      return DEFAULT_TOKEN
     },
     statusIcon() {
       if (!this.transaction.confirmed) {
