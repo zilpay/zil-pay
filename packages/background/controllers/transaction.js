@@ -181,9 +181,7 @@ export class Transaction {
         networkControl.provider
       )
 
-      await zilliqaControl.addForSingTransaction(
-        this.payload
-      )
+      await zilliqaControl.addForSingTransaction(this.payload)
 
       new PromptService().open()
 

@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT } from 'config'
+import { FIELDS, DEFAULT, DEFAULT_TOKEN } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { AES } from 'lib/crypto'
@@ -318,6 +318,7 @@ export class ZilliqaControl {
       payload.toAddr = fromBech32Address(payload.toAddr)
     }
 
+    payload.symbol = DEFAULT_TOKEN.symbol
     payload.toAddr = toChecksumAddress(payload.toAddr)
 
     try {

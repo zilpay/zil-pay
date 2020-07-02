@@ -55,6 +55,23 @@ export default {
         return true
       }
     },
+    calcIsInsufficientFundsUint(amount, gasLimit, gasPrice, balance, symbol, decimals) {
+      try {
+        let _fee = Big(0)
+
+        if (symbol === DEFAULT_TOKEN.symbol) {
+          _fee = gasFee(gasPrice, gasLimit)._fee
+        }
+
+        const _balance = Big(balance).round()
+        const _amount = Big(amount)
+        const _txAmount = _fee.add(_amount)
+
+        return _balance.lt(_txAmount)
+      } catch (err) {
+        return true
+      }
+    },
     /**
      * Calculate the max amount for current account.
      * @param {String} fee Tx gas fee.

@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import { DEFAULT_TOKEN } from 'config'
 import {
   getTokens,
   setSelectedCoin,
@@ -29,7 +30,8 @@ const ACTIONS_NAMES = {
   onRemoveToken: 'onRemoveToken'
 }
 const GETTERS_NAMES = {
-  getSelectedToken: 'getSelectedToken'
+  getSelectedToken: 'getSelectedToken',
+  getDefaultToken: 'getDefaultToken'
 }
 const STORE = {
   namespaced: true,
@@ -95,7 +97,12 @@ const STORE = {
       const { tokens, selectedcoin } = state
 
       return tokens.find((t) => t.symbol === selectedcoin)
-    }
+    },
+    [GETTERS_NAMES.getDefaultToken](state) {
+      const { tokens } = state
+
+      return tokens.find((t) => t.symbol === DEFAULT_TOKEN.symbol)
+    },
   }
 }
 

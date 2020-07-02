@@ -47,7 +47,7 @@
           :variant="amountColor"
           :size="SIZE_VARIANS.sm"
         >
-          {{ amount | fromZil(getSelectedToken.decimals) }} {{ symbol }}
+          {{ amount | fromZil(decimals) }} {{ symbol }}
         </P>
       </div>
       <div :class="b('item')">
@@ -187,7 +187,8 @@ export default {
       transactionsStore.GETTERS_NAMES.getCurrentGas
     ]),
     ...mapGetters(tokenStore.STORE_NAME, [
-      tokenStore.GETTERS_NAMES.getSelectedToken
+      tokenStore.GETTERS_NAMES.getSelectedToken,
+      tokenStore.GETTERS_NAMES.getDefaultToken
     ]),
 
     tabElements() {
@@ -217,35 +218,61 @@ export default {
 
       const { gasLimit, gasPrice } = this.getCurrentGas
 
-      return this.calcIsInsufficientFunds(
+      console.log(this.balance, this.symbol, this.decimals)
+
+      return this.calcIsInsufficientFundsUint(
         this.getCurrent.amount,
         gasLimit,
         gasPrice,
-        this.getSelectedToken.balance,
-        this.getSelectedToken.symbol,
-        this.getSelectedToken.decimals
+        this.balance,
+        this.symbol,
+        this.decimals
       )
     },
     addressTo() {
-      if (this.getCurrent.symbol !== DEFAULT_TOKEN.symbol) {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
         return JSON.parse(this.getCurrent.data).params[0].value
       }
 
       return this.getCurrent.toAddr
     },
     amount() {
-      if (this.getCurrent.symbol !== DEFAULT_TOKEN.symbol) {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
         return JSON.parse(this.getCurrent.data).params[1].value
       }
 
       return this.getCurrent.amount
     },
     symbol() {
-      if (this.getCurrent.symbol !== DEFAULT_TOKEN.symbol) {
-        return this.getCurrent.symbol
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return symbol
       }
 
       return DEFAULT_TOKEN.symbol
+    },
+    balance() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return this.getSelectedToken.balance
+      }
+
+      return this.getDefaultToken.balance
+    },
+    decimals() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return this.getSelectedToken.decimals
+      }
+
+      return DEFAULT_TOKEN.decimals
     }
   },
   methods: {
