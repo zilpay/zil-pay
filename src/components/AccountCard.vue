@@ -26,7 +26,7 @@
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          {{ account.balance | toConversion(getRate) }} {{ currency }}
+          {{ account.balance | toConversion(getRate, DEFAULT_TOKEN.decimals) }} {{ currency }}
         </Title>
       </div>
       <P

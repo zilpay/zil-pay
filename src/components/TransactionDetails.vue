@@ -10,11 +10,6 @@
       >
         {{ account.address | toAddress(addressFormat) }}
       </P>
-      <!-- <Arrow
-        height="10"
-        width="2"
-        right
-      /> -->
       <P
         v-tooltip="copytitle"
         :size="SIZE_VARIANS.xs"
@@ -64,7 +59,7 @@ import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
 import P from '@/components/P'
 import ViewblockLink from '@/components/ViewblockLink'
 
-import { toAddress, toConversion } from '@/filters'
+import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 
 /**
@@ -83,7 +78,7 @@ export default {
     ViewblockLink
   },
   mixins: [CopyMixin],
-  filters: { toAddress, toConversion },
+  filters: { toAddress },
   props: {
     account: {
       type: Object,

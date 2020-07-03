@@ -22,7 +22,7 @@
           :size="SIZE_VARIANS.sm"
           :font="FONT_VARIANTS.regular"
         >
-          {{ balance | toConversion(getRate) }}
+          {{ balance | toConversion(getRate, decimals) }}
         </Title>
         <P
           :size="SIZE_VARIANS.sm"

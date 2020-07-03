@@ -55,7 +55,7 @@ describe('components:Chip', () => {
   })
 
   it('Should be img div', () => {
-    expect(wrapper.element.tagName).toEqual('DIV')
+    expect(wrapper.element.tagName).toEqual('SPAN')
   })
 
   it('Should can emit click event', () => {

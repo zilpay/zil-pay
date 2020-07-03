@@ -49,7 +49,7 @@
         :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.light"
       >
-        {{ getSelectedToken.balance | toConversion(getRate) }} {{ currency }}
+        {{ getSelectedToken.balance | toConversion(getRate, getSelectedToken.decimals) }} {{ currency }}
       </P>
     </div>
   </div>

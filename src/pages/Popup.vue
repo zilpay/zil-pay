@@ -134,7 +134,7 @@ import SignMessage from '@/pages/SignMessage'
 
 import viewblockMixin from '@/mixins/viewblock'
 import CalcMixin from '@/mixins/calc'
-import { fromZil, toConversion, toAddress } from '@/filters'
+import { fromZil, toAddress } from '@/filters'
 
 import { Background, ledgerSendTransaction } from '@/services'
 
@@ -152,7 +152,7 @@ export default {
     Tabs
   },
   mixins: [viewblockMixin, CalcMixin],
-  filters: { fromZil, toConversion, toAddress },
+  filters: { fromZil, toAddress },
   data() {
     return {
       SIZE_VARIANS,

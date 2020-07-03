@@ -36,7 +36,7 @@
           :variant="COLOR_VARIANTS.gray"
           :font="FONT_VARIANTS.regular"
         >
-          -${{ transaction.amount | toConversion(getRate) }}
+          -{{ transaction.amount | toConversion(getRate, token.decimals) }} {{ currency }}
         </P>
       </div>
     </div>
@@ -88,6 +88,9 @@ export default {
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.currency
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
