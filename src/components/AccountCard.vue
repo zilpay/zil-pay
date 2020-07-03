@@ -26,7 +26,7 @@
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          {{ account.balance | toConversion(getRate, DEFAULT_TOKEN.decimals) }} {{ currency }}
+          {{ account.balance | toConversion(getDefaultRate, DEFAULT_TOKEN.decimals) }} {{ currency }}
         </Title>
       </div>
       <P
@@ -142,7 +142,7 @@ export default {
       settingsStore.STATE_NAMES.currency
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
-      settingsStore.GETTERS_NAMES.getRate
+      settingsStore.GETTERS_NAMES.getDefaultRate
     ]),
     ...mapGetters(tokenStore.STORE_NAME, [
       tokenStore.GETTERS_NAMES.getSelectedToken

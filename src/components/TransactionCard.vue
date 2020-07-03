@@ -90,7 +90,8 @@ export default {
       uiStore.STATE_NAMES.local
     ]),
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.currency
+      settingsStore.STATE_NAMES.currency,
+      settingsStore.STATE_NAMES.currentRate
     ]),
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getRate
@@ -99,6 +100,19 @@ export default {
       tokenStore.GETTERS_NAMES.getSelectedToken
     ]),
 
+    getRate() {
+      let { symbol } = this.transaction
+
+      if (!symbol) {
+        symbol = DEFAULT_TOKEN.symbol
+      }
+
+      try {
+        return this.currentRate[symbol][this.currency]
+      } catch (err) {
+        return 0
+      }
+    },
     txType() {
       const { Info, symbol, decimals } = this.transaction
 
