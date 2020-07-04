@@ -34,6 +34,10 @@
       </ul>
     </div>
     <BottomModal v-model="info">
+      <BackModal
+        :name="local.TRANSACTION"
+        @click="info = false"
+      />
       <TransactionDetails
         v-if="getCurrentAccount && selectedTx"
         :account="getCurrentAccount"
@@ -55,6 +59,7 @@ import { SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 import TransactionCard from '@/components/TransactionCard'
 import Title from '@/components/Title'
 import BottomModal from '@/components/BottomModal'
+import BackModal from '@/components/BackModal'
 import TransactionDetails from '@/components/TransactionDetails'
 
 export default {
@@ -62,6 +67,7 @@ export default {
   components: {
     TransactionCard,
     Title,
+    BackModal,
     BottomModal,
     TransactionDetails
   },
