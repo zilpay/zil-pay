@@ -38,6 +38,8 @@
       <BackModal
         v-if="local.REVEAL_KEY"
         :name="local.REVEAL_KEY"
+        back
+        @click="modals.key = false"
       />
       <SecureModal
         v-if="modals.key"
@@ -51,6 +53,8 @@
       <BackModal
         v-if="local.REVEAL_PHRASE"
         :name="local.REVEAL_PHRASE"
+        back
+        @click="modals.seed = false"
       />
       <SecureModal
         v-if="modals.seed"
@@ -64,6 +68,8 @@
       <BackModal
         v-if="local.REVEAL_KEYSTORE"
         :name="local.REVEAL_KEYSTORE"
+        back
+        @click="modals.keystore = false"
       />
       <SecureModal
         v-if="modals.keystore"

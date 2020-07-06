@@ -117,7 +117,7 @@ export default {
 
       background-color: var(--accent-color-second);
 
-      border-radius: var(--default-border-radius);
+      border-radius: 12px;
 
       animation: fadeInUp 0.4s;
       animation-timing-function: cubic-bezier(.3,.17,.23,.96);
