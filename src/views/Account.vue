@@ -28,7 +28,6 @@
       />
       <div :class="b('copy')">
         <P
-          v-tooltip="copytitle"
           :content="getCurrentAccount.address | toAddress(addressFormat, false)"
           copy
           @copy="onCopyMixin"
