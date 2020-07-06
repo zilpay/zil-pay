@@ -149,7 +149,8 @@ export default {
     ]),
     ...mapMutations(modalStore.STORE_NAME, [
       modalStore.MUTATIONS_NAMES.setSendModalPayload,
-      modalStore.MUTATIONS_NAMES.setShowSendModal
+      modalStore.MUTATIONS_NAMES.setShowSendModal,
+      modalStore.MUTATIONS_NAMES.setNumberStep
     ]),
 
     onDropDownSelected(event, contact, index) {
@@ -181,6 +182,7 @@ export default {
 
       this.setSendModalPayload(payload)
       this.setShowSendModal()
+      this.setNumberStep(4)
     }
   }
 }

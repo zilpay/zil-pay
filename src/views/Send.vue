@@ -11,7 +11,7 @@
         :class="b('step')"
       >
         <Input
-          v-model="recipientAddress.model"
+          :value="sendModal.payload.address"
           :placeholder="placeholder"
           :error="recipientAddress.error"
           round
@@ -72,7 +72,7 @@
         :class="b('step')"
       >
         <Title :size="SIZE_VARIANS.sm">
-          {{ local.TO }}: ({{ recipientAddress.model | trim }})
+          {{ local.TO }}: ({{ sendModal.payload.address | trim }})
         </Title>
         <div :class="b('enter')">
           <P>
@@ -169,7 +169,6 @@ export default {
       INPUT_TYPES,
 
       recipientAddress: {
-        model: null,
         error: null
       },
       amount: {
@@ -223,7 +222,7 @@ export default {
      */
     testAddress() {
       try {
-        return isBech32(this.recipientAddress.model)
+        return isBech32(this.sendModal.payload.address)
       } catch (err) {
         return false
       }
@@ -247,9 +246,9 @@ export default {
   methods: {
     ...mapMutations(modalStore.STORE_NAME, [
       modalStore.MUTATIONS_NAMES.setShowSendModal,
-      modalStore.MUTATIONS_NAMES.setNextStep,
       modalStore.MUTATIONS_NAMES.setPreviousStep,
-      modalStore.MUTATIONS_NAMES.setNumberStep
+      modalStore.MUTATIONS_NAMES.setNumberStep,
+      modalStore.MUTATIONS_NAMES.setSendModalPayload
     ]),
     ...mapMutations(transactionsStore.STORE_NAME, [
       transactionsStore.MUTATIONS_NAMES.setConfirmationTx
@@ -271,7 +270,7 @@ export default {
       if (index === 0) {
         this.setShowSendModal()
       } else if (index === 1 && step === 0) {
-        if (!this.recipientAddress.model) {
+        if (!this.sendModal.payload.address) {
           this.recipientAddress.error = `*${this.local.PASS_RECIPIENT_ADDR}`
 
           return null
@@ -289,30 +288,36 @@ export default {
     /**
      * Finding the ZNS address by domain.
      */
-    async fromZNS() {
+    async fromZNS(event) {
       this.recipientAddress.error = null
 
       const regExpDomain = new RegExp(REGX_PATTERNS.domain, 'gm')
 
-      if (regExpDomain.test(this.recipientAddress.model)) {
+      if (regExpDomain.test(event)) {
         try {
           const bg = new Background()
-          this.recipientAddress.model = await bg.getZNSAddress(this.recipientAddress.model)
+          const address = await bg.getZNSAddress(event)
+
+          this.setSendModalPayload({ address })
         } catch (err) {
           this.recipientAddress.error = this.local.NOT_FOUND_ZNS
         }
+      } else {
+        this.setSendModalPayload({ address: event })
       }
     },
     /**
      * Select address from storage.
      * @param {String, Bech32} address Zilliqa address.
      */
-    onAddress(address) {
-      this.recipientAddress.model = toAddress(
-        address,
+    onAddress(event) {
+      const address = toAddress(
+        event,
         ADDRESS_FORMAT_VARIANTS.bech32,
         false
       )
+
+      this.setSendModalPayload({ address })
       this.recipientAddress.error = null
       this.accountModal = false
       this.contactModal = false
@@ -333,7 +338,7 @@ export default {
       const txParams = this.buildTxParams({
         gasLimit,
         gasPrice,
-        toAddr: this.recipientAddress.model,
+        toAddr: this.sendModal.payload.address,
         amount: this.amount.model
       }, this.getSelectedToken)
 

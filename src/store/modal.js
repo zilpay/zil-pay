@@ -32,7 +32,9 @@ const STORE = {
     [STATE_NAMES.sendModal]: {
       step: 0,
       show: false,
-      payload: null
+      payload: {
+        address: ''
+      }
     },
     [STATE_NAMES.receiveModal]: {
       step: 0,
