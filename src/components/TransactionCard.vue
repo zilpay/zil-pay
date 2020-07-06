@@ -127,7 +127,11 @@ export default {
       return this.local.SEND
     },
     token() {
-      const { symbol, decimals } = this.transaction
+      let { symbol, decimals } = this.transaction
+
+      if (symbol === DEFAULT_TOKEN.symbol) {
+        return DEFAULT_TOKEN
+      }
 
       if (symbol) {
         return {
