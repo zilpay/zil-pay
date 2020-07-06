@@ -25,10 +25,18 @@
       </Button>
     </div>
     <BottomModal v-model="modals.key">
-      <PrivateKeyModal />
+      <BackModal
+        v-if="local.REVEAL_KEY"
+        :name="local.REVEAL_KEY"
+      />
+      <SecureModal modalType="0"/>
     </BottomModal>
     <BottomModal v-model="modals.seed">
-      <PhraseModal />
+      <BackModal
+        v-if="local.REVEAL_PHRASE"
+        :name="local.REVEAL_PHRASE"
+      />
+      <SecureModal modalType="1"/>
     </BottomModal>
   </div>
 </template>
@@ -43,9 +51,9 @@ import { DEFAULT } from 'config'
 
 import TopBar from '@/components/TopBar'
 import BottomModal from '@/components/BottomModal'
-import PrivateKeyModal from '@/views/PrivateKeyModal'
-import PhraseModal from '@/views/PhraseModal'
+import SecureModal from '@/views/SecureModal'
 import RadioGroup from '@/components/RadioGroup'
+import BackModal from '@/components/BackModal'
 import Button from '@/components/Button'
 
 export default {
@@ -54,9 +62,9 @@ export default {
     TopBar,
     RadioGroup,
     Button,
-    PrivateKeyModal,
-    BottomModal,
-    PhraseModal
+    BackModal,
+    SecureModal,
+    BottomModal
   },
   data() {
     return {

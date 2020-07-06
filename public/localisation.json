@@ -96,6 +96,7 @@
     "DELETE": "Delete",
     "REVEAL_KEY": "Reveal Private Key",
     "REVEAL_PHRASE": "Reveal Secret Phrase",
+    "REVEAL": "Reveal",
     "CANCEL": "Cancel",
     "PROCEED": "Proceed",
     "AMOUNT": "amount",
@@ -144,7 +145,6 @@
     "ENTER_AMOUTNT": "Enter Amount",
     "ADD_TOKEN": "Add Custom Token",
     "RECEIVE_DEPOSIT_DIS": "To interact with decentralized applications using ZilPay, you’ll need ZIL coin in your wallet.",
-    "EXPORT_CAN_PASSWROD": "Enter password to continue.",
     "EXPORT_DANGER": "DO NOT share this with anyone!",
     "EXPORT_WARNING": "Save them somewhere safe and secret.",
     "EXPORT_INFO": "If you ever change browsers or move computers, you will need this seed phrase to access your accounts."
