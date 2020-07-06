@@ -71,12 +71,12 @@ export class Wallet {
       const isImported = await accountExporter.isImported()
 
       if (isImported) {
-        account = await accountExporter.exportAccountFromStore()
+        account = await accountExporter.exportAccountFromStore(password)
       } else {
-        account = await accountExporter.exportPrivateKeyFromSeed()
+        account = await accountExporter.exportPrivateKeyFromSeed(password)
       }
 
-      sendResponse({ resolve: account.privateKey })
+      sendResponse({ resolve: account })
     } catch (err) {
       sendResponse({ reject: err.message })
     }
