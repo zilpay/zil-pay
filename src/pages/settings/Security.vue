@@ -23,6 +23,13 @@
       >
         {{ local.REVEAL_PHRASE }}
       </Button>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="modals.keystore = true"
+      >
+        {{ local.REVEAL_KEYSTORE }}
+      </Button>
     </div>
     <BottomModal
       v-model="modals.key"
@@ -32,7 +39,10 @@
         v-if="local.REVEAL_KEY"
         :name="local.REVEAL_KEY"
       />
-      <SecureModal modalType="0"/>
+      <SecureModal
+        v-if="modals.key"
+        modalType="0"
+      />
     </BottomModal>
     <BottomModal
       v-model="modals.seed"
@@ -42,7 +52,24 @@
         v-if="local.REVEAL_PHRASE"
         :name="local.REVEAL_PHRASE"
       />
-      <SecureModal modalType="1"/>
+      <SecureModal
+        v-if="modals.seed"
+        modalType="1"
+      />
+    </BottomModal>
+    <BottomModal
+      v-model="modals.keystore"
+      pure
+    >
+      <BackModal
+        v-if="local.REVEAL_KEYSTORE"
+        :name="local.REVEAL_KEYSTORE"
+      />
+      <SecureModal
+        v-if="modals.keystore"
+        modalType="2"
+        @close="modals.keystore = false"
+      />
     </BottomModal>
   </div>
 </template>
@@ -79,7 +106,8 @@ export default {
 
       modals: {
         key: false,
-        seed: false
+        seed: false,
+        keystore: false
       }
     }
   },
@@ -120,7 +148,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    min-height: 400px;
+    min-height: 450px;
     padding-left: 30px;
     padding-right: 30px;
 

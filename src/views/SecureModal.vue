@@ -47,7 +47,13 @@
 import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { COLOR_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, ICON_VARIANTS } from '@/config'
+import {
+  COLOR_VARIANTS,
+  SIZE_VARIANS,
+  FONT_VARIANTS,
+  ICON_VARIANTS,
+  EVENTS
+} from '@/config'
 
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
@@ -56,6 +62,8 @@ import Icon from '@/components/Icon'
 import Textarea from '@/components/Textarea'
 
 import { Background } from '@/services'
+
+import { download } from '@/utils'
 
 export default {
   name: 'SecureModal',
@@ -105,6 +113,9 @@ export default {
       case 1:
         await this.onSeed()
         break
+      case 2:
+        await this.onKeystore()
+        break
       default:
         break
       }
@@ -114,7 +125,10 @@ export default {
       const bg = new Background()
 
       try {
-        this.content = await bg.exportPrivKey(this.password.model)
+        const { privateKey } = await bg.exportPrivKey(this.password.model)
+
+        this.content = privateKey
+
       } catch (err) {
         this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
       }
@@ -123,6 +137,18 @@ export default {
       const bg = new Background()
       try {
         this.content = await bg.exportSeed(this.password.model)
+      } catch (err) {
+        this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
+      }
+    },
+    async onKeystore() {
+      const bg = new Background()
+
+      try {
+        const { keystore } = await bg.exportPrivKey(this.password.model)
+
+        download('keystore.json', keystore)
+        this.$emit(EVENTS.close)
       } catch (err) {
         this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
       }

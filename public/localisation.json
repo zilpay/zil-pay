@@ -96,6 +96,7 @@
     "DELETE": "Delete",
     "REVEAL_KEY": "Reveal Private Key",
     "REVEAL_PHRASE": "Reveal Secret Phrase",
+    "REVEAL_KEYSTORE": "Reveal keystore",
     "REVEAL": "Reveal",
     "CANCEL": "Cancel",
     "PROCEED": "Proceed",
