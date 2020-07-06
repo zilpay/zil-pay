@@ -3,6 +3,7 @@
     <Icon
       :type="ICON_TYPE.auto"
       :src="tokenImage"
+      :broken="failTookenImage"
       @click="onSelected"
     />
     <div @click="onSelected">
@@ -110,6 +111,9 @@ export default {
 
     tokenImage() {
       return `${this.API.ZRC2_API}/${this.symbol}.png`.toLowerCase()
+    },
+    failTookenImage() {
+      return `${this.API.ZRC2_API}/generic.png`
     }
   },
   methods: {
