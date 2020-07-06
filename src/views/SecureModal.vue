@@ -147,7 +147,7 @@ export default {
       try {
         const { keystore } = await bg.exportPrivKey(this.password.model)
 
-        download('keystore.json', keystore)
+        download('keystore.json', JSON.parse(keystore))
         this.$emit(EVENTS.close)
       } catch (err) {
         this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
