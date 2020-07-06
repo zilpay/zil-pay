@@ -37,7 +37,6 @@ import TxData from '@/pages/popup/TxData'
 
 // Accounts children pages.
 import Import from '@/pages/accounts/Import'
-import Export from '@/pages/accounts/Export'
 
 Vue.use(VueRouter)
 
@@ -110,12 +109,6 @@ const routes = [
     path: `/${Import.name.toLowerCase()}`,
     name: Import.name,
     component: Import,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Export.name.toLowerCase()}`,
-    name: Export.name,
-    component: Export,
     meta: { requiresAuth: true }
   },
   {
