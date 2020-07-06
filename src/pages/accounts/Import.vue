@@ -6,73 +6,57 @@
         v-model="radioGroup.model"
         :elements="radioGroup.elements"
       />
+      <ul>
+        <li v-show="radioGroup.model === RADIO_ELEMENTS[0]">
+          <Input
+            v-model="privateKey.model"
+            :placeholder="RADIO_ELEMENTS[0]"
+            :error="privateKey.error"
+            round
+            autofocus
+            @input="privateKey.error = null"
+          />
+        </li>
+        <li v-show="radioGroup.model === RADIO_ELEMENTS[1]">
+          <P capitalize>
+            {{ local.IMPORT_KEYSTORE }}
+          </P>
+          <Input
+            v-model="jsonFile.password"
+            :placeholder="local.PASSWORD"
+            :error="jsonFile.error"
+            :type="INPUT_TYPES.password"
+            round
+          />
+          <input
+            :class="b('json')"
+            ref="json"
+            type="file"
+            accept="application/JSON"
+          >
+        </li>
+        <li v-show="radioGroup.model === RADIO_ELEMENTS[2]">
+            <P
+              :class="b('info-title')"
+              capitalize
+            >
+              {{ local.IMPORT_HW }}
+            </P>
+            <Input
+              v-model="ledger.index"
+              :error="ledger.error"
+              :placeholder="local.WALLET_ID"
+              :type="INPUT_TYPES.number"
+              round
+              @input="ledger.error = null"
+            />
+        </li>
+      </ul>
+      <Tabs
+        :elements="tabElements"
+        @input="onEvent"
+      />
     </div>
-    <Alert v-show="radioGroup.model === RADIO_ELEMENTS[0]">
-      <div :class="b('info')">
-        <P
-          :class="b('info-title')"
-          capitalize
-        >
-          {{ local.IMPORT }} {{ local.PRIVATEKEY }}
-        </P>
-        <Input
-          v-model="privateKey.model"
-          :placeholder="RADIO_ELEMENTS[0]"
-          :error="privateKey.error"
-          round
-          autofocus
-          @input="privateKey.error = null"
-        />
-      </div>
-    </Alert>
-    <Alert v-show="radioGroup.model === RADIO_ELEMENTS[1]">
-      <div :class="b('info')">
-        <P
-          :class="b('info-title')"
-          capitalize
-        >
-          {{ local.IMPORT_KEYSTORE }}
-        </P>
-        <Input
-          v-model="jsonFile.password"
-          :placeholder="local.PASSWORD"
-          :error="jsonFile.error"
-          :type="INPUT_TYPES.password"
-          round
-        />
-        <input
-          :class="b('json')"
-          ref="json"
-          type="file"
-          accept="application/JSON"
-        >
-      </div>
-    </Alert>
-    <Alert v-show="radioGroup.model === RADIO_ELEMENTS[2]">
-      <div :class="b('info')">
-        <P
-          :class="b('info-title')"
-          capitalize
-        >
-          {{ local.IMPORT_HW }}
-        </P>
-        <Input
-          v-model="ledger.index"
-          :error="ledger.error"
-          :placeholder="local.WALLET_ID"
-          :type="INPUT_TYPES.number"
-          round
-          @input="ledger.error = null"
-        />
-      </div>
-    </Alert>
-    <Button
-      :class="b('btn')"
-      round
-      @click="onEvent"
-    >
-      {{ local.IMPORT }}
-    </Button>
   </div>
 </template>
 
@@ -82,16 +66,15 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 
-import { SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
 
 import homePage from '@/pages/Home'
 
-import Alert from '@/components/Alert'
 import P from '@/components/P'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import TopBar from '@/components/TopBar'
 import RadioGroup from '@/components/RadioGroup'
-import Button from '@/components/Button'
+import Tabs from '@/components/Tabs'
 
 import { Background, walletUpdate, ledgerImportAccount } from '@/services'
 import { UNIQUE } from 'lib/errors/annotations'
@@ -108,16 +91,16 @@ export default {
   components: {
     TopBar,
     RadioGroup,
-    Alert,
     P,
     Input,
-    Button
+    Tabs
   },
   data() {
     return {
       SIZE_VARIANS,
       RADIO_ELEMENTS,
       INPUT_TYPES,
+      COLOR_VARIANTS,
 
       radioGroup: {
         elements: RADIO_ELEMENTS,
@@ -140,7 +123,18 @@ export default {
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
-    ])
+    ]),
+
+    tabElements() {
+      return [
+        {
+          name: this.local.CANCEL
+        },
+        {
+          name: this.local.IMPORT
+        }
+      ]
+    }
   },
   methods: {
     ...mapActions(walletStore.STORE_NAME, [
@@ -161,7 +155,13 @@ export default {
     /**
      * Listing all events for import type/
      */
-    onEvent() {
+    onEvent(event) {
+      if (event === 0) {
+        this.$router.push({ name: homePage.name })
+
+        return null
+      }
+
       switch (this.radioGroup.model) {
       case this.radioGroup.elements[0]:
         this.onPrivateKey()
@@ -263,39 +263,33 @@ export default {
 
 <style lang="scss">
 .Import {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
   &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-    justify-items: center;
-
-    /* top | right | bottom | left */
-    padding: 15px 15px 40px 15px;
-  }
-
-  &__info {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    align-items: center;
 
-    line-height: 20px;
-    font-size: 15px;
+    width: 90%;
+    min-height: 340px;
 
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
+    & > ul {
+      padding: 0;
+      list-style: none;
 
-  &__info-title {
-    margin-bottom: 15px;
-  }
+      & > li {
+        min-width: 290px;
+      }
+    }
 
-  &__btn {
-    margin-top: 15px;
-    margin-left: 15px;
-    min-width: 100px;
-  }
-
-  &__json {
-    margin-top: 15px;
+    & > .Button {
+      min-width: 250px;
+    }
   }
 }
 </style>

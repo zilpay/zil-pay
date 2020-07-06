@@ -3,6 +3,12 @@
     <Top />
     <TopBar v-if="route"/>
     <AddMenu @click="onCreateAccount" />
+    <router-link
+      :class="b('import')"
+      :to="{ name: LINKS.import }"
+    >
+      <SvgInject :variant="ICON_VARIANTS.import" />
+    </router-link>
     <ul :class="b('scroll')">
       <li
         v-for="(acc, index) of identities"
@@ -28,11 +34,13 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 
-import { SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS, ICON_VARIANTS } from '@/config'
 
 import homePage from '@/pages/Home'
+import ImportPage from '@/pages/accounts/Import'
 
 import TopBar from '@/components/TopBar'
+import SvgInject from '@/components/SvgInject'
 import AddMenu from '@/components/AddMenu'
 import AccountCard from '@/components/AccountCard'
 import Top from '@/components/Top'
@@ -45,11 +53,16 @@ export default {
     TopBar,
     AccountCard,
     Top,
-    AddMenu
+    AddMenu,
+    SvgInject
   },
   data() {
     return {
-      SIZE_VARIANS
+      SIZE_VARIANS,
+      ICON_VARIANTS,
+      LINKS: {
+        import: ImportPage.name
+      }
     }
   },
   computed: {
@@ -143,6 +156,19 @@ export default {
     & > li {
       margin-top: 5px;
       margin-bottom: 5px;
+    }
+  }
+
+  &__import {
+    cursor: pointer;
+
+    position: absolute;
+    bottom: 60px;
+    right: 75px;
+
+    & > svg {
+      width: 35px;
+      height: auto;
     }
   }
 }

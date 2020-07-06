@@ -104,7 +104,7 @@ export default {
     items() {
       const [mainnet] = Object.keys(this.networkConfig)
       const elements = [{
-        title: `${this.local.TRANSFER} $ZIL.`,
+        title: `${this.local.DEPOSIT} $ZIL.`,
         text: this.local.TRANSFER_DES,
         event: EVENTS.transfer,
         icon: ICON_VARIANTS.zilliqaLogo,

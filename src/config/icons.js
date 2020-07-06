@@ -25,6 +25,7 @@ export const ICON_VARIANTS = {
   about: 'about',
   close: 'close',
   trash: 'trash',
+  import: 'import',
   profile: 'profile',
   copy: 'copy',
   edit: 'edit',
