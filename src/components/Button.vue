@@ -178,8 +178,12 @@ export default {
 .Button {
   &[disabled="disabled"] {
     cursor: unset;
-    color: var(--accent-color-white);
     opacity: 0.5;
+
+    &:hover {
+      background-color: var(--app-background-color);
+      color: var(--accent-color-primary);
+    }
   }
 
   &:first-letter {

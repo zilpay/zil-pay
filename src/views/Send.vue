@@ -29,6 +29,7 @@
         <Button
           :size="SIZE_VARIANS.sm"
           :color="COLOR_VARIANTS.negative"
+          :disabled="!contactList || contactList.length === 0"
           round
           @click="setNumberStep(3)"
         >
