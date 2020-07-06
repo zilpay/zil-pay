@@ -1,52 +1,31 @@
 <template>
   <div :class="b()">
-    <div :class="b('sender-recipient')">
-      <P
-        v-tooltip="copytitle"
-        :size="SIZE_VARIANS.xs"
-        :content="account.address | toAddress(addressFormat, false)"
-        copy
-        @copy="onCopyMixin"
-      >
-        {{ account.address | toAddress(addressFormat) }}
-      </P>
-      <P
-        v-tooltip="copytitle"
-        :size="SIZE_VARIANS.xs"
-        :content="transaction.toAddr | toAddress(addressFormat, false)"
-        copy
-        @copy="onCopyMixin"
-      >
-        {{ transaction.toAddr | toAddress(addressFormat) }}
-      </P>
-    </div>
-    <ul :class="b('info-list')">
+    <ul>
       <li
-        v-for="(el, index) of infoList"
-        :key="index"
-        :class="b('info-item')"
+        v-for="(el) of infoList"
+        :key="el.key"
       >
-        <P
-          :size="SIZE_VARIANS.xs"
-          :font="FONT_VARIANTS.bold"
-        >
+        <P :size="SIZE_VARIANS.xs">
           {{ el.key }}
         </P>
         <P
+          v-if="el.copy"
           v-tooltip.left="copytitle"
-          :class="b('value')"
-          :size="SIZE_VARIANS.xs"
           :content="el.value"
-          :font="FONT_VARIANTS.regular"
-          copy
           nowrap
-          @copy="onCopyMixin"
+          copy
+        >
+          {{ el.value }}
+        </P>
+        <P
+          v-else
+          nowrap
         >
           {{ el.value }}
         </P>
       </li>
     </ul>
-    <ViewblockLink :hash="transaction.TranID"/>
+    <ViewblockLink :hash="transaction.TranID" />
   </div>
 </template>
 
@@ -109,7 +88,8 @@ export default {
         },
         {
           key: 'Hash',
-          value: this.transaction.TranID
+          value: this.transaction.TranID,
+          copy: true
         },
         {
           key: 'Nonce',
@@ -121,37 +101,48 @@ export default {
         }
       ]
     }
+  },
+  mounted() {
+    console.log(this.transaction)
   }
 }
 </script>
 
 <style lang="scss">
 .TransactionDetails {
-  /* top | right | bottom | left */
-  padding: 10px 15px 30px 15px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
 
-  &__sender-recipient {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
+  width: 100%;
+  min-height: 200px;
 
-  &__info-list {
+  & > ul {
+    width: 95%;
+
+    padding: 10px;
     list-style: none;
-    margin: 0;
-    padding: 0;
-    padding-top: 15px;
   }
 
-  &__info-item {
+  & > ul > li {
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    border-bottom: 1px solid var(--theme-color-separator);
+    & > .P {
+      max-width: 150px;
+      line-height: 15px;
+    }
   }
 
-  &__value {
+  & > .Button {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    width: 100%;
+    height: 43px;
     max-width: 200px;
   }
 }
