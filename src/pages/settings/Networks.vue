@@ -19,7 +19,7 @@
       <Input
         v-model="http.model"
         :error="http.error"
-        :disabled="MAINNET === this.network"
+        :disabled="MAINNET === this.network || TESTNET === this.network"
         title="Node."
         round
         second
@@ -28,7 +28,7 @@
       <Input
         v-model="ws.model"
         :error="ws.error"
-        :disabled="MAINNET === this.network"
+        :disabled="MAINNET === this.network || TESTNET === this.network"
         title="WS."
         round
         second
@@ -38,14 +38,14 @@
         v-model="msg.model"
         :error="msg.error"
         :type="INPUT_TYPES.number"
-        :disabled="MAINNET === this.network"
+        :disabled="MAINNET === this.network || TESTNET === this.network"
         title="MSG"
         round
         second
         @input="msg.error = null"
       />
       <Button
-        v-show="MAINNET !== this.network"
+        v-show="MAINNET !== this.network && TESTNET !== this.network"
         :class="b('btn')"
         :color="COLOR_VARIANTS.negative"
         :size="SIZE_VARIANS.sm"
@@ -82,6 +82,7 @@ import P from '@/components/P'
 import { keys } from '@/filters'
 
 const MAINNET = Object.keys(ZILLIQA)[0]
+const TESTNET = Object.keys(ZILLIQA)[1]
 
 export default {
   name: 'Networks',
@@ -99,6 +100,7 @@ export default {
       INPUT_TYPES,
       SIZE_VARIANS,
       MAINNET,
+      TESTNET,
 
       http: {
         model: ZILLIQA[MAINNET].PROVIDER,

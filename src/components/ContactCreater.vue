@@ -89,7 +89,7 @@ export default {
       return this.local.CREATE
     },
     placeholderAddress() {
-      return `${this.local.SELECT} ${this.local.PUBLIC} ${this.local.ADDRESS} (zil1), ${this.local.OR} ZNS`
+      return this.local.INPUT_ZIL_ZNS
     },
     placeholderName() {
       return `${this.local.SELECT} ${this.local.NAME}.`

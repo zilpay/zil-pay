@@ -26,6 +26,7 @@
       "If you need to back up your secret phrase again, you can find it in Security",
       "If you ever have a question or see something fishy, contact us."
     ],
+    "INPUT_ZIL_ZNS": "Enter public address (zil1) or .zil domain name",
     "COPY": "Copy",
     "FEE": "Fee",
     "GAS_LIMIT": "Gas Limit",
