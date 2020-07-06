@@ -55,7 +55,7 @@ const STORE = {
       state[STATE_NAMES.sendModal].step = 0
 
       if (!state[STATE_NAMES.sendModal].show) {
-        state[STATE_NAMES.sendModal].payload = {}
+        state[STATE_NAMES.sendModal].payload = { address: '' }
       }
     },
     [MUTATIONS_NAMES.setShowReceiveModal](state) {
