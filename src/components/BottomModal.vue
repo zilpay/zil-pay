@@ -1,5 +1,5 @@
 <template>
-  <div :class="b()">
+  <div :class="b({ pure })">
     <aside
       v-show="value"
       :class="b('social')"
@@ -32,6 +32,10 @@ export default {
     value: {
       type: Boolean,
       default: true
+    },
+    pure: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -94,6 +98,24 @@ export default {
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
 
     opacity: 0.5;
+  }
+
+  &_pure {
+    & > .BottomModal__social {
+      z-index: 10;
+
+      top: 30%;
+      bottom: inherit;
+      left: 10px;
+      right: 10px;
+
+      background-color: var(--accent-color-second);
+
+      border-radius: var(--default-border-radius);
+
+      animation: fadeInUp 0.4s;
+      animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+    }
   }
 }
 </style>
