@@ -48,6 +48,10 @@ export default {
 
 <style lang="scss">
 .BottomModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &__social,
   &__close {
     position: fixed;
@@ -61,8 +65,10 @@ export default {
 
     top: 30%;
     bottom: inherit;
-    left: 30%;
-    right: 30%;
+    left: auto;
+    right: auto;
+
+    min-width: 500px;
 
     background-color: var(--accent-color-second);
 
@@ -76,6 +82,8 @@ export default {
       left: 0;
       right: 0;
       top: auto;
+
+      min-width: 300px;
 
       border-radius: 0;
 
@@ -106,8 +114,6 @@ export default {
 
       top: 30%;
       bottom: inherit;
-      left: 10px;
-      right: 10px;
 
       background-color: var(--accent-color-second);
 

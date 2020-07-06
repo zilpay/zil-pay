@@ -11,6 +11,7 @@
       :error="password.error"
       round
       required
+      autofocus
       @input="password.error = null"
     />
     <Button
@@ -140,6 +141,8 @@ export default {
   padding-bottom: 20px;
   padding-top: 20px;
 
+  min-height: 100px;
+
   &__warn {
     display: flex;
     align-items: center;
@@ -147,6 +150,14 @@ export default {
     & > .P {
       margin-left: 5px;
     }
+  }
+
+  & > .Input {
+    width: 90%;
+  }
+
+  & > .Button {
+    width: 100px;
   }
 
   & > .Textarea > textarea {

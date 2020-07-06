@@ -24,14 +24,20 @@
         {{ local.REVEAL_PHRASE }}
       </Button>
     </div>
-    <BottomModal v-model="modals.key">
+    <BottomModal
+      v-model="modals.key"
+      pure
+    >
       <BackModal
         v-if="local.REVEAL_KEY"
         :name="local.REVEAL_KEY"
       />
       <SecureModal modalType="0"/>
     </BottomModal>
-    <BottomModal v-model="modals.seed">
+    <BottomModal
+      v-model="modals.seed"
+      pure
+    >
       <BackModal
         v-if="local.REVEAL_PHRASE"
         :name="local.REVEAL_PHRASE"
@@ -123,6 +129,10 @@ export default {
       min-height: 46px;
       font-size: 18px;
     }
+  }
+
+  & > .BottomModal > .BottomModal__social {
+    margin: 10px;
   }
 }
 </style>
