@@ -12,18 +12,24 @@
       <Button
         :color="COLOR_VARIANTS.negative"
         round
-        @click="onExportPrivateKey"
+        @click="modals.key = true"
       >
         {{ local.REVEAL_KEY }}
       </Button>
       <Button
         :color="COLOR_VARIANTS.negative"
         round
-        @click="onExportPhrase"
+        @click="modals.seed = true"
       >
         {{ local.REVEAL_PHRASE }}
       </Button>
     </div>
+    <BottomModal v-model="modals.key">
+      <PrivateKeyModal />
+    </BottomModal>
+    <BottomModal v-model="modals.seed">
+      <PhraseModal />
+    </BottomModal>
   </div>
 </template>
 
@@ -35,9 +41,10 @@ import uiStore from '@/store/ui'
 import { COLOR_VARIANTS } from '@/config'
 import { DEFAULT } from 'config'
 
-import ExportPage from '@/pages/accounts/Export'
-
 import TopBar from '@/components/TopBar'
+import BottomModal from '@/components/BottomModal'
+import PrivateKeyModal from '@/views/PrivateKeyModal'
+import PhraseModal from '@/views/PhraseModal'
 import RadioGroup from '@/components/RadioGroup'
 import Button from '@/components/Button'
 
@@ -46,12 +53,20 @@ export default {
   components: {
     TopBar,
     RadioGroup,
-    Button
+    Button,
+    PrivateKeyModal,
+    BottomModal,
+    PhraseModal
   },
   data() {
     return {
       COLOR_VARIANTS,
-      DEFAULT
+      DEFAULT,
+
+      modals: {
+        key: false,
+        seed: false
+      }
     }
   },
   computed: {
@@ -73,22 +88,6 @@ export default {
 
     onDefault() {
       this.setLockTime(DEFAULT.TIME_BEFORE_LOCK)
-    },
-    onExportPrivateKey() {
-      this.$router.push({
-        name: ExportPage.name,
-        query: {
-          type: 0
-        }
-      })
-    },
-    onExportPhrase() {
-      this.$router.push({
-        name: ExportPage.name,
-        query: {
-          type: 1
-        }
-      })
     }
   }
 }
