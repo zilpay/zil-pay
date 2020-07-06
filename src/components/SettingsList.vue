@@ -14,14 +14,6 @@
         {{ local.SETTINGS }}
       </Title>
       <ul :class="b('list')">
-        <li :class="b('item')">
-          <a @click="onProfile">
-            <SvgInject :variant="ICON_VARIANTS.profile"/>
-            <P :size="SIZE_VARIANS.sm">
-              {{ local.ACCOUNT }}
-            </P>
-          </a>
-        </li>
         <li
           v-for="(link, index) of LINK_LIST"
           :key="index"
@@ -44,9 +36,8 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
-import modalStore from '@/store/modal'
 
 import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
 
@@ -115,18 +106,9 @@ export default {
     ])
   },
   methods: {
-    ...mapMutations(modalStore.STORE_NAME, [
-      modalStore.MUTATIONS_NAMES.setShowAccountModal
-    ]),
-
     onClose() {
       this.$emit(EVENTS.close)
       this.$emit(EVENTS.input, false)
-    },
-    onProfile() {
-      this.$emit(EVENTS.close)
-      this.$emit(EVENTS.input, false)
-      this.setShowAccountModal()
     }
   }
 }
