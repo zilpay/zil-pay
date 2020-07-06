@@ -1,12 +1,12 @@
 <template>
   <div
-    v-show="value"
+    v-show="show"
     :class="b()"
   >
     <div :class="b('wrapper')">
       <div
         :class="b('clsoe-btn')"
-        @click="onClose"
+        @click="toggleSideBarSettings"
       >
         <SvgInject :variant="ICON_VARIANTS.close"/>
       </div>
@@ -30,16 +30,19 @@
     </div>
     <a
       :class="b('close-wrapper')"
-      @click="onClose"
+      @click="toggleSideBarSettings"
     />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
+import modalStore from '@/store/modal'
 
-import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
+import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
+
+import HomePage from '@/pages/Home'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -86,12 +89,6 @@ export default {
     SvgInject,
     P
   },
-  props: {
-    value: {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     return {
       SIZE_VARIANS,
@@ -103,13 +100,21 @@ export default {
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
-    ])
+    ]),
+    ...mapState(modalStore.STORE_NAME, [
+      modalStore.STATE_NAMES.sideBarSettings
+    ]),
+
+    show() {
+      const { name } = this.$route
+
+      return Boolean(this.sideBarSettings) && Boolean(name === HomePage.name)
+    }
   },
   methods: {
-    onClose() {
-      this.$emit(EVENTS.close)
-      this.$emit(EVENTS.input, false)
-    }
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.toggleSideBarSettings
+    ])
   }
 }
 </script>

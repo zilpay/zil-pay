@@ -23,6 +23,7 @@
       >
         <Account />
       </BottomModal>
+      <SettingsList v-model="sideBarSettings"/>
     </footer>
   </div>
 </template>
@@ -41,6 +42,7 @@ import tokensStore from '@/store/token'
 import transactionsStore from '@/store/transactions'
 
 import BottomModal from '@/components/BottomModal'
+import SettingsList from '@/components/SettingsList'
 
 import Receive from '@/views/Receive'
 import Account from '@/views/Account'
@@ -59,7 +61,8 @@ export default {
     BottomModal,
     Receive,
     Send,
-    Account
+    Account,
+    SettingsList
   },
   computed: {
     ...mapState(transactionsStore.STORE_NAME, [
@@ -71,6 +74,7 @@ export default {
     ...mapState(modalStore.STORE_NAME, [
       modalStore.STATE_NAMES.sendModal,
       modalStore.STATE_NAMES.receiveModal,
+      modalStore.STATE_NAMES.sideBarSettings,
       modalStore.STATE_NAMES.accountModal
     ])
   },

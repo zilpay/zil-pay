@@ -10,7 +10,8 @@ const STORE_NAME = 'modal'
 const STATE_NAMES = {
   sendModal: 'sendModal',
   receiveModal: 'receiveModal',
-  accountModal: 'accountModal'
+  accountModal: 'accountModal',
+  sideBarSettings: 'sideBarSettings'
 }
 const MUTATIONS_NAMES = {
   setShowSendModal: 'setShowSendModal',
@@ -21,7 +22,9 @@ const MUTATIONS_NAMES = {
   setPreviousStep: 'setPreviousStep',
   setNumberStep: 'setNumberStep',
 
-  setSendModalPayload: 'setSendModalPayload'
+  setSendModalPayload: 'setSendModalPayload',
+
+  toggleSideBarSettings: 'toggleSideBarSettings'
 }
 const ACTIONS_NAMES = {
 }
@@ -29,6 +32,7 @@ const GETTERS_NAMES = {}
 const STORE = {
   namespaced: true,
   state: {
+    [STATE_NAMES.sideBarSettings]: false,
     [STATE_NAMES.sendModal]: {
       step: 0,
       show: false,
@@ -48,6 +52,9 @@ const STORE = {
     }
   },
   mutations: {
+    [MUTATIONS_NAMES.toggleSideBarSettings](state) {
+      state[STATE_NAMES.sideBarSettings] = !state[STATE_NAMES.sideBarSettings]
+    },
     [MUTATIONS_NAMES.setShowSendModal](state) {
       state[STATE_NAMES.receiveModal].show = false
       state[STATE_NAMES.accountModal].show = false

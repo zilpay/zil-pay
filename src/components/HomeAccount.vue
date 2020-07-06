@@ -4,7 +4,7 @@
     :class="b()"
   >
     <div :class="b('header')">
-      <div @click="onBurgerMenu">
+      <div @click="toggleSideBarSettings">
         <SvgInject :variant="ICON_VARIANTS.burger"/>
       </div>
       <div
@@ -62,13 +62,13 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 import walletStore from '@/store/wallet'
+import modalStore from '@/store/modal'
 
 import {
   ICON_VARIANTS,
   COLOR_VARIANTS,
   SIZE_VARIANS,
-  FONT_VARIANTS,
-  EVENTS
+  FONT_VARIANTS
 } from '@/config'
 
 import Accounts from '@/pages/Accounts'
@@ -136,6 +136,9 @@ export default {
     ...mapActions(walletStore.STORE_NAME, [
       walletStore.ACTIONS_NAMES.checkProvider
     ]),
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.toggleSideBarSettings
+    ]),
 
     async onRefresh() {
       this.setLoad()
@@ -148,9 +151,6 @@ export default {
       } finally {
         this.setLoad()
       }
-    },
-    onBurgerMenu() {
-      this.$emit(EVENTS.click)
     },
     setJazzicon(address) {
       this.jazziconCreate('jazzicon', address)

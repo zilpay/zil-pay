@@ -2,12 +2,10 @@
   <div :class="b()">
     <Top />
     <div :class="b('wrapper')">
-      <SettingsList v-model="settingsModal"/>
       <div :class="b('main')">
         <HomeAccount
           v-if="identities && identities.length > 0"
           :class="b('account')"
-          @click="settingsModal = true"
         />
         <Transactions :class="b('txns')"/>
         <Tabs
@@ -40,7 +38,6 @@ import Transactions from '@/components/Transactions'
 import Top from '@/components/Top'
 import HomeAccount from '@/components/HomeAccount'
 import Tabs from '@/components/Tabs'
-import SettingsList from '@/components/SettingsList'
 
 const EVENTS = {
   receive: uuid(),
@@ -53,17 +50,14 @@ export default {
     Top,
     HomeAccount,
     Transactions,
-    Tabs,
-    SettingsList
+    Tabs
   },
   data() {
     return {
       ICON_TYPE,
       ICON_VARIANTS,
       COLOR_VARIANTS,
-      SIZE_VARIANS,
-
-      settingsModal: false
+      SIZE_VARIANS
     }
   },
   computed: {
