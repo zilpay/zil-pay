@@ -35,6 +35,7 @@
     </div>
     <BottomModal v-model="info">
       <BackModal
+        v-if="getCurrentAccount && selectedTx"
         :name="local.TRANSACTION"
         @click="info = false"
       />

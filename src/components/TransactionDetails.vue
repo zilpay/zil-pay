@@ -1,5 +1,22 @@
 <template>
   <div :class="b()">
+    <div :class="b('to-from')">
+      <P
+        :content="account.address | toAddress(addressFormat, false)"
+        copy
+        @copy="onCopyMixin"
+      >
+        {{ account.address | toAddress(addressFormat) }}
+      </P>
+      <SvgInject :variant="ICON_VARIANTS.arrow" />
+      <P
+        :content="transaction.toAddr | toAddress(addressFormat, false)"
+        copy
+        @copy="onCopyMixin"
+      >
+        {{ transaction.toAddr | toAddress(addressFormat) }}
+      </P>
+    </div>
     <ul>
       <li
         v-for="(el) of infoList"
@@ -33,10 +50,11 @@
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 
-import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
+import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE, ICON_VARIANTS } from '@/config'
 
 import P from '@/components/P'
 import ViewblockLink from '@/components/ViewblockLink'
+import SvgInject from '@/components/SvgInject'
 
 import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
@@ -54,7 +72,8 @@ export default {
   name: 'TransactionDetails',
   components: {
     P,
-    ViewblockLink
+    ViewblockLink,
+    SvgInject
   },
   mixins: [CopyMixin],
   filters: { toAddress },
@@ -72,6 +91,7 @@ export default {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
+      ICON_VARIANTS,
       ICON_TYPE
     }
   },
@@ -101,9 +121,6 @@ export default {
         }
       ]
     }
-  },
-  mounted() {
-    console.log(this.transaction)
   }
 }
 </script>
@@ -118,8 +135,21 @@ export default {
   width: 100%;
   min-height: 200px;
 
+  &__to-from {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    min-width: 300px;
+
+    & > svg {
+      transform: rotate(180deg);
+    }
+  }
+
   & > ul {
     width: 95%;
+    max-width: 400px;
 
     padding: 10px;
     list-style: none;
