@@ -30,7 +30,6 @@
         </Title>
       </div>
       <P
-        v-tooltip="copytitle"
         :class="b('address')"
         :size="SIZE_VARIANS.xs"
         :variant="COLOR_VARIANTS.gray"
