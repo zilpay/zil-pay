@@ -354,7 +354,8 @@ export default {
         gasLimit,
         gasPrice,
         this.getSelectedToken.balance,
-        this.getSelectedToken.decimals
+        this.getSelectedToken.decimals,
+        this.getSelectedToken.symbol
       ).toString()
     }
   }

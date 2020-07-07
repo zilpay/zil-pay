@@ -16,7 +16,7 @@ import { fromZil } from '@/filters'
 const DEFAULT_ICON = '/icons/icon128.png'
 const _li = Big(10 ** 6)
 
-function gasFee(gasPrice, gasLimit) {
+export function gasFee(gasPrice, gasLimit) {
   const _gasPrice = Big(gasPrice).round()
   const _gasLimit = Big(gasLimit).round()
   const _fee = _gasLimit.mul(_gasPrice)
@@ -55,7 +55,7 @@ export default {
         return true
       }
     },
-    calcIsInsufficientFundsUint(amount, gasLimit, gasPrice, balance, symbol, decimals) {
+    calcIsInsufficientFundsUint(amount, gasLimit, gasPrice, balance, symbol) {
       try {
         let _fee = Big(0)
 
