@@ -23,7 +23,7 @@ export function gasFee(gasPrice, gasLimit) {
   const fee = _fee.div(_li)
 
   return {
-    _fee,
+    _fee: _fee.mul(_li),
     fee
   }
 }
