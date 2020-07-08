@@ -7,12 +7,6 @@
     />
     <div :class="b('wrapper')">
       <P
-        :font="FONT_VARIANTS.light"
-        :variant="COLOR_VARIANTS.primary"
-      >
-        {{ local.DEPOSIT }} $ZIL
-      </P>
-      <P
         :class="b('des')"
         :font="FONT_VARIANTS.regular"
       >
@@ -172,7 +166,7 @@ export default {
     align-items: center;
     justify-content: space-evenly;
 
-    min-height: 330px;
+    min-height: 240px;
 
     padding-left: 20px;
     padding-right: 20px;
