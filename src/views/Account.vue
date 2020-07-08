@@ -32,7 +32,7 @@
           copy
           @copy="onCopyMixin"
         >
-          {{ getCurrentAccount.address | toAddress(addressFormat, true) }}
+          {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
         </P>
         <SvgInject :variant="ICON_VARIANTS.copy"/>
       </div>
