@@ -4,7 +4,7 @@ import { toChecksumAddress } from '@zilliqa-js/crypto/dist/util'
 
 import { ADDRESS_FORMAT_VARIANTS } from '@/config'
 
-export function trim(string, length = 10) {
+export function trim(string, length = 8) {
   if (!string) {
     return null
   }

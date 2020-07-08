@@ -29,7 +29,13 @@
         v-if="!getCurrent.icon"
         :icon="ICON_VARIANTS.zilliqaLogo"
       />
+      <GasSelecter
+        v-if="!getCurrent.uuid"
+        :value="DEFAULT_GAS_FEE"
+        @input="setCurrentGas"
+      />
       <GasControl
+        v-else
         :value="getCurrentGas"
         :DEFAULT="DEFAULT_GAS_FEE"
         @input="setCurrentGas"
@@ -55,7 +61,7 @@
           :font="FONT_VARIANTS.bold"
           :size="SIZE_VARIANS.sm"
         >
-          tods
+          {{ local.SEND }} {{ local.TO }} DS
         </P>
         <SwitchBox
           :value="getCurrent.priority"
@@ -127,6 +133,7 @@ import Icon from '@/components/Icon'
 import GasControl from '@/components/GasControl'
 import SwitchBox from '@/components/SwitchBox'
 import Tabs from '@/components/Tabs'
+import GasSelecter from '@/components/GasSelecter'
 
 import TxDataPage from '@/pages/popup/TxData'
 import HomePage from '@/pages/Home'
@@ -146,6 +153,7 @@ export default {
     Alert,
     Title,
     P,
+    GasSelecter,
     Icon,
     GasControl,
     SwitchBox,
@@ -217,8 +225,6 @@ export default {
       }
 
       const { gasLimit, gasPrice } = this.getCurrentGas
-
-      console.log(this.balance, this.symbol, this.decimals)
 
       return this.calcIsInsufficientFundsUint(
         this.getCurrent.amount,
@@ -420,6 +426,8 @@ export default {
   &__wrapper {
     margin-top: 30px;
     margin-bottom: 30px;
+
+    min-width: 200px;
   }
 
   &__details {
