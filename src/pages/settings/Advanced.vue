@@ -8,9 +8,8 @@
       {{ local.RESET }}
     </P>
     <div :class="b('wrapper')">
-      <GasControl
-        :value="defaultGas"
-        :DEFAULT="DEFAULT_GAS_FEE"
+      <GasSelector
+        :value="DEFAULT_GAS_FEE"
         @input="setGas"
       />
       <RadioGroup
@@ -33,7 +32,7 @@ import uiStore from '@/store/ui'
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
 
 import TopBar from '@/components/TopBar'
-import GasControl from '@/components/GasControl'
+import GasSelector from '@/components/GasSelecter'
 import RadioGroup from '@/components/RadioGroup'
 import P from '@/components/P'
 
@@ -41,7 +40,7 @@ export default {
   name: 'Advanced',
   components: {
     TopBar,
-    GasControl,
+    GasSelector,
     RadioGroup,
     P
   },
@@ -95,7 +94,6 @@ export default {
     flex-direction: column;
     justify-content: space-between;
 
-    min-height: 300px;
     margin-top: 40px;
 
     & > .RadioGroup {
