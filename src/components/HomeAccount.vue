@@ -34,7 +34,7 @@
         :variant="COLOR_VARIANTS.primary"
       >
         <span v-if="getSelectedToken">
-          {{ getSelectedToken.balance | fromZil(getSelectedToken.decimals) }} {{ getSelectedToken.symbol }}
+          {{ balance | fromZil(getSelectedToken.decimals) }} {{ getSelectedToken.symbol }}
         </span>
         <div
           class="pointer"
@@ -49,13 +49,15 @@
         :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.light"
       >
-        {{ getSelectedToken.balance | toConversion(getRate, getSelectedToken.decimals) }} {{ currency }}
+        {{ balance | toConversion(getRate, getSelectedToken.decimals) }} {{ currency }}
       </P>
     </div>
   </div>
 </template>
 
 <script>
+import { DEFAULT_TOKEN } from 'config'
+
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
@@ -119,7 +121,15 @@ export default {
     ]),
     ...mapGetters(tokenStore.STORE_NAME, [
       tokenStore.GETTERS_NAMES.getSelectedToken
-    ])
+    ]),
+
+    balance() {
+      if (this.getSelectedToken.symbol === DEFAULT_TOKEN.symbol) {
+        return this.getCurrentAccount.balance
+      }
+
+      return this.getSelectedToken.balance
+    }
   },
   methods: {
     toAddress,

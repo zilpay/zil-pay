@@ -145,27 +145,9 @@ export default {
     ]),
     ...mapGetters(tokenStore.STORE_NAME, [
       tokenStore.GETTERS_NAMES.getSelectedToken
-    ]),
-
-    watermarkIcon() {
-      if (this.account.hwType === this.HW_VARIANTS.ledger) {
-        return this.ICON_VARIANTS.ledgerWatermark
-      }
-
-      return this.ICON_VARIANTS.zilliqaWatermark
-    }
+    ])
   },
   mounted() {
-    [
-      'address',
-      'balance',
-      'index'
-    ].forEach(key => {
-      if (!(key in this.account)) {
-        throw new Error(`Property ${key} is required.`)
-      }
-    })
-
     this.jazziconCreate(
       this.account.address,
       this.account.address

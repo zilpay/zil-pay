@@ -205,10 +205,11 @@ export class Wallet {
 
     try {
       const { address } = wallet.identities[wallet.selectedAddress]
+      const { balance } = await zilliqa.getBalance(address)
+
+      wallet.identities[wallet.selectedAddress].balance = balance
 
       if (selectedcoin === DEFAULT_TOKEN.symbol) {
-        const { balance } = await zilliqa.getBalance(address)
-
         tokens[foundIndex].balance = balance
       } else {
         const { proxy_address } = tokens[foundIndex]
@@ -216,7 +217,10 @@ export class Wallet {
         tokens[foundIndex].balance = await zilliqa.getZRCBalance(proxy_address, account)
       }
 
-      await storage.set(new BuildObject(FIELDS.TOKENS, tokens))
+      await storage.set([
+        new BuildObject(FIELDS.TOKENS, tokens),
+        new BuildObject(FIELDS.WALLET, wallet)
+      ])
 
       sendResponse({ resolve: tokens })
     } catch (err) {

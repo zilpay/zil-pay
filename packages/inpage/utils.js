@@ -9,6 +9,7 @@
 import { CryptoUtils } from './crypto'
 
 const { document, window } = global
+const utils = new CryptoUtils()
 
 /**
  * Get the favicon from current tab.
@@ -48,7 +49,7 @@ export function getFavicon() {
  */
 export function toAccountFormat(address) {
   return {
-    base16: new CryptoUtils().toChecksumAddress(address),
-    bech32: new CryptoUtils().toBech32Address(address)
+    base16: utils.toChecksumAddress(address),
+    bech32: utils.toBech32Address(address)
   }
 }
