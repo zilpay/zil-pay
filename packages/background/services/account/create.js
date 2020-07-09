@@ -168,6 +168,8 @@ export class AccountControl {
   }
 
   async isConnection(domain) {
+    await this.auth.vaultSync()
+
     if (domain === 'zilpay.xyz') {
       return true
     }
