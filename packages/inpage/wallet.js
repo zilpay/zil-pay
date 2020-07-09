@@ -284,10 +284,6 @@ export default class Wallet {
     const icon = getFavicon()
     const payload = { title, domain, icon, uuid }
 
-    if (this.isConnect) {
-      return Promise.resolve(this.isConnect)
-    }
-
     new SecureMessage({ type, payload }).send(_stream, recipient)
 
     const confirmPayload = await from(_subject).pipe(
