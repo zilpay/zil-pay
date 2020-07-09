@@ -29,17 +29,21 @@
         v-if="!getCurrent.icon"
         :icon="ICON_VARIANTS.zilliqaLogo"
       />
-      <GasSelecter
-        v-if="!getCurrent.uuid"
-        :value="getCurrentGas"
-        @input="setCurrentGas"
-      />
-      <GasControl
-        v-else
-        :value="getCurrentGas"
-        :DEFAULT="DEFAULT_GAS_FEE"
-        @input="setCurrentGas"
-      />
+      <div>
+        <GasSelecter
+          :value="getCurrentGas"
+          @input="setCurrentGas"
+        />
+        <router-link :to="{ name: LINKS.gasAdvanced }">
+          <P
+            :variant="COLOR_VARIANTS.primary"
+            capitalize
+            right
+          >
+            {{ local.ADVANCED }}
+          </P>
+        </router-link>
+      </div>
       <div :class="b('item')">
         <P
           :font="FONT_VARIANTS.bold"
@@ -130,12 +134,12 @@ import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Icon from '@/components/Icon'
-import GasControl from '@/components/GasControl'
 import SwitchBox from '@/components/SwitchBox'
 import Tabs from '@/components/Tabs'
 import GasSelecter from '@/components/GasSelecter'
 
 import TxDataPage from '@/pages/popup/TxData'
+import GasAdvanced from '@/pages/popup/GasAdvanced'
 import HomePage from '@/pages/Home'
 import SignMessage from '@/pages/SignMessage'
 
@@ -155,7 +159,6 @@ export default {
     P,
     GasSelecter,
     Icon,
-    GasControl,
     SwitchBox,
     Tabs
   },
@@ -170,7 +173,8 @@ export default {
       ICON_VARIANTS,
       DEFAULT_TOKEN,
       LINKS: {
-        detail: TxDataPage.name
+        detail: TxDataPage.name,
+        gasAdvanced: GasAdvanced.name
       },
 
       error: null,

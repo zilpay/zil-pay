@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div :class="b()"></div>
 </template>
 
 <script>

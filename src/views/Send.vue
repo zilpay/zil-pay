@@ -440,7 +440,7 @@ export default {
     line-height: 23px;
 
     box-shadow: none;
-    color: var(--accent-color-gray);
+    color: var(--theme-negative);
 
     -moz-appearance: textfield;
   }
