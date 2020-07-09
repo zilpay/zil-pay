@@ -26,16 +26,11 @@
         height="200"
         width="200"
       />
-      <div :class="b('copy')">
-        <P
-          :content="getCurrentAccount.address | toAddress(addressFormat, false)"
-          copy
-          @copy="onCopyMixin"
-        >
-          {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
-        </P>
-        <SvgInject :variant="ICON_VARIANTS.copy"/>
-      </div>
+      <input
+        :class="b('copy')"
+        :value="getCurrentAccount.address | toAddress(addressFormat, false)"
+        readonly
+      >
       <ViewblockLink :address="getCurrentAccount.address" />
     </div>
   </div>
@@ -58,8 +53,6 @@ import {
 } from '@/config'
 
 import Title from '@/components/Title'
-import SvgInject from '@/components/SvgInject'
-import P from '@/components/P'
 import Icon from '@/components/Icon'
 import BackModal from '@/components/BackModal'
 import ViewblockLink from '@/components/ViewblockLink'
@@ -74,9 +67,7 @@ export default {
   filters: { toAddress },
   components: {
     Title,
-    P,
     Icon,
-    SvgInject,
     BackModal,
     ViewblockLink
   },
@@ -167,12 +158,14 @@ export default {
   }
 
   &__copy {
-    display: flex;
-    align-items: center;
+    width: 200px;
+    padding: 5px;
+    border: 0;
 
-    & > svg {
-      margin-left: 5px;
-    }
+    border-radius: var(--default-border-radius);
+    background: transparent;
+    color: var(--accent-color-gray);
+    border: 1px solid var(--accent-color-gray);
   }
 }
 </style>

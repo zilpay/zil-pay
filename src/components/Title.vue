@@ -9,6 +9,7 @@
       :value="value"
       :class="b('input', { variant, font, size })"
       type="text"
+      readonly
       @change="onInput"
     >
     <slot v-if="!changeable"/>
@@ -83,6 +84,10 @@ export default {
     outline: none;
     margin: 0;
     padding: 0;
+
+    border-radius: var(--default-border-radius);
+    border: 1px solid var(--accent-color-primary);
+    max-width: 150px;
   }
 
   &_font-medium,
