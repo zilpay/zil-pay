@@ -230,8 +230,9 @@ export class Wallet {
    */
   async connectToDapp(sendResponse) {
     const isConnect = await accountControl.isConnection(this.payload.domain)
+    const { isEnable } = accountControl.auth
 
-    if (isConnect) {
+    if (isConnect && isEnable) {
       const storage = new BrowserStorage()
       const wallet = await storage.get(FIELDS.WALLET)
       const account = wallet.identities[wallet.selectedAddress]
