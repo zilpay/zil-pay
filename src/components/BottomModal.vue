@@ -65,8 +65,8 @@ export default {
 
     top: 30%;
     bottom: inherit;
-    left: auto;
-    right: auto;
+    left: 30%;
+    right: 30%;
 
     min-width: 500px;
 
