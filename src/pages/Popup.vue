@@ -31,7 +31,7 @@
       />
       <GasSelecter
         v-if="!getCurrent.uuid"
-        :value="DEFAULT_GAS_FEE"
+        :value="getCurrentGas"
         @input="setCurrentGas"
       />
       <GasControl

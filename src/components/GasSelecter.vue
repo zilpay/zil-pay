@@ -3,7 +3,7 @@
     <li
       v-for="(el, index) of items"
       :key="index"
-      :class="b('i', { selected: index + 1 === selected })"
+      :class="b('i', { selected: el.selected })"
       @click="onGaschanged(index)"
     >
       <P>
@@ -21,7 +21,7 @@ import Big from 'big.js'
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { DEFAULT_TOKEN } from 'config'
+import { DEFAULT_TOKEN, DEFAULT_GAS_FEE } from 'config'
 import { EVENTS } from '@/config'
 
 import P from '@/components/P'
@@ -54,28 +54,31 @@ export default {
     ]),
 
     items() {
-      const { gasLimit, gasPrice } = this.value
-      const { _fee } = gasFee(gasPrice, gasLimit)
+      const { gasPrice } = this.value
+      const { _fee } = gasFee(DEFAULT_GAS_FEE.gasPrice, DEFAULT_GAS_FEE.gasLimit)
 
       return [
         {
           name: this.local.SLOW,
-          value: _fee
+          value: _fee,
+          selected: Number(gasPrice) === Number(DEFAULT_GAS_FEE.gasPrice)
         },
         {
           name: this.local.AVERAGE,
-          value: _fee.mul(2)
+          value: _fee.mul(2),
+          selected: Number(gasPrice) === (Number(DEFAULT_GAS_FEE.gasPrice) * 2)
         },
         {
           name: this.local.FAST,
-          value: _fee.mul(3)
+          value: _fee.mul(3),
+          selected: Number(gasPrice) >= (Number(DEFAULT_GAS_FEE.gasPrice) * 3)
         }
       ]
     }
   },
   methods: {
     onGaschanged(index) {
-      const { gasLimit, gasPrice } = this.value
+      const { gasLimit, gasPrice } = DEFAULT_GAS_FEE
 
       this.selected = index + 1
       this.$emit(EVENTS.input, {

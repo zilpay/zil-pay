@@ -9,7 +9,7 @@
     </P>
     <div :class="b('wrapper')">
       <GasSelector
-        :value="DEFAULT_GAS_FEE"
+        :value="defaultGas"
         @input="setGas"
       />
       <RadioGroup
