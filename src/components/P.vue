@@ -6,6 +6,7 @@
       pointer,
       size,
       copy,
+      right,
       nowrap,
       capitalize,
       uppercase,
@@ -65,6 +66,10 @@ export default {
       required: false
     },
     left: {
+      type: Boolean,
+      required: false
+    },
+    right: {
       type: Boolean,
       required: false
     },
@@ -129,6 +134,10 @@ export default {
 
   &_left {
     text-align: left;
+  }
+
+  &_right {
+    text-align: right;
   }
 
   &_size-xs {
