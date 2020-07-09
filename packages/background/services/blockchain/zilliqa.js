@@ -398,6 +398,7 @@ export class ZilliqaControl {
       toAddr: toChecksumAddress(tx.toAddr),
       nonce: tx.nonce,
       block: tx.block,
+      timestamp: new Date().getTime(),
       decimals: tx.decimals,
       symbol: tx.symbol
     }

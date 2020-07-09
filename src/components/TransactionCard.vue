@@ -29,7 +29,7 @@
           :variant="COLOR_VARIANTS.gray"
           :font="FONT_VARIANTS.regular"
         >
-          {{ this.local.EPOCH }}: {{ transaction.block}}
+          {{ timeStamp }}
         </P>
         <P
           :class="b('amount')"
@@ -150,25 +150,19 @@ export default {
       }
 
       return ICON_VARIANTS.statusSuccess
+    },
+    timeStamp() {
+      if (!this.transaction.timestamp) {
+        return `${this.local.EPOCH} ${this.transaction.block}`
+      }
+
+      return new Date(this.transaction.timestamp).toDateString()
     }
   },
   methods: {
     onClick() {
       this.$emit(EVENTS.click)
     }
-  },
-  mounted() {
-    [
-      'Info',
-      'TranID',
-      'amount',
-      'nonce',
-      'toAddr'
-    ].forEach(key => {
-      if (!(key in this.transaction)) {
-        throw new Error(`${key} is required.`)
-      }
-    })
   }
 }
 </script>
