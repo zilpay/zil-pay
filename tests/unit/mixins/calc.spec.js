@@ -8,9 +8,7 @@
  */
 // import Big from 'big.js'
 import CalcMixin from 'src/mixins/calc'
-import { DEFAULT_TOKEN } from 'config'
-
-console.log(CalcMixin, DEFAULT_TOKEN)
+// import { DEFAULT_TOKEN } from 'config'
 
 const { methods } = CalcMixin
 
