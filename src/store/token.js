@@ -138,8 +138,14 @@ const STORE = {
 
       return foundToken
     },
-    [GETTERS_NAMES.getDefaultToken]() {
-      return DEFAULT_TOKEN
+    [GETTERS_NAMES.getDefaultToken](state, _, rootState) {
+      const { identities, selectedAddress } = rootState.accounts
+      const currentAccount = identities[selectedAddress]
+
+      return {
+        ...DEFAULT_TOKEN,
+        balance: currentAccount.balance
+      }
     },
     [GETTERS_NAMES.getTokenList](state, _, rootState) {
       const { tokens } = state

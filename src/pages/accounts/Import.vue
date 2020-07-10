@@ -36,10 +36,7 @@
           >
         </li>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[2]">
-            <P
-              :class="b('info-title')"
-              capitalize
-            >
+            <P capitalize>
               {{ local.IMPORT_HW }}
             </P>
             <Input
@@ -66,7 +63,7 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 
-import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
+import { SIZE_VARIANS, COLOR_VARIANTS, FONT_VARIANTS } from '@/config'
 
 import homePage from '@/pages/Home'
 
@@ -101,6 +98,7 @@ export default {
       RADIO_ELEMENTS,
       INPUT_TYPES,
       COLOR_VARIANTS,
+      FONT_VARIANTS,
 
       radioGroup: {
         elements: RADIO_ELEMENTS,
@@ -284,6 +282,14 @@ export default {
 
       & > li {
         min-width: 290px;
+
+        & > .P {
+          margin-bottom: 10px;
+        }
+
+        & > input[type="file"] {
+          margin-top: 10px;
+        }
       }
     }
 
