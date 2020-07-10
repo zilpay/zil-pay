@@ -55,22 +55,22 @@ const STORE = {
   },
   actions: {
     async [ACTIONS_NAMES.onUpdateTokensStore]({ commit, state }) {
-      const data = await getTokens()
+      const items = await getTokens()
       const tokens = state[STATE_NAMES.tokens]
 
-      if (!data) {
+      if (!items || !items.tokens || items.tokens.length === 0) {
         return null
       }
 
       for (let index = 0; index < keys.length; index++) {
         const key = keys[index]
-        tokens[key] = [DEFAULT_TOKEN].concat(data[STATE_NAMES.tokens][key])
+        tokens[key] = [DEFAULT_TOKEN].concat(items[STATE_NAMES.tokens][key])
       }
 
       commit(MUTATIONS_NAMES.setTokens, tokens)
-      commit(MUTATIONS_NAMES.setSelectedCoin, data[STATE_NAMES.selectedcoin])
+      commit(MUTATIONS_NAMES.setSelectedCoin, items[STATE_NAMES.selectedcoin])
 
-      return data
+      return items
     },
     async [ACTIONS_NAMES.onAddToken]({ commit, state }, address) {
       const bg = new Background()
@@ -96,6 +96,10 @@ const STORE = {
       const bg = new Background()
       const tokensState = state[STATE_NAMES.tokens]
       const { tokens, wallet } = await bg.balanceUpdate()
+
+      if (!tokens || tokens.length === 0) {
+        return null
+      }
 
       for (let index = 0; index < keys.length; index++) {
         const key = keys[index]

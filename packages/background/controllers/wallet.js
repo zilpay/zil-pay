@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT_TOKEN } from 'config'
+import { FIELDS } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { TabsMessage, MTypeTab } from 'lib/stream'
@@ -19,6 +19,8 @@ import {
 import { accountControl, networkControl } from './main'
 import { Transaction } from './transaction'
 import { ERROR_MSGS } from 'packages/background/errors'
+
+const { Promise } = global
 
 /**
  * wallet controler for import and export.
@@ -191,14 +193,11 @@ export class Wallet {
 
     const storage = new BrowserStorage()
     const zilliqa = new ZilliqaControl(networkControl.provider)
-    let { wallet, selectedcoin, tokens } = await storage.get([
+    let { wallet, tokens } = await storage.get([
       FIELDS.WALLET,
       FIELDS.SELECTED_COIN,
       FIELDS.TOKENS
     ])
-    let foundIndex = tokens[networkControl.selected].findIndex(
-      (t) => t.symbol === selectedcoin
-    )
     const account = wallet.identities[wallet.selectedAddress]
 
     if (!wallet || !wallet.identities || wallet.identities.length === 0) {
@@ -208,19 +207,25 @@ export class Wallet {
     try {
       const { address } = wallet.identities[wallet.selectedAddress]
       const { balance } = await zilliqa.getBalance(address)
+      const selectedTokens = tokens[networkControl.selected]
 
       wallet.identities[wallet.selectedAddress].balance = balance
 
-      if (foundIndex < 0) {
+      if (!selectedTokens || selectedTokens.length === 0) {
         await storage.set(new BuildObject(FIELDS.WALLET, wallet))
-        sendResponse({ resolve: { tokens, wallet } })
-      } else if (selectedcoin === DEFAULT_TOKEN.symbol) {
-        tokens[networkControl.selected][foundIndex].balance = balance
-      } else {
-        const { proxy_address } = tokens[networkControl.selected][foundIndex]
 
-        tokens[networkControl.selected][foundIndex].balance = await zilliqa.getZRCBalance(proxy_address, account)
+        return sendResponse({ resolve: { tokens, wallet } })
       }
+
+      const awaiterTokens = selectedTokens.map(async(el) => {
+        const { proxy_address } = el
+
+        el.balance = await zilliqa.getZRCBalance(proxy_address, account)
+
+        return el
+      })
+
+      tokens[networkControl.selected] = await Promise.all(awaiterTokens)
 
       await storage.set([
         new BuildObject(FIELDS.TOKENS, tokens),
