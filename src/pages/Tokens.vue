@@ -18,7 +18,7 @@
             :decimals="t.decimals"
             :selected="t.symbol === selectedcoin"
             @click="onSelectedToken(t)"
-            @remove="onRemoveToken(t)"
+            @remove="onRemove(t)"
           />
         </li>
       </ul>
@@ -35,6 +35,43 @@
         @input="tokenModal = false"
       />
     </BottomModal>
+    <BottomModal
+      v-model="removeModal"
+      pure
+    >
+      <BackModal
+        v-if="local.HIDE_TOKEN"
+        :name="local.HIDE_TOKEN + '?'"
+        back
+        @click="modals.removeModal = false"
+      />
+      <div
+        v-if="tokenToRemove"
+        :class="b('remove')"
+      >
+        <Icon
+          :type="ICON_TYPE.auto"
+          :src="tokenImage(tokenToRemove)"
+          :broken="failTookenImage()"
+        />
+        <P
+          :font="FONT_VARIANTS.bold"
+          :size="SIZE_VARIANS.md"
+        >
+          {{ tokenToRemove.symbol }}
+        </P>
+        <P
+          :size="SIZE_VARIANS.sm"
+          centred
+        >
+          {{ local.HIDE_TOKEN_DES }}
+        </P>
+        <Tabs
+          :elements="tabsElements"
+          @input="onEvent"
+        />
+      </div>
+    </BottomModal>
   </div>
 </template>
 
@@ -43,6 +80,7 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 
+import { API } from 'config'
 import {
   COLOR_VARIANTS,
   FONT_VARIANTS,
@@ -55,21 +93,27 @@ import Home from '@/pages/Home'
 
 import Top from '@/components/Top'
 import Title from '@/components/Title'
+import Icon from '@/components/Icon'
+import P from '@/components/P'
 import AddMenu from '@/components/AddMenu'
 import TokenCard from '@/components/TokenCard'
 import TokenCreater from '@/components/TokenCreater'
 import BottomModal from '@/components/BottomModal'
 import BackModal from '@/components/BackModal'
+import Tabs from '@/components/Tabs'
 
 export default {
   name: 'Tokens',
   components: {
     Top,
+    P,
     Title,
     TokenCard,
     TokenCreater,
     BottomModal,
+    Tabs,
     BackModal,
+    Icon,
     AddMenu
   },
   data() {
@@ -79,8 +123,11 @@ export default {
       COLOR_VARIANTS,
       FONT_VARIANTS,
       ICON_VARIANTS,
+      API,
 
-      tokenModal: false
+      tokenModal: false,
+      removeModal: false,
+      tokenToRemove: null
     }
   },
   computed: {
@@ -92,7 +139,18 @@ export default {
     ]),
     ...mapGetters(tokenStore.STORE_NAME, [
       tokenStore.GETTERS_NAMES.getTokenList
-    ])
+    ]),
+
+    tabsElements() {
+      return [
+        {
+          name: this.local.CANCEL
+        },
+        {
+          name: this.local.HIDE
+        }
+      ]
+    }
   },
   methods: {
     ...mapActions(tokenStore.STORE_NAME, [
@@ -103,6 +161,31 @@ export default {
     async onSelectedToken(token) {
       await this.onSelectToken(token.symbol)
       this.$router.push({ name: Home.name })
+    },
+    onRemove(token) {
+      this.tokenToRemove = token
+      this.removeModal = true
+    },
+    tokenImage(token) {
+      return `${this.API.ZRC2_API}/${token.symbol}.png`.toLowerCase()
+    },
+    failTookenImage() {
+      return `${this.API.ZRC2_API}/generic.png`
+    },
+    async onEvent(event) {
+      switch (event) {
+      case 0:
+        this.tokenToRemove = null
+        this.removeModal = false
+        break
+      case 1:
+        this.onRemoveToken(this.tokenToRemove)
+        this.tokenToRemove = null
+        this.removeModal = false
+        break
+      default:
+        break
+      }
     }
   }
 }
@@ -122,6 +205,15 @@ export default {
     & > .Title {
       text-align: center;
     }
+  }
+
+  &__remove {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    min-height: 300px;
   }
 
   &__scroll {

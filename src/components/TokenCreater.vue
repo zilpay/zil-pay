@@ -1,5 +1,8 @@
 <template>
-  <div :class="b()">
+  <form
+    :class="b()"
+    @submit.prevent="onSave"
+  >
     <Input
       v-model="contract.model"
       :title="local.TOKEN_CONTRACT"
@@ -27,11 +30,10 @@
       :color="COLOR_VARIANTS.negative"
       block
       round
-      @click="onSave"
     >
       {{ local.SAVE_TOKEN }}
     </Button>
-  </div>
+  </form>
 </template>
 
 <script>
