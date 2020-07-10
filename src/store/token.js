@@ -132,8 +132,14 @@ const STORE = {
       const { network } = rootState.settings
       const foundToken = tokens[network].find((t) => t.symbol === selectedcoin)
 
-      if (!foundToken) {
-        return DEFAULT_TOKEN
+      if (!foundToken || foundToken.symbol === DEFAULT_TOKEN.symbol) {
+        const { identities, selectedAddress } = rootState.accounts
+        const currentAccount = identities[selectedAddress]
+
+        return {
+          ...DEFAULT_TOKEN,
+          balance: currentAccount.balance
+        }
       }
 
       return foundToken
