@@ -32,6 +32,7 @@
       <div>
         <GasSelecter
           :value="getCurrentGas"
+          :defaultValue="gasStarter"
           @input="setCurrentGas"
         />
         <router-link :to="{ name: LINKS.gasAdvanced }">
@@ -139,7 +140,6 @@ import Tabs from '@/components/Tabs'
 import GasSelecter from '@/components/GasSelecter'
 
 import TxDataPage from '@/pages/popup/TxData'
-import GasAdvanced from '@/pages/popup/GasAdvanced'
 import HomePage from '@/pages/Home'
 import SignMessage from '@/pages/SignMessage'
 
@@ -174,11 +174,12 @@ export default {
       DEFAULT_TOKEN,
       LINKS: {
         detail: TxDataPage.name,
-        gasAdvanced: GasAdvanced.name
+        gasAdvanced: ''
       },
 
       error: null,
-      lastTx: null
+      lastTx: null,
+      gasStarter: JSON.stringify(DEFAULT_GAS_FEE)
     }
   },
   computed: {
@@ -403,6 +404,7 @@ export default {
       setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
     }
 
+    this.gasStarter = JSON.stringify(this.getCurrentGas)
     this.setLoad()
     this
       .onBalanceUpdate()

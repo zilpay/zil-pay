@@ -21,7 +21,7 @@ import Big from 'big.js'
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { DEFAULT_TOKEN, DEFAULT_GAS_FEE } from 'config'
+import { DEFAULT_TOKEN } from 'config'
 import { EVENTS } from '@/config'
 
 import P from '@/components/P'
@@ -40,6 +40,10 @@ export default {
     value: {
       type: Object,
       required: true
+    },
+    defaultValue: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -54,31 +58,41 @@ export default {
     ]),
 
     items() {
+      const defaultValue = JSON.parse(this.defaultValue)
+
+      if (!this.value) {
+        return []
+      }
+      if (!defaultValue || !defaultValue.gasLimit || !defaultValue.gasPrice) {
+        return []
+      }
+
       const { gasPrice } = this.value
-      const { _fee } = gasFee(DEFAULT_GAS_FEE.gasPrice, DEFAULT_GAS_FEE.gasLimit)
+      const { _fee } = gasFee(String(defaultValue.gasPrice), String(defaultValue.gasLimit))
 
       return [
         {
           name: this.local.SLOW,
           value: _fee,
-          selected: Number(gasPrice) === Number(DEFAULT_GAS_FEE.gasPrice)
+          selected: Number(gasPrice) === Number(defaultValue.gasPrice)
         },
         {
           name: this.local.AVERAGE,
           value: _fee.mul(2),
-          selected: Number(gasPrice) === (Number(DEFAULT_GAS_FEE.gasPrice) * 2)
+          selected: Number(gasPrice) === (Number(defaultValue.gasPrice) * 2)
         },
         {
           name: this.local.FAST,
           value: _fee.mul(3),
-          selected: Number(gasPrice) >= (Number(DEFAULT_GAS_FEE.gasPrice) * 3)
+          selected: Number(gasPrice) >= (Number(defaultValue.gasPrice) * 3)
         }
       ]
     }
   },
   methods: {
     onGaschanged(index) {
-      const { gasLimit, gasPrice } = DEFAULT_GAS_FEE
+      const defaultValue = JSON.parse(this.defaultValue)
+      const { gasLimit, gasPrice } = defaultValue
 
       this.selected = index + 1
       this.$emit(EVENTS.input, {

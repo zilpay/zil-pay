@@ -10,6 +10,7 @@
     <div :class="b('wrapper')">
       <GasSelector
         :value="defaultGas"
+        :defaultValue="defaultGasValue"
         @input="setGas"
       />
       <RadioGroup
@@ -46,7 +47,8 @@ export default {
   },
   data() {
     return {
-      DEFAULT_GAS_FEE
+      DEFAULT_GAS_FEE,
+      defaultGasValue: JSON.stringify(DEFAULT_GAS_FEE)
     }
   },
   computed: {
