@@ -64,7 +64,7 @@ const STORE = {
 
       for (let index = 0; index < keys.length; index++) {
         const key = keys[index]
-        tokens[key] = [DEFAULT_TOKEN].concat(items[STATE_NAMES.tokens][key])
+        tokens[key] = [DEFAULT_TOKEN, ...items[STATE_NAMES.tokens][key]]
       }
 
       commit(MUTATIONS_NAMES.setTokens, tokens)
@@ -79,7 +79,7 @@ const STORE = {
 
       for (let index = 0; index < keys.length; index++) {
         const key = keys[index]
-        tokens[key] = [DEFAULT_TOKEN].concat(data[STATE_NAMES.tokens][key])
+        tokens[key] = [DEFAULT_TOKEN, ...data[STATE_NAMES.tokens][key]]
       }
 
       commit(MUTATIONS_NAMES.setTokens, tokens)
@@ -110,14 +110,20 @@ const STORE = {
 
       return wallet
     },
-    async [ACTIONS_NAMES.onRemoveToken]({ commit }, token) {
+    async [ACTIONS_NAMES.onRemoveToken]({ state, commit }, token) {
       const bg = new Background()
-      const data = await bg.removeToken(token.symbol)
+      const items = await bg.removeToken(token.symbol)
+      const tokens = state[STATE_NAMES.tokens]
 
-      commit(MUTATIONS_NAMES.setSelectedCoin, data[STATE_NAMES.selectedcoin])
-      commit(MUTATIONS_NAMES.setTokens, data[STATE_NAMES.tokens])
+      for (let index = 0; index < keys.length; index++) {
+        const key = keys[index]
+        tokens[key] = [DEFAULT_TOKEN, ...items.tokens[key]]
+      }
 
-      return data
+      commit(MUTATIONS_NAMES.setTokens, tokens)
+      commit(MUTATIONS_NAMES.setSelectedCoin, items[STATE_NAMES.selectedcoin])
+
+      return items
     }
   },
   getters: {

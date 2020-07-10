@@ -191,25 +191,25 @@ export class Zilliqa {
     const tokens = await storage.get(FIELDS.TOKENS)
     const selectedNet = networkControl.selected
 
-    if (tokens[selectedNet] || tokens[selectedNet].length === 0) {
+    if (symbol === DEFAULT_TOKEN.symbol) {
       sendResponse({
         resolve: {
-          tokens: filtredTokens,
+          tokens,
           selectedcoin: DEFAULT_TOKEN.symbol
         }
       })
     }
 
-    const filtredTokens = tokens[selectedNet].filter((t) => t.symbol !== symbol)
+    tokens[selectedNet] = tokens[selectedNet].filter((t) => t.symbol !== symbol)
 
     await storage.set([
-      new BuildObject(FIELDS.TOKENS, filtredTokens),
+      new BuildObject(FIELDS.TOKENS, tokens),
       new BuildObject(FIELDS.SELECTED_COIN, DEFAULT_TOKEN.symbol)
     ])
 
     sendResponse({
       resolve: {
-        tokens: filtredTokens,
+        tokens: tokens,
         selectedcoin: DEFAULT_TOKEN.symbol
       }
     })

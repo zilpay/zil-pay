@@ -6,6 +6,7 @@
       :error="contract.error"
       placeholder="zil1whrkchln60sxedk04jw09x92vss5hvyjmrvlz6"
       round
+      autofocus
       @input="onFindToken"
     />
     <ul :class="b('details')">
