@@ -146,6 +146,10 @@ export default {
     ...mapActions(walletStore.STORE_NAME, [
       walletStore.ACTIONS_NAMES.checkProvider
     ]),
+    ...mapMutations(accountsStore.STORE_NAME, [
+      accountsStore.MUTATIONS_NAMES.setAccounts,
+      accountsStore.MUTATIONS_NAMES.setAccount
+    ]),
     ...mapMutations(modalStore.STORE_NAME, [
       modalStore.MUTATIONS_NAMES.toggleSideBarSettings
     ]),
@@ -155,7 +159,10 @@ export default {
       try {
         await this.updateRate()
         await this.checkProvider()
-        await this.onBalanceUpdate()
+        const { identities, selectedAddress } = await this.onBalanceUpdate()
+
+        this.setAccounts(identities)
+        this.setAccount(selectedAddress)
       } catch (err) {
         //
       } finally {

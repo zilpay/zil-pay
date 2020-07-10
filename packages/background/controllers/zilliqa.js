@@ -118,18 +118,27 @@ export class Zilliqa {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async addZRCToken(sendResponse) {
+    await networkControl.netwrokSync()
     const storage = new BrowserStorage()
     const tokens = await storage.get([
       FIELDS.TOKENS,
       FIELDS.SELECTED_COIN
     ])
     const zrcToken = await this.getZRCTokenInfo()
+    const selectedNet = networkControl.selected
 
     if (!tokens || !tokens[FIELDS.TOKENS]) {
-      tokens[FIELDS.TOKENS] = []
+      const keys = Object.keys(networkControl.config)
+      tokens[FIELDS.TOKENS] = {
+        [keys[0]]: [],
+        [keys[1]]: [],
+        [keys[2]]: []
+      }
     }
 
-    const hasToken = tokens[FIELDS.TOKENS].some((t) => t.symbol === zrcToken.symbol)
+    const hasToken = tokens[FIELDS.TOKENS][selectedNet].some(
+      (t) => t.symbol === zrcToken.symbol
+    )
 
     if (hasToken) {
       if (new TypeChecker(sendResponse).isFunction) {
@@ -140,7 +149,7 @@ export class Zilliqa {
     }
 
     tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
-    tokens[FIELDS.TOKENS].push({
+    tokens[FIELDS.TOKENS][selectedNet].push({
       ...zrcToken,
       address: zrcToken._this_address,
       _creation_block: undefined,
@@ -158,6 +167,10 @@ export class Zilliqa {
     }
   }
 
+  /**
+   * Reset or create token tracker in storage.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
   async toDefaulTokens(sendResponse) {
     const data = await accountControl.initCoin()
 
@@ -168,10 +181,15 @@ export class Zilliqa {
     return data
   }
 
+  /**
+   * Remove token by symbol.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
   async rmZRCToken(sendResponse) {
     const { symbol } = this.payload
     const storage = new BrowserStorage()
     const tokens = await storage.get(FIELDS.TOKENS)
+    const selectedNet = networkControl.selected
 
     if (symbol === DEFAULT_TOKEN.symbol) {
       if (new TypeChecker(sendResponse).isFunction) {
@@ -181,7 +199,7 @@ export class Zilliqa {
       return Promise.resolve(tokens)
     }
 
-    const filtredTokens = tokens.filter((t) => t.symbol !== symbol)
+    const filtredTokens = tokens[selectedNet].filter((t) => t.symbol !== symbol)
 
     await storage.set([
       new BuildObject(FIELDS.TOKENS, filtredTokens),

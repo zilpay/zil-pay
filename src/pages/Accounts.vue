@@ -117,11 +117,11 @@ export default {
       this.setLoad()
 
       try {
-        const result = await bg.createAccount()
+        await bg.createAccount()
+        const { identities, selectedAddress } = await this.onBalanceUpdate()
 
-        this.setAccounts(result.identities)
-        this.setAccount(result.selectedAddress)
-        this.onBalanceUpdate()
+        this.setAccounts(identities)
+        this.setAccount(selectedAddress)
       } catch (err) {
         //
       } finally {

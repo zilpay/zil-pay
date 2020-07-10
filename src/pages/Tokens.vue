@@ -8,7 +8,7 @@
       </Title>
       <ul :class="b('scroll')">
         <li
-          v-for="(t, index) of tokens"
+          v-for="(t, index) of getTokenList"
           :key="index"
         >
           <TokenCard
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 
@@ -88,8 +88,10 @@ export default {
       uiStore.STATE_NAMES.local
     ]),
     ...mapState(tokenStore.STORE_NAME, [
-      tokenStore.STATE_NAMES.tokens,
       tokenStore.STATE_NAMES.selectedcoin
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getTokenList
     ])
   },
   methods: {

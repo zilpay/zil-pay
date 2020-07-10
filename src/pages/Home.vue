@@ -85,6 +85,10 @@ export default {
     ...mapActions(tokenStore.STORE_NAME, [
       tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
+    ...mapMutations(accountsStore.STORE_NAME, [
+      accountsStore.MUTATIONS_NAMES.setAccounts,
+      accountsStore.MUTATIONS_NAMES.setAccount
+    ]),
     ...mapMutations(modalStore.STORE_NAME, [
       modalStore.MUTATIONS_NAMES.setShowSendModal,
       modalStore.MUTATIONS_NAMES.setShowReceiveModal
@@ -104,7 +108,12 @@ export default {
     }
   },
   mounted() {
-    this.onBalanceUpdate()
+    this
+      .onBalanceUpdate()
+      .then(({ identities, selectedAddress }) => {
+        this.setAccounts(identities)
+        this.setAccount(selectedAddress)
+      })
   }
 }
 </script>

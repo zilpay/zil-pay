@@ -196,7 +196,9 @@ export class Wallet {
       FIELDS.SELECTED_COIN,
       FIELDS.TOKENS
     ])
-    const foundIndex = tokens.findIndex((t) => t.symbol === selectedcoin)
+    let foundIndex = tokens[networkControl.selected].findIndex(
+      (t) => t.symbol === selectedcoin
+    )
     const account = wallet.identities[wallet.selectedAddress]
 
     if (!wallet || !wallet.identities || wallet.identities.length === 0) {
@@ -209,12 +211,15 @@ export class Wallet {
 
       wallet.identities[wallet.selectedAddress].balance = balance
 
-      if (selectedcoin === DEFAULT_TOKEN.symbol) {
-        tokens[foundIndex].balance = balance
+      if (foundIndex < 0) {
+        await storage.set(new BuildObject(FIELDS.WALLET, wallet))
+        sendResponse({ resolve: { tokens, wallet } })
+      } else if (selectedcoin === DEFAULT_TOKEN.symbol) {
+        tokens[networkControl.selected][foundIndex].balance = balance
       } else {
-        const { proxy_address } = tokens[foundIndex]
+        const { proxy_address } = tokens[networkControl.selected][foundIndex]
 
-        tokens[foundIndex].balance = await zilliqa.getZRCBalance(proxy_address, account)
+        tokens[networkControl.selected][foundIndex].balance = await zilliqa.getZRCBalance(proxy_address, account)
       }
 
       await storage.set([
@@ -222,7 +227,7 @@ export class Wallet {
         new BuildObject(FIELDS.WALLET, wallet)
       ])
 
-      sendResponse({ resolve: tokens })
+      sendResponse({ resolve: { tokens, wallet } })
     } catch (err) {
       sendResponse({ reject: err.message })
     }

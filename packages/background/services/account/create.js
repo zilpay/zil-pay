@@ -77,8 +77,14 @@ export class AccountControl {
    * Set Zilliqa coin as defaul selected token.
    */
   async initCoin() {
-    const tokens = [DEFAULT_TOKEN]
     const selectedCoin = DEFAULT_TOKEN.symbol
+    const { config } = this.network
+    const keys = Object.keys(config)
+    const tokens = {
+      [keys[0]]: [],
+      [keys[1]]: [],
+      [keys[2]]: []
+    }
 
     await this._storage.set([
       new BuildObject(FIELDS.TOKENS, tokens),
