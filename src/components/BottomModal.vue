@@ -65,8 +65,9 @@ export default {
 
     top: 30%;
     bottom: inherit;
-    left: 30%;
-    right: 30%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     min-width: 500px;
 
@@ -74,14 +75,13 @@ export default {
 
     border-radius: var(--default-border-radius);
 
-    animation: fadeInUp 0.4s;
-    animation-timing-function: cubic-bezier(.3,.17,.23,.96);
-
     @media (max-width: 700px) {
       bottom: 0;
       left: 0;
       right: 0;
       top: auto;
+
+      transform: none;
 
       min-width: 300px;
 
@@ -90,6 +90,9 @@ export default {
       height: fit-content;
       border-top-right-radius: var(--default-border-radius);
       border-top-left-radius: var(--default-border-radius);
+
+      animation: fadeInUp 0.4s;
+      animation-timing-function: cubic-bezier(.3,.17,.23,.96);
     }
   }
 
