@@ -1,44 +1,88 @@
 <template>
   <div :class="b()">
-    <div :class="b('to-from')">
-      <P
-        :content="account.address | toAddress(addressFormat, false)"
-        copy
-        @copy="onCopyMixin"
-      >
-        {{ account.address | toAddress(addressFormat) }}
-      </P>
-      <SvgInject :variant="ICON_VARIANTS.arrow" />
-      <P
-        :content="transaction.toAddr | toAddress(addressFormat, false)"
-        copy
-        @copy="onCopyMixin"
-      >
-        {{ transaction.toAddr | toAddress(addressFormat) }}
-      </P>
-    </div>
-    <ul>
-      <li
-        v-for="(el) of infoList"
-        :key="el.key"
-      >
-        <P :size="SIZE_VARIANS.xs">
-          {{ el.key }}
+    <ul :class="b('wrapper')">
+      <li>
+        <P>
+          {{ local.STATUS }}
+        </P>
+        <P :class="b('status')">
+          {{ status.status }}
+          <Icon
+            :icon="status.icon"
+            height="15"
+            width="15"
+          />
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.SENT }}
         </P>
         <P
-          v-if="el.copy"
-          v-tooltip.left="copytitle"
-          :content="el.value"
-          nowrap
+          :content="account.address | toAddress(addressFormat, false)"
           copy
+          nowrap
+          @copy="onCopyMixin"
         >
-          {{ el.value }}
+          {{ account.address | toAddress(addressFormat, true) }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.RECEIVED }}
         </P>
         <P
-          v-else
+          :content="transaction.toAddr | toAddress(addressFormat, false)"
+          copy
+          nowrap
+          @copy="onCopyMixin"
+        >
+          {{ transaction.toAddr | toAddress(addressFormat, true) }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.INFO }}
+        </P>
+        <P nowrap>
+          {{ transaction.Info }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.HASH }}
+        </P>
+        <P
+          :content="transaction.TranID"
+          copy
+          @copy="onCopyMixin"
           nowrap
         >
-          {{ el.value }}
+          {{ transaction.TranID }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.NONCE }}
+        </P>
+        <P>
+          {{ transaction.nonce }}
+        </P>
+      </li>
+      <li v-if="transaction.timestamp">
+        <P>
+          {{ local.TIME }}
+        </P>
+        <P>
+          {{ timeStamp }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.EPOCH }}
+        </P>
+        <P>
+          {{ transaction.block }}
         </P>
       </li>
     </ul>
@@ -49,12 +93,13 @@
 <script>
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE, ICON_VARIANTS } from '@/config'
 
 import P from '@/components/P'
 import ViewblockLink from '@/components/ViewblockLink'
-import SvgInject from '@/components/SvgInject'
+import Icon from '@/components/Icon'
 
 import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
@@ -73,7 +118,7 @@ export default {
   components: {
     P,
     ViewblockLink,
-    SvgInject
+    Icon
   },
   mixins: [CopyMixin],
   filters: { toAddress },
@@ -99,27 +144,30 @@ export default {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
     ]),
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
 
-    infoList() {
-      return [
-        {
-          key: 'Info',
-          value: this.transaction.Info
-        },
-        {
-          key: 'Hash',
-          value: this.transaction.TranID,
-          copy: true
-        },
-        {
-          key: 'Nonce',
-          value: this.transaction.nonce
-        },
-        {
-          key: 'Block',
-          value: this.transaction.block
+    status() {
+      if (!this.transaction.confirmed) {
+        return {
+          icon: ICON_VARIANTS.statusPadding,
+          status: this.local.PENDING
         }
-      ]
+      } else if (this.transaction.error) {
+        return {
+          icon: ICON_VARIANTS.REJECTED,
+          status: this.local.PENDING
+        }
+      }
+
+      return {
+        icon: ICON_VARIANTS.statusSuccess,
+        status: this.local.COMPLETED
+      }
+    },
+    timeStamp() {
+      return new Date(this.transaction.timestamp).toDateString()
     }
   }
 }
@@ -130,50 +178,58 @@ export default {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
 
   width: 100%;
   min-height: 200px;
 
-  &__to-from {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-
-    min-width: 300px;
-
-    & > svg {
-      transform: rotate(180deg);
-    }
-  }
-
-  & > ul {
-    width: 95%;
-    max-width: 400px;
-
-    padding: 10px;
+  &__wrapper {
+    padding: 0;
     list-style: none;
   }
 
-  & > ul > li {
+  &__status {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
+    & > img {
+      margin-left: 5px;
+    }
+  }
+
+  &__wrapper > li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 300px;
+    padding: 10px;
+    margin-top: 5px;
+
+    background-color: var(--app-background-color);
+    border-radius: 7px;
+
     & > .P {
-      max-width: 150px;
-      line-height: 15px;
+      max-width: 200px;
+    }
+
+    :first-of-type {
+      opacity: 0.7;
+    }
+
+    @media (max-width: 700px) {
+      max-width: 280px;
     }
   }
 
   & > .Button {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
 
+    margin: 20px;
     width: 100%;
-    height: 43px;
-    max-width: 200px;
+
+    text-transform: capitalize;
   }
 }
 </style>

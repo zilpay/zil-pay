@@ -198,7 +198,7 @@ export default {
       min-height: 190px;
 
       text-align: center;
-      border-radius: var(--default-border-radius);
+      border-radius: 22px;
       border: 2px solid var(--accent-color-gray);
 
       & > svg {
