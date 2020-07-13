@@ -390,6 +390,12 @@ export default {
 
       if (this.confirmationTx.length === 0) {
         window.close()
+
+        return null
+      }
+
+      if (this.confirmationTx.length > 0) {
+        return null
       }
 
       this.$router.push({ name: HomePage.name })
@@ -430,8 +436,8 @@ export default {
   background-color: var(--app-background-color);
 
   &__wrapper {
-    margin-top: 30px;
-    margin-bottom: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 
     min-width: 200px;
   }

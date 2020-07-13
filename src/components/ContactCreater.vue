@@ -8,6 +8,7 @@
       :placeholder="placeholderAddress"
       :error="payload.error"
       round
+      autofocus
       @input="fromZNS"
     />
     <Input

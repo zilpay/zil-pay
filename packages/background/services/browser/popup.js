@@ -42,7 +42,7 @@ export class PromptService {
       type: this._type,
       url: DEFAULT.PROMT_PAGE,
       width: this._width,
-      height: this._height,
+      height: this._height + 40,
       top: Math.max(notificationTop, 0),
       left: Math.max(notificationLeft, 0)
     }
