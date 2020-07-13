@@ -215,8 +215,12 @@ export class ZilliqaControl {
     const account = new Account(privateKey)
     const hashStr = new AES().hash(message)
     const hashBytes = Buffer.from(hashStr, 'hex')
+    const signature = account.signTransaction(hashBytes)
 
-    return account.signTransaction(hashBytes)
+    return {
+      signature,
+      publicKey: account.publicKey
+    }
   }
 
   /**

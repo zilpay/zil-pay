@@ -93,6 +93,11 @@ function _message(message) {
   new SecureMessage({ type, payload }).send(_stream, recipient)
 
   return _answer(payload, uuid)
+    .then((res) => ({
+      publicKey: res.publicKey,
+      signature: res.signature,
+      message: res.message
+    }))
 }
 
 export default class Wallet {

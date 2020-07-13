@@ -50,7 +50,7 @@ export class Wallet {
       const signature = await zilliqa.signMessage(payload.message, account)
 
       Transaction.returnTx({
-        resolve: String(signature)
+        resolve: signature
       }, payload.uuid)
 
       return sendResponse({ resolve: signature })
