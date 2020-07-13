@@ -9,6 +9,12 @@
         {{ network }}
       </P>
     </router-link>
+    <div
+      :class="b('lock')"
+      @click="onLogout"
+    >
+      <SvgInject :variant="ICON_VARIANTS.lock" />
+    </div>
   </div>
 </template>
 
@@ -19,9 +25,10 @@ import settingsStore from '@/store/settings'
 import { ICON_VARIANTS, COLOR_VARIANTS } from '@/config'
 
 import NetworkPage from '@/pages/settings/Networks'
-
 import SvgInject from '@/components/SvgInject'
 import P from '@/components/P'
+
+import { Background } from '@/services'
 
 export default {
   name: 'Top',
@@ -43,6 +50,12 @@ export default {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.network
     ])
+  },
+  methods: {
+    onLogout() {
+      const bg = new Background()
+      bg.logOut()
+    }
   }
 }
 </script>
@@ -51,12 +64,12 @@ export default {
 .Top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
-
-  width: 100%;
   height: 33px;
 
-  max-width: 100vw;
+  padding-left: 20px;
+  padding-right: 20px;
 
   background-color: var(--opacity-bg-element-1);
 
@@ -64,11 +77,13 @@ export default {
     display: flex;
     align-items: center;
 
-    margin-left: 20px;
-
     svg {
       margin-right: 5px;
     }
+  }
+
+  &__lock {
+    cursor: pointer;
   }
 }
 </style>
