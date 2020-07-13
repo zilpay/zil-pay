@@ -8,6 +8,13 @@
       {{ local.RESET }}
     </P>
     <div :class="b('wrapper')">
+      <P
+        :class="b('gas')"
+        :size="SIZE_VARIANS.sm"
+        :variant="COLOR_VARIANTS.primary"
+      >
+        {{ local.DEFAULT_GAS }}:
+      </P>
       <GasSelector
         :value="defaultGas"
         :defaultValue="defaultGasValue"
@@ -31,6 +38,7 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
+import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
 import GasSelector from '@/components/GasSelecter'
@@ -48,6 +56,8 @@ export default {
   data() {
     return {
       DEFAULT_GAS_FEE,
+      COLOR_VARIANTS,
+      SIZE_VARIANS,
       defaultGasValue: JSON.stringify(DEFAULT_GAS_FEE)
     }
   },
@@ -83,6 +93,10 @@ export default {
   align-items: center;
 
   background-color: var(--app-background-color);
+
+  &__gas {
+    font-size: 20px;
+  }
 
   &__reset {
     position: absolute;

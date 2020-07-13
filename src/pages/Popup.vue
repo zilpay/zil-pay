@@ -35,15 +35,6 @@
           :defaultValue="gasStarter"
           @input="setCurrentGas"
         />
-        <router-link :to="{ name: LINKS.gasAdvanced }">
-          <P
-            :variant="COLOR_VARIANTS.primary"
-            capitalize
-            right
-          >
-            {{ local.ADVANCED }}
-          </P>
-        </router-link>
       </div>
       <div :class="b('item')">
         <P
@@ -173,8 +164,7 @@ export default {
       ICON_VARIANTS,
       DEFAULT_TOKEN,
       LINKS: {
-        detail: TxDataPage.name,
-        gasAdvanced: ''
+        detail: TxDataPage.name
       },
 
       error: null,

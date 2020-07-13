@@ -8,6 +8,9 @@
       />
       <ul>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[0]">
+          <P>
+            {{ local.ENTER_PRIVATEKEY }}
+          </P>
           <Input
             v-model="privateKey.model"
             :placeholder="RADIO_ELEMENTS[0]"
@@ -18,9 +21,15 @@
           />
         </li>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[1]">
-          <P capitalize>
+          <P>
             {{ local.IMPORT_KEYSTORE }}
           </P>
+          <input
+            :class="b('json')"
+            ref="json"
+            type="file"
+            accept="application/JSON"
+          >
           <Input
             v-model="jsonFile.password"
             :placeholder="local.PASSWORD"
@@ -28,15 +37,9 @@
             :type="INPUT_TYPES.password"
             round
           />
-          <input
-            :class="b('json')"
-            ref="json"
-            type="file"
-            accept="application/JSON"
-          >
         </li>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[2]">
-            <P capitalize>
+            <P>
               {{ local.IMPORT_HW }}
             </P>
             <Input
@@ -288,7 +291,7 @@ export default {
         }
 
         & > input[type="file"] {
-          margin-top: 10px;
+          margin-bottom: 10px;
         }
       }
     }
