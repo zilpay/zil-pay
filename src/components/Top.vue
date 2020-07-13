@@ -1,19 +1,21 @@
 <template>
   <div :class="b()">
-    <router-link
-      :class="b('net')"
-      :to="{ name: LINKS.networkPage }"
-    >
-      <SvgInject :variant="ICON_VARIANTS.net"/>
-      <P :variant="COLOR_VARIANTS.gray">
-        {{ network }}
-      </P>
-    </router-link>
-    <div
-      :class="b('lock')"
-      @click="onLogout"
-    >
-      <SvgInject :variant="ICON_VARIANTS.lock" />
+    <div :class="b('wrapper')">
+      <router-link
+        :class="b('net')"
+        :to="{ name: LINKS.networkPage }"
+      >
+        <SvgInject :variant="ICON_VARIANTS.net"/>
+        <P :variant="COLOR_VARIANTS.gray">
+          {{ network }}
+        </P>
+      </router-link>
+      <div
+        :class="b('lock')"
+        @click="onLogout"
+      >
+        <SvgInject :variant="ICON_VARIANTS.lock" />
+      </div>
     </div>
   </div>
 </template>
@@ -64,12 +66,10 @@ export default {
 .Top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   height: 33px;
-
-  padding-left: 20px;
-  padding-right: 20px;
+  width: inherit;
 
   background-color: var(--opacity-bg-element-1);
 
@@ -84,6 +84,14 @@ export default {
 
   &__lock {
     cursor: pointer;
+  }
+
+  &__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: calc(100vw - 40px);
   }
 }
 </style>
