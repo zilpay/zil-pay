@@ -68,11 +68,15 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
     const hashStr = new AES().hash(message)
     const hashBytes = Buffer.from(hashStr, 'hex')
     const signature0 = zilliqaControl.signMessage(message, account)
-    const signature = schnorr.toSignature(signature0)
+
+    expect(signature0.publicKey).toBeTruthy()
+    expect(signature0.signature).toBeTruthy()
+
+    const signature = schnorr.toSignature(signature0.signature)
     const verify = schnorr.verify(
       hashBytes,
       signature,
-      Buffer.from(account.publicKey, 'hex')
+      Buffer.from(signature0.publicKey, 'hex')
     )
 
     expect(verify).toBeTruthy()
