@@ -30,8 +30,10 @@ export const ICON_VARIANTS = {
   copy: 'copy',
   edit: 'edit',
   zilliqaLogo: 'zilliqa_logo',
-  coinswitch: 'coinswitch',
   viewblockLogo: 'viewblock_logo',
+  wallet: 'wallet',
+  cart: 'cart',
+  bag: 'bag',
 
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',

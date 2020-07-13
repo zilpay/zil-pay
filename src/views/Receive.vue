@@ -18,9 +18,8 @@
           :key="index"
           @click="onItem(el.event)"
         >
-          <Icon
-            :icon="el.icon"
-            :type="el.type"
+          <SvgInject
+            :variant="el.icon"
           />
           <Title :size="SIZE_VARIANS.sm">
             {{ el.title }}
@@ -51,7 +50,7 @@ import { ICON_TYPE, ICON_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS }
 import Title from '@/components/Title'
 import P from '@/components/P'
 import BackModal from '@/components/BackModal'
-import Icon from '@/components/Icon'
+import SvgInject from '@/components/SvgInject'
 
 import { toAddress } from '@/filters'
 import LinksMixin from '@/mixins/links'
@@ -67,8 +66,8 @@ export default {
   components: {
     Title,
     P,
-    BackModal,
-    Icon
+    SvgInject,
+    BackModal
   },
   mixins: [LinksMixin],
   data() {
@@ -101,7 +100,7 @@ export default {
         title: `${this.local.DEPOSIT} $ZIL.`,
         text: this.local.TRANSFER_DES,
         event: EVENTS.transfer,
-        icon: ICON_VARIANTS.zilliqaLogo,
+        icon: ICON_VARIANTS.wallet,
         type: ICON_TYPE.svg
       }]
       if (mainnet === this.network) {
@@ -109,16 +108,14 @@ export default {
           title: `${this.local.BUY} ${this.local.BUY_ON}.`,
           text: this.local.BUY_DES,
           event: EVENTS.buy,
-          icon: ICON_VARIANTS.coinswitch,
-          type: ICON_TYPE.png
+          icon: ICON_VARIANTS.cart
         })
       } else {
         elements.push({
           title: this.local.TEST_FAUCET,
           text: this.local.TEST_FAUCET_DES,
           event: EVENTS.faucet,
-          icon: ICON_VARIANTS.zilliqaLogo,
-          type: ICON_TYPE.svg
+          icon: ICON_VARIANTS.bag
         })
       }
       return elements
@@ -190,22 +187,36 @@ export default {
 
     li {
       cursor: pointer;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+
       padding: 10px;
       max-width: 110px;
+      min-height: 190px;
+
       text-align: center;
       border-radius: var(--default-border-radius);
-      border: 2px solid var(--accent-color-primary);
+      border: 2px solid var(--accent-color-gray);
 
-      & > img {
-        height: 60px;
+      & > svg {
+        height: 32px;
         width: auto;
       }
 
       &:hover {
-        background-color: var(--accent-color-primary);
+        background-color: var(--app-background-color);
+        border: 2px solid var(--accent-color-primary);
+        box-shadow: 4px 4px 7px var(--app-background-color);
 
-        & > * {
-          color: var(--accent-color-black);
+        & > .Title {
+          color: var(--accent-color-primary);
+        }
+
+        & > svg > path {
+          fill: var(--accent-color-primary);
         }
       }
     }
