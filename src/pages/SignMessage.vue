@@ -152,6 +152,7 @@ export default {
     },
     async onConfirm() {
       let signature = null
+      let publicKey = null
       const bg = new Background()
 
       try {
@@ -162,11 +163,13 @@ export default {
 
         if (account.hwType && account.hwType === HW_VARIANTS.ledger) {
           signature = await ledgerSignMessage(account.index, message)
+          publicKey = account.pubKey
         }
 
         await bg.sendForConfirmMessage({
           ...this.getCurrent,
-          signature
+          signature,
+          publicKey
         })
 
         this.popupClouse()

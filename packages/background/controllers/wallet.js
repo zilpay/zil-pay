@@ -40,7 +40,10 @@ export class Wallet {
 
       if (this.payload.signature) {
         Transaction.returnTx({
-          resolve: String(this.payload.signature)
+          resolve: {
+            ...payload,
+            ...this.payload
+          }
         }, this.payload.uuid)
 
         return sendResponse({ resolve: this.payload.signature })
