@@ -2,26 +2,23 @@
     background-color: var(--opacity-bg-element-1);
     box-sizing: border-box;
     color: var(--theme-color-font);
-    letter-spacing: -0.139803px;
     text-align: center;
-    font-size: 15px;
-    min-width: fit-content;
 
-    padding-left: var(--default-border-radius);
-    padding-right: var(--default-border-radius);
+    font-family: var(--font-family-light);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 1.33594px;
+
+    padding: 2px;
+
+    padding-left: 15px;
+    padding-right: 15px;
 
     border-radius: var(--default-border-radius);
     z-index: 100;
     box-shadow: var(--default-box-shadow);
 
-    transition: opacity 1s cubic-bezier(.3,.17,.23,.96);
-
-    opacity: 1;
-
-    &.vue-tooltip-hidden {
-        opacity: 0;
-        transform: translateX(-100000px) !important;
-    }
+    transition: none;
 
     .vue-tooltip-content {
         text-align: center;
@@ -36,10 +33,6 @@
         margin: 5px;
         border-color: transparent;
     }
-
-    &[x-out-of-boundaries] {
-        display: none;
-    }
     
     &[x-placement^="bottom"] {
         margin-top: 5px;
@@ -53,42 +46,6 @@
             top: -5px;
             margin-top: 0;
             margin-bottom: 0;
-        }
-    }
-    
-    &[x-placement^="top"] {
-        margin-bottom: 5px;
-        
-        .tooltip-arrow {
-            border-width: 5px 5px 0 5px;
-            border-top-color: var(--opacity-bg-element-1);
-            bottom: -5px;
-            margin-top: 0;
-            margin-bottom: 0;
-        }
-    }
-    
-    &[x-placement^="right"] {
-        margin-left: 5px;
-        
-        .tooltip-arrow {
-            border-width: 5px 5px 5px 0;
-            border-right-color: var(--opacity-bg-element-1);
-            left: -5px;
-            margin-left: 0;
-            margin-right: 0;
-        }
-    }
-    
-    &[x-placement^="left"] {
-        margin-right: 5px;
-        
-        .tooltip-arrow {
-            border-width: 5px 0 5px 5px;
-            border-left-color: var(--opacity-bg-element-1);
-            right: -5px;
-            margin-left: 0;
-            margin-right: 0;
         }
     }
 }

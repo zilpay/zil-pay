@@ -14,21 +14,19 @@
       @click="onThemeChanged"
     >
       <Icon
-        v-show="selectedTheme === themes[1] || selectedTheme === themes[0]"
+        v-show="selectedTheme === themes[2]"
         :icon="ICON_VARIANTS.sun"
         height="40"
         width="40"
         pointer
-        @click="setTheme(themes[1])"
       />
       <span />
       <Icon
-        v-show="selectedTheme === themes[2]"
+        v-show="selectedTheme === themes[1] || selectedTheme === themes[0]"
         :icon="ICON_VARIANTS.moon"
         height="40"
         width="40"
         pointer
-        @click="setTheme(themes[2])"
       />
     </div>
   </div>

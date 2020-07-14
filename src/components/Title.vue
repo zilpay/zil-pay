@@ -9,7 +9,6 @@
       :value="value"
       :class="b('input', { variant, font, size })"
       type="text"
-      readonly
       @change="onInput"
     >
     <slot v-if="!changeable"/>

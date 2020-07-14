@@ -19,6 +19,7 @@
           {{ local.SENT }}
         </P>
         <P
+          v-tooltip="copytitle"
           :content="account.address | toAddress(addressFormat, false)"
           copy
           nowrap
@@ -32,6 +33,7 @@
           {{ local.RECEIVED }}
         </P>
         <P
+          v-tooltip="copytitle"
           :content="transaction.toAddr | toAddress(addressFormat, false)"
           copy
           nowrap
@@ -53,6 +55,7 @@
           {{ local.HASH }}
         </P>
         <P
+          v-tooltip="copytitle"
           :content="transaction.TranID"
           copy
           @copy="onCopyMixin"
@@ -75,14 +78,6 @@
         </P>
         <P>
           {{ timeStamp }}
-        </P>
-      </li>
-      <li>
-        <P>
-          {{ local.EPOCH }}
-        </P>
-        <P>
-          {{ transaction.block }}
         </P>
       </li>
     </ul>
@@ -167,7 +162,9 @@ export default {
       }
     },
     timeStamp() {
-      return new Date(this.transaction.timestamp).toDateString()
+      return new Date(this.transaction.timestamp)
+        .toLocaleString()
+        .replace(/\//g, '-')
     }
   }
 }

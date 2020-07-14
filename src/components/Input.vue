@@ -113,9 +113,11 @@ export default {
     text-indent: 7px;
     text-align: left;
 
-    font-family: var(--font-family-medium);
-    color: var(--theme-color-font);
-    font-size: 12px;
+    font-family: var(--font-family-light);
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: 1.33594px;
 
     &__enable {
       height: 20px;

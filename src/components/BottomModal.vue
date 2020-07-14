@@ -69,7 +69,7 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
 
-    min-width: 500px;
+    max-width: 500px;
 
     background-color: var(--accent-color-second);
 

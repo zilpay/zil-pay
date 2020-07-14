@@ -9,7 +9,7 @@
       <ul>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[0]">
           <P>
-            {{ local.ENTER_PRIVATEKEY }}
+            {{ local.ENTER_PRIVATEKEY }}:
           </P>
           <Input
             v-model="privateKey.model"
@@ -22,7 +22,7 @@
         </li>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[1]">
           <P>
-            {{ local.IMPORT_KEYSTORE }}
+            {{ local.IMPORT_KEYSTORE }}:
           </P>
           <input
             :class="b('json')"
@@ -81,8 +81,8 @@ import { UNIQUE } from 'lib/errors/annotations'
 
 const { FileReader } = global
 const RADIO_ELEMENTS = [
-  'PrivateKey',
-  'JSON',
+  'Private key',
+  'Key store',
   'Ledger'
 ]
 

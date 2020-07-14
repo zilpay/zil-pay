@@ -13,22 +13,40 @@
         {{ local.RECEIVE_DEPOSIT_DIS }}
       </P>
       <ul :class="b('btns')">
-        <li
-          v-for="(el, index) of items"
-          :key="index"
-          @click="onItem(el.event)"
-        >
-          <SvgInject
-            :variant="el.icon"
-          />
+        <li>
+          <SvgInject :variant="ICON_VARIANTS.wallet"/>
           <Title :size="SIZE_VARIANS.sm">
-            {{ el.title }}
+            {{ local.DEPOSIT }} {{ DEFAULT_TOKEN.symbol }}
           </Title>
           <P
             :class="b('des')"
             :font="FONT_VARIANTS.regular"
           >
-            {{ el.text }}
+            {{ local.TRANSFER_DES }}
+          </P>
+        </li>
+        <li v-show="mainnet === network">
+          <SvgInject :variant="ICON_VARIANTS.cart"/>
+          <Title :size="SIZE_VARIANS.sm">
+            {{ local.BUY }} {{ local.BUY_ON }}
+          </Title>
+          <P
+            :class="b('des')"
+            :font="FONT_VARIANTS.regular"
+          >
+            {{ local.BUY_DES }}
+          </P>
+        </li>
+        <li v-show="mainnet !== network">
+          <SvgInject :variant="ICON_VARIANTS.bag"/>
+          <Title :size="SIZE_VARIANS.sm">
+            {{ local.TEST_FAUCET }}
+          </Title>
+          <P
+            :class="b('des')"
+            :font="FONT_VARIANTS.regular"
+          >
+            {{ local.TEST_FAUCET_DES }}
           </P>
         </li>
       </ul>
@@ -45,7 +63,8 @@ import uiStore from '@/store/ui'
 import modalStore from '@/store/modal'
 import accountsStore from '@/store/accounts'
 
-import { ICON_TYPE, ICON_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
+import { DEFAULT_TOKEN, ZILLIQA } from 'config'
+import { ICON_VARIANTS, SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -74,8 +93,11 @@ export default {
     return {
       ICON_VARIANTS,
       SIZE_VARIANS,
+      DEFAULT_TOKEN,
       FONT_VARIANTS,
-      COLOR_VARIANTS
+      COLOR_VARIANTS,
+
+      mainnet: Object.keys(ZILLIQA)[0]
     }
   },
   computed: {
@@ -92,34 +114,7 @@ export default {
     ]),
     ...mapGetters(accountsStore.STORE_NAME, [
       accountsStore.GETTERS_NAMES.getCurrentAccount
-    ]),
-
-    items() {
-      const [mainnet] = Object.keys(this.networkConfig)
-      const elements = [{
-        title: `${this.local.DEPOSIT} $ZIL.`,
-        text: this.local.TRANSFER_DES,
-        event: EVENTS.transfer,
-        icon: ICON_VARIANTS.wallet,
-        type: ICON_TYPE.svg
-      }]
-      if (mainnet === this.network) {
-        elements.push({
-          title: `${this.local.BUY} ${this.local.BUY_ON}.`,
-          text: this.local.BUY_DES,
-          event: EVENTS.buy,
-          icon: ICON_VARIANTS.cart
-        })
-      } else {
-        elements.push({
-          title: this.local.TEST_FAUCET,
-          text: this.local.TEST_FAUCET_DES,
-          event: EVENTS.faucet,
-          icon: ICON_VARIANTS.bag
-        })
-      }
-      return elements
-    }
+    ])
   },
   methods: {
     ...mapMutations(modalStore.STORE_NAME, [

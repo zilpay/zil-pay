@@ -1,11 +1,11 @@
 <svg width="55" height="55" viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="27.2475" cy="27.5" r="13.3716" fill="#5E87DE"/>
-<rect x="26.4912" width="2.01835" height="10.5963" rx="1.00917" fill="#5E87DE"/>
-<rect x="9.48145" y="10.9084" width="2.01835" height="7.56974" rx="1.00917" transform="rotate(-45 9.48145 10.9084)" fill="#5E87DE"/>
-<rect x="10.9082" y="45.5183" width="2.01835" height="7.56974" rx="1.00917" transform="rotate(-135 10.9082 45.5183)" fill="#5E87DE"/>
-<rect y="28.5093" width="2.01835" height="10.5963" rx="1.00917" transform="rotate(-90 0 28.5093)" fill="#5E87DE"/>
-<rect x="26.4912" y="44.4036" width="2.01835" height="10.5963" rx="1.00917" fill="#5E87DE"/>
-<rect x="38.7393" y="40.1663" width="2.01835" height="7.56893" rx="1.00917" transform="rotate(-45 38.7393 40.1663)" fill="#5E87DE"/>
-<rect x="40.166" y="16.2605" width="2.01835" height="7.56893" rx="1.00917" transform="rotate(-135 40.166 16.2605)" fill="#5E87DE"/>
-<rect x="44.4033" y="28.5093" width="2.01835" height="10.5963" rx="1.00917" transform="rotate(-90 44.4033 28.5093)" fill="#5E87DE"/>
+<circle cx="27.2475" cy="27.5" r="13.3716" fill="#29CCC4"/>
+<rect x="26.4912" width="2.01835" height="10.5963" rx="1.00917" fill="#29CCC4"/>
+<rect x="9.48145" y="10.9084" width="2.01835" height="7.56974" rx="1.00917" transform="rotate(-45 9.48145 10.9084)" fill="#29CCC4"/>
+<rect x="10.9082" y="45.5183" width="2.01835" height="7.56974" rx="1.00917" transform="rotate(-135 10.9082 45.5183)" fill="#29CCC4"/>
+<rect y="28.5093" width="2.01835" height="10.5963" rx="1.00917" transform="rotate(-90 0 28.5093)" fill="#29CCC4"/>
+<rect x="26.4912" y="44.4036" width="2.01835" height="10.5963" rx="1.00917" fill="#29CCC4"/>
+<rect x="38.7393" y="40.1663" width="2.01835" height="7.56893" rx="1.00917" transform="rotate(-45 38.7393 40.1663)" fill="#29CCC4"/>
+<rect x="40.166" y="16.2605" width="2.01835" height="7.56893" rx="1.00917" transform="rotate(-135 40.166 16.2605)" fill="#29CCC4"/>
+<rect x="44.4033" y="28.5093" width="2.01835" height="10.5963" rx="1.00917" transform="rotate(-90 44.4033 28.5093)" fill="#29CCC4"/>
 </svg>
