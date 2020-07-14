@@ -7,10 +7,10 @@
     />
     <div :class="b('wrapper')">
       <div>
-        <Title>
+        <Title :variant="COLOR_VARIANTS.primary">
           {{ local.FIRSTSTART_TITLE }}
         </Title>
-        <P>
+        <P :variant="COLOR_VARIANTS.primary">
           {{ local.FIRSTSTART_DIS }}
         </P>
       </div>
@@ -52,7 +52,8 @@ import uiStore from '@/store/ui'
 
 import {
   ICON_VARIANTS,
-  SIZE_VARIANS
+  SIZE_VARIANS,
+  COLOR_VARIANTS
 } from '@/config'
 
 import CreateAcc from '@/pages/Create'
@@ -76,6 +77,7 @@ export default {
       // Proxy constants:
       ICON_VARIANTS,
       SIZE_VARIANS,
+      COLOR_VARIANTS,
       LINKS: {
         restore: Restore.name,
         create: CreateAcc.name
@@ -143,6 +145,7 @@ export default {
 
     &:hover {
       background: var(--accent-color-primary);
+      box-shadow: 1px 0 7px var(--accent-color-primary);
 
       & > * {
         color: var(--accent-color-black);
