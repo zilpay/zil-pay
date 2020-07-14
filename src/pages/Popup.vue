@@ -29,13 +29,11 @@
         v-if="!getCurrent.icon"
         :icon="ICON_VARIANTS.zilliqaLogo"
       />
-      <div>
-        <GasSelecter
-          :value="getCurrentGas"
-          :defaultValue="gasStarter"
-          @input="setCurrentGas"
-        />
-      </div>
+      <GasSelecter
+        :value="getCurrentGas"
+        :defaultValue="gasStarter"
+        @input="setCurrentGas"
+      />
       <div :class="b('item')">
         <P
           :font="FONT_VARIANTS.bold"
@@ -52,17 +50,52 @@
           {{ amount | fromZil(decimals) }} {{ symbol }}
         </P>
       </div>
-      <div :class="b('item')">
+      <a
+        :class="b('advanced', { opned: advanced })"
+        @click="advanced = !advanced"
+      >
+        <SvgInject :variant="ICON_VARIANTS.arrow" />
         <P
-          :font="FONT_VARIANTS.bold"
-          :size="SIZE_VARIANS.sm"
+          :variant="COLOR_VARIANTS.primary"
+          capitalize
         >
-          {{ local.SEND }} {{ local.TO }} DS
+          {{ local.ADVANCED }}
         </P>
-        <SwitchBox
-          :value="getCurrent.priority"
-          @input="setPriority"
-        />
+      </a>
+      <div :class="b('advanced-items')">
+        <div
+          v-show="advanced"
+          :class="b('item')"
+        >
+          <P
+            :font="FONT_VARIANTS.bold"
+            :size="SIZE_VARIANS.sm"
+          >
+            {{ local.SEND }} {{ local.TO }} DS
+          </P>
+          <SwitchBox
+            :value="getCurrent.priority"
+            @input="setPriority"
+          />
+        </div>
+        <div
+          v-show="advanced"
+          :class="b('item')"
+        >
+          <P
+            :font="FONT_VARIANTS.bold"
+            :variant="amountColor"
+            :size="SIZE_VARIANS.sm"
+          >
+            Gas Limit
+          </P>
+          <input
+            :type="INPUT_TYPES.number"
+            :value="getCurrentGas.gasLimit"
+            min="1"
+            @input="onGasLimitChanged"
+          >
+        </div>
       </div>
     </div>
     <P
@@ -79,7 +112,7 @@
       :to="{ name: LINKS.detail }"
     >
       <P :class="b('details')">
-        {{ local.VIEW }} {{ local.DETAILS }} >>
+        >>> {{ local.VIEW }} {{ local.TX }} {{ local.DETAILS }}
       </P>
     </router-link>
     <Alert
@@ -126,8 +159,10 @@ import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Icon from '@/components/Icon'
+import { INPUT_TYPES } from '@/components/Input'
 import SwitchBox from '@/components/SwitchBox'
 import Tabs from '@/components/Tabs'
+import SvgInject from '@/components/SvgInject'
 import GasSelecter from '@/components/GasSelecter'
 
 import TxDataPage from '@/pages/popup/TxData'
@@ -150,6 +185,7 @@ export default {
     P,
     GasSelecter,
     Icon,
+    SvgInject,
     SwitchBox,
     Tabs
   },
@@ -162,12 +198,14 @@ export default {
       DEFAULT_GAS_FEE,
       COLOR_VARIANTS,
       ICON_VARIANTS,
+      INPUT_TYPES,
       DEFAULT_TOKEN,
       LINKS: {
         detail: TxDataPage.name
       },
 
       error: null,
+      advanced: false,
       lastTx: null,
       gasStarter: JSON.stringify(DEFAULT_GAS_FEE)
     }
@@ -389,6 +427,15 @@ export default {
       }
 
       this.$router.push({ name: HomePage.name })
+    },
+    onGasLimitChanged(event) {
+      const { value } = event.target
+      const gas = this.getCurrentGas
+
+      gas.gasLimit = value
+
+      this.setCurrentGas(gas)
+      this.gasStarter = JSON.stringify(gas)
     }
   },
   mounted() {
@@ -432,6 +479,36 @@ export default {
     min-width: 200px;
   }
 
+  &__advanced-items {
+    min-height: 60px;
+  }
+
+  &__advanced {
+    cursor: pointer;
+
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+
+    text-align: right;
+
+    & > svg {
+      transform: rotate(-90deg);
+      height: 10px;
+      width: 15px;
+
+      & > path {
+        stroke: var(--accent-color-primary);
+      }
+    }
+
+    &_opned {
+      & > svg {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
   &__details {
     text-decoration-line: underline;
     letter-spacing: -0.139803px;
@@ -446,6 +523,17 @@ export default {
 
     & > .P {
       line-height: 30px;
+    }
+
+    & > input {
+      border: 0;
+      background-color: var(--opacity-bg-element-2);
+      border-radius: 10px;
+      max-width: 100px;
+      text-align: right;
+      height: 20px;
+      font-size: var(--size-sm-font);
+      font-family: var(--font-family-bold);
     }
   }
 

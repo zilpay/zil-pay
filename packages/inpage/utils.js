@@ -41,6 +41,12 @@ export function getFavicon() {
     favicon = window.location.origin + favicon
   }
 
+  if (!favicon.includes(window.location.origin) && favicon[0] !== '/') {
+    favicon = `${window.location.origin}/${favicon}`
+  } else if (!favicon.includes(window.location.origin) && favicon[0] === '/') {
+    favicon = window.location.origin + favicon
+  }
+
   return favicon
 }
 

@@ -15,6 +15,7 @@
     "SEND": "Send",
     "SENT": "Sent",
     "NONCE": "Nonce",
+    "TX": "transaction",
     "HASH": "Hash",
     "DEPOSIT": "Deposit",
     "ON": "on",
