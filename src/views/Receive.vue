@@ -13,7 +13,7 @@
         {{ local.RECEIVE_DEPOSIT_DIS }}
       </P>
       <ul :class="b('btns')">
-        <li>
+        <li @click="setShowAccountModal">
           <SvgInject :variant="ICON_VARIANTS.wallet"/>
           <Title :size="SIZE_VARIANS.sm">
             {{ local.DEPOSIT }} {{ DEFAULT_TOKEN.symbol }}
@@ -25,7 +25,10 @@
             {{ local.TRANSFER_DES }}
           </P>
         </li>
-        <li v-show="mainnet === network">
+        <li
+          v-show="mainnet === network"
+          @click="linksToCoinswitch(toAddress(getCurrentAccount.address, addressFormat, false))"
+        >
           <SvgInject :variant="ICON_VARIANTS.cart"/>
           <Title :size="SIZE_VARIANS.sm">
             {{ local.BUY }} {{ local.BUY_ON }}
@@ -37,7 +40,10 @@
             {{ local.BUY_DES }}
           </P>
         </li>
-        <li v-show="mainnet !== network">
+        <li
+          v-show="mainnet !== network"
+          @click="linksToFaucet"
+        >
           <SvgInject :variant="ICON_VARIANTS.bag"/>
           <Title :size="SIZE_VARIANS.sm">
             {{ local.TEST_FAUCET }}
@@ -55,8 +61,6 @@
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
@@ -74,11 +78,6 @@ import SvgInject from '@/components/SvgInject'
 import { toAddress } from '@/filters'
 import LinksMixin from '@/mixins/links'
 
-const EVENTS = {
-  faucet: uuid(),
-  buy: uuid(),
-  transfer: uuid()
-}
 
 export default {
   name: 'Receive',
@@ -121,29 +120,11 @@ export default {
       modalStore.MUTATIONS_NAMES.setShowReceiveModal,
       modalStore.MUTATIONS_NAMES.setShowAccountModal
     ]),
+    toAddress,
 
     onStep() {
       if (this.receiveModal.step === 0) {
         this.setShowReceiveModal()
-      }
-    },
-    onItem(event) {
-      switch (event) {
-      case EVENTS.faucet:
-        this.linksToFaucet()
-        break
-      case EVENTS.buy:
-        this.linksToCoinswitch(toAddress(
-          this.getCurrentAccount.address,
-          this.addressFormat,
-          false
-        ))
-        break
-      case EVENTS.transfer:
-        this.setShowAccountModal()
-        break
-      default:
-        break
       }
     }
   }

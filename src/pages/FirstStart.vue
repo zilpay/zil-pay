@@ -148,11 +148,11 @@ export default {
       box-shadow: 1px 0 7px var(--accent-color-primary);
 
       & > * {
-        color: var(--accent-color-black);
+        color: var(--app-background-color);
       }
 
       & > svg > path {
-        fill: var(--accent-color-black);
+        fill: var(--app-background-color);
       }
     }
   }

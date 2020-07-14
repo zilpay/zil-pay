@@ -114,6 +114,7 @@ export default {
     text-align: left;
 
     font-family: var(--font-family-light);
+    color: var(--theme-negative);
     font-weight: 600;
     font-size: 10px;
     line-height: 12px;

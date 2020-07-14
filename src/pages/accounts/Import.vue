@@ -40,7 +40,7 @@
         </li>
         <li v-show="radioGroup.model === RADIO_ELEMENTS[2]">
             <P>
-              {{ local.IMPORT_HW }}
+              {{ local.IMPORT_HW }}:
             </P>
             <Input
               v-model="ledger.index"

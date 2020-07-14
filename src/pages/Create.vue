@@ -6,14 +6,9 @@
       :variant="ICON_VARIANTS.zilPayLogo"
     />
     <div :class="b('wrapper')">
-      <div>
-        <Title :size="SIZE_VARIANS.lg">
-          {{ local.CREATE_TITLE }}
-        </Title>
-        <P :size="SIZE_VARIANS.md">
-          {{ local.CREATE_DIS }}
-        </P>
-      </div>
+      <P :size="SIZE_VARIANS.md">
+        {{ local.CREATE_DIS }}
+      </P>
       <div
         :class="b('reset-icon')"
         @click="refreshWords"
@@ -71,7 +66,6 @@ import {
 import Verify from '@/pages/Verify'
 
 import Chip from '@/components/Chip'
-import Title from '@/components/Title'
 import P from '@/components/P'
 import Button from '@/components/Button'
 import UiPanel from '@/components/UiPanel'
@@ -88,7 +82,6 @@ export default {
   components: {
     Chip,
     P,
-    Title,
     Button,
     UiPanel,
     SvgInject

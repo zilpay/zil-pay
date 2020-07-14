@@ -2,7 +2,6 @@
   "en": {
     "FIRSTSTART_TITLE": "Welcome to ZilPay",
     "FIRSTSTART_DIS": "Connecting you to Zilliqa and the Decentralized Web. We’re happy to see you.",
-    "CREATE_TITLE": "Your recovery phrase.",
     "SECRET_PHRACSE": "Secret Phrase",
     "CREATE_DIS": "Remember your 12 words.",
     "VERIFY_DIS": "Verify your recovery phrase.",
