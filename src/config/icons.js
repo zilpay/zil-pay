@@ -35,6 +35,7 @@ export const ICON_VARIANTS = {
   cart: 'cart',
   bag: 'bag',
   lock: 'lock',
+  desktop: 'desktop',
 
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',

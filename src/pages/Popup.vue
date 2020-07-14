@@ -528,6 +528,7 @@ export default {
     & > input {
       border: 0;
       background-color: var(--opacity-bg-element-2);
+      color: var(--theme-negative);
       border-radius: 10px;
       max-width: 100px;
       text-align: right;

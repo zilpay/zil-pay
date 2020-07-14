@@ -10,11 +10,13 @@
           {{ network }}
         </P>
       </router-link>
-      <div
-        :class="b('lock')"
-        @click="onLogout"
-      >
-        <SvgInject :variant="ICON_VARIANTS.lock" />
+      <div :class="b('icons')">
+        <div @click="onLogout">
+          <SvgInject :variant="ICON_VARIANTS.lock" />
+        </div>
+        <div @click="onExpend">
+          <SvgInject :variant="ICON_VARIANTS.desktop" />
+        </div>
       </div>
     </div>
   </div>
@@ -30,10 +32,12 @@ import NetworkPage from '@/pages/settings/Networks'
 import SvgInject from '@/components/SvgInject'
 import P from '@/components/P'
 
+import LinkMixin from '@/mixins/links'
 import { Background } from '@/services'
 
 export default {
   name: 'Top',
+  mixins: [LinkMixin],
   components: {
     SvgInject,
     P
@@ -57,6 +61,9 @@ export default {
     onLogout() {
       const bg = new Background()
       bg.logOut()
+    },
+    onExpend() {
+      this.linksExpand()
     }
   }
 }
@@ -82,8 +89,14 @@ export default {
     }
   }
 
-  &__lock {
-    cursor: pointer;
+  &__icons {
+    display: flex;
+    justify-content: space-between;
+    min-width: 40px;
+
+    & > div {
+      cursor: pointer;
+    }
   }
 
   &__wrapper {
