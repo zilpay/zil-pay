@@ -46,7 +46,7 @@ const STORE = {
       [CURRENCIES.BTC]: 0,
       [CURRENCIES.USD]: 0
     },
-    [STATE_NAMES.selectedTheme]: THEMES[0],
+    [STATE_NAMES.selectedTheme]: THEMES[1],
     [STATE_NAMES.themes]: THEMES,
     [STATE_NAMES.local]: {},
     [STATE_NAMES.currentLocal]: 'en'

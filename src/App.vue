@@ -127,8 +127,10 @@ export default {
 
       const { wallet, config, selectednet } = storageData
 
-      this.setAccounts(wallet.identities)
-      this.setAccount(wallet.selectedAddress)
+      if (wallet && wallet.identities) {
+        this.setAccounts(wallet.identities)
+        this.setAccount(wallet.selectedAddress)
+      }
 
       this.setNetwork(selectednet)
       this.setNetworkConfig(config)

@@ -86,6 +86,9 @@ export default {
       case this.themes[2]:
         this.setTheme(this.themes[1])
         break
+      default:
+        this.setTheme(this.themes[2])
+        break
       }
     }
   }
