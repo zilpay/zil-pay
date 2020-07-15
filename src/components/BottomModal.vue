@@ -122,8 +122,7 @@ export default {
 
       border-radius: 12px;
 
-      animation: fadeInUp 0.4s;
-      animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+      animation: none;
     }
   }
 }
