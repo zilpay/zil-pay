@@ -114,7 +114,7 @@ export default {
 
     &:hover {
       background: var(--accent-color-primary);
-      color: var(--theme-negative);
+      color: var(--app-background-color);
     }
   }
 
@@ -147,7 +147,7 @@ export default {
 
     &:hover {
       background: var(--accent-color-primary);
-      color: var(--accent-color-black);
+      color: var(--app-background-color);
     }
   }
 }

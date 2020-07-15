@@ -452,6 +452,7 @@ export default {
     this
       .onBalanceUpdate()
       .then(() => this.setLoad())
+      .catch(() => this.setLoad())
   },
   updated() {
     if (this.getCurrent && this.getCurrent.message) {

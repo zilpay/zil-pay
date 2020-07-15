@@ -65,22 +65,25 @@ export default {
 
 <style lang="scss">
 .Data {
-  &__wrapper {
-    display: grid;
-    grid-gap: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    padding-top: 30px;
-    padding-left: 15px;
-    padding-right: 15px;
+  background-color: var(--app-background-color);
+
+  &__wrapper {
+    width: 100%;
+    max-width: 290px;
   }
 
   &__switcher {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 150px;
+    justify-content: flex-end;
 
-    justify-self: right;
+    & > .SwitchBox {
+      margin-left: 15px;
+    }
   }
 }
 
