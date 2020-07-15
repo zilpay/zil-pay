@@ -20,7 +20,7 @@
         v-model="http.model"
         :error="http.error"
         :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="Node."
+        title="RCP endpoint:"
         round
         second
         @input="http.error = null"
@@ -29,7 +29,7 @@
         v-model="ws.model"
         :error="ws.error"
         :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="WS."
+        title="Websocket endpoint:"
         round
         second
         @input="ws.error = null"
@@ -39,7 +39,7 @@
         :error="msg.error"
         :type="INPUT_TYPES.number"
         :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="MSG"
+        title="Msg version:"
         round
         second
         @input="msg.error = null"
