@@ -393,11 +393,12 @@ export default {
       background-color: var(--accent-color-primary);
 
       & > svg > path {
-        stroke: var(--accent-color-black);
+        stroke: var(--app-background-color);
       }
 
       & > .P {
-        color: var(--accent-color-black);
+        color: var(--app-background-color);
+        transition: none;
       }
     }
   }

@@ -151,8 +151,8 @@ export default {
         }
       } else if (this.transaction.error) {
         return {
-          icon: ICON_VARIANTS.REJECTED,
-          status: this.local.PENDING
+          icon: ICON_VARIANTS.statusDanger,
+          status: this.local.REJECTED
         }
       }
 

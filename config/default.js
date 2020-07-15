@@ -16,7 +16,7 @@ export const DEFAULT = {
     4,
     5
   ],
-  DS_PER_TX_BLOCKS: 101, // For DS block need 100 tx blocks.
+  DS_PER_TX_BLOCKS: 5, // For DS block need 100 tx blocks.
   MAX_TX_AMOUNT_LIST: 10,
   MIN_LENGTH_PASSWORD: 6,
   MAX_LENGTH_NAME: 10,
