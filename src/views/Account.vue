@@ -4,7 +4,8 @@
     :class="b()"
   >
     <BackModal
-      :name="$options.name"
+      v-if="local.RECEIVE"
+      :name="local.RECEIVE"
       :back="accountModal.step > 0"
       @click="onStep"
     />
