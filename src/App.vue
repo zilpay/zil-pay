@@ -132,8 +132,14 @@ export default {
         this.setAccount(wallet.selectedAddress)
       }
 
-      this.setNetwork(selectednet)
       this.setNetworkConfig(config)
+
+      if (!selectednet) {
+        const [net] = Object.keys(config)
+        this.setNetwork(net)
+      } else {
+        this.setNetwork(selectednet)
+      }
     }
   },
   async beforeMount() {

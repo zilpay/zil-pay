@@ -122,10 +122,7 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setNetwork](state, network) {
       if ((network in state.networkConfig)) {
-        if (state.network !== network) {
-          setSelectedNetwork(network)
-        }
-
+        setSelectedNetwork(network)
         state.network = network
       }
     },
