@@ -167,6 +167,7 @@ export default {
         password,
         seed: this.verifyWords.join(' ')
       })
+      this.setLoad()
 
       this.$router.push({ name: Congratulation.name })
     }
