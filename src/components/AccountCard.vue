@@ -5,13 +5,22 @@
       @click="onSelectedCard"
     />
     <div :class="b('wrapper')">
-      <Title
-        :variant="COLOR_VARIANTS.primary"
-        :size="SIZE_VARIANS.sm"
-        @click="onSelectedCard"
-      >
-        {{ getAccountName(account) }}
-      </Title>
+      <div :class="b('name')">
+        <Title
+          :variant="COLOR_VARIANTS.primary"
+          :size="SIZE_VARIANS.sm"
+          @click="onSelectedCard"
+        >
+          {{ getAccountName(account) }}
+        </Title>
+        <div
+          v-show="trash"
+          :class="b('close')"
+          @click="onRemove"
+        >
+          <SvgInject :variant="ICON_VARIANTS.close"/>
+        </div>
+      </div>
       <div
         :class="b('balance')"
         @click="onSelectedCard"
@@ -39,13 +48,6 @@
       >
         {{ account.address | toAddress(addressFormat, true) }}
       </P>
-    </div>
-    <div
-      v-show="trash"
-      :class="b('close')"
-      @click="onRemove"
-    >
-      <SvgInject :variant="ICON_VARIANTS.close"/>
     </div>
   </div>
 </template>
@@ -195,13 +197,16 @@ export default {
   &__close {
     cursor: pointer;
 
-    position: absolute;
-    transform: translate(1750%, -100%);
-
     & > svg {
       height: 15px;
       width: auto;
     }
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__balance {

@@ -150,7 +150,7 @@ export default {
     list-style: none;
 
     overflow-y: scroll;
-    height: calc(100vh - 250px);
+    height: calc(100vh - 210px);
     min-width: 300px;
 
     & > li {
