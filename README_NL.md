@@ -63,7 +63,7 @@ $ npm run lint
 
 ## auteurs
 
-* **Rinat Khasanshin** - *Eerste werkzaamheden* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *Eerste werkzaamheden* - [hicaru](https://github.com/hicaru)
 
 ## Licentie
 
