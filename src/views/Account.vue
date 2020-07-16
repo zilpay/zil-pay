@@ -120,7 +120,7 @@ export default {
         false
       )
       this.qrcode = await QRCode.toDataURL(
-        `zilliqa:${address}`
+        `zilliqa://${address}`
       )
     }
   },
