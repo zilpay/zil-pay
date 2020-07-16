@@ -23,7 +23,7 @@
           :size="SIZE_VARIANS.sm"
           :font="FONT_VARIANTS.regular"
         >
-          {{ balance | toConversion(getRate, decimals) }}
+          {{ balance | toConversion(rate, decimals) }}
         </Title>
         <P
           :size="SIZE_VARIANS.sm"
@@ -46,7 +46,7 @@
 <script>
 import { API, DEFAULT_TOKEN } from 'config'
 
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 
 import {
@@ -103,10 +103,9 @@ export default {
   },
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.currency
-    ]),
-    ...mapGetters(settingsStore.STORE_NAME, [
-      settingsStore.GETTERS_NAMES.getRate
+      settingsStore.STATE_NAMES.currency,
+      settingsStore.STATE_NAMES.currentCurrency,
+      settingsStore.STATE_NAMES.currentRate
     ]),
 
     tokenImage() {
@@ -114,6 +113,13 @@ export default {
     },
     failTookenImage() {
       return `${this.API.ZRC2_API}/generic.png`
+    },
+    rate() {
+      try {
+        return this.currentRate[this.symbol][this.currency]
+      } catch (err) {
+        return 0
+      }
     }
   },
   methods: {
