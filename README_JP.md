@@ -66,7 +66,7 @@ $ npm run lint
 
 ## 著者
 
-* **Rinat Khasanshin** - *初期作業* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *初期作業* - [hicaru](https://github.com/hicaru)
 
 ## ライセンス
 
