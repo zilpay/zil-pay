@@ -15,7 +15,7 @@
 $max-width-container: 320px;
 $max-height-container: 560px;
 
-$default-border-radius: 5px;
+$default-border-radius: 27px;
 
 $xs-break: 400px !default;
 $sm-break: 576px !default;
@@ -28,28 +28,40 @@ $md: 50px !default;
 $lg: 60px !default;
 
 $xs-font: 10px !default;
-$sm-font: 20px !default;
+$sm-font: 15px !default;
 $md-font: 22px !default;
 $lg-font: 32px !default;
 
 // Color system
-$black:     #000000 !default;
+$black:     #131313 !default;
 $white:     #FFFFFF !default;
-$gray:      #DEDEDE !default;
-$dark:      #002B44 !default;
+$gray:      #666666 !default;
+$dark:      #000    !default;
 
-$input-ui-light:   #ececec !default;
-$input-ui-dark:    #003D61 !default;
+// new 
+$opacity-bg-element-black: #131313cc;
+$opacity-bg-element-white: #ffffffe6;
 
-$alert-ui-dark:           #001C2C !default;
-$alert-ui-dark-border:    #001826 !default;
-$alert-ui-light:          #FBFBFB !default;
+$opacity-bg-element-black-1: #00000080;
+$opacity-bg-element-white-1: #EEEEEE;
+$opacity-bg-element-white-2: #EEEEEEBA;
 
-$separator-ui-light:      #CECECE !default;
-$separator-ui-dark:       #003D61 !default;
+$primary-light:         #5E87DE !default;
+$second-light:          #EAEAEA !default;
+$success-light:         #2FA84F !default;
+$info-light:            #00B2FF !default;
+$warning-light:         #FD9630 !default;
+$danger-light:          #FA5D50 !default;
 
-$primary:         #057A8E !default;
-$success:         #2FA84F !default;
-$info:            #00B2FF !default;
-$warning:         #FD9630 !default;
-$danger:          #FA5D50 !default;
+$primary-dark:         #29CCC4 !default;
+$second-dark:          #272727 !default;
+$success-dark:         #2FA84F !default;
+$info-dark:            #00B2FF !default;
+$warning-dark:         #FD9630 !default;
+$danger-dark:          #FA5D50 !default;
+
+$logo-gradient-white-0: #5E87DE;
+$logo-gradient-white-1: #5E87DE;
+
+$logo-gradient-dark-0: #00c2ff73;
+$logo-gradient-dark-1: #eaf7ff00;

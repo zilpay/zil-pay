@@ -6,9 +6,27 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { BN, units } from '@zilliqa-js/util'
+import Big from 'big.js'
+import { isBech32 } from '@zilliqa-js/util/dist/validation'
+import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 
+import { DEFAULT_TOKEN } from 'config'
 import { fromZil } from '@/filters'
+
+const DEFAULT_ICON = '/icons/icon128.png'
+const _li = Big(10 ** 6)
+
+export function gasFee(gasPrice, gasLimit) {
+  const _gasPrice = Big(gasPrice).round()
+  const _gasLimit = Big(gasLimit).round()
+  const _fee = _gasLimit.mul(_gasPrice)
+  const fee = _fee.div(_li)
+
+  return {
+    _fee: _fee.mul(_li),
+    fee
+  }
+}
 
 export default {
   methods: {
@@ -18,13 +36,35 @@ export default {
      * @param {String} fee Tx gas fee.
      * @param {String} balance Account balance.
      */
-    calcIsInsufficientFunds(amount, gasLimit, gasPrice, balance) {
+    calcIsInsufficientFunds(amount, gasLimit, gasPrice, balance, symbol, decimals) {
       try {
-        const _gasLimit = new BN(gasLimit)
-        const _gasPrice = new BN(gasPrice)
-        const _fee = units.toQa(_gasLimit.mul(_gasPrice), units.Units.Li)
-        const _amount = new BN(amount)
-        const _balance = new BN(balance)
+        let _fee = Big(0)
+
+        if (symbol === DEFAULT_TOKEN.symbol) {
+          _fee = gasFee(gasPrice, gasLimit)._fee
+        }
+
+        const _fact = Big(10 ** decimals)
+        const _Famount = Big(amount)
+        const _balance = Big(balance).round()
+        const _amount = _Famount.mul(_fact).round()
+        const _txAmount = _fee.add(_amount)
+
+        return _balance.lt(_txAmount)
+      } catch (err) {
+        return true
+      }
+    },
+    calcIsInsufficientFundsUint(amount, gasLimit, gasPrice, balance, symbol) {
+      try {
+        let _fee = Big(0)
+
+        if (symbol === DEFAULT_TOKEN.symbol) {
+          _fee = gasFee(gasPrice, gasLimit)._fee
+        }
+
+        const _balance = Big(balance).round()
+        const _amount = Big(amount)
         const _txAmount = _fee.add(_amount)
 
         return _balance.lt(_txAmount)
@@ -37,17 +77,25 @@ export default {
      * @param {String} fee Tx gas fee.
      * @param {String} balance Account balance.
      */
-    calcMaxAmount(gasLimit, gasPrice, balance) {
+    calcMaxAmount(gasLimit, gasPrice, balance, decimals, symbol) {
       if (Number(balance) === 0) {
-        return Number(balance)
+        return String(balance)
       }
-      const _gasLimit = new BN(gasLimit)
-      const _gasPrice = new BN(gasPrice)
-      const _fee = units.toQa(_gasLimit.mul(_gasPrice), units.Units.Li)
-      const _balance = new BN(balance)
-      const _amount = _balance.sub(_fee)
 
-      return fromZil(_amount, false)
+      try {
+        let _fee = Big(0)
+
+        if (symbol === DEFAULT_TOKEN.symbol) {
+          _fee = gasFee(gasPrice, gasLimit)._fee
+        }
+
+        const _balance = Big(balance).round()
+        const _amount = _balance.sub(_fee)
+
+        return fromZil(_amount, decimals, false)
+      } catch (err) {
+        return '0'
+      }
     },
     /**
      * Calculate gas fee amount.
@@ -55,10 +103,74 @@ export default {
      * @param {Number} gasPrice Li.
      */
     calcFee(gasLimit, gasPrice) {
-      const factor = Math.pow(10, -6) // 10 ^ -6
-      const amount = gasLimit * gasPrice * factor
+      return String(gasFee(gasPrice, gasLimit).fee)
+    },
+    /**
+     * Build transaction params for send.
+     * @param {Object} data - Transaction data.
+     * @param {Object} token - Object of token.
+     */
+    buildPaymentTx(data, _amount) {
+      const _gasPrice = Big(data.gasPrice).round()
 
-      return amount.toFixed(3)
+      return {
+        toAddr: data.toAddr,
+        amount: String(_amount),
+        gasPrice: String(_gasPrice.mul(_li)),
+        gasLimit: String(data.gasLimit),
+        code: '',
+        data: '',
+        icon: DEFAULT_ICON,
+        priority: false,
+        uuid: false
+      }
+    },
+    /**
+     * Build token transfer params.
+     * @param {Object} param0 - txObject.
+     * @param {Object} token - Object of token.
+     */
+    buildTokenTxParams({ toAddr }, token, _amount) {
+      const data = JSON.stringify({
+        _tag: 'Transfer',
+        params: [
+          {
+            vname: 'to',
+            type: 'ByStr20',
+            value: isBech32(toAddr) ? fromBech32Address(toAddr).toLowerCase() : toAddr.toLowerCase()
+          },
+          {
+            vname: 'amount',
+            type: 'Uint128',
+            value: String(_amount)
+          }
+        ]
+      })
+
+      return {
+        data,
+        toAddr: toBech32Address(token.proxy_address),
+        symbol: token.symbol,
+        amount: String(0),
+        gasPrice: String(1000000000),
+        gasLimit: String(9000),
+        code: '',
+        decimals: token.decimals,
+        icon: DEFAULT_ICON,
+        priority: false,
+        uuid: false
+      }
+    },
+    buildTxParams(data, token) {
+      const _qa = Big(10 ** token.decimals)
+      const _Famount = Big(data.amount)
+      const _amount = _Famount.mul(_qa).round()
+
+      if (DEFAULT_TOKEN.symbol === token.symbol) {
+        return this.buildPaymentTx(data, _amount)
+      }
+
+      return this.buildTokenTxParams(data, token, _amount)
     }
   }
 }

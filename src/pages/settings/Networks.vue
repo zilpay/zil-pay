@@ -1,7 +1,13 @@
 <template>
   <div :class="b()">
-    <TopBar close/>
-    <Container :class="b('wrapper')">
+    <TopBar/>
+    <P
+      :class="b('reset', 'pointer')"
+      @click="onDefaultConfig"
+    >
+      {{ local.RESET }}
+    </P>
+    <div :class="b('wrapper')">
       <RadioGroup
         :value="network"
         :title="local.NETWORKS"
@@ -10,57 +16,48 @@
       >
         {{ local.NETWORKS }}:
       </RadioGroup>
-      <Separator />
-      <div>
-        <Input
-          v-model="http.model"
-          :error="http.error"
-          :disabled="MAINNET === this.network"
-          title="Node."
-          round
-          @input="http.error = null"
-        />
-        <Input
-          v-model="ws.model"
-          :error="ws.error"
-          :disabled="MAINNET === this.network"
-          title="WS."
-          round
-          @input="ws.error = null"
-        />
-        <Input
-          v-model="msg.model"
-          :error="msg.error"
-          :type="INPUT_TYPES.number"
-          :disabled="MAINNET === this.network"
-          title="MSG"
-          round
-          @input="msg.error = null"
-        />
-        <Container :class="b('net-buttons')">
-          <Button
-            :color="COLOR_VARIANTS.warning"
-            :disabled="MAINNET === this.network"
-            :name="buttons.change"
-            :value="buttons.change"
-            round
-            block
-            @click="onChangeConfig"
-          >
-            {{ local.UPDATE }}
-          </Button>
-          <Button
-            :name="buttons.default"
-            :value="buttons.default"
-            round
-            block
-            @click="onDefaultConfig"
-          >
-            {{ local.DEFAULT }}
-          </Button>
-        </Container>
-      </div>
-    </Container>
+      <Input
+        v-model="http.model"
+        :error="http.error"
+        :disabled="MAINNET === this.network || TESTNET === this.network"
+        title="RCP endpoint:"
+        round
+        second
+        @input="http.error = null"
+      />
+      <Input
+        v-model="ws.model"
+        :error="ws.error"
+        :disabled="MAINNET === this.network || TESTNET === this.network"
+        title="Websocket endpoint:"
+        round
+        second
+        @input="ws.error = null"
+      />
+      <Input
+        v-model="msg.model"
+        :error="msg.error"
+        :type="INPUT_TYPES.number"
+        :disabled="MAINNET === this.network || TESTNET === this.network"
+        title="Msg version:"
+        round
+        second
+        @input="msg.error = null"
+      />
+      <Button
+        v-show="MAINNET !== this.network && TESTNET !== this.network"
+        :class="b('btn')"
+        :color="COLOR_VARIANTS.negative"
+        :size="SIZE_VARIANS.sm"
+        :name="buttons.change"
+        :value="buttons.change"
+        round
+        block
+        @click="onChangeConfig"
+      >
+        {{ local.UPDATE }}
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -74,27 +71,26 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
-import { COLOR_VARIANTS, REGX_PATTERNS } from '@/config'
+import { COLOR_VARIANTS, REGX_PATTERNS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
 import RadioGroup from '@/components/RadioGroup'
-import Separator from '@/components/Separator'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
+import P from '@/components/P'
 
 import { keys } from '@/filters'
 
 const MAINNET = Object.keys(ZILLIQA)[0]
+const TESTNET = Object.keys(ZILLIQA)[1]
 
 export default {
   name: 'Networks',
   components: {
     TopBar,
-    Container,
     RadioGroup,
-    Separator,
     Input,
+    P,
     Button
   },
   filters: { keys },
@@ -102,7 +98,9 @@ export default {
     return {
       COLOR_VARIANTS,
       INPUT_TYPES,
+      SIZE_VARIANS,
       MAINNET,
+      TESTNET,
 
       http: {
         model: ZILLIQA[MAINNET].PROVIDER,
@@ -220,6 +218,7 @@ export default {
 
       try {
         await this.onUpdateNetworkConfig(ZILLIQA)
+        await this.onChangeNetwork(MAINNET)
       } catch (err) {
         //
       } finally {
@@ -236,21 +235,31 @@ export default {
 
 <style lang="scss">
 .Networks {
-  &__wrapper {
-    display: grid;
-    grid-gap: 15px;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    padding-left: 15px;
-    padding-right: 15px;
+  background-color: var(--app-background-color);
+
+  &__reset {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    text-decoration: underline;
   }
 
-  &__net-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 30px;
+  &__wrapper {
+    margin-top: 30px;
+    min-width: 250px;
 
-    margin-top: 15px;
+    & > .Input {
+      padding: 25px;
+    }
+  }
+
+  &__btn {
+    min-width: 250px;
+    margin-top: 10px;
   }
 }
 </style>

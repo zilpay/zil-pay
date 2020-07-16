@@ -1,112 +1,68 @@
 <template>
   <div :class="b()">
-    <TopBar />
-    <div :class="b('wrapper')">
-      <Tabs
-        v-model="tabs"
-        :elements="tabsElements"
-      />
-      <div :class="b('list')">
+    <Top />
+    <TopBar v-if="route"/>
+    <AddMenu @click="onCreateAccount" />
+    <router-link
+      :class="b('import')"
+      :to="{ name: LINKS.import }"
+    >
+      <SvgInject :variant="ICON_VARIANTS.import" />
+    </router-link>
+    <ul :class="b('scroll')">
+      <li
+        v-for="(acc, index) of identities"
+        :key="acc.address"
+      >
         <AccountCard
-          v-show="tabs === 0"
-          v-for="(acc, index) of identities"
-          :key="acc.address"
           :account="acc"
           :selected="index === selectedAddress"
           :trash="Boolean(acc.index > 0 || acc.isImport || acc.hwType)"
           @selected="onSelectAccount(index)"
           @remove="onRemoveAccount(index)"
         />
-        <div
-          v-show="tabs === 1"
-          v-for="(contact, index) of contactList"
-          :key="index"
-        >
-          <Item
-            trash
-            pointer
-            @click="onSelectContact(contact)"
-            @remove="onRemoveByIndex(index)"
-          >
-            <Title :size="SIZE_VARIANS.sm">
-              {{ contact.name }}
-            </Title>
-          </Item>
-          <Separator v-show="index < contactList.length - 1"/>
-        </div>
-        <Title
-          v-show="tabs === 1 && contactList.length === 0"
-          :size="SIZE_VARIANS.sm"
-        >
-          {{ local.NOT_CONTACTS }}
-        </Title>
-      </div>
-    </div>
-    <BottomBar
-      :elements="bottomBar"
-      @click="onEvent"
-    />
-    <BottomModal v-model="contactModal">
-      <ContactCreater
-        v-if="contactModal"
-        @close="contactModal = false"
-      />
-    </BottomModal>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
 import { mapState, mapMutations, mapActions } from 'vuex'
 import contactsStore from '@/store/contacts'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 
-import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
+import { SIZE_VARIANS, ICON_VARIANTS } from '@/config'
 
-import SendPage from '@/pages/Send'
-import ImportPage from '@/pages/accounts/Import'
 import homePage from '@/pages/Home'
+import ImportPage from '@/pages/accounts/Import'
 
 import TopBar from '@/components/TopBar'
-import BottomBar from '@/components/BottomBar'
-import Tabs from '@/components/Tabs'
+import SvgInject from '@/components/SvgInject'
+import AddMenu from '@/components/AddMenu'
 import AccountCard from '@/components/AccountCard'
-import Item from '@/components/Item'
-import Separator from '@/components/Separator'
-import Title from '@/components/Title'
-import BottomModal from '@/components/BottomModal'
-import ContactCreater from '@/components/ContactCreater'
+import Top from '@/components/Top'
 
-import { toAddress } from '@/filters'
 import { Background } from '@/services'
 
-const EVENTS = {
-  create: uuid(),
-  import: uuid(),
-  contacts: uuid(),
-  accounts: uuid()
-}
 export default {
   name: 'Accounts',
   components: {
     TopBar,
-    BottomBar,
-    Tabs,
     AccountCard,
-    Item,
-    Separator,
-    Title,
-    BottomModal,
-    ContactCreater
+    Top,
+    AddMenu,
+    SvgInject
   },
   data() {
     return {
       SIZE_VARIANS,
-
-      tabs: 0,
-      contactModal: false
+      ICON_VARIANTS,
+      LINKS: {
+        import: ImportPage.name
+      }
     }
   },
   computed: {
@@ -124,33 +80,14 @@ export default {
       accountsStore.STATE_NAMES.selectedAddress
     ]),
 
-    bottomBar() {
-      return [
-        {
-          value: this.local.CREATE,
-          event: EVENTS.create,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
-        },
-        {
-          value: this.local.IMPORT,
-          event: EVENTS.import,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
-        }
-      ]
-    },
-    tabsElements() {
-      return [
-        {
-          name: this.local.ACCOUNTS,
-          event: EVENTS.accounts
-        },
-        {
-          name: this.local.CONTACTS,
-          event: EVENTS.contacts
-        }
-      ]
+    route() {
+      const currentName = this.$router.history.current.name
+
+      if (currentName === this.$options.name) {
+        return true
+      }
+
+      return false
     }
   },
   methods: {
@@ -162,49 +99,17 @@ export default {
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.onRemoveAccount,
-      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+      accountsStore.ACTIONS_NAMES.onRemoveAccount
+    ]),
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
     ]),
-
-    onEvent(event) {
-      if (EVENTS.create === event && this.tabs === 1) {
-        this.contactModal = true
-
-        return null
-      }
-
-      if (EVENTS.create === event && this.tabs === 0) {
-        this.onCreateAccount()
-
-        return null
-      }
-
-      if (EVENTS.import === event) {
-        this.$router.push({
-          name: ImportPage.name
-        })
-
-        return null
-      }
-    },
     onSelectAccount(index) {
       this.setAccount(index)
       this.$router.push({ name: homePage.name })
-    },
-    onSelectContact(contact) {
-      this.$router.push({
-        name: SendPage.name,
-        params: {
-          address: toAddress(
-            contact.address,
-            this.addressFormat,
-            false
-          )
-        }
-      })
     },
     async onCreateAccount() {
       const bg = new Background()
@@ -212,11 +117,11 @@ export default {
       this.setLoad()
 
       try {
-        const result = await bg.createAccount()
+        await bg.createAccount()
+        const { identities, selectedAddress } = await this.onBalanceUpdate()
 
-        this.setAccounts(result.identities)
-        this.setAccount(result.selectedAddress)
-        this.updateCurrentAccount()
+        this.setAccounts(identities)
+        this.setAccount(selectedAddress)
       } catch (err) {
         //
       } finally {
@@ -230,20 +135,41 @@ export default {
 
 <style lang="scss">
 .Accounts {
-  &__wrapper {
-    display: grid;
-    justify-items: center;
-    align-items: baseline;
-    grid-template-rows: 80px auto;
-    grid-template-rows: 80px auto;
-    min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--app-background-color);
+
+  &__scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 0;
+    list-style: none;
+
+    overflow-y: scroll;
+    height: calc(100vh - 250px);
+    min-width: 300px;
+
+    & > li {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
   }
 
-  &__list {
-    display: grid;
-    grid-gap: 15px;
+  &__import {
+    cursor: pointer;
 
-    padding-bottom: 50px;
+    position: absolute;
+    bottom: 60px;
+    right: 75px;
+
+    & > svg {
+      width: 35px;
+      height: auto;
+    }
   }
 }
 </style>

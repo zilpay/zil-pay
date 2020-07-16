@@ -1,10 +1,12 @@
 <template>
   <img
+    v-if="src"
     :class="b({ pointer })"
     :src="src"
     :height="height"
     :width="width"
     @click="onClick"
+    @error="onError"
   >
 </template>
 
@@ -39,6 +41,10 @@ export default {
     pointer: {
       type: Boolean,
       default: false
+    },
+    broken: {
+      type: String,
+      required: false
     }
   },
   computed: {
@@ -57,6 +63,9 @@ export default {
   methods: {
     onClick() {
       this.$emit(EVENTS.click)
+    },
+    onError(event) {
+      event.srcElement.src = this.broken
     }
   }
 }

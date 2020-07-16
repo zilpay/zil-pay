@@ -1,10 +1,14 @@
 <template>
-  <Container :class="b()">
+  <form
+    :class="b()"
+    @submit.prevent="onAdded"
+  >
     <Input
       v-model="payload.address"
       :placeholder="placeholderAddress"
       :error="payload.error"
       round
+      autofocus
       @input="fromZNS"
     />
     <Input
@@ -13,26 +17,25 @@
       round
     />
     <Button
-      :class="b('btn')"
+      :color="COLOR_VARIANTS.negative"
       block
       round
-      @click="onAdded"
     >
-      Create
+      {{ buttonText }}
     </Button>
-  </Container>
+  </form>
 </template>
 
 <script>
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
+
 import { mapActions, mapState } from 'vuex'
 import contactsStore from '@/store/contacts'
 import uiStore from '@/store/ui'
 
-import { EVENTS, REGX_PATTERNS } from '@/config'
+import { EVENTS, REGX_PATTERNS, COLOR_VARIANTS } from '@/config'
 
 import Input from '@/components/Input'
-import Container from '@/components/Container'
 import Button from '@/components/Button'
 
 import { Background } from '@/services'
@@ -48,11 +51,22 @@ export default {
   name: 'ContactCreater',
   components: {
     Input,
-    Container,
     Button
+  },
+  props: {
+    edit: {
+      type: Boolean,
+      default: false
+    },
+    contactIndex: {
+      type: Number,
+      required: false
+    }
   },
   data() {
     return {
+      COLOR_VARIANTS,
+
       payload: {
         address: null,
         name: null,
@@ -64,9 +78,19 @@ export default {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ]),
+    ...mapState(contactsStore.STORE_NAME, [
+      contactsStore.STATE_NAMES.contactList
+    ]),
 
+    buttonText() {
+      if (this.edit) {
+        return this.local.UPDATE
+      }
+
+      return this.local.CREATE
+    },
     placeholderAddress() {
-      return `${this.local.SELECT} ${this.local.PUBLIC} ${this.local.ADDRESS} (zil1), ${this.local.OR} ZNS`
+      return this.local.INPUT_ZIL_ZNS
     },
     placeholderName() {
       return `${this.local.SELECT} ${this.local.NAME}.`
@@ -74,18 +98,27 @@ export default {
   },
   methods: {
     ...mapActions(contactsStore.STORE_NAME, [
-      contactsStore.ACTIONS_NAMES.onAddedContact
+      contactsStore.ACTIONS_NAMES.onAddedContact,
+      contactsStore.ACTIONS_NAMES.onUpdateContact
     ]),
 
     onAdded() {
       try {
-        if (!isBech32(this.payload.address)) {
+        if (!this.payload.address || !isBech32(this.payload.address)) {
           this.payload.error = `*${this.local.INCORRECT_ADDR_FORMAT}`
 
           return null
         }
 
-        this.onAddedContact(this.payload)
+        if (this.edit) {
+          this.onUpdateContact({
+            payload: this.payload,
+            index: this.contactIndex
+          })
+        } else {
+          this.onAddedContact(this.payload)
+        }
+
         this.$emit(EVENTS.close)
       } catch (err) {
         this.payload.error = err.message
@@ -110,6 +143,11 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    if (this.edit && this.contactList && this.contactList.length > 0) {
+      this.payload = this.contactList[this.contactIndex]
+    }
   }
 }
 </script>
@@ -118,12 +156,17 @@ export default {
 .ContactCreater {
   display: grid;
   grid-gap: 15px;
+  justify-items: center;
 
   /* top | right | bottom | left */
   padding: 15px;
 
-  &__btn {
-    max-width: 150px;
+  & > .Button {
+    max-width: 100px;
+  }
+
+  & > .Input {
+    width: 100%;
   }
 }
 </style>

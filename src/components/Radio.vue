@@ -72,10 +72,10 @@ export default {
     height: 15px;
     background: transparent;
     border-radius: 100%;
-    border: 3px solid var(--theme-color-separator);
+    border: 3px solid var(--accent-color-primary);
 
     &_checked {
-      border: 3px solid var(--accent-color-info);
+      border: 3px solid var(--accent-color-primary);
 
       &:before {
         content: " ";
@@ -87,7 +87,7 @@ export default {
       margin: 2px;
       width: 11px;
       height: 11px;
-      background-color: var(--accent-color-info);
+      background-color: var(--accent-color-primary);
       border-radius: 100%;
     }
   }
@@ -104,7 +104,7 @@ export default {
     &:hover {
       .Radio__check {
         transition: all 0.5s ease-out;
-        border: 3px solid var(--accent-color-info);
+        border: 3px solid var(--accent-color-primary);
       }
     }
   }

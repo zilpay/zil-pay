@@ -93,6 +93,11 @@ function _message(message) {
   new SecureMessage({ type, payload }).send(_stream, recipient)
 
   return _answer(payload, uuid)
+    .then((res) => ({
+      publicKey: res.publicKey,
+      signature: res.signature,
+      message: res.message
+    }))
 }
 
 export default class Wallet {
@@ -283,10 +288,6 @@ export default class Wallet {
     const domain = window.document.domain
     const icon = getFavicon()
     const payload = { title, domain, icon, uuid }
-
-    if (this.isConnect) {
-      return Promise.resolve(this.isConnect)
-    }
 
     new SecureMessage({ type, payload }).send(_stream, recipient)
 

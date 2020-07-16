@@ -83,6 +83,10 @@ export default {
     outline: none;
     margin: 0;
     padding: 0;
+
+    border-radius: var(--default-border-radius);
+    border: 1px solid var(--accent-color-primary);
+    max-width: 150px;
   }
 
   &_font-medium,
@@ -93,6 +97,11 @@ export default {
   &_font-bold,
   &__input_font-bold {
     font-family: var(--font-family-bold);
+  }
+
+  &_font-regular,
+  &__input_font-regular {
+    font-family: var(--font-family-regular);
   }
 
   &_font-light,
@@ -118,6 +127,16 @@ export default {
   &_size-lg,
   &__input_size-lg {
     font-size: var(--size-lg-font);
+  }
+
+  &_variant-primary,
+  &__input_variant-primary {
+    color: var(--accent-color-primary);
+  }
+
+  &_variant-gray,
+  &__input_variant-gray {
+    color: var(--accent-color-gray);
   }
 
   &_variant-success,

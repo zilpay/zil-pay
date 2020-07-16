@@ -9,7 +9,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import Tabs from 'src/components/Tabs.vue'
-import { BEM_CONFIG, COLOR_VARIANTS } from 'src/config'
+import { BEM_CONFIG } from 'src/config'
 import { uuid } from 'uuidv4'
 
 const localVue = createLocalVue()
@@ -59,18 +59,6 @@ describe('components:Tabs', () => {
 
   it('Should be img div', () => {
     expect(wrapper.element.tagName).toEqual('DIV')
-  })
-
-  it('Should be have some computed prop', () => {
-    expect(wrapper.vm.tabs.length).toBe(TEST_TABS.length)
-    expect(wrapper.vm.tabs[0]).toEqual({
-      ...TEST_TABS[0],
-      variant: COLOR_VARIANTS.primary
-    })
-    expect(wrapper.vm.tabs[1]).toEqual({
-      ...TEST_TABS[1],
-      variant: COLOR_VARIANTS.transparent
-    })
   })
 
   it('Should can emit change event', () => {

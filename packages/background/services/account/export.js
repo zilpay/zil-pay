@@ -11,6 +11,8 @@ import { AccountControl } from './create'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
 import { ArgumentError, AccessError, ERROR_MSGS } from 'packages/background/errors'
 
+import { Account } from '@zilliqa-js/account/dist/account'
+
 export class AccountExporter extends AccountControl {
 
   constructor() {
@@ -28,7 +30,7 @@ export class AccountExporter extends AccountControl {
   /**
    * Export Private Key from seed pashe via index.
    */
-  async exportPrivateKeyFromSeed() {
+  async exportPrivateKeyFromSeed(password) {
     // Sync with storage.
     await this.auth.vaultSync()
 
@@ -54,17 +56,20 @@ export class AccountExporter extends AccountControl {
     const account = await this.zilliqa.getAccountBySeed(
       decryptSeed, index
     )
+    const accountInstance = new Account(account.privateKey)
+    const keystore = await accountInstance.toFile(password)
 
     return {
       index,
-      privateKey: account.privateKey
+      privateKey: account.privateKey,
+      keystore: JSON.stringify(keystore)
     }
   }
 
   /**
    * Export private key from imported storage.
    */
-  async exportAccountFromStore() {
+  async exportAccountFromStore(password) {
     // Sync with storage.
     await this.auth.vaultSync()
 
@@ -89,7 +94,13 @@ export class AccountExporter extends AccountControl {
       throw new ArgumentError('index')
     }
 
-    return account
+    const accountInstance = new Account(account.privateKey)
+    const keystore = await accountInstance.toFile(password)
+
+    return {
+      ...account,
+      keystore: JSON.stringify(keystore)
+    }
   }
 
   /**

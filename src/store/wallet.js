@@ -30,8 +30,8 @@ const GETTERS_NAMES = {}
 const STORE = {
   namespaced: true,
   state: {
-    [STATE_NAMES.isReady]: false,
-    [STATE_NAMES.isEnable]: false,
+    [STATE_NAMES.isReady]: null,
+    [STATE_NAMES.isEnable]: null,
     [STATE_NAMES.networkStatus]: null,
     [STATE_NAMES.verifly]: null
   },

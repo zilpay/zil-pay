@@ -23,6 +23,6 @@ describe('filters:to-conversion', () => {
   })
 
   it('toConversion should able conver currency', () => {
-    expect(toConversion('10000000000', 0.1)).toBe('0.0010')
+    expect(String(toConversion('10000000000', 0.1, 12))).toBe('0.001')
   })
 })

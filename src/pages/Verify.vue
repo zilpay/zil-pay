@@ -1,14 +1,14 @@
 <template>
   <div :class="b()">
-    <UiPanel />
+    <UiPanel arrow />
+    <SvgInject
+      :class="b('logo')"
+      :variant="ICON_VARIANTS.zilPayLogo"
+    />
     <div :class="b('wrapper')">
-      <TopBar
-        :route="false"
-        back
-      />
-      <P :variant="COLOR_VARIANTS.gray">
+      <Title :size="SIZE_VARIANS.lg">
         {{ local.VERIFY_DIS }}
-      </P>
+      </Title>
       <div :class="b('words')">
         <Chip
           v-for="(phrase, index) of verifyWords"
@@ -20,13 +20,25 @@
         >
           {{ phrase }}
         </Chip>
+        <Chip
+          v-for="(phrase, index) of Array(randomItems.length - verifyWords.length)"
+          :key="index + 'emnty'"
+        />
       </div>
       <PasswordForm
         v-show="isVerify"
+        :class="b('form')"
         :btn="local.CONTINUE"
         @submit="onSubmit"
       />
-      <div :class="b('verify-words')">
+      <P
+        v-show="!isVerify"
+        :class="b('intr')"
+        :size="SIZE_VARIANS.md"
+      >
+        {{ local.VERIFY_PICK }}
+      </P>
+      <div :class="b('words')">
         <Chip
           v-for="(phrase, index) of exceptionalItems"
           :key="index"
@@ -37,7 +49,6 @@
         </Chip>
       </div>
     </div>
-    <Wave />
   </div>
 </template>
 
@@ -46,35 +57,39 @@ import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
-import { SIZE_VARIANS, COLOR_VARIANTS } from '@/config'
+import { SIZE_VARIANS, COLOR_VARIANTS, ICON_VARIANTS } from '@/config'
 import { shuffle } from 'lib/utils/shuffle'
 
-import TopBar from '@/components/TopBar'
+import Create from '@/pages/Create'
+import Congratulation from '@/pages/Congratulation'
+
 import Chip from '@/components/Chip'
+import Title from '@/components/Title'
 import P from '@/components/P'
-import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
+import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
-const { window, Set } = global
+const { Set } = global
 const bgScript = new Background()
 
 export default {
   name: 'Verify',
   components: {
-    TopBar,
-    P,
     Chip,
-    Wave,
+    Title,
+    P,
     PasswordForm,
-    UiPanel
+    UiPanel,
+    SvgInject
   },
   data() {
     return {
       SIZE_VARIANS,
       COLOR_VARIANTS,
+      ICON_VARIANTS,
 
       verifyWords: [],
       randomItems: []
@@ -152,11 +167,18 @@ export default {
         password,
         seed: this.verifyWords.join(' ')
       })
+      this.setLoad()
 
-      window.location.reload()
+      this.$router.push({ name: Congratulation.name })
     }
   },
   mounted() {
+    if (!this.verifly) {
+      this.$router.push({ name: Create.name })
+
+      return null
+    }
+
     const words = this.verifly.split(' ')
 
     this.randomItems = this.shuffle(words)
@@ -166,35 +188,47 @@ export default {
 
 <style lang="scss">
 .Verify {
-  display: grid;
+  display: flex;
   justify-content: center;
   align-items: center;
+
+  text-align: center;
+
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vh;
+  }
 
   &__wrapper {
     display: flex;
     flex-direction: column;
-    min-width: 250px;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 45vh;
+    max-width: 765px;
+    z-index: 1;
+  }
+
+  &__intr {
+    margin-top: 100px;
   }
 
   &__words {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(6, 40px);
-    grid-auto-flow: column;
-    grid-column-gap: 30px;
-    grid-row-gap: 10px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+
+    min-height: 100px;
   }
 
-  &__continue-btn {
-    max-width: 175px;
-    justify-self: right;
-  }
-
-  &__verify-words {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 15px;
-    grid-row: 5;
+  &__form {
+    margin: 50px;
   }
 }
 </style>

@@ -275,4 +275,71 @@ export class Background {
 
     return toAddress(result.resolve.owner, ADDRESS_FORMAT_VARIANTS.bech32, false)
   }
+
+  /**
+   * Get the token information by contract address.
+   * @param {String} address - Contract address.
+   */
+  async getTokenInfo(address) {
+    const type = MTypePopup.GET_TOKEN_INFO
+    const payload = { address }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  /**
+   * Write to storage new token.
+   * @param {String} address - contract address of token.
+   */
+  async setToken(address) {
+    const type = MTypePopup.SET_TOKEN
+    const payload = { address }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  async toDefaultCoinsList() {
+    const type = MTypePopup.INIT_TOKEN
+    const result = await Message.signal(type).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  /**
+   * Removeing token item from store.
+   * @param {String} symbol - Symbol of token.
+   */
+  async removeToken(symbol) {
+    const type = MTypePopup.RM_TOKEN
+    const payload = { symbol }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
 }

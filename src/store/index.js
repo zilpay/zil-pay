@@ -15,6 +15,8 @@ import settingsStore from './settings'
 import transactionsStore from './transactions'
 import uiStore from './ui'
 import walletStore from './wallet'
+import modalStore from './modal'
+import tokenStore from './token'
 
 Vue.use(Vuex)
 
@@ -27,10 +29,12 @@ export default new Vuex.Store({
   },
   modules: {
     [accountsStore.STORE_NAME]: accountsStore.STORE,
+    [modalStore.STORE_NAME]: modalStore.STORE,
     [contactsStore.STORE_NAME]: contactsStore.STORE,
     [settingsStore.STORE_NAME]: settingsStore.STORE,
     [transactionsStore.STORE_NAME]: transactionsStore.STORE,
     [uiStore.STORE_NAME]: uiStore.STORE,
-    [walletStore.STORE_NAME]: walletStore.STORE
+    [walletStore.STORE_NAME]: walletStore.STORE,
+    [tokenStore.STORE_NAME]: tokenStore.STORE
   }
 })

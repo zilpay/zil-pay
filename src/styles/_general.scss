@@ -17,22 +17,19 @@
   --app-background-color: #{$white};
 
   --theme-color-font: #{$black};
-  --theme-color-input: #{$input-ui-light};
-
-  --theme-color-alert: #{$alert-ui-light};
-  --theme-color-alert-border: #{$gray};
-
-  --theme-color-separator: #{$separator-ui-light};
+  --theme-negative: #{$black};
 
   --accent-color-black: #{$black};
   --accent-color-white: #{$white};
   --accent-color-gray:  #{$gray};
 
-  --accent-color-primary: #{$primary};
-  --accent-color-success: #{$success};
-  --accent-color-info: #{$info};
-  --accent-color-warning: #{$warning};
-  --accent-color-danger: #{$danger};
+  --accent-color-primary: #{$primary-light};
+  --accent-color-success: #{$success-light};
+  --accent-color-info: #{$info-light};
+  --accent-color-warning: #{$warning-light};
+  --accent-color-danger: #{$danger-light};
+  --accent-color-dark: #{$dark};
+  --accent-color-second: #{$second-light};
 
   --font-family-medium: #{$font-family-Medium};
   --font-family-regular: #{$font-family-Regular};
@@ -51,60 +48,66 @@
 
   --default-border-radius: #{$default-border-radius};
   --default-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  --opacity-bg-element: #{$opacity-bg-element-white};
+  --opacity-bg-element-1: #{$opacity-bg-element-white-1};
+  --opacity-bg-element-2: #{$opacity-bg-element-white-2};
+
+  --logo-gradient-0: #{$logo-gradient-white-0};
+  --logo-gradient-1: #{$logo-gradient-white-1};
 }
 
 * {
   @include no-select;
+  transition: all 0.2s linear;
 }
 
 // Enable document.body.setAttribute('theme', 'dark');
 [theme="dark"] {
-  --app-background-color: #{$dark};
+  --app-background-color: #{$black};
 
+  --theme-negative: #{$white};
   --theme-color-font: #{$white};
 
-  --theme-color-input: #{$input-ui-dark};
+  --opacity-bg-element: #{$opacity-bg-element-black};
+  --opacity-bg-element-1: #{$opacity-bg-element-black-1};
+  --opacity-bg-element-2: #{$opacity-bg-element-black-1};
 
-  --theme-color-separator: #{$separator-ui-dark};
+  --accent-color-primary: #{$primary-dark};
+  --accent-color-success: #{$success-dark};
+  --accent-color-info: #{$info-dark};
+  --accent-color-warning: #{$warning-dark};
+  --accent-color-danger: #{$danger-dark};
+  --accent-color-second: #{$second-dark};
 
-  --theme-color-alert: #{$alert-ui-dark};
-  --theme-color-alert-border: #{$alert-ui-dark-border};
+  --logo-gradient-0: #{$logo-gradient-dark-0};
+  --logo-gradient-1: #{$logo-gradient-dark-1};
 }
 
 body, html {
-  min-width: 360px;
-  min-height: 600px;
+  margin: 0;
+  padding: 0;
 
-	overflow-x: hidden;
+  min-width: 320px;
+  min-height: 560px;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: initial;
 }
 
 body {
-  background-color: var(--app-background-color);
-
-  font-family: var(--font-family-Poppins-Regular), sans-serif;
-
-  font-style: normal;
-  font-weight: normal;
-
-  font-size: 20px;
-  line-height: 28px;
-
-  overflow: hidden;
-
-  margin: 0;
-  padding: 0;
-}
-
-a {
-  text-decoration: unset;
+  font-family: var(--font-family-light);
 }
 
 ::-webkit-scrollbar { 
   display: none; 
 }
 
-@media screen and (max-width: 360px) {
-  body, html {
-    max-width: 360px;
-  }
+.pointer {
+  cursor: pointer;
 }

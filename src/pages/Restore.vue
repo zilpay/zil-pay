@@ -1,31 +1,23 @@
 <template>
   <div :class="b()">
-    <UiPanel />
-    <TopBar
-      :route="false"
-      back
+    <UiPanel arrow />
+    <SvgInject
+      :class="b('logo')"
+      :variant="ICON_VARIANTS.zilPayLogo"
     />
-    <Container :class="b('wrapper')">
-      <Title>
-        {{ local.RESTORE_TITLE }}
-      </Title>
-      <P :class="b('description')">
-        {{ local.RESTORE_DIS }}
-      </P>
-      <div>
-        <Textarea
-          v-model="seed.model"
-          :error="seed.error"
-          round
-          @input="seed.error = null"
-        />
-        <PasswordForm
-          :btn="local.RESTORE"
-          @submit="restore"
-        />
-      </div>
-    </Container>
-    <Wave />
+    <div :class="b('wrapper')">
+      <Textarea
+        v-model="seed.model"
+        :error="seed.error"
+        :title="local.SECRET_PHRACSE"
+        round
+        @input="seed.error = null"
+      />
+      <PasswordForm
+        :btn="local.RESTORE"
+        @submit="restore"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,38 +25,32 @@
 import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 
-import { COLOR_VARIANTS, SIZE_VARIANS } from '@/config'
+import { COLOR_VARIANTS, SIZE_VARIANS, ICON_VARIANTS } from '@/config'
 
-import Title from '@/components/Title'
+import Congratulation from '@/pages/Congratulation'
+
 import Textarea from '@/components/Textarea'
-import TopBar from '@/components/TopBar'
-import P from '@/components/P'
-import Container from '@/components/Container'
-import Wave from '@/components/Wave'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
+import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
-const { window } = global
 const bgScript = new Background()
 
 export default {
   name: 'Restore',
   components: {
-    Title,
-    P,
-    Container,
-    Wave,
     Textarea,
-    TopBar,
     PasswordForm,
-    UiPanel
+    UiPanel,
+    SvgInject
   },
   data() {
     return {
       COLOR_VARIANTS,
       SIZE_VARIANS,
+      ICON_VARIANTS,
 
       seed: {
         model: null,
@@ -96,7 +82,7 @@ export default {
           seed: this.seed.model
         })
 
-        window.location.reload()
+        this.$router.push({ name: Congratulation.name })
       } catch (err) {
         this.seed.error = this.local.SEED_INCORRECT
       } finally {
@@ -109,21 +95,33 @@ export default {
 
 <style lang="scss">
 .Restore {
-  display: grid;
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  &__wrapper {
-    padding-top: 30px;
-    padding-right: 15px;
-    padding-left: 15px;
+  text-align: center;
 
-    max-width: calc(360px - 30px);
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vh;
+  }
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 50vh;
+
+    z-index: 1;
   }
 
   &__description {
-    padding-top: 30px;
-    opacity: 0.5;
+    margin-bottom: 80px;
   }
 }
 </style>

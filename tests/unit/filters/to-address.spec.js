@@ -27,7 +27,7 @@ describe('filters:to-address', () => {
   it('toAddress should able convert address', () => {
     expect(
       toAddress(TEST_ADDRES, ADDRESS_FORMAT_VARIANTS.bech32)
-    ).toBe('zil1az5e0c...p6kjtaxf4q')
+    ).toBe('zil1az...taxf4q')
     expect(
       toAddress(TEST_ADDRES, ADDRESS_FORMAT_VARIANTS.bech32, false)
     ).toBe('zil1az5e0c6e4s4pazgahhmlca2cvgamp6kjtaxf4q')

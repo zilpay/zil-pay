@@ -1,7 +1,7 @@
 <template>
   <button
     v-bind="$attrs"
-    :class="b({ round, block, size, color })"
+    :class="b({ round, block, size, color, uppercase })"
     :disabled="disabled"
     @click="onClick"
   >
@@ -50,6 +50,10 @@ export default {
     block: {
       type: Boolean,
       default: false
+    },
+    uppercase: {
+      type: Boolean,
+      required: false
     }
   },
   methods: {
@@ -66,14 +70,12 @@ export default {
   max-width: 250px;
 
   box-sizing: border-box;
-  font-family: var(--font-family-medium);
+  font-family: var(--font-family-light);
 
   font-size: 12px;
 
   border: 0;
   outline: none;
-
-  box-shadow: var(--default-box-shadow);
 
   transition: all 0.5s ease-out;
 }
@@ -105,6 +107,17 @@ export default {
     color: var(--accent-color-block);
   }
 
+  &_color-negative {
+    background-color: var(--app-background-color);
+    color: var(--accent-color-primary);
+    border: 1px solid var(--accent-color-primary);
+
+    &:hover {
+      background: var(--accent-color-primary);
+      color: var(--app-background-color);
+    }
+  }
+
   &_color-gray {
     background-color: var(--accent-color-gray);
     color: var(--accent-color-white);
@@ -131,6 +144,11 @@ export default {
     color: var(--accent-color-primary);
     background: transparent;
     border: 1px solid var(--accent-color-primary);
+
+    &:hover {
+      background: var(--accent-color-primary);
+      color: var(--app-background-color);
+    }
   }
 }
 
@@ -145,18 +163,27 @@ export default {
 
   &_size-md {
     height: var(--size-md);
+    font-size: 20px;
   }
 
   &_size-lg {
     height: var(--size-lg);
+  }
+
+  &_uppercase {
+    text-transform: uppercase;
   }
 }
 
 .Button {
   &[disabled="disabled"] {
     cursor: unset;
-    color: var(--accent-color-white);
     opacity: 0.5;
+
+    &:hover {
+      background-color: var(--app-background-color);
+      color: var(--accent-color-primary);
+    }
   }
 
   &:first-letter {

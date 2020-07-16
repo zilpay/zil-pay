@@ -6,9 +6,12 @@
       pointer,
       size,
       copy,
+      right,
       nowrap,
       capitalize,
-      centred
+      uppercase,
+      centred,
+      left
     })"
     @click="onCopyContent"
   >
@@ -62,7 +65,19 @@ export default {
       type: Boolean,
       required: false
     },
+    left: {
+      type: Boolean,
+      required: false
+    },
+    right: {
+      type: Boolean,
+      required: false
+    },
     capitalize: {
+      type: Boolean,
+      required: false
+    },
+    uppercase: {
       type: Boolean,
       required: false
     }
@@ -72,6 +87,8 @@ export default {
       if (this.copy && this.content) {
         copy(this.content)
         this.$emit(EVENTS.copy)
+      } else {
+        this.$emit(EVENTS.click)
       }
     }
   }
@@ -115,6 +132,14 @@ export default {
     text-align: center;
   }
 
+  &_left {
+    text-align: left;
+  }
+
+  &_right {
+    text-align: right;
+  }
+
   &_size-xs {
     font-size: var(--size-xs-font);
   }
@@ -139,17 +164,25 @@ export default {
     color: var(--accent-color-danger);
   }
 
+  &_variant-primary {
+    color: var(--accent-color-primary);
+  }
+
   &_copy {
     cursor: pointer;
 
     &:hover {
       cursor: pointer;
-      text-shadow: 0 0 0.5em var(--accent-color-gray);
+      text-shadow: 0 0 0.1em var(--theme-negative);
     }
   }
 
   &_capitalize {
     text-transform: capitalize;
+  }
+
+  &_uppercase {
+    text-transform: uppercase;
   }
 }
 </style>

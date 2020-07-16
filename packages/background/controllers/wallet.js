@@ -20,6 +20,8 @@ import { accountControl, networkControl } from './main'
 import { Transaction } from './transaction'
 import { ERROR_MSGS } from 'packages/background/errors'
 
+const { Promise } = global
+
 /**
  * wallet controler for import and export.
  */
@@ -38,7 +40,10 @@ export class Wallet {
 
       if (this.payload.signature) {
         Transaction.returnTx({
-          resolve: String(this.payload.signature)
+          resolve: {
+            ...payload,
+            ...this.payload
+          }
         }, this.payload.uuid)
 
         return sendResponse({ resolve: this.payload.signature })
@@ -48,7 +53,7 @@ export class Wallet {
       const signature = await zilliqa.signMessage(payload.message, account)
 
       Transaction.returnTx({
-        resolve: String(signature)
+        resolve: signature
       }, payload.uuid)
 
       return sendResponse({ resolve: signature })
@@ -71,12 +76,12 @@ export class Wallet {
       const isImported = await accountExporter.isImported()
 
       if (isImported) {
-        account = await accountExporter.exportAccountFromStore()
+        account = await accountExporter.exportAccountFromStore(password)
       } else {
-        account = await accountExporter.exportPrivateKeyFromSeed()
+        account = await accountExporter.exportPrivateKeyFromSeed(password)
       }
 
-      sendResponse({ resolve: account.privateKey })
+      sendResponse({ resolve: account })
     } catch (err) {
       sendResponse({ reject: err.message })
     }
@@ -191,22 +196,46 @@ export class Wallet {
 
     const storage = new BrowserStorage()
     const zilliqa = new ZilliqaControl(networkControl.provider)
+    let { wallet, tokens } = await storage.get([
+      FIELDS.WALLET,
+      FIELDS.SELECTED_COIN,
+      FIELDS.TOKENS
+    ])
+    const account = wallet.identities[wallet.selectedAddress]
 
-    let wallet = await storage.get(FIELDS.WALLET)
-
-    if (!wallet || !wallet.identities || wallet.identities.lenght === 0) {
+    if (!wallet || !wallet.identities || wallet.identities.length === 0) {
       wallet = await this.createAccountBySeed()
     }
 
     try {
       const { address } = wallet.identities[wallet.selectedAddress]
       const { balance } = await zilliqa.getBalance(address)
+      const selectedTokens = tokens[networkControl.selected]
 
       wallet.identities[wallet.selectedAddress].balance = balance
 
-      await storage.set(new BuildObject(FIELDS.WALLET, wallet))
+      if (!selectedTokens || selectedTokens.length === 0) {
+        await storage.set(new BuildObject(FIELDS.WALLET, wallet))
 
-      sendResponse({ resolve: wallet })
+        return sendResponse({ resolve: { tokens, wallet } })
+      }
+
+      const awaiterTokens = selectedTokens.map(async(el) => {
+        const { proxy_address } = el
+
+        el.balance = await zilliqa.getZRCBalance(proxy_address, account)
+
+        return el
+      })
+
+      tokens[networkControl.selected] = await Promise.all(awaiterTokens)
+
+      await storage.set([
+        new BuildObject(FIELDS.TOKENS, tokens),
+        new BuildObject(FIELDS.WALLET, wallet)
+      ])
+
+      sendResponse({ resolve: { tokens, wallet } })
     } catch (err) {
       sendResponse({ reject: err.message })
     }
@@ -218,8 +247,9 @@ export class Wallet {
    */
   async connectToDapp(sendResponse) {
     const isConnect = await accountControl.isConnection(this.payload.domain)
+    const { isEnable } = accountControl.auth
 
-    if (isConnect) {
+    if (isConnect && isEnable) {
       const storage = new BrowserStorage()
       const wallet = await storage.get(FIELDS.WALLET)
       const account = wallet.identities[wallet.selectedAddress]

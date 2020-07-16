@@ -2,21 +2,22 @@
   <div :class="b()">
     <P
       :class="b('title')"
-      :font="FONT_VARIANTS.regular"
+      :font="FONT_VARIANTS.light"
+      :variant="COLOR_VARIANTS.primary"
     >
       <slot />
     </P>
     <Radio
       v-for="(label, index) of elements"
       :key="index"
-      :class="b('item', { border: index < elements.length - 1 })"
+      :class="b('item')"
       :name="NAME"
       :value="value === label"
       @input="onInput(label)"
     >
       <P
         :size="SIZE_VARIANS.sm"
-        :font="FONT_VARIANTS.medium"
+        :font="FONT_VARIANTS.light"
       >
         {{ label }}
       </P>
@@ -26,7 +27,7 @@
 
 <script>
 import { uuid } from 'uuidv4'
-import { SIZE_VARIANS, FONT_VARIANTS, EVENTS } from '@/config'
+import { SIZE_VARIANS, FONT_VARIANTS, EVENTS, COLOR_VARIANTS } from '@/config'
 
 import P from '@/components/P'
 import Radio from '@/components/Radio'
@@ -64,6 +65,7 @@ export default {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
+      COLOR_VARIANTS,
       NAME
     }
   },
@@ -81,10 +83,8 @@ export default {
   width: 100%;
   max-width: 360px;
 
-  border-right: 1px solid var(--accent-color-success);
-
   &__title {
-    font-size: 15px;
+    font-size: 20px;
 
     &:first-letter {
       text-transform: capitalize;
@@ -93,10 +93,6 @@ export default {
 
   &__item {
     padding: 15px 0 15px 0;
-
-    &_border {
-      border-bottom: 1px solid var(--accent-color-success);
-    }
   }
 }
 </style>

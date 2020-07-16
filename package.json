@@ -1,6 +1,6 @@
 {
   "name": "zil-pay",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "ZilPay browser Extension for zilliqa blockchain",
   "shortName": "ZilPay Zilliqa wallet",
   "private": false,
@@ -13,13 +13,16 @@
     "lint:fix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "@iconfu/svg-inject": "^1.2.3",
     "@unstoppabledomains/resolution": "^1.4.0",
     "@zilliqa-js/zilliqa": "^0.10.1",
+    "big.js": "^5.2.2",
     "clipboard-copy": "^3.1.0",
     "core-js": "^3.6.5",
     "cross-fetch": "^3.0.4",
     "crypto": "^1.0.1",
     "extensionizer": "^1.0.1",
+    "jazzicon": "^1.5.0",
     "qrcode": "^1.4.4",
     "rxjs": "^6.5.5",
     "uuidv4": "^6.1.0",

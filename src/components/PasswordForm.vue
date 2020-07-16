@@ -6,6 +6,7 @@
     <Input
       v-model="password"
       :type="INPUT_TYPES.password"
+      :size="SIZE_VARIANS.sm"
       :placeholder="local.PASSWORD"
       :error="error"
       round
@@ -15,6 +16,7 @@
     <Input
       v-model="confirmPassword"
       :type="INPUT_TYPES.password"
+      :size="SIZE_VARIANS.sm"
       :error="errorConfirm"
       :placeholder="local.CONFIRM + ' ' + local.PASSWORD"
       autocomplete=off
@@ -23,9 +25,10 @@
     />
     <Button
       :class="b('btn')"
-      :size="SIZE_VARIANS.xs"
-      :color="COLOR_VARIANTS.warning"
+      :size="SIZE_VARIANS.md"
+      :color="COLOR_VARIANTS.negative"
       round
+      uppercase
     >
       {{ btn }}
     </Button>
@@ -39,7 +42,6 @@ import uiStore from '@/store/ui'
 import { DEFAULT } from 'config'
 import {
   EVENTS,
-  REGX_PATTERNS,
   COLOR_VARIANTS,
   SIZE_VARIANS
 } from '@/config'
@@ -100,9 +102,6 @@ export default {
       if (!this.password) {
         this.error = `*${this.local.PASSWORD} ${this.local.IS} ${this.local.REQUIRED}!`
         return null
-      } else if (!new RegExp(REGX_PATTERNS).test(this.password)) {
-        this.error = `*${this.local.PASSWORD} ${this.local.LOW_COMPLEXITY}`
-        return null
       } else if (this.password.length < DEFAULT.MIN_LENGTH_PASSWORD) {
         this.error = `*${this.local.PASSWORD} ${this.local.MUST_LEAST}` +
                      `${DEFAULT.MIN_LENGTH_PASSWORD} ${this.local.CHARS} ${this.local.LONG}`
@@ -125,7 +124,15 @@ export default {
 <style lang="scss">
 .PasswordForm {
   display: grid;
-  grid-gap: 15px;
-  max-width: 250px;
+  grid-gap: 20px;
+
+  width: 100%;
+  max-width: 320px;
+
+  &__btn {
+    justify-self: center;
+    width: 100%;
+    margin-top: 20px;
+  }
 }
 </style>

@@ -1,61 +1,74 @@
 <template>
-  <Alert :class="b()">
+  <div :class="b()">
     <div :class="b('wrapper')">
       <Title
         :class="b('title')"
-        :size="SIZE_VARIANS.xs"
-        :font="FONT_VARIANTS.medium"
+        :font="FONT_VARIANTS.light"
       >
-        Transactions:
+        <span>
+          {{ local.RECENT_TX }}:
+        </span>
+        <a @click="setClearTxHistory">
+          {{ local.CLEAR_ALL }}
+        </a>
       </Title>
-      <Title
-        v-show="getCurrentTransactions.length === 0"
-        :size="SIZE_VARIANS.sm"
-        :font="FONT_VARIANTS.regular"
-      >
-        You don’t have any transactions yet.
-      </Title>
-      <div
-        v-for="(tx, index) of getCurrentTransactions"
-        :key="index"
-        @click="onSelect(index)"
-      >
-        <TransactionCard :transaction="tx"/>
-        <Separator v-show="index < getCurrentTransactions.length - 1" />
-      </div>
+      <ul :class="b('scroll')">
+        <li v-show="getCurrentTransactions.length === 0">
+          <Title
+            :size="SIZE_VARIANS.sm"
+            :font="FONT_VARIANTS.regular"
+            :variant="COLOR_VARIANTS.gray"
+          >
+            {{ local.HOS_NOT_TX }}
+          </Title>
+        </li>
+        <li
+          v-for="(tx, index) of getCurrentTransactions"
+          :key="index"
+        >
+          <TransactionCard
+            :transaction="tx"
+            @click="onSelect(index)"
+          />
+        </li>
+      </ul>
     </div>
     <BottomModal v-model="info">
+      <BackModal
+        v-if="getCurrentAccount && selectedTx"
+        :name="local.TRANSACTION"
+        @click="info = false"
+      />
       <TransactionDetails
         v-if="getCurrentAccount && selectedTx"
         :account="getCurrentAccount"
         :transaction="selectedTx"
       />
     </BottomModal>
-  </Alert>
+  </div>
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 import accountsStore from '@/store/accounts'
 import transactionsStore from '@/store/transactions'
 
-import { SIZE_VARIANS, FONT_VARIANTS } from '@/config'
+import { SIZE_VARIANS, FONT_VARIANTS, COLOR_VARIANTS } from '@/config'
 
-import Alert from '@/components/Alert'
 import TransactionCard from '@/components/TransactionCard'
-import Separator from '@/components/Separator'
 import Title from '@/components/Title'
 import BottomModal from '@/components/BottomModal'
+import BackModal from '@/components/BackModal'
 import TransactionDetails from '@/components/TransactionDetails'
 
 export default {
   name: 'Transactions',
   components: {
-    Alert,
     TransactionCard,
-    Separator,
     Title,
+    BackModal,
     BottomModal,
     TransactionDetails
   },
@@ -63,11 +76,16 @@ export default {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
+      COLOR_VARIANTS,
+
       info: false,
       selected: null
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
     ]),
@@ -77,11 +95,16 @@ export default {
     ...mapGetters(transactionsStore.STORE_NAME, [
       transactionsStore.GETTERS_NAMES.getCurrentTransactions
     ]),
+
     selectedTx() {
       return this.getCurrentTransactions[this.selected]
     }
   },
   methods: {
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setClearTxHistory
+    ]),
+
     onSelect(index) {
       this.selected = index
       this.info = true
@@ -92,17 +115,45 @@ export default {
 
 <style lang="scss">
 .Transactions {
-  min-width: 360px;
-  min-height: 250px;
-  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
 
-  &__title {
-    height: 16px;
-  }
+  padding-left: 15px;
+  padding-right: 15px;
 
   &__wrapper {
-    display: grid;
-    grid-gap: 5px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  &__scroll {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 10px;
+    padding: 0;
+    list-style: none;
+
+    overflow-y: scroll;
+    height: calc(100vh - 320px);
+
+    & > li {
+      margin-top: 10px;
+    }
+  }
+
+  &__title {
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 14px;
+
+    a,
+    a:hover {
+      cursor: pointer;
+      color: var(--accent-color-primary);
+      text-decoration: underline;
+    }
   }
 }
 </style>

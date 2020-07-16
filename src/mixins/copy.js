@@ -6,10 +6,13 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+
+import copy from 'clipboard-copy'
+
 const DEFAULT_TIMER = 1000
 const COPY_FORMS = {
-  copy: 'copy',
-  copied: 'copied'
+  copy: 'Copy',
+  copied: 'Copied'
 }
 /**
  * Mixin for useing P component copy with `v-tooltip`.
@@ -27,7 +30,11 @@ export default {
     }
   },
   methods: {
-    onCopyMixin() {
+    onCopyMixin(content) {
+      if (content) {
+        copy(content)
+      }
+
       this.copytitle = COPY_FORMS.copied
 
       setTimeout(

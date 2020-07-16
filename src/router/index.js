@@ -11,18 +11,17 @@ import VueRouter from 'vue-router'
 import guard from './guard'
 
 import Accounts from '@/pages/Accounts'
+import Contacts from '@/pages/Contacts'
+import Tokens from '@/pages/Tokens'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
 import Verify from '@/pages/Verify'
-import Connections from '@/pages/Connections'
+import Congratulation from '@/pages/Congratulation'
 import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
 import LockScreen from '@/pages/LockScreen'
 import Popup from '@/pages/Popup'
 import SignMessage from '@/pages/SignMessage'
-import Receive from '@/pages/Receive'
-import Send from '@/pages/Send'
-import Settings from '@/pages/Settings'
 
 // Settings children pages.
 import About from '@/pages/settings/About'
@@ -31,13 +30,13 @@ import General from '@/pages/settings/General'
 import Networks from '@/pages/settings/Networks'
 import Restore from '@/pages/Restore'
 import Security from '@/pages/settings/Security'
+import Connections from '@/pages/settings/Connections'
 
 // Popup children pages.
 import TxData from '@/pages/popup/TxData'
 
 // Accounts children pages.
 import Import from '@/pages/accounts/Import'
-import Export from '@/pages/accounts/Export'
 
 Vue.use(VueRouter)
 
@@ -60,6 +59,12 @@ const routes = [
     path: `/${Create.name.toLowerCase()}`,
     name: Create.name,
     component: Create,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: `/${Congratulation.name.toLowerCase()}`,
+    name: Congratulation.name,
+    component: Congratulation,
     meta: { requiresAuth: false }
   },
   {
@@ -89,15 +94,21 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: `/${Import.name.toLowerCase()}`,
-    name: Import.name,
-    component: Import,
+    path: `/${Contacts.name.toLowerCase()}`,
+    name: Contacts.name,
+    component: Contacts,
     meta: { requiresAuth: true }
   },
   {
-    path: `/${Export.name.toLowerCase()}`,
-    name: Export.name,
-    component: Export,
+    path: `/${Tokens.name.toLowerCase()}`,
+    name: Tokens.name,
+    component: Tokens,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Import.name.toLowerCase()}`,
+    name: Import.name,
+    component: Import,
     meta: { requiresAuth: true }
   },
   {
@@ -134,24 +145,6 @@ const routes = [
     path: `/${TxData.name.toLowerCase()}`,
     name: TxData.name,
     component: TxData,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Receive.name.toLowerCase()}`,
-    name: Receive.name,
-    component: Receive,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Send.name.toLowerCase()}/:?address`,
-    name: Send.name,
-    component: Send,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: `/${Settings.name.toLowerCase()}`,
-    name: Settings.name,
-    component: Settings,
     meta: { requiresAuth: true }
   },
   {

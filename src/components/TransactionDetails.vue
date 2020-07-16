@@ -1,74 +1,102 @@
 <template>
-  <Container :class="b()">
-    <div :class="b('sender-recipient')">
-      <P
-        v-tooltip="copytitle"
-        :size="SIZE_VARIANS.xs"
-        :content="account.address | toAddress(addressFormat, false)"
-        copy
-        @copy="onCopyMixin"
-      >
-        {{ account.address | toAddress(addressFormat) }}
-      </P>
-      <Arrow
-        height="10"
-        width="2"
-        right
-      />
-      <P
-        v-tooltip="copytitle"
-        :size="SIZE_VARIANS.xs"
-        :content="transaction.toAddr | toAddress(addressFormat, false)"
-        copy
-        @copy="onCopyMixin"
-      >
-        {{ transaction.toAddr | toAddress(addressFormat) }}
-      </P>
-    </div>
-    <Separator />
-    <ul :class="b('info-list')">
-      <li
-        v-for="(el, index) of infoList"
-        :key="index"
-        :class="b('info-item')"
-      >
-        <P
-          :size="SIZE_VARIANS.xs"
-          :font="FONT_VARIANTS.bold"
-        >
-          {{ el.key }}
+  <div :class="b()">
+    <ul :class="b('wrapper')">
+      <li>
+        <P>
+          {{ local.STATUS }}
+        </P>
+        <P :class="b('status')">
+          {{ status.status }}
+          <Icon
+            :icon="status.icon"
+            height="15"
+            width="15"
+          />
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.SENT }}
         </P>
         <P
-          v-tooltip.left="copytitle"
-          :class="b('value')"
-          :size="SIZE_VARIANS.xs"
-          :content="el.value"
-          :font="FONT_VARIANTS.regular"
+          v-tooltip="copytitle"
+          :content="account.address | toAddress(addressFormat, false)"
           copy
           nowrap
           @copy="onCopyMixin"
         >
-          {{ el.value }}
+          {{ account.address | toAddress(addressFormat, true) }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.RECEIVED }}
+        </P>
+        <P
+          v-tooltip="copytitle"
+          :content="transaction.toAddr | toAddress(addressFormat, false)"
+          copy
+          nowrap
+          @copy="onCopyMixin"
+        >
+          {{ transaction.toAddr | toAddress(addressFormat, true) }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.INFO }}
+        </P>
+        <P nowrap>
+          {{ transaction.Info }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.HASH }}
+        </P>
+        <P
+          v-tooltip="copytitle"
+          :content="transaction.TranID"
+          copy
+          @copy="onCopyMixin"
+          nowrap
+        >
+          {{ transaction.TranID }}
+        </P>
+      </li>
+      <li>
+        <P>
+          {{ local.NONCE }}
+        </P>
+        <P>
+          {{ transaction.nonce }}
+        </P>
+      </li>
+      <li v-if="transaction.timestamp">
+        <P>
+          {{ local.TIME }}
+        </P>
+        <P>
+          {{ timeStamp }}
         </P>
       </li>
     </ul>
-    <ViewblockLink :hash="transaction.TranID"/>
-  </Container>
+    <ViewblockLink :hash="transaction.TranID" />
+  </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
-import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE } from '@/config'
+import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE, ICON_VARIANTS } from '@/config'
 
 import P from '@/components/P'
-import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import ViewblockLink from '@/components/ViewblockLink'
-import Arrow from '@/components/icons/Arrow'
+import Icon from '@/components/Icon'
 
-import { toAddress, fromZil, toConversion } from '@/filters'
+import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 
 /**
@@ -83,14 +111,12 @@ import CopyMixin from '@/mixins/copy'
 export default {
   name: 'TransactionDetails',
   components: {
-    Container,
-    Separator,
-    Arrow,
     P,
-    ViewblockLink
+    ViewblockLink,
+    Icon
   },
   mixins: [CopyMixin],
-  filters: { toAddress, fromZil, toConversion },
+  filters: { toAddress },
   props: {
     account: {
       type: Object,
@@ -105,6 +131,7 @@ export default {
     return {
       SIZE_VARIANS,
       FONT_VARIANTS,
+      ICON_VARIANTS,
       ICON_TYPE
     }
   },
@@ -112,26 +139,32 @@ export default {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat
     ]),
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.local
+    ]),
 
-    infoList() {
-      return [
-        {
-          key: 'Info',
-          value: this.transaction.Info
-        },
-        {
-          key: 'Hash',
-          value: this.transaction.TranID
-        },
-        {
-          key: 'Nonce',
-          value: this.transaction.nonce
-        },
-        {
-          key: 'Block',
-          value: this.transaction.block
+    status() {
+      if (!this.transaction.confirmed) {
+        return {
+          icon: ICON_VARIANTS.statusPadding,
+          status: this.local.PENDING
         }
-      ]
+      } else if (this.transaction.error) {
+        return {
+          icon: ICON_VARIANTS.statusDanger,
+          status: this.local.REJECTED
+        }
+      }
+
+      return {
+        icon: ICON_VARIANTS.statusSuccess,
+        status: this.local.COMPLETED
+      }
+    },
+    timeStamp() {
+      return new Date(this.transaction.timestamp)
+        .toLocaleString()
+        .replace(/\//g, '-')
     }
   }
 }
@@ -139,32 +172,61 @@ export default {
 
 <style lang="scss">
 .TransactionDetails {
-  /* top | right | bottom | left */
-  padding: 10px 15px 30px 15px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
 
-  &__sender-recipient {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
+  width: 100%;
+  min-height: 200px;
 
-  &__info-list {
-    list-style: none;
-    margin: 0;
+  &__wrapper {
     padding: 0;
-    padding-top: 15px;
+    list-style: none;
   }
 
-  &__info-item {
+  &__status {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
-    border-bottom: 1px solid var(--theme-color-separator);
+    & > img {
+      margin-left: 5px;
+    }
   }
 
-  &__value {
-    max-width: 200px;
+  &__wrapper > li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 300px;
+    padding: 10px;
+    margin-top: 5px;
+
+    background-color: var(--app-background-color);
+    border-radius: 7px;
+
+    & > .P {
+      max-width: 200px;
+    }
+
+    :first-of-type {
+      opacity: 0.7;
+    }
+
+    @media (max-width: 700px) {
+      max-width: 280px;
+    }
+  }
+
+  & > .Button {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+    margin: 20px;
+    width: 100%;
+
+    text-transform: capitalize;
   }
 }
 </style>

@@ -3,62 +3,64 @@
     :class="b()"
     @click="onClick"
   >
-    <Container :class="b('first-line')">
-      <P
-        :class="b('send')"
-        :font="FONT_VARIANTS.bold"
-      >
-        {{ txType }}
-      </P>
-      <P
-        :class="b('amount')"
-        :font="FONT_VARIANTS.regular"
-      >
-        -ZIL{{ transaction.amount | fromZil }}
-      </P>
-    </Container>
-    <Container :class="b('second-line')">
-      <Icon
-        :icon="statusIcon"
-        height="15"
-        width="15"
-      />
-      <Arrow
-        :color="COLOR_VARIANTS.primary"
-        height="10"
-        width="2"
-        right
-      />
-    </Container>
-    <Container :class="b('thirdly-line')">
-      <div :class="b('time')">
-        {{ this.local.EPOCH }}: {{ transaction.block}}
+    <Icon
+      :icon="statusIcon"
+      height="15"
+      width="15"
+    />
+    <div :class="b('wrapper')">
+      <div :class="b('first-line')">
+        <P
+          :class="b('send')"
+          :font="FONT_VARIANTS.bold"
+        >
+          {{ txType }}
+        </P>
+        <P
+          :class="b('zil')"
+          :font="FONT_VARIANTS.light"
+        >
+          -{{ transaction.amount | fromZil(token.decimals) }} {{ token.symbol }}
+        </P>
       </div>
-      <P
-        :class="b('amount')"
-        :font="FONT_VARIANTS.regular"
-      >
-        -${{ transaction.amount | toConversion('0.001') }}
-      </P>
-    </Container>
+      <div :class="b('thirdly-line')">
+        <P
+          :class="b('time')"
+          :variant="COLOR_VARIANTS.gray"
+          :font="FONT_VARIANTS.regular"
+        >
+          {{ timeStamp }}
+        </P>
+        <P
+          :class="b('amount')"
+          :variant="COLOR_VARIANTS.gray"
+          :font="FONT_VARIANTS.regular"
+        >
+          -{{ transaction.amount | toConversion(getRate, token.decimals) }} {{ currency }}
+        </P>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { DEFAULT_TOKEN } from 'config'
+
+import { mapState, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
+import settingsStore from '@/store/settings'
 
 import {
   ICON_VARIANTS,
   FONT_VARIANTS,
   COLOR_VARIANTS,
+  SIZE_VARIANS,
   EVENTS
 } from '@/config'
 
 import P from '@/components/P'
-import Container from '@/components/Container'
 import Icon from '@/components/Icon'
-import Arrow from '@/components/icons/Arrow'
 
 import { fromZil, toConversion } from '@/filters'
 
@@ -66,9 +68,7 @@ export default {
   name: 'TransactionCard',
   components: {
     P,
-    Icon,
-    Arrow,
-    Container
+    Icon
   },
   filters: { fromZil, toConversion },
   props: {
@@ -81,23 +81,66 @@ export default {
     return {
       ICON_VARIANTS,
       FONT_VARIANTS,
-      COLOR_VARIANTS
+      COLOR_VARIANTS,
+      SIZE_VARIANS
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
     ]),
-    txType() {
-      const { Info } = this.transaction
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.currency,
+      settingsStore.STATE_NAMES.currentRate
+    ]),
+    ...mapGetters(settingsStore.STORE_NAME, [
+      settingsStore.GETTERS_NAMES.getRate
+    ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken
+    ]),
 
-      if (Info.includes('Contract Txn')) {
+    getRate() {
+      let { symbol } = this.transaction
+
+      if (!symbol) {
+        symbol = DEFAULT_TOKEN.symbol
+      }
+
+      try {
+        return this.currentRate[symbol][this.currency]
+      } catch (err) {
+        return 0
+      }
+    },
+    txType() {
+      const { Info, symbol, decimals } = this.transaction
+
+      if (symbol && decimals) {
+        return this.local.TRANSFER
+      } else if (Info.includes('Contract Txn')) {
         return this.local.TRIGGER
       } else if (Info.includes('Contract Creation')) {
         return this.local.DEPLOY
       }
 
       return this.local.SEND
+    },
+    token() {
+      let { symbol, decimals } = this.transaction
+
+      if (symbol === DEFAULT_TOKEN.symbol) {
+        return DEFAULT_TOKEN
+      }
+
+      if (symbol) {
+        return {
+          symbol,
+          decimals
+        }
+      }
+
+      return DEFAULT_TOKEN
     },
     statusIcon() {
       if (!this.transaction.confirmed) {
@@ -107,33 +150,40 @@ export default {
       }
 
       return ICON_VARIANTS.statusSuccess
+    },
+    timeStamp() {
+      if (!this.transaction.timestamp) {
+        return `${this.local.EPOCH} ${this.transaction.block}`
+      }
+
+      return new Date(this.transaction.timestamp).toDateString()
     }
   },
   methods: {
     onClick() {
       this.$emit(EVENTS.click)
     }
-  },
-  mounted() {
-    [
-      'Info',
-      'TranID',
-      'amount',
-      'nonce',
-      'toAddr'
-    ].forEach(key => {
-      if (!(key in this.transaction)) {
-        throw new Error(`${key} is required.`)
-      }
-    })
   }
 }
 </script>
 
 <style lang="scss">
 .TransactionCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   cursor: pointer;
-  height: 70px;
+
+  border-radius: 7px;
+  background-color: var(--opacity-bg-element-1);
+  padding: 8px;
+
+  max-height: 40px;
+
+  &__wrapper {
+    width: 100%;
+  }
 
   &__first-line,
   &__second-line,
@@ -150,20 +200,16 @@ export default {
     padding-right: 15px;
   }
 
-  &__send {
-    font-size: 10px;
+  &__send,
+  &__zil {
+    font-size: 14px;
     line-height: 25px;
   }
 
-  &__amount {
-    font-size: 10px;
-    line-height: 20px;
-  }
-
+  &__amount,
   &__time {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 20px;
-    color: var(--theme-color-font);
   }
 }
 </style>

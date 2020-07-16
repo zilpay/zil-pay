@@ -51,7 +51,7 @@ export default {
 
     &_checked + .SwitchBox__slider:before {
       transform: translateX(23px);
-      background-color: var(--accent-color-success);
+      background-color: var(--accent-color-info);
     }
   }
 
@@ -62,7 +62,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--theme-color-separator);
+    background-color: var(--accent-color-second);
     border-radius: 34px;
     transition: .4s;
 

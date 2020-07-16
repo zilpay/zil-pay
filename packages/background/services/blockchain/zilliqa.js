@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT } from 'config'
+import { FIELDS, DEFAULT, DEFAULT_TOKEN } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { AES } from 'lib/crypto'
@@ -60,6 +60,24 @@ export class ZilliqaControl {
     }
 
     return result
+  }
+
+  /**
+   * Get the balance of ZRC token.
+   * @param {String} proxyAddress - ZRC proxy contract address.
+   * @param {Object} account - Default account object.
+   */
+  async getZRCBalance(proxyAddress, account) {
+    const address = String(account.address).toLowerCase()
+    const balanceResult = await this
+      .blockchain
+      .getSmartContractSubState(proxyAddress, 'balances', [address])
+
+    if (!balanceResult.result || !balanceResult.result.balances || !balanceResult.result.balances[address]) {
+      return '0'
+    }
+
+    return balanceResult.result.balances[address]
   }
 
   /**
@@ -197,8 +215,12 @@ export class ZilliqaControl {
     const account = new Account(privateKey)
     const hashStr = new AES().hash(message)
     const hashBytes = Buffer.from(hashStr, 'hex')
+    const signature = account.signTransaction(hashBytes)
 
-    return account.signTransaction(hashBytes)
+    return {
+      signature,
+      publicKey: account.publicKey
+    }
   }
 
   /**
@@ -300,6 +322,7 @@ export class ZilliqaControl {
       payload.toAddr = fromBech32Address(payload.toAddr)
     }
 
+    payload.symbol = DEFAULT_TOKEN.symbol
     payload.toAddr = toChecksumAddress(payload.toAddr)
 
     try {
@@ -378,7 +401,10 @@ export class ZilliqaControl {
       amount: tx.amount,
       toAddr: toChecksumAddress(tx.toAddr),
       nonce: tx.nonce,
-      block: tx.block
+      block: tx.block,
+      timestamp: new Date().getTime(),
+      decimals: tx.decimals,
+      symbol: tx.symbol
     }
 
     if (!net) {

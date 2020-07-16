@@ -1,5 +1,5 @@
 <template>
-  <div :class="b()">
+  <div :class="b({ pure })">
     <aside
       v-show="value"
       :class="b('social')"
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import { EVENTS } from '@/config'
+
 /**
  * Modal which show from bottom.
  * @example
@@ -30,15 +32,15 @@ export default {
     value: {
       type: Boolean,
       default: true
-    }
-  },
-  data() {
-    return {
+    },
+    pure: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
     onModal() {
-      this.$emit('input', !this.value)
+      this.$emit(EVENTS.input, !this.value)
     }
   }
 }
@@ -46,6 +48,10 @@ export default {
 
 <style lang="scss">
 .BottomModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &__social,
   &__close {
     position: fixed;
@@ -57,12 +63,37 @@ export default {
   &__social {
     z-index: 10;
 
-    background-color: var(--app-background-color);
+    top: 30%;
+    bottom: inherit;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
-    height: fit-content;
+    max-width: 500px;
 
-    animation: fadeInUp 0.4s;
-    animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+    background-color: var(--accent-color-second);
+
+    border-radius: var(--default-border-radius);
+
+    @media (max-width: 700px) {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: auto;
+
+      transform: none;
+
+      min-width: 300px;
+
+      border-radius: 0;
+
+      height: fit-content;
+      border-top-right-radius: var(--default-border-radius);
+      border-top-left-radius: var(--default-border-radius);
+
+      animation: fadeInUp 0.4s;
+      animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+    }
   }
 
   &__close {
@@ -78,6 +109,21 @@ export default {
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
 
     opacity: 0.5;
+  }
+
+  &_pure {
+    & > .BottomModal__social {
+      z-index: 10;
+
+      top: 30%;
+      bottom: inherit;
+
+      background-color: var(--accent-color-second);
+
+      border-radius: 12px;
+
+      animation: none;
+    }
   }
 }
 </style>

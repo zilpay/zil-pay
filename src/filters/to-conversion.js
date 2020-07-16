@@ -6,21 +6,19 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import Big from 'big.js'
 import fromZil from './from-zil'
 
-export function toConversion(value, rate) {
-  if (isNaN(rate)) {
-    return ''
-  }
-
-  if (value <= 0) {
+export function toConversion(value, rate, decimals) {
+  if (isNaN(rate) || Number(value) <= 0) {
     return 0
   }
 
-  let zilAmount = Number(fromZil(value))
-  let usdAmount = zilAmount * Number(rate)
+  const _rate = Big(rate)
+  let zilAmount = Big(fromZil(value, decimals))
+  let coverted = zilAmount.mul(_rate)
 
-  return usdAmount.toFixed(4)
+  return coverted.round(4)
 }
 
 export default toConversion

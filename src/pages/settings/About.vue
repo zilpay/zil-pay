@@ -1,27 +1,14 @@
 <template>
   <div :class="b()">
-    <TopBar close/>
-    <Container :class="b('wrapper')">
-      <Icon :icon="ICON_VARIANTS.zilPayLogo"/>
-      <Title :size="SIZE_VARIANS.sm">
+    <TopBar />
+    <SvgInject
+      :class="b('logo')"
+      :variant="ICON_VARIANTS.zilPayLogo"
+    />
+    <div :class="b('wrapper')">
+      <Title :size="SIZE_VARIANS.md">
         ZilPay Version {{ version }}
       </Title>
-      <Title :size="SIZE_VARIANS.sm">
-        Thanks for your donats.
-      </Title>
-      <P
-        v-tooltip="copytitle"
-        :class="b('address')"
-        :size="SIZE_VARIANS.sm"
-        :content="donateAddress"
-        copy
-        nowrap
-        @copy="onCopyMixin"
-      >
-        {{ donateAddress }}
-      </P>
-    </Container>
-    <Container>
       <ul :class="b('links')">
         <li
           v-for="(link, index) of links"
@@ -32,20 +19,13 @@
             :href="link.url"
             target="_blank"
           >
-            {{ link.name }}
+            <P>
+              {{ link.name }}
+            </P>
           </a>
         </li>
       </ul>
-    </Container>
-    <Container :class="b('wrapper')">
-      <a
-        :class="b('owner-link')"
-        :href="owner.url"
-        target="_blank"
-      >
-        By: {{ owner.name }}
-      </a>
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -54,10 +34,9 @@ import extension from 'extensionizer'
 import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import TopBar from '@/components/TopBar'
-import Icon from '@/components/Icon'
-import Container from '@/components/Container'
 import Title from '@/components/Title'
 import P from '@/components/P'
+import SvgInject from '@/components/SvgInject'
 
 import CopyMixin from '@/mixins/copy'
 
@@ -65,9 +44,8 @@ export default {
   name: 'About',
   components: {
     TopBar,
-    Icon,
-    Container,
     Title,
+    SvgInject,
     P
   },
   mixins: [CopyMixin],
@@ -76,11 +54,6 @@ export default {
       ICON_VARIANTS,
       SIZE_VARIANS,
       version: extension.runtime.getManifest().version,
-      owner: {
-        name: 'Rinat',
-        url: 'https://github.com/lich666dead'
-      },
-      donateAddress: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
       links: [
         {
           name: 'Github',
@@ -93,14 +66,6 @@ export default {
         {
           name: 'Terms and use',
           url: 'https://zilpay.xyz/Terms'
-        },
-        {
-          name: 'Documentation',
-          url: 'https://zilpay.xyz/Documentation/'
-        },
-        {
-          name: 'License MIT',
-          url: 'https://github.com/zilpay/zil-pay/blob/master/LICENSE'
         }
       ]
     }
@@ -110,32 +75,39 @@ export default {
 
 <style lang="scss">
 .About {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+    top: 20vh;
+
+    width: 50vw;
+    height: 50vh;
+
+    @media (max-width: 700px) {
+      width: 70vw;
+    }
+  }
+
   &__wrapper {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 30px;
+    height: 100%;
+    z-index: 1;
   }
 
   &__links {
     list-style: none;
-    font-weight: 500;
-    font-size: 10px;
-    line-height: 28px;
-  }
-
-  &__link,
-  &__owner-link {
-    text-decoration: none;
-    color: var(--theme-color-font);
-  }
-
-  &__address {
-    width: 250px;
-  }
-
-  &__owner-link {
-    text-align: center;
+    line-height: 38px;
+    padding: 0;
   }
 }
 </style>

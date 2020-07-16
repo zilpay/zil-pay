@@ -1,19 +1,16 @@
 <template>
   <div :class="b()">
     <Alert>
-      <Container
-        v-if="getCurrentAccount"
-        :class="b('account')"
-      >
+      <div v-if="getCurrentAccount">
         <Title :size="SIZE_VARIANS.sm">
           {{ getAccountName(getCurrentAccount) }}
         </Title>
-          <P>
+          <P :size="SIZE_VARIANS.xs">
             {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
           </P>
-      </Container>
+      </div>
     </Alert>
-    <Container :class="b('wrapper')">
+    <div :class="b('wrapper')">
       <Icon
         :src="connect.icon"
         :type="ICON_TYPE.auto"
@@ -26,25 +23,20 @@
       <P>
         {{ connect.title }} {{ local.CONNECT_INFO }}
       </P>
-    </Container>
-    <Alert :class="b('about-connect')">
-      <P
-        :class="b('info')"
-        :font="FONT_VARIANTS.light"
-      >
+    </div>
+    <Alert>
+      <P :font="FONT_VARIANTS.light">
         {{ local.CONNECT_DIS }}
       </P>
     </Alert>
-    <BottomBar
-      :elements="bottomBar"
-      @click="onEvent"
+    <Tabs
+      :elements="tabElements"
+      @input="onEvent"
     />
   </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
 import accountsStore from '@/store/accounts'
 import settingsStore from '@/store/settings'
@@ -58,22 +50,20 @@ import {
   FONT_VARIANTS
 } from '@/config'
 
+import HomePage from '@/pages/Home'
+
 import Icon from '@/components/Icon'
 import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
-import BottomBar from '@/components/BottomBar'
-import Container from '@/components/Container'
+import Tabs from '@/components/Tabs'
 
 import { toAddress } from '@/filters'
 import AccountMixin from '@/mixins/account'
 import { removeConnect, Background } from '@/services'
 
 const { window } = global
-const EVENTS = {
-  connect: uuid(),
-  cancel: uuid()
-}
+
 export default {
   name: 'Connect',
   mixins: [AccountMixin],
@@ -81,9 +71,8 @@ export default {
     Alert,
     Title,
     P,
-    BottomBar,
-    Container,
-    Icon
+    Icon,
+    Tabs
   },
   filters: { toAddress },
   data() {
@@ -106,19 +95,13 @@ export default {
       accountsStore.GETTERS_NAMES.getCurrentAccount
     ]),
 
-    bottomBar() {
+    tabElements() {
       return [
         {
-          value: this.local.CANCEL,
-          event: EVENTS.cancel,
-          size: SIZE_VARIANS.sm,
-          variant: COLOR_VARIANTS.primary
+          name: this.local.CANCEL
         },
         {
-          value: this.local.CONNECT,
-          event: EVENTS.connect,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
+          name: this.local.CONNECT
         }
       ]
     }
@@ -139,19 +122,22 @@ export default {
       await removeConnect()
 
       this.setConnect({})
-      window.close()
+      this.popupClouse()
     },
     async onConfirm() {
       await this.onUpdateDappList()
-      window.close()
+      this.popupClouse()
     },
-
+    popupClouse() {
+      window.close()
+      this.$router.push({ name: HomePage.name })
+    },
     onEvent(event) {
       switch (event) {
-      case EVENTS.connect:
+      case 1:
         this.onConfirm()
         break
-      case EVENTS.cancel:
+      case 0:
         this.onReject()
         break
       default:
@@ -167,32 +153,31 @@ export default {
 
 <style lang="scss">
 .Connect {
-  &__account {
-    padding-left: 15px;
-    padding-right: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    font-size: 15px;
-  }
+  text-align: center;
+
+  background-color: var(--app-background-color);
 
   &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 
-    /* top | right | bottom | left */
-    padding: 30px 15px 100px 15px;
+    padding-top: 30px;
+
+    min-height: 200px;
   }
 
-  &__info {
-    text-align: center;
-
-    line-height: 18px;
-    font-size: 15px;
-    margin-top: 15px;
+  & > .Alert {
+    margin-top: 30px;
   }
 
-  &__about-connect {
-    height: 100px;
+  & > .Tabs {
+    margin-top: 20px;
   }
 }
 </style>

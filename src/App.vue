@@ -1,8 +1,30 @@
 <template>
   <div id="app">
-    <div :class="b()">
-      <router-view/>
-    </div>
+    <router-view/>
+    <footer>
+      <BottomModal
+        v-show="receiveModal.show"
+        :value="receiveModal.show"
+        @input="setShowReceiveModal"
+      >
+        <Receive />
+      </BottomModal>
+      <BottomModal
+        v-show="sendModal.show"
+        :value="sendModal.show"
+        @input="setShowSendModal"
+      >
+        <Send />
+      </BottomModal>
+      <BottomModal
+        v-show="accountModal.show"
+        :value="accountModal.show"
+        @input="setShowAccountModal"
+      >
+        <Account />
+      </BottomModal>
+      <SettingsList v-model="sideBarSettings"/>
+    </footer>
   </div>
 </template>
 
@@ -11,30 +33,49 @@ import { BrowserStorage } from 'lib/storage'
 import { FIELDS } from 'config'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import uiStore from '@/store/ui'
+import modalStore from '@/store/modal'
 import settingsStore from '@/store/settings'
 import contactsStore from '@/store/contacts'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
+import tokensStore from '@/store/token'
 import transactionsStore from '@/store/transactions'
 
-import FirstPage from '@/pages/FirstStart'
-import LockPage from '@/pages/LockScreen'
-import homePage from '@/pages/Home'
-import PopupPage from '@/pages/Popup'
+import BottomModal from '@/components/BottomModal'
+import SettingsList from '@/components/SettingsList'
+
+import Receive from '@/views/Receive'
+import Account from '@/views/Account'
+import Send from '@/views/Send'
+
+import Popup from '@/pages/Popup'
 import ConnectPage from '@/pages/Connect'
 
 import LinkMixin from '@/mixins/links'
-import { isExpand, getStorageData } from '@/services'
+import { getStorageData } from '@/services'
 
 export default {
   name: 'App',
   mixins: [LinkMixin],
+  components: {
+    BottomModal,
+    Receive,
+    Send,
+    Account,
+    SettingsList
+  },
   computed: {
     ...mapState(transactionsStore.STORE_NAME, [
       transactionsStore.STATE_NAMES.confirmationTx
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.connect
+    ]),
+    ...mapState(modalStore.STORE_NAME, [
+      modalStore.STATE_NAMES.sendModal,
+      modalStore.STATE_NAMES.receiveModal,
+      modalStore.STATE_NAMES.sideBarSettings,
+      modalStore.STATE_NAMES.accountModal
     ])
   },
   methods: {
@@ -45,6 +86,9 @@ export default {
     ]),
     ...mapActions(uiStore.STORE_NAME, [
       uiStore.ACTIONS_NAMES.onLocal
+    ]),
+    ...mapActions(tokensStore.STORE_NAME, [
+      tokensStore.ACTIONS_NAMES.onUpdateTokensStore
     ]),
     ...mapActions(walletStore.STORE_NAME, [
       walletStore.ACTIONS_NAMES.onInit
@@ -68,32 +112,12 @@ export default {
       transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
       transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
+    ...mapMutations(modalStore.STORE_NAME, [
+      modalStore.MUTATIONS_NAMES.setShowSendModal,
+      modalStore.MUTATIONS_NAMES.setShowReceiveModal,
+      modalStore.MUTATIONS_NAMES.setShowAccountModal
+    ]),
 
-    async authNavigation(authData) {
-      if (!authData.isReady) {
-        if (isExpand()) {
-          this.linksExpand()
-        }
-
-        this.$router.push({ name: FirstPage.name })
-
-        return null
-      } else if (!authData.isEnable) {
-        this.$router.push({ name: LockPage.name })
-
-        return null
-      } else if (this.confirmationTx && this.confirmationTx.length > 0) {
-        this.$router.push({ name: PopupPage.name })
-
-        return null
-      } else if (this.connect && Object.keys(this.connect).length > 0) {
-        this.$router.push({ name: ConnectPage.name })
-
-        return null
-      }
-
-      this.$router.push({ name: homePage.name })
-    },
     async storeUpdate() {
       const storageData = await getStorageData()
 
@@ -103,11 +127,19 @@ export default {
 
       const { wallet, config, selectednet } = storageData
 
-      this.setAccounts(wallet.identities)
-      this.setAccount(wallet.selectedAddress)
+      if (wallet && wallet.identities) {
+        this.setAccounts(wallet.identities)
+        this.setAccount(wallet.selectedAddress)
+      }
 
-      this.setNetwork(selectednet)
       this.setNetworkConfig(config)
+
+      if (!selectednet) {
+        const [net] = Object.keys(config)
+        this.setNetwork(net)
+      } else {
+        this.setNetwork(selectednet)
+      }
     }
   },
   async beforeMount() {
@@ -117,16 +149,25 @@ export default {
     const theme = await storage.get(FIELDS.THEME)
     this.setTheme(theme)
 
-    const authData = await this.onInit()
+    await this.onInit()
 
-    await this.onUpdateToConfirmTxs()
+    const forConfirm = await this.onUpdateToConfirmTxs()
+
+    if (forConfirm && forConfirm.length !== 0) {
+      this.$router.push({ name: Popup.name })
+    }
+
     await this.onUpdateConnection()
 
     this.storeUpdate()
-    this.authNavigation(authData)
+    this.onUpdateTokensStore()
     this.onLocal()
     this.onUpdate()
     this.onUpdateTransactions()
+
+    if (this.connect && Object.keys(this.connect).length > 0) {
+      this.$router.push({ name: ConnectPage.name })
+    }
 
     this.updateRate()
     this.onUpdateSettings()
@@ -139,8 +180,13 @@ export default {
 <style lang="scss">
 @import "./styles/general";
 
-.App {
-  display: grid;
-  justify-content: center;
+#app {
+  width: 100vw;
+  height: 100vh;
+
+  & > div {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

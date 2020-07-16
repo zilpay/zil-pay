@@ -15,5 +15,6 @@ export const COLOR_VARIANTS = {
   info: 'info',
   danger: 'danger',
   warning: 'warning',
-  transparent: 'transparent'
+  transparent: 'transparent',
+  negative: 'negative'
 }

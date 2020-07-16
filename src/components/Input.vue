@@ -5,7 +5,7 @@
     </div>
     <input
       v-bind="$attrs"
-      :class="b('element', { round, centred, error: Boolean(error) })"
+      :class="b('element', { round, centred, second, error: Boolean(error) })"
       :value="value"
       :autofocus="autofocus"
       ref="input"
@@ -53,6 +53,10 @@ export default {
       type: String,
       default: SIZE_VARIANS.xs
     },
+    second: {
+      type: Boolean,
+      default: false
+    },
     round: {
       type: Boolean,
       default: false
@@ -99,12 +103,6 @@ export default {
 
 <style lang="scss">
 .Input {
-  display: grid;
-
-  justify-items: left;
-}
-
-.Input {
   &__title,
   &__error {
     display: flex;
@@ -112,12 +110,15 @@ export default {
 
     width: 100%;
 
-    text-indent: 15px;
+    text-indent: 7px;
     text-align: left;
 
-    font-family: var(--font-family-medium);
-    color: var(--theme-color-font);
-    font-size: var(--size-xs-font);
+    font-family: var(--font-family-light);
+    color: var(--theme-negative);
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: 1.33594px;
 
     &__enable {
       height: 20px;
@@ -134,12 +135,14 @@ export default {
     border: 0;
     text-indent: 15px;
 
-    background: var(--theme-color-input);
+    color: var(--accent-color-primary);
 
-    color: var(--theme-color-font);
+    background: var(--opacity-bg-element);
+    border: 1px solid var(--accent-color-primary);
 
     &_error {
-      border: 1px solid var(--accent-color-danger);
+      color: var(--accent-color-danger);
+      border: 2px solid var(--accent-color-danger);
     }
 
     &_centred {
@@ -148,7 +151,13 @@ export default {
     }
 
     &_round {
-      border-radius: 5px;
+      border-radius: calc(var(--default-border-radius) - 18px);
+    }
+
+    &_second {
+      border: 0;
+      background-color: var(--opacity-bg-element-2);
+      border-radius: 10px;
     }
 
     &:focus {
@@ -171,11 +180,6 @@ export default {
     .Input__element {
       height: var(--size-xs);
     }
-
-    .Input__title,
-    .Input__error {
-      font-size: var(--size-xs-font);
-    }
   }
 
   &_size-sm {
@@ -185,29 +189,7 @@ export default {
 
     .Input__title,
     .Input__error {
-      font-size: var(--size-sm-font);
-    }
-  }
-
-  &_size-md {
-    .Input__element {
-      height: var(--size-md);
-    }
-
-    .Input__title,
-    .Input__error {
-      font-size: var(--size-md-font);
-    }
-  }
-
-  &_size-lg {
-    .Input__element {
-      height: var(--size-lg);
-    }
-
-    .Input__title,
-    .Input__error {
-      font-size: var(--size-lg-font);
+      font-size: calc(var(--size-sm-font) - 5px);
     }
   }
 }

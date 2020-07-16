@@ -1,48 +1,52 @@
 <template>
-  <Container :class="b()">
+  <div :class="b()">
     <UiPanel />
+    <SvgInject
+      :class="b('logo')"
+      :variant="ICON_VARIANTS.zilPayLogo"
+    />
     <div :class="b('wrapper')">
-      <Icon
-        :icon="ICON_VARIANTS.zilPayLogo"
-        width="148"
-        height="148"
-      />
-      <Title>
-        {{ local.FIRSTSTART_TITLE }}
-      </Title>
-      <P>
-        {{ local.FIRSTSTART_DIS }}
-      </P>
+      <div>
+        <Title :variant="COLOR_VARIANTS.primary">
+          {{ local.FIRSTSTART_TITLE }}
+        </Title>
+        <P :variant="COLOR_VARIANTS.primary">
+          {{ local.FIRSTSTART_DIS }}
+        </P>
+      </div>
       <div :class="b('actions')">
-        <div
-          v-for="action of actions"
-          :key="action.uuid"
-          :class="b('action')"
+        <router-link
+          :class="b('btn')"
+          :to="LINKS.create"
         >
-          <Icon
-            :icon="action.icon"
-            width="80"
-            height="80"
+          <SvgInject
+            :variant="ICON_VARIANTS.add"
+            height="88"
+            width="88"
           />
-          <Button
-            :size="SIZE_VARIANS.xs"
-            :color="action.color"
-            block
-            round
-            @click="$router.push({ name: action.toLink })"
-          >
-            {{ action.name }}
-          </Button>
-        </div>
+          <P uppercase>
+            {{ local.CREATE }}
+          </P>
+        </router-link>
+        <router-link
+          :class="b('btn', { cloud: true })"
+          :to="LINKS.restore"
+        >
+          <SvgInject
+            :variant="ICON_VARIANTS.cloud"
+            height="88"
+            width="88"
+          />
+          <P uppercase>
+            {{ local.RESTORE }}
+          </P>
+        </router-link>
       </div>
     </div>
-    <Wave />
-  </Container>
+  </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { mapState } from 'vuex'
 import uiStore from '@/store/ui'
 
@@ -52,103 +56,105 @@ import {
   COLOR_VARIANTS
 } from '@/config'
 
-import Icon from '@/components/Icon'
-import Title from '@/components/Title'
-import P from '@/components/P'
-import Button from '@/components/Button'
-import Container from '@/components/Container'
 import CreateAcc from '@/pages/Create'
 import Restore from '@/pages/Restore'
-import Wave from '@/components/Wave'
+
+import Title from '@/components/Title'
+import P from '@/components/P'
 import UiPanel from '@/components/UiPanel'
+import SvgInject from '@/components/SvgInject'
 
 export default {
   name: 'FirstStart',
   components: {
-    Icon,
     Title,
     P,
-    Button,
-    Container,
-    Wave,
-    UiPanel
+    UiPanel,
+    SvgInject
   },
   data() {
     return {
       // Proxy constants:
       ICON_VARIANTS,
-      SIZE_VARIANS
+      SIZE_VARIANS,
+      COLOR_VARIANTS,
+      LINKS: {
+        restore: Restore.name,
+        create: CreateAcc.name
+      }
     }
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
-    ]),
-
-    actions() {
-      return [
-        {
-          uuid: uuid(),
-          name: this.local.CREATE,
-          icon: ICON_VARIANTS.add,
-          toLink: CreateAcc.name,
-          color: COLOR_VARIANTS.success
-        },
-        {
-          uuid: uuid(),
-          name: this.local.RESTORE,
-          icon: ICON_VARIANTS.download,
-          toLink: Restore.name,
-          color: COLOR_VARIANTS.primary
-        }
-      ]
-    }
+    ])
   }
 }
 </script>
 
 <style lang="scss">
 .FirstStart {
-  display: grid;
-
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  height: 70vh;
+  text-align: center;
+
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vh;
+  }
 
   &__wrapper {
-    display: grid;
-    grid-gap: 30px;
+    display: flex;
+    flex-direction: column;
 
-    justify-items: center;
-    text-align: center;
+    height: 70vh;
+    width: 1024px;
+    z-index: 1;
   }
 
   &__actions {
     display: flex;
-
-    flex-wrap: wrap;
     justify-content: space-around;
-
-    width: 100%;
+    flex-wrap: wrap;
   }
 
-  &__action {
-    display: grid;
-    grid-gap: 15px;
+  &__btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: inherit;
+    align-items: center;
 
-    justify-items: center;
+    min-width: 200px;
+    min-height: 200px;
 
-    min-width: 175px;
-  }
+    margin-top: 10%;
 
-  &__wave {
-    position: fixed;
-    z-index: -1;
-    bottom: 0;
+    background: var(--opacity-bg-element);
+    border: 2px solid var(--accent-color-primary);
+    border-radius: var(--default-border-radius);
 
-    width: 100%;
-    max-width: 100vw;
+    & > * {
+      color: var(--accent-color-primary);
+    }
+
+    &:hover {
+      background: var(--accent-color-primary);
+      box-shadow: 1px 0 7px var(--accent-color-primary);
+
+      & > * {
+        color: var(--app-background-color);
+      }
+
+      & > svg > path {
+        fill: var(--app-background-color);
+      }
+    }
   }
 }
 </style>

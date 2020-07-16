@@ -1,19 +1,10 @@
 <template>
   <div :class="b()">
     <div
-      :class="b('back-wrapper')"
+      :class="b('back-icon')"
       @click="goBack"
     >
-      <Arrow
-        :class="b('back-icon')"
-        pointer
-      />
-      <Title
-        v-if="back"
-        :size="SIZE_VARIANS.sm"
-      >
-        back
-      </Title>
+      <SvgInject :variant="ICON_VARIANTS.arrow"/>
     </div>
     <Title
       v-show="route"
@@ -22,28 +13,18 @@
     >
       {{ currentRouter.name }}
     </Title>
-    <Close
-      v-show="close"
-      :class="b('cancel-icon')"
-      :size="SIZE_VARIANS.lg"
-      pointer
-      @click="onCancel"
-    />
   </div>
 </template>
 
 <script>
-import { ICON_VARIANTS, SIZE_VARIANS, EVENTS } from '@/config'
+import { ICON_VARIANTS, SIZE_VARIANS } from '@/config'
 
 import Title from '@/components/Title'
-import Arrow from '@/components/icons/Arrow'
-import Close from '@/components/icons/Close'
+import SvgInject from '@/components/SvgInject'
 
 /**
  * ToBar is bar for navigate by UI.
  * @param route Show current router name.
- * @param close Show close button.
- * @event close When cleck to close button.
  * @example
  * import TopBar from '@/components/TopBar'
  * <TopBar/>
@@ -52,17 +33,12 @@ export default {
   name: 'TopBar',
   components: {
     Title,
-    Arrow,
-    Close
+    SvgInject
   },
   props: {
     route: {
       type: Boolean,
       default: true
-    },
-    back: {
-      type: Boolean,
-      required: false
     },
     close: {
       type: Boolean,
@@ -83,10 +59,6 @@ export default {
   methods: {
     goBack() {
       this.$router.go(-1)
-    },
-    onCancel() {
-      this.$router.push({ path: '/home' })
-      this.$emit(EVENTS.close)
     }
   }
 }
@@ -94,35 +66,17 @@ export default {
 
 <style lang="scss">
 .TopBar {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
   align-items: center;
+  justify-content: center;
 
-  min-height: 65px;
-  width: 360px;
-
-  &__back-wrapper {
-    display: flex;
-    align-items: center;
-
-    text-indent: 10px;
-
-    cursor: pointer;
-  }
+  width: 100%;
+  height: 60px;
 
   &__back-icon {
-    padding-left: 15px;
-    justify-self: left;
-  }
-
-  &__current-page {
-    justify-self: center;
-  }
-
-  &__cancel-icon {
-    padding-right: 15px;
-    justify-self: right;
+    cursor: pointer;
+    position: absolute;
+    left: 30px;
   }
 }
 </style>

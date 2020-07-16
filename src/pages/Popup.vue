@@ -2,7 +2,6 @@
   <div :class="b()">
     <Alert
       v-if="getCurrentAccount"
-      :class="b('from')"
       pointer
       @click="onFrom"
     >
@@ -12,11 +11,11 @@
       >
         {{ local.ADDRESS }} {{ local.FROM }}:
       </Title>
-      <P>
+      <P :size="SIZE_VARIANS.xs">
         {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
       </P>
     </Alert>
-    <Container
+    <div
       v-if="getCurrent"
       :class="b('wrapper')"
     >
@@ -30,36 +29,75 @@
         v-if="!getCurrent.icon"
         :icon="ICON_VARIANTS.zilliqaLogo"
       />
-      <GasControl
+      <GasSelecter
         :value="getCurrentGas"
-        :DEFAULT="DEFAULT_GAS_FEE"
+        :defaultValue="gasStarter"
         @input="setCurrentGas"
       />
-      <div :class="b('amount')">
+      <div :class="b('item')">
         <P
           :font="FONT_VARIANTS.bold"
           :variant="amountColor"
+          :size="SIZE_VARIANS.sm"
         >
           {{ local.AMOUNT }}
         </P>
         <P
           :font="FONT_VARIANTS.bold"
           :variant="amountColor"
+          :size="SIZE_VARIANS.sm"
         >
-          ZIL{{ getCurrent.amount | fromZil }}
+          {{ amount | fromZil(decimals) }} {{ symbol }}
         </P>
       </div>
-      <Container :class="b('to-ds')">
-        <P :font="FONT_VARIANTS.bold">
-          TODS
+      <a
+        :class="b('advanced', { opned: advanced })"
+        @click="advanced = !advanced"
+      >
+        <SvgInject :variant="ICON_VARIANTS.arrow" />
+        <P
+          :variant="COLOR_VARIANTS.primary"
+          capitalize
+        >
+          {{ local.ADVANCED }}
         </P>
-        <SwitchBox
-          :value="getCurrent.priority"
-          @input="setPriority"
-        />
-      </Container>
-    </Container>
-    <Separator />
+      </a>
+      <div :class="b('advanced-items')">
+        <div
+          v-show="advanced"
+          :class="b('item')"
+        >
+          <P
+            :font="FONT_VARIANTS.bold"
+            :size="SIZE_VARIANS.sm"
+          >
+            {{ local.SEND }} {{ local.TO }} DS
+          </P>
+          <SwitchBox
+            :value="getCurrent.priority"
+            @input="setPriority"
+          />
+        </div>
+        <div
+          v-show="advanced"
+          :class="b('item')"
+        >
+          <P
+            :font="FONT_VARIANTS.bold"
+            :variant="amountColor"
+            :size="SIZE_VARIANS.sm"
+          >
+            Gas Limit
+          </P>
+          <input
+            :type="INPUT_TYPES.number"
+            :value="getCurrentGas.gasLimit"
+            min="1"
+            @input="onGasLimitChanged"
+          >
+        </div>
+      </div>
+    </div>
     <P
       :class="b('error-msg')"
       :variant="COLOR_VARIANTS.danger"
@@ -69,25 +107,16 @@
     >
       {{ error }}
     </P>
-    <Container
+    <router-link
       v-if="getCurrent && getCurrent.data"
-      :class="b('details')"
-      @click="onDetails"
+      :to="{ name: LINKS.detail }"
     >
-      <Title
-        :size="SIZE_VARIANS.md"
-        :font="FONT_VARIANTS.regular"
-      >
-        {{ local.VIEW }} {{ local.DETAILS }}
-      </Title>
-      <ArrowInCircle
-        width="40"
-        height="40"
-      />
-    </Container>
+      <P :class="b('details')">
+        >>> {{ local.VIEW }} {{ local.TX }} {{ local.DETAILS }}
+      </P>
+    </router-link>
     <Alert
       v-if="getCurrent"
-      :class="b('to')"
       pointer
       @click="onTo"
     >
@@ -97,27 +126,26 @@
       >
         {{ local.ADDRESS }} {{ local.TO }}:
       </Title>
-      <P>
-        {{ getCurrent.toAddr | toAddress(addressFormat, false) }}
+      <P :size="SIZE_VARIANS.xs">
+        {{ addressTo | toAddress(addressFormat, false) }}
       </P>
     </Alert>
-    <BottomBar
-      :elements="bottomBar"
-      @click="onEvent"
+    <Tabs
+      :elements="tabElements"
+      @input="onEvent"
     />
   </div>
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
-
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import accountsStore from '@/store/accounts'
 import uiStore from '@/store/ui'
+import tokenStore from '@/store/token'
 import transactionsStore from '@/store/transactions'
 
-import { DEFAULT } from 'config'
+import { DEFAULT, DEFAULT_TOKEN } from 'config'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -131,12 +159,11 @@ import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
 import Icon from '@/components/Icon'
-import Container from '@/components/Container'
-import GasControl from '@/components/GasControl'
-import Separator from '@/components/Separator'
-import BottomBar from '@/components/BottomBar'
-import ArrowInCircle from '@/components/icons/ArrowInCircle'
+import { INPUT_TYPES } from '@/components/Input'
 import SwitchBox from '@/components/SwitchBox'
+import Tabs from '@/components/Tabs'
+import SvgInject from '@/components/SvgInject'
+import GasSelecter from '@/components/GasSelecter'
 
 import TxDataPage from '@/pages/popup/TxData'
 import HomePage from '@/pages/Home'
@@ -144,15 +171,11 @@ import SignMessage from '@/pages/SignMessage'
 
 import viewblockMixin from '@/mixins/viewblock'
 import CalcMixin from '@/mixins/calc'
-import { fromZil, toConversion, toAddress } from '@/filters'
+import { fromZil, toAddress } from '@/filters'
 
 import { Background, ledgerSendTransaction } from '@/services'
 
 const { window } = global
-const BOTTOM_BAR_EVENTS = {
-  confirm: uuid(),
-  reject: uuid()
-}
 
 export default {
   name: 'Popup',
@@ -160,16 +183,14 @@ export default {
     Alert,
     Title,
     P,
+    GasSelecter,
     Icon,
-    GasControl,
-    Container,
-    Separator,
-    BottomBar,
-    ArrowInCircle,
-    SwitchBox
+    SvgInject,
+    SwitchBox,
+    Tabs
   },
   mixins: [viewblockMixin, CalcMixin],
-  filters: { fromZil, toConversion, toAddress },
+  filters: { fromZil, toAddress },
   data() {
     return {
       SIZE_VARIANS,
@@ -177,9 +198,16 @@ export default {
       DEFAULT_GAS_FEE,
       COLOR_VARIANTS,
       ICON_VARIANTS,
+      INPUT_TYPES,
+      DEFAULT_TOKEN,
+      LINKS: {
+        detail: TxDataPage.name
+      },
 
       error: null,
-      lastTx: null
+      advanced: false,
+      lastTx: null,
+      gasStarter: JSON.stringify(DEFAULT_GAS_FEE)
     }
   },
   computed: {
@@ -199,20 +227,18 @@ export default {
       transactionsStore.GETTERS_NAMES.getCurrent,
       transactionsStore.GETTERS_NAMES.getCurrentGas
     ]),
+    ...mapGetters(tokenStore.STORE_NAME, [
+      tokenStore.GETTERS_NAMES.getSelectedToken,
+      tokenStore.GETTERS_NAMES.getDefaultToken
+    ]),
 
-    bottomBar() {
+    tabElements() {
       return [
         {
-          value: this.local.REJECT,
-          event: BOTTOM_BAR_EVENTS.reject,
-          variant: COLOR_VARIANTS.primary,
-          size: SIZE_VARIANS.sm
+          name: this.local.REJECT
         },
         {
-          value: this.local.CONFIRM,
-          event: BOTTOM_BAR_EVENTS.confirm,
-          size: SIZE_VARIANS.sm,
-          variant: COLOR_VARIANTS.primary
+          name: this.local.CONFIRM
         }
       ]
     },
@@ -227,18 +253,65 @@ export default {
      * Testing for insufficient funds.
      */
     testAmount() {
-      if (!this.getCurrentAccount) {
+      if (!this.getSelectedToken) {
         return null
       }
 
       const { gasLimit, gasPrice } = this.getCurrentGas
 
-      return this.calcIsInsufficientFunds(
+      return this.calcIsInsufficientFundsUint(
         this.getCurrent.amount,
         gasLimit,
         gasPrice,
-        this.getCurrentAccount.balance
+        this.balance,
+        this.symbol,
+        this.decimals
       )
+    },
+    addressTo() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return JSON.parse(this.getCurrent.data).params[0].value
+      }
+
+      return this.getCurrent.toAddr
+    },
+    amount() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return JSON.parse(this.getCurrent.data).params[1].value
+      }
+
+      return this.getCurrent.amount
+    },
+    symbol() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return symbol
+      }
+
+      return DEFAULT_TOKEN.symbol
+    },
+    balance() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return this.getSelectedToken.balance
+      }
+
+      return this.getDefaultToken.balance
+    },
+    decimals() {
+      const { symbol } = this.getCurrent
+
+      if (symbol && symbol !== DEFAULT_TOKEN.symbol) {
+        return this.getSelectedToken.decimals
+      }
+
+      return DEFAULT_TOKEN.decimals
     }
   },
   methods: {
@@ -255,8 +328,8 @@ export default {
       transactionsStore.ACTIONS_NAMES.setRejectedLastTx,
       transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
     ]),
-    ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.updateCurrentAccount
+    ...mapActions(tokenStore.STORE_NAME, [
+      tokenStore.ACTIONS_NAMES.onBalanceUpdate
     ]),
 
     /**
@@ -268,13 +341,6 @@ export default {
     onFrom() {
       this.onViewblockAddress(this.getCurrentAccount.address)
     },
-    /**
-     * Go to the Details tx data.
-     */
-    onDetails() {
-      this.$router.push({ name: TxDataPage.name })
-    },
-
     /**
      * When rejected tx.
      */
@@ -317,10 +383,10 @@ export default {
      */
     onEvent(event) {
       switch (event) {
-      case BOTTOM_BAR_EVENTS.reject:
+      case 0:
         this.onReject()
         break
-      case BOTTOM_BAR_EVENTS.confirm:
+      case 1:
         this.onConfirm()
         break
       default:
@@ -352,15 +418,41 @@ export default {
 
       if (this.confirmationTx.length === 0) {
         window.close()
+
+        return null
       }
+
+      if (this.confirmationTx.length > 0) {
+        return null
+      }
+
+      this.$router.push({ name: HomePage.name })
+    },
+    onGasLimitChanged(event) {
+      const { value } = event.target
+      const gas = this.getCurrentGas
+
+      gas.gasLimit = value
+
+      this.setCurrentGas(gas)
+      this.gasStarter = JSON.stringify(gas)
     }
   },
   mounted() {
-    setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
+    if (!this.getCurrent) {
+      this.$router.push({ name: HomePage.name })
+    }
+
+    if (this.getCurrent && this.getCurrent.uuid) {
+      setTimeout(() => this.popupClouse(), DEFAULT.POPUP_CALL_TIMEOUT)
+    }
+
+    this.gasStarter = JSON.stringify(this.getCurrentGas)
     this.setLoad()
     this
-      .updateCurrentAccount()
+      .onBalanceUpdate()
       .then(() => this.setLoad())
+      .catch(() => this.setLoad())
   },
   updated() {
     if (this.getCurrent && this.getCurrent.message) {
@@ -372,69 +464,92 @@ export default {
 
 <style lang="scss">
 .Popup {
-  min-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-  &__from,
-  &__to {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 80px;
-    font-size: 13px;
-  }
+  text-align: center;
+
+  background-color: var(--app-background-color);
 
   &__wrapper {
-    display: grid;
-    grid-gap: 15px;
-    align-items: center;
-    justify-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 
-    padding: 15px 30px 30px 30px;
+    min-width: 200px;
   }
 
-  &__amount,
-  &__to-ds {
-    font-size: 15px;
-    line-height: 0;
+  &__advanced-items {
+    min-height: 60px;
   }
 
-  &__amount {
+  &__advanced {
+    cursor: pointer;
+
     display: flex;
-    justify-content: space-between;
+    align-items: baseline;
+    justify-content: flex-end;
 
-    width: 100%;
-    max-width: 250px;
-  }
+    text-align: right;
 
-  &__to-ds {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 250px;
+    & > svg {
+      transform: rotate(-90deg);
+      height: 10px;
+      width: 15px;
+
+      & > path {
+        stroke: var(--accent-color-primary);
+      }
+    }
+
+    &_opned {
+      & > svg {
+        transform: rotate(90deg);
+      }
+    }
   }
 
   &__details {
-    position: fixed;
-    bottom: 130px;
-    right: 30px;
-
-    cursor: pointer;
-
-    display: grid;
-    align-items: center;
-    grid-template-columns: 1fr 40px;
-    grid-gap: 10px;
+    text-decoration-line: underline;
+    letter-spacing: -0.139803px;
+    font-size: 15px;
+    line-height: 18px;
   }
 
-  &__to {
-    position: fixed;
-    bottom: 40px;
-    z-index: 1;
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & > .P {
+      line-height: 30px;
+    }
+
+    & > input {
+      border: 0;
+      background-color: var(--opacity-bg-element-2);
+      color: var(--theme-negative);
+      border-radius: 10px;
+      max-width: 100px;
+      text-align: right;
+      height: 20px;
+      font-size: var(--size-sm-font);
+      font-family: var(--font-family-bold);
+    }
   }
 
   &__error-msg {
-    padding-top: 5px;
+    min-height: 40px;
+  }
+
+  & > a {
+    min-width: 250px;
+    text-align: right;
+  }
+
+  & > .Tabs {
+    margin-top: 20px;
   }
 }
 </style>

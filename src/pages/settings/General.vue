@@ -1,7 +1,13 @@
 <template>
   <div :class="b()">
-    <TopBar close/>
-    <Container :class="b('wrapper')">
+    <TopBar/>
+    <P
+      :class="b('reset', 'pointer')"
+      @click="onDefault"
+    >
+      {{ local.RESET }}
+    </P>
+    <div :class="b('wrapper')">
       <RadioGroup
         :value="currency"
         :title="local.CUR_CONVER"
@@ -10,33 +16,15 @@
       >
         {{ local.CUR_CONVER }}:
       </RadioGroup>
-      <Separator />
       <RadioGroup
-        :value="addressFormat"
-        :title="local.ADDR_FORMATS"
-        :elements="addressFormatItems"
-        @input="setAddressFormat"
+        :value="selectedTheme"
+        :title="local.THEME"
+        :elements="themes"
+        @input="setTheme"
       >
-        {{ local.ADDR_FORMATS }}:
+        {{ local.THEME }}:
       </RadioGroup>
-      <div :class="b('btns')">
-        <Button
-          :color="COLOR_VARIANTS.warning"
-          :disabled="Object.keys(transactions).length === 0"
-          round
-          @click="setClearTxHistory"
-        >
-          {{ local.CLEAR }} {{ local.TX_FULL }}
-        </Button>
-        <Button
-          :disabled="(currency === currencyItems[0]) && (addressFormat === addressFormatItems[0])"
-          round
-          @click="onDefault"
-        >
-          {{ local.DEFAULT }}
-        </Button>
-      </div>
-    </Container>
+    </div>
   </div>
 </template>
 
@@ -44,24 +32,19 @@
 import { mapState, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
-import transactionsStore from '@/store/transactions'
 
 import { COLOR_VARIANTS } from '@/config'
 
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
-import Separator from '@/components/Separator'
 import RadioGroup from '@/components/RadioGroup'
-import Button from '@/components/Button'
+import P from '@/components/P'
 
 export default {
   name: 'General',
   components: {
     TopBar,
     RadioGroup,
-    Container,
-    Separator,
-    Button
+    P
   },
   data() {
     return {
@@ -70,29 +53,25 @@ export default {
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
-      uiStore.STATE_NAMES.local
+      uiStore.STATE_NAMES.local,
+      uiStore.STATE_NAMES.selectedTheme,
+      uiStore.STATE_NAMES.themes
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.currencyItems,
-      settingsStore.STATE_NAMES.currency,
-      settingsStore.STATE_NAMES.addressFormatItems,
-      settingsStore.STATE_NAMES.addressFormat
-    ]),
-    ...mapState(transactionsStore.STORE_NAME, [
-      transactionsStore.STATE_NAMES.transactions
+      settingsStore.STATE_NAMES.currency
     ])
   },
   methods: {
     ...mapMutations(settingsStore.STORE_NAME, [
-      settingsStore.MUTATIONS_NAMES.setCurrency,
-      settingsStore.MUTATIONS_NAMES.setAddressFormat
+      settingsStore.MUTATIONS_NAMES.setCurrency
     ]),
-    ...mapMutations(transactionsStore.STORE_NAME, [
-      transactionsStore.MUTATIONS_NAMES.setClearTxHistory
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setTheme
     ]),
 
     onDefault() {
-      this.setAddressFormat(this.addressFormatItems[0])
+      this.setTheme(this.themes[0])
       this.setCurrency(this.currencyItems[0])
     }
   }
@@ -101,21 +80,31 @@ export default {
 
 <style lang="scss">
 .General {
-  &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    padding-left: 15px;
-    padding-right: 15px;
+  background-color: var(--app-background-color);
+
+  &__reset {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    text-decoration: underline;
   }
 
-  &__btns {
-    display: grid;
-    justify-self: right;
-    grid-gap: 15px;
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-    width: 175px;
+    min-height: 300px;
+
+    padding-right: 100px;
+
+    & > .RadioGroup {
+      margin-top: 30px;
+    }
   }
 }
 </style>

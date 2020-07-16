@@ -1,24 +1,20 @@
 <template>
   <div :class="b()">
-    <UiPanel />
+    <UiPanel arrow />
+    <SvgInject
+      :class="b('logo')"
+      :variant="ICON_VARIANTS.zilPayLogo"
+    />
     <div :class="b('wrapper')">
-      <TopBar
-        :route="false"
-        back
-      />
-      <Title :size="SIZE_VARIANS.md">
-        {{ local.CREATE_TITLE }}
-      </Title>
-      <P :variant="COLOR_VARIANTS.gray">
+      <P :size="SIZE_VARIANS.md">
         {{ local.CREATE_DIS }}
       </P>
-      <Refresh
+      <div
         :class="b('reset-icon')"
-        width="30"
-        height="30"
-        pointer
         @click="refreshWords"
-      />
+      >
+        <SvgInject :variant="ICON_VARIANTS.refresh" />
+      </div>
       <div :class="b('words')">
         <Chip
           v-for="(el, index) of wrdsAsArray"
@@ -28,25 +24,29 @@
           {{ el.word }}
         </Chip>
       </div>
-      <div :class="b('actions')">
+      <div :class="b('btns')">
         <Button
-          :color="COLOR_VARIANTS.success"
+          :color="COLOR_VARIANTS.negative"
+          :size="SIZE_VARIANS.md"
           block
           round
+          uppercase
           @click="prinntWords"
         >
           {{ local.PRINT }}
         </Button>
         <Button
+          :color="COLOR_VARIANTS.negative"
+          :size="SIZE_VARIANS.md"
           block
           round
+          uppercase
           @click="setWords"
         >
           {{ local.CONTINUE }}
         </Button>
       </div>
     </div>
-    <Wave />
   </div>
 </template>
 
@@ -65,15 +65,12 @@ import {
 
 import Verify from '@/pages/Verify'
 
-import TopBar from '@/components/TopBar'
 import Chip from '@/components/Chip'
-import Title from '@/components/Title'
 import P from '@/components/P'
 import Button from '@/components/Button'
-import Refresh from '@/components/icons/Refresh'
-import Wave from '@/components/Wave'
 import UiPanel from '@/components/UiPanel'
 import Printer from '@/mixins/printer'
+import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
@@ -84,13 +81,10 @@ export default {
   mixins: [Printer],
   components: {
     Chip,
-    TopBar,
     P,
-    Title,
     Button,
-    Refresh,
-    Wave,
-    UiPanel
+    UiPanel,
+    SvgInject
   },
   data() {
     return {
@@ -140,36 +134,57 @@ export default {
 
 <style lang="scss">
 .Create {
-  display: grid;
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  &__wrapper {
-    display: inline-grid;
-    align-items: center;
-    grid-template-rows: auto 50px 60px 50px 1fr 90px;
+  text-align: center;
 
-    min-width: 250px;
+  background-color: var(--app-background-color);
+
+  &__logo {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vh;
   }
 
   &__reset-icon {
     justify-self: right;
+    cursor: pointer;
+  }
+
+  &__wrapper {
+    display: grid;
+    justify-items: center;
+    grid-template-rows: max-content min-content 100px 50px;
+
+    z-index: 1;
+    height: 50vh;
+
+    max-width: 700px;
+
+    @media (max-width: 700px) {
+      height: 80vh;
+      grid-template-rows: max-content min-content 200px 50px;
+    }
   }
 
   &__words {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(6, 40px);
-    grid-auto-flow: column;
-    grid-column-gap: 30px;
-    grid-row-gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  &__actions {
-    display: grid;
-    grid-template-columns: minmax(90px, 100px) minmax(90px, 100px);
+  &__btns {
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    grid-gap: 30px;
+
+    width: 264px;
+    height: 120px;
+    margin-top: 50px;
   }
 }
 </style>

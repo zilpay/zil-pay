@@ -8,7 +8,7 @@
  */
 import fetch from 'cross-fetch'
 
-import { DEFAULT, API } from 'config'
+import { DEFAULT, API, DEFAULT_TOKEN } from 'config'
 import { TypeChecker } from 'lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
@@ -60,7 +60,8 @@ const ACTIONS_NAMES = {
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
   getHours: 'getHours',
-  getRate: 'getRate'
+  getRate: 'getRate',
+  getDefaultRate: 'getDefaultRate'
 }
 
 const STORE = {
@@ -87,8 +88,11 @@ const STORE = {
     [STATE_NAMES.dappsList]: [],
     [STATE_NAMES.connect]: {},
     [STATE_NAMES.currentRate]: {
-      [CURRENCIES.BTC]: 0,
-      [CURRENCIES.USD]: 0
+      [DEFAULT_TOKEN.symbol]: {
+        [CURRENCIES.BTC]: 0,
+        [CURRENCIES.USD]: 0,
+        [CURRENCIES.ETH]: 0
+      }
     }
   },
   mutations: {
@@ -118,10 +122,7 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setNetwork](state, network) {
       if ((network in state.networkConfig)) {
-        if (state.network !== network) {
-          setSelectedNetwork(network)
-        }
-
+        setSelectedNetwork(network)
         state.network = network
       }
     },
@@ -193,15 +194,19 @@ const STORE = {
         rate = await response.json()
 
         rate = {
-          USD: rate.zilliqa.usd,
-          BTC: rate.zilliqa.btc,
-          ETH: rate.zilliqa.eth
+          [DEFAULT_TOKEN.symbol]: {
+            USD: rate.zilliqa.usd,
+            BTC: rate.zilliqa.btc,
+            ETH: rate.zilliqa.eth
+          }
         }
       } catch (err) {
         rate = {
-          BTC: 0,
-          USD: 0,
-          ETH: 0
+          [DEFAULT_TOKEN.symbol]: {
+            BTC: 0,
+            USD: 0,
+            ETH: 0
+          }
         }
       }
 
@@ -246,10 +251,24 @@ const STORE = {
     }
   },
   getters: {
-    [GETTERS_NAMES.getRate]: state => {
+    [GETTERS_NAMES.getRate]: (state, _, rootState) => {
+      const currentCurrency = state[STATE_NAMES.currency]
+      const { selectedcoin } = rootState.token
+
+      try {
+        return state[STATE_NAMES.currentRate][selectedcoin][currentCurrency]
+      } catch (err) {
+        return 0
+      }
+    },
+    [GETTERS_NAMES.getDefaultRate](state) {
       const currentCurrency = state[STATE_NAMES.currency]
 
-      return state[STATE_NAMES.currentRate][currentCurrency]
+      try {
+        return state[STATE_NAMES.currentRate][DEFAULT_TOKEN.symbol][currentCurrency]
+      } catch (err) {
+        return 0
+      }
     },
     [GETTERS_NAMES.getCurrent]: state => `${state.lockTime} hours.`,
     [GETTERS_NAMES.getHours]: () => DEFAULT.DEFAULT_HOURS_LOCK.map(hour => `${hour} hours.`)

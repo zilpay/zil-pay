@@ -17,5 +17,7 @@ export const FIELDS = {
   STATIC: 'static',
   CONNECT_DAPP: 'connect',
   THEME: 'theme',
-  CONTACTS: 'contacts'
+  CONTACTS: 'contacts',
+  SELECTED_COIN: 'selectedcoin',
+  TOKENS: 'tokens'
 }

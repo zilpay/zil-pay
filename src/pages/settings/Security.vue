@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
-    <TopBar close />
-    <Container :class="b('wrapper')">
+    <TopBar />
+    <div :class="b('wrapper')">
       <RadioGroup
         :value="getCurrent"
         :elements="getHours"
@@ -9,31 +9,74 @@
       >
         {{ local.AUTO_LOGOUT_HOURS }} ({{ local.HOURS }})
       </RadioGroup>
-      <Separator />
-      <div :class="b('btns')">
-        <Button
-          :color="COLOR_VARIANTS.warning"
-          round
-          @click="onExport"
-        >
-          {{ local.EXPORT }}
-        </Button>
-        <Button
-          :color="COLOR_VARIANTS.warning"
-          round
-          @click="onRestore"
-        >
-          {{ local.RESTORE }}
-        </Button>
-        <Button
-          :disabled="Number(lockTime) === Number(DEFAULT.TIME_BEFORE_LOCK)"
-          round
-          @click="onDefault"
-        >
-          {{ local.DEFAULT }}
-        </Button>
-      </div>
-    </Container>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="modals.key = true"
+      >
+        {{ local.REVEAL_KEY }}
+      </Button>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="modals.seed = true"
+      >
+        {{ local.REVEAL_PHRASE }}
+      </Button>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="modals.keystore = true"
+      >
+        {{ local.REVEAL_KEYSTORE }}
+      </Button>
+    </div>
+    <BottomModal
+      v-model="modals.key"
+      pure
+    >
+      <BackModal
+        v-if="local.REVEAL_KEY"
+        :name="local.REVEAL_KEY"
+        back
+        @click="modals.key = false"
+      />
+      <SecureModal
+        v-if="modals.key"
+        modalType="0"
+      />
+    </BottomModal>
+    <BottomModal
+      v-model="modals.seed"
+      pure
+    >
+      <BackModal
+        v-if="local.REVEAL_PHRASE"
+        :name="local.REVEAL_PHRASE"
+        back
+        @click="modals.seed = false"
+      />
+      <SecureModal
+        v-if="modals.seed"
+        modalType="1"
+      />
+    </BottomModal>
+    <BottomModal
+      v-model="modals.keystore"
+      pure
+    >
+      <BackModal
+        v-if="local.REVEAL_KEYSTORE"
+        :name="local.REVEAL_KEYSTORE"
+        back
+        @click="modals.keystore = false"
+      />
+      <SecureModal
+        v-if="modals.keystore"
+        modalType="2"
+        @close="modals.keystore = false"
+      />
+    </BottomModal>
   </div>
 </template>
 
@@ -45,28 +88,33 @@ import uiStore from '@/store/ui'
 import { COLOR_VARIANTS } from '@/config'
 import { DEFAULT } from 'config'
 
-import RestorePage from '@/pages/Restore'
-import ExportPage from '@/pages/accounts/Export'
-
 import TopBar from '@/components/TopBar'
-import Container from '@/components/Container'
-import Separator from '@/components/Separator'
+import BottomModal from '@/components/BottomModal'
+import SecureModal from '@/views/SecureModal'
 import RadioGroup from '@/components/RadioGroup'
+import BackModal from '@/components/BackModal'
 import Button from '@/components/Button'
 
 export default {
   name: 'Security',
   components: {
     TopBar,
-    Container,
-    Separator,
     RadioGroup,
-    Button
+    Button,
+    BackModal,
+    SecureModal,
+    BottomModal
   },
   data() {
     return {
       COLOR_VARIANTS,
-      DEFAULT
+      DEFAULT,
+
+      modals: {
+        key: false,
+        seed: false,
+        keystore: false
+      }
     }
   },
   computed: {
@@ -88,16 +136,6 @@ export default {
 
     onDefault() {
       this.setLockTime(DEFAULT.TIME_BEFORE_LOCK)
-    },
-    onRestore() {
-      this.$router.push({
-        name: RestorePage.name
-      })
-    },
-    onExport() {
-      this.$router.push({
-        name: ExportPage.name
-      })
     }
   }
 }
@@ -105,20 +143,30 @@ export default {
 
 <style lang="scss">
 .Security {
-  &__wrapper {
-    display: grid;
-    grid-gap: 30px;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    padding-left: 15px;
-    padding-right: 15px;
+  background-color: var(--app-background-color);
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    min-height: 450px;
+    padding-left: 30px;
+    padding-right: 30px;
+
+    & > .Button {
+      min-width: 260px;
+      min-height: 46px;
+      font-size: 18px;
+    }
   }
 
-  &__btns {
-    display: grid;
-    justify-self: right;
-    grid-gap: 15px;
-    width: 175px;
+  & > .BottomModal > .BottomModal__social {
+    margin: 10px;
   }
 }
 </style>
