@@ -63,7 +63,7 @@ $ npm run lint
 
 ## 저자
 
-* **Rinat Khasanshin** - *초기 작업* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *초기 작업* - [hicaru](https://github.com/hicaru)
 
 ## 특허
 

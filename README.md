@@ -70,7 +70,7 @@ $ npm run build
 
 ## Authors
 
-* **Rinat Khasanshin** - *Initial work* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *Initial work* - [hicaru](https://github.com/hicaru)
 
 ## License
 

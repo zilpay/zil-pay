@@ -68,7 +68,7 @@ $ npm run build
 
 ## s
 
-* **Rinat Khasanshin** - *初期工作* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *初期工作* - [hicaru](https://github.com/hicaru)
 
 ## 执照
 

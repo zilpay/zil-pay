@@ -66,7 +66,7 @@ $ npm run lint
 
 ## Autoren
 
-* **Rinat Khasanshin** - *Erste Arbeit* - [lich666black](https://github.com/lich666dead)
+* **Rinat Khasanshin** - *Erste Arbeit* - [hicaru](https://github.com/hicaru)
 
 ## Lizenz
 
