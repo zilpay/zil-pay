@@ -114,9 +114,11 @@ export default {
       }
     },
     txType() {
-      const { Info, symbol, decimals } = this.transaction
+      const { Info, symbol, decimals, cancel } = this.transaction
 
-      if (symbol && decimals) {
+      if (cancel) {
+        return this.local.CANCELED
+      } else if (symbol && decimals) {
         return this.local.TRANSFER
       } else if (Info.includes('Contract Txn')) {
         return this.local.TRIGGER
@@ -145,7 +147,7 @@ export default {
     statusIcon() {
       if (!this.transaction.confirmed) {
         return ICON_VARIANTS.statusPadding
-      } else if (this.transaction.error) {
+      } else if (this.transaction.error || this.transaction.cancel) {
         return ICON_VARIANTS.statusDanger
       }
 

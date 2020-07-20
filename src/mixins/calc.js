@@ -30,6 +30,10 @@ export function gasFee(gasPrice, gasLimit) {
 
 export default {
   methods: {
+    toLi(value) {
+      const _value = Big(value).round()
+      return _value.div(_li)
+    },
     /**
      * Calculate the insufficient funds.
      * @param {String, Number} amount The send amount.
@@ -112,12 +116,15 @@ export default {
      */
     buildPaymentTx(data, _amount) {
       const _gasPrice = Big(data.gasPrice).round()
+      const { toAddr, nonce, gasLimit, cancel } = data
 
       return {
-        toAddr: data.toAddr,
+        nonce,
+        toAddr,
+        cancel,
         amount: String(_amount),
         gasPrice: String(_gasPrice.mul(_li)),
-        gasLimit: String(data.gasLimit),
+        gasLimit: String(gasLimit),
         code: '',
         data: '',
         icon: DEFAULT_ICON,

@@ -142,24 +142,29 @@ export class ZilliqaControl {
       toAddr, // Recipient address. type String.
       version // Netowrk version. type Number.
     } = txData
-    const hasPendingTx = historyTx && historyTx
-      .filter((tx) => Boolean(!tx.error && !tx.confirmed))
-      .sort((txA, txB) => txA.nonce - txB.nonce)
 
     if (!version) {
       version = await this.version()
     }
 
-    if (hasPendingTx && hasPendingTx.length !== 0) {
-      const lastTx = hasPendingTx.pop()
-      const pendingTx = await this.getPendingTxn(lastTx.TranID)
+    if (txData.cancel) {
+      nonce = txData.nonce
+    } else {
+      const hasPendingTx = historyTx && historyTx
+        .filter((tx) => Boolean(!tx.error && !tx.confirmed))
+        .sort((txA, txB) => txA.nonce - txB.nonce)
 
-      if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
-        nonce = lastTx.nonce
+      if (hasPendingTx && hasPendingTx.length !== 0) {
+        const lastTx = hasPendingTx.pop()
+        const pendingTx = await this.getPendingTxn(lastTx.TranID)
+
+        if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
+          nonce = lastTx.nonce
+        }
       }
-    }
 
-    nonce++
+      nonce++
+    }
 
     amount = new BN(amount)
     gasPrice = new BN(gasPrice)
@@ -360,6 +365,23 @@ export class ZilliqaControl {
     return removedConfirm
   }
 
+  async cancelTx(txData, net) {
+    const storage = new BrowserStorage()
+    const from = toChecksumAddress(txData.from)
+    const txsList = await storage.get(FIELDS.TRANSACTIONS)
+
+    txsList[from][net] = txsList[from][net].map((txn) => {
+      if (txn.nonce === txData.nonce) {
+        txn.cancel = true
+        txn.TranID = txData.TranID
+      }
+
+      return txn
+    })
+
+    await storage.set(new BuildObject(FIELDS.TRANSACTIONS, txsList))
+  }
+
   /**
    * When user confirm transaction, it will add to storage.
    * @param {Object} tx - Tranaction payload.
@@ -374,6 +396,8 @@ export class ZilliqaControl {
       TranID: tx.TranID,
       confirmed: tx.confirmed,
       amount: tx.amount,
+      gasLimit: tx.gasLimit,
+      gasPrice: tx.gasPrice,
       toAddr: toChecksumAddress(tx.toAddr),
       nonce: tx.nonce,
       block: tx.block,

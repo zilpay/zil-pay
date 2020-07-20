@@ -72,6 +72,14 @@
           {{ transaction.nonce }}
         </P>
       </li>
+      <li v-if="transaction.gasPrice">
+        <P>
+          {{ local.GAS_FEE }}
+        </P>
+        <P>
+          {{ gasFee }} {{ DEFAULT_TOKEN.symbol }}
+        </P>
+      </li>
       <li v-if="transaction.timestamp">
         <P>
           {{ local.TIME }}
@@ -86,10 +94,11 @@
       :hash="transaction.TranID"
     />
     <Button
-      v-else
+      v-if="!transaction.confirmed && transaction.gasPrice && !transaction.cancel"
       :color="COLOR_VARIANTS.danger"
       block
       round
+      @click="cancel"
     >
       {{ local.CANCEL }}
     </Button>
@@ -97,10 +106,15 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import Big from 'big.js'
+
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import transactionsStore from '@/store/transactions'
+import accountsStore from '@/store/accounts'
 
+import { DEFAULT_TOKEN } from 'config'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -109,6 +123,8 @@ import {
   COLOR_VARIANTS
 } from '@/config'
 
+import PopupPage from '@/pages/Popup'
+
 import P from '@/components/P'
 import ViewblockLink from '@/components/ViewblockLink'
 import Icon from '@/components/Icon'
@@ -116,6 +132,7 @@ import Button from '@/components/Button'
 
 import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
+import CalcMixin from '@/mixins/calc'
 
 /**
  * Show more information about transaction.
@@ -134,7 +151,7 @@ export default {
     Icon,
     Button
   },
-  mixins: [CopyMixin],
+  mixins: [CopyMixin, CalcMixin],
   filters: { toAddress },
   props: {
     account: {
@@ -152,15 +169,20 @@ export default {
       FONT_VARIANTS,
       ICON_VARIANTS,
       COLOR_VARIANTS,
-      ICON_TYPE
+      ICON_TYPE,
+      DEFAULT_TOKEN
     }
   },
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.addressFormat
+      settingsStore.STATE_NAMES.addressFormat,
+      settingsStore.STATE_NAMES.defaultGas
     ]),
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
+    ]),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
     ]),
 
     status() {
@@ -185,6 +207,34 @@ export default {
       return new Date(this.transaction.timestamp)
         .toLocaleString()
         .replace(/\//g, '-')
+    },
+    gasFee() {
+      let { gasLimit, gasPrice } = this.transaction
+
+      gasPrice = String(this.toLi(gasPrice))
+
+      return this.calcFee(gasLimit, gasPrice)
+    }
+  },
+  methods: {
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setConfirmationTx
+    ]),
+    cancel() {
+      const _one = Big(1)
+      const { gasLimit, gasPrice } = this.transaction
+      // Generate tx params.
+      const txParams = this.buildTxParams({
+        gasLimit,
+        gasPrice: String(this.toLi(gasPrice).add(_one)),
+        toAddr: this.getCurrentAccount.address,
+        amount: '0',
+        nonce: this.transaction.nonce,
+        cancel: true
+      }, DEFAULT_TOKEN)
+
+      this.setConfirmationTx(txParams)
+      this.$router.push({ name: PopupPage.name })
     }
   }
 }

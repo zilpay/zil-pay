@@ -229,7 +229,11 @@ export class Transaction {
         tx.amount = JSON.parse(this.payload.data).params[1].value
       }
 
-      await accountControl.zilliqa.addTransactionList(tx, networkControl.selected)
+      if (this.payload.cancel) {
+        await accountControl.zilliqa.cancelTx(tx, networkControl.selected)
+      } else {
+        await accountControl.zilliqa.addTransactionList(tx, networkControl.selected)
+      }
 
       if (this.payload.uuid) {
         await accountControl.zilliqa.rmForSingTransaction()
