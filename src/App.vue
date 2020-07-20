@@ -31,6 +31,7 @@
 <script>
 import { BrowserStorage } from 'lib/storage'
 import { FIELDS } from 'config'
+
 import { mapActions, mapMutations, mapState } from 'vuex'
 import uiStore from '@/store/ui'
 import modalStore from '@/store/modal'
@@ -64,6 +65,11 @@ export default {
     Account,
     SettingsList
   },
+  data() {
+    return {
+      storageSubscribe: null
+    }
+  },
   computed: {
     ...mapState(transactionsStore.STORE_NAME, [
       transactionsStore.STATE_NAMES.confirmationTx
@@ -90,6 +96,10 @@ export default {
     ...mapActions(tokensStore.STORE_NAME, [
       tokensStore.ACTIONS_NAMES.onUpdateTokensStore
     ]),
+    ...mapMutations(tokensStore.STORE_NAME, [
+      tokensStore.MUTATIONS_NAMES.setTokens,
+      tokensStore.MUTATIONS_NAMES.setSelectedCoin
+    ]),
     ...mapActions(walletStore.STORE_NAME, [
       walletStore.ACTIONS_NAMES.onInit
     ]),
@@ -111,6 +121,9 @@ export default {
     ...mapActions(transactionsStore.STORE_NAME, [
       transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
       transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
+    ]),
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setTxHistory
     ]),
     ...mapMutations(modalStore.STORE_NAME, [
       modalStore.MUTATIONS_NAMES.setShowSendModal,
@@ -173,6 +186,36 @@ export default {
     this.onUpdateSettings()
 
     this.setLoad()
+
+    this.storageSubscribe = BrowserStorage.subscribe((store) => {
+      Object.keys(store).forEach((key) => {
+        const { newValue } = store[key]
+
+        switch (key) {
+        case FIELDS.WALLET:
+          this.setAccounts(newValue.identities)
+          this.setAccount(newValue.selectedAddress)
+          break
+        case FIELDS.TOKENS:
+          this.setTokens(newValue)
+          break
+        case FIELDS.SELECTED_COIN:
+          this.setSelectedCoin(newValue)
+          break
+        case FIELDS.TRANSACTIONS:
+          this.setTxHistory(newValue)
+          break
+        case FIELDS.SELECTED_NET:
+          this.setNetwork(newValue)
+          break
+        }
+      })
+    })
+  },
+  beforeDestroy() {
+    if (this.storageSubscribe) {
+      this.storageSubscribe.unsubscribe()
+    }
   }
 }
 </script>

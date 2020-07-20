@@ -81,7 +81,18 @@
         </P>
       </li>
     </ul>
-    <ViewblockLink :hash="transaction.TranID" />
+    <ViewblockLink
+      v-if="transaction.confirmed"
+      :hash="transaction.TranID"
+    />
+    <Button
+      v-else
+      :color="COLOR_VARIANTS.danger"
+      block
+      round
+    >
+      {{ local.CANCEL }}
+    </Button>
   </div>
 </template>
 
@@ -90,11 +101,18 @@ import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
-import { SIZE_VARIANS, FONT_VARIANTS, ICON_TYPE, ICON_VARIANTS } from '@/config'
+import {
+  SIZE_VARIANS,
+  FONT_VARIANTS,
+  ICON_TYPE,
+  ICON_VARIANTS,
+  COLOR_VARIANTS
+} from '@/config'
 
 import P from '@/components/P'
 import ViewblockLink from '@/components/ViewblockLink'
 import Icon from '@/components/Icon'
+import Button from '@/components/Button'
 
 import { toAddress } from '@/filters'
 import CopyMixin from '@/mixins/copy'
@@ -113,7 +131,8 @@ export default {
   components: {
     P,
     ViewblockLink,
-    Icon
+    Icon,
+    Button
   },
   mixins: [CopyMixin],
   filters: { toAddress },
@@ -132,6 +151,7 @@ export default {
       SIZE_VARIANS,
       FONT_VARIANTS,
       ICON_VARIANTS,
+      COLOR_VARIANTS,
       ICON_TYPE
     }
   },

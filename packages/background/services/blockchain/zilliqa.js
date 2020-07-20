@@ -302,19 +302,6 @@ export class ZilliqaControl {
    * @param {Object} payload - Tranaction payload "amount, gas, data"...
    */
   async addForSingTransaction(payload) {
-    const neededParams = [
-      'amount',
-      'toAddr'
-    ]
-
-    for (let index = 0; index < neededParams.length; index++) {
-      const param = neededParams[index]
-
-      if (!(param in payload)) {
-        throw new ArgumentError(param, ERROR_MSGS.REQUIRED)
-      }
-    }
-
     const storage = new BrowserStorage()
     let forConfirm = await storage.get(FIELDS.CONFIRM_TX)
 
@@ -341,18 +328,6 @@ export class ZilliqaControl {
   async addForSignMessage(msg) {
     const storage = new BrowserStorage()
     let forConfirm = await storage.get(FIELDS.CONFIRM_TX)
-    const txParams = [
-      'amount',
-      'toAddr'
-    ]
-
-    for (let index = 0; index < txParams.length; index++) {
-      const param = txParams[index]
-
-      if (msg.message.includes(param)) {
-        throw new ArgumentError(param, ERROR_MSGS.FORBIDDEN_TO_USE)
-      }
-    }
 
     try {
       forConfirm.push(msg)
