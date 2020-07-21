@@ -34,7 +34,8 @@ const STATE_NAMES = {
   defaultGas: 'defaultGas',
   dappsList: 'dappsList',
   connect: 'connect',
-  currentRate: 'currentRate'
+  currentRate: 'currentRate',
+  blockNumber: 'blockNumber'
 }
 const MUTATIONS_NAMES = {
   setCurrency: 'setCurrency',
@@ -48,7 +49,8 @@ const MUTATIONS_NAMES = {
   setConnect: 'setConnect',
   setDappList: 'setDappList',
   setEmptyDappList: 'setEmptyDappList',
-  setRemoveDappList: 'setRemoveDappList'
+  setRemoveDappList: 'setRemoveDappList',
+  setBlockNumber: 'setBlockNumber'
 }
 const ACTIONS_NAMES = {
   updateRate: 'updateRate',
@@ -68,6 +70,7 @@ const STORE = {
   namespaced: true,
   state: {
     [STATE_NAMES.lockTime]: DEFAULT.TIME_BEFORE_LOCK, // in hours.
+    [STATE_NAMES.blockNumber]: 0,
     [STATE_NAMES.currency]: CURRENCIES.USD,
     [STATE_NAMES.currencyItems]: [
       CURRENCIES.BTC,
@@ -104,6 +107,9 @@ const STORE = {
 
         state.currency = currency
       }
+    },
+    [MUTATIONS_NAMES.setBlockNumber](state, value) {
+      state[STATE_NAMES.blockNumber] = value
     },
     [MUTATIONS_NAMES.setNetworkConfig](state, config) {
       state[STATE_NAMES.networkConfig] = {

@@ -12,6 +12,7 @@ export const FIELDS = {
   CONFIG: 'config',
   WALLET: 'wallet',
   SELECTED_NET: 'selectednet',
+  BLOCK_NUMBER: 'blocknumber',
   TRANSACTIONS: 'transactions',
   CONFIRM_TX: 'confirm',
   STATIC: 'static',

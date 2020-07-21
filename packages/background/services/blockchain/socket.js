@@ -54,6 +54,7 @@ export class SocketControl {
 
         this.blockNumber = Number(event.value.TxBlock.header.BlockNum)
         this.observer.next(event.value)
+        this._networkControl.updateBlockNumber(String(this.blockNumber))
       })
 
       this._subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
@@ -105,6 +106,8 @@ export class SocketControl {
   }
 
   async _getBlockchainInfo() {
+    await this._networkControl.netwrokSync()
+
     const provider = new HTTPProvider(this._networkControl.provider)
     const method = RPCMethod.GetLatestTxBlock
 
@@ -124,6 +127,7 @@ export class SocketControl {
         TxHashes: [lastRecentTransactions]
       })
       this._networkControl.status = true
+      this._networkControl.updateBlockNumber(result.header.BlockNum)
     } catch (err) {
       this._networkControl.status = false
       this.stop()

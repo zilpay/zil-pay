@@ -94,7 +94,7 @@
       :hash="transaction.TranID"
     />
     <Button
-      v-if="!transaction.confirmed && transaction.gasPrice && !transaction.cancel"
+      v-if="canCancel"
       :color="COLOR_VARIANTS.danger"
       block
       round
@@ -114,7 +114,7 @@ import uiStore from '@/store/ui'
 import transactionsStore from '@/store/transactions'
 import accountsStore from '@/store/accounts'
 
-import { DEFAULT_TOKEN } from 'config'
+import { DEFAULT_TOKEN, DEFAULT } from 'config'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -176,7 +176,8 @@ export default {
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.addressFormat,
-      settingsStore.STATE_NAMES.defaultGas
+      settingsStore.STATE_NAMES.defaultGas,
+      settingsStore.STATE_NAMES.blockNumber
     ]),
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
@@ -214,6 +215,13 @@ export default {
       gasPrice = String(this.toLi(gasPrice))
 
       return this.calcFee(gasLimit, gasPrice)
+    },
+    canCancel() {
+      const { confirmed, gasPrice, cancel, block } = this.transaction
+      const blockNumber = Number(this.blockNumber)
+      const nextBlock = Number(block) + Number(DEFAULT.BLOCKS_TO_CANCEL_TX)
+
+      return !confirmed && gasPrice && !cancel && blockNumber > nextBlock
     }
   },
   methods: {

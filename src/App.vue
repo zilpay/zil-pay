@@ -113,7 +113,8 @@ export default {
     ]),
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setNetwork,
-      settingsStore.MUTATIONS_NAMES.setNetworkConfig
+      settingsStore.MUTATIONS_NAMES.setNetworkConfig,
+      settingsStore.MUTATIONS_NAMES.setBlockNumber
     ]),
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onUpdate
@@ -138,7 +139,7 @@ export default {
         return null
       }
 
-      const { wallet, config, selectednet } = storageData
+      const { wallet, config, selectednet, blocknumber } = storageData
 
       if (wallet && wallet.identities) {
         this.setAccounts(wallet.identities)
@@ -146,6 +147,10 @@ export default {
       }
 
       this.setNetworkConfig(config)
+
+      if (blocknumber) {
+        this.setBlockNumber(blocknumber)
+      }
 
       if (!selectednet) {
         const [net] = Object.keys(config)
@@ -207,6 +212,11 @@ export default {
           break
         case FIELDS.SELECTED_NET:
           this.setNetwork(newValue)
+          break
+        case FIELDS.BLOCK_NUMBER:
+          this.setBlockNumber(newValue)
+          break
+        default:
           break
         }
       })

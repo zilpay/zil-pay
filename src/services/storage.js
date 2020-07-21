@@ -13,7 +13,8 @@ export async function getStorageData() {
     FIELDS.SELECTED_NET,
     FIELDS.TRANSACTIONS,
     FIELDS.CONFIRM_TX,
-    FIELDS.CONNECT_DAPP
+    FIELDS.CONNECT_DAPP,
+    FIELDS.BLOCK_NUMBER
   ])
 }
 

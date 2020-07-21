@@ -144,4 +144,10 @@ export class NetworkControl {
     return this.status
   }
 
+  async updateBlockNumber(blockNumber) {
+    await this._storage.set(
+      new BuildObject(FIELDS.BLOCK_NUMBER, blockNumber)
+    )
+  }
+
 }

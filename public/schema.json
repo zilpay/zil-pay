@@ -16,6 +16,10 @@
       "title": "current network name",
       "type": "string"
     },
+    "blocknumber": {
+      "title": "current tx block number",
+      "type": "string"
+    },
     "selectedcoin": {
       "title": "current coin(token) symbol",
       "type": "string"
