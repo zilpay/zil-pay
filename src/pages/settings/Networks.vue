@@ -20,7 +20,7 @@
         v-model="http.model"
         :error="http.error"
         :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="RCP endpoint:"
+        title="RPC endpoint:"
         round
         second
         @input="http.error = null"

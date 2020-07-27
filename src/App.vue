@@ -197,10 +197,6 @@ export default {
         const { newValue } = store[key]
 
         switch (key) {
-        case FIELDS.WALLET:
-          this.setAccounts(newValue.identities)
-          this.setAccount(newValue.selectedAddress)
-          break
         case FIELDS.TOKENS:
           this.setTokens(newValue)
           break
