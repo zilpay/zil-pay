@@ -197,17 +197,9 @@ export default {
         const { newValue } = store[key]
 
         switch (key) {
-        case FIELDS.TOKENS:
-          this.setTokens(newValue)
-          break
-        case FIELDS.SELECTED_COIN:
-          this.setSelectedCoin(newValue)
-          break
+
         case FIELDS.TRANSACTIONS:
           this.setTxHistory(newValue)
-          break
-        case FIELDS.SELECTED_NET:
-          this.setNetwork(newValue)
           break
         case FIELDS.BLOCK_NUMBER:
           this.setBlockNumber(newValue)
