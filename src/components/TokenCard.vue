@@ -185,6 +185,12 @@ export default {
     & > svg {
       height: 15px;
     }
+
+    &:hover {
+      & > svg > line {
+        stroke: var(--accent-color-primary);
+      }
+    }
   }
 
   &_selected {

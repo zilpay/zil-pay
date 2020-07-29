@@ -201,6 +201,12 @@ export default {
       height: 15px;
       width: auto;
     }
+
+    &:hover {
+      & > svg > line {
+        stroke: var(--accent-color-primary);
+      }
+    }
   }
 
   &__name {

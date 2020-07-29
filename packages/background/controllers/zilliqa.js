@@ -93,11 +93,16 @@ export class Zilliqa {
         token[element.vname] = element.value
       }
 
-      const totalSupplyResult = await blockchain
-        .getSmartContractSubState(token.proxy_address, 'totalSupply')
+      if (result.length < 10) {
+        const totalSupplyResult = await blockchain
+          .getSmartContractSubState(token.proxy_address, 'totalSupply')
 
-      token.totalSupply = totalSupplyResult.result.totalSupply
-      token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)
+        token.totalSupply = totalSupplyResult.result.totalSupply
+        token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)
+      } else {
+        token.init_owner = token.init_admin
+        token.proxy_address = token.address
+      }
     } catch (err) {
       if (new TypeChecker(sendResponse).isFunction) {
         sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })
