@@ -20,7 +20,7 @@
           :class="b('zil')"
           :font="FONT_VARIANTS.light"
         >
-          -{{ transaction.amount | fromZil(token.decimals) }} {{ token.symbol }}
+          -{{ transaction.amount | fromZil(token.decimals) | toLocaleString }} {{ token.symbol }}
         </P>
       </div>
       <div :class="b('thirdly-line')">
@@ -36,7 +36,7 @@
           :variant="COLOR_VARIANTS.gray"
           :font="FONT_VARIANTS.regular"
         >
-          -{{ transaction.amount | toConversion(getRate, token.decimals) }} {{ currency }}
+          -{{ transaction.amount | toConversion(getRate, token.decimals) | toLocaleString }} {{ currency }}
         </P>
       </div>
     </div>
@@ -62,7 +62,7 @@ import {
 import P from '@/components/P'
 import Icon from '@/components/Icon'
 
-import { fromZil, toConversion } from '@/filters'
+import { fromZil, toConversion, toLocaleString } from '@/filters'
 
 export default {
   name: 'TransactionCard',
@@ -70,7 +70,7 @@ export default {
     P,
     Icon
   },
-  filters: { fromZil, toConversion },
+  filters: { fromZil, toConversion, toLocaleString },
   props: {
     transaction: {
       type: Object,

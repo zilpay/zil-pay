@@ -47,7 +47,7 @@
           :variant="amountColor"
           :size="SIZE_VARIANS.sm"
         >
-          {{ amount | fromZil(decimals) }} {{ symbol }}
+          {{ amount | fromZil(decimals) | toLocaleString }} {{ symbol }}
         </P>
       </div>
       <a
@@ -171,7 +171,7 @@ import SignMessage from '@/pages/SignMessage'
 
 import viewblockMixin from '@/mixins/viewblock'
 import CalcMixin from '@/mixins/calc'
-import { fromZil, toAddress } from '@/filters'
+import { fromZil, toAddress, toLocaleString } from '@/filters'
 
 import { Background, ledgerSendTransaction } from '@/services'
 
@@ -190,7 +190,7 @@ export default {
     Tabs
   },
   mixins: [viewblockMixin, CalcMixin],
-  filters: { fromZil, toAddress },
+  filters: { fromZil, toAddress, toLocaleString },
   data() {
     return {
       SIZE_VARIANS,

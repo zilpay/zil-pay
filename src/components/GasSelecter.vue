@@ -10,7 +10,7 @@
         {{ el.name }}
       </P>
       <P>
-        {{ el.value | fromZil(DEFAULT_TOKEN.decimals) }} {{ DEFAULT_TOKEN.symbol }}
+        {{ el.value | fromZil(DEFAULT_TOKEN.decimals) | toLocaleString }} {{ DEFAULT_TOKEN.symbol }}
       </P>
     </li>
   </ul>
@@ -26,12 +26,12 @@ import { EVENTS } from '@/config'
 
 import P from '@/components/P'
 
-import { fromZil } from '@/filters'
+import { fromZil, toLocaleString } from '@/filters'
 import CalcMixin, { gasFee } from '@/mixins/calc'
 
 export default {
   name: 'GasSelecter',
-  filters: { fromZil },
+  filters: { fromZil, toLocaleString },
   mixins: [CalcMixin],
   components: {
     P

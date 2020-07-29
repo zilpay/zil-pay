@@ -29,13 +29,13 @@
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          {{ account.balance | fromZil(DEFAULT_TOKEN.decimals) }} ZIL
+          {{ account.balance | fromZil(DEFAULT_TOKEN.decimals) | toLocaleString }} ZIL
         </Title>
         <Title
           :variant="COLOR_VARIANTS.gray"
           :size="SIZE_VARIANS.xs"
         >
-          {{ account.balance | toConversion(getDefaultRate, DEFAULT_TOKEN.decimals) }} {{ currency }}
+          {{ account.balance | toConversion(getDefaultRate, DEFAULT_TOKEN.decimals) | toLocaleString }} {{ currency }}
         </Title>
       </div>
       <P
@@ -74,7 +74,7 @@ import Title from '@/components/Title'
 import P from '@/components/P'
 import SvgInject from '@/components/SvgInject'
 
-import { fromZil, toConversion, toAddress } from '@/filters'
+import { fromZil, toConversion, toAddress, toLocaleString } from '@/filters'
 import CopyMixin from '@/mixins/copy'
 import AccountMixin from '@/mixins/account'
 import JazziconMixin from '@/mixins/jazzicon'
@@ -108,7 +108,7 @@ export default {
     P
   },
   mixins: [CopyMixin, AccountMixin, JazziconMixin],
-  filters: { fromZil, toConversion, toAddress },
+  filters: { fromZil, toConversion, toAddress, toLocaleString },
   props: {
     account: {
       type: Object,

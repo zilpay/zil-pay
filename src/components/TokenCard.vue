@@ -12,7 +12,7 @@
           :size="SIZE_VARIANS.md"
           :font="FONT_VARIANTS.regular"
         >
-          {{ balance | fromZil(decimals) }}
+          {{ balance | fromZil(decimals) | toLocaleString }}
         </Title>
         <P :font="FONT_VARIANTS.bold">
           {{ symbol }}
@@ -23,7 +23,7 @@
           :size="SIZE_VARIANS.sm"
           :font="FONT_VARIANTS.regular"
         >
-          {{ balance | toConversion(rate, decimals) }}
+          {{ balance | toConversion(rate, decimals) | toLocaleString }}
         </Title>
         <P
           :size="SIZE_VARIANS.sm"
@@ -62,11 +62,11 @@ import P from '@/components/P'
 import SvgInject from '@/components/SvgInject'
 import Icon from '@/components/Icon'
 
-import { toConversion, fromZil } from '@/filters'
+import { toConversion, fromZil, toLocaleString } from '@/filters'
 
 export default {
   name: 'TokenCard',
-  filters: { toConversion, fromZil },
+  filters: { toConversion, fromZil, toLocaleString },
   components: {
     SvgInject,
     Icon,

@@ -34,7 +34,7 @@
         :variant="COLOR_VARIANTS.primary"
       >
         <span v-if="getSelectedToken">
-          {{ balance | fromZil(getSelectedToken.decimals) }} {{ getSelectedToken.symbol }}
+          {{ balance | fromZil(getSelectedToken.decimals) | toLocaleString }} {{ getSelectedToken.symbol }}
         </span>
         <div
           class="pointer"
@@ -49,7 +49,7 @@
         :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.light"
       >
-        {{ balance | toConversion(getRate, getSelectedToken.decimals) }} {{ currency }}
+        {{ balance | toConversion(getRate, getSelectedToken.decimals) | toLocaleString }} {{ currency }}
       </P>
     </div>
   </div>
@@ -82,12 +82,12 @@ import Title from '@/components/Title'
 import AccountMixin from '@/mixins/account'
 import CopyMixin from '@/mixins/copy'
 import JazziconMixin from '@/mixins/jazzicon'
-import { toAddress, fromZil, toConversion } from '@/filters'
+import { toAddress, fromZil, toConversion, toLocaleString } from '@/filters'
 
 export default {
   name: 'HomeAccount',
   mixins: [AccountMixin, CopyMixin, JazziconMixin],
-  filters: { toAddress, fromZil, toConversion },
+  filters: { toAddress, fromZil, toConversion, toLocaleString },
   components: {
     SvgInject,
     P,

@@ -98,11 +98,12 @@ export class Zilliqa {
           .getSmartContractSubState(token.proxy_address, 'totalSupply')
 
         token.totalSupply = totalSupplyResult.result.totalSupply
-        token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)
       } else {
         token.init_owner = token.init_admin
-        token.proxy_address = token.address
+        token.proxy_address = token._this_address
       }
+
+      token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)
     } catch (err) {
       if (new TypeChecker(sendResponse).isFunction) {
         sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })
