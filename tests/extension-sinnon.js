@@ -8,7 +8,7 @@
  * Copyright (c) 2019 ZilPay
  */
 import extension from 'extensionizer'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 const extensionID = uuid()
 

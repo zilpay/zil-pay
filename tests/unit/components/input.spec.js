@@ -9,7 +9,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import Input, { INPUT_TYPES } from 'src/components/Input.vue'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import {
   BEM_CONFIG,
   SIZE_VARIANS

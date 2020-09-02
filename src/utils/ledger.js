@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { Subject, from } from 'rxjs'
 import { filter, take, map } from 'rxjs/operators'
 import { TypeChecker } from 'lib/type'

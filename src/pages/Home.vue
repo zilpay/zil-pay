@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import modalStore from '@/store/modal'

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { SIZE_VARIANS, FONT_VARIANTS, EVENTS, COLOR_VARIANTS } from '@/config'
 
 import P from '@/components/P'

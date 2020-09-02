@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import uuidv4 from 'uuid/v4'
+import { v4 } from 'uuid'
 import { filter, take, map } from 'rxjs/operators'
 import { from } from 'rxjs'
 
@@ -60,7 +60,7 @@ function _transaction(tx) {
 
   const type = MTypeTab.CALL_TO_SIGN_TX
   const recipient = MTypeTabContent.CONTENT
-  const uuid = uuidv4()
+  const uuid = v4()
   const { payload } = tx
 
   // Transaction id.
@@ -79,7 +79,7 @@ function _transaction(tx) {
 function _message(message) {
   const type = MTypeTab.SIGN_MESSAGE
   const recipient = MTypeTabContent.CONTENT
-  const uuid = uuidv4()
+  const uuid = v4()
   const title = window.document.title
   const icon = getFavicon()
   const payload = {
@@ -283,7 +283,7 @@ export default class Wallet {
   async connect() {
     const type = MTypeTab.CONNECT_APP
     const recipient = MTypeTabContent.CONTENT
-    const uuid = uuidv4()
+    const uuid = v4()
     const title = window.document.title
     const domain = window.document.domain
     const icon = getFavicon()

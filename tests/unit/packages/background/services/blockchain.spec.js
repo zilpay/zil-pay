@@ -18,7 +18,7 @@ import { FIELDS } from 'config'
 import { BrowserStorage } from 'lib/storage'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
 import { NetworkControl } from 'packages/background/services/network'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { AES } from 'lib/crypto'
 
 const SEED = generateMnemonic(128)

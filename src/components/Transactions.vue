@@ -23,7 +23,7 @@
           </Title>
         </li>
         <li
-          v-for="(tx, index) of getCurrentTransactions"
+          v-for="(tx, index) of getCurrentTransactions.reverse()"
           :key="index"
         >
           <TransactionCard

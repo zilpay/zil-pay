@@ -8,7 +8,7 @@
  */
 import 'tests/extension-sinnon'
 
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 import { TabsMessage } from 'lib/stream/message'
 

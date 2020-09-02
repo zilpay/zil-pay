@@ -9,7 +9,7 @@
 import 'tests/extension-sinnon'
 import 'packages/inpage'
 
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { TypeChecker } from 'lib/type'
 
 const { window } = global

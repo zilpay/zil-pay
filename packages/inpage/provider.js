@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import uuidv4 from 'uuid/v4'
+import { v4 } from 'uuid'
 import { RPCMethod } from '@zilliqa-js/core/dist/net'
 
 import { from } from 'rxjs'
@@ -63,7 +63,7 @@ export default class HTTPProvider {
     const type = MTypeTab.CONTENT_PROXY_MEHTOD
     const recipient = MTypeTabContent.CONTENT
     // Request id.
-    const uuid = uuidv4()
+    const uuid = v4()
 
     // Send to content.js
     new SecureMessage({

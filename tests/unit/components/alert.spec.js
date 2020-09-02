@@ -12,7 +12,7 @@ import Alert from 'src/components/Alert.vue'
 import {
   BEM_CONFIG
 } from 'src/config'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 const TEST_TEXT = uuid()
 const localVue = createLocalVue()

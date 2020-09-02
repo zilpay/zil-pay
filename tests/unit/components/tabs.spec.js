@@ -10,7 +10,7 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import Tabs from 'src/components/Tabs.vue'
 import { BEM_CONFIG } from 'src/config'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 const localVue = createLocalVue()
 

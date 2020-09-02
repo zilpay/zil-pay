@@ -8,7 +8,7 @@
  */
 import 'tests/extension-sinnon'
 
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { SecureMessage } from 'lib/stream/message'
 
 describe('lib:stream:message:SecureMessage', () => {

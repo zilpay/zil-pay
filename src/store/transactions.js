@@ -127,7 +127,8 @@ const STORE = {
         const transactions = state.transactions[address][network] || []
 
         if (transactions.length > DEFAULT.MAX_TX_AMOUNT_LIST) {
-          return transactions.slice(transactions.length - DEFAULT.MAX_TX_AMOUNT_LIST, transactions.length)
+          return transactions
+            .slice(transactions.length - DEFAULT.MAX_TX_AMOUNT_LIST, transactions.length)
         }
 
         return transactions

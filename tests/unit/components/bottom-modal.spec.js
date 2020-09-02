@@ -9,7 +9,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import vueBemCn from 'vue-bem-cn'
 import BottomModal from 'src/components/BottomModal.vue'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { BEM_CONFIG } from 'src/config'
 
 const localVue = createLocalVue()

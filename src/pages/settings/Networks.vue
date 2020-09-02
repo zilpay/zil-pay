@@ -65,7 +65,7 @@
 import { ZILLIQA } from 'config/zilliqa'
 import { TypeChecker } from 'lib/type'
 
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { mapState, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'

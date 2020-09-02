@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'

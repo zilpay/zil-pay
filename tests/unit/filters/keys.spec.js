@@ -8,7 +8,7 @@
  */
 import { createLocalVue } from '@vue/test-utils'
 import keys from 'src/filters/keys'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 const localVue = createLocalVue()
 

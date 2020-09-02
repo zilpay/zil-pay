@@ -9,7 +9,7 @@
 jest.useFakeTimers()
 import 'tests/extension-sinnon'
 
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 import { LocalStream } from 'lib/stream'
 import { Message } from 'lib/stream/message'

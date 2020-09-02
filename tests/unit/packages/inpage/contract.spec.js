@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { ContractControl, Contract } from 'packages/inpage/contract'
 import Wallet from 'packages/inpage/wallet'
 import Handler from 'packages/inpage/handler'

@@ -13,7 +13,7 @@ import {
   BEM_CONFIG,
   COLOR_VARIANTS
 } from 'src/config'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 
 const TEST_TEXT = uuid()
 
