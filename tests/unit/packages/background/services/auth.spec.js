@@ -9,7 +9,7 @@
 import 'tests/extension-sinnon'
 
 import { generateMnemonic } from 'bip39'
-import uuidv4 from 'uuid/v4'
+import { v4 as uuidv4} from 'uuid'
 import { FIELDS } from 'config'
 
 import { BuildObject, BrowserStorage } from 'lib/storage'
