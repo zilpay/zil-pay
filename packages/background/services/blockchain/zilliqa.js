@@ -121,6 +121,23 @@ export class ZilliqaControl {
     return result
   }
 
+  async getSmartContractInit(address) {
+    const method = RPCMethod.GetSmartContractInit
+
+    address = toNodeAddress(address)
+
+    const { result, error } = await this.provider.send(
+      method,
+      address
+    )
+
+    if (error) {
+      throw new RPCError(error)
+    }
+
+    return result
+  }
+
   /**
    * Preparation transaction to send.
    * @param {Object} txData - some tx params.

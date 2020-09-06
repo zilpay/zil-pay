@@ -84,8 +84,13 @@ export class Zilliqa {
     const zilliqa = new ZilliqaControl(networkControl.provider)
 
     try {
-      const { blockchain } = zilliqa
-      const { result } = await blockchain.getSmartContractInit(address)
+      let result = await zilliqa.getSmartContractInit(address)
+
+      if (Array.isArray(result) && result.some((el) => el.vname === 'proxy_address')) {
+        const proxyAddress = result.find((el) => el.vname === 'proxy_address').value
+
+        result = await zilliqa.getSmartContractInit(proxyAddress)
+      }
 
       for (let index = 0; index < result.length; index++) {
         const element = result[index]
@@ -93,14 +98,22 @@ export class Zilliqa {
         token[element.vname] = element.value
       }
 
-      if (result.length < 10) {
-        const totalSupplyResult = await blockchain
+      if (token.init_supply) {
+        token.totalSupply = token.init_supply
+      }
+
+      if (result.length < 10 && token.proxy_address) {
+        const totalSupplyResult = await zilliqa
           .getSmartContractSubState(token.proxy_address, 'totalSupply')
 
         token.totalSupply = totalSupplyResult.result.totalSupply
       } else {
         token.init_owner = token.init_admin
         token.proxy_address = token._this_address
+      }
+
+      if (token.contract_owner) {
+        token.init_owner = token.contract_owner
       }
 
       token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)

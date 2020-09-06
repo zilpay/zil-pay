@@ -13,7 +13,7 @@
         </a>
       </Title>
       <ul :class="b('scroll')">
-        <li v-show="getCurrentTransactions.length === 0">
+        <li v-show="transactions.length === 0">
           <Title
             :size="SIZE_VARIANS.sm"
             :font="FONT_VARIANTS.regular"
@@ -23,7 +23,7 @@
           </Title>
         </li>
         <li
-          v-for="(tx, index) of getCurrentTransactions.reverse()"
+          v-for="(tx, index) of transactions.reverse()"
           :key="index"
         >
           <TransactionCard
@@ -96,8 +96,15 @@ export default {
       transactionsStore.GETTERS_NAMES.getCurrentTransactions
     ]),
 
+    transactions() {
+      try {
+        return [...this.getCurrentTransactions].reverse()
+      } catch (err) {
+        return []
+      }
+    },
     selectedTx() {
-      return this.getCurrentTransactions[this.selected]
+      return this.transactions[this.selected]
     }
   },
   methods: {
