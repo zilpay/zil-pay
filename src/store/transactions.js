@@ -124,7 +124,8 @@ const STORE = {
       try {
         const { address } = rootGetters['accounts/getCurrentAccount']
         const { network } = rootState.settings
-        const transactions = state.transactions[address][network] || []
+        const jsonTxns = JSON.stringify(state.transactions[address][network] || [])
+        const transactions = JSON.parse(jsonTxns).reverse()
 
         if (transactions.length > DEFAULT.MAX_TX_AMOUNT_LIST) {
           return transactions

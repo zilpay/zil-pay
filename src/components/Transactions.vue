@@ -23,7 +23,7 @@
           </Title>
         </li>
         <li
-          v-for="(tx, index) of transactions.reverse()"
+          v-for="(tx, index) of transactions"
           :key="index"
         >
           <TransactionCard
@@ -98,7 +98,7 @@ export default {
 
     transactions() {
       try {
-        return [...this.getCurrentTransactions].reverse()
+        return [...this.getCurrentTransactions]
       } catch (err) {
         return []
       }

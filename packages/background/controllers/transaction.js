@@ -110,7 +110,7 @@ export class Transaction {
           return tx
         }
 
-        const { result } = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
+        const result = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
         const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
         let block = tx.block
         let error = null
