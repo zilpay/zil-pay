@@ -22,7 +22,7 @@ export function fromZil(value, decimals, isRound = true) {
   const result = _amount.div(_decimals).toString()
 
   if (isRound) {
-    return Big(result).toFixed(5)
+    return Big(result).toFixed(3)
   }
 
   return result
