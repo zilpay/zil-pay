@@ -69,15 +69,16 @@ export class ZilliqaControl {
    */
   async getZRCBalance(proxyAddress, account) {
     const address = String(account.address).toLowerCase()
-    const { balances } = await this.getSmartContractSubState(
-      proxyAddress, 'balances', [address]
-    )
 
-    if (!balances || !balances[address]) {
+    try {
+      const { balances } = await this.getSmartContractSubState(
+        proxyAddress, 'balances', [address]
+      )
+
+      return balances[address]
+    } catch (err) {
       return '0'
     }
-
-    return balances[address]
   }
 
   /**
