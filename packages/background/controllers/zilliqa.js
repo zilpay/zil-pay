@@ -154,13 +154,7 @@ export class Zilliqa {
     }
 
     tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
-    tokens[FIELDS.TOKENS][selectedNet].push({
-      ...zrcToken,
-      address: zrcToken._this_address,
-      _creation_block: undefined,
-      _scilla_version: undefined,
-      _this_address: undefined
-    })
+    tokens[FIELDS.TOKENS][selectedNet].push(zrcToken)
 
     await storage.set([
       new BuildObject(FIELDS.TOKENS, tokens[FIELDS.TOKENS]),

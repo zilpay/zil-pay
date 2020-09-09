@@ -17,15 +17,15 @@ export function fromZil(value, decimals, isRound = true) {
     return 0
   }
 
-  const _decimals = 10 ** Number(decimals)
+  const _decimals = Big(10).pow(Number(decimals))
   const _amount = Big(value)
-  const result = _amount.div(_decimals)
+  const result = _amount.div(_decimals).toString()
 
   if (isRound) {
-    return String(Math.round(Number(result) * 1000) / 1000)
-  } else {
-    return result
+    return Big(result).toFixed(5)
   }
+
+  return result
 }
 
 export default fromZil

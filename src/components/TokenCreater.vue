@@ -131,7 +131,7 @@ export default {
           },
           {
             title: this.local.TOKEN_OWNER,
-            value: toAddress(result.init_owner, this.addressFormat)
+            value: toAddress(result.owner, this.addressFormat)
           }
         ]
       } catch (err) {

@@ -221,9 +221,10 @@ export class Wallet {
       }
 
       const awaiterTokens = selectedTokens.map(async(el) => {
-        const { proxy_address } = el
+        const address = el.proxy_address ? el.proxy_address : el.address
+        const balance = await zilliqa.getZRCBalance(address, account)
 
-        el.balance = await zilliqa.getZRCBalance(proxy_address, account)
+        el.balance = balance
 
         return el
       })
@@ -237,6 +238,7 @@ export class Wallet {
 
       sendResponse({ resolve: { tokens, wallet } })
     } catch (err) {
+      console.error(err)
       sendResponse({ reject: err.message })
     }
   }

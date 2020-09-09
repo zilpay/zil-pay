@@ -153,10 +153,11 @@ export default {
           }
         ]
       })
+      const address = token.proxy_address ? token.proxy_address : token.address
 
       return {
         data,
-        toAddr: toBech32Address(token.proxy_address),
+        toAddr: toBech32Address(address),
         symbol: token.symbol,
         amount: String(0),
         gasPrice: String(1000000000),
