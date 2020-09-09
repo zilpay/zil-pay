@@ -77,46 +77,38 @@ export class Zilliqa {
     const account = wallet.identities[
       wallet.selectedAddress
     ]
-    const token = {
-      address,
-      balance: '0'
-    }
     const zilliqa = new ZilliqaControl(networkControl.provider)
 
+    // Trting to get full token information.
     try {
       let result = await zilliqa.getSmartContractInit(address)
 
-      if (Array.isArray(result) && result.some((el) => el.vname === 'proxy_address')) {
-        const proxyAddress = result.find((el) => el.vname === 'proxy_address').value
-
-        result = await zilliqa.getSmartContractInit(proxyAddress)
+      if (result.proxy_address) {
+        // If token is Mintable type need to get the operator.
+        result = await zilliqa.getSmartContractInit(result.proxy_address)
       }
 
-      for (let index = 0; index < result.length; index++) {
-        const element = result[index]
-
-        token[element.vname] = element.value
+      // Getting total supply of token.
+      const { total_supply } = await zilliqa.getSmartContractSubState(
+        result._this_address, 'total_supply'
+      )
+      // Getting balance of token for current selected account.
+      const balance = await zilliqa.getZRCBalance(result._this_address, account)
+      const token = {
+        address: result._this_address,
+        balance: balance,
+        owner: result.contract_owner,
+        decimals: result.decimals,
+        name: result.name,
+        symbol: result.symbol,
+        totalSupply: total_supply
       }
 
-      if (token.init_supply) {
-        token.totalSupply = token.init_supply
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ resolve: token })
       }
 
-      if (result.length < 10 && token.proxy_address) {
-        const totalSupplyResult = await zilliqa
-          .getSmartContractSubState(token.proxy_address, 'totalSupply')
-
-        token.totalSupply = totalSupplyResult.result.totalSupply
-      } else {
-        token.init_owner = token.init_admin
-        token.proxy_address = token._this_address
-      }
-
-      if (token.contract_owner) {
-        token.init_owner = token.contract_owner
-      }
-
-      token.balance = await zilliqa.getZRCBalance(token.proxy_address, account)
+      return Promise.resolve(token)
     } catch (err) {
       if (new TypeChecker(sendResponse).isFunction) {
         sendResponse({ reject: ERROR_MSGS.BAD_CONTRACT_ADDRESS })
@@ -124,12 +116,6 @@ export class Zilliqa {
 
       return Promise.reject(err)
     }
-
-    if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse({ resolve: token })
-    }
-
-    return Promise.resolve(token)
   }
 
   /**

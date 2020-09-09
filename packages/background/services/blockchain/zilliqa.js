@@ -123,6 +123,7 @@ export class ZilliqaControl {
 
   async getSmartContractInit(address) {
     const method = RPCMethod.GetSmartContractInit
+    let object = {}
 
     address = toNodeAddress(address)
 
@@ -135,7 +136,13 @@ export class ZilliqaControl {
       throw new RPCError(error)
     }
 
-    return result
+    for (let index = 0; index < result.length; index++) {
+      const element = result[index]
+
+      object[element.vname] = element.value
+    }
+
+    return object
   }
 
   /**
