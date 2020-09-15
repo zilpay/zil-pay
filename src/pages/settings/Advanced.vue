@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 
@@ -72,6 +72,9 @@ export default {
     ])
   },
   methods: {
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.onGetMinGasPrice
+    ]),
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setDefaultGas,
       settingsStore.MUTATIONS_NAMES.setGas,
@@ -82,6 +85,11 @@ export default {
       this.setDefaultGas()
       this.setAddressFormat(this.addressFormatItems[0])
     }
+  },
+  mounted() {
+    this
+      .onGetMinGasPrice()
+      .then((gas) => this.defaultGasValue = JSON.stringify(gas))
   }
 }
 </script>

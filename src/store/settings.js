@@ -238,13 +238,18 @@ const STORE = {
       const bg = new Background()
       const gasPrice = await bg.getMinGasPrice()
       const gasPriceInLi = CalcMixin.methods.toLi(gasPrice)
-
-      commit(MUTATIONS_NAMES.setGas, {
+      const gas = {
         ...state.defaultGas,
         gasPrice: gasPriceInLi
-      })
+      }
 
-      await updateStatic(state, true)
+      if (Number(gasPriceInLi) >= Number(state.defaultGas.gasPrice)) {
+        commit(MUTATIONS_NAMES.setGas, gas)
+
+        await updateStatic(state, true)
+      }
+
+      return gas
     },
     async [ACTIONS_NAMES.onUpdateDappList]({ state, commit }) {
       const bg = new Background()
