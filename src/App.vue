@@ -88,7 +88,8 @@ export default {
     ...mapActions(settingsStore.STORE_NAME, [
       settingsStore.ACTIONS_NAMES.updateRate,
       settingsStore.ACTIONS_NAMES.onUpdateSettings,
-      settingsStore.ACTIONS_NAMES.onUpdateConnection
+      settingsStore.ACTIONS_NAMES.onUpdateConnection,
+      settingsStore.ACTIONS_NAMES.onGetMinGasPrice
     ]),
     ...mapActions(uiStore.STORE_NAME, [
       uiStore.ACTIONS_NAMES.onLocal
@@ -188,6 +189,7 @@ export default {
     }
 
     this.updateRate()
+    this.onGetMinGasPrice()
     this.onUpdateSettings()
 
     this.setLoad()

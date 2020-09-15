@@ -12,6 +12,7 @@ import { DEFAULT, API, DEFAULT_TOKEN } from 'config'
 import { TypeChecker } from 'lib/type'
 import { ZILLIQA, DEFAULT_GAS_FEE } from 'config/zilliqa'
 import { CURRENCIES, ADDRESS_FORMAT_VARIANTS } from '@/config'
+import CalcMixin from '@/mixins/calc'
 
 import {
   setSelectedNetwork,
@@ -57,7 +58,8 @@ const ACTIONS_NAMES = {
   onUpdateNetworkConfig: 'onUpdateNetworkConfig',
   onUpdateSettings: 'onUpdateSettings',
   onUpdateConnection: 'onUpdateConnection',
-  onUpdateDappList: 'onUpdateDappList'
+  onUpdateDappList: 'onUpdateDappList',
+  onGetMinGasPrice: 'onGetMinGasPrice'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -231,6 +233,18 @@ const STORE = {
       const connection = await getConnect()
 
       commit(MUTATIONS_NAMES.setConnect, connection)
+    },
+    async [ACTIONS_NAMES.onGetMinGasPrice]({ state, commit }) {
+      const bg = new Background()
+      const gasPrice = await bg.getMinGasPrice()
+      const gasPriceInLi = CalcMixin.methods.toLi(gasPrice)
+
+      commit(MUTATIONS_NAMES.setGas, {
+        ...state.defaultGas,
+        gasPrice: gasPriceInLi
+      })
+
+      await updateStatic(state, true)
     },
     async [ACTIONS_NAMES.onUpdateDappList]({ state, commit }) {
       const bg = new Background()
