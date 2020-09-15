@@ -342,4 +342,21 @@ export class Background {
 
     return result.resolve
   }
+
+  /**
+   * Getting minimum gasPrice from RPC.
+   */
+  async getMinGasPrice() {
+    const data = await Message.signal(
+      MTypePopup.GET_GAS_PRICE
+    ).send()
+
+    if (!data) {
+      throw new Error(BG_ERROR)
+    } else if (data.reject) {
+      return Promise.reject(data.reject)
+    }
+
+    return data.resolve
+  }
 }

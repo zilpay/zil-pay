@@ -143,6 +143,10 @@ export class Background {
       new Transaction(message.payload).buildTxParams(sendResponse)
       break
 
+    case MTypePopup.GET_GAS_PRICE:
+      new Zilliqa().getMinGasPrice(sendResponse)
+      break
+
     default:
       break
     }

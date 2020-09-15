@@ -214,4 +214,29 @@ export class Zilliqa {
     })
   }
 
+  /**
+   * Getting minimum gasPrice from blockchain.
+   * @param {*} sendResponse - CallBack funtion for return response to sender.
+   */
+  async getMinGasPrice(sendResponse) {
+    try {
+      await networkControl.netwrokSync()
+
+      const zilliqa = new ZilliqaControl(networkControl.provider)
+      const { result, error } = await zilliqa.blockchain.getMinimumGasPrice()
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ resolve: result })
+      }
+    } catch (err) {
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({ reject: err.message })
+      }
+    }
+  }
+
 }
