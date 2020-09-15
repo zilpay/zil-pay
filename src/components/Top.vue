@@ -10,7 +10,10 @@
           {{ network }}
         </P>
       </router-link>
-      <div :class="b('icons')">
+      <div
+        v-show="!hiden"
+        :class="b('icons')"
+      >
         <div @click="onLogout">
           <SvgInject :variant="ICON_VARIANTS.lock" />
         </div>
@@ -41,6 +44,12 @@ export default {
   components: {
     SvgInject,
     P
+  },
+  props: {
+    hiden: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

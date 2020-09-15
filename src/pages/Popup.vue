@@ -1,5 +1,7 @@
 <template>
   <div :class="b()">
+    <Top hiden/>
+    <br>
     <Alert
       v-if="getCurrentAccount"
       pointer
@@ -164,6 +166,7 @@ import SwitchBox from '@/components/SwitchBox'
 import Tabs from '@/components/Tabs'
 import SvgInject from '@/components/SvgInject'
 import GasSelecter from '@/components/GasSelecter'
+import Top from '@/components/Top'
 
 import TxDataPage from '@/pages/popup/TxData'
 import HomePage from '@/pages/Home'
@@ -187,6 +190,7 @@ export default {
     Icon,
     SvgInject,
     SwitchBox,
+    Top,
     Tabs
   },
   mixins: [viewblockMixin, CalcMixin],
@@ -467,7 +471,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 
   text-align: center;
 
