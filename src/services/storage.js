@@ -23,17 +23,19 @@ export async function setSelectedNetwork(selectedNet) {
     throw new Error('selectedNet must be', Object.keys(ZILLIQA).join(','))
   }
 
-  await storage.set([
-    new BuildObject(FIELDS.SELECTED_NET, selectedNet)
-  ])
+  const type = MTypePopup.SET_PROXY_STORAGE
+  const payload = new BuildObject(FIELDS.SELECTED_NET, selectedNet)
+
+  await new Message({ type, payload }).send()
 
   return selectedNet
 }
 
 export async function setSelectedCoin(symbol) {
-  await storage.set([
-    new BuildObject(FIELDS.SELECTED_COIN, symbol)
-  ])
+  const type = MTypePopup.SET_PROXY_STORAGE
+  const payload = new BuildObject(FIELDS.SELECTED_COIN, symbol)
+
+  await new Message({ type, payload }).send()
 
   return symbol
 }
