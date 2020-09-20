@@ -191,6 +191,8 @@ export class Wallet {
       }).send()
 
       sendResponse({ resolve: this.payload })
+
+      new Transaction().checkAllTransaction()
     } catch (err) {
       sendResponse({ reject: err.message })
     }

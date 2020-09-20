@@ -8,6 +8,7 @@
  */
 import { networkControl, socketControl } from './main'
 import { TabsMessage, MTypeTab } from 'lib/stream'
+import { Transaction } from './transaction'
 
 /**
  * Network actions for popup.
@@ -39,6 +40,8 @@ export class Network {
         provider: networkControl.provider,
         net: networkControl.selected
       }
+
+      new Transaction().checkAllTransaction()
     } catch (err) {
       payload = { reject: err.message }
     } finally {
