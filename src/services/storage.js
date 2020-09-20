@@ -43,14 +43,8 @@ export async function setSelectedCoin(symbol) {
 }
 
 export async function walletUpdate(wallet) {
-  if (!wallet || !wallet.identities || wallet.identities.length === 0) {
-    return null
-  } else if (!new TypeChecker(wallet.selectedAddress).isInt) {
-    return null
-  }
-
-  const type = MTypePopup.SET_PROXY_STORAGE
-  const payload = new BuildObject(FIELDS.WALLET, wallet)
+  const type = MTypePopup.PUT_WALLET
+  const payload = wallet
 
   await new Message({ type, payload }).send()
 

@@ -50,6 +50,7 @@ export class ZilliqaControl {
   async getBalance(address) {
     const method = RPCMethod.GetBalance
     const params = toNodeAddress(address)
+
     const { result, error } = await this.provider.send(method, params)
 
     if (error) {

@@ -72,6 +72,10 @@ export class Background {
       new Popup(message.payload).setDataFromPopup(sendResponse)
       break
 
+    case MTypePopup.PUT_WALLET:
+      new Wallet(message.payload).changeWallet(sendResponse)
+      break
+
     case MTypePopup.SET_NETWORK:
       new Network(message.payload).changeNetwork()
       break

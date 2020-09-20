@@ -165,26 +165,35 @@ export class Wallet {
    * When has been any change account.
    * @param {Object} wallet - Wallet object with accounts.
    */
-  changeWallet(wallet) {
-    if (!new TypeChecker(wallet.identities).isArray) {
+  async changeWallet(sendResponse) {
+    if (!new TypeChecker(this.payload.identities).isArray) {
       return null
-    } else if (!new TypeChecker(wallet.selectedAddress).isInt) {
+    } else if (!new TypeChecker(this.payload.selectedAddress).isInt) {
       return null
     }
 
-    const account = wallet.identities[
-      wallet.selectedAddress
+    const account = this.payload.identities[
+      this.payload.selectedAddress
     ]
     const type = MTypeTab.ADDRESS_CHANGED
+    const storage = new BrowserStorage()
 
     if (!account) {
       return null
     }
 
-    new TabsMessage({
-      type,
-      payload: account
-    }).send()
+    try {
+      await storage.set(new BuildObject(FIELDS.WALLET, this.payload))
+
+      new TabsMessage({
+        type,
+        payload: account
+      }).send()
+
+      sendResponse({ resolve: this.payload })
+    } catch (err) {
+      sendResponse({ reject: err.message })
+    }
   }
 
   /**
@@ -238,7 +247,7 @@ export class Wallet {
 
       sendResponse({ resolve: { tokens, wallet } })
     } catch (err) {
-      console.error(err)
+      console.warn(err)
       sendResponse({ reject: err.message })
     }
   }
