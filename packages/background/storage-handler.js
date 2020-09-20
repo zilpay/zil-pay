@@ -7,9 +7,8 @@
  * Copyright (c) 2019 ZilPay
  */
 import { FIELDS } from 'config'
-import { Network, Wallet, Transaction } from './controllers'
+import { Wallet, Transaction } from './controllers'
 
-const networkControl = new Network()
 const walletControl = new Wallet()
 /**
  * Store Handler call when window.chrome.storage.local has been changed.
@@ -29,7 +28,7 @@ export function browserStorageHandler(store) {
       new Transaction().checkAllTransaction()
       break
     case FIELDS.SELECTED_NET:
-      networkControl.changeNetwork(value.newValue)
+      // networkControl.changeNetwork(value.newValue)
       new Transaction().checkAllTransaction()
       break
     default:

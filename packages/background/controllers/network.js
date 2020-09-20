@@ -6,7 +6,6 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { TypeChecker } from 'lib/type'
 import { networkControl, socketControl } from './main'
 import { TabsMessage, MTypeTab } from 'lib/stream'
 
@@ -16,15 +15,18 @@ import { TabsMessage, MTypeTab } from 'lib/stream'
 export class Network {
 
   /**
+   * @param {Object} payload - Message payload.
+   */
+  constructor(payload) {
+    this.payload = payload
+  }
+
+  /**
    * When user change selected network through popup.
    * @param {String} selectednet - Network string.
    */
-  async changeNetwork(selectednet) {
-    if (!new TypeChecker(selectednet).isString) {
-      return null
-    }
-
-    console.log(selectednet)
+  async changeNetwork() {
+    const { selectednet } = this.payload
 
     let payload = null
     const type = MTypeTab.NETWORK_CHANGED

@@ -19,7 +19,7 @@ export class NetworkControl {
    * @return nodeURL.
    */
   get provider() {
-    return this.config[this.selected].PROVIDER
+    return this._getURL(this.selected)
   }
 
   /**
@@ -48,17 +48,31 @@ export class NetworkControl {
     this.status = null
     this._storage = new BrowserStorage()
 
-    this.checkProvider()
+    this.checkProvider(this.selected)
+  }
+
+  _getURL(selected) {
+    return this.config[selected].PROVIDER
   }
 
   /**
    * Change the network.
    * @param {String} selected - Can be only (mainnet, testnet, private).
    */
-  async changeNetwork(selected = defaultSelected) {
+  async changeNetwork(selected) {
     if (!(selected in this.config)) {
       throw new ArgumentError('selected')
     } else if (selected === this.selected) {
+      return {
+        selected,
+        config: this.config,
+        provider: this.provider
+      }
+    }
+
+    await this.checkProvider(selected)
+
+    if (!this.status) {
       return {
         selected,
         config: this.config,
@@ -71,8 +85,6 @@ export class NetworkControl {
     )
 
     this.selected = selected
-
-    await this.checkProvider()
 
     return {
       selected,
@@ -98,8 +110,6 @@ export class NetworkControl {
       ...ZILLIQA,
       ...config
     }
-
-    await this.checkProvider()
 
     return this.config
   }
@@ -130,9 +140,10 @@ export class NetworkControl {
   /**
    * Call the options requests to node URL.
    */
-  async checkProvider() {
+  async checkProvider(selected) {
     try {
-      await fetch(this.provider, {
+      const url = this._getURL(selected)
+      await fetch(url, {
         method: 'OPTIONS'
       })
 

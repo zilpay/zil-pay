@@ -7,7 +7,6 @@
  * Copyright (c) 2019 ZilPay
  */
 import { LocalStream } from 'lib/stream'
-import { BrowserStorage } from 'lib/storage'
 import {
   Message,
   MTypePopup,
@@ -18,15 +17,13 @@ import {
   Zilliqa,
   Domains,
   Transaction,
-  Wallet
+  Wallet, Network
 } from './controllers'
-import { browserStorageHandler } from './storage-handler'
 
 export class Background {
 
   constructor() {
     this._watchInternalMessaging()
-    BrowserStorage.subscribe((store) => browserStorageHandler(store))
     Transaction.listingBlockchain()
     new Transaction().checkAllTransaction()
   }
@@ -73,6 +70,10 @@ export class Background {
 
     case MTypePopup.SET_PROXY_STORAGE:
       new Popup(message.payload).setDataFromPopup(sendResponse)
+      break
+
+    case MTypePopup.SET_NETWORK:
+      new Network(message.payload).changeNetwork()
       break
 
     case MTypePopup.GET_TOKEN_INFO:

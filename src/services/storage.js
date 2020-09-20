@@ -18,17 +18,19 @@ export async function getStorageData() {
   ])
 }
 
-export async function setSelectedNetwork(selectedNet) {
-  if (!(selectedNet in ZILLIQA)) {
+export async function setSelectedNetwork(selectednet) {
+  if (!(selectednet in ZILLIQA)) {
     throw new Error('selectedNet must be', Object.keys(ZILLIQA).join(','))
   }
 
-  const type = MTypePopup.SET_PROXY_STORAGE
-  const payload = new BuildObject(FIELDS.SELECTED_NET, selectedNet)
+  const type = MTypePopup.SET_NETWORK
+  const payload = {
+    selectednet
+  }
 
   await new Message({ type, payload }).send()
 
-  return selectedNet
+  return selectednet
 }
 
 export async function setSelectedCoin(symbol) {
