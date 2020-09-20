@@ -25,5 +25,8 @@ export const DEFAULT = {
   POPUP_WIDTH: 320,
   POPUP_HEIGHT: 560,
   PROMT_PAGE: 'popup.html',
-  UD_CONTRACT_ADDRESS: 'zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz'
+  UD_CONTRACT_ADDRESS: 'zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz',
+  DEFAULT_TOKENS: [
+    ''
+  ]
 }

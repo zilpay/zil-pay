@@ -163,7 +163,7 @@ export class Wallet {
 
   /**
    * When has been any change account.
-   * @param {Object} wallet - Wallet object with accounts.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async changeWallet(sendResponse) {
     if (!new TypeChecker(this.payload.identities).isArray) {

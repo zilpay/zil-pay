@@ -24,9 +24,9 @@ export class Network {
 
   /**
    * When user change selected network through popup.
-   * @param {String} selectednet - Network string.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
-  async changeNetwork() {
+  async changeNetwork(sendResponse) {
     const { selectednet } = this.payload
 
     let payload = null
@@ -41,12 +41,13 @@ export class Network {
         net: networkControl.selected
       }
 
+      sendResponse({ resolve: selectednet })
+
+      new TabsMessage({ type, payload }).send()
       new Transaction().checkAllTransaction()
     } catch (err) {
-      payload = { reject: err.message }
+      sendResponse({ reject: err.message })
     } finally {
-      new TabsMessage({ type, payload }).send()
-
       await socketControl.stop()
       await socketControl.start()
     }

@@ -77,7 +77,7 @@ export class Background {
       break
 
     case MTypePopup.SET_NETWORK:
-      new Network(message.payload).changeNetwork()
+      new Network(message.payload).changeNetwork(sendResponse)
       break
 
     case MTypePopup.GET_TOKEN_INFO:
