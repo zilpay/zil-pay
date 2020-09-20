@@ -24,6 +24,8 @@ export class Network {
       return null
     }
 
+    console.log(selectednet)
+
     let payload = null
     const type = MTypeTab.NETWORK_CHANGED
 
