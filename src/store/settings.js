@@ -59,7 +59,8 @@ const ACTIONS_NAMES = {
   onUpdateSettings: 'onUpdateSettings',
   onUpdateConnection: 'onUpdateConnection',
   onUpdateDappList: 'onUpdateDappList',
-  onGetMinGasPrice: 'onGetMinGasPrice'
+  onGetMinGasPrice: 'onGetMinGasPrice',
+  onUpdateSelectedNet: 'onUpdateSelectedNet'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -129,10 +130,7 @@ const STORE = {
       }
     },
     [MUTATIONS_NAMES.setNetwork](state, network) {
-      if ((network in state.networkConfig)) {
-        setSelectedNetwork(network)
-        state.network = network
-      }
+      state.network = network
     },
     [MUTATIONS_NAMES.setLockTime](state, time) {
       if (new TypeChecker(time).isString) {
@@ -184,6 +182,11 @@ const STORE = {
     }
   },
   actions: {
+    async [ACTIONS_NAMES.onUpdateSelectedNet]({ commit }, selected) {
+      await setSelectedNetwork(selected)
+
+      commit(MUTATIONS_NAMES.setNetwork, selected)
+    },
     async [ACTIONS_NAMES.onUpdateNetworkConfig]({ commit }, config) {
       await updateNetworkConifg({
         ...ZILLIQA,

@@ -130,8 +130,8 @@ export default {
     ])
   },
   methods: {
-    ...mapMutations(settingsStore.STORE_NAME, [
-      settingsStore.MUTATIONS_NAMES.setNetwork
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.onUpdateSelectedNet
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
@@ -172,7 +172,7 @@ export default {
 
       await this.checkProvider(PROVIDER)
 
-      this.setNetwork(net)
+      await this.onUpdateSelectedNet(net)
       this.onUpdateModels()
       this.setLoad()
     },

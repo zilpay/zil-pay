@@ -113,9 +113,12 @@ export default {
       accountsStore.MUTATIONS_NAMES.setAccount
     ]),
     ...mapMutations(settingsStore.STORE_NAME, [
-      settingsStore.MUTATIONS_NAMES.setNetwork,
       settingsStore.MUTATIONS_NAMES.setNetworkConfig,
-      settingsStore.MUTATIONS_NAMES.setBlockNumber
+      settingsStore.MUTATIONS_NAMES.setBlockNumber,
+      settingsStore.MUTATIONS_NAMES.setNetwork
+    ]),
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.onUpdateSelectedNet
     ]),
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onUpdate
@@ -155,6 +158,7 @@ export default {
 
       if (!selectednet) {
         const [net] = Object.keys(config)
+
         this.setNetwork(net)
       } else {
         this.setNetwork(selectednet)
