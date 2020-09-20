@@ -168,10 +168,6 @@ export default {
       this.http.error = null
       this.ws.error = null
 
-      const { PROVIDER } = this.networkConfig[net]
-
-      await this.checkProvider(PROVIDER)
-
       await this.onUpdateSelectedNet(net)
       this.onUpdateModels()
       this.setLoad()

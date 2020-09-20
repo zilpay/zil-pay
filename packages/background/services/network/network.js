@@ -6,7 +6,6 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import fetch from 'cross-fetch'
 import { FIELDS, ZILLIQA } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { ArgumentError } from 'packages/background/errors'
@@ -47,8 +46,6 @@ export class NetworkControl {
     this.selected = selected
     this.status = null
     this._storage = new BrowserStorage()
-
-    this.checkProvider(this.selected)
   }
 
   _getURL(selected) {
@@ -69,8 +66,6 @@ export class NetworkControl {
         provider: this.provider
       }
     }
-
-    await this.checkProvider(selected)
 
     if (!this.status) {
       return {
@@ -135,24 +130,6 @@ export class NetworkControl {
       config,
       selected: this.selected
     }
-  }
-
-  /**
-   * Call the options requests to node URL.
-   */
-  async checkProvider(selected) {
-    try {
-      const url = this._getURL(selected)
-      await fetch(url, {
-        method: 'OPTIONS'
-      })
-
-      this.status = true
-    } catch (err) {
-      this.status = false
-    }
-
-    return this.status
   }
 
   async updateBlockNumber(blockNumber) {
