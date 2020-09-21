@@ -68,8 +68,14 @@ export class Zilliqa {
     const storage = new BrowserStorage()
     let data = await storage.get([
       FIELDS.TOKENS,
-      FIELDS.SELECTED_COIN
+      FIELDS.SELECTED_COIN,
+      FIELDS.WALLET
     ])
+
+    // Need wallet for balance check.
+    if (!data[FIELDS.WALLET]) {
+      return null
+    }
 
     if (!data.tokens) {
       data = await accountControl.initCoin()
