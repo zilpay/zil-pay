@@ -130,6 +130,7 @@ const STORE = {
     [GETTERS_NAMES.getSelectedToken](state, _, rootState) {
       const { tokens, selectedcoin } = state
       const { network } = rootState.settings
+
       const foundToken = tokens[network].find((t) => t.symbol === selectedcoin)
 
       if (!foundToken || foundToken.symbol === DEFAULT_TOKEN.symbol) {

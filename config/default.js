@@ -25,12 +25,5 @@ export const DEFAULT = {
   POPUP_WIDTH: 320,
   POPUP_HEIGHT: 560,
   PROMT_PAGE: 'popup.html',
-  UD_CONTRACT_ADDRESS: 'zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz',
-  DEFAULT_TOKENS: {
-    mainnet: [],
-    testnet: [
-      'zil10w2fwf5kdwqvjd2zyv6nr7da2d2z63g5dvtvsy',
-      'zil14vac5hvlsdklgmufh699x7mucrt3lsa43re9zz'
-    ]
-  }
+  UD_CONTRACT_ADDRESS: 'zil1jcgu2wlx6xejqk9jw3aaankw6lsjzeunx2j0jz'
 }

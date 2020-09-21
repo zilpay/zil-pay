@@ -24,6 +24,18 @@ export const ZILLIQA = {
   }
 }
 
+
+/**
+ * Default tokens will add to tokens list, this token cannot remove.
+ */
+export const DEFAULT_TOKENS_LIST = {
+  [Object.keys(ZILLIQA)[0]]: [],
+  [Object.keys(ZILLIQA)[1]]: [
+    '0x7b949726966b80c93542233531f9bd53542d4514',
+    '0x7f4a28aabde4cca04b5529eacb64b1449b317e7f'
+  ]
+}
+
 export const DEFAULT_GAS_FEE = {
   gasPrice: 1000,
   gasLimit: 1

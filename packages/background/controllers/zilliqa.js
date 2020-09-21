@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT_TOKEN } from 'config'
+import { FIELDS, DEFAULT_TOKEN, DEFAULT_TOKENS_LIST } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
@@ -60,6 +60,42 @@ export class Zilliqa {
     }
   }
 
+  /**
+   * Creating Default tokens list.
+   */
+  static async addDefaultTokens() {
+    const networks = Object.keys(DEFAULT_TOKENS_LIST)
+    const storage = new BrowserStorage()
+    let data = await storage.get([
+      FIELDS.TOKENS,
+      FIELDS.SELECTED_COIN
+    ])
+
+    if (!data.tokens) {
+      data = await accountControl.initCoin()
+    }
+
+    for (let index = 0; index < networks.length; index++) {
+      const net = networks[index]
+      const tokenAddresses = DEFAULT_TOKENS_LIST[net]
+
+      for (let index = 0; index < tokenAddresses.length; index++) {
+        const address = tokenAddresses[index]
+        const payload = {
+          address,
+          defaultToken: true
+        }
+        const hasAddress = data.tokens[net].some((token) => token.address)
+
+        if (hasAddress) {
+          continue
+        }
+
+        await new Zilliqa(payload).addZRCToken()
+      }
+    }
+  }
+
   constructor(payload) {
     this.payload = payload
   }
@@ -73,7 +109,7 @@ export class Zilliqa {
 
     const storage = new BrowserStorage()
     const wallet = await storage.get(FIELDS.WALLET)
-    const { address } = this.payload
+    const { address, defaultToken } = this.payload
     const account = wallet.identities[
       wallet.selectedAddress
     ]
@@ -101,7 +137,8 @@ export class Zilliqa {
         decimals: result.decimals,
         name: result.name,
         symbol: result.symbol,
-        totalSupply: total_supply
+        totalSupply: total_supply,
+        default: Boolean(defaultToken)
       }
 
       if (new TypeChecker(sendResponse).isFunction) {
@@ -134,6 +171,7 @@ export class Zilliqa {
 
     if (!tokens || !tokens[FIELDS.TOKENS]) {
       const keys = Object.keys(networkControl.config)
+
       tokens[FIELDS.TOKENS] = {
         [keys[0]]: [],
         [keys[1]]: [],

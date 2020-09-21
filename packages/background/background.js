@@ -26,6 +26,7 @@ export class Background {
     this._watchInternalMessaging()
     Transaction.listingBlockchain()
     new Transaction().checkAllTransaction()
+    Zilliqa.addDefaultTokens()
   }
 
   _watchInternalMessaging() {

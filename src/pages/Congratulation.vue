@@ -52,6 +52,7 @@ import accountsStore from '@/store/accounts'
 import transactionsStore from '@/store/transactions'
 import walletStore from '@/store/wallet'
 
+import { ZILLIQA } from 'config'
 import { SIZE_VARIANS, COLOR_VARIANTS, ICON_VARIANTS } from '@/config'
 
 import Home from '@/pages/Home'
@@ -120,11 +121,21 @@ export default {
 
       const { wallet, config, selectednet } = storageData
 
+      if (!config) {
+        this.setNetworkConfig(ZILLIQA)
+      } else {
+        this.setNetworkConfig(config)
+      }
+      if (!selectednet) {
+        const keys = Object.keys(ZILLIQA)
+
+        this.setNetwork(keys[0])
+      } else {
+        this.setNetwork(selectednet)
+      }
+
       this.setAccounts(wallet.identities)
       this.setAccount(wallet.selectedAddress)
-
-      this.setNetwork(selectednet)
-      this.setNetworkConfig(config)
     }
   },
   async beforeMount() {

@@ -34,7 +34,7 @@
       </div>
     </div>
     <span
-      v-show="DEFAULT_TOKEN.symbol !== symbol"
+      v-show="DEFAULT_TOKEN.symbol !== symbol && !defaultToken"
       :class="b('rm')"
       @click="onRemove"
     >
@@ -89,6 +89,10 @@ export default {
     symbol: {
       type: String,
       required: true
+    },
+    defaultToken: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

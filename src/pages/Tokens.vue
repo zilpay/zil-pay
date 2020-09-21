@@ -17,6 +17,7 @@
             :symbol="t.symbol"
             :decimals="t.decimals"
             :selected="t.symbol === selectedcoin"
+            :defaultToken="t.default"
             @click="onSelectedToken(t)"
             @remove="onRemove(t)"
           />
