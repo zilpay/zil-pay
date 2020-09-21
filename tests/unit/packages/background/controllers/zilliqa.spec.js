@@ -29,6 +29,12 @@ describe('packages:controllers:Zilliqa', () => {
     expect(instance.payload.uuid).toEqual(payload.uuid)
   })
 
+  it('amount of methods', () => {
+    const propiriesNames = Object.getOwnPropertyNames(Zilliqa.prototype)
+
+    expect(propiriesNames.length).toBe(6)
+  })
+
   it('should be have static methods', () => {
     expect(Zilliqa.initInpage).toBeTruthy()
     expect(Zilliqa.rmAllTransactionList).toBeTruthy()

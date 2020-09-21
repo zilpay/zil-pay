@@ -18,6 +18,12 @@ describe('packages:controllers:Transaction', () => {
     expect(new Transaction()).toBeTruthy()
   })
 
+  it('amount of methods', () => {
+    const propiriesNames = Object.getOwnPropertyNames(Transaction.prototype)
+
+    expect(propiriesNames.length).toBe(5)
+  })
+
   it('test constructor', () => {
     const payload = {
       uuid: v4()

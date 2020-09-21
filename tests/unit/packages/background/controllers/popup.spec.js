@@ -18,6 +18,12 @@ describe('packages:controllers:Popup', () => {
     expect(new Popup()).toBeTruthy()
   })
 
+  it('amount of methods', () => {
+    const propiriesNames = Object.getOwnPropertyNames(Popup.prototype)
+
+    expect(propiriesNames.length).toBe(7)
+  })
+
   it('test constructor', () => {
     const payload = {
       uuid: v4()

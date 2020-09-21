@@ -18,6 +18,12 @@ describe('packages:controllers:Wallet', () => {
     expect(new Wallet()).toBeTruthy()
   })
 
+  it('amount of methods', () => {
+    const propiriesNames = Object.getOwnPropertyNames(Wallet.prototype)
+
+    expect(propiriesNames.length).toBe(12)
+  })
+
   it('test constructor', () => {
     const payload = {
       uuid: v4()

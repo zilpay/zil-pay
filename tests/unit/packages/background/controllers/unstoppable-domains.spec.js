@@ -18,6 +18,12 @@ describe('packages:controllers:Domains', () => {
     expect(new Domains()).toBeTruthy()
   })
 
+  it('amount of methods', () => {
+    const propiriesNames = Object.getOwnPropertyNames(Domains.prototype)
+
+    expect(propiriesNames.length).toBe(2)
+  })
+
   it('test constructor', () => {
     const payload = {
       domain: v4()

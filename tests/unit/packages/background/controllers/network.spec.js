@@ -18,6 +18,12 @@ describe('packages:controllers:Network', () => {
     expect(new Network()).toBeTruthy()
   })
 
+  it('amount of methods', () => {
+    const propiriesNames = Object.getOwnPropertyNames(Network.prototype)
+
+    expect(propiriesNames.length).toBe(2)
+  })
+
   it('test constructor', () => {
     const payload = {
       uuid: v4()
