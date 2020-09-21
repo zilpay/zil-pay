@@ -2,11 +2,11 @@
   <div :class="b()">
     <div :class="b('wrapper')">
       <router-link
-        :class="b('net')"
+        :class="b('net', { main: network === mainnet })"
         :to="{ name: LINKS.networkPage }"
       >
         <SvgInject :variant="ICON_VARIANTS.net"/>
-        <P :variant="COLOR_VARIANTS.gray">
+        <P>
           {{ network }}
         </P>
       </router-link>
@@ -29,6 +29,7 @@
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
 
+import { ZILLIQA } from 'config'
 import { ICON_VARIANTS, COLOR_VARIANTS } from '@/config'
 
 import NetworkPage from '@/pages/settings/Networks'
@@ -58,7 +59,8 @@ export default {
 
       LINKS: {
         networkPage: NetworkPage.name
-      }
+      },
+      mainnet: Object.keys(ZILLIQA)[0]
     }
   },
   computed: {
@@ -93,8 +95,26 @@ export default {
     display: flex;
     align-items: center;
 
+    .P {
+      color: var(--accent-color-warning);
+    }
+
     svg {
       margin-right: 5px;
+
+      g > path {
+        fill: var(--accent-color-warning);
+      }
+    }
+
+    &_main > .P {
+      color: var(--accent-color-gray);
+    }
+
+    &_main {
+      svg > g > path {
+        fill: var(--accent-color-gray);
+      }
     }
   }
 
