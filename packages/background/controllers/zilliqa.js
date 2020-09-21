@@ -97,13 +97,21 @@ export class Zilliqa {
           continue
         }
 
-        await new Zilliqa(payload).addZRCToken()
+        try {
+          await new Zilliqa(payload).addZRCToken()
+          await storage.set(
+            new BuildObject(FIELDS.SELECTED_COIN, DEFAULT_TOKEN.symbol)
+          )
+        } catch (err) {
+          continue
+        }
       }
     }
   }
 
   constructor(payload) {
     this.payload = payload
+    this._storage = new BrowserStorage()
   }
 
   /**
@@ -113,8 +121,7 @@ export class Zilliqa {
   async getZRCTokenInfo(sendResponse) {
     await networkControl.netwrokSync()
 
-    const storage = new BrowserStorage()
-    const wallet = await storage.get(FIELDS.WALLET)
+    const wallet = await this._storage.get(FIELDS.WALLET)
     const { address, defaultToken } = this.payload
     const account = wallet.identities[
       wallet.selectedAddress
@@ -167,8 +174,7 @@ export class Zilliqa {
    */
   async addZRCToken(sendResponse) {
     await networkControl.netwrokSync()
-    const storage = new BrowserStorage()
-    const tokens = await storage.get([
+    const tokens = await this._storage.get([
       FIELDS.TOKENS,
       FIELDS.SELECTED_COIN
     ])
@@ -200,7 +206,7 @@ export class Zilliqa {
     tokens[FIELDS.SELECTED_COIN] = zrcToken.symbol
     tokens[FIELDS.TOKENS][selectedNet].push(zrcToken)
 
-    await storage.set([
+    await this._storage.set([
       new BuildObject(FIELDS.TOKENS, tokens[FIELDS.TOKENS]),
       new BuildObject(FIELDS.SELECTED_COIN, tokens[FIELDS.SELECTED_COIN])
     ])
@@ -215,13 +221,18 @@ export class Zilliqa {
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */
   async toDefaulTokens(sendResponse) {
-    const data = await accountControl.initCoin()
+    await Zilliqa.addDefaultTokens()
+
+    const tokens = await this._storage.get([
+      FIELDS.TOKENS,
+      FIELDS.SELECTED_COIN
+    ])
 
     if (new TypeChecker(sendResponse).isFunction) {
-      sendResponse({ resolve: data })
+      sendResponse({ resolve: tokens })
     }
 
-    return data
+    return tokens
   }
 
   /**
@@ -230,8 +241,7 @@ export class Zilliqa {
    */
   async rmZRCToken(sendResponse) {
     const { symbol } = this.payload
-    const storage = new BrowserStorage()
-    const tokens = await storage.get(FIELDS.TOKENS)
+    const tokens = await this._storage.get(FIELDS.TOKENS)
     const selectedNet = networkControl.selected
 
     if (symbol === DEFAULT_TOKEN.symbol) {
@@ -245,7 +255,7 @@ export class Zilliqa {
 
     tokens[selectedNet] = tokens[selectedNet].filter((t) => t.symbol !== symbol)
 
-    await storage.set([
+    await this._storage.set([
       new BuildObject(FIELDS.TOKENS, tokens),
       new BuildObject(FIELDS.SELECTED_COIN, DEFAULT_TOKEN.symbol)
     ])

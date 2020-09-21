@@ -19,6 +19,7 @@ import {
   TabsMessage,
   MTypeTab
 } from 'lib/stream'
+import { Zilliqa } from './zilliqa'
 
 /**
  * Popup controler.
@@ -143,6 +144,8 @@ export class Popup {
       await accountControl.initWallet(seed)
 
       const wallet = await storage.get(FIELDS.WALLET)
+
+      await Zilliqa.addDefaultTokens()
 
       sendResponse({ resolve: wallet })
     } catch (err) {

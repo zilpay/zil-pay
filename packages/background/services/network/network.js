@@ -67,14 +67,6 @@ export class NetworkControl {
       }
     }
 
-    if (!this.status) {
-      return {
-        selected,
-        config: this.config,
-        provider: this.provider
-      }
-    }
-
     await this._storage.set(
       new BuildObject(FIELDS.SELECTED_NET, selected)
     )

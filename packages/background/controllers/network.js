@@ -9,6 +9,7 @@
 import { networkControl, socketControl } from './main'
 import { TabsMessage, MTypeTab } from 'lib/stream'
 import { Transaction } from './transaction'
+import { Zilliqa } from './zilliqa'
 
 /**
  * Network actions for popup.
@@ -45,6 +46,8 @@ export class Network {
 
       new TabsMessage({ type, payload }).send()
       new Transaction().checkAllTransaction()
+
+      Zilliqa.addDefaultTokens()
     } catch (err) {
       sendResponse({ reject: err.message })
     } finally {
