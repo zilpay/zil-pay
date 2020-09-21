@@ -36,6 +36,7 @@ export class Network {
     try {
       await networkControl.netwrokSync()
       await networkControl.changeNetwork(selectednet)
+      await Zilliqa.addDefaultTokens()
 
       payload = {
         provider: networkControl.provider,
@@ -46,8 +47,6 @@ export class Network {
 
       new TabsMessage({ type, payload }).send()
       new Transaction().checkAllTransaction()
-
-      Zilliqa.addDefaultTokens()
     } catch (err) {
       sendResponse({ reject: err.message })
     } finally {
