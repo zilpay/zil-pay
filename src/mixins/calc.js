@@ -7,7 +7,6 @@
  * Copyright (c) 2019 ZilPay
  */
 import Big from 'big.js'
-import BN from 'bn.js'
 import { isBech32 } from '@zilliqa-js/util/dist/validation'
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 
@@ -173,10 +172,8 @@ export default {
       }
     },
     buildTxParams(data, token) {
-      const _ten = new BN(10)
-      const _decimals = new BN(token.decimals)
-      const _qa = _ten.pow(_decimals)
-      const _Famount = new BN(data.amount)
+      const _qa = Big(10 ** token.decimals)
+      const _Famount = Big(data.amount)
       const _amount = _Famount.mul(_qa)
 
       if (DEFAULT_TOKEN.symbol === token.symbol) {
