@@ -10,11 +10,13 @@ import 'tests/extension-sinnon'
 
 import { v4 } from 'uuid'
 import { Wallet } from 'packages/background/controllers/wallet'
+import { schnorr } from '@zilliqa-js/crypto'
 import { Wallet as ZilliqaWallet } from '@zilliqa-js/account'
 import { Popup } from 'packages/background/controllers/popup'
 import { generateMnemonic } from 'bip39'
 
 const SEED = generateMnemonic(128)
+const PRIVATE_KEY = schnorr.generatePrivateKey()
 const PASSWORD = v4()
 
 describe('packages:controllers:Wallet', () => {
@@ -115,6 +117,29 @@ describe('packages:controllers:Wallet', () => {
       expect(result.resolve).toBeTruthy()
 
       expect(result.resolve.selectedAddress).toBe(index)
+
+      const wallet = result.resolve
+      const account = wallet.identities[wallet.selectedAddress].address
+
+      expect(account.address).toBe(wallet.defaultAccount.address)
+    })
+  })
+
+  it('try import PrivateKey', async() => {
+    const instance = new Wallet({
+      privKey: PRIVATE_KEY
+    })
+    const wallet = new ZilliqaWallet()
+
+    wallet.addByPrivateKey(PRIVATE_KEY)
+
+    await instance.importPrivateKey((result) => {
+      if (result.reject) {
+        return null
+      }
+
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve.selectedAddress).toBe(2)
 
       const wallet = result.resolve
       const account = wallet.identities[wallet.selectedAddress].address
