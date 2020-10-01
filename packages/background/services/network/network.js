@@ -58,7 +58,7 @@ export class NetworkControl {
    */
   async changeNetwork(selected) {
     if (!(selected in this.config)) {
-      throw new ArgumentError('selected')
+      throw new ArgumentError('selected', `${selected} is not ${Object.keys(this.config)}`)
     } else if (selected === this.selected) {
       return {
         selected,

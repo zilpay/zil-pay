@@ -58,7 +58,7 @@ extension.storage = {
         storeChanged.oldValue = store[key]
       }
 
-      store = Object.assign(store, value)
+      store = JSON.parse(JSON.stringify(Object.assign(store, value)))
 
       resolve()
 

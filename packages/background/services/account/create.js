@@ -151,15 +151,19 @@ export class AccountControl {
    * @param {String} name - User account name.
    */
   async changeAccountName(name) {
-    if (!new TypeChecker(name).isString || name.length > MAX_LENGTH_NAME) {
+    if (!new TypeChecker(name).isString) {
       throw new ArgumentError(`name ${ERROR_MSGS.MUST_BE_STRING}`)
+    } else if (name.length > MAX_LENGTH_NAME) {
+      throw new ArgumentError('name is too long')
     }
 
     let wallet = await this._storage.get(FIELDS.WALLET)
 
     wallet.identities[wallet.selectedAddress].name = name
 
-    await this.walletUpdate(wallet)
+    await this._storage.set(
+      new BuildObject(FIELDS.WALLET, wallet)
+    )
   }
 
   /**

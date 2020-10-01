@@ -20,7 +20,7 @@ import {
   verifyPrivateKey,
   schnorr
 } from '@zilliqa-js/crypto'
-import { v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { FIELDS } from 'config'
 
 import { BrowserStorage } from 'lib/storage'

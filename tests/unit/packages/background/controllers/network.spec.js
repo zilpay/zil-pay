@@ -6,7 +6,10 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+
+import 'tests/extension-sinnon'
 import { v4 } from 'uuid'
+import { ZILLIQA } from 'config'
 import { Network } from 'packages/background/controllers/network'
 
 describe('packages:controllers:Network', () => {
@@ -38,5 +41,26 @@ describe('packages:controllers:Network', () => {
     const instance = new Network({})
 
     expect(instance.changeNetwork).toBeTruthy()
+  })
+
+  it('try change wrong netwrok', () => {
+    const instance = new Network({
+      selectednet: v4()
+    })
+
+    instance.changeNetwork((selectednet) => {
+      expect(selectednet.resolve).toBeFalsy()
+      expect(selectednet.reject).toBe(`selected ${instance.payload.selectednet} is not ${Object.keys(ZILLIQA)}`)
+    })
+  })
+
+  it('try change netwrok', () => {
+    const instance = new Network({
+      selectednet: Object.keys(ZILLIQA)[0]
+    })
+
+    instance.changeNetwork((selectednet) => {
+      expect(selectednet.resolve).toBe(Object.keys(ZILLIQA)[0])
+    })
   })
 })

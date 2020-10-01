@@ -6,8 +6,17 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { v4 } from 'uuid'
+import 'tests/extension-sinnon'
+import { v4, v1 } from 'uuid'
+import { FIELDS } from 'config'
+import { BrowserStorage } from 'lib/storage'
 import { Popup } from 'packages/background/controllers/popup'
+import { generateMnemonic } from 'bip39'
+import { Wallet } from '@zilliqa-js/account'
+
+const SEED = generateMnemonic(128)
+const PASSWORD = v4()
+const storage = new BrowserStorage()
 
 describe('packages:controllers:Popup', () => {
   it('Should import Popup', () => {
@@ -49,4 +58,94 @@ describe('packages:controllers:Popup', () => {
     expect(instance.changeAccountName).toBeTruthy()
     expect(instance.setDataFromPopup).toBeTruthy()
   })
+
+  it('try init Wallet', async() => {
+    const instance = new Popup({
+      seed: SEED,
+      password: PASSWORD
+    })
+    const wallet = new Wallet()
+
+    wallet.addByMnemonic(SEED, 0)
+
+    await instance.initWallet((result) => {
+      expect(result.reject).toBeFalsy()
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve).toEqual({
+        selectedAddress: 0,
+        identities: [{
+          address: wallet.defaultAccount.address,
+          balance: '0',
+          index: 0
+        }]
+      })
+    })
+  })
+
+  it('try init Popup', async() => {
+    const instance = new Popup({})
+
+    await instance.initPopup((result) => {
+      expect(result.reject).toBeFalsy()
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve.isReady).toBeTruthy()
+      expect(result.resolve.isEnable).toBeTruthy()
+    })
+  })
+
+  it('try logOut', async() => {
+    await Popup.logOut((result) => {
+      expect(result).toBeTruthy()
+    })
+  })
+
+  it('check logout', async() => {
+    const instance = new Popup({})
+
+    await instance.initPopup((result) => {
+      expect(result.reject).toBeFalsy()
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve.isReady).toBeTruthy()
+      expect(result.resolve.isEnable).toBeFalsy()
+    })
+  })
+
+  it('try unlock wallet', async() => {
+    const instance = new Popup({
+      password: PASSWORD
+    })
+
+    await instance.walletUnlock((result) => {
+      expect(result.reject).toBeFalsy()
+      expect(result.resolve).toBeTruthy()
+    })
+  })
+
+  it('check unlock', async() => {
+    const instance = new Popup({})
+
+    await instance.initPopup((result) => {
+      expect(result.reject).toBeFalsy()
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve.isReady).toBeTruthy()
+      expect(result.resolve.isEnable).toBeTruthy()
+    })
+  })
+
+  it('try change name of selected account', async() => {
+    const instance = new Popup({
+      name: v1().slice(30)
+    })
+
+    await instance.changeAccountName(async(result) => {
+      expect(result.reject).toBeFalsy()
+      expect(result.resolve).toBeTruthy()
+
+      const wallet = await storage.get(FIELDS.WALLET)
+      const selected = wallet.identities[wallet.selectedAddress]
+
+      expect(selected.name).toBe(instance.payload.name)
+    })
+  })
+
 })
