@@ -12,6 +12,8 @@
  */
 import Big from 'big.js'
 
+Big.PE = 99
+
 export function fromZil(value, decimals, isRound = true) {
   if (isNaN(value) || isNaN(decimals)) {
     return 0

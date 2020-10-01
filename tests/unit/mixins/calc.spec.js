@@ -8,11 +8,11 @@
  */
 // import Big from 'big.js'
 import CalcMixin from 'src/mixins/calc'
-// import { DEFAULT_TOKEN } from 'config'
+import { DEFAULT_GAS_FEE } from 'config'
 
 const { methods } = CalcMixin
 
-describe('filters:keys', () => {
+describe('mixin:calc', () => {
   it('shoul import CalcMixin', () => {
     expect(CalcMixin).toBeTruthy()
   })
@@ -23,29 +23,15 @@ describe('filters:keys', () => {
     expect(methods.calcFee(8765, 1233)).toBe('10.807245')
   })
 
-  // it('try calc calcIsInsufficientFundsUint', () => {
-  //   const gasPrice = 1000
-  //   const gasLimit = 1
-  //   const _balance = Big('850934578493659202')
-  //   const { _fee } = gasFee(gasPrice, gasLimit)
-  //   const amount = String(_balance.sub(_fee))
+  it('calc:calcMaxAmount', () => {
+    const { calcMaxAmount } = methods
+    const { gasPrice, gasLimit } = DEFAULT_GAS_FEE
+    const balance = '99999999999999999999999999999'
+    const decimals = '6'
+    const symbol = 'test'
 
-  //   expect(methods.calcIsInsufficientFundsUint(
-  //     amount,
-  //     gasLimit,
-  //     gasPrice,
-  //     _balance,
-  //     DEFAULT_TOKEN.symbol,
-  //     DEFAULT_TOKEN.decimals
-  //   )).toBeFalsy()
-
-  //   expect(methods.calcIsInsufficientFundsUint(
-  //     String(Number(amount) + 1),
-  //     gasLimit,
-  //     gasPrice,
-  //     _balance,
-  //     DEFAULT_TOKEN.symbol,
-  //     DEFAULT_TOKEN.decimals
-  //   )).toBeFalsy()
-  // })
+    console.log(calcMaxAmount(
+      gasLimit, gasPrice, balance, decimals, symbol
+    ))
+  })
 })

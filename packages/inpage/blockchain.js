@@ -532,15 +532,16 @@ export class Blockchain {
    * @param {string} address
    * @returns {Promise<RPCResponse<Value[], string>>}
    */
-  getSmartContractInit(addr) {
+  async getSmartContractInit(addr) {
     if (!addr) {
       throw new ArgumentError('addr', ERROR_MSGS.REQUIRED)
     }
 
     const address = cryptoUtils.toHex(cryptoUtils.normaliseAddress(addr))
     const { RPCMethod } = this.provider
+    const result = await this.provider.send(RPCMethod.GetSmartContractInit, address)
 
-    return this.provider.send(RPCMethod.GetSmartContractInit, address)
+    return result
   }
 
   /**

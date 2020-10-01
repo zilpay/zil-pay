@@ -23,7 +23,7 @@ describe('filters:from-zil', () => {
   })
 
   it('fromZil can convert', () => {
-    const TEST_NUMBER = '15346547231'
+    const TEST_NUMBER = '9999999999999999999999999999999999999'
 
     expect(String(fromZil(TEST_NUMBER, 12, false))).toBe('0.015346547231')
     expect(String(fromZil(TEST_NUMBER, 12))).toBe('0.015')

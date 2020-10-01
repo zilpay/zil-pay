@@ -29,7 +29,9 @@ export const ZILLIQA = {
  * Default tokens will add to tokens list, this token cannot remove.
  */
 export const DEFAULT_TOKENS_LIST = {
-  [Object.keys(ZILLIQA)[0]]: [],
+  [Object.keys(ZILLIQA)[0]]: [
+    '0x173Ca6770Aa56EB00511Dac8e6E13B3D7f16a5a5'
+  ],
   [Object.keys(ZILLIQA)[1]]: [
     '0x7b949726966b80c93542233531f9bd53542d4514',
     '0x7f4a28aabde4cca04b5529eacb64b1449b317e7f'
