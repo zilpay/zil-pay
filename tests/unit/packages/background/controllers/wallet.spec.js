@@ -6,10 +6,19 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import 'tests/extension-sinnon'
+
 import { v4 } from 'uuid'
 import { Wallet } from 'packages/background/controllers/wallet'
+import { Wallet as ZilliqaWallet } from '@zilliqa-js/account'
+import { Popup } from 'packages/background/controllers/popup'
+import { generateMnemonic } from 'bip39'
+
+const SEED = generateMnemonic(128)
+const PASSWORD = v4()
 
 describe('packages:controllers:Wallet', () => {
+
   it('Should import Wallet', () => {
     expect(Wallet).toBeTruthy()
   })
@@ -48,5 +57,69 @@ describe('packages:controllers:Wallet', () => {
     expect(instance.connectToDapp).toBeTruthy()
     expect(instance.isConnectionDapp).toBeTruthy()
     expect(instance.signMessage).toBeTruthy()
+  })
+
+  it('try export privateKey', async() => {
+    await new Popup({
+      seed: SEED,
+      password: PASSWORD
+    }).initWallet(async() => null)
+
+    const wallet = new ZilliqaWallet()
+    const instance = new Wallet({
+      password: PASSWORD
+    })
+
+    wallet.addByMnemonic(SEED, 0)
+
+    return await instance.exportPrivateKey((result) => {
+      if (!result.resolve) {
+        return null
+      }
+
+      expect(result.resolve).toBeTruthy()
+
+      expect(result.resolve.index).toBeTruthy()
+      expect(result.resolve.index).toBe(0)
+
+      expect(result.resolve.privateKey).toBe(wallet.defaultAccount.privateKey)
+      expect(result.resolve.keystore).toBeTruthy()
+    })
+  }, 9000)
+
+  it('try export inital phrase', async() => {
+    const instance = new Wallet({
+      password: PASSWORD
+    })
+
+    await instance.exportSeedPhrase((result) => {
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve).toBe(SEED)
+    })
+  })
+
+  it('try export inital phrase', async() => {
+    const instance = new Wallet({
+      password: PASSWORD
+    })
+    const wallet = new ZilliqaWallet()
+    const index = 1
+
+    wallet.addByMnemonic(SEED, index)
+
+    await instance.createAccountBySeed((result) => {
+      if (result.reject) {
+        return null
+      }
+
+      expect(result.resolve).toBeTruthy()
+
+      expect(result.resolve.selectedAddress).toBe(index)
+
+      const wallet = result.resolve
+      const account = wallet.identities[wallet.selectedAddress].address
+
+      expect(account.address).toBe(wallet.defaultAccount.address)
+    })
   })
 })

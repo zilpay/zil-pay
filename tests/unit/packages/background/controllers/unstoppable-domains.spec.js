@@ -39,4 +39,20 @@ describe('packages:controllers:Domains', () => {
 
     expect(instance.getUdOwnerByDomain).toBeTruthy()
   })
+
+  it('try get owner', async() => {
+    const instance = new Domains({
+      domain: 'zilpay.zil'
+    })
+
+    await instance.getUdOwnerByDomain((result) => {
+      expect(result.resolve).toBeTruthy()
+      expect(result.reject).toBeFalsy()
+
+      expect(result.resolve.records).toBeTruthy()
+      expect(result.resolve.owner).toBeTruthy()
+      expect(result.resolve.domainHash).toBe('0x37a3ff9caf9da96c6972648495a045c315f4a91d5e2d545d0ff9f6d9ae7220a1')
+      expect(result.resolve.domain).toBe(instance.payload.domain)
+    })
+  }, 9000)
 })

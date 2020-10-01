@@ -8,6 +8,7 @@
  */
 import 'tests/extension-sinnon'
 import { generateMnemonic } from 'bip39'
+import { getPubKeyFromPrivateKey } from '@zilliqa-js/crypto/dist/util'
 import {
   toChecksumAddress,
   verifyPrivateKey,
@@ -107,6 +108,7 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
     expect(account.index).toBe(0)
     expect(account.balance).not.toBeNull()
     expect(account.privateKey).toEqual(PRIVATE_KEY)
+    expect(account.publicKey).toEqual(getPubKeyFromPrivateKey(account.privateKey))
   })
 
   it('Should be able add transaction for confirm', async() => {
@@ -152,5 +154,75 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
 
     expect(txFromStorage[tx.from]).toBeTruthy()
     expect(txFromStorage[tx.from][networkControl.selected]).toBeTruthy()
+  })
+
+  it('try build txparams', async() => {
+    const account = await zilliqaControl.getAccountByPrivateKey(
+      PRIVATE_KEY, 0
+    )
+    const txParams = {
+      data: '',
+      code: '',
+      toAddr: '0x1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3',
+      amount: String(43543543),
+      gasPrice: String(1000000000),
+      gasLimit: String(9000),
+      cancel: false,
+      priority: false
+    }
+
+    const result = await zilliqaControl.buildTxParams(txParams, account)
+
+    expect(result.txParams.version).toBe(65537)
+    expect(result.txParams.toAddr).toBe(txParams.toAddr)
+    expect(result.txParams.nonce).toBe(1)
+    expect(result.txParams.pubKey).toBe(account.publicKey)
+    expect(String(result.txParams.amount)).toBe(txParams.amount)
+    expect(String(result.txParams.gasPrice)).toBe(txParams.gasPrice)
+    expect(String(result.txParams.gasLimit)).toBe(txParams.gasLimit)
+    expect(result.txParams.data).toBe(txParams.data)
+    expect(result.txParams.code).toBe(txParams.code)
+    expect(result.toDS).toBeFalsy()
+  })
+
+  it('try build txparams testing cancel', async() => {
+    const account = await zilliqaControl.getAccountByPrivateKey(
+      PRIVATE_KEY, 0
+    )
+    const txParams = {
+      data: '',
+      code: '',
+      nonce: 11,
+      toAddr: '0x1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3',
+      amount: String(43543543),
+      gasPrice: String(1000000000),
+      gasLimit: String(9000),
+      cancel: true,
+      priority: false
+    }
+
+    const result = await zilliqaControl.buildTxParams(txParams, account)
+
+    expect(result.txParams.nonce).toBe(txParams.nonce)
+  })
+
+  it('try build txparams with priority flag', async() => {
+    const account = await zilliqaControl.getAccountByPrivateKey(
+      PRIVATE_KEY, 0
+    )
+    const txParams = {
+      data: '',
+      code: '',
+      toAddr: '0x1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3',
+      amount: String(43543543),
+      gasPrice: String(1000000000),
+      gasLimit: String(9000),
+      cancel: false,
+      priority: true
+    }
+
+    const result = await zilliqaControl.buildTxParams(txParams, account)
+
+    expect(result.toDS).toBeTruthy()
   })
 })

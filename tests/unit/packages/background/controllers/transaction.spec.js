@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import 'tests/extension-sinnon'
 import { v4 } from 'uuid'
 import { Transaction } from 'packages/background/controllers/transaction'
 
