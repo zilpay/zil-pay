@@ -107,4 +107,44 @@ describe('store:settings', () => {
 
     expect(keys.length).toBe(4)
   })
+
+
+  it('try setCurrency', () => {
+  })
+
+  it('try setBlockNumber', () => {
+  })
+
+  it('try setNetworkConfig', () => {
+  })
+
+  it('try setAddressFormat', () => {
+  })
+
+  it('try setNetwork', () => {
+  })
+
+  it('try setLockTime', () => {
+  })
+
+  it('try setGas', () => {
+  })
+
+  it('try setDefaultGas', () => {
+  })
+
+  it('try setRate', () => {
+  })
+
+  it('try setConnect', () => {
+  })
+
+  it('try setEmptyDappList', () => {
+  })
+
+  it('try setDappList', () => {
+  })
+
+  it('try setRemoveDappList', () => {
+  })
 })
