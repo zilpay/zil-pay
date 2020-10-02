@@ -91,16 +91,18 @@ const STORE = {
 
       walletUpdate(state)
     },
-    [ACTIONS_NAMES.onAddAccount]({ state, commit }, payload) {
-      if (!payload) {
-        throw new Error('payload is', typeof payload)
+    [ACTIONS_NAMES.onAddAccount]({ state, commit, rootState }, payload) {
+      const type = new TypeChecker(payload)
+
+      if (!type.isObject || type.isArray || type.isUndefined || !payload) {
+        return null
       }
 
       const { identities } = state
-      const unique = identities.some(acc => acc.address === payload.address)
+      const unique = identities.some(acc => (payload && acc.address === payload.address))
 
       if (unique) {
-        throw new Error('Each address is unique')
+        throw new Error(rootState.ui.local.MUST_BE_UNIQUE)
       }
 
       identities.push(payload)

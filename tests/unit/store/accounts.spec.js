@@ -19,6 +19,20 @@ const {
   getters
 } = AccountStore.STORE
 
+const actionProvider = {
+  state,
+  commit: (key, value) => {
+    mutations[key](state, value)
+  },
+  rootState: {
+    ui: {
+      local: {
+        MUST_BE_UNIQUE: v4()
+      }
+    }
+  }
+}
+
 describe('store:accounts', () => {
   it('should have STORE object', () => {
     expect(AccountStore.STORE).toBeTruthy()
@@ -160,4 +174,36 @@ describe('store:accounts', () => {
     expect(getters.getCurrentAccount(state)).toEqual(identities[selectedAddress])
   })
 
+  it('try remove accounts', () => {
+    actions.onRemoveAccount(actionProvider, 0)
+    actions.onRemoveAccount(actionProvider, 1)
+    actions.onRemoveAccount(actionProvider, 0)
+    actions.onRemoveAccount(actionProvider, 0)
+
+    expect(state.selectedAddress).toBe(0)
+    expect(state.identities).toBeDefined()
+  })
+
+  it('try add account', () => {
+    const newAccount = {
+      balance: '0',
+      name: v4().slice(30),
+      index: 0,
+      address: v4()
+    }
+    actions.onAddAccount(actionProvider, 0)
+    actions.onAddAccount(actionProvider, [])
+    actions.onAddAccount(actionProvider, '')
+    actions.onAddAccount(actionProvider, null)
+    actions.onAddAccount(actionProvider, undefined)
+
+    expect(state.selectedAddress).toBe(0)
+    expect(state.identities.length).toBe(1)
+
+    actions.onAddAccount(actionProvider, newAccount)
+
+    expect(state.selectedAddress).toBe(1)
+    expect(state.identities.length).toBe(2)
+    expect(getters.getCurrentAccount(state)).toEqual(newAccount)
+  })
 })
