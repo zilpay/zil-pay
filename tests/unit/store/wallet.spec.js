@@ -15,7 +15,7 @@ const {
   actions,
   getters
 } = WalletStore.STORE
-console.log(getters)
+
 describe('store:wallet', () => {
   it('should have STORE object', () => {
     expect(WalletStore.STORE).toBeTruthy()
