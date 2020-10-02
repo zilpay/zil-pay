@@ -6,8 +6,11 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+import 'tests/extension-sinnon'
+
 import { v4 } from 'uuid'
 import { Zilliqa } from 'packages/background/controllers/zilliqa'
+
 
 describe('packages:controllers:Zilliqa', () => {
   it('Should import Zilliqa', () => {
@@ -49,5 +52,18 @@ describe('packages:controllers:Zilliqa', () => {
     expect(instance.toDefaulTokens).toBeTruthy()
     expect(instance.rmZRCToken).toBeTruthy()
     expect(instance.getMinGasPrice).toBeTruthy()
+  })
+
+  it('try call getMinGasPrice', async() => {
+    const instance = new Zilliqa({})
+
+    await instance.getMinGasPrice((result) => {
+      expect(result.resolve).toBeTruthy()
+      expect(result.resolve).not.toBeNaN()
+    })
+  })
+
+  it('try add default tokens', async() => {
+    await Zilliqa.addDefaultTokens()
   })
 })

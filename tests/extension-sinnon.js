@@ -11,10 +11,8 @@ import extension from 'extensionizer'
 import { v4 as uuid } from 'uuid'
 
 const extensionID = uuid()
+const { localStorage } = global.window
 
-let store = {}
-let storeChanged = {}
-let hasBeenChanged = false
 let messageQueue = []
 
 extension.runtime = {
@@ -52,68 +50,58 @@ extension.tabs = {
 extension.storage = {
   local: {
     set(value, resolve) {
-      storeChanged = {
-        newValue: value,
-        oldValue: ''
-      }
-
       for (const key in value) {
-        storeChanged.oldValue = store[key]
+        localStorage.setItem(key, JSON.stringify(value[key]))
       }
-
-      store = JSON.parse(JSON.stringify(Object.assign(store, value)))
 
       resolve()
-
-      hasBeenChanged = true
     },
     get(inputKeys, resolve) {
-      if (!inputKeys) {
-        resolve(store)
-      }
-
       let data = {}
 
-      try {
-        inputKeys.forEach(key => {
-          data[key] = store[key]
+      if (!inputKeys) {
+        let keys = Object.keys(localStorage)
+
+        keys.forEach((key) => {
+          try {
+            data[key] = JSON.parse(localStorage.getItem(key))
+          } catch (err) {
+            data[key] = localStorage.getItem(key)
+          }
         })
-      } catch (err) {
-        data[inputKeys] = store[inputKeys]
+
+        return resolve(data)
+      }
+
+      if (Array.isArray(inputKeys)) {
+        inputKeys.forEach(key => {
+          try {
+            data[key] = JSON.parse(localStorage.getItem(key))
+          } catch (err) {
+            data[key] = localStorage.getItem(key)
+          }
+        })
+      } else if (typeof inputKeys === 'string') {
+        data[inputKeys] = JSON.parse(localStorage.getItem(inputKeys))
       }
 
       resolve(data)
     },
     remove(key, resolve) {
-      storeChanged = {
-        newValue: null,
-        oldValue: store[key]
-      }
-
-      delete store[key]
+      localStorage.removeItem(key)
 
       resolve()
-
-      hasBeenChanged = true
     },
     clear(resolve) {
-      store = {}
+      localStorage.clear()
 
       resolve()
-
-      hasBeenChanged = true
     }
   },
   onChanged: {
     removeListener() {},
     addListener(cb) {
-      global.setInterval(() => {
-        if (hasBeenChanged) {
-          cb(storeChanged)
-        }
-
-        hasBeenChanged = false
-      }, 100)
+      cb()
     }
   }
 }
