@@ -9,6 +9,7 @@
 import { FIELDS } from 'config'
 import { BrowserStorage } from 'lib/storage'
 import { changeContacts } from '@/services'
+import { TypeChecker } from 'lib/type'
 
 const storage = new BrowserStorage()
 
@@ -34,8 +35,16 @@ const STORE = {
   },
   mutations: {
     [MUTATIONS_NAMES.setContacts](state, contactList) {
-      if (!contactList || contactList.lenght < 1) {
+      if (!new TypeChecker(contactList).isArray) {
         return null
+      }
+
+      for (var i = 0; i < contactList.length; i++) {
+        const payload = contactList[i]
+
+        if (!payload || !payload.name || !payload.address) {
+          return null
+        }
       }
 
       state.contactList = contactList
@@ -51,9 +60,9 @@ const STORE = {
       )
     },
     [ACTIONS_NAMES.onAddedContact]({ commit, state, rootState }, payload) {
-      if (!payload || !payload.address || !payload.name) {
+      if (!new TypeChecker(payload).isObject) {
         return null
-      } else if (state.contactList.some((contact) => contact.address === payload.address)) {
+      } else if (state.contactList.some((contact) => (payload && contact.address === payload.address))) {
         throw new Error(rootState.ui.local.MUST_BE_UNIQUE)
       }
 
@@ -62,6 +71,12 @@ const STORE = {
       commit(MUTATIONS_NAMES.setContacts, newList)
     },
     [ACTIONS_NAMES.onUpdateContact]({ commit, state }, { payload, index }) {
+      if (!new TypeChecker(payload).isObject) {
+        return null
+      } else if (!new TypeChecker(index).isInt) {
+        return null
+      }
+
       const newList = state.contactList
 
       newList[index] = payload

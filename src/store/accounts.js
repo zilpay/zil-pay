@@ -43,7 +43,7 @@ const STORE = {
       state.identities = identities
     },
     [MUTATIONS_NAMES.setAccount](state, index) {
-      if (isNaN(index) || index > state.identities || index < 0) {
+      if (!new TypeChecker(index).isInt || index > state.identities.length || index < 0) {
         return null
       }
 
@@ -52,7 +52,9 @@ const STORE = {
       walletUpdate(state)
     },
     [MUTATIONS_NAMES.setAccountName](state, value) {
-      if (!new TypeChecker(value).isString || value.length > DEFAULT.MAX_LENGTH_NAME) {
+      if (!new TypeChecker(value).isString) {
+        return null
+      } else if (value.length > DEFAULT.MAX_LENGTH_NAME) {
         return null
       }
 
@@ -63,6 +65,12 @@ const STORE = {
       walletUpdate(state)
     },
     [MUTATIONS_NAMES.setWallet](state, wallet) {
+      if (!wallet || !new TypeChecker(wallet.selectedAddress).isInt) {
+        return null
+      } else if (!wallet || !new TypeChecker(wallet.identities).isArray) {
+        return null
+      }
+
       state.identities = wallet.identities
       state.selectedAddress = wallet.selectedAddress
     }
