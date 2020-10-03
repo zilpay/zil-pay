@@ -11,12 +11,11 @@
       </div>
     </Alert>
     <div :class="b('wrapper')">
-      <Icon
+      <img
         :src="connect.icon"
-        :type="ICON_TYPE.auto"
         width="40"
         height="40"
-      />
+      >
       <Title :size="SIZE_VARIANS.md">
         {{ connect.domain }}
       </Title>
@@ -52,7 +51,6 @@ import {
 
 import HomePage from '@/pages/Home'
 
-import Icon from '@/components/Icon'
 import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -71,7 +69,6 @@ export default {
     Alert,
     Title,
     P,
-    Icon,
     Tabs
   },
   filters: { toAddress },
@@ -146,6 +143,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.connect)
     setTimeout(() => this.onReject(), DEFAULT.POPUP_CALL_TIMEOUT)
   }
 }

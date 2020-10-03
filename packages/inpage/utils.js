@@ -8,46 +8,18 @@
  */
 import { CryptoUtils } from './crypto'
 
-const { document, window } = global
+const { document } = global
 const utils = new CryptoUtils()
 
 /**
  * Get the favicon from current tab.
  */
 export function getFavicon() {
-  const needAttribute = 'href'
-  let favicon = null
-  let nodeList = document.getElementsByTagName('link')
-
-  for (let i = 0; i < nodeList.length; i++) {
-    switch (nodeList[i].getAttribute('rel')) {
-    case 'icon':
-      favicon = nodeList[i].getAttribute(needAttribute)
-      break
-    case 'fluid-icon':
-      favicon = nodeList[i].getAttribute(needAttribute)
-      break
-    case 'shortcut icon':
-      favicon = nodeList[i].getAttribute(needAttribute)
-      break
-    default:
-      break
-    }
-  }
-
-  if (!favicon) {
+  try {
+    return document.querySelector('link[rel*=\'icon\']').href
+  } catch (err) {
     return null
-  } else if (favicon[0] === '/') {
-    favicon = window.location.origin + favicon
   }
-
-  if (!favicon.includes(window.location.origin) && favicon[0] !== '/') {
-    favicon = `${window.location.origin}/${favicon}`
-  } else if (!favicon.includes(window.location.origin) && favicon[0] === '/') {
-    favicon = window.location.origin + favicon
-  }
-
-  return favicon
 }
 
 /**

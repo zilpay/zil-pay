@@ -50,11 +50,7 @@ export default {
   computed: {
     src() {
       if (this.type === ICON_TYPE.auto) {
-        if (!this.$attrs.src) {
-          throw new Error('Attr src is required')
-        }
-
-        return this.$attrs.src
+        return this.icon
       }
 
       return `/icons/${this.icon}.${this.type}`
@@ -67,6 +63,9 @@ export default {
     onError(event) {
       event.srcElement.src = this.broken
     }
+  },
+  mounted() {
+    console.log(this.icon)
   }
 }
 </script>
