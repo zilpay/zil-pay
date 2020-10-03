@@ -20,7 +20,7 @@ export async function getStorageData() {
 
 export async function setSelectedNetwork(selectednet) {
   if (!(selectednet in ZILLIQA)) {
-    throw new Error('selectedNet must be', Object.keys(ZILLIQA).join(','))
+    throw new Error(`selectedNet must be ${Object.keys(ZILLIQA).join(',')}`)
   }
 
   const type = MTypePopup.SET_NETWORK

@@ -112,9 +112,21 @@ const STORE = {
       }
     },
     [MUTATIONS_NAMES.setBlockNumber](state, value) {
+      const type = new TypeChecker(value)
+
+      if (!type.isInt || value < 0) {
+        return null
+      }
+
       state[STATE_NAMES.blockNumber] = value
     },
     [MUTATIONS_NAMES.setNetworkConfig](state, config) {
+      const type = new TypeChecker(config)
+
+      if (!config || !type.isObject) {
+        return null
+      }
+
       state[STATE_NAMES.networkConfig] = {
         ...ZILLIQA,
         ...config
@@ -130,10 +142,23 @@ const STORE = {
       }
     },
     [MUTATIONS_NAMES.setNetwork](state, network) {
+      const type = new TypeChecker(network)
+      const keys = Object.keys(ZILLIQA)
+
+      if (!type.isString || !keys.includes(network)) {
+        return null
+      }
+
       state.network = network
     },
     [MUTATIONS_NAMES.setLockTime](state, time) {
-      if (new TypeChecker(time).isString) {
+      const type = new TypeChecker(time)
+
+      if (!type.isString && !type.isInt) {
+        return null
+      }
+
+      if (type.isString) {
         time = time.replace(' hours.', '')
       }
 
@@ -145,9 +170,19 @@ const STORE = {
         state.lockTime = time
       }
     },
-    [MUTATIONS_NAMES.setGas](state, { gasPrice, gasLimit }) {
-      if (gasPrice && gasLimit) {
-        state.defaultGas = { gasPrice, gasLimit }
+    [MUTATIONS_NAMES.setGas](state, payload) {
+      const type = new TypeChecker(payload)
+
+      if (!payload || !type.isObject) {
+        return null
+      }
+
+      if (payload.gasPrice) {
+        state.defaultGas.gasPrice = payload.gasPrice
+      }
+
+      if (payload.gasLimit) {
+        state.defaultGas.gasLimit = payload.gasLimit
       }
 
       updateStatic(state, true)
@@ -158,11 +193,48 @@ const STORE = {
       updateStatic(state, true)
     },
     [MUTATIONS_NAMES.setRate](state, payload) {
+      const type = new TypeChecker(payload)
+
+      if (!payload || !type.isObject || type.isArray) {
+        return null
+      }
+
+      const keys = Object.keys(payload)
+
+      if (keys.length < 1) {
+        return null
+      }
+
       state[STATE_NAMES.currentRate] = payload
     },
     [MUTATIONS_NAMES.setConnect](state, payload) {
-      if (!payload || !new TypeChecker(payload).isObject) {
+      const type = new TypeChecker(payload)
+
+      if (!payload || !type.isObject || type.isArray) {
         return null
+      }
+
+      const keys = Object.keys(payload)
+
+      if (keys.length === 0) {
+        state[STATE_NAMES.connect] = payload
+
+        return null
+      }
+
+      const requiredKeys = [
+        'domain',
+        'icon',
+        'title',
+        'uuid'
+      ]
+
+      for (let index = 0; index < requiredKeys.length; index++) {
+        const key = requiredKeys[index]
+
+        if (!keys.includes(key)) {
+          return null
+        }
       }
 
       state[STATE_NAMES.connect] = payload
@@ -173,27 +245,34 @@ const STORE = {
       updateStatic(state, true)
     },
     [MUTATIONS_NAMES.setDappList](state, data) {
+      const type = new TypeChecker(data)
+
+      if (!data || !type.isArray) {
+        return null
+      }
+
       state[STATE_NAMES.dappsList] = state[STATE_NAMES.dappsList].concat(data)
     },
     [MUTATIONS_NAMES.setRemoveDappList](state, item) {
       state[STATE_NAMES.dappsList] = state[STATE_NAMES.dappsList]
         .filter((el) => el.domain !== item.domain)
+
       updateStatic(state, true)
     }
   },
   actions: {
     async [ACTIONS_NAMES.onUpdateSelectedNet]({ commit }, selected) {
-      await setSelectedNetwork(selected)
-
       commit(MUTATIONS_NAMES.setNetwork, selected)
+
+      await setSelectedNetwork(selected)
     },
     async [ACTIONS_NAMES.onUpdateNetworkConfig]({ commit }, config) {
+      commit(MUTATIONS_NAMES.setNetworkConfig, config)
+
       await updateNetworkConifg({
         ...ZILLIQA,
         ...config
       })
-
-      commit(MUTATIONS_NAMES.setNetworkConfig, config)
     },
     async [ACTIONS_NAMES.updateRate]({ commit }) {
       let rate = null
