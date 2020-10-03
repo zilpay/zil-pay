@@ -14,14 +14,13 @@
       </div>
     </Alert>
     <div :class="b('wrapper')">
-      <Icon
-        v-if="getCurrent.icon"
-        :icon="getCurrent.icon"
-        :type="ICON_TYPE.auto"
+      <img
         :class="b('icon')"
+        :src="getCurrent.icon"
         width="40"
         height="40"
-      />
+        @error="imageUnloaded"
+      >
       <Title :size="SIZE_VARIANS.md">
         {{ getCurrent.title }}
       </Title>
@@ -69,7 +68,6 @@ import transactionsStore from '@/store/transactions'
 import Popup from '@/pages/Popup'
 import HomePage from '@/pages/Home'
 
-import Icon from '@/components/Icon'
 import Alert from '@/components/Alert'
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -87,7 +85,6 @@ export default {
     Alert,
     Title,
     P,
-    Icon,
     Tabs,
     Textarea
   },
@@ -204,6 +201,9 @@ export default {
       default:
         break
       }
+    },
+    imageUnloaded(event) {
+      event.target.style.display = 'none'
     }
   },
   updated() {
@@ -235,6 +235,9 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+
+    min-height: 300px;
   }
 
   &__icon {

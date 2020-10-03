@@ -15,6 +15,7 @@
         :src="connect.icon"
         width="40"
         height="40"
+        @error="imageUnloaded"
       >
       <Title :size="SIZE_VARIANS.md">
         {{ connect.domain }}
@@ -140,6 +141,9 @@ export default {
       default:
         break
       }
+    },
+    imageUnloaded(event) {
+      event.target.style.display = 'none'
     }
   },
   mounted() {
