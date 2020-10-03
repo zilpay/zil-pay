@@ -2,7 +2,7 @@
   <div :class="b({ selected })">
     <Icon
       :type="ICON_TYPE.auto"
-      :src="tokenImage"
+      :icon="tokenImage"
       :broken="failTookenImage"
       @click="onSelected"
     />

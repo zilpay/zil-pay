@@ -16,7 +16,7 @@
     <div :class="b('wrapper')">
       <Icon
         v-if="getCurrent.icon"
-        :src="getCurrent.icon"
+        :icon="getCurrent.icon"
         :type="ICON_TYPE.auto"
         :class="b('icon')"
         width="40"

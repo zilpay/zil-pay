@@ -21,12 +21,13 @@
       v-if="getCurrent"
       :class="b('wrapper')"
     >
-      <Icon
+      <img
         v-if="getCurrent.icon"
         :src="getCurrent.icon"
         width="40"
         height="40"
-      />
+        @error="imageUnloaded"
+      >
       <Icon
         v-if="!getCurrent.icon"
         :icon="ICON_VARIANTS.zilliqaLogo"
@@ -153,7 +154,8 @@ import {
   FONT_VARIANTS,
   COLOR_VARIANTS,
   ICON_VARIANTS,
-  HW_VARIANTS
+  HW_VARIANTS,
+  ICON_TYPE
 } from '@/config'
 import { DEFAULT_GAS_FEE } from 'config/zilliqa'
 
@@ -204,6 +206,7 @@ export default {
       ICON_VARIANTS,
       INPUT_TYPES,
       DEFAULT_TOKEN,
+      ICON_TYPE,
       LINKS: {
         detail: TxDataPage.name
       },
@@ -440,6 +443,9 @@ export default {
 
       this.setCurrentGas(gas)
       this.gasStarter = JSON.stringify(gas)
+    },
+    imageUnloaded(event) {
+      event.target.style.display = 'none'
     }
   },
   mounted() {

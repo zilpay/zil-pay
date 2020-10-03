@@ -22,7 +22,7 @@
       </Title>
       <Icon
         v-if="qrcode"
-        :src="qrcode"
+        :icon="qrcode"
         :type="ICON_TYPE.auto"
         height="200"
         width="200"

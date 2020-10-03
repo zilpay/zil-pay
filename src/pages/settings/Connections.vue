@@ -8,7 +8,7 @@
       >
         <Icon
           :type="ICON_TYPE.auto"
-          :src="item.icon"
+          :icon="item.icon"
           @click="linkToDomain(item.domain)"
         />
         <div @click="linkToDomain(item.domain)">

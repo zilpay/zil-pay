@@ -52,7 +52,7 @@
       >
         <Icon
           :type="ICON_TYPE.auto"
-          :src="tokenImage(tokenToRemove)"
+          :icon="tokenImage(tokenToRemove)"
           :broken="failTookenImage()"
         />
         <P
