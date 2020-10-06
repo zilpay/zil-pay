@@ -3,13 +3,13 @@ import extension from 'extensionizer'
 import { DEFAULT } from 'config'
 
 const { window } = global
-const coinswitch = 'https://coinswitch.co'
+const transak = 'https://global.transak.com/'
 const faucet = 'https://dev-wallet.zilliqa.com/faucet'
 
 export default {
   methods: {
-    linksToCoinswitch(address) {
-      const url = `${coinswitch}?address=${address}&to=zil`
+    linksToCoinswitch() {
+      const url = transak
 
       extension.tabs.create({ url })
     },
