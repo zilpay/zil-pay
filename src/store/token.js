@@ -64,6 +64,7 @@ const STORE = {
 
       for (let index = 0; index < keys.length; index++) {
         const key = keys[index]
+
         tokens[key] = [DEFAULT_TOKEN, ...items[STATE_NAMES.tokens][key]]
       }
 
@@ -137,6 +138,10 @@ const STORE = {
         const { identities, selectedAddress } = rootState.accounts
         const currentAccount = identities[selectedAddress]
 
+        if (!currentAccount) {
+          return foundToken
+        }
+
         return {
           ...DEFAULT_TOKEN,
           balance: currentAccount.balance
@@ -148,6 +153,10 @@ const STORE = {
     [GETTERS_NAMES.getDefaultToken](state, _, rootState) {
       const { identities, selectedAddress } = rootState.accounts
       const currentAccount = identities[selectedAddress]
+
+      if (!currentAccount) {
+        return DEFAULT_TOKEN
+      }
 
       return {
         ...DEFAULT_TOKEN,

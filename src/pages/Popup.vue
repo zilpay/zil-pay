@@ -372,7 +372,15 @@ export default {
       try {
         this.setLoad()
 
+        const minGasPrice = await bg.getMinGasPrice()
+        const gasPrice = txParams.gasPrice
+
+        if (Number(gasPrice) < Number(minGasPrice)) {
+          txParams.gasPrice = minGasPrice
+        }
+
         if (account.hwType && account.hwType === HW_VARIANTS.ledger) {
+
           txParams = await ledgerSendTransaction(account.index, txParams)
         }
 
