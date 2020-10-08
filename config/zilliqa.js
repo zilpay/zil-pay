@@ -30,11 +30,13 @@ export const ZILLIQA = {
  */
 export const DEFAULT_TOKENS_LIST = {
   [Object.keys(ZILLIQA)[0]]: [
-    '0x173Ca6770Aa56EB00511Dac8e6E13B3D7f16a5a5'
+    '0x173Ca6770Aa56EB00511Dac8e6E13B3D7f16a5a5',
+    '0xfbd07e692543d3064B9CF570b27faaBfd7948DA4'
   ],
   [Object.keys(ZILLIQA)[1]]: [
     '0x7b949726966b80c93542233531f9bd53542d4514',
-    '0x7f4a28aabde4cca04b5529eacb64b1449b317e7f'
+    '0x7f4a28aabde4cca04b5529eacb64b1449b317e7f',
+    '0x6f0B1fbDA199dc4AbFda28fa2eaa299599b3e8F2'
   ]
 }
 

@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
+
 export const DEFAULT = {
   ZERO: 0,
   TIME_BEFORE_LOCK: 3, // Number in hour.
@@ -16,7 +17,7 @@ export const DEFAULT = {
     4,
     5
   ],
-  DS_PER_TX_BLOCKS: 102, // For DS block need 100 tx blocks.
+  DS_PER_TX_BLOCKS: 101, // For DS block need 100 tx blocks.
   BLOCKS_TO_CANCEL_TX: 10,
   MAX_TX_AMOUNT_LIST: 10,
   MIN_LENGTH_PASSWORD: 6,
