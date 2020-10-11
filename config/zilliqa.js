@@ -24,6 +24,11 @@ export const ZILLIQA = {
   }
 }
 
+export const ZIL_SWAP_CONTRACT = {
+  [Object.keys(ZILLIQA)[0]]: '0xBa11eB7bCc0a02e947ACF03Cc651Bfaf19C9EC00',
+  [Object.keys(ZILLIQA)[1]]: '0x1a62Dd9C84b0C8948cb51FC664ba143e7A34985c'
+}
+
 
 /**
  * Default tokens will add to tokens list, this token cannot remove.
