@@ -24,7 +24,7 @@ export const ZILLIQA = {
   }
 }
 
-export const ZIL_SWAP_CONTRACT = {
+export const ZIL_SWAP_CONTRACTS = {
   [Object.keys(ZILLIQA)[0]]: '0xBa11eB7bCc0a02e947ACF03Cc651Bfaf19C9EC00',
   [Object.keys(ZILLIQA)[1]]: '0x1a62Dd9C84b0C8948cb51FC664ba143e7A34985c'
 }

@@ -153,6 +153,10 @@ export class Background {
       new Zilliqa().getMinGasPrice(sendResponse)
       break
 
+    case MTypePopup.GET_TOKEN_RATE:
+      new Zilliqa().getZilSwapTokens(sendResponse)
+      break
+
     default:
       break
     }

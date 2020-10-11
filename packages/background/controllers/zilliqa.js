@@ -6,7 +6,12 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT_TOKEN, DEFAULT_TOKENS_LIST } from 'config'
+import {
+  FIELDS,
+  DEFAULT_TOKEN,
+  DEFAULT_TOKENS_LIST,
+  ZIL_SWAP_CONTRACTS
+} from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
@@ -293,4 +298,27 @@ export class Zilliqa {
     }
   }
 
+  /**
+   * Getting minimum gasPrice from blockchain.
+   * @param {*} sendResponse - CallBack funtion for return response to sender.
+   */
+  async getZilSwapTokens(sendResponse) {
+    try {
+      await networkControl.netwrokSync()
+
+      const contract = ZIL_SWAP_CONTRACTS[networkControl.selected]
+      const tokens = await this._storage.get(FIELDS.TOKENS)
+      const addresses = tokens[networkControl.selected].map((token) => token.address)
+
+      console.log(addresses, contract)
+
+      sendResponse({
+        resolve: addresses
+      })
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      })
+    }
+  }
 }

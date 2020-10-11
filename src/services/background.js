@@ -25,6 +25,20 @@ export class Background {
     return data.resolve
   }
 
+  async getTokenRate() {
+    const data = await Message.signal(
+      MTypePopup.GET_TOKEN_RATE
+    ).send()
+
+    if (!data) {
+      throw new Error(BG_ERROR)
+    } else if (data.reject) {
+      return Promise.reject(data.reject)
+    }
+
+    return data.resolve
+  }
+
   /**
    * Generate mnemonic seed words.
    * @returns Promise<string> Random mnemonic seed words.
