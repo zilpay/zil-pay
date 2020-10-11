@@ -6,7 +6,10 @@
       <Title :size="SIZE_VARIANS.md">
         {{ $options.name }}
       </Title>
-      <ul :class="b('scroll')">
+      <ul
+        v-if="loaded"
+        :class="b('scroll')"
+      >
         <li
           v-for="(t, index) of getTokenList"
           :key="index"
@@ -77,7 +80,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
 import settingsStore from '@/store/settings'
@@ -129,7 +132,8 @@ export default {
 
       tokenModal: false,
       removeModal: false,
-      tokenToRemove: null
+      tokenToRemove: null,
+      loaded: false
     }
   },
   computed: {
@@ -161,6 +165,9 @@ export default {
     ]),
     ...mapActions(settingsStore.STORE_NAME, [
       settingsStore.ACTIONS_NAMES.onUpdateTokensRate
+    ]),
+    ...mapMutations(uiStore.STORE_NAME, [
+      uiStore.MUTATIONS_NAMES.setLoad
     ]),
 
     async onSelectedToken(token) {
@@ -194,7 +201,13 @@ export default {
     }
   },
   mounted() {
-    this.onUpdateTokensRate()
+    this.setLoad()
+    this
+      .onUpdateTokensRate()
+      .finally(() => {
+        this.setLoad()
+        this.loaded = true
+      })
   }
 }
 </script>

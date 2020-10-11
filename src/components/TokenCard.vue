@@ -9,12 +9,15 @@
     <div @click="onSelected">
       <div>
         <Title
-          :size="SIZE_VARIANS.md"
+          :size="SIZE_VARIANS.sm"
           :font="FONT_VARIANTS.regular"
         >
           {{ balance | fromZil(decimals) | toLocaleString }}
         </Title>
-        <P :font="FONT_VARIANTS.bold">
+        <P
+          :size="SIZE_VARIANS.sm"
+          :font="FONT_VARIANTS.bold"
+        >
           {{ symbol }}
         </P>
       </div>
@@ -22,14 +25,16 @@
         <Title
           :size="SIZE_VARIANS.sm"
           :font="FONT_VARIANTS.regular"
+          :variant="COLOR_VARIANTS.gray"
         >
           {{ balance | toConversion(rate, decimals) | toLocaleString }}
         </Title>
         <P
-          :size="SIZE_VARIANS.sm"
+          :size="SIZE_VARIANS.xs"
           :font="FONT_VARIANTS.bold"
+          :variant="COLOR_VARIANTS.gray"
         >
-          {{ currency }}
+          {{ tokenCurrency }}
         </P>
       </div>
     </div>
@@ -54,6 +59,7 @@ import {
   SIZE_VARIANS,
   ICON_VARIANTS,
   ICON_TYPE,
+  COLOR_VARIANTS,
   EVENTS
 } from '@/config'
 
@@ -102,7 +108,8 @@ export default {
       ICON_TYPE,
       SIZE_VARIANS,
       API,
-      DEFAULT_TOKEN
+      DEFAULT_TOKEN,
+      COLOR_VARIANTS
     }
   },
   computed: {
@@ -118,9 +125,20 @@ export default {
     failTookenImage() {
       return `${this.API.ZRC2_API}/generic.png`
     },
+    tokenCurrency() {
+      if (this.symbol === DEFAULT_TOKEN.symbol) {
+        return this.currency
+      }
+
+      return DEFAULT_TOKEN.symbol
+    },
     rate() {
       try {
-        return this.currentRate[this.symbol][this.currency]
+        if (this.symbol === DEFAULT_TOKEN.symbol) {
+          return this.currentRate[this.symbol][this.currency]
+        }
+
+        return this.currentRate[this.symbol][DEFAULT_TOKEN.symbol]
       } catch (err) {
         return 0
       }
@@ -178,7 +196,7 @@ export default {
     font-size: 18px;
 
     & > .P {
-      margin-left: 5px;
+      margin-left: 3px;
     }
   }
 

@@ -359,8 +359,17 @@ const STORE = {
     },
     async [ACTIONS_NAMES.onUpdateTokensRate]({ state, commit }) {
       const rates = await bg.getTokenRate()
+      let currentRate = state[STATE_NAMES.currentRate]
 
-      console.log(rates)
+      for (let index = 0; index < rates.length; index++) {
+        const { symbol, exchangeRate } = rates[index]
+
+        currentRate[symbol] = {
+          [DEFAULT_TOKEN.symbol]: Number(exchangeRate)
+        }
+
+        commit(MUTATIONS_NAMES.setRate, currentRate)
+      }
     }
   },
   getters: {

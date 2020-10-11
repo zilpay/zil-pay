@@ -318,11 +318,10 @@ export class Zilliqa {
 
         if (!pool || !pool[fieldname] || !pool[fieldname][token.address]) {
           return {
-            [token.symbol]: {
-              zilReserve: '0',
-              tokenReserve: '0',
-              exchangeRate: '0'
-            }
+            symbol: token.symbol,
+            zilReserve: '0',
+            tokenReserve: '0',
+            exchangeRate: '0'
           }
         }
 
@@ -330,11 +329,10 @@ export class Zilliqa {
         const exchangeRate = String(Big(zilReserve).div(tokenReserve).toFixed(10))
 
         return {
-          [token.symbol]: {
-            zilReserve,
-            tokenReserve,
-            exchangeRate
-          }
+          symbol: token.symbol,
+          zilReserve,
+          tokenReserve,
+          exchangeRate
         }
       })
       const pools = await Promise.all(PromisePools)
