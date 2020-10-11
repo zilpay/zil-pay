@@ -35,7 +35,7 @@ describe('packages:controllers:Zilliqa', () => {
   it('amount of methods', () => {
     const propiriesNames = Object.getOwnPropertyNames(Zilliqa.prototype)
 
-    expect(propiriesNames.length).toBe(6)
+    expect(propiriesNames.length).toBe(7)
   })
 
   it('should be have static methods', () => {

@@ -104,7 +104,7 @@ describe('store:settings', () => {
     expect(actions.onGetMinGasPrice).toBeTruthy()
     expect(actions.onUpdateDappList).toBeTruthy()
 
-    expect(keys.length).toBe(7)
+    expect(keys.length).toBe(8)
   })
 
   it('should have some getters', () => {
