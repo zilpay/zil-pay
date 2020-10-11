@@ -17,8 +17,11 @@ import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
 import { ZilliqaControl } from 'packages/background/services'
 import { ERROR_MSGS } from 'packages/background/errors'
+import Big from 'big.js'
 
 const { Promise } = global
+
+Big.PE = 99
 
 export class Zilliqa {
 
@@ -306,14 +309,38 @@ export class Zilliqa {
     try {
       await networkControl.netwrokSync()
 
+      const fieldname = 'pools'
       const contract = ZIL_SWAP_CONTRACTS[networkControl.selected]
       const tokens = await this._storage.get(FIELDS.TOKENS)
-      const addresses = tokens[networkControl.selected].map((token) => token.address)
+      const zilliqa = new ZilliqaControl(networkControl.provider)
+      const PromisePools = tokens[networkControl.selected].map(async(token) => {
+        const pool = await zilliqa.getSmartContractSubState(contract, fieldname, [token.address])
 
-      console.log(addresses, contract)
+        if (!pool || !pool[fieldname] || !pool[fieldname][token.address]) {
+          return {
+            [token.symbol]: {
+              zilReserve: '0',
+              tokenReserve: '0',
+              exchangeRate: '0'
+            }
+          }
+        }
+
+        const [zilReserve, tokenReserve] = pool[fieldname][token.address].arguments
+        const exchangeRate = String(Big(zilReserve).div(tokenReserve).toFixed(10))
+
+        return {
+          [token.symbol]: {
+            zilReserve,
+            tokenReserve,
+            exchangeRate
+          }
+        }
+      })
+      const pools = await Promise.all(PromisePools)
 
       sendResponse({
-        resolve: addresses
+        resolve: pools
       })
     } catch (err) {
       sendResponse({
