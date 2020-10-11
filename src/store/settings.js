@@ -60,7 +60,8 @@ const ACTIONS_NAMES = {
   onUpdateConnection: 'onUpdateConnection',
   onUpdateDappList: 'onUpdateDappList',
   onGetMinGasPrice: 'onGetMinGasPrice',
-  onUpdateSelectedNet: 'onUpdateSelectedNet'
+  onUpdateSelectedNet: 'onUpdateSelectedNet',
+  onUpdateTokensRate: 'onUpdateTokensRate'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -68,6 +69,8 @@ const GETTERS_NAMES = {
   getRate: 'getRate',
   getDefaultRate: 'getDefaultRate'
 }
+
+const bg = new Background()
 
 const STORE = {
   namespaced: true,
@@ -317,7 +320,6 @@ const STORE = {
       commit(MUTATIONS_NAMES.setConnect, connection)
     },
     async [ACTIONS_NAMES.onGetMinGasPrice]({ state, commit }) {
-      const bg = new Background()
       const gasPrice = await bg.getMinGasPrice()
       const gasPriceInLi = CalcMixin.methods.toLi(gasPrice)
       const gas = {
@@ -334,7 +336,6 @@ const STORE = {
       return gas
     },
     async [ACTIONS_NAMES.onUpdateDappList]({ state, commit }) {
-      const bg = new Background()
       const currentConnect = state[STATE_NAMES.connect]
       const currentList = state[STATE_NAMES.dappsList]
 
@@ -355,6 +356,11 @@ const STORE = {
       await updateStatic(state, true)
 
       commit(MUTATIONS_NAMES.setDappList, currentList)
+    },
+    async [ACTIONS_NAMES.onUpdateTokensRate]({ state, commit }) {
+      const rates = await bg.getTokenRate()
+
+      console.log(rates)
     }
   },
   getters: {

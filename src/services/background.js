@@ -25,6 +25,9 @@ export class Background {
     return data.resolve
   }
 
+  /**
+   * Get all tokens rate from ZilSwap pool.
+   */
   async getTokenRate() {
     const data = await Message.signal(
       MTypePopup.GET_TOKEN_RATE

@@ -80,6 +80,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex'
 import uiStore from '@/store/ui'
 import tokenStore from '@/store/token'
+import settingsStore from '@/store/settings'
 
 import { API } from 'config'
 import {
@@ -158,6 +159,9 @@ export default {
       tokenStore.ACTIONS_NAMES.onSelectToken,
       tokenStore.ACTIONS_NAMES.onRemoveToken
     ]),
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.onUpdateTokensRate
+    ]),
 
     async onSelectedToken(token) {
       await this.onSelectToken(token.symbol)
@@ -188,6 +192,9 @@ export default {
         break
       }
     }
+  },
+  mounted() {
+    this.onUpdateTokensRate()
   }
 }
 </script>
