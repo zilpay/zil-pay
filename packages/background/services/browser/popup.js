@@ -63,6 +63,10 @@ export class PromptService {
     }
   }
 
+  openTab() {
+    extension.tabs.create({ url: DEFAULT.PROMT_PAGE })
+  }
+
   _getPopup() {
     return new Promise(resolve => {
       extension.windows.getAll({}, tabs => {

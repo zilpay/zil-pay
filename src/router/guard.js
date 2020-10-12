@@ -6,19 +6,15 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import extension from 'extensionizer'
-
 import LockScreen from '@/pages/LockScreen'
 import FirstPage from '@/pages/FirstStart'
 import HomePage from '@/pages/Home'
 
 import walletStore from '@/store/wallet'
 
-import { Background, isExpand } from '@/services'
+import { Background } from '@/services'
 
 const bgScript = new Background()
-
-const { window } = global
 
 /**
  * Common guard for routers.
@@ -54,12 +50,6 @@ export default async function guard(to, from, next) {
       return next({
         name: HomePage.name
       })
-    } else if (!isExpand() && !isReady) {
-      const url = `${window.location.origin}/${window.location.pathname}`
-
-      extension.tabs.create({ url })
-
-      return null
     } else if (!isReady) {
       return next({
         name: FirstPage.name

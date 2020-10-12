@@ -20,6 +20,7 @@ import {
   MTypeTab
 } from 'lib/stream'
 import { Zilliqa } from './zilliqa'
+import { PromptService } from 'packages/background/services'
 
 /**
  * Popup controler.
@@ -73,6 +74,15 @@ export class Popup {
 
     if (new TypeChecker(sendResponse).isFunction) {
       sendResponse(true)
+    }
+  }
+
+  static async installedWallet(){
+    await accountControl.auth.vaultSync()
+    await networkControl.netwrokSync()
+
+    if (!accountControl.auth.isReady && !accountControl.auth.isEnable) {
+      new PromptService().openTab()
     }
   }
 

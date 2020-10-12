@@ -140,7 +140,7 @@ export default {
     async storeUpdate() {
       const storageData = await getStorageData()
 
-      if (!storageData) {
+      if (!storageData || !storageData.wallet) {
         return null
       }
 
@@ -171,6 +171,7 @@ export default {
 
     const storage = new BrowserStorage()
     const theme = await storage.get(FIELDS.THEME)
+
     this.setTheme(theme)
 
     await this.onInit()

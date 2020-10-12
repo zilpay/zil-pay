@@ -17,12 +17,14 @@ import {
   Zilliqa,
   Domains,
   Transaction,
-  Wallet, Network
+  Wallet,
+  Network
 } from './controllers'
 
 export class Background {
 
   constructor() {
+    Popup.installedWallet()
     this._watchInternalMessaging()
     Transaction.listingBlockchain()
     new Transaction().checkAllTransaction()

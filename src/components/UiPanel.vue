@@ -29,6 +29,13 @@
         pointer
       />
     </div>
+    <div
+      v-if="isExpanded"
+      :class="b('expand')"
+      @click="linksExpand"
+    >
+      <SvgInject :variant="ICON_VARIANTS.desktop" />
+    </div>
   </div>
 </template>
 
@@ -36,11 +43,15 @@
 import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 
+import { DEFAULT } from 'config'
 import { ICON_VARIANTS } from '@/config'
 
 import Icon from '@/components/Icon'
 import SvgInject from '@/components/SvgInject'
 
+import LinkMixin from '@/mixins/links'
+
+const { window } = global
 /**
  * Show icons for change theme.
  * @example
@@ -49,6 +60,7 @@ import SvgInject from '@/components/SvgInject'
  */
 export default {
   name: 'UiPanel',
+  mixins: [LinkMixin],
   components: {
     Icon,
     SvgInject
@@ -68,7 +80,17 @@ export default {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.selectedTheme,
       uiStore.STATE_NAMES.themes
-    ])
+    ]),
+
+    isExpanded() {
+      const { innerHeight, innerWidth } = window
+
+      if (innerHeight <= 600 && innerWidth <= DEFAULT.POPUP_WIDTH) {
+        return true
+      }
+
+      return false
+    }
   },
   methods: {
     ...mapMutations(uiStore.STORE_NAME, [
@@ -135,6 +157,17 @@ export default {
 
       margin-left: 5px;
       margin-right: 5px;
+    }
+  }
+
+  &__expand {
+    margin-left: 20px;
+
+    cursor: pointer;
+
+    & > svg {
+      height: auto;
+      width: 38px;
     }
   }
 
