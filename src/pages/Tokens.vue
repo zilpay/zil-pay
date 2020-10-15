@@ -146,6 +146,9 @@ export default {
     ...mapGetters(tokenStore.STORE_NAME, [
       tokenStore.GETTERS_NAMES.getTokenList
     ]),
+    ...mapState(settingsStore.STORE_NAME, [
+      settingsStore.STATE_NAMES.currentRate
+    ]),
 
     tabsElements() {
       return [
@@ -202,6 +205,7 @@ export default {
   },
   mounted() {
     this.setLoad()
+
     this
       .onUpdateTokensRate()
       .finally(() => {

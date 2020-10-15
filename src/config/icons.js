@@ -42,7 +42,8 @@ export const ICON_VARIANTS = {
   statusSuccess: 'status_success',
   moon: 'moon',
   sun: 'sun',
-  warn: 'warn'
+  warn: 'warn',
+  generic: 'generic'
 }
 
 export const ICON_TYPE = {

@@ -120,10 +120,10 @@ export default {
     ]),
 
     tokenImage() {
-      return `${this.API.ZRC2_API}/${this.symbol}.png`.toLowerCase()
+      return `${this.API.ZRC2_API}/${this.symbol}.${ICON_TYPE.svg}`
     },
     failTookenImage() {
-      return `${this.API.ZRC2_API}/generic.png`
+      return `/icons/${ICON_VARIANTS.generic}.${ICON_TYPE.svg}`
     },
     tokenCurrency() {
       if (this.symbol === DEFAULT_TOKEN.symbol) {

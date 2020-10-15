@@ -61,6 +61,10 @@ export default {
       this.$emit(EVENTS.click)
     },
     onError(event) {
+      if (event.srcElement.src.includes(this.broken)) {
+        return null
+      }
+
       event.srcElement.src = this.broken
     }
   }
