@@ -120,6 +120,10 @@ export default {
     ]),
 
     tokenImage() {
+      if (this.symbol.includes('gzil')) {
+        return `${this.API.ZRC2_API}/gZIL.${ICON_TYPE.svg}`
+      }
+
       return `${this.API.ZRC2_API}/${this.symbol}.${ICON_TYPE.svg}`
     },
     failTookenImage() {

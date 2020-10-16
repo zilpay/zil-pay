@@ -99,7 +99,8 @@ export class Zilliqa {
           address,
           defaultToken: true
         }
-        const hasAddress = data.tokens[net].some((token) => token.address)
+
+        const hasAddress = data.tokens[net].some((token) => token.address === address)
 
         if (hasAddress) {
           continue
