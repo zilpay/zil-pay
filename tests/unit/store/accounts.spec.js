@@ -67,7 +67,7 @@ describe('store:accounts', () => {
 
     expect(actions.onRemoveAccount).toBeTruthy()
     expect(actions.onAddAccount).toBeTruthy()
-    expect(keys.length).toBe(2)
+    expect(keys.length).toBe(3)
   })
 
   it('should have some getters', () => {

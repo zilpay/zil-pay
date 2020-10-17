@@ -13,7 +13,7 @@ export function toConversion(value, rate, decimals) {
     return 0
   }
 
-  return (fromZil(value, decimals) * rate).toFixed(4)
+  return (fromZil(value, decimals) * rate).toFixed(3)
 }
 
 export default toConversion
