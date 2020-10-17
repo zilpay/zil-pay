@@ -4,7 +4,7 @@
     <AddMenu @click="contactModal = true"/>
     <div :class="b('wrapper')">
       <Title :size="SIZE_VARIANS.md">
-        {{ local.CONTACTS }}
+        {{ local.FINANCES }}
       </Title>
       <ul :class="b('scroll')">
         <li
