@@ -23,7 +23,8 @@ const MUTATIONS_NAMES = {
 }
 const ACTIONS_NAMES = {
   onRemoveAccount: 'onRemoveAccount',
-  onAddAccount: 'onAddAccount'
+  onAddAccount: 'onAddAccount',
+  onSelectedAccount: 'onSelectedAccount'
 }
 const GETTERS_NAMES = {
   getCurrentAccount: 'getCurrentAccount'
@@ -48,8 +49,6 @@ const STORE = {
       }
 
       state.selectedAddress = index
-
-      walletUpdate(state)
     },
     [MUTATIONS_NAMES.setAccountName](state, value) {
       if (!new TypeChecker(value).isString) {
@@ -109,6 +108,11 @@ const STORE = {
 
       commit(MUTATIONS_NAMES.setAccount, identities.length - 1)
       commit(MUTATIONS_NAMES.setAccounts, identities)
+    },
+    async [ACTIONS_NAMES.onSelectedAccount]({ state, commit }, index) {
+      commit(MUTATIONS_NAMES.setAccount, index)
+
+      await walletUpdate(state)
     }
   },
   getters: {

@@ -99,7 +99,8 @@ export default {
       uiStore.MUTATIONS_NAMES.setLoad
     ]),
     ...mapActions(accountsStore.STORE_NAME, [
-      accountsStore.ACTIONS_NAMES.onRemoveAccount
+      accountsStore.ACTIONS_NAMES.onRemoveAccount,
+      accountsStore.ACTIONS_NAMES.onSelectedAccount
     ]),
     ...mapActions(tokenStore.STORE_NAME, [
       tokenStore.ACTIONS_NAMES.onBalanceUpdate
@@ -107,8 +108,8 @@ export default {
     ...mapActions(contactsStore.STORE_NAME, [
       contactsStore.ACTIONS_NAMES.onRemoveByIndex
     ]),
-    onSelectAccount(index) {
-      this.setAccount(index)
+    async onSelectAccount(index) {
+      await this.onSelectedAccount(index)
       this.$router.push({ name: homePage.name })
     },
     async onCreateAccount() {

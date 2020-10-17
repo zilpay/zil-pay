@@ -76,7 +76,7 @@ import TopBar from '@/components/TopBar'
 import RadioGroup from '@/components/RadioGroup'
 import Tabs from '@/components/Tabs'
 
-import { Background, walletUpdate, ledgerImportAccount } from '@/services'
+import { Background, ledgerImportAccount } from '@/services'
 import { UNIQUE } from 'lib/errors/annotations'
 
 const { FileReader } = global
@@ -190,8 +190,6 @@ export default {
 
         this.setAccounts(result.identities)
         this.setAccount(result.selectedAddress)
-
-        walletUpdate(result)
 
         this.$router.push({ name: homePage.name })
       } catch (err) {
