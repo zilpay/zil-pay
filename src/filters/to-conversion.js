@@ -6,7 +6,6 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import Big from 'big.js'
 import fromZil from './from-zil'
 
 export function toConversion(value, rate, decimals) {
@@ -14,11 +13,7 @@ export function toConversion(value, rate, decimals) {
     return 0
   }
 
-  const _rate = Big(rate)
-  let zilAmount = Big(fromZil(value, decimals))
-  let coverted = zilAmount.mul(_rate)
-
-  return coverted.round(4)
+  return (fromZil(value, decimals) * rate).toFixed(4)
 }
 
 export default toConversion

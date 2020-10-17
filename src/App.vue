@@ -197,6 +197,7 @@ export default {
     this.updateRate()
     this.onGetMinGasPrice()
     this.onUpdateSettings()
+    this.onUpdateTokensRate()
 
     this.setLoad()
 

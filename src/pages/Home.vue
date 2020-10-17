@@ -22,10 +22,12 @@
 <script>
 import { v4 as uuid } from 'uuid'
 import { mapState, mapActions, mapMutations } from 'vuex'
+
 import uiStore from '@/store/ui'
 import modalStore from '@/store/modal'
 import tokenStore from '@/store/token'
 import accountsStore from '@/store/accounts'
+import settingsStore from '@/store/settings'
 
 import {
   ICON_TYPE,
@@ -93,6 +95,9 @@ export default {
       modalStore.MUTATIONS_NAMES.setShowSendModal,
       modalStore.MUTATIONS_NAMES.setShowReceiveModal
     ]),
+    ...mapActions(settingsStore.STORE_NAME, [
+      settingsStore.ACTIONS_NAMES.onUpdateTokensRate
+    ]),
 
     onEvent(event) {
       switch (event) {
@@ -113,7 +118,10 @@ export default {
       .then(({ identities, selectedAddress }) => {
         this.setAccounts(identities)
         this.setAccount(selectedAddress)
+
+        // return this.onUpdateTokensRate()
       })
+      .catch(console.error)
   }
 }
 </script>

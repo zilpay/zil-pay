@@ -6,10 +6,7 @@
       <Title :size="SIZE_VARIANS.md">
         {{ $options.name }}
       </Title>
-      <ul
-        v-if="loaded"
-        :class="b('scroll')"
-      >
+      <ul :class="b('scroll')">
         <li
           v-for="(t, index) of getTokenList"
           :key="index"
@@ -203,16 +200,6 @@ export default {
       }
     }
   },
-  mounted() {
-    this.setLoad()
-
-    this
-      .onUpdateTokensRate()
-      .finally(() => {
-        this.setLoad()
-        this.loaded = true
-      })
-  }
 }
 </script>
 

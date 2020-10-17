@@ -49,7 +49,7 @@
         :size="SIZE_VARIANS.xs"
         :font="FONT_VARIANTS.light"
       >
-        {{ balance | toConversion(getRate, getSelectedToken.decimals) | toLocaleString }} {{ currency }}
+        {{ balance | toConversion(getRate, getSelectedToken.decimals) | toLocaleString }} {{ conversionCurrency }}
       </P>
     </div>
   </div>
@@ -129,6 +129,13 @@ export default {
       }
 
       return this.getSelectedToken.balance
+    },
+    conversionCurrency() {
+      if (this.getSelectedToken.symbol === DEFAULT_TOKEN.symbol) {
+        return this.currency
+      }
+
+      return DEFAULT_TOKEN.symbol
     }
   },
   methods: {
