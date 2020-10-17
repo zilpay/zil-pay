@@ -17,11 +17,8 @@ import { TypeChecker } from 'lib/type'
 import { accountControl, networkControl } from './main'
 import { ZilliqaControl } from 'packages/background/services'
 import { ERROR_MSGS } from 'packages/background/errors'
-import Big from 'big.js'
 
 const { Promise } = global
-
-Big.PE = 99
 
 export class Zilliqa {
 
@@ -327,7 +324,7 @@ export class Zilliqa {
         }
 
         const [zilReserve, tokenReserve] = pool[fieldname][token.address].arguments
-        const exchangeRate = String(Big(zilReserve).div(tokenReserve).toFixed(10))
+        const exchangeRate = (zilReserve / tokenReserve).toFixed(10)
 
         return {
           symbol: token.symbol,
