@@ -90,7 +90,7 @@ const STORE = {
 
       walletUpdate(state)
     },
-    [ACTIONS_NAMES.onAddAccount]({ state, commit, rootState }, payload) {
+    async [ACTIONS_NAMES.onAddAccount]({ state, commit, rootState }, payload) {
       const type = new TypeChecker(payload)
 
       if (!type.isObject || type.isArray || type.isUndefined || !payload) {
@@ -108,6 +108,8 @@ const STORE = {
 
       commit(MUTATIONS_NAMES.setAccount, identities.length - 1)
       commit(MUTATIONS_NAMES.setAccounts, identities)
+
+      await walletUpdate(state)
     },
     async [ACTIONS_NAMES.onSelectedAccount]({ state, commit }, index) {
       commit(MUTATIONS_NAMES.setAccount, index)
