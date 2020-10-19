@@ -71,8 +71,82 @@ export class Transaction {
         payload: { block }
       }).send()
 
-      new Transaction().checkAllTransaction()
+      Transaction.checkBlockForTx(block)
     })
+  }
+
+  static async checkBlockForTx(block) {
+    const type = new TypeChecker(block.TxHashes)
+    if (!type.isArray) {
+      return null
+    }
+
+    const storage = new BrowserStorage()
+    const hasPool = block.TxHashes.flat()
+    const data = await storage.get([
+      FIELDS.TRANSACTIONS,
+      FIELDS.SELECTED_NET
+    ])
+    const selectednet = data[FIELDS.SELECTED_NET]
+    const transactions = data[FIELDS.TRANSACTIONS]
+    const addresses = Object.keys(transactions)
+
+    for (let index = 0; index < addresses.length; index++) {
+      try {
+        const address = addresses[index]
+        const txns = transactions[address][selectednet]
+
+        if (!txns || txns.length === 0) {
+          continue
+        }
+
+        transactions[address][selectednet] = txns.map((tx) => {
+          const hash = tx.TranID
+
+          if (tx.confirmed) {
+            return tx
+          }
+
+          if (hasPool.includes(hash)) {
+            Transaction.makeNotificationConfirm(tx)
+            tx.confirmed = true
+          }
+
+          const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
+
+          if (!tx.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
+            Transaction.makeNotificationReject(tx)
+
+            tx.error = true
+            tx.confirmed = true
+          }
+
+          return tx
+        })
+      } catch (err) {
+        continue
+      }
+    }
+
+    await storage.set(
+      new BuildObject(FIELDS.TRANSACTIONS, transactions)
+    )
+  }
+
+  static makeNotificationReject(tx) {
+    new NotificationsControl({
+      url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
+      title: 'ZilPay rejected',
+      message: tx.Info
+    }).create()
+  }
+
+  static makeNotificationConfirm(tx) {
+    new NotificationsControl({
+      url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
+      title: 'ZilPay confirmed',
+      message: tx.Info
+    }).create()
   }
 
   constructor(payload) {
@@ -119,19 +193,11 @@ export class Transaction {
         let error = null
 
         if (result.confirmed) {
-          new NotificationsControl({
-            url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
-            title: 'ZilPay confirmed',
-            message: tx.Info
-          }).create()
+          Transaction.makeNotificationConfirm(tx)
 
           block = socketControl.blockNumber
         } else if (!result.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
-          new NotificationsControl({
-            url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
-            title: 'ZilPay rejected',
-            message: tx.Info
-          }).create()
+          Transaction.makeNotificationReject(tx)
 
           error = true
           result.confirmed = true
