@@ -324,7 +324,9 @@ export class Zilliqa {
         }
 
         const [zilReserve, tokenReserve] = pool[fieldname][token.address].arguments
-        const exchangeRate = (zilReserve / tokenReserve).toFixed(10)
+        const _zilReserve = zilReserve * Math.pow(10, -1 * DEFAULT_TOKEN.decimals)
+        const _tokenReserve = tokenReserve * Math.pow(10, -1 * token.decimals)
+        const exchangeRate = (_zilReserve / _tokenReserve).toFixed(10)
 
         return {
           symbol: token.symbol,
