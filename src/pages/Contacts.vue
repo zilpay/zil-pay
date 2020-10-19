@@ -4,7 +4,7 @@
     <AddMenu @click="contactModal = true"/>
     <div :class="b('wrapper')">
       <Title :size="SIZE_VARIANS.md">
-        {{ local.FINANCES }}
+        {{ local.CONTACTS }}
       </Title>
       <ul :class="b('scroll')">
         <li
@@ -17,7 +17,7 @@
           </div>
           <P
             :font="FONT_VARIANTS.regular"
-            @click="onSelectContact(contact)"
+            @click="onSelectContact(contact)"z
           >
             {{ contact.name }}
           </P>
