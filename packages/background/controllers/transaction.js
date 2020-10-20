@@ -112,15 +112,6 @@ export class Transaction {
             tx.confirmed = true
           }
 
-          const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
-
-          if (!tx.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
-            Transaction.makeNotificationReject(tx)
-
-            tx.error = true
-            tx.confirmed = true
-          }
-
           return tx
         })
       } catch (err) {
