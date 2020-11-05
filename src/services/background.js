@@ -290,6 +290,10 @@ export class Background {
       throw new Error(result.reject)
     }
 
+    if (result.resolve.address) {
+      return result.resolve.address
+    }
+
     return toAddress(result.resolve.owner, ADDRESS_FORMAT_VARIANTS.bech32, false)
   }
 

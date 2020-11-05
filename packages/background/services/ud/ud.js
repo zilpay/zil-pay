@@ -13,6 +13,7 @@ import { ZilliqaControl } from 'packages/background/services/blockchain'
 
 const { UD_CONTRACT_ADDRESS } = DEFAULT
 const { PROVIDER } = ZILLIQA.mainnet
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 /**
  * Unstoppabledomains service domain resolver.
@@ -26,17 +27,32 @@ export class UnstoppableDomains {
 
   async getAddressByDomain(domain) {
     const domainHash = namehash(domain)
+    const field = 'records'
+    const zilRecords = 'crypto.ZIL.address'
     const { records } = await this.zilliqa.getSmartContractSubState(
       UD_CONTRACT_ADDRESS,
-      'records',
+      field,
       [domainHash]
     )
+    const [owner, resolver] = records[domainHash].arguments
+    let address = null
 
-    const [owner] = records[domainHash].arguments
+    if (resolver && resolver !== ZERO_ADDRESS) {
+      const result = await this.zilliqa.getSmartContractSubState(
+        resolver,
+        field,
+        [zilRecords]
+      )
+
+      if (result && result[field][zilRecords]) {
+        address = result[field][zilRecords]
+      }
+    }
 
     return {
       records,
       owner,
+      address,
       domainHash,
       domain
     }
