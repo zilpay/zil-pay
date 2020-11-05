@@ -364,6 +364,8 @@ export default {
 
 <style lang="scss">
 .Send {
+  max-height: 80vh;
+
   &__wrapper {
     display: flex;
     flex-direction: column;
@@ -475,10 +477,9 @@ export default {
       align-items: center;
       justify-content: normal;
 
-      padding-left: 20px;
-      padding-right: 20px;
-
       overflow-y: scroll;
+
+      height: calc(100vh - 210px);
 
       & > li {
         margin-top: 5px;
