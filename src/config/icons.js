@@ -43,7 +43,8 @@ export const ICON_VARIANTS = {
   moon: 'moon',
   sun: 'sun',
   warn: 'warn',
-  generic: 'generic'
+  generic: 'generic',
+  blocks: 'blocks'
 }
 
 export const ICON_TYPE = {

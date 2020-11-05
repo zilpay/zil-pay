@@ -20,28 +20,38 @@
         <div @click="onExpend">
           <SvgInject :variant="ICON_VARIANTS.desktop" />
         </div>
+        <div @click="onAccountExpand">
+          <SvgInject :variant="ICON_VARIANTS.blocks" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import settingsStore from '@/store/settings'
+import accountsStore from '@/store/accounts'
 
 import { ZILLIQA } from 'config'
-import { ICON_VARIANTS, COLOR_VARIANTS } from '@/config'
+import {
+  ICON_VARIANTS,
+  COLOR_VARIANTS,
+  ADDRESS_FORMAT_VARIANTS
+} from '@/config'
 
 import NetworkPage from '@/pages/settings/Networks'
 import SvgInject from '@/components/SvgInject'
 import P from '@/components/P'
 
 import LinkMixin from '@/mixins/links'
+import ViewblockMixin from '@/mixins/viewblock'
 import { Background } from '@/services'
+import { toAddress } from '@/filters'
 
 export default {
   name: 'Top',
-  mixins: [LinkMixin],
+  mixins: [LinkMixin, ViewblockMixin],
   components: {
     SvgInject,
     P
@@ -65,7 +75,10 @@ export default {
   },
   computed: {
     ...mapState(settingsStore.STORE_NAME, [
-      settingsStore.STATE_NAMES.network
+      settingsStore.STATE_NAMES.network,
+    ]),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
     ])
   },
   methods: {
@@ -75,6 +88,16 @@ export default {
     },
     onExpend() {
       this.linksExpand()
+    },
+    onAccountExpand() {
+      const { address } = this.getCurrentAccount
+      const bech32 = toAddress(
+        address,
+        ADDRESS_FORMAT_VARIANTS.bech32,
+        false
+      )
+
+      this.onViewblockAddress(bech32)
     }
   }
 }
@@ -121,7 +144,7 @@ export default {
   &__icons {
     display: flex;
     justify-content: space-between;
-    min-width: 40px;
+    min-width: 60px;
 
     & > div {
       cursor: pointer;
