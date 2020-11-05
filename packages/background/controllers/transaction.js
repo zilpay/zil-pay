@@ -124,11 +124,11 @@ export class Transaction {
     )
   }
 
-  static makeNotificationReject(tx) {
+  static makeNotificationReject(tx, msg) {
     new NotificationsControl({
       url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
       title: 'ZilPay rejected',
-      message: tx.Info
+      message: msg
     }).create()
   }
 
@@ -183,22 +183,29 @@ export class Transaction {
         let block = tx.block
         let error = null
 
-        if (result.confirmed) {
+        if (result.code === 0 && result.confirmed) {
           Transaction.makeNotificationConfirm(tx)
 
           block = socketControl.blockNumber
+          tx.confirmed = true
         } else if (!result.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
-          Transaction.makeNotificationReject(tx)
+          Transaction.makeNotificationReject(tx, result.info)
 
+          tx.Info = result.info
           error = true
-          result.confirmed = true
+          tx.confirmed = true
+        } else if (result.code !== 0) {
+          Transaction.makeNotificationReject(tx, result.info)
+
+          tx.Info = result.info
+          error = true
+          tx.confirmed = true
         }
 
         return {
           ...tx,
           block,
-          error,
-          confirmed: result.confirmed
+          error
         }
       })
       const provens = await Promise.all(checkList)

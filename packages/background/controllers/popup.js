@@ -19,6 +19,7 @@ import {
   TabsMessage,
   MTypeTab
 } from 'lib/stream'
+import { Transaction } from 'packages/background/controllers'
 import { Zilliqa } from './zilliqa'
 import { PromptService } from 'packages/background/services'
 
@@ -137,6 +138,10 @@ export class Popup {
         networkStatus: networkControl.status
       }
     })
+
+    if (accountControl.auth.isEnable) {
+      new Transaction().checkAllTransaction()
+    }
 
     Popup.walletStatusUpdate()
   }

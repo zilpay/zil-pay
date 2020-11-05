@@ -61,7 +61,7 @@
           @copy="onCopyMixin"
           nowrap
         >
-          {{ transaction.TranID }}
+          0x{{ transaction.TranID }}
         </P>
       </li>
       <li>
