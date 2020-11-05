@@ -106,8 +106,10 @@ extension.storage = {
   }
 }
 extension.webRequest = {
-  onErrorOccurred: () => null,
-  removeListener: () => null
+  onErrorOccurred: {
+    removeListener: () => null,
+    addListener: () => null
+  }
 }
 extension.browserAction = {
   setBadgeText() {
