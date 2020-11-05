@@ -29,14 +29,7 @@
     "storage",
     "notifications",
     "webRequest",
-
-    "https://www.google.com/search?q=*",
-    "https://duckduckgo.com/?q=*",
-    "https://www.bing.com/search?q=*",
-    "https://www.startpage.com/do/search?q=*",
-    "https://www.qwant.com/?q=*",
-    "https://yandex.ru/search/?&text=*",
-
+    "*://*.zil/*",
     "https://api.coingecko.com/api/v3/simple/price",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",

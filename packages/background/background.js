@@ -26,6 +26,7 @@ export class Background {
   constructor() {
     Popup.installedWallet()
     this._watchInternalMessaging()
+    new Domains().unstoppableDomains.subcribe()
     Transaction.listingBlockchain()
     new Transaction().checkAllTransaction()
     Zilliqa.addDefaultTokens()

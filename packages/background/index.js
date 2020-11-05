@@ -6,22 +6,6 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import extension from 'extensionizer'
-
 import { Background } from './background'
 
 new Background()
-
-extension.webRequest.onBeforeRequest.addListener(
-  (req) => {
-    console.log(req)
-
-    return {
-      redirectUrl: 'http://dragoneth.com/'
-    }
-  },
-  {
-    urls: ['<all_urls>'],
-    types: ['main_frame']
-  }
-)
