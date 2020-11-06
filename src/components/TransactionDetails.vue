@@ -56,7 +56,7 @@
         </P>
         <P
           v-tooltip="copytitle"
-          :content="transaction.TranID"
+          :content="'0x' + transaction.TranID"
           copy
           @copy="onCopyMixin"
           nowrap

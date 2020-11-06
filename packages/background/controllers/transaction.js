@@ -164,7 +164,7 @@ export class Transaction {
       const net = data[FIELDS.SELECTED_NET]
       const selectedAccount = wallet.identities[wallet.selectedAddress]
       const currentTransaction = transactions[selectedAccount.address][net]
-      const time = 500
+      const time = 200
 
       // If hasn't not confirmed tx.
       if (!currentTransaction.some((tx) => !tx.confirmed)) {
