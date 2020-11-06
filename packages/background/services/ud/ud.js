@@ -110,7 +110,7 @@ export class UnstoppableDomains {
 
           return extension.tabs.update(tabId, { url })
         } else if (resolver[ipfs1]) {
-          const url = `${PINTA}/${resolver[ipfs0]}`
+          const url = `${PINTA}/${resolver[ipfs1]}`
 
           return extension.tabs.update(tabId, { url })
         } else if (resolver[ipfsr]) {
@@ -121,10 +121,6 @@ export class UnstoppableDomains {
           const url = `${PINTA}/${resolver[redirect]}`
 
           return extension.tabs.update(tabId, { url })
-        }
-
-        return {
-          redirectUrl: 'http://dragoneth.com/'
         }
       },
       {
