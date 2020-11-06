@@ -91,7 +91,10 @@ export class UnstoppableDomains {
     extension.webRequest.onErrorOccurred.removeListener()
     extension.webRequest.onErrorOccurred.addListener(
       async(details) => {
-        const ipfs = 'ipfs.html.value'
+        const ipfs0 = 'ipfs.html.value'
+        const ipfs1 = 'dweb.ipfs.hash'
+        const ipfsr = 'ipfs.redirect_domain'
+        const redirect = 'browser.redirect_url'
         const { tabId, url } = details
         // ignore requests that are not associated with tabs
         // only attempt ZNS resolution on mainnet
@@ -102,8 +105,20 @@ export class UnstoppableDomains {
         const { hostname } = new URL(url)
         const resolver = await this.resolve(hostname)
 
-        if (resolver[ipfs]) {
-          const url = `${PINTA}/${resolver[ipfs]}`
+        if (resolver[ipfs0]) {
+          const url = `${PINTA}/${resolver[ipfs0]}`
+
+          return extension.tabs.update(tabId, { url })
+        } else if (resolver[ipfs1]) {
+          const url = `${PINTA}/${resolver[ipfs0]}`
+
+          return extension.tabs.update(tabId, { url })
+        } else if (resolver[ipfsr]) {
+          const url = `${PINTA}/${resolver[ipfsr]}`
+
+          return extension.tabs.update(tabId, { url })
+        } else if (resolver[redirect]) {
+          const url = `${PINTA}/${resolver[redirect]}`
 
           return extension.tabs.update(tabId, { url })
         }
