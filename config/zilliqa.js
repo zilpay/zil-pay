@@ -18,8 +18,8 @@ export const ZILLIQA = {
     MSG_VERSION: 1
   },
   private: {
-    PROVIDER: 'http://127.0.0.1:4200',
-    WS: 'ws://127.0.0.1:4200',
+    PROVIDER: 'http://127.0.0.1:5555',
+    WS: 'ws://127.0.0.1:5555',
     MSG_VERSION: 1
   }
 }
