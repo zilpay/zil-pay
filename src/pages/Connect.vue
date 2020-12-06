@@ -123,6 +123,9 @@ export default {
       this.popupClouse()
     },
     async onConfirm() {
+      const bg = new Background()
+
+      await bg.sendResponseConnection(true, this.connect.uuid)
       await this.onUpdateDappList()
       this.popupClouse()
     },
