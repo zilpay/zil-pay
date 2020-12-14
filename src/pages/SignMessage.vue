@@ -9,6 +9,9 @@
           {{ local.SIGN_REQ }}
         </Title>
         <P nowrap>
+          {{ getAccountName(getCurrentAccount) }}
+        </P>
+        <P nowrap>
           {{ getCurrentAccount.address | toAddress(addressFormat, true) }}
         </P>
       </div>
@@ -76,11 +79,13 @@ import Tabs from '@/components/Tabs'
 
 import { Background, ledgerSignMessage } from '@/services'
 import { toAddress } from '@/filters'
+import AccountMixin from '@/mixins/account'
 
 const { window } = global
 
 export default {
   name: 'SignMessage',
+  mixins: [AccountMixin],
   components: {
     Alert,
     Title,
