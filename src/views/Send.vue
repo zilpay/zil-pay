@@ -1,7 +1,7 @@
 <template>
   <div :class="b()">
     <BackModal
-      :name="$options.name"
+      :name="`${$options.name} (${getSelectedToken.symbol})`"
       :back="sendModal.step > 0"
       @click="onStep"
     />
