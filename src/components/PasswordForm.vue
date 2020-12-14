@@ -23,8 +23,18 @@
       round
       @input="onReset"
     />
+    <div :class="b('accept')">
+      <SwitchBox v-model="accept"/>
+      <a
+        href="https://zilpay.xyz/PrivacyPolicy"
+        target="_blacnk"
+      >
+        {{ local.ACCEPT_PRIVACY }}
+      </a>
+    </div>
     <Button
       :class="b('btn')"
+      :disabled="!accept"
       :size="SIZE_VARIANS.md"
       :color="COLOR_VARIANTS.negative"
       round
@@ -47,6 +57,7 @@ import {
 } from '@/config'
 
 import Button from '@/components/Button'
+import SwitchBox from '@/components/SwitchBox'
 import Input, { INPUT_TYPES } from '@/components/Input'
 
 /**
@@ -68,6 +79,7 @@ export default {
   name: 'PasswordForm',
   components: {
     Button,
+    SwitchBox,
     Input
   },
   props: {
@@ -83,6 +95,7 @@ export default {
       SIZE_VARIANS,
 
       password: null,
+      accept: false,
       confirmPassword: null,
       error: null,
       errorConfirm: null
@@ -133,6 +146,20 @@ export default {
     justify-self: center;
     width: 100%;
     margin-top: 20px;
+  }
+
+  &__accept {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & > a {
+      color: var(--accent-color-primary);
+    }
+
+    & > .SwitchBox > .SwitchBox__slider {
+      background-color: var(--accent-color-warning);
+    }
   }
 }
 </style>
