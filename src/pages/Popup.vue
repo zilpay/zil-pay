@@ -14,6 +14,9 @@
         {{ local.ADDRESS }} {{ local.FROM }}:
       </Title>
       <P :size="SIZE_VARIANS.xs">
+        {{ getAccountName(getCurrentAccount) }}
+      </P>
+      <P :size="SIZE_VARIANS.xs">
         {{ getCurrentAccount.address | toAddress(addressFormat, false) }}
       </P>
     </Alert>
@@ -175,6 +178,7 @@ import HomePage from '@/pages/Home'
 import SignMessage from '@/pages/SignMessage'
 
 import viewblockMixin from '@/mixins/viewblock'
+import AccountMixin from '@/mixins/account'
 import CalcMixin from '@/mixins/calc'
 import { fromZil, toAddress, toLocaleString } from '@/filters'
 
@@ -195,7 +199,7 @@ export default {
     Top,
     Tabs
   },
-  mixins: [viewblockMixin, CalcMixin],
+  mixins: [viewblockMixin, CalcMixin, AccountMixin],
   filters: { fromZil, toAddress, toLocaleString },
   data() {
     return {
