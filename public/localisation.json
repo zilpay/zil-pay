@@ -15,6 +15,7 @@
     "SENT": "Sent",
     "NONCE": "Nonce",
     "TX": "Transaction",
+    "ACCEPT_PRIVACY": "Accept privacy policy of ZIlPay wallet",
     "HASH": "Hash",
     "DEPOSIT": "Deposit",
     "ON": "on",
