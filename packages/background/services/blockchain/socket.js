@@ -1,8 +1,6 @@
 import { Subject } from 'rxjs'
 import { RPCMethod } from '@zilliqa-js/core/dist/net'
 import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
-import { SubscriptionBuilder } from '@zilliqa-js/subscriptions/dist/builder'
-import { MessageType, SocketConnect } from '@zilliqa-js/subscriptions/dist/types'
 
 import { NetworkControl } from 'packages/background/services/network'
 
@@ -27,43 +25,10 @@ export class SocketControl {
       return null
     }
 
-    try {
-      await this._networkControl.netwrokSync()
+    await this._networkControl.netwrokSync()
 
-      this._subscriber = new SubscriptionBuilder().buildNewBlockSubscriptions(
-        this._networkControl.wsProvider
-      )
-
-      this._subscriber.addEventListener(SocketConnect.ERROR, () => {
-        this._subscriber.websocket.onclose = () => null
-        this._subscriber.removeEventListener(SocketConnect.ERROR)
-      })
-
-      this._subscriber.websocket.onopen = async() => {
-        await this._subscriber.start()
-        this._running = true
-        this._networkControl.status = true
-      }
-
-      this._subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
-        if (isNaN(event.value.TxBlock.header.BlockNum)) {
-          return null
-        } else if (Number(this.blockNumber) === Number(event.value.TxBlock.header.BlockNum)) {
-          return null
-        }
-
-        this.blockNumber = Number(event.value.TxBlock.header.BlockNum)
-        this.observer.next(event.value)
-        this._networkControl.updateBlockNumber(String(this.blockNumber))
-      })
-
-      this._subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
-        this._running = false
-      })
-    } catch (err) {
-      this._pollingInterval()
-      this._running = true
-    }
+    this._pollingInterval()
+    this._running = true
   }
 
   async stop() {

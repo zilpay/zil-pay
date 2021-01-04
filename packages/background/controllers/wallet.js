@@ -9,6 +9,7 @@
 import { FIELDS } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
+import { AES } from 'lib/crypto'
 import { TabsMessage, MTypeTab } from 'lib/stream'
 import {
   AccountExporter,
@@ -344,6 +345,7 @@ export class Wallet {
       await networkControl.netwrokSync()
 
       const zilliqa = new ZilliqaControl(networkControl.provider)
+      this.payload.hash = new AES().hash(this.payload.message)
 
       await zilliqa.addForSignMessage(this.payload)
 

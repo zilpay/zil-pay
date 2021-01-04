@@ -39,9 +39,18 @@
       >
         {{ error }}
       </P>
+      <div :class="b('switch-wrapper')">
+        <P
+          :font="FONT_VARIANTS.bold"
+          :size="SIZE_VARIANS.sm"
+        >
+          {{ local.HASH }}
+        </P>
+        <SwitchBox v-model="isHash" />
+      </div>
       <Textarea
         :class="b('msg')"
-        :value="getCurrent.message"
+        :value="isHash ? getCurrent.hash : getCurrent.message"
         readonly
       />
     </div>
@@ -76,6 +85,7 @@ import Title from '@/components/Title'
 import P from '@/components/P'
 import Textarea from '@/components/Textarea'
 import Tabs from '@/components/Tabs'
+import SwitchBox from '@/components/SwitchBox'
 
 import { Background, ledgerSignMessage } from '@/services'
 import { toAddress } from '@/filters'
@@ -91,6 +101,7 @@ export default {
     Title,
     P,
     Tabs,
+    SwitchBox,
     Textarea
   },
   filters: { toAddress },
@@ -101,6 +112,7 @@ export default {
       FONT_VARIANTS,
       ICON_TYPE,
 
+      isHash: false,
       error: null
     }
   },
@@ -243,6 +255,19 @@ export default {
     justify-content: center;
 
     min-height: 300px;
+  }
+
+  &__switch-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    min-width: 200px;
+    padding: 5px;
+  }
+
+  &__msg {
+    max-width: 300px;
   }
 
   &__icon {
