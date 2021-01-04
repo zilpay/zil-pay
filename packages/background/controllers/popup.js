@@ -85,6 +85,9 @@ export class Popup {
     await networkControl.netwrokSync()
 
     if (!accountControl.auth.isReady && !accountControl.auth.isEnable) {
+      await accountControl.auth.vaultSync()
+      await networkControl.netwrokSync()
+
       new PromptService().openTab()
     }
   }
