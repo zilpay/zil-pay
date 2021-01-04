@@ -28,7 +28,7 @@ export const ZIL_SWAP_CONTRACTS = {
   [Object.keys(ZILLIQA)[0]]: '0xBa11eB7bCc0a02e947ACF03Cc651Bfaf19C9EC00',
   [Object.keys(ZILLIQA)[1]]: '0x1a62Dd9C84b0C8948cb51FC664ba143e7A34985c'
 }
-
+export const SSN_ADDRESS = '0xB780e8095b8BA85A7145965ed632b3B774ac51cE'
 
 /**
  * Default tokens will add to tokens list, this token cannot remove.
@@ -47,7 +47,7 @@ export const DEFAULT_TOKENS_LIST = {
 }
 
 export const DEFAULT_GAS_FEE = {
-  gasPrice: 1000,
+  gasPrice: 2000,
   gasLimit: 1
 }
 

@@ -22,6 +22,7 @@ import {
 import { Transaction } from 'packages/background/controllers'
 import { Zilliqa } from './zilliqa'
 import { PromptService } from 'packages/background/services'
+import { sleep } from 'lib/utils/sleep'
 
 /**
  * Popup controler.
@@ -78,7 +79,8 @@ export class Popup {
     }
   }
 
-  static async installedWallet(){
+  static async installedWallet() {
+    await sleep(1000)
     await accountControl.auth.vaultSync()
     await networkControl.netwrokSync()
 
