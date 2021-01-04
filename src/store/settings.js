@@ -36,6 +36,7 @@ const STATE_NAMES = {
   dappsList: 'dappsList',
   connect: 'connect',
   currentRate: 'currentRate',
+  ssnList: 'ssnList',
   blockNumber: 'blockNumber'
 }
 const MUTATIONS_NAMES = {
@@ -51,6 +52,7 @@ const MUTATIONS_NAMES = {
   setDappList: 'setDappList',
   setEmptyDappList: 'setEmptyDappList',
   setRemoveDappList: 'setRemoveDappList',
+  setSsnList: 'setSsnList',
   setBlockNumber: 'setBlockNumber'
 }
 const ACTIONS_NAMES = {
@@ -61,7 +63,8 @@ const ACTIONS_NAMES = {
   onUpdateDappList: 'onUpdateDappList',
   onGetMinGasPrice: 'onGetMinGasPrice',
   onUpdateSelectedNet: 'onUpdateSelectedNet',
-  onUpdateTokensRate: 'onUpdateTokensRate'
+  onUpdateTokensRate: 'onUpdateTokensRate',
+  onUpdateSSnList: 'onUpdateSSnList'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -102,9 +105,15 @@ const STORE = {
         [CURRENCIES.USD]: 0,
         [CURRENCIES.ETH]: 0
       }
-    }
+    },
+    [STATE_NAMES.ssnList]: []
   },
   mutations: {
+    [MUTATIONS_NAMES.setSsnList](state, list) {
+      if (Array.isArray(list)) {
+        state[STATE_NAMES.ssnList] = list
+      }
+    },
     [MUTATIONS_NAMES.setCurrency](state, currency) {
       if (state.currencyItems.includes(currency)) {
         if (state.currency !== currency) {
@@ -264,6 +273,11 @@ const STORE = {
     }
   },
   actions: {
+    async [ACTIONS_NAMES.onUpdateSSnList]({ commit }) {
+      const list = await bg.updateSSnList()
+
+      commit(MUTATIONS_NAMES.setSsnList, list)
+    },
     async [ACTIONS_NAMES.onUpdateSelectedNet]({ commit }, selected) {
       commit(MUTATIONS_NAMES.setNetwork, selected)
 

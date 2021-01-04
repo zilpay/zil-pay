@@ -16,47 +16,62 @@
       >
         {{ local.NETWORKS }}:
       </RadioGroup>
-      <Input
-        v-model="http.model"
-        :error="http.error"
-        :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="RPC endpoint:"
-        round
-        second
-        @input="http.error = null"
-      />
-      <Input
-        v-model="ws.model"
-        :error="ws.error"
-        :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="Websocket endpoint:"
-        round
-        second
-        @input="ws.error = null"
-      />
-      <Input
-        v-model="msg.model"
-        :error="msg.error"
-        :type="INPUT_TYPES.number"
-        :disabled="MAINNET === this.network || TESTNET === this.network"
-        title="Msg version:"
-        round
-        second
-        @input="msg.error = null"
-      />
-      <Button
-        v-show="MAINNET !== this.network && TESTNET !== this.network"
-        :class="b('btn')"
-        :color="COLOR_VARIANTS.negative"
-        :size="SIZE_VARIANS.sm"
-        :name="buttons.change"
-        :value="buttons.change"
-        round
-        block
-        @click="onChangeConfig"
+      <div v-show="network !== MAINNET">
+        <Input
+          v-model="http.model"
+          :error="http.error"
+          :disabled="MAINNET === this.network || TESTNET === this.network"
+          title="RPC endpoint:"
+          round
+          second
+          @input="http.error = null"
+        />
+        <Input
+          v-model="ws.model"
+          :error="ws.error"
+          :disabled="MAINNET === this.network || TESTNET === this.network"
+          title="Websocket endpoint:"
+          round
+          second
+          @input="ws.error = null"
+        />
+        <Input
+          v-model="msg.model"
+          :error="msg.error"
+          :type="INPUT_TYPES.number"
+          :disabled="MAINNET === this.network || TESTNET === this.network"
+          title="Msg version:"
+          round
+          second
+          @input="msg.error = null"
+        />
+        <Button
+          v-show="MAINNET !== this.network && TESTNET !== this.network"
+          :class="b('btn')"
+          :color="COLOR_VARIANTS.negative"
+          :size="SIZE_VARIANS.sm"
+          :name="buttons.change"
+          :value="buttons.change"
+          round
+          block
+          @click="onChangeConfig"
+        >
+          {{ local.UPDATE }}
+        </Button>
+      </div>
+      <div
+        v-show="network === MAINNET"
+        :class="b('nodes')"
       >
-        {{ local.UPDATE }}
-      </Button>
+        <RadioGroup
+          :value="network"
+          :title="local.SSN_LIST"
+          :elements="ssnItems"
+          @input="onChangeNetwork"
+        >
+          {{ local.SSN_LIST }}:
+        </RadioGroup>
+      </div>
     </div>
   </div>
 </template>
@@ -126,8 +141,13 @@ export default {
     ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.networkConfig,
-      settingsStore.STATE_NAMES.network
-    ])
+      settingsStore.STATE_NAMES.network,
+      settingsStore.STATE_NAMES.ssnList
+    ]),
+
+    ssnItems() {
+      return this.ssnList.map((ssn) => `${ssn.name} ${ssn.time} ms`)
+    }
   },
   methods: {
     ...mapActions(settingsStore.STORE_NAME, [
@@ -140,7 +160,8 @@ export default {
       walletStore.ACTIONS_NAMES.checkProvider
     ]),
     ...mapActions(settingsStore.STORE_NAME, [
-      settingsStore.ACTIONS_NAMES.onUpdateNetworkConfig
+      settingsStore.ACTIONS_NAMES.onUpdateNetworkConfig,
+      settingsStore.ACTIONS_NAMES.onUpdateSSnList
     ]),
 
     onUpdateModels() {
@@ -210,11 +231,11 @@ export default {
       }
     },
     async onDefaultConfig() {
-      this.setLoad()
-
       try {
-        await this.onUpdateNetworkConfig(ZILLIQA)
         await this.onChangeNetwork(MAINNET)
+        this.setLoad()
+        await this.onUpdateNetworkConfig(ZILLIQA)
+        await this.onUpdateSSnList()
       } catch (err) {
         //
       } finally {
@@ -236,6 +257,10 @@ export default {
   align-items: center;
 
   background-color: var(--app-background-color);
+
+  &__nodes {
+    margin-top: 15px;
+  }
 
   &__reset {
     position: absolute;

@@ -14,6 +14,8 @@ const defaultSelected = Object.keys(ZILLIQA)[0]
 
 export class NetworkControl {
 
+  static mainnet = defaultSelected
+
   /**
    * @return nodeURL.
    */

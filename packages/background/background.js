@@ -25,6 +25,7 @@ export class Background {
 
   constructor() {
     Popup.installedWallet()
+    new Network().initSSn()
     this._watchInternalMessaging()
     new Domains().unstoppableDomains.subcribe()
     Transaction.listingBlockchain()
@@ -82,6 +83,10 @@ export class Background {
 
     case MTypePopup.SET_NETWORK:
       new Network(message.payload).changeNetwork(sendResponse)
+      break
+
+    case MTypePopup.UPDATE_SSN_LIST:
+      new Network().updateSSn(sendResponse)
       break
 
     case MTypePopup.GET_TOKEN_INFO:

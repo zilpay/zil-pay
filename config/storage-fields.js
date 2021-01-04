@@ -20,5 +20,6 @@ export const FIELDS = {
   THEME: 'theme',
   CONTACTS: 'contacts',
   SELECTED_COIN: 'selectedcoin',
-  TOKENS: 'tokens'
+  TOKENS: 'tokens',
+  SSN: 'ssnlist'
 }

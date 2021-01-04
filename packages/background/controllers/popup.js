@@ -80,7 +80,7 @@ export class Popup {
   }
 
   static async installedWallet() {
-    await sleep(1000)
+    await sleep(500)
     await accountControl.auth.vaultSync()
     await networkControl.netwrokSync()
 

@@ -260,6 +260,15 @@ export class ZilliqaControl {
    * @param {Number} msgVerison - `MSG_VERSION` chain.
    */
   async version(msgVerison = 1) {
+    const id = await this.getNetworkId()
+
+    return bytes.pack(id, msgVerison)
+  }
+
+  /**
+   * Getting netwrok number ID.
+   */
+  async getNetworkId() {
     const method = RPCMethod.GetNetworkId
     const { result, error } = await this.provider.send(method)
 
@@ -267,7 +276,7 @@ export class ZilliqaControl {
       throw new RPCError(error)
     }
 
-    return bytes.pack(result, msgVerison)
+    return result
   }
 
   /**

@@ -116,6 +116,7 @@ export default {
     ...mapMutations(settingsStore.STORE_NAME, [
       settingsStore.MUTATIONS_NAMES.setNetworkConfig,
       settingsStore.MUTATIONS_NAMES.setBlockNumber,
+      settingsStore.MUTATIONS_NAMES.setSsnList,
       settingsStore.MUTATIONS_NAMES.setNetwork
     ]),
     ...mapActions(settingsStore.STORE_NAME, [
@@ -152,6 +153,10 @@ export default {
       }
 
       this.setNetworkConfig(config)
+
+      if (storageData && storageData.ssnlist) {
+        this.setSsnList(storageData.ssnlist)
+      }
 
       if (blocknumber) {
         this.setBlockNumber(blocknumber)

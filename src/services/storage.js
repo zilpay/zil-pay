@@ -14,23 +14,20 @@ export async function getStorageData() {
     FIELDS.TRANSACTIONS,
     FIELDS.CONFIRM_TX,
     FIELDS.CONNECT_DAPP,
-    FIELDS.BLOCK_NUMBER
+    FIELDS.BLOCK_NUMBER,
+    FIELDS.SSN
   ])
 }
 
 export async function setSelectedNetwork(selectednet) {
-  if (!(selectednet in ZILLIQA)) {
-    throw new Error(`selectedNet must be ${Object.keys(ZILLIQA).join(',')}`)
-  }
-
   const type = MTypePopup.SET_NETWORK
   const payload = {
     selectednet
   }
 
-  await new Message({ type, payload }).send()
+  const res = await new Message({ type, payload }).send()
 
-  return selectednet
+  return res.resolve
 }
 
 export async function setSelectedCoin(symbol) {
