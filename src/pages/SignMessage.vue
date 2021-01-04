@@ -18,6 +18,7 @@
     </Alert>
     <div :class="b('wrapper')">
       <img
+        v-if="getCurrent && getCurrent.icon"
         :class="b('icon')"
         :src="getCurrent.icon"
         width="40"
