@@ -7,7 +7,7 @@
       type="checkbox"
       @input="onInput"
     >
-    <span :class="b('slider')" />
+    <span :class="b('slider', { checked: value })" />
   </label>
 </template>
 
@@ -62,7 +62,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--accent-color-second);
+    background-color: var(--accent-color-gray);
     border-radius: 34px;
     transition: .4s;
 

@@ -157,8 +157,8 @@ export default {
       color: var(--accent-color-primary);
     }
 
-    & > .SwitchBox > .SwitchBox__slider {
-      background-color: var(--accent-color-warning);
+    & > .SwitchBox > .SwitchBox__slider_checked {
+      background-color: var(--accent-color-primary);
     }
   }
 }
