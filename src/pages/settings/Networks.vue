@@ -63,14 +63,35 @@
         v-show="network === MAINNET"
         :class="b('nodes')"
       >
-        <RadioGroup
-          :value="network"
-          :title="local.SSN_LIST"
-          :elements="ssnItems"
-          @input="onChangeNetwork"
+        <P
+          :class="b('nodes-title')"
+          :font="FONT_VARIANTS.light"
+          :variant="COLOR_VARIANTS.primary"
         >
           {{ local.SSN_LIST }}:
-        </RadioGroup>
+        </P>
+        <Radio
+          v-for="(ssn, index) of ssnList"
+          :key="index"
+          :class="b('node-item')"
+          :value="provider === ssn.api"
+          @input="onSelectedSSn(ssn)"
+        >
+          <div :class="b('node-text')">
+            <P
+              :size="SIZE_VARIANS.sm"
+              :font="FONT_VARIANTS.light"
+            >
+              {{ ssn.name }}
+            </P>
+            <P
+              :size="SIZE_VARIANS.sm"
+              :font="FONT_VARIANTS.light"
+            >
+              {{ ssn.time }} ms
+            </P>
+          </div>
+        </Radio>
       </div>
     </div>
   </div>
@@ -86,13 +107,19 @@ import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 
-import { COLOR_VARIANTS, REGX_PATTERNS, SIZE_VARIANS } from '@/config'
-
+import {
+  COLOR_VARIANTS,
+  REGX_PATTERNS,
+  SIZE_VARIANS,
+  FONT_VARIANTS,
+  EVENTS
+} from '@/config'
 import TopBar from '@/components/TopBar'
 import RadioGroup from '@/components/RadioGroup'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
 import P from '@/components/P'
+import Radio from '@/components/Radio'
 
 import { keys } from '@/filters'
 
@@ -106,6 +133,7 @@ export default {
     RadioGroup,
     Input,
     P,
+    Radio,
     Button
   },
   filters: { keys },
@@ -116,6 +144,8 @@ export default {
       SIZE_VARIANS,
       MAINNET,
       TESTNET,
+      FONT_VARIANTS,
+      EVENTS,
 
       http: {
         model: ZILLIQA[MAINNET].PROVIDER,
@@ -146,7 +176,12 @@ export default {
     ]),
 
     ssnItems() {
-      return this.ssnList.map((ssn) => `${ssn.name} ${ssn.time} ms`)
+      return this.ssnList.map((ssn) => ssn.name)
+    },
+    provider() {
+      const { PROVIDER } = this.networkConfig.mainnet
+
+      return PROVIDER
     }
   },
   methods: {
@@ -242,6 +277,17 @@ export default {
         this.onUpdateModels()
         this.setLoad()
       }
+    },
+    async onSelectedSSn(ssn) {
+      this.setLoad()
+      try {
+        const config = this.networkConfig
+        config.mainnet.PROVIDER = ssn.api
+        await this.onUpdateNetworkConfig(config)
+      } catch {
+        //
+      }
+      this.setLoad()
     }
   },
   mounted() {
@@ -258,8 +304,29 @@ export default {
 
   background-color: var(--app-background-color);
 
+  &__nodes-title {
+    font-size: 20px;
+
+    &:first-letter {
+      text-transform: capitalize;
+    }
+  }
+
+  &__node-item {
+    padding: 15px 0 15px 0;
+  }
+
   &__nodes {
+    display: block;
+    width: 100%;
+    max-width: 360px;
     margin-top: 15px;
+  }
+
+  &__node-text {
+    display: flex;
+    justify-content: space-between;
+    min-width: 200px;
   }
 
   &__reset {
