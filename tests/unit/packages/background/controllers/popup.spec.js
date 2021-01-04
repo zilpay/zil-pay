@@ -80,7 +80,7 @@ describe('packages:controllers:Popup', () => {
         }]
       })
     })
-  }, 9000)
+  }, 20000)
 
   it('try init Popup', async() => {
     const instance = new Popup({})

@@ -24,7 +24,7 @@ describe('packages:controllers:Network', () => {
   it('amount of methods', () => {
     const propiriesNames = Object.getOwnPropertyNames(Network.prototype)
 
-    expect(propiriesNames.length).toBe(2)
+    expect(propiriesNames.length).toBe(4)
   })
 
   it('test constructor', () => {

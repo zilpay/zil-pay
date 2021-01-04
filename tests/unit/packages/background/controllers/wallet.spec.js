@@ -87,7 +87,7 @@ describe('packages:controllers:Wallet', () => {
       expect(result.resolve.privateKey).toBe(wallet.defaultAccount.privateKey)
       expect(result.resolve.keystore).toBeTruthy()
     })
-  }, 9000)
+  }, 20000)
 
   it('try export inital phrase', async() => {
     const instance = new Wallet({
