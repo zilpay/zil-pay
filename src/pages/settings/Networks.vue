@@ -71,7 +71,7 @@
           {{ local.SSN_LIST }}:
         </P>
         <Radio
-          v-for="(ssn, index) of ssnList"
+          v-for="(ssn, index) of ssnItems"
           :key="index"
           :class="b('node-item')"
           :value="provider === ssn.api"
@@ -176,7 +176,11 @@ export default {
     ]),
 
     ssnItems() {
-      return this.ssnList.map((ssn) => ssn.name)
+      if (!this.ssnList || !Array.isArray(this.ssnList)) {
+        return []
+      }
+
+      return [...this.ssnList].sort((a, b) => a.time - b.time)
     },
     provider() {
       const { PROVIDER } = this.networkConfig.mainnet
@@ -301,6 +305,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: auto !important;
 
   background-color: var(--app-background-color);
 
@@ -313,7 +318,7 @@ export default {
   }
 
   &__node-item {
-    padding: 15px 0 15px 0;
+    padding: 5px 0 5px 0;
   }
 
   &__nodes {
