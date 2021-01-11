@@ -16,12 +16,12 @@
           :circle="index + 1"
           :color="colorChip"
           close
-          @close="rm(phrase)"
+          @close="rm(phrase, index)"
         >
           {{ phrase }}
         </Chip>
         <Chip
-          v-for="(phrase, index) of Array(randomItems.length - verifyWords.length)"
+          v-for="(phrase, index) of Array(randomItems.length)"
           :key="index + 'emnty'"
         />
       </div>
@@ -40,10 +40,10 @@
       </P>
       <div :class="b('words')">
         <Chip
-          v-for="(phrase, index) of exceptionalItems"
+          v-for="(phrase, index) of randomItems"
           :key="index"
           pointer
-          @click="add(phrase)"
+          @click="add(phrase, index)"
         >
           {{ phrase }}
         </Chip>
@@ -72,7 +72,6 @@ import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
-const { Set } = global
 const bgScript = new Background()
 
 export default {
@@ -103,14 +102,6 @@ export default {
       walletStore.STATE_NAMES.verifly
     ]),
     /**
-     * Divide the array.
-     */
-    exceptionalItems() {
-      return this.randomItems.filter(
-        word => !this.verifyWords.includes(word)
-      )
-    },
-    /**
      * Tessting for original seed phrase.
      */
     isVerify() {
@@ -122,14 +113,14 @@ export default {
     isContinue() {
       if (this.verifyWords.length < 12) {
         return false
-      } else if (this.exceptionalItems.length > 0) {
+      } else if (this.randomItems.length > 0) {
         return false
       }
 
       return true
     },
     colorChip() {
-      if (this.exceptionalItems.length > 0) {
+      if (this.randomItems.length > 0) {
         return COLOR_VARIANTS.info
       }
 
@@ -144,22 +135,22 @@ export default {
     /**
      * Added phrase to verifyWords Set array.
      */
-    add(phrase) {
-      const uniqueItems = new Set(this.verifyWords)
+    add(phrase, index) {
+      this.randomItems = this.randomItems.filter(
+        (_, i) => i !== index
+      )
 
-      if (phrase && this.randomItems.includes(phrase)) {
-        uniqueItems.add(phrase)
-      }
-
-      this.verifyWords = Array.from(uniqueItems)
+      this.verifyWords = [...this.verifyWords, phrase]
     },
     /**
      * Remove phrase from verifyWords Set array.
      */
-    rm(phraseRM) {
+    rm(phrase, index) {
       this.verifyWords = this.verifyWords.filter(
-        phrase => phrase !== phraseRM
+        (_, i) => i !== index
       )
+
+      this.randomItems = [...this.randomItems, phrase]
     },
     async onSubmit(password) {
       this.setLoad()
