@@ -178,34 +178,38 @@ export class Transaction {
           return tx
         }
 
-        const result = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
-        const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
-        let block = tx.block
-        let error = null
+        try {
+          const result = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
+          const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
+          let block = tx.block
+          let error = null
 
-        if (result.code === 0 && result.confirmed) {
-          Transaction.makeNotificationConfirm(tx)
+          if (result.code === 0 && result.confirmed) {
+            Transaction.makeNotificationConfirm(tx)
 
-          block = socketControl.blockNumber
-          tx.confirmed = true
-        } else if (!result.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
-          Transaction.makeNotificationReject(tx, result.info)
+            block = socketControl.blockNumber
+            tx.confirmed = true
+          } else if (!result.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
+            Transaction.makeNotificationReject(tx, result.info)
 
-          tx.Info = result.info
-          error = true
-          tx.confirmed = true
-        } else if (result.code !== 0) {
-          Transaction.makeNotificationReject(tx, result.info)
+            tx.Info = result.info
+            error = true
+            tx.confirmed = true
+          } else if (result.code !== 0) {
+            Transaction.makeNotificationReject(tx, result.info)
 
-          tx.Info = result.info
-          error = true
-          tx.confirmed = true
-        }
+            tx.Info = result.info
+            error = true
+            tx.confirmed = true
+          }
 
-        return {
-          ...tx,
-          block,
-          error
+          return {
+            ...tx,
+            block,
+            error
+          }
+        } catch {
+          return tx
         }
       })
       const provens = await Promise.all(checkList)

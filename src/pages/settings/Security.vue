@@ -10,6 +10,7 @@
         {{ local.AUTO_LOGOUT_HOURS }} ({{ local.HOURS }})
       </RadioGroup>
       <Button
+        v-show="getCurrentAccount && !getCurrentAccount.hwType"
         :color="COLOR_VARIANTS.negative"
         round
         @click="modals.key = true"
@@ -84,6 +85,7 @@
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import settingsStore from '@/store/settings'
 import uiStore from '@/store/ui'
+import accountsStore from '@/store/accounts'
 
 import { COLOR_VARIANTS } from '@/config'
 import { DEFAULT } from 'config'
@@ -127,6 +129,9 @@ export default {
     ...mapGetters(settingsStore.STORE_NAME, [
       settingsStore.GETTERS_NAMES.getHours,
       settingsStore.GETTERS_NAMES.getCurrent
+    ]),
+    ...mapGetters(accountsStore.STORE_NAME, [
+      accountsStore.GETTERS_NAMES.getCurrentAccount
     ])
   },
   methods: {

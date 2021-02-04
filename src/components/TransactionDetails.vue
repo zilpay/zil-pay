@@ -89,10 +89,7 @@
         </P>
       </li>
     </ul>
-    <ViewblockLink
-      v-if="transaction.confirmed"
-      :hash="transaction.TranID"
-    />
+    <ViewblockLink :hash="transaction.TranID" />
     <Button
       v-if="canCancel"
       :color="COLOR_VARIANTS.danger"
