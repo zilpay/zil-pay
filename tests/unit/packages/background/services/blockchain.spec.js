@@ -163,6 +163,7 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
     const txParams = {
       data: '',
       code: '',
+      nonce: 99,
       toAddr: '0x1b9bEE83A721B6e63Ba4819D0c9ce2D16C521Bd3',
       amount: String(43543543),
       gasPrice: String(1000000000),
@@ -175,7 +176,7 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
 
     expect(result.txParams.version).toBe(65537)
     expect(result.txParams.toAddr).toBe(txParams.toAddr)
-    expect(result.txParams.nonce).toBe(1)
+    expect(result.txParams.nonce).toBe(txParams.nonce)
     expect(result.txParams.pubKey).toBe(account.publicKey)
     expect(String(result.txParams.amount)).toBe(txParams.amount)
     expect(String(result.txParams.gasPrice)).toBe(txParams.gasPrice)
@@ -203,7 +204,7 @@ describe('packages:background:services:blockchain:ZilliqaControl', () => {
 
     const result = await zilliqaControl.buildTxParams(txParams, account)
 
-    expect(result.txParams.nonce).toBe(txParams.nonce)
+    expect(result.txParams.nonce).toBe(txParams.nonce - 1)
   })
 
   it('try build txparams with priority flag', async() => {

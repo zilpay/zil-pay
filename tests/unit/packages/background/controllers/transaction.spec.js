@@ -22,7 +22,7 @@ describe('packages:controllers:Transaction', () => {
   it('amount of methods', () => {
     const propiriesNames = Object.getOwnPropertyNames(Transaction.prototype)
 
-    expect(propiriesNames.length).toBe(5)
+    expect(propiriesNames.length).toBe(6)
   })
 
   it('test constructor', () => {

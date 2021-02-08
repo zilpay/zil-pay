@@ -48,7 +48,7 @@ describe('store:transactions', () => {
     expect(mutations.setTxHistory).toBeTruthy()
     expect(mutations.setPriority).toBeTruthy()
 
-    expect(keys.length).toBe(7)
+    expect(keys.length).toBe(8)
   })
 
   it('should have some actions', () => {
@@ -58,7 +58,7 @@ describe('store:transactions', () => {
     expect(actions.onUpdateToConfirmTxs).toBeTruthy()
     expect(actions.setRejectedLastTx).toBeTruthy()
 
-    expect(keys.length).toBe(3)
+    expect(keys.length).toBe(4)
   })
 
   it('should have some getters', () => {
