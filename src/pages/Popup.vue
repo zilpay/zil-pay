@@ -70,7 +70,7 @@
       </a>
       <div :class="b('advanced-items')">
         <div
-          v-show="advanced"
+          v-show="advanced && !getCurrent.data"
           :class="b('item')"
         >
           <P
@@ -98,6 +98,24 @@
           <input
             :type="INPUT_TYPES.number"
             :value="getCurrentGas.gasLimit"
+            min="1"
+            @input="onGasLimitChanged"
+          >
+        </div>
+        <div
+          v-show="advanced"
+          :class="b('item')"
+        >
+          <P
+            :font="FONT_VARIANTS.bold"
+            :variant="amountColor"
+            :size="SIZE_VARIANS.sm"
+          >
+            Nonce
+          </P>
+          <input
+            :type="INPUT_TYPES.number"
+            :value="getCurrent.nonce"
             min="1"
             @input="onGasLimitChanged"
           >
