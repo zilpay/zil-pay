@@ -355,7 +355,8 @@ export default {
     ...mapActions(transactionsStore.STORE_NAME, [
       transactionsStore.ACTIONS_NAMES.onUpdateTransactions,
       transactionsStore.ACTIONS_NAMES.setRejectedLastTx,
-      transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs
+      transactionsStore.ACTIONS_NAMES.onUpdateToConfirmTxs,
+      transactionsStore.ACTIONS_NAMES.onUpdateNonce
     ]),
     ...mapActions(tokenStore.STORE_NAME, [
       tokenStore.ACTIONS_NAMES.onBalanceUpdate
@@ -476,6 +477,23 @@ export default {
     },
     imageUnloaded(event) {
       event.target.style.display = 'none'
+    },
+    async updateBalance() {
+      this.setLoad()
+
+      try {
+        await this.onUpdateNonce()
+      } catch {
+        //
+      }
+
+      try {
+        await this.onBalanceUpdate()
+      } catch {
+        //
+      }
+
+      this.setLoad()
     }
   },
   mounted() {
@@ -488,11 +506,7 @@ export default {
     }
 
     this.gasStarter = JSON.stringify(this.getCurrentGas)
-    this.setLoad()
-    this
-      .onBalanceUpdate()
-      .then(() => this.setLoad())
-      .catch(() => this.setLoad())
+    this.updateBalance()
   },
   updated() {
     if (this.getCurrent && this.getCurrent.message) {

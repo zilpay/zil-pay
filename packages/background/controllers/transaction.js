@@ -142,6 +142,7 @@ export class Transaction {
 
   constructor(payload) {
     this.payload = payload
+    this.storage = new BrowserStorage()
   }
 
   /**
@@ -150,9 +151,8 @@ export class Transaction {
   async checkAllTransaction() {
     await networkControl.netwrokSync()
 
-    const storage = new BrowserStorage()
     const zilliqaControl = new ZilliqaControl(networkControl.provider)
-    const data = await storage.get([
+    const data = await this.storage.get([
       FIELDS.TRANSACTIONS,
       FIELDS.WALLET,
       FIELDS.SELECTED_NET
@@ -216,7 +216,7 @@ export class Transaction {
 
       transactions[selectedAccount.address][net] = provens
 
-      await storage.set(
+      await this.storage.set(
         new BuildObject(FIELDS.TRANSACTIONS, transactions)
       )
     } catch (err) {
@@ -259,6 +259,47 @@ export class Transaction {
       return sendResponse({ resolve: true })
     } catch (err) {
       return sendResponse({ reject: err.message })
+    }
+  }
+
+  /**
+   * Calculate nonce counter.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
+  async calculateNonce(sendResponse) {
+    await networkControl.netwrokSync()
+
+    try {
+      const network = networkControl.selected
+      const account = await accountControl.getCurrentAccount()
+      const zilliqa = new ZilliqaControl(networkControl.provider)
+      let { nonce } = await zilliqa.getBalance(account.address)
+      const transactions = await this.storage.get(FIELDS.TRANSACTIONS)
+      const historyTx = transactions
+        && transactions[account.address]
+        && transactions[account.address][network]
+      const hasPendingTx = historyTx && historyTx
+        .filter((tx) => Boolean(!tx.error && !tx.confirmed))
+        .sort((txA, txB) => txA.nonce - txB.nonce)
+
+      if (hasPendingTx && hasPendingTx.length !== 0) {
+        const lastTx = hasPendingTx.pop()
+        const pendingTx = await this.getPendingTxn(lastTx.TranID)
+
+        if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
+          nonce = lastTx.nonce
+        }
+      }
+
+      nonce++
+
+      sendResponse({
+        resolve: nonce
+      })
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      })
     }
   }
 

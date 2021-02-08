@@ -275,6 +275,22 @@ export class Background {
     return result.resolve
   }
 
+  /**
+   * Calculate nonce for current account.
+   */
+  async getNonce() {
+    const type = MTypePopup.GET_ACCOUNT_NONCE
+    const result = await Message.signal(type).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
   async updateSSnList() {
     const type = MTypePopup.UPDATE_SSN_LIST
     const result = await Message.signal(type).send()

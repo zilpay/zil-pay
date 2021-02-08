@@ -32,12 +32,14 @@ const MUTATIONS_NAMES = {
   setEmpty: 'setEmpty',
   setClearTxHistory: 'setClearTxHistory',
   setTxHistory: 'setTxHistory',
-  setPriority: 'setPriority'
+  setPriority: 'setPriority',
+  setNonce: 'setNonce'
 }
 const ACTIONS_NAMES = {
   onUpdateTransactions: 'onUpdateTransactions',
   onUpdateToConfirmTxs: 'onUpdateToConfirmTxs',
-  setRejectedLastTx: 'setRejectedLastTx'
+  setRejectedLastTx: 'setRejectedLastTx',
+  onUpdateNonce: 'onUpdateNonce'
 }
 const GETTERS_NAMES = {
   getCurrent: 'getCurrent',
@@ -52,6 +54,11 @@ const STORE = {
     [STATE_NAMES.confirmationTx]: []
   },
   mutations: {
+    [MUTATIONS_NAMES.setNonce](state, nonce) {
+      if (new TypeChecker(nonce).isInt) {
+        state[STATE_NAMES.confirmationTx][state.confirmationTx.length - 1].nonce = nonce
+      }
+    },
     [MUTATIONS_NAMES.setCurrentGas](state, gas) {
       if (!gas || !gas.gasPrice || !gas.gasLimit) {
         return null
@@ -103,6 +110,11 @@ const STORE = {
     },
     async [ACTIONS_NAMES.setRejectedLastTx]() {
       await bg.rejectTx()
+    },
+    async [ACTIONS_NAMES.onUpdateNonce]({ commit }) {
+      const nonce = await bg.getNonce()
+
+      commit(MUTATIONS_NAMES.setNonce, nonce)
     }
   },
   getters: {

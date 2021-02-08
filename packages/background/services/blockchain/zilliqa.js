@@ -153,14 +153,10 @@ export class ZilliqaControl {
    * @param {Object} account - Full account object.
    */
   async buildTxParams(txData, account) {
-    const storage = new BrowserStorage()
     const transactionFactory = new TransactionFactory(this.provider, this.wallet)
-    const transactions = await storage.get(FIELDS.TRANSACTIONS)
-    const network = await storage.get(FIELDS.SELECTED_NET)
-    const historyTx = transactions && transactions[account.address] && transactions[account.address][network]
-    let { nonce } = await this.getBalance(account.address)
     let {
       amount, // Amount of zil. type Number.
+      nonce, // Count of transaction for account.
       code, // Value contract code. type String.
       data, // Call contract transition. type Object.
       gasLimit,
@@ -174,22 +170,7 @@ export class ZilliqaControl {
     }
 
     if (txData.cancel) {
-      nonce = txData.nonce
-    } else {
-      const hasPendingTx = historyTx && historyTx
-        .filter((tx) => Boolean(!tx.error && !tx.confirmed))
-        .sort((txA, txB) => txA.nonce - txB.nonce)
-
-      if (hasPendingTx && hasPendingTx.length !== 0) {
-        const lastTx = hasPendingTx.pop()
-        const pendingTx = await this.getPendingTxn(lastTx.TranID)
-
-        if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
-          nonce = lastTx.nonce
-        }
-      }
-
-      nonce++
+      nonce = txData.nonce - 1
     }
 
     amount = new BN(amount)

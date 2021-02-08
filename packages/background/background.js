@@ -129,6 +129,10 @@ export class Background {
       new Popup().getRandomSeedPhrase(sendResponse)
       break
 
+    case MTypePopup.GET_ACCOUNT_NONCE:
+      new Transaction().calculateNonce(sendResponse)
+      break
+
     case MTypePopup.CREATE_ACCOUNT_BY_SEED:
       new Wallet().createAccountBySeed(sendResponse)
       break
