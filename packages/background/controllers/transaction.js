@@ -293,18 +293,34 @@ export class Transaction {
 
       nonce++
 
-      sendResponse({
-        resolve: nonce
-      })
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({
+          resolve: nonce
+        })
+      }
+
+      return nonce
     } catch (err) {
-      sendResponse({
-        reject: err.message
-      })
+      if (new TypeChecker(sendResponse).isFunction) {
+        sendResponse({
+          reject: err.message
+        })
+      } else {
+        throw new Error(err.message)
+      }
     }
   }
 
   async signSendTx(sendResponse) {
     await networkControl.netwrokSync()
+
+    try {
+      if (!new TypeChecker(this.payload.nonce).isInt) {
+        this.payload.nonce = await this.calculateNonce()
+      }
+    } catch {
+      //
+    }
 
     try {
       const zilliqa = new ZilliqaControl(networkControl.provider)
