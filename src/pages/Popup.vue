@@ -116,6 +116,7 @@
           <input
             :type="INPUT_TYPES.number"
             :value="getCurrent.nonce"
+            @input="onChangeNonce"
           >
         </div>
       </div>
@@ -345,7 +346,8 @@ export default {
     ...mapMutations(transactionsStore.STORE_NAME, [
       transactionsStore.MUTATIONS_NAMES.setCurrentGas,
       transactionsStore.MUTATIONS_NAMES.setEmpty,
-      transactionsStore.MUTATIONS_NAMES.setPriority
+      transactionsStore.MUTATIONS_NAMES.setPriority,
+      transactionsStore.MUTATIONS_NAMES.setNonce
     ]),
     ...mapMutations(uiStore.STORE_NAME, [
       uiStore.MUTATIONS_NAMES.setLoad
@@ -368,6 +370,9 @@ export default {
     },
     onFrom() {
       this.onViewblockAddress(this.getCurrentAccount.address)
+    },
+    onChangeNonce(event) {
+      this.setNonce(Number(event.target.value))
     },
     /**
      * When rejected tx.
