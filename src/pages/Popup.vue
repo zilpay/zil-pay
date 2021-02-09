@@ -116,8 +116,6 @@
           <input
             :type="INPUT_TYPES.number"
             :value="getCurrent.nonce"
-            min="1"
-            @input="onGasLimitChanged"
           >
         </div>
       </div>

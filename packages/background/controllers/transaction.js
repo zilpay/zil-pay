@@ -284,7 +284,7 @@ export class Transaction {
 
       if (hasPendingTx && hasPendingTx.length !== 0) {
         const lastTx = hasPendingTx.pop()
-        const pendingTx = await this.getPendingTxn(lastTx.TranID)
+        const pendingTx = await zilliqa.getPendingTxn(lastTx.TranID)
 
         if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
           nonce = lastTx.nonce
