@@ -89,16 +89,18 @@
         </P>
       </li>
     </ul>
-    <ViewblockLink :hash="transaction.TranID" />
-    <Button
-      v-if="canCancel"
-      :color="COLOR_VARIANTS.danger"
-      block
-      round
-      @click="cancel"
-    >
-      {{ local.CANCEL }}
-    </Button>
+    <div :class="b('btn-wrapper')">
+      <ViewblockLink :hash="transaction.TranID" />
+      <Button
+        v-if="!transaction.confirmed && !transaction.cancel"
+        :color="COLOR_VARIANTS.danger"
+        block
+        round
+        @click="cancel"
+      >
+        {{ local.CANCEL }}
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -111,7 +113,7 @@ import uiStore from '@/store/ui'
 import transactionsStore from '@/store/transactions'
 import accountsStore from '@/store/accounts'
 
-import { DEFAULT_TOKEN, DEFAULT } from 'config'
+import { DEFAULT_TOKEN } from 'config'
 import {
   SIZE_VARIANS,
   FONT_VARIANTS,
@@ -212,13 +214,6 @@ export default {
       gasPrice = String(this.toLi(gasPrice))
 
       return this.calcFee(gasLimit, gasPrice)
-    },
-    canCancel() {
-      const { confirmed, gasPrice, cancel, block } = this.transaction
-      const blockNumber = Number(this.blockNumber)
-      const nextBlock = Number(block) + Number(DEFAULT.BLOCKS_TO_CANCEL_TX)
-
-      return !confirmed && gasPrice && !cancel && blockNumber > nextBlock
     }
   },
   methods: {
@@ -268,6 +263,15 @@ export default {
     }
   }
 
+  &__btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+    min-height: 100px;
+  }
+
   &__wrapper > li {
     display: flex;
     align-items: center;
@@ -291,17 +295,6 @@ export default {
     @media (max-width: 700px) {
       max-width: 280px;
     }
-  }
-
-  & > .Button {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-
-    margin: 20px;
-    width: 100%;
-
-    text-transform: capitalize;
   }
 }
 </style>

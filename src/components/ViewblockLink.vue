@@ -1,5 +1,6 @@
 <template>
   <Button
+    :class="b()"
     :size="SIZE_VARIANS.sm"
     :color="COLOR_VARIANTS.transparent"
     round
@@ -78,3 +79,16 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.ViewblockLink {
+  display: flex;
+  align-items: center;
+
+  padding: 20px;
+
+  & > img {
+    margin-right: 5px;
+  }
+}
+</style>
