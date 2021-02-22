@@ -70,28 +70,12 @@
         >
           {{ local.SSN_LIST }}:
         </P>
-        <Radio
-          v-for="(ssn, index) of ssnItems"
-          :key="index"
-          :class="b('node-item')"
-          :value="provider === ssn.api"
-          @input="onSelectedSSn(ssn)"
-        >
-          <div :class="b('node-text')">
-            <P
-              :size="SIZE_VARIANS.sm"
-              :font="FONT_VARIANTS.light"
-            >
-              {{ ssn.name }}
-            </P>
-            <P
-              :size="SIZE_VARIANS.sm"
-              :font="FONT_VARIANTS.light"
-            >
-              {{ ssn.time }} ms
-            </P>
-          </div>
-        </Radio>
+        <DropMenu
+          v-if="ssnList.length !== 0"
+          :value="currentNode"
+          :items="ssnItems"
+          @input="onSelectedSSn"
+        />
       </div>
     </div>
   </div>
@@ -119,7 +103,7 @@ import RadioGroup from '@/components/RadioGroup'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import Button from '@/components/Button'
 import P from '@/components/P'
-import Radio from '@/components/Radio'
+import DropMenu from '@/components/DropMenu'
 
 import { keys } from '@/filters'
 
@@ -132,8 +116,8 @@ export default {
     TopBar,
     RadioGroup,
     Input,
+    DropMenu,
     P,
-    Radio,
     Button
   },
   filters: { keys },
@@ -162,6 +146,10 @@ export default {
       buttons: {
         change: uuid(),
         default: uuid()
+      },
+      ssnModel: {
+        name: '',
+        time: 0
       }
     }
   },
@@ -186,6 +174,13 @@ export default {
       const { PROVIDER } = this.networkConfig.mainnet
 
       return PROVIDER
+    },
+    currentNode() {
+      const config = this.networkConfig
+
+      return this.ssnList.find(
+        ({ api }) => api === config.mainnet.PROVIDER
+      )
     }
   },
   methods: {
@@ -292,10 +287,13 @@ export default {
         //
       }
       this.setLoad()
+    },
+    async prepare() {
+      await this.onUpdateModels()
     }
   },
   mounted() {
-    this.onUpdateModels()
+    this.prepare()
   }
 }
 </script>
@@ -317,21 +315,11 @@ export default {
     }
   }
 
-  &__node-item {
-    padding: 5px 0 5px 0;
-  }
-
   &__nodes {
     display: block;
     width: 100%;
     max-width: 360px;
     margin-top: 15px;
-  }
-
-  &__node-text {
-    display: flex;
-    justify-content: space-between;
-    min-width: 200px;
   }
 
   &__reset {
