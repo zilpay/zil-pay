@@ -16,6 +16,7 @@ import Tokens from '@/pages/Tokens'
 import Connect from '@/pages/Connect'
 import Create from '@/pages/Create'
 import Verify from '@/pages/Verify'
+import WalletConnect from '@/pages/WalletConnect'
 import Congratulation from '@/pages/Congratulation'
 import FirstStart from '@/pages/FirstStart'
 import Home from '@/pages/Home'
@@ -83,6 +84,11 @@ const routes = [
     path: `/${Restore.name.toLowerCase()}`,
     name: Restore.name,
     component: Restore
+  },
+  {
+    path: `/${WalletConnect.name.toLowerCase()}`,
+    name: WalletConnect.name,
+    component: WalletConnect
   },
   /**
    * Guards routers.

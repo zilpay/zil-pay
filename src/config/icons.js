@@ -36,6 +36,7 @@ export const ICON_VARIANTS = {
   bag: 'bag',
   lock: 'lock',
   desktop: 'desktop',
+  qrcode: 'qr-code',
 
   statusPadding: 'status_padding',
   statusDanger: 'status_danger',

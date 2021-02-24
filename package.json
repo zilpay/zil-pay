@@ -24,6 +24,7 @@
     "crypto-js": "^4.0.0",
     "extensionizer": "^1.0.1",
     "jazzicon": "^1.5.0",
+    "pubnub": "^4.29.11",
     "qrcode": "^1.4.4",
     "rxjs": "^6.6.3",
     "uuid": "^8.3.2",

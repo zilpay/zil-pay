@@ -31,6 +31,13 @@
       >
         {{ local.REVEAL_KEYSTORE }}
       </Button>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        round
+        @click="modals.connect = true"
+      >
+        {{ local.MOBILE_SYNC }}
+      </Button>
     </div>
     <BottomModal
       v-model="modals.key"
@@ -78,6 +85,21 @@
         @close="modals.keystore = false"
       />
     </BottomModal>
+    <BottomModal
+      v-model="modals.connect"
+      pure
+    >
+      <BackModal
+        v-if="local.MOBILE_SYNC"
+        :name="local.MOBILE_SYNC"
+        back
+        @click="modals.connect = false"
+      />
+      <WalletConnectModal
+        v-if="modals.connect"
+        @close="modals.connect = false"
+      />
+    </BottomModal>
   </div>
 </template>
 
@@ -93,6 +115,7 @@ import { DEFAULT } from 'config'
 import TopBar from '@/components/TopBar'
 import BottomModal from '@/components/BottomModal'
 import SecureModal from '@/views/SecureModal'
+import WalletConnectModal from '@/views/WalletConnectModal'
 import RadioGroup from '@/components/RadioGroup'
 import BackModal from '@/components/BackModal'
 import Button from '@/components/Button'
@@ -105,6 +128,7 @@ export default {
     Button,
     BackModal,
     SecureModal,
+    WalletConnectModal,
     BottomModal
   },
   data() {
@@ -115,7 +139,8 @@ export default {
       modals: {
         key: false,
         seed: false,
-        keystore: false
+        keystore: false,
+        connect: false
       }
     }
   },
@@ -159,7 +184,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    min-height: 450px;
+    min-height: 502px;
     padding-left: 30px;
     padding-right: 30px;
 

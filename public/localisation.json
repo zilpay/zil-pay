@@ -134,6 +134,8 @@
     "INCORRECT": "Incorrect",
     "NOT_FOUND_ZNS": ".zil domain not in use",
     "CONNECT": "Connect",
+    "MOBILE_SYNC": "Mobile connect",
+    "SCAN_MOBILE_CONNECT": "Scan this code with your ZilPay mobile app",
     "CONNECT_INFO": "Would you like to connect to this application?",
     "CONNECT_DIS": "This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.",
     "CONTINUE": "Continue",
