@@ -53,6 +53,8 @@
 <script>
 import QRCode from 'qrcode'
 import PubNub from 'pubnub'
+import { FIELDS } from 'config'
+import { BrowserStorage } from 'lib/storage'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
 import accountsStore from '@/store/accounts'
@@ -62,7 +64,8 @@ import {
   SIZE_VARIANS,
   FONT_VARIANTS,
   ICON_VARIANTS,
-  ICON_TYPE
+  ICON_TYPE,
+  EVENTS
 } from '@/config'
 
 import Input, { INPUT_TYPES } from '@/components/Input'
@@ -75,10 +78,11 @@ import { Background } from '@/services'
 const { Promise } = global
 const SYNC_EVENTS = {
   start: 'start-sync',
-  connectionInfo: 'connection-info',
   endSync: 'end-sync',
   syncingData: 'syncing-data'
 }
+const PUB_KEY = 'pub-c-59f9788d-7754-46e8-b653-71566255aac1'
+const SUB_KEY = 'sub-c-2b8cbe56-766b-11eb-b2c3-2e58680e8335'
 
 export default {
   name: 'WalletConnectModal',
@@ -111,9 +115,7 @@ export default {
       cipherKey: null,
       channelName: null,
       pubnub: null,
-      pubnubListener: null,
-      syncing: false,
-      completed: false
+      pubnubListener: null
     }
   },
   computed: {
@@ -144,27 +146,22 @@ export default {
       }
     },
     async startSyncing() {
-      if (this.syncing) {
-        return null
-      }
-
-      this.syncing = true
+      const storage = new BrowserStorage()
+      const data = await storage.get([
+        FIELDS.VAULT,
+        FIELDS.VAULT_IMPORTED,
+        FIELDS.WALLET
+      ])
 
       const allDataStr = JSON.stringify({
-        seed: 'sdasdasds',
-        importedAccounts: 'importedAccounts',
-        accounts: []
+        seed: data.vault,
+        importedAccounts: data.importedvault,
+        wallet: data.wallet
       })
 
-      const chunks = this.chunkString(allDataStr, 17000)
-      const totalChunks = chunks.length
       try {
-        for (let i = 0; i < totalChunks; i++) {
-          await this.sendMessage(chunks[i], i + 1, totalChunks)
-        }
+        await this.sendMessage(allDataStr)
       } catch (e) {
-        // this.props.displayWarning('Sync failed :(')
-        this.syncing = false
         this.syncError = e.toString()
       }
     },
@@ -177,21 +174,18 @@ export default {
       const { address } = this.getCurrentAccount
 
       this.cipherKey = `${address.substr(-4,)}-${PubNub.generateUUID()}`
-      this.channelName = `mm-${PubNub.generateUUID()}`
+      this.channelName = PubNub.generateUUID()
 
       QRCode.toDataURL(
         `zilpay-sync:${this.channelName}|@|${this.cipherKey}`
       ).then((base64) => this.qrcode = base64)
     },
     initWebsockets() {
-      // Make sure there are no existing listeners
-      this.disconnectWebsockets()
-
       this.pubnub = new PubNub({
-        subscribeKey: 'pub-c-59f9788d-7754-46e8-b653-71566255aac1',
-        publishKey: 'sub-c-2b8cbe56-766b-11eb-b2c3-2e58680e8335',
         cipherKey: this.cipherKey,
-        ssl: true,
+        publishKey: PUB_KEY,
+        subscribeKey: SUB_KEY,
+        ssl: true
       })
 
       this.pubnubListener = {
@@ -201,21 +195,13 @@ export default {
             return
           }
 
-          console.log(message.event)
-
           switch (message.event) {
           case SYNC_EVENTS.start:
             this.startSyncing()
             break
-          case SYNC_EVENTS.connectionInfo:
-            this.disconnectWebsockets()
-            this.initWithCipherKeyAndChannelName(message.cipher, message.channel)
-            this.initWebsockets()
-            break
           case SYNC_EVENTS.endSync:
             this.disconnectWebsockets()
-            this.syncing = false
-            this.completed = true
+            this.$emit(EVENTS.close)
             break
           default:
             break
@@ -225,23 +211,23 @@ export default {
       this.pubnub.addListener(this.pubnubListener)
       this.pubnub.subscribe({
         channels: [this.channelName],
-        withPresence: false,
+        withPresence: false
       })
     },
     disconnectWebsockets() {
-      if (this.pubnub && this.pubnubListener) {
-        this.pubnub.removeListener(this.pubnubListener)
+      if (this.pubnub) {
+        this.pubnub.removeAllListeners()
+        this.pubnub.stop()
+        this.pubnub.unsubscribeAll()
       }
     },
-    sendMessage(data, pkg, count) {
+    sendMessage(data) {
       return new Promise((resolve, reject) => {
         this.pubnub.publish(
           {
             message: {
               event: SYNC_EVENTS.syncingData,
-              data,
-              totalPkg: count,
-              currentPkg: pkg,
+              data
             },
             channel: this.channelName,
             sendByPost: false, // true to send via post
@@ -256,16 +242,6 @@ export default {
           },
         )
       })
-    },
-    chunkString(str, size) {
-      const numChunks = Math.ceil(str.length / size)
-      const chunks = new Array(numChunks)
-      let o = 0
-      for (let i = 0; i < numChunks; i += 1) {
-        chunks[i] = str.substr(o, size)
-        o += size
-      }
-      return chunks
     },
     initWithCipherKeyAndChannelName(cipherKey, channelName) {
       this.cipherKey = cipherKey
