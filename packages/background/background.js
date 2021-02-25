@@ -113,6 +113,10 @@ export class Background {
       new Wallet(message.payload).exportSeedPhrase(sendResponse)
       break
 
+    case MTypePopup.ENCRYPT_WALLET:
+      new Wallet(message.payload).getEncryptedWallet(sendResponse)
+      break
+
     case MTypePopup.EXPORT_PRIVATE_KEY:
       new Wallet(message.payload).exportPrivateKey(sendResponse)
       break

@@ -55,9 +55,8 @@ import QRCode from 'qrcode'
 import PubNub from 'pubnub'
 import { FIELDS } from 'config'
 import { BrowserStorage } from 'lib/storage'
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import uiStore from '@/store/ui'
-import accountsStore from '@/store/accounts'
 
 import {
   COLOR_VARIANTS,
@@ -121,9 +120,6 @@ export default {
   computed: {
     ...mapState(uiStore.STORE_NAME, [
       uiStore.STATE_NAMES.local
-    ]),
-    ...mapGetters(accountsStore.STORE_NAME, [
-      accountsStore.GETTERS_NAMES.getCurrentAccount
     ])
   },
   methods: {
@@ -138,8 +134,9 @@ export default {
     },
     async onGenerate() {
       const bg = new Background()
+
       try {
-        this.content = await bg.exportSeed(this.password.model)
+        this.content = await bg.getEncrypted(this.password.model)
         this.startKeysGeneration()
       } catch (err) {
         this.password.error = `${this.local.INCORRECT} ${this.local.PASSWORD}`
@@ -147,16 +144,14 @@ export default {
     },
     async startSyncing() {
       const storage = new BrowserStorage()
-      const data = await storage.get([
-        FIELDS.VAULT,
-        FIELDS.VAULT_IMPORTED,
-        FIELDS.WALLET
-      ])
+      const wallet = await storage.get(FIELDS.WALLET)
 
       const allDataStr = JSON.stringify({
-        seed: data.vault,
-        importedAccounts: data.importedvault,
-        wallet: data.wallet
+        wallet,
+        encrypted: {
+          iv: this.content.iv,
+          cipher: this.content.cipher
+        }
       })
 
       try {
@@ -171,13 +166,11 @@ export default {
       this.initWebsockets()
     },
     generateCipherKeyAndChannelName() {
-      const { address } = this.getCurrentAccount
-
-      this.cipherKey = `${address.substr(-4,)}-${PubNub.generateUUID()}`
+      this.cipherKey = PubNub.generateUUID()
       this.channelName = PubNub.generateUUID()
 
       QRCode.toDataURL(
-        `zilpay-sync:${this.channelName}|@|${this.cipherKey}`
+        `zilpay-sync:${this.channelName}|@|${this.cipherKey}|@|${this.content.salt}`
       ).then((base64) => this.qrcode = base64)
     },
     initWebsockets() {

@@ -188,6 +188,24 @@ export class Background {
   }
 
   /**
+   * Encrypt full wallet return the AES object.
+   * @param {String} password - A ZilPay password.
+   */
+  async getEncrypted(password) {
+    const type = MTypePopup.ENCRYPT_WALLET
+    const payload = { password }
+    const result = await new Message({ type, payload }).send()
+
+    if (!result) {
+      throw new Error(BG_ERROR)
+    } else if (result.reject) {
+      throw new Error(result.reject)
+    }
+
+    return result.resolve
+  }
+
+  /**
    * Decrypt vault and responce privateKey for selected account.
    * @param {String} password Unlock password.
    */

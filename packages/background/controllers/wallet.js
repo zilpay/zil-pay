@@ -109,6 +109,25 @@ export class Wallet {
   }
 
   /**
+   * Exporting encrypted object.
+   * @param {Function} sendResponse - CallBack funtion for return response to sender.
+   */
+  async getEncryptedWallet(sendResponse) {
+    const { password } = this.payload
+    const accountExporter = new AccountExporter()
+
+    try {
+      await accountExporter.auth.setPassword(password)
+
+      const data = await accountExporter.auth.getEncrypted()
+
+      sendResponse({ resolve: data })
+    } catch (err) {
+      sendResponse({ reject: err.message })
+    }
+  }
+
+  /**
    * Import privateKey and add account to storage.
    * @param {Function} sendResponse - CallBack funtion for return response to sender.
    */

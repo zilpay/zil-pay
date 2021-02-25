@@ -113,6 +113,15 @@ export class Auth {
     return { decryptSeed, decryptImported }
   }
 
+  getEncrypted() {
+    const { decryptImported, decryptSeed } = this.getWallet()
+
+    return this._guard.getEncrypted({
+      decryptImported,
+      decryptSeed
+    })
+  }
+
   /**
    * Synchronization with storage.
    */

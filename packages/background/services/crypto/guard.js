@@ -68,6 +68,16 @@ export class CryptoGuard {
     return this._crypto.decrypt(data, this.pwdHash)
   }
 
+  getEncrypted(object) {
+    if (!new TypeChecker(object).isObject) {
+      throw new ArgumentError('object', ERROR_MSGS.MUST_BE_OBJECT)
+    }
+
+    return this._crypto.getEncrypted(
+      JSON.stringify(object), this.pwdHash
+    )
+  }
+
   /**
    * Decrypt the encrypted data.
    * @param {String} encryptJson - Encryped json object.
