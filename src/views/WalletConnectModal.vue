@@ -148,10 +148,7 @@ export default {
 
       const allDataStr = JSON.stringify({
         wallet,
-        encrypted: {
-          iv: this.content.iv,
-          cipher: this.content.cipher
-        }
+        cipher: this.content.cipher
       })
 
       try {
@@ -170,7 +167,7 @@ export default {
       this.channelName = PubNub.generateUUID()
 
       QRCode.toDataURL(
-        `zilpay-sync:${this.channelName}|@|${this.cipherKey}|@|${this.content.salt}`
+        `zilpay-sync:${this.channelName}|@|${this.cipherKey}|@|${this.content.iv}`
       ).then((base64) => this.qrcode = base64)
     },
     initWebsockets() {
