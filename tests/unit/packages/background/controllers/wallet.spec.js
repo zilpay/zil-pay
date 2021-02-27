@@ -32,7 +32,7 @@ describe('packages:controllers:Wallet', () => {
   it('amount of methods', () => {
     const propiriesNames = Object.getOwnPropertyNames(Wallet.prototype)
 
-    expect(propiriesNames.length).toBe(12)
+    expect(propiriesNames.length).toBe(13)
   })
 
   it('test constructor', () => {
