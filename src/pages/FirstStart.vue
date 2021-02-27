@@ -30,19 +30,6 @@
         </router-link>
         <router-link
           :class="b('btn', { cloud: true })"
-          :to="LINKS.connect"
-        >
-          <SvgInject
-            :variant="ICON_VARIANTS.qrcode"
-            height="88"
-            width="88"
-          />
-          <P uppercase>
-            {{ local.CONNECT }}
-          </P>
-        </router-link>
-        <router-link
-          :class="b('btn', { cloud: true })"
           :to="LINKS.restore"
         >
           <SvgInject
@@ -71,7 +58,6 @@ import {
 
 import CreateAcc from '@/pages/Create'
 import Restore from '@/pages/Restore'
-import WalletConnect from '@/pages/WalletConnect'
 
 import Title from '@/components/Title'
 import P from '@/components/P'
@@ -94,8 +80,7 @@ export default {
       COLOR_VARIANTS,
       LINKS: {
         restore: Restore.name,
-        create: CreateAcc.name,
-        connect: WalletConnect.name
+        create: CreateAcc.name
       }
     }
   },

@@ -16,6 +16,7 @@
     "@iconfu/svg-inject": "^1.2.3",
     "@unstoppabledomains/resolution": "1.0.0",
     "@zilliqa-js/zilliqa": "^2.2.0",
+    "@zxing/library": "^0.18.4",
     "big.js": "^6.0.3",
     "clipboard-copy": "^4.0.1",
     "core-js": "^3.9.0",
