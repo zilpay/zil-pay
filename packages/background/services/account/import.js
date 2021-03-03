@@ -8,6 +8,7 @@
  */
 import { FIELDS, DEFAULT } from 'config'
 import { BuildObject } from 'lib/storage'
+import { Account } from '@zilliqa-js/account/dist/account'
 
 import { AccountControl } from './create'
 import { ZilliqaControl } from 'packages/background/services/blockchain'
@@ -108,12 +109,11 @@ export class AccountImporter extends AccountControl {
     }
 
     this.zilliqa = new ZilliqaControl(this.network.provider)
-    await this.zilliqa.wallet.addByKeystore(keystore, password)
 
+    const account = await Account.fromFile(keystore, password)
     let { decryptImported } = await this.auth.getWallet()
     let wallet = await this._storage.get(FIELDS.WALLET)
     const index = decryptImported.length
-    const account = this.zilliqa.wallet.defaultAccount
     const hasAccount = wallet.identities.find(
       (acc) => acc.address.toLowerCase() === account.address.toLowerCase()
     )

@@ -57,7 +57,7 @@ export class AccountExporter extends AccountControl {
       decryptSeed, index
     )
     const accountInstance = new Account(account.privateKey)
-    const keystore = await accountInstance.toFile(password)
+    const keystore = await accountInstance.toFile(password, 'pbkdf2')
 
     return {
       index,
@@ -95,7 +95,7 @@ export class AccountExporter extends AccountControl {
     }
 
     const accountInstance = new Account(account.privateKey)
-    const keystore = await accountInstance.toFile(password)
+    const keystore = await accountInstance.toFile(password, 'pbkdf2')
 
     return {
       ...account,
