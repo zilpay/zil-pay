@@ -81,14 +81,13 @@ export class Transaction {
       return null
     }
 
+    await networkControl.netwrokSync()
     const storage = new BrowserStorage()
     const hasPool = block.TxHashes.flat()
-    const data = await storage.get([
-      FIELDS.TRANSACTIONS,
-      FIELDS.SELECTED_NET
-    ])
-    const selectednet = data[FIELDS.SELECTED_NET]
-    const transactions = data[FIELDS.TRANSACTIONS]
+    const transactions = await storage.get(
+      FIELDS.TRANSACTIONS
+    )
+    const selectednet = networkControl.selected
     const addresses = Object.keys(transactions)
 
     for (let index = 0; index < addresses.length; index++) {
@@ -154,14 +153,17 @@ export class Transaction {
     const zilliqaControl = new ZilliqaControl(networkControl.provider)
     const data = await this.storage.get([
       FIELDS.TRANSACTIONS,
-      FIELDS.WALLET,
-      FIELDS.SELECTED_NET
+      FIELDS.WALLET
     ])
+    let transactions = data[FIELDS.TRANSACTIONS]
+
+    if (!transactions || Object.keys(transactions).length === 0) {
+      return null
+    }
 
     try {
-      let transactions = data[FIELDS.TRANSACTIONS]
       const wallet = data[FIELDS.WALLET]
-      const net = data[FIELDS.SELECTED_NET]
+      const net = networkControl.selected
       const selectedAccount = wallet.identities[wallet.selectedAddress]
       const currentTransaction = transactions[selectedAccount.address][net]
       const time = 200
@@ -179,28 +181,30 @@ export class Transaction {
         }
 
         try {
-          const result = await zilliqaControl.blockchain.getPendingTxn(tx.TranID)
+          const result = await zilliqaControl.blockchain.getTransaction(tx.TranID)
           const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
           let block = tx.block
           let error = null
 
-          if (result.code === 0 && result.confirmed) {
+          console.log(result)
+
+          if (result && result.receipt && result.receipt.errors) {
+            tx.Info = JSON.stringify(result.receipt.errors)
+            error = false
+            tx.confirmed = true
+
+            Transaction.makeNotificationReject(tx, result.info)
+          } else if (result && result.receipt && result.receipt.success) {
             Transaction.makeNotificationConfirm(tx)
 
             block = socketControl.blockNumber
             tx.confirmed = true
-          } else if (!result.confirmed && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
-            Transaction.makeNotificationReject(tx, result.info)
-
+          } else if (!result && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
             tx.Info = result.info
             error = true
             tx.confirmed = true
-          } else if (result.code !== 0) {
-            Transaction.makeNotificationReject(tx, result.info)
 
-            tx.Info = result.info
-            error = true
-            tx.confirmed = true
+            Transaction.makeNotificationReject(tx, result.info)
           }
 
           return {
@@ -220,6 +224,7 @@ export class Transaction {
         new BuildObject(FIELDS.TRANSACTIONS, transactions)
       )
     } catch (err) {
+      console.log(err)
       return null
     }
   }
