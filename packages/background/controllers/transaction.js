@@ -155,6 +155,9 @@ export class Transaction {
       FIELDS.TRANSACTIONS,
       FIELDS.WALLET
     ])
+    const wallet = data[FIELDS.WALLET]
+    const net = networkControl.selected
+    const selectedAccount = wallet.identities[wallet.selectedAddress]
     let transactions = data[FIELDS.TRANSACTIONS]
 
     if (!transactions || Object.keys(transactions).length === 0) {
@@ -162,14 +165,11 @@ export class Transaction {
     }
 
     try {
-      const wallet = data[FIELDS.WALLET]
-      const net = networkControl.selected
-      const selectedAccount = wallet.identities[wallet.selectedAddress]
       const currentTransaction = transactions[selectedAccount.address][net]
       const time = 200
 
       // If hasn't not confirmed tx.
-      if (!currentTransaction.some((tx) => !tx.confirmed)) {
+      if (!currentTransaction || !currentTransaction.some((tx) => !tx.confirmed)) {
         return null
       }
 
@@ -185,8 +185,6 @@ export class Transaction {
           const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
           let block = tx.block
           let error = null
-
-          console.log(result)
 
           if (result && result.receipt && result.receipt.errors) {
             tx.Info = JSON.stringify(result.receipt.errors)
