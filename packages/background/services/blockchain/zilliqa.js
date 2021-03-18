@@ -407,7 +407,17 @@ export class ZilliqaControl {
     const storage = new BrowserStorage()
     const from = toChecksumAddress(tx.from)
     let txsList = await storage.get(FIELDS.TRANSACTIONS)
+    let type = 0
+
+    if (tx.data) {
+      type = 1
+    }
+    if (tx.code) {
+      type = 2
+    }
+
     const data = {
+      type,
       Info: tx.Info,
       TranID: tx.TranID,
       confirmed: tx.confirmed,

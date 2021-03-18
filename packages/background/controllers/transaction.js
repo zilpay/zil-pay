@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { API, FIELDS, DEFAULT, DEFAULT_TOKEN } from 'config'
+import { API, FIELDS, DEFAULT_TOKEN } from 'config'
 
 import {
   ZilliqaControl,
@@ -107,8 +107,9 @@ export class Transaction {
           }
 
           if (hasPool.includes(hash)) {
-            Transaction.makeNotificationConfirm(tx)
             tx.confirmed = true
+            tx.Info = 'Confirmed'
+            Transaction.makeNotification(tx)
           }
 
           return tx
@@ -123,18 +124,10 @@ export class Transaction {
     )
   }
 
-  static makeNotificationReject(tx, msg) {
+  static makeNotification(tx) {
     new NotificationsControl({
       url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
-      title: 'ZilPay rejected',
-      message: msg
-    }).create()
-  }
-
-  static makeNotificationConfirm(tx) {
-    new NotificationsControl({
-      url: `${API.EXPLORER}/tx/0x${tx.TranID}?network=${networkControl.selected}`,
-      title: 'ZilPay confirmed',
+      title: 'ZilPay',
       message: tx.Info
     }).create()
   }
@@ -159,6 +152,7 @@ export class Transaction {
     const net = networkControl.selected
     const selectedAccount = wallet.identities[wallet.selectedAddress]
     let transactions = data[FIELDS.TRANSACTIONS]
+    let rejectQueue = false
 
     if (!transactions || Object.keys(transactions).length === 0) {
       return null
@@ -166,7 +160,6 @@ export class Transaction {
 
     try {
       const currentTransaction = transactions[selectedAccount.address][net]
-      const time = 200
 
       // If hasn't not confirmed tx.
       if (!currentTransaction || !currentTransaction.some((tx) => !tx.confirmed)) {
@@ -176,41 +169,42 @@ export class Transaction {
       const checkList = currentTransaction.map(async(tx) => {
         if (tx.confirmed) {
           return tx
-        } else if (tx.timestamp && (new Date().getTime() - new Date(tx.timestamp).getTime()) < time) {
+        } else if (rejectQueue) {
+          tx.Info = 'Queue rejected'
+          tx.error = true
+          tx.confirmed = true
+
+          Transaction.makeNotification(tx)
+
           return tx
         }
 
         try {
-          const result = await zilliqaControl.blockchain.getTransaction(tx.TranID)
-          const blockForskel = Number(socketControl.blockNumber) - Number(tx.block)
-          let block = tx.block
-          let error = null
+          const result = await zilliqaControl.blockchain.getTransactionStatus(tx.TranID)
 
-          if (result && result.receipt && result.receipt.errors) {
-            tx.Info = JSON.stringify(result.receipt.errors)
-            error = false
+          switch (result.status) {
+          case 1:
+            return tx
+          case 2:
+            return tx
+          case 3:
+            tx.Info = result.statusMessage
+            tx.block = result.epochUpdated
+            tx.confirmed = result.success
+
+            Transaction.makeNotification(tx)
+
+            return tx
+          default:
+            rejectQueue = true
+            tx.Info = result.statusMessage
+            tx.error = true
             tx.confirmed = true
+            Transaction.makeNotification(tx)
 
-            Transaction.makeNotificationReject(tx, tx.Info)
-          } else if (result && result.receipt && result.receipt.success) {
-            block = socketControl.blockNumber
-            tx.confirmed = true
-
-            Transaction.makeNotificationConfirm(tx)
-          } else if (!result && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
-            tx.Info = result.info
-            error = true
-            tx.confirmed = true
-
-            Transaction.makeNotificationReject(tx, result.info)
+            return tx
           }
-
-          return {
-            ...tx,
-            block,
-            error
-          }
-        } catch {
+        } catch (err) {
           return tx
         }
       })

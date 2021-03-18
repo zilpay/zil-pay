@@ -114,15 +114,15 @@ export default {
       }
     },
     txType() {
-      const { Info, symbol, decimals, cancel } = this.transaction
+      const { symbol, decimals, cancel, type } = this.transaction
 
       if (cancel) {
         return this.local.CANCELED
       } else if (symbol && decimals) {
         return this.local.TRANSFER
-      } else if (Info.includes('Contract Txn')) {
+      } else if (type === 1) {
         return this.local.TRIGGER
-      } else if (Info.includes('Contract Creation')) {
+      } else if (type === 2) {
         return this.local.DEPLOY
       }
 
