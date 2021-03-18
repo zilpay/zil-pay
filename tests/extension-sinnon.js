@@ -47,6 +47,9 @@ extension.runtime = {
 extension.tabs = {
   query: (_, resolve) => resolve()
 }
+extension.extension = {
+  getURL: () => null
+}
 extension.storage = {
   local: {
     set(value, resolve) {
