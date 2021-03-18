@@ -44,7 +44,6 @@ export const ICON_VARIANTS = {
   moon: 'moon',
   sun: 'sun',
   warn: 'warn',
-  generic: 'generic',
   blocks: 'blocks'
 }
 

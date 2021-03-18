@@ -3,7 +3,6 @@
     <Icon
       :type="ICON_TYPE.auto"
       :icon="tokenImage"
-      :broken="failTookenImage"
       @click="onSelected"
     />
     <div @click="onSelected">
@@ -49,7 +48,8 @@
 </template>
 
 <script>
-import { API, DEFAULT_TOKEN } from 'config'
+import { DEFAULT_TOKEN } from 'config'
+import { toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
@@ -68,6 +68,7 @@ import P from '@/components/P'
 import SvgInject from '@/components/SvgInject'
 import Icon from '@/components/Icon'
 
+import { getTokenImage } from '@/utils'
 import { toConversion, fromZil, toLocaleString } from '@/filters'
 
 export default {
@@ -88,6 +89,9 @@ export default {
       type: [Number, String],
       required: true
     },
+    address: {
+      type: String
+    },
     balance: {
       type: String,
       required: true
@@ -107,7 +111,6 @@ export default {
       ICON_VARIANTS,
       ICON_TYPE,
       SIZE_VARIANS,
-      API,
       DEFAULT_TOKEN,
       COLOR_VARIANTS
     }
@@ -120,14 +123,17 @@ export default {
     ]),
 
     tokenImage() {
-      if (this.symbol.includes('gzil')) {
-        return `${this.API.ZRC2_API}/gZIL.${ICON_TYPE.svg}`
+      if (this.symbol === DEFAULT_TOKEN.symbol) {
+        return getTokenImage(this.symbol)
       }
 
-      return `${this.API.ZRC2_API}/${this.symbol}.${ICON_TYPE.svg}`
-    },
-    failTookenImage() {
-      return `/icons/${ICON_VARIANTS.generic}.${ICON_TYPE.svg}`
+      try {
+        const bech32 = toBech32Address(this.address)
+
+        return getTokenImage(bech32)
+      } catch {
+        return getTokenImage(this.address)
+      }
     },
     tokenCurrency() {
       if (this.symbol === DEFAULT_TOKEN.symbol) {
