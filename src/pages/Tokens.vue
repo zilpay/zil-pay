@@ -139,7 +139,8 @@ export default {
   },
   computed: {
     ...mapState(uiStore.STORE_NAME, [
-      uiStore.STATE_NAMES.local
+      uiStore.STATE_NAMES.local,
+      uiStore.STATE_NAMES.selectedTheme
     ]),
     ...mapState(tokenStore.STORE_NAME, [
       tokenStore.STATE_NAMES.selectedcoin
@@ -151,6 +152,9 @@ export default {
       settingsStore.STATE_NAMES.currentRate
     ]),
 
+    isDark() {
+      return this.selectedTheme === 'dark'
+    },
     tabsElements() {
       return [
         {
@@ -184,15 +188,15 @@ export default {
     },
     tokenImage(token) {
       if (token.symbol === DEFAULT_TOKEN.symbol) {
-        return getTokenImage(token.symbol)
+        return getTokenImage(token.symbol, this.isDark)
       }
 
       try {
         const bech32 = toBech32Address(token.address)
 
-        return getTokenImage(bech32)
+        return getTokenImage(bech32, this.isDark)
       } catch {
-        return getTokenImage(token.address)
+        return getTokenImage(token.address, this.isDark)
       }
     },
     async onEvent(event) {

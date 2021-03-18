@@ -53,6 +53,7 @@ import { toBech32Address } from '@zilliqa-js/crypto/dist/bech32'
 
 import { mapState } from 'vuex'
 import settingsStore from '@/store/settings'
+import uiStore from '@/store/ui'
 
 import {
   FONT_VARIANTS,
@@ -116,23 +117,29 @@ export default {
     }
   },
   computed: {
+    ...mapState(uiStore.STORE_NAME, [
+      uiStore.STATE_NAMES.selectedTheme
+    ]),
     ...mapState(settingsStore.STORE_NAME, [
       settingsStore.STATE_NAMES.currency,
       settingsStore.STATE_NAMES.currentCurrency,
       settingsStore.STATE_NAMES.currentRate
     ]),
 
+    isDark() {
+      return this.selectedTheme === 'dark'
+    },
     tokenImage() {
       if (this.symbol === DEFAULT_TOKEN.symbol) {
-        return getTokenImage(this.symbol)
+        return getTokenImage(this.symbol, this.isDark)
       }
 
       try {
         const bech32 = toBech32Address(this.address)
 
-        return getTokenImage(bech32)
+        return getTokenImage(bech32, this.isDark)
       } catch {
-        return getTokenImage(this.address)
+        return getTokenImage(this.address, this.isDark)
       }
     },
     tokenCurrency() {
