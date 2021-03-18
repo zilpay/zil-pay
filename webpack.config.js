@@ -82,6 +82,7 @@ function getPlugins() {
       { from: 'public/localisation.json', to: 'localisation.json' },
       { from: 'public/schema.json', to: 'schema.json' },
       { from: 'public/spinner.css', to: 'spinner.css' },
+      { from: 'public/phishing.html', to: 'phishing.html'},
       {
         from: 'public/manifest.json',
         to: 'manifest.json',

@@ -4,7 +4,7 @@ import { HTTPProvider } from '@zilliqa-js/core/dist/providers/http'
 
 import { NetworkControl } from 'packages/background/services/network'
 
-const HALF_MINUTE = 30000
+const HALF_MINUTE = 20000
 
 export class SocketControl {
 

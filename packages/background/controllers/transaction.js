@@ -191,12 +191,12 @@ export class Transaction {
             error = false
             tx.confirmed = true
 
-            Transaction.makeNotificationReject(tx, result.info)
+            Transaction.makeNotificationReject(tx, tx.Info)
           } else if (result && result.receipt && result.receipt.success) {
-            Transaction.makeNotificationConfirm(tx)
-
             block = socketControl.blockNumber
             tx.confirmed = true
+
+            Transaction.makeNotificationConfirm(tx)
           } else if (!result && blockForskel >= DEFAULT.DS_PER_TX_BLOCKS) {
             tx.Info = result.info
             error = true

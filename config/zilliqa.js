@@ -40,11 +40,7 @@ export const DEFAULT_TOKENS_LIST = {
     '0xa845C1034CD077bD8D32be0447239c7E4be6cb21',
     '0x0D21C1901A06aBEE40d8177F95171c8c63AbdC31'
   ],
-  [Object.keys(ZILLIQA)[1]]: [
-    '0x7b949726966b80c93542233531f9bd53542d4514',
-    '0x7f4a28aabde4cca04b5529eacb64b1449b317e7f',
-    '0x6f0B1fbDA199dc4AbFda28fa2eaa299599b3e8F2'
-  ]
+  [Object.keys(ZILLIQA)[1]]: []
 }
 
 export const DEFAULT_GAS_FEE = {
