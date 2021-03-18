@@ -172,6 +172,7 @@ export class Transaction {
         } else if (rejectQueue) {
           tx.Info = 'Queue rejected'
           tx.error = true
+          tx.nonce = 0
           tx.confirmed = true
 
           Transaction.makeNotification(tx)
@@ -200,6 +201,7 @@ export class Transaction {
             tx.Info = result.statusMessage
             tx.error = true
             tx.confirmed = true
+            tx.nonce = 0
             Transaction.makeNotification(tx)
 
             return tx
