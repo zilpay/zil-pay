@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2019 ZilPay
  */
-import { FIELDS, DEFAULT, DEFAULT_TOKEN } from 'config'
+import { FIELDS, DEFAULT, DEFAULT_TOKEN, SCAM_TOKEN } from 'config'
 import { BrowserStorage, BuildObject } from 'lib/storage'
 import { TypeChecker } from 'lib/type'
 import { AES } from 'lib/crypto'
@@ -165,6 +165,8 @@ export class ZilliqaControl {
       version // Netowrk version. type Number.
     } = txData
 
+    await this.checkScam(toAddr)
+
     if (!version) {
       version = await this.version()
     }
@@ -244,6 +246,35 @@ export class ZilliqaControl {
     const id = await this.getNetworkId()
 
     return bytes.pack(id, msgVerison)
+  }
+
+  async checkScam(address) {
+    let isScam = false
+    const field = 'balances'
+
+    if (validation.isBech32(address)) {
+      address = fromBech32Address(address)
+    }
+
+    address = address.toLowerCase()
+
+    try {
+      const { result } = await this.blockchain.getSmartContractSubState(
+        SCAM_TOKEN,
+        field,
+        [address]
+      )
+
+      if (result && result[field] && result[field][address]) {
+        isScam = Number(result[field][address]) > 0
+      }
+    } catch (err) {
+      //
+    }
+
+    if (isScam) {
+      throw new Error('Scam detected')
+    }
   }
 
   /**

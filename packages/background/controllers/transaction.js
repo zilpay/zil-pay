@@ -187,6 +187,11 @@ export class Transaction {
           case 1:
             return tx
           case 2:
+            tx.Info = result.statusMessage
+            tx.block = result.epochUpdated
+            tx.confirmed = true
+
+            Transaction.makeNotification(tx)
             return tx
           case 3:
             tx.Info = result.statusMessage

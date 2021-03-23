@@ -496,9 +496,7 @@ export default {
         //
       }
 
-      setTimeout(() => {
-        this.setLoad()
-      }, 1000)
+      this.setLoad()
     }
   },
   mounted() {

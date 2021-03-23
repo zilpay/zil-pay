@@ -29,6 +29,7 @@ export const ZIL_SWAP_CONTRACTS = {
   [Object.keys(ZILLIQA)[1]]: '0x1a62Dd9C84b0C8948cb51FC664ba143e7A34985c'
 }
 export const SSN_ADDRESS = '0xB780e8095b8BA85A7145965ed632b3B774ac51cE'
+export const SCAM_TOKEN = '0xe66593414Ba537e965b5e0eB723a58b4d1fACc89'
 
 /**
  * Default tokens will add to tokens list, this token cannot remove.
