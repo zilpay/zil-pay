@@ -10,7 +10,7 @@
 ZilPay ist eine Browserbrieftasche für die Zilliqa-Blockchain. Entwickler können ZilPay in ihre Website integrieren, um dezentrale Apps zu erstellen.
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## Links
