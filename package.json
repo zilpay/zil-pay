@@ -78,7 +78,7 @@
     "metamask"
   ],
   "license": "MIT",
-  "homepage": "https://zilpay.xyz/",
+  "homepage": "https://zilpay.io/",
   "author": "Rinat Hasanshin <lich666black@gmail.com>",
   "engines": {
     "node": ">=10",
