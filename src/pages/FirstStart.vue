@@ -1,12 +1,8 @@
 <template>
   <div :class="b()">
     <UiPanel />
-    <SvgInject
-      :class="b('logo')"
-      :variant="ICON_VARIANTS.zilPayLogo"
-    />
-    <div :class="b('wrapper')">
-      <div>
+    <header>
+      <div id="intro">
         <Title :variant="COLOR_VARIANTS.primary">
           {{ local.FIRSTSTART_TITLE }}
         </Title>
@@ -14,34 +10,35 @@
           {{ local.FIRSTSTART_DIS }}
         </P>
       </div>
-      <div :class="b('actions')">
-        <router-link
-          :class="b('btn')"
-          :to="LINKS.create"
-        >
-          <SvgInject
-            :variant="ICON_VARIANTS.add"
-            height="88"
-            width="88"
-          />
-          <P uppercase>
-            {{ local.CREATE }}
-          </P>
-        </router-link>
-        <router-link
-          :class="b('btn', { cloud: true })"
-          :to="LINKS.restore"
-        >
-          <SvgInject
-            :variant="ICON_VARIANTS.cloud"
-            height="88"
-            width="88"
-          />
-          <P uppercase>
-            {{ local.RESTORE }}
-          </P>
-        </router-link>
-      </div>
+    </header>
+
+    <div :class="b('actions')">
+      <router-link
+        :class="b('btn')"
+        :to="LINKS.create"
+      >
+        <SvgInject
+          :variant="ICON_VARIANTS.add"
+          height="88"
+          width="88"
+        />
+        <P uppercase>
+          {{ local.CREATE }}
+        </P>
+      </router-link>
+      <router-link
+        :class="b('btn', { cloud: true })"
+        :to="LINKS.restore"
+      >
+        <SvgInject
+          :variant="ICON_VARIANTS.cloud"
+          height="88"
+          width="88"
+        />
+        <P uppercase>
+          {{ local.RESTORE }}
+        </P>
+      </router-link>
     </div>
   </div>
 </template>
@@ -95,52 +92,22 @@ export default {
 <style lang="scss">
 .FirstStart {
   display: flex;
-  justify-content: center;
-  align-items: center;
-
-  text-align: center;
-
-  background-color: var(--app-background-color);
-
-  &__logo {
-    position: absolute;
-
-    width: 50vw;
-    height: 50vh;
-  }
-
-  &__wrapper {
-    display: flex;
-    flex-direction: column;
-
-    height: 70vh;
-    width: 1024px;
-    z-index: 1;
-  }
+  flex-direction: column;
 
   &__actions {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap;
   }
 
   &__btn {
-    display: flex;
-    flex-direction: column;
-    justify-content: inherit;
-    align-items: center;
-
-    min-width: 200px;
-    min-height: 200px;
-
-    margin-top: 10%;
-
-    background: var(--opacity-bg-element);
-    border: 2px solid var(--accent-color-primary);
-    border-radius: var(--default-border-radius);
+    padding: 20px;
 
     & > * {
       color: var(--accent-color-primary);
+    }
+
+    & > svg {
+      margin-bottom: 15px;
     }
 
     &:hover {
@@ -154,6 +121,10 @@ export default {
       & > svg > path {
         fill: var(--app-background-color);
       }
+    }
+
+    .P {
+      text-align: center;
     }
   }
 }

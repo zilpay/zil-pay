@@ -59,28 +59,19 @@ export default {
 
 <style lang="scss">
 .Textarea {
-  display: grid;
-  grid-template-rows: min-content auto min-content;
-  grid-template-columns: minmax(250px, 50vh);
-  justify-content: center;
+  width: 100%;
 
   &__element {
-    min-height: 100px;
-
-    padding: 15px;
-
-    border: 0;
-
-    font-size: var(--size-sm-font);
-    color: var(--theme-color-font);
-
     background: var(--opacity-bg-element);
-    border: 2px solid var(--accent-color-primary);
-    border-radius: var(--default-border-radius);
-
+    box-sizing: border-box;
+    color: var(--theme-color-font);
+    font-size: var(--size-sm-font);
+    min-height: 100px;
     outline: none;
-    resize: none;
     overflow: hidden;
+    padding: 15px;
+    resize: none;
+    width: 100%;
 
     &_round {
       border-radius: var(--default-border-radius);

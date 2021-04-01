@@ -1,10 +1,6 @@
 <template>
   <div :class="b()">
     <UiPanel arrow />
-    <SvgInject
-      :class="b('logo')"
-      :variant="ICON_VARIANTS.zilPayLogo"
-    />
     <div :class="b('wrapper')">
       <Textarea
         v-model="seed.model"
@@ -32,7 +28,6 @@ import Congratulation from '@/pages/Congratulation'
 import Textarea from '@/components/Textarea'
 import PasswordForm from '@/components/PasswordForm'
 import UiPanel from '@/components/UiPanel'
-import SvgInject from '@/components/SvgInject'
 
 import { Background } from '@/services'
 
@@ -43,8 +38,7 @@ export default {
   components: {
     Textarea,
     PasswordForm,
-    UiPanel,
-    SvgInject
+    UiPanel
   },
   data() {
     return {
@@ -95,29 +89,15 @@ export default {
 
 <style lang="scss">
 .Restore {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   text-align: center;
-
   background-color: var(--app-background-color);
-
-  &__logo {
-    position: absolute;
-
-    width: 50vw;
-    height: 50vh;
-  }
 
   &__wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 50vh;
-
-    z-index: 1;
+    padding: 10px 0 20px;
   }
 
   &__description {

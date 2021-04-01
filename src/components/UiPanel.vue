@@ -3,9 +3,9 @@
     <div
       :class="b('back')"
       @click="goBack"
+      v-if="arrow"
     >
       <SvgInject
-        v-show="arrow"
         :variant="ICON_VARIANTS.arrowLong"
       />
     </div>
@@ -99,6 +99,7 @@ export default {
 
     goBack() {
       this.$router.go(-1)
+      console.log(this.$router.path)
     },
     onThemeChanged() {
       switch (this.selectedTheme) {
@@ -121,10 +122,7 @@ export default {
 .UiPanel {
   display: flex;
   justify-content: space-between;
-
-  position: absolute;
-  top: 15px;
-  right: 30px;
+  width: 100%;
 
   &__back {
     cursor: pointer;
@@ -170,9 +168,9 @@ export default {
       width: 38px;
     }
   }
+}
 
-  &_arrow {
-    width: calc(100vw - 60px);
-  }
+header {
+  margin: 20px 0;
 }
 </style>

@@ -134,57 +134,44 @@ export default {
 
 <style lang="scss">
 .Create {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   text-align: center;
-
   background-color: var(--app-background-color);
 
   &__logo {
+    height: auto;
+    left: 20vw;
+    opacity: 0.25;
     position: absolute;
-
-    width: 50vw;
-    height: 50vh;
+    top: 30vh;
+    width: 60vw;
   }
 
   &__reset-icon {
-    justify-self: right;
     cursor: pointer;
   }
 
   &__wrapper {
     display: grid;
+    grid-row-gap: 15px;
     justify-items: center;
-    grid-template-rows: max-content min-content 100px 50px;
-
-    z-index: 1;
-    height: 50vh;
-
-    max-width: 700px;
-
-    @media (max-width: 700px) {
-      height: 80vh;
-      grid-template-rows: max-content min-content 200px 50px;
-    }
+    margin: 10px 0 20px;
   }
 
   &__words {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    font-size: 1.5em;
+    grid-column-gap: 10px;
+    grid-row-gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   &__btns {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
+    margin-top: 10px;
     width: 264px;
     height: 120px;
-    margin-top: 50px;
   }
 }
 </style>

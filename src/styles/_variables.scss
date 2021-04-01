@@ -12,7 +12,7 @@
 // Variables should follow the `$component-state-property-size` formula for
 // consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
 
-$default-border-radius: 27px;
+$default-border-radius: 6px;
 
 $xs-break: 400px !default;
 $sm-break: 576px !default;
@@ -43,7 +43,7 @@ $opacity-bg-element-black-1: #00000080;
 $opacity-bg-element-white-1: #EEEEEE;
 $opacity-bg-element-white-2: #EEEEEEBA;
 
-$primary-light:         #5E87DE !default;
+$primary-light:         #2080C0 !default;
 $second-light:          #EAEAEA !default;
 $success-light:         #2FA84F !default;
 $info-light:            #00B2FF !default;

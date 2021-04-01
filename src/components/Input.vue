@@ -130,15 +130,13 @@ export default {
   }
 
   &__element {
+    box-sizing: border-box;
     width: 100%;
-
     border: 0;
-    text-indent: 15px;
-
     color: var(--accent-color-primary);
-
     background: var(--opacity-bg-element);
     border: 1px solid var(--accent-color-primary);
+    padding: 8px 10px;
 
     &_error {
       color: var(--accent-color-danger);
@@ -167,30 +165,6 @@ export default {
 
   &__error {
     color: var(--accent-color-danger);
-  }
-}
-
-.Input {
-  &_block {
-    display: block;
-    width: 100%;
-  }
-
-  &_size-xs {
-    .Input__element {
-      height: var(--size-xs);
-    }
-  }
-
-  &_size-sm {
-    .Input__element {
-      height: var(--size-sm);
-    }
-
-    .Input__title,
-    .Input__error {
-      font-size: calc(var(--size-sm-font) - 5px);
-    }
   }
 }
 </style>

@@ -98,8 +98,8 @@ export default {
 <style lang="scss">
 .P {
   color: var(--theme-color-font);
+  font-size: 1.2em;
   letter-spacing: -0.139803px;
-
   transition: all 0.5s linear;
 
   &_nowrap {

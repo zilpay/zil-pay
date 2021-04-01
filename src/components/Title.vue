@@ -69,6 +69,7 @@ export default {
 <style lang="scss">
 .Title {
   color: var(--theme-color-font);
+  margin-bottom: 10px;
   transition: all 0.5s linear;
 
   &__input {
