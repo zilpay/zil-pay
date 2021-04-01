@@ -234,14 +234,4 @@ export default {
 
 <style lang="scss">
 @import "./styles/general";
-
-#app {
-  width: 100vw;
-  height: 100vh;
-
-  & > div {
-    width: 100%;
-    height: 100%;
-  }
-}
 </style>

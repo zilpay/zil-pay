@@ -5,7 +5,7 @@
   >
     <div :class="b('wrapper')">
       <div
-        :class="b('clsoe-btn')"
+        :class="b('close-btn')"
         @click="toggleSideBarSettings"
       >
         <SvgInject :variant="ICON_VARIANTS.close"/>
@@ -140,9 +140,10 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
 
     min-width: 250px;
-    padding-top: 100px;
+    padding-top: 30px;
 
     border-bottom-right-radius: var(--default-border-radius);
     border-top-right-radius: var(--default-border-radius);
@@ -155,7 +156,7 @@ export default {
     opacity: 1;
   }
 
-  &__clsoe-btn {
+  &__close-btn {
     cursor: pointer;
     position: absolute;
     left: 0;

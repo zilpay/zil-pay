@@ -1,25 +1,23 @@
 <template>
   <div :class="b()">
-    <div :class="b('wrapper')">
-      <router-link
-        :class="b('icon', { enable: (currentName === LINKS.home) })"
-        :to="{ name: LINKS.home }"
-      >
-        <SvgInject :variant="ICON_VARIANTS.home" />
-      </router-link>
-      <router-link
-        :class="b('icon', { enable: (currentName === LINKS.tokens) })"
-        :to="{ name: LINKS.tokens }"
-      >
-        <SvgInject :variant="ICON_VARIANTS.chip" />
-      </router-link>
-      <router-link
-        :class="b('icon', { enable: (currentName === LINKS.contacts) })"
-        :to="{ name: LINKS.contacts }"
-      >
-        <SvgInject :variant="ICON_VARIANTS.contact" />
-      </router-link>
-    </div>
+    <router-link
+      :class="b('icon', { enable: (currentName === LINKS.home) })"
+      :to="{ name: LINKS.home }"
+    >
+      <SvgInject :variant="ICON_VARIANTS.home" />
+    </router-link>
+    <router-link
+      :class="b('icon', { enable: (currentName === LINKS.tokens) })"
+      :to="{ name: LINKS.tokens }"
+    >
+      <SvgInject :variant="ICON_VARIANTS.chip" />
+    </router-link>
+    <router-link
+      :class="b('icon', { enable: (currentName === LINKS.contacts) })"
+      :to="{ name: LINKS.contacts }"
+    >
+      <SvgInject :variant="ICON_VARIANTS.contact" />
+    </router-link>
   </div>
 </template>
 
@@ -58,26 +56,12 @@ export default {
 
 <style lang="scss">
 .BottomBar {
+  box-sizing: border-box;
   display: flex;
-  justify-content: center;
-
-  &__wrapper {
-    position: absolute;
-    bottom: 0;
-
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-
-    width: 100%;
-    height: 40px;
-    max-width: 400px;
-
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-
-    background-color: var(--opacity-bg-element-1);
-  }
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 8px 10px;
+  width: 100%;
 
   &__icon {
     cursor: pointer;

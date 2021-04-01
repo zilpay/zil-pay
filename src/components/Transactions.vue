@@ -122,15 +122,16 @@ export default {
 
 <style lang="scss">
 .Transactions {
+  box-sizing: border-box;
   display: flex;
+  flex-grow: 1;
   justify-content: center;
-
   padding-left: 15px;
   padding-right: 15px;
+  width: 100%;
 
   &__wrapper {
     width: 100%;
-    max-width: 400px;
   }
 
   &__scroll {
@@ -142,7 +143,6 @@ export default {
     list-style: none;
 
     overflow-y: scroll;
-    height: calc(100vh - 320px);
 
     & > li {
       margin-top: 10px;
@@ -160,6 +160,10 @@ export default {
       cursor: pointer;
       color: var(--accent-color-primary);
       text-decoration: underline;
+    }
+
+    a {
+      margin-left: 8px;
     }
   }
 }

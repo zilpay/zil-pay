@@ -2,13 +2,7 @@
   <div :class="b()">
     <Top />
     <TopBar v-if="route"/>
-    <AddMenu @click="onCreateAccount" />
-    <router-link
-      :class="b('import')"
-      :to="{ name: LINKS.import }"
-    >
-      <SvgInject :variant="ICON_VARIANTS.import" />
-    </router-link>
+
     <ul :class="b('scroll')">
       <li
         v-for="(acc, index) of identities"
@@ -23,6 +17,16 @@
         />
       </li>
     </ul>
+
+    <div id="interaction">
+      <router-link
+        :class="b('import')"
+        :to="{ name: LINKS.import }"
+      >
+        <SvgInject :variant="ICON_VARIANTS.import" />
+      </router-link>
+      <AddMenu @click="onCreateAccount" />
+    </div>
   </div>
 </template>
 
@@ -142,6 +146,18 @@ export default {
 
   background-color: var(--app-background-color);
 
+  #interaction {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 15px;
+    width: 100%;
+
+    & > *:not(:first-child) {
+      margin-left: 20px;
+    }
+  }
+
   &__scroll {
     display: flex;
     flex-direction: column;
@@ -162,10 +178,6 @@ export default {
 
   &__import {
     cursor: pointer;
-
-    position: absolute;
-    bottom: 60px;
-    right: 75px;
 
     & > svg {
       width: 35px;

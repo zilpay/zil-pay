@@ -128,21 +128,30 @@ export default {
 
 <style lang="scss">
 .Home {
-  background-color: var(--app-background-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   &__wrapper {
     display: flex;
     justify-content: space-around;
+    flex-grow: 1;
   }
 
   &__main {
+    display: flex;
+    flex-direction: column;
+    position: relative;
     width: 100%;
   }
 
-  &__account,
+  &__account {
+    margin-top: 10px;
+  }
+
   &__txns,
   &__tabs {
-    margin-top: 10px;
+    margin-top: 30px;
   }
 }
 </style>

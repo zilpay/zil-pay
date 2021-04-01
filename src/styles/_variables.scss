@@ -12,9 +12,6 @@
 // Variables should follow the `$component-state-property-size` formula for
 // consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
 
-$max-width-container: 320px;
-$max-height-container: 560px;
-
 $default-border-radius: 27px;
 
 $xs-break: 400px !default;
@@ -33,7 +30,7 @@ $md-font: 22px !default;
 $lg-font: 32px !default;
 
 // Color system
-$black:     #131313 !default;
+$black:     #202020 !default;
 $white:     #FFFFFF !default;
 $gray:      #666666 !default;
 $dark:      #000    !default;

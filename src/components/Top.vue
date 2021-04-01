@@ -108,11 +108,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-
   height: 33px;
   width: inherit;
-
-  background-color: var(--opacity-bg-element-1);
 
   &__net {
     display: flex;
@@ -148,6 +145,10 @@ export default {
 
     & > div {
       cursor: pointer;
+
+      &:not(:first-child):not(:last-child) {
+        margin: 0 20px;
+      }
     }
   }
 

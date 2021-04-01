@@ -34,10 +34,6 @@ export default {
 .AddMenu {
   cursor: pointer;
 
-  position: absolute;
-  bottom: 60px;
-  right: 30px;
-
   svg {
     width: 36px;
     height: 36px;
