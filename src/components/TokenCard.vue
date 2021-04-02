@@ -15,19 +15,18 @@
         </Title>
         <P
           :size="SIZE_VARIANS.sm"
-          :font="FONT_VARIANTS.bold"
         >
           {{ symbol }}
         </P>
       </div>
       <div>
-        <Title
+        <span
           :size="SIZE_VARIANS.sm"
-          :font="FONT_VARIANTS.regular"
           :variant="COLOR_VARIANTS.gray"
+          class="subtitle"
         >
           {{ balance | toConversion(rate, decimals) | toLocaleString }}
-        </Title>
+        </span>
         <P
           :size="SIZE_VARIANS.xs"
           :font="FONT_VARIANTS.bold"
@@ -174,18 +173,12 @@ export default {
 
 <style lang="scss">
 .TokenCard {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-
-  max-height: 60px;
-  min-height: 70px;
-  padding-left: 10px;
-
-  background-color: var(--accent-color-second);
+  box-shadow: inset 1px 1px 15px var(--accent-color-second);
   border-radius: 10px;
-
+  display: flex;
   cursor: pointer;
+  padding: 8px 10px;
 
   img {
     max-width: 30px;
@@ -206,20 +199,26 @@ export default {
   }
 
   & > div > div {
-    width: 150px;
     display: flex;
     align-items: center;
 
-    font-size: 18px;
+    &:nth-child(2) {
+      margin-top: 3px;
+      padding-left: 2px;
+    }
+
+    & > .Title {
+      font-size: 1.5em;
+      margin-bottom: 0;
+    }
 
     & > .P {
-      margin-left: 3px;
+      margin-left: 4px;
     }
   }
 
   &__rm {
     width: 30px;
-    height: 55px;
 
     & > svg {
       height: 15px;

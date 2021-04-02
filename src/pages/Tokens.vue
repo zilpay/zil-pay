@@ -1,11 +1,13 @@
 <template>
   <div :class="b()">
     <Top />
-    <AddMenu @click="tokenModal = true" />
-    <div :class="b('wrapper')">
+    <header>
       <Title :size="SIZE_VARIANS.md">
         {{ $options.name }}
       </Title>
+      <AddMenu @click="tokenModal = true" />
+    </header>
+    <div :class="b('wrapper')">
       <ul :class="b('scroll')">
         <li
           v-for="(t, index) of getTokenList"
@@ -223,11 +225,22 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-
   background-color: var(--app-background-color);
 
+  header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    width: 100%;
+
+    .Title {
+      margin-bottom: 0;
+    }
+  }
+
   &__wrapper {
-    margin-top: 30px;
+    width: 100%;
 
     & > .Title {
       text-align: center;
@@ -246,15 +259,13 @@ export default {
   &__scroll {
     display: flex;
     flex-direction: column;
-
     padding: 0;
     list-style: none;
-
+    margin: 0 0 15px;
     overflow-y: scroll;
-    height: calc(100vh - 210px);
     min-width: 300px;
 
-    & > li {
+    & > li:not(:first-child) {
       margin-top: 10px;
     }
   }

@@ -59,8 +59,7 @@ export default {
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
-  padding: 8px 10px;
+  padding: 15px 10px 0;
   width: 100%;
 
   &__icon {
