@@ -162,17 +162,16 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-
     padding: 0;
     list-style: none;
-
     overflow-y: scroll;
-    height: calc(100vh - 210px);
-    min-width: 300px;
+    width: 100%;
 
     & > li {
       margin-top: 5px;
       margin-bottom: 5px;
+      padding: 8px 10px;
+      width: 100%;
     }
   }
 

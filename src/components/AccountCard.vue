@@ -168,29 +168,17 @@ export default {
 
 <style lang="scss">
 .AccountCard {
+  box-shadow: inset 0 0 10px var(--accent-color-second);
   cursor: pointer;
-
   display: flex;
   align-items: center;
-
-  width: 260px;
-
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-
-  background-color: var(--accent-color-second);
   border-radius: 10px;
+  padding: 10px 12px;
 
   &__wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-
     width: 100%;
-    height: 60px;
-
     margin-left: 10px;
   }
 
@@ -211,8 +199,11 @@ export default {
 
   &__name {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+
+    .Title {
+      margin-bottom: 0;
+    }
   }
 
   &__balance {
