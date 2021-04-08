@@ -226,6 +226,7 @@ export default {
   flex-direction: column;
   align-items: center;
   background-color: var(--app-background-color);
+  max-height: 550px;
 
   header {
     align-items: center;
@@ -240,6 +241,8 @@ export default {
   }
 
   &__wrapper {
+    flex: 1 1 auto;
+    overflow-y: auto;
     width: 100%;
 
     & > .Title {
@@ -262,7 +265,6 @@ export default {
     padding: 0;
     list-style: none;
     margin: 0 0 15px;
-    overflow-y: scroll;
     min-width: 300px;
 
     & > li:not(:first-child) {

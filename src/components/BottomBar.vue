@@ -58,6 +58,7 @@ export default {
 .BottomBar {
   box-sizing: border-box;
   display: flex;
+  flex: 0 0 auto;
   justify-content: space-between;
   padding: 15px 10px 0;
   width: 100%;

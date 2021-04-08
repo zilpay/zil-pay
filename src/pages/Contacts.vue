@@ -235,6 +235,8 @@ export default {
   }
 
   &__wrapper {
+    width: 100%;
+
     & > .Title {
       text-align: center;
       margin-top: 30px;

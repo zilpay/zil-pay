@@ -177,9 +177,11 @@ export default {
   background-color: var(--app-background-color);
 
   &__logo {
-    width: 40vw;
-    height: auto;
-    margin-top: 80px;
+    margin-top: 45px;
+
+    & > g > path {
+      fill: var(--accent-color-primary);
+    }
 
     @media (max-width: 700px) {
       width: 70vw;

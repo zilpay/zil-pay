@@ -8,6 +8,7 @@
  */
 export const ICON_VARIANTS = {
   add: 'add',
+  zilPayIcon: 'zilpay_icon',
   zilPayLogo: 'zilpay_logo',
   cloud: 'cloud',
   arrow: 'arrow',

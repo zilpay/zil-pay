@@ -50,6 +50,7 @@ export default {
 .BottomModal {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
   justify-content: center;
 
   &__social,

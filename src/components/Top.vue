@@ -1,15 +1,19 @@
 <template>
   <div :class="b()">
     <div :class="b('wrapper')">
-      <router-link
-        :class="b('net', { main: network === mainnet })"
-        :to="{ name: LINKS.networkPage }"
-      >
-        <SvgInject :variant="ICON_VARIANTS.net"/>
-        <P>
-          {{ network }}
-        </P>
-      </router-link>
+      <div :class="b('network')">
+        <SvgInject :variant="ICON_VARIANTS.zilPayIcon" :class="b('icon')" />
+        <SvgInject :variant="ICON_VARIANTS.zilPayLogo" :class="b('logo')" />
+        <router-link
+          :class="b('net', { main: network === mainnet })"
+          :to="{ name: LINKS.networkPage }"
+        >
+          <SvgInject :variant="ICON_VARIANTS.net"/>
+          <P>
+            {{ network }}
+          </P>
+        </router-link>
+      </div>
       <div
         v-show="!hiden"
         :class="b('icons')"
@@ -108,12 +112,28 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 33px;
   width: inherit;
+  width: 100%;
+
+  &__network {
+    display: flex;
+  }
+
+  &__logo {
+    display: none;
+    margin-right: 40px;
+    height: 30px;
+    width: auto;
+
+    & > g > path {
+      fill: var(--accent-color-primary);
+    }
+  }
 
   &__net {
     display: flex;
     align-items: center;
+    margin: 0 20px;
 
     .P {
       color: var(--accent-color-warning);
@@ -156,8 +176,18 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+  }
+}
 
-    width: calc(100vw - 40px);
+@media screen and (min-width: 720px) {
+  .Top {
+    &__icon {
+      display: none;
+    }
+    &__logo {
+      display: block;
+    }
   }
 }
 </style>

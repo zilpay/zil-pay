@@ -86,7 +86,6 @@
 body, html {
   margin: 0;
   padding: 0;
-  width: 320px;
 }
 
 a:link,
@@ -100,9 +99,10 @@ a:active {
 body {
   font-family: var(--font-family-light);
   background-color: var(--app-background-color);
-  border: solid #e0e0e0 1px;
-  box-sizing: border-box;
-  padding: 8px;
+  margin: 0 auto;
+  max-width: 720px;
+  min-width: 320px;
+  padding: 15px 10px;
 }
 
 ::-webkit-scrollbar { 

@@ -126,25 +126,26 @@ export default {
   display: flex;
   flex-grow: 1;
   justify-content: center;
-  padding-left: 15px;
-  padding-right: 15px;
   width: 100%;
 
   &__wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 300px;
     width: 100%;
   }
 
   &__scroll {
     display: flex;
     flex-direction: column;
-
-    margin-top: 10px;
+    height: 300px;
+    margin: 0;
+    max-height: 100%;
     padding: 0;
     list-style: none;
+    overflow-y: auto;
 
-    overflow-y: scroll;
-
-    & > li {
+    & > li:not(:first-child) {
       margin-top: 10px;
     }
   }

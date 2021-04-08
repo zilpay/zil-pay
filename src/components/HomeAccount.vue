@@ -198,9 +198,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     width: 100%;
-    max-width: 300px;
 
     & > * {
       cursor: pointer;
@@ -238,7 +236,7 @@ export default {
     max-width: 340px;
     min-width: 200px;
     padding: 5px;
-    margin-top: 30px;
+    margin-top: 10px;
     border-radius: 8px;
     border: 1px solid var(--accent-color-primary);
 
@@ -261,7 +259,6 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 85px;
   }
 }
 </style>

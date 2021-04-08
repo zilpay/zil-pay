@@ -130,28 +130,32 @@ export default {
 .Home {
   display: flex;
   flex-direction: column;
-  height: 100%;
 
   &__wrapper {
     display: flex;
     justify-content: space-around;
-    flex-grow: 1;
   }
 
   &__main {
     display: flex;
     flex-direction: column;
-    position: relative;
     width: 100%;
   }
 
   &__account {
+    flex: 0 0 auto;
     margin-top: 10px;
   }
 
-  &__txns,
+  &__txns {
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding-top: 10px;
+  }
+
   &__tabs {
-    margin-top: 30px;
+    flex: 0 0 auto;
+    margin-top: 15px;
   }
 }
 </style>

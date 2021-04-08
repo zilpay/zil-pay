@@ -178,7 +178,7 @@ export default {
   cursor: pointer;
 
   border-radius: 7px;
-  background-color: var(--opacity-bg-element-1);
+  box-shadow: inset 0 0 10px var(--opacity-bg-element-1);
   padding: 8px;
 
   max-height: 40px;
