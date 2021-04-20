@@ -46,7 +46,7 @@ export const DEFAULT_TOKENS_LIST = {
 
 export const DEFAULT_GAS_FEE = {
   gasPrice: 2000,
-  gasLimit: 1
+  gasLimit: 50
 }
 
 export const DEFAULT_TOKEN = {
