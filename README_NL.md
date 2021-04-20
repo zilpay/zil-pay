@@ -10,7 +10,7 @@
 ZilPay is een browserportemonnee voor Zilliqa blockchain. Ontwikkelaars kunnen ZilPay in hun website integreren om gedecentraliseerde apps te maken.
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## Links

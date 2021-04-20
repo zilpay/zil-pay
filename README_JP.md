@@ -10,7 +10,7 @@
 ZilPayは、Zilliqaブロックチェーン用のブラウザーウォレットです。 開発者は、ZilPayをWebサイトに統合して、分散型アプリを作成できます。
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## リンク集

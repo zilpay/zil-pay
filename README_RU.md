@@ -10,7 +10,7 @@
 ZilPay - это браузерный кошелек для блокчейна Zilliqa. Разработчики могут интегрировать ZilPay в свой веб-сайт для создания децентрализованных приложений.
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## Ссылки:

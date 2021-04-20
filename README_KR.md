@@ -10,7 +10,7 @@
 ZilPay는 Zilliqa 블록 체인 용 브라우저 지갑입니다. 개발자는 ZilPay를 웹 사이트에 통합하여 분산 앱을 만들 수 있습니다.
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## 연결

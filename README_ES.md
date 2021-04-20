@@ -10,7 +10,7 @@
 ZilPay es una billetera de navegador para Zilliqa blockchain. Los desarrolladores pueden integrar ZilPay en su sitio web para crear aplicaciones descentralizadas.
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## Enlaces

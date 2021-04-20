@@ -10,7 +10,7 @@
 ZilPay是Zilliqa区块链的浏览器钱包。 开发人员可以将ZilPay集成到他们的网站中以创建去中心化应用程序。
 
 <p align="center">
-  <a href="https://zilpay.xyz"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
+  <a href="https://zilpay.io"><img src="https://github.com/lich666dead/zil-pay/blob/master/imgs/preview.png"></a>
 </p>
 
 ## 链接
