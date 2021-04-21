@@ -473,7 +473,11 @@ export default {
       const { value } = event.target
       const gas = this.getCurrentGas
 
-      gas.gasLimit = value
+      if (Number(value) < Number(DEFAULT_GAS_FEE.gasLimit)) {
+        gas.gasLimit = DEFAULT_GAS_FEE.gasLimit
+      } else {
+        gas.gasLimit = value
+      }
 
       this.setCurrentGas(gas)
       this.gasStarter = JSON.stringify(gas)
@@ -486,7 +490,8 @@ export default {
 
       try {
         await this.onUpdateNonce()
-      } catch {
+      } catch (err) {
+        console.error(err)
         //
       }
 

@@ -322,6 +322,11 @@ const STORE = {
     async [ACTIONS_NAMES.onUpdateSettings]({ commit, state }) {
       const newState = await updateStatic(state)
 
+
+      if (Number(DEFAULT_GAS_FEE.gasLimit) > Number(newState.defaultGas.gasLimit)) {
+        newState.defaultGas.gasLimit = DEFAULT_GAS_FEE.gasLimit
+      }
+
       commit(MUTATIONS_NAMES.setGas, newState.defaultGas)
       commit(MUTATIONS_NAMES.setLockTime, newState.lockTime)
       commit(MUTATIONS_NAMES.setNetwork, newState.network)
