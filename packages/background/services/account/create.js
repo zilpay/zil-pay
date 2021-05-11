@@ -203,6 +203,9 @@ export class AccountControl {
 
   async getCurrentAccount() {
     await this.auth.vaultSync()
+    await this.network.netwrokSync()
+
+    this.zilliqa = new ZilliqaControl(this.network.provider)
 
     // Mandatory authentication test.
     if (!this.auth.isReady || !this.auth.isEnable) {

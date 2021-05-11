@@ -275,7 +275,8 @@ export class Transaction {
 
     try {
       const network = networkControl.selected
-      const account = await accountControl.getCurrentAccount()
+      const wallet = await this.storage.get(FIELDS.WALLET)
+      const account = wallet.identities[wallet.selectedAddress]
       const zilliqa = new ZilliqaControl(networkControl.provider)
       let { nonce } = await zilliqa.getBalance(account.address)
       const transactions = await this.storage.get(FIELDS.TRANSACTIONS)
