@@ -166,8 +166,10 @@ export class Transaction {
         return null
       }
 
+      const now = new Date().getTime()
+      const dilaySeconds = 5000
       const checkList = currentTransaction.map(async(tx) => {
-        if (tx.confirmed) {
+        if (tx.confirmed || (now - tx.timestamp) < dilaySeconds) {
           return tx
         } else if (rejectQueue) {
           tx.Info = 'Queue rejected'
@@ -212,6 +214,12 @@ export class Transaction {
             return tx
           }
         } catch (err) {
+          rejectQueue = true
+          tx.Info = err.message
+          tx.error = true
+          tx.confirmed = true
+          tx.nonce = 0
+          Transaction.makeNotification(tx)
           return tx
         }
       })
@@ -282,14 +290,16 @@ export class Transaction {
       const transactions = await this.storage.get(FIELDS.TRANSACTIONS)
       const historyTx = transactions
         && transactions[account.address]
-        && transactions[account.address][network]
-      const hasPendingTx = historyTx && historyTx
+        && transactions[account.address][network] || []
+      const hasPendingTx = historyTx
         .filter((tx) => Boolean(!tx.error && !tx.confirmed))
         .sort((txA, txB) => txA.nonce - txB.nonce)
 
       if (hasPendingTx && hasPendingTx.length !== 0) {
         const lastTx = hasPendingTx.pop()
-        const pendingTx = await zilliqa.getPendingTxn(lastTx.TranID)
+        const pendingTx = await zilliqa.blockchain.getTransactionStatus(lastTx.TranID)
+
+        console.log(pendingTx)
 
         if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
           nonce = lastTx.nonce
