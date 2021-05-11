@@ -224,9 +224,6 @@ export class Transaction {
         }
       })
       const provens = await Promise.all(checkList)
-
-      console.log(provens)
-
       transactions[selectedAccount.address][net] = provens
 
       await this.storage.set(
