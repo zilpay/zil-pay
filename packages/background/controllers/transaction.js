@@ -231,7 +231,6 @@ export class Transaction {
         new BuildObject(FIELDS.TRANSACTIONS, transactions)
       )
     } catch (err) {
-      console.log(err)
       return null
     }
   }
@@ -298,8 +297,6 @@ export class Transaction {
       if (hasPendingTx && hasPendingTx.length !== 0) {
         const lastTx = hasPendingTx.pop()
         const pendingTx = await zilliqa.blockchain.getTransactionStatus(lastTx.TranID)
-
-        console.log(pendingTx)
 
         if (!pendingTx.confirmed && Number(lastTx.nonce) > Number(nonce)) {
           nonce = lastTx.nonce

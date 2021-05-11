@@ -303,6 +303,7 @@ export class ZilliqaControl {
       throw new ArgumentError('index', ERROR_MSGS.MUST_BE_INT)
     }
 
+    let balance = '0'
     const wallet = new Wallet(this.provider)
 
     wallet.addByMnemonic(seed, index)
@@ -312,7 +313,14 @@ export class ZilliqaControl {
       publicKey,
       privateKey
     } = wallet.defaultAccount
-    const { balance } = await this.getBalance(address)
+
+    try {
+      const res = await this.getBalance(address)
+
+      balance = res.balance
+    } catch {
+      //
+    }
 
     return {
       index,

@@ -391,13 +391,22 @@ export default {
      * When confirmed tx.
      */
     async onConfirm() {
+      this.setLoad()
       const bg = new Background()
       const account = this.getCurrentAccount
       let txParams = this.getCurrent
 
-      try {
+      if (Number(txParams.nonce) <= 0) {
+        this.error = `Nonce cannot be ${txParams.nonce}`
+
+        await this.onUpdateNonce()
+
         this.setLoad()
 
+        return null
+      }
+
+      try {
         const minGasPrice = await bg.getMinGasPrice()
         const gasPrice = txParams.gasPrice
 
