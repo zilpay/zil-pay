@@ -24,6 +24,7 @@ import Popup from '@/pages/Popup'
 import SignMessage from '@/pages/SignMessage'
 
 // Settings children pages.
+import Account from '@/pages/settings/Account'
 import About from '@/pages/settings/About'
 import Advanced from '@/pages/settings/Advanced'
 import General from '@/pages/settings/General'
@@ -151,6 +152,12 @@ const routes = [
     path: `/${About.name.toLowerCase()}`,
     name: About.name,
     component: About,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `/${Account.name.toLowerCase()}`,
+    name: Account.name,
+    component: Account,
     meta: { requiresAuth: true }
   },
   {

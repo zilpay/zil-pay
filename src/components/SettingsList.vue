@@ -54,8 +54,13 @@ import Networks from '@/pages/settings/Networks'
 import Connections from '@/pages/settings/Connections'
 import Security from '@/pages/settings/Security'
 import About from '@/pages/settings/About'
+import Account from '@/pages/settings/Account'
 
 const LINK_LIST = [
+  {
+    icon: ICON_VARIANTS.profile,
+    name: Account.name
+  },
   {
     icon: ICON_VARIANTS.gear,
     name: General.name

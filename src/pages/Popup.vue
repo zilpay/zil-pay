@@ -399,7 +399,11 @@ export default {
       if (Number(txParams.nonce) <= 0) {
         this.error = `Nonce cannot be ${txParams.nonce}`
 
-        await this.onUpdateNonce()
+        try {
+          await this.onUpdateNonce()
+        } catch {
+          //
+        }
 
         this.setLoad()
 
