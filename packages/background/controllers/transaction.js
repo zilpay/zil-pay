@@ -198,7 +198,7 @@ export class Transaction {
           case 3:
             tx.Info = result.statusMessage
             tx.block = result.epochUpdated
-            tx.confirmed = result.success
+            tx.confirmed = true
 
             Transaction.makeNotification(tx)
 
@@ -224,6 +224,8 @@ export class Transaction {
         }
       })
       const provens = await Promise.all(checkList)
+
+      console.log(provens)
 
       transactions[selectedAccount.address][net] = provens
 
