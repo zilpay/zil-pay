@@ -33,7 +33,6 @@
     "https://api.coingecko.com/api/v3/simple/price",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
-    "https://zilpay.xyz/*",
     "http://127.0.0.1/*"
   ],
   "content_scripts": [
