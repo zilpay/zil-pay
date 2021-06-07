@@ -23,6 +23,10 @@ export class NetworkControl {
     return this._getURL(this.selected)
   }
 
+  get mainProvider() {
+    return ZILLIQA[this.selected].PROVIDER
+  }
+
   /**
    * Get WS provider.
    */

@@ -143,7 +143,7 @@ export class Transaction {
   async checkAllTransaction() {
     await networkControl.netwrokSync()
 
-    const zilliqaControl = new ZilliqaControl(networkControl.provider)
+    const zilliqaControl = new ZilliqaControl(networkControl.mainProvider)
     const data = await this.storage.get([
       FIELDS.TRANSACTIONS,
       FIELDS.WALLET
