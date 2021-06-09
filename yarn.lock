@@ -10051,10 +10051,10 @@ public-encrypt@^4.0.0:
     randombytes "^2.0.1"
     safe-buffer "^5.1.2"
 
-pubnub@^4.29.11:
-  version "4.29.11"
-  resolved "https://registry.yarnpkg.com/pubnub/-/pubnub-4.29.11.tgz#d56623bd72d3485bf7f779611ed4865dbb5bc126"
-  integrity sha512-L/3TYuw/7t8EA2l5jnn8YwYpGWZst8AFWJ0KLmAM/xs9BA+ZkWvsZkC7gllf1N5e5DbH0EB8vl52F81WYu3n5Q==
+pubnub@^4.32.1:
+  version "4.32.1"
+  resolved "https://registry.yarnpkg.com/pubnub/-/pubnub-4.32.1.tgz#8eef63be4754f186d048312a14968764abad4ac4"
+  integrity sha512-hzwNmzVQD4SuGnepQt2JT5JCqgIP+laR1fqN8MVwUIclG0u7aSDcYn+0KJQceGWEpiN7GoQr6mQQ8K9TbiLz/w==
   dependencies:
     "@babel/runtime" "^7.10.5"
     agentkeepalive "^3.5.2"

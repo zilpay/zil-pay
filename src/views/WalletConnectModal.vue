@@ -181,7 +181,7 @@ export default {
       this.pubnubListener = {
         message: ({ channel, message }) => {
           // handle message
-          if (channel !== this.channelName || !message) {
+          if (channel !== this.channelName) {
             return
           }
 
