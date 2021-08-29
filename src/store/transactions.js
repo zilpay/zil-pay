@@ -33,7 +33,8 @@ const MUTATIONS_NAMES = {
   setClearTxHistory: 'setClearTxHistory',
   setTxHistory: 'setTxHistory',
   setPriority: 'setPriority',
-  setNonce: 'setNonce'
+  setNonce: 'setNonce',
+  setCurrentTxData: 'setCurrentTxData'
 }
 const ACTIONS_NAMES = {
   onUpdateTransactions: 'onUpdateTransactions',
@@ -93,6 +94,11 @@ const STORE = {
     },
     [MUTATIONS_NAMES.setPriority](state, value) {
       state[STATE_NAMES.confirmationTx][state.confirmationTx.length - 1].priority = value
+    },
+    [MUTATIONS_NAMES.setCurrentTxData](state, value) {
+      if (new TypeChecker(value).isString) {
+        state[STATE_NAMES.confirmationTx][state.confirmationTx.length - 1].data = value
+      }
     }
   },
   actions: {

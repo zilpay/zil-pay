@@ -11,13 +11,14 @@
       <tree-view
         :data="data"
         :options="options"
+        @change-data="onChangeData"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import transactionsStore from '@/store/transactions'
 import uiStore from '@/store/ui'
 
@@ -58,6 +59,14 @@ export default {
 
     data() {
       return JSON.parse(this.getCurrent.data)
+    }
+  },
+  methods: {
+    ...mapMutations(transactionsStore.STORE_NAME, [
+      transactionsStore.MUTATIONS_NAMES.setCurrentTxData
+    ]),
+    onChangeData(event) {
+      this.setCurrentTxData(JSON.stringify(event))
     }
   }
 }
