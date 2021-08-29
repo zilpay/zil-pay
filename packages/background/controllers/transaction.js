@@ -22,6 +22,10 @@ import { ERROR_MSGS } from 'packages/background/errors'
 
 const { Promise } = global
 
+const sleep = (interval) => new Promise(
+  (resolve) => setTimeout(() => resolve(), interval)
+)
+
 /**
  * Get or send tranasctions.
  */
@@ -181,6 +185,8 @@ export class Transaction {
 
           return tx
         }
+
+        await sleep(500)
 
         try {
           const result = await zilliqaControl.blockchain.getTransactionStatus(tx.TranID)
