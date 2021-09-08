@@ -2,16 +2,17 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
   "include": [
     "popup/**/*",
-    "core/**/*"
+    "core/**/*",
+    "lib/**/*",
   ],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
       "app/*": ["popup/*"],
-      "background/*": ["background/*"],
-      "content/*": ["content/*"],
-      "inpage/*": ["inpage/*"],
+      "background/*": ["core/background/*"],
+      "content/*": ["core/content/*"],
+      "inpage/*": ["core/inpage/*"],
       "config/*": ["config/*"],
       "lib/*": ["lib/*"]
     },
