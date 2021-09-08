@@ -1,35 +1,14 @@
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import { sass } from 'svelte-preprocess-sass';
+import copy from 'rollup-plugin-copy';
+import pkg from './package.json';
 
 const production = !process.env.ROLLUP_WATCH;
-
-function serve() {
-	let server;
-
-	function toExit() {
-		if (server) server.kill(0);
-	}
-
-	return {
-		writeBundle() {
-			if (server) return;
-			server = require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
-				stdio: ['ignore', 'inherit', 'inherit'],
-				shell: true
-			});
-
-			process.on('SIGTERM', toExit);
-			process.on('exit', toExit);
-		}
-	};
-}
 
 const popup = {
 	input: 'popup/main.ts',
@@ -37,7 +16,7 @@ const popup = {
 		sourcemap: !production,
 		format: 'iife',
 		name: 'popup',
-		file: 'public/build/bundle.js'
+		file: 'dist/bundle.js'
 	},
 	plugins: [
 		svelte({
@@ -67,19 +46,7 @@ const popup = {
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
-		}),
-
-		// In dev mode, call `npm run start` once
-		// the bundle has been generated
-		!production && serve(),
-
-		// Watch the `public` directory and refresh the
-		// browser on changes when not in production
-		!production && livereload('public'),
-
-		// If we're building for production (npm run build
-		// instead of npm run dev), minify
-		production && terser()
+		})
 	],
 	watch: {
 		clearScreen: false
@@ -91,13 +58,47 @@ const background = {
 		sourcemap: !production,
 		format: 'iife',
 		name: 'background',
-		file: 'public/build/background.js'
+		file: 'dist/background.js'
 	},
 	plugins: [
 		commonjs(),
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
+		}),
+		copy({
+			targets: [
+				{
+					src: 'public/icons',
+					dest: 'dist/'
+				},
+				{
+					src: 'public/phishing.html',
+					dest: 'dist/'
+				},
+				{
+					src: 'public/popup.html',
+					dest: 'dist/'
+				},
+				{
+					src: 'public/schema.json',
+					dest: 'dist/'
+				},
+				{
+					src: 'public/manifest.json',
+					dest: 'dist/',
+					transform: (contents) => {
+						const jsonContent = JSON.parse(contents)
+
+						jsonContent.version = pkg.version;
+						jsonContent.short_name = pkg.shortName;
+						jsonContent.description = pkg.description;
+						jsonContent.author = pkg.homepage;
+
+						return JSON.stringify(jsonContent, null, 2);
+					}
+				}
+			]
 		})
 	]
 };
@@ -107,7 +108,7 @@ const content = {
 		sourcemap: !production,
 		format: 'iife',
 		name: 'content',
-		file: 'public/build/content.js'
+		file: 'dist/content.js'
 	},
 	plugins: [
 		commonjs(),
@@ -123,7 +124,7 @@ const inpage = {
 		sourcemap: !production,
 		format: 'iife',
 		name: 'inpage',
-		file: 'public/build/inpage.js'
+		file: 'dist/inpage.js'
 	},
 	plugins: [
 		commonjs(),
@@ -140,4 +141,3 @@ export default [
 	content,
 	inpage
 ];
-
