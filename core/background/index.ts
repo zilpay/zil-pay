@@ -1,1 +1,1 @@
-console.log('i am background');
+console.log(window.chrome);

@@ -12,9 +12,13 @@
       "background/*": ["background/*"],
       "content/*": ["content/*"],
       "inpage/*": ["inpage/*"],
-      "config/*": ["config/*"]
+      "config/*": ["config/*"],
+      "lib/*": ["lib/*"]
     },
     "baseUrl": ".",
     "isolatedModules": false
   },
+  "types": [
+    "chrome"
+  ]
 }
