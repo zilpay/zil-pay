@@ -28,12 +28,8 @@
   "permissions": [
     "storage",
     "notifications",
-    "webRequest",
-    "*://*.zil/*",
-    "https://api.coingecko.com/api/v3/simple/price",
-    "https://api.zilliqa.com/",
-    "https://dev-api.zilliqa.com/",
-    "http://127.0.0.1/*"
+    "activeTab",
+    "alarms"
   ],
   "content_scripts": [
     {
@@ -41,7 +37,7 @@
         "*://*/*"
       ],
       "js": [
-        "content.js"
+        "build/content.js"
       ],
       "run_at": "document_start",
       "all_frames": true
