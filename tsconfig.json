@@ -5,7 +5,7 @@
     "core/**/*",
     "lib/**/*",
   ],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
   "compilerOptions": {
     "rootDir": ".",
     "paths": {

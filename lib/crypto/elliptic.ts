@@ -7,6 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import { ec } from 'elliptic';
+import { Buffer } from 'buffer';
 import { Signature } from './signature';
 import hashjs from 'hash.js';
 import DRBG from 'hmac-drbg';

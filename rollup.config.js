@@ -6,6 +6,7 @@ import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import { sass } from 'svelte-preprocess-sass';
 import copy from 'rollup-plugin-copy';
+import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -46,7 +47,8 @@ const popup = {
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
-		})
+		}),
+		production && terser()
 	],
 	watch: {
 		clearScreen: false
@@ -62,6 +64,12 @@ const background = {
 	},
 	plugins: [
 		commonjs(),
+		resolve({
+			jsnext: true,   
+			main: true,
+			brower: true,
+			preferBuiltins: false
+		}),
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
@@ -99,7 +107,8 @@ const background = {
 					}
 				}
 			]
-		})
+		}),
+		production && terser()
 	]
 };
 const content = {
@@ -112,10 +121,17 @@ const content = {
 	},
 	plugins: [
 		commonjs(),
+		resolve({
+			jsnext: true,   
+			main: true,
+			brower: true,
+			preferBuiltins: false
+		}),
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
-		})
+		}),
+		production && terser()
 	]
 };
 const inpage = {
@@ -128,10 +144,17 @@ const inpage = {
 	},
 	plugins: [
 		commonjs(),
+		resolve({
+			jsnext: true,   
+			main: true,
+			brower: true,
+			preferBuiltins: false
+		}),
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
-		})
+		}),
+		production && terser()
 	]
 };
 
