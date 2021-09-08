@@ -11,7 +11,8 @@
       "app/*": ["popup/*"],
       "background/*": ["background/*"],
       "content/*": ["content/*"],
-      "inpage/*": ["inpage/*"]
+      "inpage/*": ["inpage/*"],
+      "config/*": ["config/*"]
     },
     "baseUrl": ".",
     "isolatedModules": false
