@@ -1,7 +1,9 @@
 {
-  "name": "svelte-app",
-  "version": "1.0.0",
-  "private": true,
+  "name": "zil-pay",
+  "version": "0.9.4",
+  "description": "ZilPay browser Extension for zilliqa blockchain",
+  "shortName": "ZilPay Zilliqa wallet",
+  "private": false,
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -28,5 +30,19 @@
   },
   "dependencies": {
     "sirv-cli": "^1.0.14"
+  },
+  "keywords": [
+    "blockchain",
+    "zilliqa",
+    "ZilPay",
+    "dapp",
+    "metamask"
+  ],
+  "license": "MIT",
+  "homepage": "https://zilpay.io/",
+  "author": "Rinat Hasanshin <lich666black@gmail.com>",
+  "engines": {
+    "node": ">=10",
+    "npm": "^6.14.4"
   }
 }
