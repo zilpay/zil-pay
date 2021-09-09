@@ -6,8 +6,3 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-
-export enum Gas {
-  gasPrice = 2000,
-  gasLimit = 50
-}

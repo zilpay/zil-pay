@@ -1,8 +1,8 @@
 /*
  * Project: ZilPay-wallet
- * Author: Rinat(lich666dead)
+ * Author: Rinat(hiccaru)
  * -----
- * Modified By: the developer formerly known as Rinat(lich666dead) at <lich666black@gmail.com>
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
  * -----
  * Copyright (c) 2020 ZilPay
  */
