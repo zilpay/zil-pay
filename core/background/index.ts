@@ -2,10 +2,7 @@
 // import { SchnorrControl } from 'lib/crypto/elliptic';
 
 
-// import { ec } from 'elliptic';
-import { Buffer } from 'buffer';
-// import hashjs from 'hash.js';
-// import DRBG from 'hmac-drbg';
-// import BN from 'bn.js';
+import { BrowserStorage, buildObject } from 'lib/storage';
 
-console.log(Buffer);
+window['BrowserStorage'] = BrowserStorage;
+window['buildObject'] = buildObject;

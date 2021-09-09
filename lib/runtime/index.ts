@@ -6,4 +6,5 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-export const runtime = globalThis.chrome;
+
+export * from './extensionizer';
