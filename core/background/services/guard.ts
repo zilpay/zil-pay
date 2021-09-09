@@ -24,21 +24,17 @@ export class AuthGuard {
   // Seed phase storage in encrypted.
   private _encryptSeed?: string;
   // Current time + some hours.
-  private _endSession?: Date;
+  private _endSession = new Date(-1);
 
-  /**
-   * Verification time session.
-   * @return Boolean.
-   */
-  public get verificationTime() {
-    if (TypeOf.isNull(Number(this._endSession))) {
-      return false;
-    }
-
+  public get isEnable() {
     const now = new Date().getTime();
     const timeDifference = this._endSession.getTime() - now;
 
-    return timeDifference > 0;
+    return timeDifference > 0 && this._isEnable;
+  }
+
+  public get isReady() {
+    return this.isReady;
   }
 
   public async sync() {
@@ -70,17 +66,12 @@ export class AuthGuard {
   }
 
   public getWallet() {
-    if (!this._isEnable) {
-      throw new Error('Wallet is not enabled.');
-    }
-    if (!this._isReady) {
-      throw new Error('Wallet inited.');
-    }
+    this._checkSession();
 
     const hash = this._hash.get(this);
     const decryptSeed = Aes.decrypt(this._encryptSeed, hash);
     const decryptImported = this._encryptImported ?
-      Aes.decrypt(this._encryptImported, hash) : [];
+      JSON.parse(Aes.decrypt(this._encryptImported, hash)) : [];
 
     return {
       decryptSeed,
@@ -94,6 +85,8 @@ export class AuthGuard {
    * @return String.
    */
   public async updateImported(decryptImported: object[]) {
+    this._checkSession();
+
     const hash = this._hash.get(this);
     const encryptImported = Aes.encrypt(JSON.stringify(decryptImported), hash);
 
@@ -105,6 +98,8 @@ export class AuthGuard {
   }
 
   public async updateMnemonic(decryptSeed: string) {
+    this._checkSession();
+
     const hash = this._hash.get(this);
     const encryptSeed = Aes.encrypt(JSON.stringify(decryptSeed), hash);
 
@@ -113,6 +108,15 @@ export class AuthGuard {
     );
 
     this._encryptSeed = encryptSeed;
+  }
+
+  private _checkSession() {
+    if (!this._isEnable) {
+      throw new Error('Wallet is not enabled.');
+    }
+    if (!this._isReady) {
+      throw new Error('Wallet inited.');
+    }
   }
 
   private async _updateSession() {
@@ -127,56 +131,3 @@ export class AuthGuard {
   }
 
 }
-
-// export class CryptoGuard {
-
-//   private readonly _hash: string;
-
-//   constructor(password: string) {
-//     // Get the SHA256 hash by password.
-//     this._hash = Aes.hash(password);
-//   }
-
-//   /**
-//    * Encrypted data.
-//    * @param data: String.
-//    * @return Encrypted data by password hash.
-//    */
-//   public encrypt(data: string) {
-//     return Aes.encrypt(data, this._hash);
-//   }
-
-//   /**
-//    * Encrypted json Object.
-//    * @param {Object} object - Object for encrypt.
-//    * @return Encrypted data by password hash.
-//    */
-//   public encryptJson<T>(object: Array<T> | object) {
-//     return Aes.encrypt(JSON.stringify(object), this._hash);
-//   }
-
-//   /**
-//    * Decrypt the encrypted data.
-//    * @param {String} data - Data for decrypting.
-//    * @return Some derypted data.
-//    */
-//   public decrypt(data: string) {
-//     return Aes.decrypt(data, this._hash);
-//   }
-
-//   /**
-//    * Decrypt the encrypted data.
-//    * @param {String} encryptJson - Encryped json object.
-//    * @return Object.
-//    */
-//   decryptJson(encryptJson) {
-//     if (!new TypeChecker(encryptJson).isString) {
-//       throw new ArgumentError('encryptJson', ERROR_MSGS.MUST_BE_STRING)
-//     }
-
-//     return JSON.parse(
-//       this._crypto.decrypt(encryptJson, this.pwdHash)
-//     )
-//   }
-
-// }
