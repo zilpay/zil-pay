@@ -51,9 +51,9 @@ export class NetworkControl {
    * @param selected - Can be only (mainnet, testnet, private).
    */
   public async changeNetwork(selected: string) {
-    const keys = Object.keys(NETWORK));
+    const keys = Object.keys(NETWORK);
 
-    if (!(selected in keys)) {
+    if (!keys.includes(selected)) {
       throw new Error(`${selected} is not ${keys}`);
     } else if (selected === this.selected) {
       return {
