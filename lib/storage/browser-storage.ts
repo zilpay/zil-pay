@@ -9,6 +9,7 @@
 
 import { Runtime } from 'lib/runtime';
 import type { StorageKeyValue } from 'lib/storage';
+import type { Fields } from 'config/fields';
 
 type CallBack = { [key: string]: chrome.storage.StorageChange; };
 
@@ -80,7 +81,7 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
    * import { BrowserStorage } from 'lib/storage'
    * BrowserStorage.get(key).then(recievePaylod => / Do something... /)
    */
-  get(...keys: string[]): Promise<StorageKeyValue | string> {
+  get(...keys: Fields[]): Promise<StorageKeyValue | string> {
     return new Promise((resolve) => {
       Runtime.storage.local.get(keys, (elements: StorageKeyValue) => {
         if (keys.length === 1) {
@@ -113,7 +114,7 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
    * const storage = new BrowserStorage()
    * storage.rm('any-key-item').then(() => / Do something... /)
    */
-  rm(keys: string[]) {
+  rm(keys: Fields[]) {
     return new Promise<void>((resolve) => {
       Runtime.storage.local.remove(keys, () => resolve());
     });

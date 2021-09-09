@@ -7,10 +7,11 @@
  * Copyright (c) 2021 ZilPay
  */
 import { TypeOf } from 'lib/type/type-checker';
+import type { Fields } from 'config/fields';
 
-export interface StorageKeyValue {
+export type StorageKeyValue = {
   [key: string]: string;
-}
+};
 /**
  * Through this class can build payload for write to browser Storage.
  * @example
@@ -19,7 +20,7 @@ export interface StorageKeyValue {
  *  buildObject('key', 'any payload or object or array')
  * ])
  */
-export function buildObject(key: string, value: string | object): StorageKeyValue {
+export function buildObject(key: Fields, value: string | object): StorageKeyValue {
   let data = value;
 
   if (TypeOf.isObject(value) || TypeOf.isArray(value)) {

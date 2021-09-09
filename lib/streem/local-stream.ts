@@ -10,10 +10,12 @@
 import { Runtime } from 'lib/runtime';
 import type { ReqBody } from './message';
 
+
+export type SendResponse = (response?: object) => void;
 /**
  * Un-encrypted stream used to communicate between an extensions popup script and background script.
  */
-export function localStream(cb: (req: ReqBody, sendResponse: (response?: object) => void) => void) {
+export function localStream(cb: (req: ReqBody, sendResponse: SendResponse) => void) {
   Runtime
     .runtime
     .onMessage
