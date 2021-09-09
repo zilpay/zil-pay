@@ -8,11 +8,9 @@
  */
 
 import { Runtime } from 'lib/runtime';
-import type { MTypeTab, MTypePopup } from './stream-keys';
 
-export type MessageType = typeof MTypeTab | typeof MTypePopup;
 export interface ReqBody {
-  type: MessageType;
+  type: string;
   payload?: object;
   domain?: string;
   from?: string;
@@ -34,7 +32,7 @@ const { window } = globalThis;
   /**
    * Make just signal message.
    */
-  public static signal(type: MessageType): Message {
+  public static signal(type: string): Message {
     return new Message({
       type,
       domain: window.document.domain
@@ -66,5 +64,4 @@ const { window } = globalThis;
       }
     })
   }
-
 }

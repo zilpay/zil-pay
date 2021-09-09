@@ -8,11 +8,12 @@
  */
 
 import { Runtime } from 'lib/runtime';
+import type { ReqBody } from './message';
 
 /**
  * Un-encrypted stream used to communicate between an extensions popup script and background script.
  */
-export function localStream(cb: (req: any, sendResponse: (response?: any) => void) => void) {
+export function localStream(cb: (req: ReqBody, sendResponse: (response?: object) => void) => void) {
   Runtime
     .runtime
     .onMessage
