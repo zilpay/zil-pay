@@ -28,9 +28,9 @@ export const Aes = Object.freeze({
   /**
    * Ecnrypt payload through password.
    */
-  encrypt<T>(data: object | Array<T>, key: string) {
+  encrypt(data: string, key: string) {
     return aes
-      .encrypt(JSON.stringify(data), key)
+      .encrypt(data, key)
       .toString();
   },
 

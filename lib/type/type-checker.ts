@@ -1,4 +1,4 @@
-type Arg = string | Array<string | number | null | undefined> | null | undefined | object;
+type Arg = string | Array<string | number | null | undefined> | null | undefined | object | number;
 
 export const TypeOf = Object.freeze({
 

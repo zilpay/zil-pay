@@ -17,6 +17,7 @@ export enum Fields {
   TRANSACTIONS = 'transactions',
   CONFIRM_TX = 'confirm',
   STATIC = 'static',
+  LOCK_TIME = 'time_before_lock',
   CONNECT_DAPP = 'connect',
   THEME = 'theme',
   CONTACTS = 'contacts',
