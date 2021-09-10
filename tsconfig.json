@@ -4,6 +4,7 @@
     "popup/**/*",
     "core/**/*",
     "lib/**/*",
+    "types/**/*"
   ],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
   "compilerOptions": {
@@ -14,7 +15,8 @@
       "content/*": ["core/content/*"],
       "inpage/*": ["core/inpage/*"],
       "config/*": ["config/*"],
-      "lib/*": ["lib/*"]
+      "lib/*": ["lib/*"],
+      "types/*": ["types/*"],
     },
     "baseUrl": ".",
     "isolatedModules": false

@@ -20,6 +20,10 @@ export class NetworkControl {
     return this._getURL(this.selected);
   }
 
+  get nativeHttp() {
+    return NETWORK[this.selected].PROVIDER;
+  }
+
   get version() {
     return this.config[this.selected].MSG_VERSION;
   }
