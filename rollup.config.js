@@ -8,6 +8,8 @@ import { sass } from 'svelte-preprocess-sass';
 import copy from 'rollup-plugin-copy';
 import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 import pkg from './package.json';
 
@@ -77,6 +79,8 @@ const background = {
 			inlineSources: !production
 		}),
 		json(),
+		nodePolyfills(),
+		production && visualizer(),
 		copy({
 			targets: [
 				{

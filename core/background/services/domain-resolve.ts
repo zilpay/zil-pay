@@ -13,7 +13,6 @@
  */
 import { ZilliqaControl } from './blockchain';
 import { NetworkControl } from './network';
-import { IPFS } from './ipfs';
 import { Contracts } from 'config/contracts';
 import { fromBech32Address } from 'lib/utils/bech32';
 import type { DomainResolver } from 'types/domain';
