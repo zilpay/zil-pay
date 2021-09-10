@@ -23,10 +23,8 @@ export class UnstoppableDomains {
   private _field = 'records';
   private _zilliqa: ZilliqaControl;
   private _netwrok: NetworkControl;
-  private _ipfs: IPFS;
 
   constructor() {
-    this._ipfs = new IPFS();
     this._netwrok = new NetworkControl(true);
     this._zilliqa = new ZilliqaControl(this._netwrok);
   }

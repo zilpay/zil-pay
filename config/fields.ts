@@ -23,6 +23,5 @@ export enum Fields {
   CONTACTS = 'contacts',
   SELECTED_COIN = 'selectedcoin',
   TOKENS = 'tokens',
-  SSN = 'ssnlist',
-  SELECTED_IPFS = 'selected_ipfs'
+  SSN = 'ssnlist'
 }
