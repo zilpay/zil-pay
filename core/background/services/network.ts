@@ -13,8 +13,14 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 const [mainnet] = Object.keys(NETWORK);
 
 export class NetworkControl {
+  private _onlyMainnet: boolean;
+
   public config = NETWORK;
   public selected = mainnet;
+
+  constructor(onlyMainnet = false) {
+    this._onlyMainnet = onlyMainnet;
+  }
 
   get provider() {
     return this._getURL(this.selected);
@@ -45,7 +51,7 @@ export class NetworkControl {
     if (data[Fields.CONFIG]) {
       this.config = data[Fields.CONFIG];
     }
-    if (data[Fields.SELECTED_NET]) {
+    if (data[Fields.SELECTED_NET] && !this._onlyMainnet) {
       this.selected = data[Fields.SELECTED_NET];
     }
   }

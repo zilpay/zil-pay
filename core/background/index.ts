@@ -4,6 +4,8 @@ import { PromptService } from './services/popup';
 import { NotificationsControl } from './services/notifications';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { ZilliqaControl } from './services/blockchain/zilliqa';
+import { IPFS } from './services/ipfs';
+import { UnstoppableDomains } from './services/domain-resolve';
 
 window['BrowserStorage'] = BrowserStorage;
 window['buildObject'] = buildObject;
@@ -16,3 +18,5 @@ window['notificationsControl'] = new NotificationsControl(
   'ZIlpay message'
 );
 window['zilliqaControl'] = new ZilliqaControl(window['netwrok']);
+window['ipfs'] = new IPFS();
+window['domain'] = new UnstoppableDomains();
