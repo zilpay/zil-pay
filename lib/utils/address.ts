@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import BN from 'bn.js';
-import hashjs from 'hash.js';
+import sha256 from 'hash.js/lib/hash/sha/256';
 import elliptic from 'elliptic';
 
 const secp256k1 = new elliptic.ec('secp256k1');
@@ -30,8 +30,7 @@ export const toChecksumAddress = (address: string): string => {
   isAddress(address);
 
   address = tohexString(address);
-  const hash = hashjs
-    .sha256()
+  const hash = sha256()
     .update(address, 'hex')
     .digest('hex');
   const v = new BN(hash, 'hex', 'be');
@@ -50,10 +49,11 @@ export const toChecksumAddress = (address: string): string => {
   return ret;
 };
 
+window['toChecksumAddress'] = toChecksumAddress;
+
 export const getAddressFromPublicKey = (publicKey: string) => {
   const pub = tohexString(publicKey);
-  const hash = hashjs
-    .sha256()
+  const hash = sha256()
     .update(pub, 'hex')
     .digest('hex')
     .slice(24);

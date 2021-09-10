@@ -6,3 +6,6 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+export * from './codes';
+export * from './methods';
+export * from './zilliqa';

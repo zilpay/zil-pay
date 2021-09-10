@@ -3,6 +3,7 @@ import { AuthGuard } from './services/guard';
 import { PromptService } from './services/popup';
 import { NotificationsControl } from './services/notifications';
 import { BrowserStorage, buildObject } from 'lib/storage';
+import { ZilliqaControl } from './services/blockchain/zilliqa';
 
 window['BrowserStorage'] = BrowserStorage;
 window['buildObject'] = buildObject;
@@ -14,3 +15,4 @@ window['notificationsControl'] = new NotificationsControl(
   'test',
   'ZIlpay message'
 );
+window['zilliqaControl'] = new ZilliqaControl(window['netwrok']);

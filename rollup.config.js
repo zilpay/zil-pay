@@ -7,6 +7,8 @@ import css from 'rollup-plugin-css-only';
 import { sass } from 'svelte-preprocess-sass';
 import copy from 'rollup-plugin-copy';
 import { terser } from 'rollup-plugin-terser';
+import json from '@rollup/plugin-json';
+
 import pkg from './package.json';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -74,6 +76,7 @@ const background = {
 			sourceMap: !production,
 			inlineSources: !production
 		}),
+		json(),
 		copy({
 			targets: [
 				{

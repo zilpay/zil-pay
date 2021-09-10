@@ -96,7 +96,7 @@ export class ZilliqaControl {
     const responce = await fetch(this._network.provider, request);
 
     if (responce.status !== 200) {
-      throw new Error(i18n.t('node_error'));
+      throw new Error('Something wrong with node.');
     }
 
     const data = await responce.json();
@@ -225,7 +225,7 @@ export class ZilliqaControl {
     hash = tohexString(hash);
 
     const request = this._json(Methods.GetTransaction, [hash]);
-    const responce = await fetch(this._network.http, request);
+    const responce = await fetch(this._network.provider, request);
     const data = await responce.json();
 
     if (data.error) {
