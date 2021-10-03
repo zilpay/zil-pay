@@ -6,14 +6,15 @@
  * -----
  * Copyright (c) 2020 ZilPay
  */
-// import { Transaction } from '../transaction';
 
 import type { NetworkControl } from 'core/background/services/network';
+import type { TxParams } from 'types/transaction';
+import type { Transaction } from 'lib/utils/tx-builder';
+
 import { toChecksumAddress, tohexString } from 'lib/utils/address';
 import { Methods } from './methods';
 import { JsonRPCCodes } from './codes';
 import { Contracts } from 'config/contracts';
-import type { TxParams } from 'types/transaction';
 
 type Params = TxParams[] | string[] | number[] | (string | string[] | number[])[];
 type Balance = {
@@ -170,7 +171,7 @@ export class ZilliqaControl {
     }
   }
 
-  public async send(tx: any): Promise<string> {
+  public async send(tx: Transaction): Promise<string> {
     await this.detectSacmAddress(tx.toAddr);
 
     const request = this._json(Methods.CreateTransaction, [

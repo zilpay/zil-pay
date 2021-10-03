@@ -5,6 +5,7 @@ import { NotificationsControl } from './services/notifications';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { ZilliqaControl } from './services/blockchain/zilliqa';
 import { UnstoppableDomains } from './services/domain-resolve';
+// import { startBackground } from './background';
 
 window['BrowserStorage'] = BrowserStorage;
 window['buildObject'] = buildObject;
@@ -18,3 +19,5 @@ window['notificationsControl'] = new NotificationsControl(
 );
 window['zilliqaControl'] = new ZilliqaControl(window['netwrok']);
 window['domain'] = new UnstoppableDomains();
+
+// startBackground();
