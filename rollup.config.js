@@ -11,6 +11,8 @@ import json from '@rollup/plugin-json';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import { visualizer } from 'rollup-plugin-visualizer';
 
+import ignore from 'rollup-plugin-ignore';
+
 import pkg from './package.json';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -68,6 +70,17 @@ const background = {
 	},
 	plugins: [
 		commonjs(),
+		ignore([
+			'./wordlists/chinese_simplified.json',
+			'./wordlists/japanese.json',
+			'./wordlists/spanish.json',
+			'./wordlists/italian.json',
+			'./wordlists/french.json',
+			'./wordlists/korean.json',
+			'./wordlists/czech.json',
+			'./wordlists/portuguese.json',
+			'./wordlists/chinese_traditional.json'
+		]),
 		resolve({
 			jsnext: true,   
 			main: true,

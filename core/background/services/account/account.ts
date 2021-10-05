@@ -14,4 +14,12 @@ type Wallet = {
 }
 
 export class AccountController {
+
+  public add() {}
+
+  public remove() {}
+
+  public fromSeed() {}
+
+  public fromPrivateKey() {}
 }
