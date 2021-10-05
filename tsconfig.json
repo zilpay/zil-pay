@@ -18,6 +18,7 @@
       "lib/*": ["lib/*"],
       "types/*": ["types/*"],
     },
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "isolatedModules": false
   },

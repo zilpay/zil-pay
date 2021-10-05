@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-
+import { Buffer } from 'buffer';
 /**
  * randomBytes
  *
@@ -20,21 +20,14 @@
   const b = Buffer.allocUnsafe(bytes);
   const n = b.byteLength;
 
-  let crypto = global.crypto;
+  let crypto = globalThis.crypto;
   if (crypto === undefined) {
     // @ts-ignore
     // for IE 11
-    crypto = global.msCrypto;
+    crypto = globalThis.msCrypto;
   }
 
-  const isNodeEnv = typeof process?.versions?.node === 'string';
-  if (isNodeEnv) {
-    // For node enviroment, use sodium-native
-    // https://paragonie.com/blog/2016/05/how-generate-secure-random-numbers-in-various-programming-languages#nodejs-csprng
-
-    const sodium = require('sodium-native');
-    sodium.randombytes_buf(b);
-  } else if (crypto && crypto.getRandomValues) {
+  if (crypto && crypto.getRandomValues) {
     // For browser or web worker enviroment, use window.crypto.getRandomValues()
     // https://paragonie.com/blog/2016/05/how-generate-secure-random-numbers-in-various-programming-languages#js-csprng
 
