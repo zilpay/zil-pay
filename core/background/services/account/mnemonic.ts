@@ -11,7 +11,6 @@ import { randomBytes } from 'lib/crypto/random';
 import sha256 from 'hash.js/lib/hash/sha/256';
 import { pbkdf2 } from 'pbkdf2';
 import { Buffer } from 'buffer';
-import { HDKey } from './hd-key';
 
 const INVALID_ENTROPY = -1;
 const WORDLIST_REQUIRED = -2;

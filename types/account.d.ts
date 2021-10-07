@@ -23,3 +23,14 @@ export interface Account {
   };
   [key: string | undefined]: string;
 }
+
+export interface Wallet {
+  selectedAddress: number;
+  identities: Account[];
+}
+
+export interface KeyPair {
+  pubKey: string;
+  privKey: string;
+  base16: string;
+};

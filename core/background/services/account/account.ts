@@ -6,27 +6,45 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { Account } from 'types/account';
-import hdkey from 'hdkey';
-
-type Wallet = {
-  selectedAddress: number;
-  identities: Account[];
-}
+import type { KeyPair } from 'types/account';
+import { Buffer } from 'buffer';
+import assert from 'assert';
+import { HDKey } from './hd-key';
+import { MnemonicController } from './mnemonic';
+import secp256k1 from 'secp256k1/elliptic';
+import { getAddressFromPublicKey } from 'lib/utils/address';
+import { getPubKeyFromPrivateKey } from 'lib/utils/address';
 
 export class AccountController {
+  private _hdKey = new HDKey();
+  private _mnemonic = new MnemonicController();
 
-  public add() {}
+  public add(keyPair: KeyPair) {}
 
-  public remove() {}
+  public remove(index: number) {}
 
-  // public fromSeed(seed) {
-  //   const seed = bip39.mnemonicToSeed(phrase);
-  //   const hdKey = hdkey.fromMasterSeed(seed);
-  //   const childKey = hdKey.derive(`m/44'/313'/0'/0/${index}`);
-  //   const privateKey = childKey.privateKey.toString('hex');
-  //   return this.addByPrivateKey(privateKey);
-  // }
+  public async fromSeed(words: string, index = 0): Promise<KeyPair> {
+    const path = this._mnemonic.getKey(index);
+    const seed = await this._mnemonic.mnemonicToSeed(words);
+    const hdKey = this._hdKey.fromMasterSeed(seed);
+    const childKey = hdKey.derive(path);
 
-  public fromPrivateKey() {}
+    return childKey.keyPair;
+  }
+
+  public fromPrivateKey(privateKey: string): KeyPair {
+    const bytes = Buffer.from(privateKey, 'hex');
+
+    assert.equal(bytes.length, 32, 'Private key must be 32 bytes.');
+    assert(secp256k1.privateKeyVerify(bytes), 'Invalid private key');
+
+    const pubKey = getPubKeyFromPrivateKey(privateKey);
+    const base16 = getAddressFromPublicKey(pubKey);
+
+    return {
+      pubKey,
+      base16,
+      privKey: privateKey
+    };
+  }
 }
