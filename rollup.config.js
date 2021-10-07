@@ -70,6 +70,7 @@ const background = {
 	},
 	plugins: [
 		commonjs(),
+		nodePolyfills(),
 		ignore([
 			'./wordlists/chinese_simplified.json',
 			'./wordlists/japanese.json',
@@ -92,7 +93,6 @@ const background = {
 			inlineSources: !production
 		}),
 		json(),
-		nodePolyfills(),
 		production && visualizer(),
 		copy({
 			targets: [
