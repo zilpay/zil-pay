@@ -6,6 +6,8 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { GuardVault } from 'types/account';
+import assert from 'assert';
 import { Aes } from 'lib/crypto/aes';
 import { TypeOf } from 'lib/type/type-checker';
 import { BrowserStorage, buildObject } from 'lib/storage';
@@ -65,7 +67,7 @@ export class AuthGuard {
     this._hash.set(this, hash);
   }
 
-  public getWallet() {
+  public getWallet(): GuardVault {
     this._checkSession();
 
     const hash = this._hash.get(this);
@@ -111,12 +113,8 @@ export class AuthGuard {
   }
 
   private _checkSession() {
-    if (!this._isEnable) {
-      throw new Error('Wallet is not enabled.');
-    }
-    if (!this._isReady) {
-      throw new Error('Wallet inited.');
-    }
+    assert(this._isEnable, 'Wallet is not enabled.');
+    assert(this._isReady, 'Wallet is not sync.');
   }
 
   private async _updateSession() {

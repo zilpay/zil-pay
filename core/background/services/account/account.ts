@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { KeyPair } from 'types/account';
+import type { Account, KeyPair, Wallet } from 'types/account';
 import { Buffer } from 'buffer';
 import assert from 'assert';
 import { HDKey } from './hd-key';
@@ -14,12 +14,43 @@ import { MnemonicController } from './mnemonic';
 import secp256k1 from 'secp256k1/elliptic';
 import { getAddressFromPublicKey } from 'lib/utils/address';
 import { getPubKeyFromPrivateKey } from 'lib/utils/address';
+import { BrowserStorage, buildObject } from 'lib/storage';
+import { Fields } from 'config/fields';
+import { TypeOf } from 'lib/type/type-checker';
+import { AccountTypes } from 'config/account-type';
 
 export class AccountController {
   private _hdKey = new HDKey();
   private _mnemonic = new MnemonicController();
+  private _wallet: Wallet = {
+    selectedAddress: 0,
+    identities: []
+  };
 
-  public add(keyPair: KeyPair) {}
+  public get wallet() {
+    return this._wallet;
+  }
+
+  public get lastIndexPrivKey() {
+    return this._wallet
+      .identities
+      .filter((acc) => acc.type === AccountTypes.privateKey)
+      .length;
+  }
+
+  public get lastIndexSeed() {
+    return this._wallet
+      .identities
+      .filter((acc) => acc.type === AccountTypes.Seed)
+      .length;
+  }
+
+  public get lastIndexLedger() {
+    return this._wallet
+      .identities
+      .filter((acc) => acc.type === AccountTypes.Ledger)
+      .length;
+  }
 
   public remove(index: number) {}
 
@@ -47,4 +78,29 @@ export class AccountController {
       privKey: privateKey
     };
   }
+
+  public async migrate() {
+    
+  }
+
+  public async sync() {
+    const list = await BrowserStorage.get(Fields.WALLET);
+    const field0 = 'identities';
+    const field1 = 'selectedAddress';
+
+    if (!list || !TypeOf.isArray(list[field0]) || !TypeOf.isNumber(list[field1])) {
+      await BrowserStorage.set(
+        buildObject(Fields.WALLET, this._wallet)
+      );
+
+      return null;
+    }
+
+    this._wallet = {
+      selectedAddress: list[field1],
+      identities: list[field0]
+    };
+  }
+
+  private _add(acc: Account) {}
 }

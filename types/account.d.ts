@@ -34,3 +34,11 @@ export interface KeyPair {
   privKey: string;
   base16: string;
 };
+
+export interface GuardVault {
+  decryptSeed: string,
+  decryptImported: {
+    index: number;
+    privateKey: string;
+  }[];
+}
