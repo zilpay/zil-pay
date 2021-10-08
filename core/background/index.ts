@@ -5,7 +5,7 @@ import { NotificationsControl } from './services/notifications';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { ZilliqaControl } from './services/blockchain/zilliqa';
 import { UnstoppableDomains } from './services/domain-resolve';
-
+import { ZRC2Controller } from 'core/background/services/token';
 // import { startBackground } from './background';
 import { AccountController } from './services/account/account';
 
@@ -21,6 +21,6 @@ window['notificationsControl'] = new NotificationsControl(
 );
 window['zilliqaControl'] = new ZilliqaControl(window['netwrok']);
 window['domain'] = new UnstoppableDomains();
-window['account'] = new AccountController(window['zilliqaControl'] );
-
+window['account'] = new AccountController(window['zilliqaControl']);
+window['zrc2'] = new ZRC2Controller(window['netwrok'], window['zilliqaControl']);
 // startBackground();

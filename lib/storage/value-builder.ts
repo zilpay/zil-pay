@@ -20,7 +20,7 @@ export type StorageKeyValue = {
  *  buildObject('key', 'any payload or object or array')
  * ])
  */
-export function buildObject(key: Fields, value: string | object): StorageKeyValue {
+export function buildObject(key: Fields | string, value: string | object): StorageKeyValue {
   let data = value;
 
   if (TypeOf.isObject(value) || TypeOf.isArray(value)) {

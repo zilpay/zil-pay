@@ -81,7 +81,7 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
    * import { BrowserStorage } from 'lib/storage'
    * BrowserStorage.get(key).then(recievePaylod => / Do something... /)
    */
-  get(...keys: Fields[]): Promise<StorageKeyValue | string> {
+  get(...keys: Fields[] | string[]): Promise<StorageKeyValue | string> {
     return new Promise((resolve) => {
       Runtime.storage.local.get(keys, (elements: StorageKeyValue) => {
         if (keys.length === 1) {
@@ -114,7 +114,7 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
    * const storage = new BrowserStorage()
    * storage.rm('any-key-item').then(() => / Do something... /)
    */
-  rm(keys: Fields[]) {
+  rm(keys: Fields[] | string[]) {
     return new Promise<void>((resolve) => {
       Runtime.storage.local.remove(keys, () => resolve());
     });

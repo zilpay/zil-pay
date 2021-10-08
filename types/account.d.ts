@@ -8,6 +8,11 @@
  */
 import { AccountTypes } from 'config/account-type';
 
+export interface ZRC1Token {
+  id: string;
+  url: string;
+}
+
 export interface Account {
   name: string;
   index: number;
@@ -21,7 +26,9 @@ export interface Account {
       [key: string]: string;
     };
   };
-  [key: string | undefined]: string;
+  nft: {
+    [key: string]: ZRC1Token[];
+  };
 }
 
 export interface Wallet {
