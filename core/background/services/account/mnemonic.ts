@@ -6,22 +6,19 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import assert from 'assert';
 import wordlist from 'bip39/src/wordlists/english.json';
 import { randomBytes } from 'lib/crypto/random';
 import sha256 from 'hash.js/lib/hash/sha/256';
 import { pbkdf2 } from 'pbkdf2';
 import { Buffer } from 'buffer';
-
-const INVALID_ENTROPY = -1;
-const WORDLIST_REQUIRED = -2;
+import { ErrorMessages } from 'config/errors';
 
 export class MnemonicController {
 
   public generateMnemonic(strength = 128) {
     strength = strength || 128;
-    if (strength % 32 !== 0) {
-        throw INVALID_ENTROPY;
-    }
+    assert(strength % 32 === 0, ErrorMessages.InvalidEntropy);
     return this._entropyToMnemonic(randomBytes(strength / 8), wordlist);
   }
 
@@ -50,19 +47,13 @@ export class MnemonicController {
   private _entropyToMnemonic(entropy: string, wordlist: string[]) {
     const bufferEntropy = Buffer.from(entropy, 'hex');
 
-    if (!wordlist) {
-      throw WORDLIST_REQUIRED;
-    }
+    assert(Boolean(wordlist), ErrorMessages.WordListRequired);
+    assert(Boolean(wordlist), ErrorMessages.WordListRequired);
+
     // 128 <= ENT <= 256
-    if (bufferEntropy.length < 16) {
-      throw INVALID_ENTROPY;
-    }
-    if (bufferEntropy.length > 32) {
-      throw INVALID_ENTROPY;
-    }
-    if (bufferEntropy.length % 4 !== 0) {
-      throw INVALID_ENTROPY;
-    }
+    assert(bufferEntropy.length >= 16, ErrorMessages.InvalidEntropy);
+    assert(bufferEntropy.length <= 32, ErrorMessages.InvalidEntropy);
+    assert(bufferEntropy.length % 4 === 0, ErrorMessages.InvalidEntropy);
 
     const entropyBits = this._bytesToBinary(Array.from(bufferEntropy));
     const checksumBits = this._deriveChecksumBits(bufferEntropy);

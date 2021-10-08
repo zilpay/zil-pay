@@ -14,6 +14,7 @@ import { ripemd160 } from 'hash.js/lib/hash/ripemd';
 import Hmac from 'hash.js/lib/hash/hmac';
 import secp256k1 from 'secp256k1/elliptic';
 import { getAddressFromPublicKey } from 'lib/utils/address';
+import { ErrorMessages } from 'config/errors';
 
 const MASTER_SECRET = 'Bitcoin seed';
 const HARDENED_OFFSET = 0x80000000;
@@ -37,8 +38,8 @@ export class HDKey {
   public versions: typeof BITCOIN_VERSIONS;
 
   public set privateKey(value: Uint8Array) {
-    assert.equal(value.length, 32, 'Private key must be 32 bytes.');
-    assert(secp256k1.privateKeyVerify(value) === true, 'Invalid private key');
+    assert.equal(value.length, 32, ErrorMessages.PrivateKeyMustBe);
+    assert(secp256k1.privateKeyVerify(value) === true, ErrorMessages.BadPrivateKey);
 
     this._privateKey = value;
     this._publicKey = Buffer.from(secp256k1.publicKeyCreate(value, true));
@@ -47,8 +48,8 @@ export class HDKey {
   }
 
   public set publicKey(value: Buffer) {
-    assert(value.length === 33 || value.length === 65, 'Public key must be 33 or 65 bytes.');
-    assert(secp256k1.publicKeyVerify(value) === true, 'Invalid public key');
+    assert(value.length === 33 || value.length === 65, ErrorMessages.PublicKeyMustBe);
+    assert(secp256k1.publicKeyVerify(value) === true, ErrorMessages.BadPubKey);
 
     // force compressed point
     this._publicKey = Buffer.from(secp256k1.publicKeyConvert(value, true));
@@ -124,7 +125,7 @@ export class HDKey {
     let data: Buffer;
   
     if (isHardened) { // Hardened child
-      assert(this.privateKey, 'Could not derive hardened child key');
+      assert(this.privateKey, ErrorMessages.CouldNotDeriveHardened);
   
       let pk = Buffer.from(this.privateKey);
       let zb = Buffer.alloc(1, 0);

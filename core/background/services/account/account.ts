@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { ZilliqaControl } from 'core/background/services/blockchain';
 import type { Account, KeyPair, Wallet } from 'types/account';
 import { Buffer } from 'buffer';
 import assert from 'assert';
@@ -20,8 +21,9 @@ import { TypeOf } from 'lib/type/type-checker';
 import { AccountTypes } from 'config/account-type';
 
 export class AccountController {
-  private _hdKey = new HDKey();
-  private _mnemonic = new MnemonicController();
+  private readonly _hdKey = new HDKey();
+  private readonly _mnemonic = new MnemonicController();
+  private readonly _zilliqa: ZilliqaControl;
   private _wallet: Wallet = {
     selectedAddress: 0,
     identities: []
@@ -52,6 +54,10 @@ export class AccountController {
       .length;
   }
 
+  constructor(zilliqa: ZilliqaControl) {
+    this._zilliqa = zilliqa;
+  }
+
   public remove(index: number) {}
 
   public async fromSeed(words: string, index = 0): Promise<KeyPair> {
@@ -79,9 +85,7 @@ export class AccountController {
     };
   }
 
-  public async migrate() {
-    
-  }
+  public async migrate() {}
 
   public async sync() {
     const list = await BrowserStorage.get(Fields.WALLET);
@@ -102,5 +106,33 @@ export class AccountController {
     };
   }
 
-  private _add(acc: Account) {}
+  private async _add(account: Account) {
+    await this._checkAccount(account);
+
+    this._wallet
+      .identities
+      .push(account);
+    this._wallet
+      .selectedAddress = this.wallet.identities.length - 1;
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+
+    return this.wallet;
+  }
+
+  private async _checkAccount(account: Account) {
+    await this.sync();
+
+    const isUnique = this.wallet.identities.some(
+      (acc) => (acc.base16 === account.base16)
+    );
+    const isIndex = this.wallet.identities.some(
+      (acc) => (acc.index === account.index) && (acc.type === account.type)
+    );
+
+    assert(!isUnique, 'Account must be unique');
+    assert(!isIndex, 'Incorect index and account type');
+  }
 }

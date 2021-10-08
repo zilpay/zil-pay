@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import assert from 'assert';
 import { ec } from 'elliptic';
 import { Buffer } from 'buffer';
 import { Signature } from './signature';
@@ -14,6 +15,7 @@ import DRBG from 'hmac-drbg';
 import BN from 'bn.js';
 import { getPubKeyFromPrivateKey } from 'lib/utils/address';
 import { randomBytes } from './random';
+import { ErrorMessages } from 'config/errors';
 
 // Public key is a point (x, y) on the curve.
 // Each coordinate requires 32 bytes.
@@ -111,9 +113,8 @@ export class SchnorrControl {
   }
 
   private _trySign(msg: Buffer, k: BN, privKey: BN, pubKey: Buffer) {
-    if (privKey.isZero() || privKey.gte(this._curve.n)) {
-      throw new Error('Bad private key.');
-    }
+    assert(!privKey.isZero(), ErrorMessages.BadPrivateKey);
+    assert(!privKey.gte(this._curve.n), ErrorMessages.BadPrivateKey);
 
     // 1a. check that k is not 0
     if (k.isZero() || k.gte(this._curve.n)) {

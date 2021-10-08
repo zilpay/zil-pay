@@ -13,6 +13,7 @@ import { TypeOf } from 'lib/type/type-checker';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { Common } from 'config/common';
+import { ErrorMessages } from 'config/errors';
 
 export class AuthGuard {
   // hash of the password.
@@ -51,10 +52,8 @@ export class AuthGuard {
   }
 
   public setPassword(password: string) {
-    if (!this._isReady) {
-      throw new Error('is not ready');
-    }
-    
+    assert(this._isReady, ErrorMessages.WalletNotReady);
+
     const hash = Aes.hash(password);
     Aes.decrypt(this._encryptSeed, hash);
 
@@ -113,8 +112,8 @@ export class AuthGuard {
   }
 
   private _checkSession() {
-    assert(this._isEnable, 'Wallet is not enabled.');
-    assert(this._isReady, 'Wallet is not sync.');
+    assert(this._isReady, ErrorMessages.WalletNotReady);
+    assert(this._isEnable, ErrorMessages.WalletNotEnabled);
   }
 
   private async _updateSession() {

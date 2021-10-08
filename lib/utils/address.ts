@@ -6,9 +6,11 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import assert from 'assert';
 import BN from 'bn.js';
 import sha256 from 'hash.js/lib/hash/sha/256';
 import elliptic from 'elliptic';
+import { ErrorMessages } from 'config/errors';
 
 const secp256k1 = new elliptic.ec('secp256k1');
 
@@ -21,9 +23,7 @@ export const isByteString = (str: string, len: number) => {
 };
 
 export const isAddress = (address: string) => {
-  if (!isByteString(address, 40)) {
-    throw new Error(`${address} is not a valid base 16 address`);
-  }
+  assert(isByteString(address, 40), ErrorMessages.Base16NotValid);
 };
 
 export const toChecksumAddress = (address: string): string => {
@@ -48,8 +48,6 @@ export const toChecksumAddress = (address: string): string => {
 
   return ret;
 };
-
-window['toChecksumAddress'] = toChecksumAddress;
 
 export const getAddressFromPublicKey = (publicKey: string) => {
   const pub = tohexString(publicKey);
@@ -82,7 +80,5 @@ export const getPubKeyFromPrivateKey = (privateKey: string) => {
 };
 
 export const isPrivateKey = (privateKey: string) => {
-  if (!isByteString(privateKey, 64)) {
-    throw new Error('Incorect priaveKey');
-  }
+  assert(isByteString(privateKey, 64), ErrorMessages.BadPrivateKey);
 };

@@ -11,10 +11,12 @@ import type { NetworkControl } from 'core/background/services/network';
 import type { TxParams } from 'types/transaction';
 import type { Transaction } from 'lib/utils/tx-builder';
 
+import assert from 'assert';
 import { toChecksumAddress, tohexString } from 'lib/utils/address';
 import { Methods } from './methods';
 import { JsonRPCCodes } from './codes';
 import { Contracts } from 'config/contracts';
+import { ErrorMessages } from 'config/errors';
 
 type Params = TxParams[] | string[] | number[] | (string | string[] | number[])[];
 type Balance = {
@@ -39,9 +41,7 @@ export class ZilliqaControl {
     const request = this._json(Methods.getBalance, [address]);
     const responce = await fetch(this._network.provider, request);
 
-    if (responce.status !== 200) {
-      throw new Error('Something Wrong with node.');
-    }
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
 
     const data = await responce.json();
 
@@ -70,9 +70,7 @@ export class ZilliqaControl {
     const responce = await fetch(this._network.provider, request);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }
@@ -96,15 +94,11 @@ export class ZilliqaControl {
     );
     const responce = await fetch(this._network.provider, request);
 
-    if (responce.status !== 200) {
-      throw new Error('Something wrong with node.');
-    }
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
 
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }
@@ -112,11 +106,10 @@ export class ZilliqaControl {
   public async getLatestTxBlock() {
     const request = this._json(Methods.GetLatestTxBlock, []);
     const responce = await fetch(this._network.provider, request);
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }
@@ -124,11 +117,10 @@ export class ZilliqaControl {
   public async getRecentTransactions() {
     const request = this._json(Methods.GetRecentTransactions, []);
     const responce = await fetch(this._network.provider, request);
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }
@@ -136,11 +128,10 @@ export class ZilliqaControl {
   public async getNetworkId() {
     const request = this._json(Methods.GetNetworkId, []);
     const responce = await fetch(this._network.provider, request);
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return Number(data.result);
   }
@@ -166,9 +157,7 @@ export class ZilliqaControl {
       //
     }
 
-    if (isScam) {
-      throw new Error('Scam detected');
-    }
+    assert(!isScam, ErrorMessages.Scam);
   }
 
   public async send(tx: Transaction): Promise<string> {
@@ -180,15 +169,13 @@ export class ZilliqaControl {
     const responce = await fetch(this._network.provider, request);
     const { error, result } = await responce.json();
 
-    if (error && error.message) {
-      throw new Error(error.message);
-    }
+    assert(!error, error.message);
 
     if (result && result.TranID) {
       return result.TranID;
     }
 
-    throw new Error('Netwrok fail');
+    throw new Error(ErrorMessages.RequestFailed);
   }
 
   public async getTransactionStatus(hash: string) {
@@ -196,16 +183,10 @@ export class ZilliqaControl {
 
     const request = this._json(Methods.GetTransactionStatus, [hash]);
     const responce = await fetch(this._network.nativeHttp, request);
-
-    if (responce.status !== 200) {
-      throw new Error('Something Wrong with node');
-    }
-
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }
@@ -213,11 +194,10 @@ export class ZilliqaControl {
   public async getMinimumGasPrice() {
     const request = this._json(Methods.GetMinimumGasPrice, []);
     const responce = await fetch(this._network.provider, request);
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }
@@ -227,11 +207,10 @@ export class ZilliqaControl {
 
     const request = this._json(Methods.GetTransaction, [hash]);
     const responce = await fetch(this._network.provider, request);
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    assert(!data.error, data.error.message);
 
     return data.result;
   }

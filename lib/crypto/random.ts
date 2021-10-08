@@ -6,7 +6,10 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import assert from 'assert';
 import { Buffer } from 'buffer';
+import { ErrorMessages } from 'config/errors';
+
 /**
  * randomBytes
  *
@@ -27,22 +30,21 @@ import { Buffer } from 'buffer';
     crypto = globalThis.msCrypto;
   }
 
-  if (crypto && crypto.getRandomValues) {
-    // For browser or web worker enviroment, use window.crypto.getRandomValues()
-    // https://paragonie.com/blog/2016/05/how-generate-secure-random-numbers-in-various-programming-languages#js-csprng
+  assert(crypto && crypto.getRandomValues, ErrorMessages.IsNotSecureRNG);
 
-    // limit of getRandomValues()
-    // The requested length exceeds 65536 bytes.
-    // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues#exceptions
-    const MAX_BYTES = 65536;
-    for (let i = 0; i < n; i += MAX_BYTES) {
-      crypto.getRandomValues(
-        new Uint8Array(b.buffer, i + b.byteOffset, Math.min(n - i, MAX_BYTES)),
-      );
-    }
-  } else {
-    throw new Error('No secure random number generator available');
+  // For browser or web worker enviroment, use window.crypto.getRandomValues()
+  // https://paragonie.com/blog/2016/05/how-generate-secure-random-numbers-in-various-programming-languages#js-csprng
+
+  // limit of getRandomValues()
+  // The requested length exceeds 65536 bytes.
+  // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues#exceptions
+  const MAX_BYTES = 65536;
+  for (let i = 0; i < n; i += MAX_BYTES) {
+    crypto.getRandomValues(
+      new Uint8Array(b.buffer, i + b.byteOffset, Math.min(n - i, MAX_BYTES)),
+    );
   }
+
   const randBz = new Uint8Array(
     b.buffer,
     b.byteOffset,

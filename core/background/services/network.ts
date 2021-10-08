@@ -6,9 +6,11 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import assert from 'assert';
 import { NETWORK } from 'config/network';
 import { Fields } from 'config/fields';
 import { BrowserStorage, buildObject } from 'lib/storage';
+import { ErrorMessages } from 'config/errors';
 
 const [mainnet] = Object.keys(NETWORK);
 
@@ -63,9 +65,9 @@ export class NetworkControl {
   public async changeNetwork(selected: string) {
     const keys = Object.keys(NETWORK);
 
-    if (!keys.includes(selected)) {
-      throw new Error(`${selected} is not ${keys}`);
-    } else if (selected === this.selected) {
+    assert(keys.includes(selected), ErrorMessages.IncorrectKey);
+
+    if (selected === this.selected) {
       return {
         selected,
         config: this.config,
@@ -77,7 +79,7 @@ export class NetworkControl {
       buildObject(Fields.SELECTED_NET, selected)
     );
 
-    this.selected = selected
+    this.selected = selected;
 
     return {
       selected,
