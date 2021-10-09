@@ -21,3 +21,12 @@ export interface InitItem {
   value: string;
   vname: string;
 }
+
+export interface ZRC2Info {
+  balance: string;
+  bech32: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  base16: string;
+}

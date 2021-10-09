@@ -20,7 +20,6 @@ import { toBech32Address } from 'lib/utils/bech32';
 import { getPubKeyFromPrivateKey } from 'lib/utils/address';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
-import { TypeOf } from 'lib/type/type-checker';
 import { AccountTypes } from 'config/account-type';
 import { Contracts } from 'config/contracts';
 import { ErrorMessages } from 'config/errors';
@@ -125,6 +124,16 @@ export class AccountController {
         [token.base16]: balance
       }
     }));
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+  }
+
+  public async removeToken(token: ZRC2Token) {
+    for (let index = 0; index < this.wallet.identities.length; index++) {
+      delete this.wallet.identities[index].zrc2[token.base16];
+    }
 
     await BrowserStorage.set(
       buildObject(Fields.WALLET, this._wallet)

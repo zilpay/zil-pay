@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { ZRC2Token, InitItem } from 'types/token';
+import type { ZRC2Token, InitItem, ZRC2Info } from 'types/token';
 import type { ZilliqaControl } from 'core/background/services/blockchain';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
@@ -75,6 +75,9 @@ export class ZRC2Controller {
 
   public async remove(index: number) {
     assert(index > 2, ErrorMessages.OutOfIndex);
+
+    await this._account.removeToken(this._identities[index]);
+
     delete this._identities[index];
 
     await BrowserStorage.set(
@@ -82,27 +85,29 @@ export class ZRC2Controller {
     );
   }
 
-  public async add(token: ZRC2Token) {
-    this._isUnique(token);
-    this._identities.push(token);
+  public async add(token: ZRC2Info) {
+    const newToken: ZRC2Token = {
+      decimals: token.decimals,
+      name: token.name,
+      symbol: token.symbol,
+      base16: token.base16,
+      bech32: token.bech32
+    };
+    this._isUnique(newToken);
+    this._identities.push(newToken);
 
+    await this._account.addToken(newToken, token.balance);
     await BrowserStorage.set(
       buildObject(this.field, this.identities)
     );
   }
 
-  public async getToken(address: string) {
+  public async getToken(address: string): Promise<ZRC2Info> {
     let balance = '0';
     const init = await this._zilliqa.getSmartContractInit(address);
     const zrc = this._toZRC2(init);
     const bech32 = toBech32Address(address);
     const field = 'balances';
-    const totalSupplyField = 'total_supply';
-    let totalSupply = await this._zilliqa.getSmartContractSubState(
-      address,
-      totalSupplyField
-    );
-    totalSupply = totalSupply[totalSupplyField];
 
     if (this._account.selectedAccount) {
       const userAddress = this._account.selectedAccount.base16.toLowerCase();
@@ -124,7 +129,6 @@ export class ZRC2Controller {
     }
 
     return {
-      totalSupply,
       balance,
       bech32,
       name: zrc.name,
