@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import { Buffer } from 'buffer';
 import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { isAddress, toChecksumAddress, tohexString } from "./address";

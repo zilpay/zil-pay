@@ -21,6 +21,6 @@ window['notificationsControl'] = new NotificationsControl(
 );
 window['zilliqaControl'] = new ZilliqaControl(window['netwrok']);
 window['domain'] = new UnstoppableDomains();
-window['account'] = new AccountController(window['zilliqaControl']);
+window['account'] = new AccountController(window['zilliqaControl'], window['guard']);
 window['zrc2'] = new ZRC2Controller(window['netwrok'], window['zilliqaControl'], window['account']);
 // startBackground();

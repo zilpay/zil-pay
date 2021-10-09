@@ -7,23 +7,32 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZilliqaControl } from 'core/background/services/blockchain';
-import type { Account, KeyPair, Wallet } from 'types/account';
+import type { Account, KeyPair, Wallet, GuardVault } from 'types/account';
+import type { AuthGuard } from 'core/background/services/guard';
+import type { ZRC2Token } from 'types/token';
 import { Buffer } from 'buffer';
 import assert from 'assert';
 import { HDKey } from './hd-key';
 import { MnemonicController } from './mnemonic';
 import secp256k1 from 'secp256k1/elliptic';
-import { getAddressFromPublicKey } from 'lib/utils/address';
+import { getAddressFromPublicKey, toChecksumAddress } from 'lib/utils/address';
+import { toBech32Address } from 'lib/utils/bech32';
 import { getPubKeyFromPrivateKey } from 'lib/utils/address';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { TypeOf } from 'lib/type/type-checker';
 import { AccountTypes } from 'config/account-type';
+import { Contracts } from 'config/contracts';
+import { ErrorMessages } from 'config/errors';
 
 export class AccountController {
+  public static readonly field0 = 'identities';
+  public static readonly field1 = 'selectedAddress';
+
   private readonly _hdKey = new HDKey();
   private readonly _mnemonic = new MnemonicController();
   private readonly _zilliqa: ZilliqaControl;
+  private readonly _guard: AuthGuard;
   private _wallet: Wallet = {
     selectedAddress: 0,
     identities: []
@@ -64,11 +73,24 @@ export class AccountController {
       .length;
   }
 
-  constructor(zilliqa: ZilliqaControl) {
+  constructor(zilliqa: ZilliqaControl, guard: AuthGuard) {
     this._zilliqa = zilliqa;
+    this._guard = guard;
   }
 
-  public remove(index: number) {}
+  public async remove(index: number) {
+    assert(index > 1, ErrorMessages.OutOfIndex);
+
+    delete this._wallet.identities[index];
+
+    if (this.wallet.selectedAddress === index) {
+      this.wallet.selectedAddress -= 1;
+    }
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+  }
 
   public async fromSeed(words: string, index = 0): Promise<KeyPair> {
     const path = this._mnemonic.getKey(index);
@@ -95,25 +117,82 @@ export class AccountController {
     };
   }
 
-  public async migrate() {}
+  public async addToken(token: ZRC2Token, balance: string) {
+    this.wallet.identities = this.wallet.identities.map((acc) => ({
+      ...acc,
+      zrc2: {
+        ...acc.zrc2,
+        [token.base16]: balance
+      }
+    }));
 
-  public async sync() {
-    const list = await BrowserStorage.get(Fields.WALLET);
-    const field0 = 'identities';
-    const field1 = 'selectedAddress';
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+  }
 
-    if (!list || !TypeOf.isArray(list[field0]) || !TypeOf.isNumber(list[field1])) {
-      await BrowserStorage.set(
-        buildObject(Fields.WALLET, this._wallet)
-      );
+  public async migrate() {
+    const newWallet = await BrowserStorage.get(Fields.WALLET);
+    if (newWallet) return null;
+    const oldWallet = await BrowserStorage.get(Fields.OLD_WALLET);
+    const identities = oldWallet[AccountController.field0];
+    const selectedAddress = oldWallet[AccountController.field1];
+    const newIdentities: Account[] = [];
+    const vault = this._guard.getWallet();
 
-      return null;
+    for (let i = 0; i < identities.length; i++) {
+      const { address, balance, isImport, index, hwType, name, pubKey } = identities[i];
+      const newAccount: Account = {
+        index,
+        pubKey,
+        name: name || `Account ${index}`,
+        type: AccountTypes.Seed,
+        base16: toChecksumAddress(address),
+        bech32: toBech32Address(address),
+        zrc2: {
+          [Contracts.ZERO_ADDRESS]: balance
+        },
+        nft: {}
+      };
+
+      if (hwType === 'ledger') {
+        newAccount.type = AccountTypes.Ledger;
+        newAccount.name = `Ledger ${index}`;
+      } else if (isImport) {
+        const { privateKey } = vault.decryptImported.find(
+          (el) => el.index === index
+        );
+        newAccount.privKey = this._guard.encryptPrivateKey(privateKey);
+        newAccount.type = AccountTypes.privateKey;
+        newAccount.name = `Imported ${index}`;
+        newAccount.pubKey = getPubKeyFromPrivateKey(privateKey);
+      } else {
+        const { pubKey } = await this.fromSeed(vault.decryptSeed, index);
+
+        newAccount.pubKey = pubKey;
+      }
+
+      newIdentities.push(newAccount);
     }
 
-    this._wallet = {
-      selectedAddress: list[field1],
-      identities: list[field0]
-    };
+    this._wallet.selectedAddress = selectedAddress;
+    this._wallet.identities = newIdentities;
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+  }
+
+  public async sync() {
+    const walletJson = await BrowserStorage.get(Fields.WALLET);
+
+    try {
+      const wallet = JSON.parse(String(walletJson));
+
+      this._wallet = wallet;
+    } catch {
+      //
+    }
   }
 
   private async _add(account: Account) {

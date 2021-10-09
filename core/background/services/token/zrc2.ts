@@ -83,6 +83,7 @@ export class ZRC2Controller {
   }
 
   public async add(token: ZRC2Token) {
+    this._isUnique(token);
     this._identities.push(token);
 
     await BrowserStorage.set(

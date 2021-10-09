@@ -21,10 +21,8 @@ export interface Account {
   bech32: string;
   privKey?: string;
   pubKey: string;
-  balance: {
-    [key: string]: {
-      [key: string]: string;
-    };
+  zrc2: {
+    [key: string]: string;
   };
   nft: {
     [key: string]: ZRC1Token[];

@@ -14,6 +14,7 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { Common } from 'config/common';
 import { ErrorMessages } from 'config/errors';
+import { isPrivateKey } from 'lib/utils/address';
 
 export class AuthGuard {
   // hash of the password.
@@ -96,6 +97,12 @@ export class AuthGuard {
     );
 
     this._encryptImported = encryptImported;
+  }
+
+  public encryptPrivateKey(privKey: string) {
+    isPrivateKey(privKey);
+    const hash = this._hash.get(this);
+    return Aes.encrypt(String(privKey), hash);
   }
 
   public async updateMnemonic(decryptSeed: string) {
