@@ -56,7 +56,7 @@ export class ZilliqaControl {
       };
     }
 
-    throw new Error(data.error.message);
+    throw new Error(data.error);
   }
 
   /**
@@ -70,7 +70,7 @@ export class ZilliqaControl {
     const responce = await fetch(this._network.provider, request);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return data.result;
   }
@@ -98,7 +98,7 @@ export class ZilliqaControl {
 
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return data.result;
   }
@@ -109,7 +109,7 @@ export class ZilliqaControl {
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return data.result;
   }
@@ -120,7 +120,7 @@ export class ZilliqaControl {
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return data.result;
   }
@@ -131,7 +131,7 @@ export class ZilliqaControl {
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return Number(data.result);
   }
@@ -186,7 +186,7 @@ export class ZilliqaControl {
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return data.result;
   }
@@ -197,7 +197,7 @@ export class ZilliqaControl {
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
 
     return data.result;
   }
@@ -210,7 +210,8 @@ export class ZilliqaControl {
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
-    assert(!data.error, data.error.message);
+    assert(!data.error, data.error);
+
 
     return data.result;
   }

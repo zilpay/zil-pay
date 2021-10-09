@@ -33,6 +33,16 @@ export class AccountController {
     return this._wallet;
   }
 
+  public get selectedAccount(): undefined | Account {
+    if (this.wallet.identities.length === 0) {
+      return null;
+    }
+    if (!this.wallet.identities[this.wallet.selectedAddress]) {
+      return null;
+    }
+    return this.wallet.identities[this.wallet.selectedAddress];
+  }
+
   public get lastIndexPrivKey() {
     return this._wallet
       .identities

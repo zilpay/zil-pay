@@ -14,3 +14,10 @@ export interface ZRC2Token {
   base16: string;
   bech32: string;
 }
+
+
+export interface InitItem {
+  type: string;
+  value: string;
+  vname: string;
+}

@@ -26,5 +26,7 @@ export enum ErrorMessages {
   PublicKeyMustBe = 'Public key must be 33 or 65 bytes.',
   CouldNotDeriveHardened = 'Could not derive hardened child key',
   Scam = 'Scam detected.',
-  MustBeUnique = 'Address must be unique.'
+  MustBeUnique = 'Address must be unique.',
+  RequiredParam = 'is required.',
+  OutOfIndex = 'Out of index.'
 }

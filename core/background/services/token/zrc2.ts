@@ -6,9 +6,10 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { ZRC2Token } from 'types/token';
+import type { ZRC2Token, InitItem } from 'types/token';
 import type { ZilliqaControl } from 'core/background/services/blockchain';
 import type { NetworkControl } from 'core/background/services/network';
+import type { AccountController } from 'core/background/services/account/account';
 import assert from 'assert';
 import { Contracts } from 'config/contracts';
 import { BrowserStorage, buildObject } from 'lib/storage';
@@ -16,6 +17,15 @@ import { Fields } from 'config/fields';
 import { TypeOf } from 'lib/type/type-checker';
 import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
+import { toBech32Address } from 'lib/utils/bech32';
+
+enum InitFields {
+  ContractOwner = 'contract_owner',
+  Name = 'name',
+  Symbol = 'symbol',
+  Decimals = 'decimals',
+  Address = '_this_address'
+}
 
 const [mainnet, testnet, custom] = Object.keys(NETWORK);
 
@@ -25,7 +35,7 @@ const ZIL = {
   decimals: 12,
   name: 'Zilliqa',
   symbol: 'ZIL'
-}
+};
 const ZLP = {
   base16: Contracts.ZIlPay,
   bech32: 'zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4',
@@ -37,26 +47,90 @@ const INIT = {
   [mainnet]: [ZIL, ZLP],
   [testnet]: [ZIL],
   [custom]: [ZIL]
-}
+};
 
 export class ZRC2Controller {
   private readonly _netwrok: NetworkControl;
   private readonly _zilliqa: ZilliqaControl;
+  private readonly _account: AccountController;
   private _identities: ZRC2Token[] = [];
 
   public get identities() {
     return this._identities;
   }
+
   public get field() {
     return `${Fields.TOKENS}/${this._netwrok.selected}`;
   }
 
-  constructor(netwrok: NetworkControl, zilliqa: ZilliqaControl) {
+  constructor(
+    netwrok: NetworkControl,
+    zilliqa: ZilliqaControl,
+    account: AccountController
+  ) {
     this._netwrok = netwrok;
     this._zilliqa = zilliqa;
+    this._account = account;
+  }
+
+  public async remove(index: number) {
+    assert(index > 2, ErrorMessages.OutOfIndex);
+    delete this._identities[index];
+
+    await BrowserStorage.set(
+      buildObject(this.field, this.identities)
+    );
+  }
+
+  public async add(token: ZRC2Token) {
+    this._identities.push(token);
+
+    await BrowserStorage.set(
+      buildObject(this.field, this.identities)
+    );
   }
 
   public async getToken(address: string) {
+    let balance = '0';
+    const init = await this._zilliqa.getSmartContractInit(address);
+    const zrc = this._toZRC2(init);
+    const bech32 = toBech32Address(address);
+    const field = 'balances';
+    const totalSupplyField = 'total_supply';
+    let totalSupply = await this._zilliqa.getSmartContractSubState(
+      address,
+      totalSupplyField
+    );
+    totalSupply = totalSupply[totalSupplyField];
+
+    if (this._account.selectedAccount) {
+      const userAddress = this._account.selectedAccount.base16.toLowerCase();
+      balance = await this._zilliqa.getSmartContractSubState(
+        address,
+        field,
+        [userAddress]
+      );
+
+      if (!balance) {
+        balance = '0';
+      }
+
+      try {
+        balance = balance[field][userAddress];
+      } catch {
+        balance = '0';
+      }
+    }
+
+    return {
+      totalSupply,
+      balance,
+      bech32,
+      name: zrc.name,
+      symbol: zrc.symbol,
+      decimals: zrc.decimals,
+      base16: address
+    };
   }
 
   public async sync() {
@@ -90,5 +164,27 @@ export class ZRC2Controller {
       assert(element.bech32 !== token.bech32, ErrorMessages.MustBeUnique);
       assert(element.name !== token.name, ErrorMessages.MustBeUnique);
     }
+  }
+
+  private _toZRC2(init: InitItem[]) {
+    const contractOwner = init.find((el) => el.vname === InitFields.ContractOwner)?.value;
+    const name = init.find((el) => el.vname === InitFields.Name)?.value || '';
+    const symbol = init.find((el) => el.vname === InitFields.Symbol)?.value;
+    const address = init.find((el) => el.vname === InitFields.Address)?.value;
+    const decimals = init.find((el) => el.vname === InitFields.Decimals)?.value;
+
+    assert(Boolean(contractOwner), `${InitFields.ContractOwner} ${ErrorMessages.RequiredParam}`);
+    assert(Boolean(name), `${InitFields.Name} ${ErrorMessages.RequiredParam}`);
+    assert(Boolean(symbol), `${InitFields.Symbol} ${ErrorMessages.RequiredParam}`);
+    assert(Boolean(address), `${InitFields.Address} ${ErrorMessages.RequiredParam}`);
+    assert(Boolean(decimals), `${InitFields.Decimals} ${ErrorMessages.RequiredParam}`);
+
+    return {
+      decimals: Number(decimals),
+      contractOwner,
+      name,
+      symbol,
+      address
+    };
   }
 }
