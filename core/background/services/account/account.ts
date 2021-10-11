@@ -33,6 +33,7 @@ export class AccountController {
   private readonly _mnemonic = new MnemonicController();
   private readonly _zilliqa: ZilliqaControl;
   private readonly _guard: AuthGuard;
+  private _zrc2: ZRC2Controller;
   private _wallet: Wallet = {
     selectedAddress: 0,
     identities: []
@@ -76,6 +77,10 @@ export class AccountController {
   constructor(zilliqa: ZilliqaControl, guard: AuthGuard) {
     this._zilliqa = zilliqa;
     this._guard = guard;
+  }
+
+  public initZRC(rc2Controller: ZRC2Controller) {
+    this._zrc2 = rc2Controller;
   }
 
   public async remove(index: number) {
@@ -205,12 +210,44 @@ export class AccountController {
     }
   }
 
-  public async addAccount(keyPair: KeyPair, zrc2Controller: ZRC2Controller) {
-    const { privKey, pubKey, base16 } = keyPair;
+  public async addAccountFromSeed(seed: string, name: string) {
+    const index = this.lastIndexSeed;
+    const { pubKey, base16 } = await this.fromSeed(seed, index);
     const bech32 = toBech32Address(base16);
-    const balances = await zrc2Controller.getBalance(base16);
+    const type = AccountTypes.Seed;
+    const zrc2 = await this._zrc2.getBalance(base16);
+    const account: Account = {
+      name,
+      bech32,
+      index,
+      base16,
+      type,
+      pubKey,
+      zrc2,
+      nft: {}
+    };
+    await this._add(account);
+    return account;
+  }
 
-    console.log(balances);
+  public async addAccountFromPrivateKey(privKey: string, name: string) {
+    const index = this.lastIndexPrivKey;
+    const { pubKey, base16 } = this.fromPrivateKey(privKey);
+    const bech32 = toBech32Address(base16);
+    const type = AccountTypes.privateKey;
+    const zrc2 = await this._zrc2.getBalance(base16);
+    const account: Account = {
+      name,
+      bech32,
+      index,
+      base16,
+      type,
+      pubKey,
+      zrc2,
+      nft: {}
+    };
+    await this._add(account);
+    return account;
   }
 
   private async _add(account: Account) {

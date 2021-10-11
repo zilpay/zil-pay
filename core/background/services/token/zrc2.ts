@@ -76,6 +76,7 @@ export class ZRC2Controller {
     this._netwrok = netwrok;
     this._zilliqa = zilliqa;
     this._account = account;
+    this._account.initZRC(this);
   }
 
   public async remove(index: number) {
