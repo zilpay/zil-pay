@@ -18,6 +18,7 @@ import { TypeOf } from 'lib/type/type-checker';
 import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
 import { toBech32Address } from 'lib/utils/bech32';
+import { tohexString } from 'lib/utils/address';
 
 enum InitFields {
   ContractOwner = 'contract_owner',
@@ -25,6 +26,10 @@ enum InitFields {
   Symbol = 'symbol',
   Decimals = 'decimals',
   Address = '_this_address'
+}
+
+enum ZRC2Fields {
+  Balances = 'balances'
 }
 
 const [mainnet, testnet, custom] = Object.keys(NETWORK);
@@ -107,13 +112,12 @@ export class ZRC2Controller {
     const init = await this._zilliqa.getSmartContractInit(address);
     const zrc = this._toZRC2(init);
     const bech32 = toBech32Address(address);
-    const field = 'balances';
 
     if (this._account.selectedAccount) {
       const userAddress = this._account.selectedAccount.base16.toLowerCase();
       balance = await this._zilliqa.getSmartContractSubState(
         address,
-        field,
+        ZRC2Fields.Balances,
         [userAddress]
       );
 
@@ -122,7 +126,7 @@ export class ZRC2Controller {
       }
 
       try {
-        balance = balance[field][userAddress];
+        balance = balance[ZRC2Fields.Balances][userAddress];
       } catch {
         balance = '0';
       }
@@ -136,6 +140,36 @@ export class ZRC2Controller {
       decimals: zrc.decimals,
       base16: address
     };
+  }
+
+  public async getBalance(owner: string) {
+    let balance = {};
+    for (let index = 0; index < this.identities.length; index++) {
+      const token = this.identities[index];
+      try {
+        if (token.base16 === Contracts.ZERO_ADDRESS) {
+          const bal = await this._zilliqa.getBalance(owner);
+          balance[token.base16] = bal.balance;
+          continue;
+        }
+
+        const addr = String(owner).toLowerCase();
+        const bal = await this._zilliqa.getSmartContractSubState(
+          tohexString(token.base16),
+          ZRC2Fields.Balances,
+          [addr]
+        );
+        if (!bal) {
+          balance[token.base16] = '0';
+        } else {
+          balance[token.base16] = bal[ZRC2Fields.Balances][addr];
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return balance;
   }
 
   public async sync() {

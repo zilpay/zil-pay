@@ -7,7 +7,8 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZilliqaControl } from 'core/background/services/blockchain';
-import type { Account, KeyPair, Wallet, GuardVault } from 'types/account';
+import type { ZRC2Controller } from 'core/background/services/token';
+import type { Account, KeyPair, Wallet } from 'types/account';
 import type { AuthGuard } from 'core/background/services/guard';
 import type { ZRC2Token } from 'types/token';
 import { Buffer } from 'buffer';
@@ -202,6 +203,14 @@ export class AccountController {
     } catch {
       //
     }
+  }
+
+  public async addAccount(keyPair: KeyPair, zrc2Controller: ZRC2Controller) {
+    const { privKey, pubKey, base16 } = keyPair;
+    const bech32 = toBech32Address(base16);
+    const balances = await zrc2Controller.getBalance(base16);
+
+    console.log(balances);
   }
 
   private async _add(account: Account) {
