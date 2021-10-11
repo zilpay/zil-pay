@@ -20,6 +20,7 @@ export enum Fields {
   STATIC = 'static',
   LOCK_TIME = 'time_before_lock',
   CONNECT_DAPP = 'connect',
+  CONNECT_LIST = 'connection-list',
   THEME = 'theme',
   CONTACTS = 'contacts',
   SELECTED_COIN = 'selectedcoin',
