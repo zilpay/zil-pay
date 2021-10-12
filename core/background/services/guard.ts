@@ -81,6 +81,14 @@ export class AuthGuard {
     };
   }
 
+  public getSeed(): string {
+    this._checkSession();
+
+    const hash = this._hash.get(this);
+
+    return Aes.decrypt(this._encryptSeed, hash);
+  }
+
   /**
    * Write decryptImported to storage.
    * @param decryptImported - Imported account object.

@@ -14,9 +14,14 @@ import { Fields } from 'config/fields';
 
 export class AppConnectController {
   private _identities: AppConnect[] = [];
+  private _confirm?: AppConnect;
 
   public get connections() {
     return this._identities;
+  }
+
+  public get confirmApp() {
+    return this._confirm;
   }
 
   private _isUnique(connect: AppConnect) {
@@ -36,6 +41,22 @@ export class AppConnectController {
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_LIST, this.connections)
     );
+
+    this._confirm = undefined;
+  }
+
+  public async addConfirm(connect: AppConnect) {
+    this._confirm = connect;
+
+    await BrowserStorage.set(
+      buildObject(Fields.CONNECT_DAPP, this.confirmApp)
+    );
+  }
+
+  public async rejectConfirm() {
+    this._confirm = undefined;
+
+    await BrowserStorage.rm(Fields.CONNECT_DAPP);
   }
 
   public async rm(index: number) {
@@ -56,6 +77,15 @@ export class AppConnectController {
 
   public async sync() {
     const jsonData = await BrowserStorage.get(Fields.CONNECT_LIST);
+    const confirm = await BrowserStorage.get(Fields.CONNECT_DAPP);
+
+    try {
+      if (confirm) {
+        this._confirm = JSON.parse(String(confirm));
+      }
+    } catch {
+      ///
+    }
 
     try {
       this._identities = JSON.parse(String(jsonData));

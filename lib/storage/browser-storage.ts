@@ -114,7 +114,7 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
    * const storage = new BrowserStorage()
    * storage.rm('any-key-item').then(() => / Do something... /)
    */
-  rm(keys: Fields[] | string[]) {
+  rm(...keys: Fields[] | string[]) {
     return new Promise<void>((resolve) => {
       Runtime.storage.local.remove(keys, () => resolve());
     });
