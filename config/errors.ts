@@ -28,5 +28,6 @@ export enum ErrorMessages {
   Scam = 'Scam detected.',
   MustBeUnique = 'Address must be unique.',
   RequiredParam = 'is required.',
-  OutOfIndex = 'Out of index.'
+  OutOfIndex = 'Out of index.',
+  IncorrectParams = 'Incorrect argument'
 }

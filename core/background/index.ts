@@ -8,7 +8,8 @@ import { UnstoppableDomains } from './services/domain-resolve';
 import { ZRC2Controller } from 'core/background/services/token';
 // import { startBackground } from './background';
 import { AccountController } from './services/account/account';
-import { BlockControl } from './services/worker';
+import { BlockController } from './services/worker';
+import { RateController, CurrenciesController } from './services/currency';
 
 window['BrowserStorage'] = BrowserStorage;
 window['buildObject'] = buildObject;
@@ -24,5 +25,7 @@ window['zilliqaControl'] = new ZilliqaControl(window['netwrok']);
 window['domain'] = new UnstoppableDomains();
 window['account'] = new AccountController(window['zilliqaControl'], window['guard']);
 window['zrc2'] = new ZRC2Controller(window['netwrok'], window['zilliqaControl'], window['account']);
-window['block'] = new BlockControl(window['zilliqaControl']);
+window['block'] = new BlockController(window['zilliqaControl']);
+window['rate'] = new RateController();
+window['currencies'] = new CurrenciesController();
 // startBackground();

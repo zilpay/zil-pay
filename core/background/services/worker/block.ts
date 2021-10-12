@@ -14,7 +14,7 @@ import { Fields } from 'config/fields';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { MTypeTab } from 'lib/streem/stream-keys';
 
-export class BlockControl {
+export class BlockController {
   private readonly _zilliqa: ZilliqaControl;
   private readonly _name = `block/${Runtime.runtime.id}/zilpay`;
   private readonly _delay = 0.3; // approximately 18seconds.
