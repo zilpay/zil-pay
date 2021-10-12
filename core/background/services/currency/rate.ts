@@ -9,6 +9,7 @@
 import { APIs } from 'config/api-list';
 import { DEFAULT_CURRENCIES } from 'config/currencies';
 import { BrowserStorage, buildObject } from 'lib/storage';
+import { Runtime } from 'lib/runtime';
 import { Fields } from 'config/fields';
 
 export interface RateCurrencies {
@@ -18,10 +19,31 @@ export interface RateCurrencies {
 }
 
 export class RateController {
+  private readonly _name = `rate/${Runtime.runtime.id}/zilpay`;
+  private readonly _delay = 60; // approximately 1 hours.
   private _rate: RateCurrencies;
 
   public get rate() {
     return this._rate;
+  }
+
+  constructor() {
+    this.unsubscribe();
+    Runtime.alarms.create(this._name, {
+      delayInMinutes: this._delay,
+      periodInMinutes: this._delay
+    });
+  }
+
+  public async subscribe() {
+    await this.updateRate();
+    Runtime.alarms.onAlarm.addListener(async() => {
+      await this.updateRate();
+    });
+  }
+
+  public unsubscribe() {
+    Runtime.alarms.clearAll();
   }
 
   public async updateRate() {

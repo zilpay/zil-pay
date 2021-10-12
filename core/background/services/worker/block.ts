@@ -23,9 +23,8 @@ export class BlockController {
   constructor(zilliqa: ZilliqaControl) {
     this._zilliqa = zilliqa;
 
-    Runtime.alarms.clearAll();
+    this.unsubscribe();
     Runtime.alarms.create(this._name, {
-      // delayInMinutes: this._delay,
       delayInMinutes: this._delay,
       periodInMinutes: this._delay
     });
@@ -59,6 +58,10 @@ export class BlockController {
         }
       }).send();
     });
+  }
+
+  public unsubscribe() {
+    Runtime.alarms.clearAll();
   }
 
   public async sync() {
