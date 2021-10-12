@@ -27,7 +27,9 @@ export enum ErrorMessages {
   CouldNotDeriveHardened = 'Could not derive hardened child key',
   Scam = 'Scam detected.',
   MustBeUnique = 'Address must be unique.',
+  MustBe = 'must be unique.',
   RequiredParam = 'is required.',
   OutOfIndex = 'Out of index.',
-  IncorrectParams = 'Incorrect argument'
+  IncorrectParams = 'Incorrect argument',
+  SSnAllowNet = 'SSn list allow on mainnet only.'
 }

@@ -7,12 +7,12 @@
  * Copyright (c) 2021 ZilPay
  */
 import assert from 'assert';
-import { NETWORK } from 'config/network';
+import { NETWORK, NETWORK_KEYS } from 'config/network';
 import { Fields } from 'config/fields';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { ErrorMessages } from 'config/errors';
 
-const [mainnet] = Object.keys(NETWORK);
+const [mainnet] = NETWORK_KEYS;
 
 export class NetworkControl {
   private _onlyMainnet: boolean;

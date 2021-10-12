@@ -21,3 +21,4 @@ export const NETWORK = {
     MSG_VERSION: 1
   }
 }
+export const NETWORK_KEYS = Object.keys(NETWORK);

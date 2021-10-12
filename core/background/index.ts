@@ -11,6 +11,7 @@ import { AccountController } from './services/account/account';
 import { BlockController } from './services/worker';
 import { RateController, CurrenciesController } from './services/currency';
 import { ThemeController } from './services/theme';
+import { SSnController } from './services/ssn';
 
 window['BrowserStorage'] = BrowserStorage;
 window['buildObject'] = buildObject;
@@ -30,4 +31,5 @@ window['block'] = new BlockController(window['zilliqaControl']);
 window['rate'] = new RateController();
 window['currencies'] = new CurrenciesController();
 window['theme'] = new ThemeController();
+window['ssn'] = new SSnController(window['zilliqaControl'], window['netwrok']);
 // startBackground();

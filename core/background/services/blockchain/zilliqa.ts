@@ -7,16 +7,19 @@
  * Copyright (c) 2020 ZilPay
  */
 
+import type { SSN } from 'types/ssn';
 import type { NetworkControl } from 'core/background/services/network';
 import type { TxParams } from 'types/transaction';
 import type { Transaction } from 'lib/utils/tx-builder';
 
 import assert from 'assert';
+import { NETWORK, NETWORK_KEYS } from 'config/network';
 import { toChecksumAddress, tohexString } from 'lib/utils/address';
 import { Methods } from './methods';
 import { JsonRPCCodes } from './codes';
 import { Contracts } from 'config/contracts';
 import { ErrorMessages } from 'config/errors';
+import { DEFAULT_SSN } from 'core/background/services/ssn';
 
 type Params = TxParams[] | string[] | number[] | (string | string[] | number[])[];
 type Balance = {
@@ -214,6 +217,69 @@ export class ZilliqaControl {
 
 
     return data.result;
+  }
+
+  public async getSSnList(): Promise<SSN[]> {
+    const [mainnet] = NETWORK_KEYS;
+    assert(this._network.selected === mainnet, ErrorMessages.SSnAllowNet);
+
+    const field = 'ssnlist';
+    const contract = tohexString(Contracts.SSN);
+    const http = NETWORK.mainnet.PROVIDER;
+
+    const request = this._json(
+      Methods.GetSmartContractSubState,
+      [contract, field, []]
+    );
+    const responce = await fetch(http, request);
+    const data = await responce.json();
+
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    const ssnlist = data.result[field];
+    const list = Object.keys(ssnlist).map((addr) => ({
+      address: addr,
+      name: ssnlist[addr].arguments[3],
+      api: ssnlist[addr].arguments[5]
+    }));
+    const ssnList = [DEFAULT_SSN, ...list].map(async(ssn) => {
+      const t0 = performance.now();
+      try {
+        const r = this._json(
+          Methods.GetNetworkId,
+          []
+        );
+        const res = await fetch(ssn.api, r);
+        const { error, result } = await res.json();
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        const id = Number(result);
+        const t1 = performance.now();
+
+        return {
+          ...ssn,
+          id,
+          time: t1 - t0,
+          ok: res.ok
+        };
+      } catch {
+        const t1 = performance.now();
+        return {
+          ...ssn,
+          id: 0,
+          time: t1 - t0,
+          ok: false
+        };
+      }
+    });
+    const gotSSN = await Promise.all(ssnList);
+
+    return gotSSN.filter((ssn) => ssn.ok);
   }
 
   private _json(method: string, params: Params) {
