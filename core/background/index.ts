@@ -10,6 +10,7 @@ import { ZRC2Controller } from 'core/background/services/token';
 import { AccountController } from './services/account/account';
 import { BlockController } from './services/worker';
 import { RateController, CurrenciesController } from './services/currency';
+import { ThemeController } from './services/theme';
 
 window['BrowserStorage'] = BrowserStorage;
 window['buildObject'] = buildObject;
@@ -28,4 +29,5 @@ window['zrc2'] = new ZRC2Controller(window['netwrok'], window['zilliqaControl'],
 window['block'] = new BlockController(window['zilliqaControl']);
 window['rate'] = new RateController();
 window['currencies'] = new CurrenciesController();
+window['theme'] = new ThemeController();
 // startBackground();
