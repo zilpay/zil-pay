@@ -11,6 +11,8 @@ import type { ZilliqaControl } from "core/background/services/blockchain";
 import { Runtime } from 'lib/runtime';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
+import { TabsMessage } from 'lib/streem/tabs-message';
+import { MTypeTab } from 'lib/streem/stream-keys';
 
 export class BlockControl {
   private readonly _zilliqa: ZilliqaControl;
@@ -46,16 +48,16 @@ export class BlockControl {
       }
 
       const { TxnHashes } = await this._zilliqa.getRecentTransactions();
-      const m = {
-        origin: 'this._origin',
-        data: {
-          block: {
-            TxBlock: result,
-            TxHashes: [TxnHashes]
-          }
-        }
+      const block = {
+        TxBlock: result,
+        TxHashes: [TxnHashes]
       };
-      console.log(m);
+      new TabsMessage({
+        type: MTypeTab.NEW_BLOCK,
+        payload: {
+          block
+        }
+      }).send();
     });
   }
 
