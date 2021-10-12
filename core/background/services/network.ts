@@ -42,19 +42,14 @@ export class NetworkControl {
       Fields.SELECTED_NET  
     );
 
-    if (!data) {
+    try {
+      this.selected = data[Fields.SELECTED_NET];
+      this.config = JSON.parse(data[Fields.CONFIG]);
+    } catch {
       await BrowserStorage.set(
         buildObject(Fields.CONFIG, this.config),
         buildObject(Fields.SELECTED_NET, this.selected)
       );
-      return null;
-    }
-
-    if (data[Fields.CONFIG]) {
-      this.config = data[Fields.CONFIG];
-    }
-    if (data[Fields.SELECTED_NET] && !this._onlyMainnet) {
-      this.selected = data[Fields.SELECTED_NET];
     }
   }
 

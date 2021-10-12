@@ -199,6 +199,7 @@ export class AccountController {
   }
 
   public async sync() {
+    await this.migrate();
     const walletJson = await BrowserStorage.get(Fields.WALLET);
 
     try {
