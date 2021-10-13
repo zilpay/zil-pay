@@ -3,6 +3,8 @@ import { ZIlPayCore } from 'core/background/wallet/core';
 (async function() {
   const core = Object.freeze(new ZIlPayCore());
   window['core'] = core;
+  // TODO: add notificationsCounter.
+  // https://github.com/zilpay/zil-pay/blob/84d770dbaec813cd6e14b8b449316f6c138a3a47/packages/background/services/blockchain/zilliqa.js#L533
 }());
 
 // import { NetworkControl } from './services/network';

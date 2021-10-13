@@ -21,9 +21,4 @@ export class ZilPaySynchronizer extends ZIlPayCore {
     await this._rate.sync();
     console.log('end-sync');
   }
-
-  public subscribe() {
-    this._blockchain.subscribe();
-    this._rate.subscribe();
-  }
 }

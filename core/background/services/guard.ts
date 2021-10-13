@@ -49,7 +49,20 @@ export class AuthGuard {
 
     this._encryptImported = data[Fields.VAULT_IMPORTED];
     this._encryptSeed = data[Fields.VAULT];
-    this._isReady = Boolean(this._encryptSeed);
+
+    if (this._encryptSeed) {
+      this._isReady = Boolean(this._encryptSeed);
+    }
+  }
+  
+  public async logout() {
+    this._isEnable = false;
+    this._isReady = false;
+    this._encryptSeed = undefined;
+    this._encryptImported = undefined;
+    this._endSession = new Date(-1);
+
+    this._hash.delete(this);
   }
 
   public setPassword(password: string) {
@@ -89,6 +102,19 @@ export class AuthGuard {
     return Aes.decrypt(this._encryptSeed, hash);
   }
 
+  public async setSeed(seed: string, password: string) {
+    const hash = Aes.hash(password);
+    this._encryptSeed = Aes.encrypt(seed, hash);
+    this._isReady = true;
+    this._isEnable = true;
+    this._updateSession();
+    this._hash.set(this, hash);
+
+    await BrowserStorage.set(
+      buildObject(Fields.VAULT, this._encryptSeed)
+    );
+  }
+
   /**
    * Write decryptImported to storage.
    * @param decryptImported - Imported account object.
@@ -117,19 +143,6 @@ export class AuthGuard {
     const hash = this._hash.get(this);
 
     return Aes.decrypt(content, hash);
-  }
-
-  public async updateMnemonic(decryptSeed: string) {
-    this._checkSession();
-
-    const hash = this._hash.get(this);
-    const encryptSeed = Aes.encrypt(JSON.stringify(decryptSeed), hash);
-
-    await BrowserStorage.set(
-      buildObject(Fields.VAULT, encryptSeed)
-    );
-
-    this._encryptSeed = encryptSeed;
   }
 
   private _checkSession() {

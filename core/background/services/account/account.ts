@@ -265,6 +265,16 @@ export class AccountController {
     return this.selectedAccount;
   }
 
+  public async changeAccountName(name: string) {
+    this._wallet.identities[this._wallet.selectedAddress].name = name;
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+
+    return this.selectedAccount;
+  }
+
   private async _add(account: Account) {
     await this._checkAccount(account);
 
