@@ -31,7 +31,7 @@ export class SSnController {
   private _ssnList: SSN[] = [DEFAULT_SSN];
   private _selected = 0;
 
-  private get payload() {
+  public get payload() {
     return {
       selected: this._selected,
       list: this._ssnList
