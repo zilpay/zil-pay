@@ -3,9 +3,6 @@ import { ZIlPayCore } from 'core/background/wallet/core';
 (async function() {
   const core = Object.freeze(new ZIlPayCore());
   window['core'] = core;
-
-  core.sync();
-  core.subscribe();
 }());
 
 // import { NetworkControl } from './services/network';

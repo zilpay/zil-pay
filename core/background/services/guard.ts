@@ -113,6 +113,12 @@ export class AuthGuard {
     return Aes.encrypt(String(privKey), hash);
   }
 
+  public decryptPrivateKey(content: string) {
+    const hash = this._hash.get(this);
+
+    return Aes.decrypt(content, hash);
+  }
+
   public async updateMnemonic(decryptSeed: string) {
     this._checkSession();
 

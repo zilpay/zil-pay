@@ -73,7 +73,7 @@ export class SSnController {
         PROVIDER: this.ssn.api
       }
     });
-  } 
+  }
 
   public async reset() {
     this._ssnList = [DEFAULT_SSN];

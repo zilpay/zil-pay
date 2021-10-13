@@ -236,6 +236,7 @@ export class AccountController {
     const { pubKey, base16 } = this.fromPrivateKey(privKey);
     const bech32 = toBech32Address(base16);
     const type = AccountTypes.privateKey;
+    const encryptedPrivateKey = this._guard.encryptPrivateKey(privKey);
     const zrc2 = await this._zrc2.getBalance(base16);
     const account: Account = {
       name,
@@ -244,11 +245,24 @@ export class AccountController {
       base16,
       type,
       pubKey,
+      privKey: encryptedPrivateKey,
       zrc2,
       nft: {}
     };
     await this._add(account);
     return account;
+  }
+
+  public async select(index: number) {
+    assert(index < this.wallet.identities.length, ErrorMessages.OutOfIndex);
+
+    this._wallet.selectedAddress = index;
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+
+    return this.selectedAccount;
   }
 
   private async _add(account: Account) {

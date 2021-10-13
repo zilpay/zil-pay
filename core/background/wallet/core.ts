@@ -31,22 +31,4 @@ export class ZIlPayCore {
   protected readonly _zrc2 = new ZRC2Controller(this._netwrok, this._zilliqa, this._account);
   protected readonly _blockchain = new BlockController(this._zilliqa);
   protected readonly _ssn = new SSnController(this._zilliqa, this._netwrok);
-
-  public async sync() {
-    console.log('start-sync');
-    await this._netwrok.sync();
-    await this._guard.sync();
-    await this._account.sync();
-    await this._zrc2.sync();
-    await this._blockchain.sync();
-    await this._ssn.sync();
-    await this._theme.sync();
-    await this._rate.sync();
-    console.log('end-sync');
-  }
-
-  public subscribe() {
-    this._blockchain.subscribe();
-    this._rate.subscribe();
-  }
 }

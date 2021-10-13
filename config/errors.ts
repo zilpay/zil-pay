@@ -31,5 +31,6 @@ export enum ErrorMessages {
   RequiredParam = 'is required.',
   OutOfIndex = 'Out of index.',
   IncorrectParams = 'Incorrect argument',
-  SSnAllowNet = 'SSn list allow on mainnet only.'
+  SSnAllowNet = 'SSn list allow on mainnet only.',
+  CannotExportLedger = 'Cannot export privateKey from ledger.'
 }
