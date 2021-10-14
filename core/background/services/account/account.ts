@@ -149,7 +149,13 @@ export class AccountController {
   public async migrate() {
     const newWallet = await BrowserStorage.get(Fields.WALLET);
     if (newWallet) return null;
-    const oldWallet = await BrowserStorage.get(Fields.OLD_WALLET);
+    let oldWallet = await BrowserStorage.get(Fields.OLD_WALLET);
+    if (!oldWallet) return null;
+    try {
+      oldWallet = JSON.parse(String(oldWallet));
+    } catch {
+      //
+    }
     const identities = oldWallet[AccountController.field0];
     const selectedAddress = oldWallet[AccountController.field1];
     const newIdentities: Account[] = [];
@@ -199,7 +205,6 @@ export class AccountController {
   }
 
   public async sync() {
-    await this.migrate();
     const walletJson = await BrowserStorage.get(Fields.WALLET);
 
     try {

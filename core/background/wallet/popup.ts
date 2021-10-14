@@ -100,9 +100,10 @@ export class ZilPayPopup {
     }
   }
 
-  public unlock(password: string, sendResponse: StreamResponse) {
+  public async unlock(password: string, sendResponse: StreamResponse) {
     try {
       this._core.guard.setPassword(password);
+      await this._core.account.migrate();
       this.updateStatus();
 
       sendResponse({
@@ -112,6 +113,7 @@ export class ZilPayPopup {
         }
       });
     } catch (err) {
+      console.log(err)
       sendResponse({
         reject: err.message
       });

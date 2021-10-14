@@ -3,6 +3,8 @@ import { testFromOld } from './test';
 
 (async function() {
   const core = new ZIlPayBackground();
+
+  // await core.sync();
   testFromOld(core);
   // TODO: add notificationsCounter.
   // https://github.com/zilpay/zil-pay/blob/84d770dbaec813cd6e14b8b449316f6c138a3a47/packages/background/services/blockchain/zilliqa.js#L533

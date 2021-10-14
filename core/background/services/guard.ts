@@ -38,7 +38,7 @@ export class AuthGuard {
   }
 
   public get isReady() {
-    return this.isReady;
+    return this._isReady;
   }
 
   public async sync() {
@@ -152,8 +152,8 @@ export class AuthGuard {
 
   private async _updateSession() {
     const now = new Date().getTime();
-    const time = await BrowserStorage.get(Fields.LOCK_TIME);
-    const h = TypeOf.isNull(Number(time)) ? Number(time) : Common.TIME_BEFORE_LOCK;
+    const time = Number(await BrowserStorage.get(Fields.LOCK_TIME));
+    const h = !isNaN(time) ? Number(time) : Common.TIME_BEFORE_LOCK;
     const newSession = new Date();
 
     newSession.setTime(now + (h * 60 * 60 * 1000));

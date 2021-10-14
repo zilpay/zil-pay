@@ -30,19 +30,21 @@ export class ZilPayWallet {
           const seed = this._core.guard.getSeed();
           const index = this._core.account.selectedAccount.index;
           const keyPair = await this._core.account.fromSeed(seed, index);
-          return sendResponse({
+          sendResponse({
             resolve: keyPair
           });
+          break;
         case AccountTypes.privateKey:
           const encryptedPriveLey = this._core.account.selectedAccount.privKey;
           const privateKey = this._core.guard.decryptPrivateKey(encryptedPriveLey);
-          return sendResponse({
+          sendResponse({
             resolve: {
               pubKey: this._core.account.selectedAccount.pubKey,
               privKey: privateKey,
               base16: this._core.account.selectedAccount.base16
             }
           });
+          break;
         case AccountTypes.Ledger:
           throw new Error(ErrorMessages.CannotExportLedger);
       }
