@@ -6,32 +6,37 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { ZIlPayCore } from './core';
 import type { NETWORK } from 'config/network';
 import type { StreamResponse } from 'types/stream';
 import { MTypeTab } from 'lib/streem/stream-keys';
 import { TabsMessage } from 'lib/streem/tabs-message';
-import { ZIlPayCore } from './core';
 
-export class ZilPayNetwrok extends ZIlPayCore {
+export class ZilPayNetwrok {
+  private readonly _core: ZIlPayCore;
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
 
   public reactNetwork() {
     new TabsMessage({
       type: MTypeTab.NETWORK_CHANGED,
       payload: {
-        netwrok: this._netwrok.selected,
-        node: this._netwrok.provider
+        netwrok: this._core.netwrok.selected,
+        node: this._core.netwrok.provider
       }
     }).send();
   }
 
   public async select(net: string, sendResponse: StreamResponse) {
     try {
-      await this._netwrok.changeNetwork(net);
+      await this._core.netwrok.changeNetwork(net);
 
       this.reactNetwork();
 
       sendResponse({
-        resolve: this._netwrok.selected
+        resolve: this._core.netwrok.selected
       });
     } catch (err) {
       sendResponse({
@@ -42,10 +47,10 @@ export class ZilPayNetwrok extends ZIlPayCore {
 
   public async updateSSN(sendResponse: StreamResponse) {
     try {
-      await this._ssn.update();
+      await this._core.ssn.update();
 
       sendResponse({
-        resolve: this._ssn.payload
+        resolve: this._core.ssn.payload
       });
     } catch (err) {
       sendResponse({
@@ -56,10 +61,10 @@ export class ZilPayNetwrok extends ZIlPayCore {
 
   public async changeConfig(config: typeof NETWORK, sendResponse: StreamResponse) {
     try {
-      await this._netwrok.changeConfig(config);
+      await this._core.netwrok.changeConfig(config);
 
       sendResponse({
-        resolve: this._netwrok.config
+        resolve: this._core.netwrok.config
       });
     } catch (err) {
       sendResponse({

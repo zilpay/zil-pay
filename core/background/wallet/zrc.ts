@@ -8,12 +8,18 @@
  */
 import type { ZRC2Info } from 'types/token';
 import type { StreamResponse } from 'types/stream';
-import { ZIlPayCore } from './core';
+import type { ZIlPayCore } from './core';
 
-export class ZilPayZRC extends ZIlPayCore {
+export class ZilPayZRC {
+  private readonly _core: ZIlPayCore;
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
+
   public async getZRC2Info(address: string, sendResponse: StreamResponse) {
     try {
-      const token = await this._zrc2.getToken(address);
+      const token = await this._core.zrc2.getToken(address);
 
       sendResponse({
         resolve: token
@@ -27,10 +33,10 @@ export class ZilPayZRC extends ZIlPayCore {
 
   public async addZRC2(token: ZRC2Info, sendResponse: StreamResponse) {
     try {
-      await this._zrc2.add(token);
+      await this._core.zrc2.add(token);
 
       sendResponse({
-        resolve: this._zrc2.identities
+        resolve: this._core.zrc2.identities
       });
     } catch (err) {
       sendResponse({
@@ -41,10 +47,10 @@ export class ZilPayZRC extends ZIlPayCore {
 
   public async removeToken(index: number, sendResponse: StreamResponse) {
     try {
-      await this._zrc2.remove(index);
+      await this._core.zrc2.remove(index);
 
       sendResponse({
-        resolve: this._zrc2.identities
+        resolve: this._core.zrc2.identities
       });
     } catch (err) {
       sendResponse({

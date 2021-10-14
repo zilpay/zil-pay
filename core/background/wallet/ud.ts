@@ -7,12 +7,18 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { StreamResponse } from 'types/stream';
-import { ZIlPayCore } from './core';
+import type { ZIlPayCore } from './core';
 
-export class ZilPayUnstoppableDomains extends ZIlPayCore {
+export class ZilPayUnstoppableDomains {
+  private readonly _core: ZIlPayCore;
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
+
   public async getOwner(domain: string, sendResponse: StreamResponse) {
     try {
-      const resolver = await this._ud.getAddressByDomain(domain);
+      const resolver = await this._core.ud.getAddressByDomain(domain);
 
       sendResponse({
         resolve: resolver

@@ -19,16 +19,16 @@ import { ThemeController } from 'core/background/services/theme';
 import { SSnController } from 'core/background/services/ssn';
 
 export class ZIlPayCore {
-  protected readonly _netwrok = new NetworkControl();
-  protected readonly _guard = new AuthGuard();
-  protected readonly _ud = new UnstoppableDomains();
-  protected readonly _prompt = new PromptService();
-  protected readonly _rate = new RateController();
-  protected readonly _theme = new ThemeController();
-  protected readonly _currencies = new CurrenciesController();
-  protected readonly _zilliqa = new ZilliqaControl(this._netwrok);
-  protected readonly _account = new AccountController(this._zilliqa, this._guard);
-  protected readonly _zrc2 = new ZRC2Controller(this._netwrok, this._zilliqa, this._account);
-  protected readonly _blockchain = new BlockController(this._zilliqa);
-  protected readonly _ssn = new SSnController(this._zilliqa, this._netwrok);
+  public readonly netwrok = new NetworkControl();
+  public readonly guard = new AuthGuard();
+  public readonly ud = new UnstoppableDomains();
+  public readonly prompt = new PromptService();
+  public readonly rate = new RateController();
+  public readonly theme = new ThemeController();
+  public readonly currencies = new CurrenciesController();
+  public readonly zilliqa = new ZilliqaControl(this.netwrok);
+  public readonly account = new AccountController(this.zilliqa, this.guard);
+  public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
+  public readonly blockchain = new BlockController(this.zilliqa);
+  public readonly ssn = new SSnController(this.zilliqa, this.netwrok);
 }

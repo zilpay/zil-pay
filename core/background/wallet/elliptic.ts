@@ -6,10 +6,15 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { ZIlPayCore } from './core';
+import type { ZIlPayCore } from './core';
 
-export class ZilPayElliptic extends ZIlPayCore {
+export class ZilPayElliptic {
+  private readonly _core: ZIlPayCore;
 
   public async signMessage() {}
   public async signTransaction() {}
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
 }

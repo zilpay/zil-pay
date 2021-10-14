@@ -6,9 +6,9 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { ZIlPayCore } from './core';
 import type { StreamResponse } from 'types/stream';
 import { AccountTypes } from 'config/account-type';
-import { ZIlPayCore } from './core';
 import { ErrorMessages } from 'config/errors';
 
 interface PrivateKeyName {
@@ -16,26 +16,31 @@ interface PrivateKeyName {
   privKey: string;
 }
 
-export class ZilPayWallet extends ZIlPayCore {
+export class ZilPayWallet {
+  private readonly _core: ZIlPayCore;
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
 
   public async exportPrivateKey(sendResponse: StreamResponse) {
     try {
-      switch (this._account.selectedAccount.type) {
+      switch (this._core.account.selectedAccount.type) {
         case AccountTypes.Seed:
-          const seed = this._guard.getSeed();
-          const index = this._account.selectedAccount.index;
-          const keyPair = await this._account.fromSeed(seed, index);
+          const seed = this._core.guard.getSeed();
+          const index = this._core.account.selectedAccount.index;
+          const keyPair = await this._core.account.fromSeed(seed, index);
           return sendResponse({
             resolve: keyPair
           });
         case AccountTypes.privateKey:
-          const encryptedPriveLey = this._account.selectedAccount.privKey;
-          const privateKey = this._guard.decryptPrivateKey(encryptedPriveLey);
+          const encryptedPriveLey = this._core.account.selectedAccount.privKey;
+          const privateKey = this._core.guard.decryptPrivateKey(encryptedPriveLey);
           return sendResponse({
             resolve: {
-              pubKey: this._account.selectedAccount.pubKey,
+              pubKey: this._core.account.selectedAccount.pubKey,
               privKey: privateKey,
-              base16: this._account.selectedAccount.base16
+              base16: this._core.account.selectedAccount.base16
             }
           });
         case AccountTypes.Ledger:
@@ -50,7 +55,7 @@ export class ZilPayWallet extends ZIlPayCore {
 
   public async exportSeedPhrase(sendResponse: StreamResponse) {
     try {
-      const seed = this._guard.getSeed();
+      const seed = this._core.guard.getSeed();
 
       sendResponse({
         resolve: seed
@@ -64,7 +69,7 @@ export class ZilPayWallet extends ZIlPayCore {
 
   public async importPrivateKey(payload: PrivateKeyName, sendResponse: StreamResponse) {
     try {
-      const account = await this._account.addAccountFromPrivateKey(
+      const account = await this._core.account.addAccountFromPrivateKey(
         payload.privKey,
         payload.name
       );
@@ -83,8 +88,8 @@ export class ZilPayWallet extends ZIlPayCore {
 
   public async createAccountBySeed(name: string, sendResponse?: StreamResponse) {
     try {
-      const seed = this._guard.getSeed();
-      const account = await this._account.addAccountFromSeed(seed, name);
+      const seed = this._core.guard.getSeed();
+      const account = await this._core.account.addAccountFromSeed(seed, name);
 
       sendResponse({
         resolve: account
@@ -98,7 +103,7 @@ export class ZilPayWallet extends ZIlPayCore {
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {
-      const account = this._account.select(index);
+      const account = this._core.account.select(index);
 
       sendResponse({
         resolve: account

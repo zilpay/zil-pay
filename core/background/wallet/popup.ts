@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { StreamResponse } from 'types/stream';
-import { ZIlPayCore } from './core';
+import type { ZIlPayCore } from './core';
 import { MnemonicController } from 'core/background/services/account/mnemonic';
 import { toBech32Address } from 'lib/utils/bech32';
 import { TabsMessage } from 'lib/streem/tabs-message';
@@ -18,24 +18,29 @@ interface InitPayload {
   password: string;
 }
 
-export class ZilPayPopup extends ZIlPayCore {
+export class ZilPayPopup {
+  private readonly _core: ZIlPayCore;
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
 
   public updateStatus() {
-    const { base16, bech32 } = this._account.selectedAccount;
+    const { base16, bech32 } = this._core.account.selectedAccount;
 
-    if (this._guard.isEnable && this._guard.isReady) {
-      this._blockchain.subscribe();
-      this._rate.subscribe();
+    if (this._core.guard.isEnable && this._core.guard.isReady) {
+      this._core.blockchain.subscribe();
+      this._core.rate.subscribe();
     } else {
-      this._blockchain.unsubscribe();
-      this._rate.unsubscribe();
+      this._core.blockchain.unsubscribe();
+      this._core.rate.unsubscribe();
     }
 
     new TabsMessage({
       type: MTypeTab.LOCK_STAUS,
       payload: {
-        isReady: this._guard.isReady,
-        isEnable: this._guard.isEnable,
+        isReady: this._core.guard.isReady,
+        isEnable: this._core.guard.isEnable,
         account: {
           base16,
           bech32
@@ -45,12 +50,12 @@ export class ZilPayPopup extends ZIlPayCore {
   }
 
   public async logout(sendResponse: StreamResponse) {
-    await this._guard.logout();
+    await this._core.guard.logout();
     this.updateStatus();
     sendResponse({
       resolve: {
-        isReady: this._guard.isReady,
-        isEnable: this._guard.isEnable
+        isReady: this._core.guard.isReady,
+        isEnable: this._core.guard.isEnable
       }
     });
   }
@@ -60,22 +65,22 @@ export class ZilPayPopup extends ZIlPayCore {
       resolve: {
         // TODO: add txns.
         // TODO: add zrc1.
-        zrc2: this._zrc2.identities,
-        netwrok: this._netwrok.selected,
-        wallet: this._account.wallet,
-        isReady: this._guard.isReady,
-        isEnable: this._guard.isEnable
+        zrc2: this._core.zrc2.identities,
+        netwrok: this._core.netwrok.selected,
+        wallet: this._core.account.wallet,
+        isReady: this._core.guard.isReady,
+        isEnable: this._core.guard.isEnable
       }
     });
   }
 
   public async initSeedWallet(payload: InitPayload, sendResponse: StreamResponse) {
     try {
-      await this._guard.setSeed(
+      await this._core.guard.setSeed(
         payload.seed,
         payload.password
       );
-      const { base16 } = await this._account.fromSeed(payload.seed, 0);
+      const { base16 } = await this._core.account.fromSeed(payload.seed, 0);
       const bech32 = toBech32Address(base16);
 
       this.updateStatus();
@@ -84,8 +89,8 @@ export class ZilPayPopup extends ZIlPayCore {
         resolve: {
           bech32,
           base16,
-          isReady: this._guard.isReady,
-          isEnable: this._guard.isEnable
+          isReady: this._core.guard.isReady,
+          isEnable: this._core.guard.isEnable
         }
       });
     } catch (err) {
@@ -97,13 +102,13 @@ export class ZilPayPopup extends ZIlPayCore {
 
   public unlock(password: string, sendResponse: StreamResponse) {
     try {
-      this._guard.setPassword(password);
+      this._core.guard.setPassword(password);
       this.updateStatus();
 
       sendResponse({
         resolve: {
-          isReady: this._guard.isReady,
-          isEnable: this._guard.isEnable
+          isReady: this._core.guard.isReady,
+          isEnable: this._core.guard.isEnable
         }
       });
     } catch (err) {
@@ -129,7 +134,7 @@ export class ZilPayPopup extends ZIlPayCore {
 
   public changeAccountName(name: string, sendResponse: StreamResponse) {
     try {
-      const account = this._account.changeAccountName(name);
+      const account = this._core.account.changeAccountName(name);
 
       sendResponse({
         resolve: account

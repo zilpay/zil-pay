@@ -6,19 +6,25 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { ZIlPayCore } from './core';
+import type { ZIlPayCore } from './core';
 
-export class ZilPaySynchronizer extends ZIlPayCore {
+export class ZilPaySynchronizer {
+  private readonly _core: ZIlPayCore;
+
+  constructor(core: ZIlPayCore) {
+    this._core = core;
+  }
+
   public async sync() {
     console.log('start-sync');
-    await this._netwrok.sync();
-    await this._guard.sync();
-    await this._account.sync();
-    await this._zrc2.sync();
-    await this._blockchain.sync();
-    await this._ssn.sync();
-    await this._theme.sync();
-    await this._rate.sync();
+    await this._core.netwrok.sync();
+    await this._core.guard.sync();
+    await this._core.account.sync();
+    await this._core.zrc2.sync();
+    await this._core.blockchain.sync();
+    await this._core.ssn.sync();
+    await this._core.theme.sync();
+    await this._core.rate.sync();
     console.log('end-sync');
   }
 }
