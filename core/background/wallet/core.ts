@@ -17,6 +17,9 @@ import { BlockController } from 'core/background/services/worker';
 import { RateController, CurrenciesController } from 'core/background/services/currency';
 import { ThemeController } from 'core/background/services/theme';
 import { SSnController } from 'core/background/services/ssn';
+import { AppConnectController } from 'core/background/services/app-connect';
+import { ContactController } from 'core/background/services/contacts';
+import { GasController } from 'core/background/services/gas';
 
 export class ZIlPayCore {
   public readonly netwrok = new NetworkControl();
@@ -25,8 +28,11 @@ export class ZIlPayCore {
   public readonly prompt = new PromptService();
   public readonly rate = new RateController();
   public readonly theme = new ThemeController();
+  public readonly apps = new AppConnectController();
   public readonly currencies = new CurrenciesController();
+  public readonly contacts = new ContactController();
   public readonly zilliqa = new ZilliqaControl(this.netwrok);
+  public readonly gas = new GasController(this.zilliqa);
   public readonly account = new AccountController(this.zilliqa, this.guard);
   public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
   public readonly blockchain = new BlockController(this.zilliqa);

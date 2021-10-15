@@ -2,7 +2,6 @@ import type { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import assert from 'assert';
 import { AccountTypes } from 'config/account-type';
-import { Runtime } from 'lib/runtime';
 import { Contracts } from 'config/contracts';
 
 export async function testFromOld(core: ZIlPayBackground) {
