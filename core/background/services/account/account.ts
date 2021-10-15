@@ -88,6 +88,8 @@ export class AccountController {
 
     delete this._wallet.identities[index];
 
+    this._wallet.identities = this._wallet.identities.filter(Boolean);
+
     if (this.wallet.selectedAddress === index) {
       this.wallet.selectedAddress -= 1;
     }

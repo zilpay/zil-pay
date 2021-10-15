@@ -62,6 +62,8 @@ export class AppConnectController {
   public async rm(index: number) {
     delete this._identities[index];
 
+    this._identities = this._identities.filter(Boolean);
+
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_LIST, this.connections)
     );

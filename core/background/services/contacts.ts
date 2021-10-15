@@ -11,6 +11,7 @@ import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
+import { isBech32 } from 'lib/utils/address';
 
 export class ContactController {
   private _identities: Contact[] = [];
@@ -35,6 +36,8 @@ export class ContactController {
   public async add(connect: Contact) {
     this._isUnique(connect);
 
+    assert(isBech32(connect.address), ErrorMessages.IncorrectFormat);
+
     this._identities.push(connect);
 
     await BrowserStorage.set(
@@ -44,6 +47,8 @@ export class ContactController {
 
   public async rm(index: number) {
     delete this._identities[index];
+
+    this._identities = this._identities.filter(Boolean);
 
     await BrowserStorage.set(
       buildObject(Fields.CONTACTS, this.contacts)

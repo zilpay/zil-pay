@@ -15,6 +15,7 @@ import { ZilPayUnstoppableDomains } from './ud';
 import { ZilPayWallet } from './wallet';
 import { ZilPayZRC } from './zrc';
 import { ZilPayApps } from './apps';
+import { ZilPayContacts } from './contacts';
 
 export class ZIlPayBackground {
   private readonly _core = new ZIlPayCore();
@@ -26,6 +27,7 @@ export class ZIlPayBackground {
   public readonly wallet = new ZilPayWallet(this._core);
   public readonly zrc2 = new ZilPayZRC(this._core);
   public readonly apps = new ZilPayApps(this._core);
+  public readonly contacts = new ZilPayContacts(this._core);
 
   public async sync() {
     await this.synchronizer.sync();

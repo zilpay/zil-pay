@@ -246,6 +246,14 @@ export async function testFromOld(core: ZIlPayBackground) {
     assert.equal(resolve['index'], 0, 'incorrect index');
   });
 
+  core.popup.randomizeWords(256, ({ resolve }) => {
+    assert(String(resolve).split(' ').length === 24, 'Shoud be 24 words');
+  });
+
+  core.popup.randomizeWords(128, ({ resolve }) => {
+    assert(String(resolve).split(' ').length === 12, 'Shoud be 12 words');
+  });
+
   /// import privateKey
   const payload = {
     name: 'private account',
@@ -288,6 +296,35 @@ export async function testFromOld(core: ZIlPayBackground) {
   await core.wallet.balanceUpdate(({ resolve }) => {
     const account = resolve['identities'][resolve['selectedAddress']];
     assert(Number(account.zrc2[Contracts.ZERO_ADDRESS]) > 0, 'balance didn not updated;');
+  });
+
+  const newApp = {
+    domain: 'zilpay.xyz',
+    icon: 'https://zilpay.io/favicon/apple-icon-192x192.png',
+    title: 'zilpay'
+  };
+  await core.apps.addApp(newApp, ({ resolve }) => {
+    assert.deepEqual(resolve[0], newApp, 'App doesn not mach');
+  });
+
+  await core.apps.addConfirm(newApp, ({ resolve }) => {
+    assert.deepEqual(resolve, newApp, 'App doesn not mach');
+  });
+
+  const newContact = {
+    name: 'test',
+    address: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace'
+  };
+  await core.contacts.addContact(newContact, ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+
+    assert.deepEqual(resolve[0], newContact, 'Contact is not mach');
+  });
+
+  await core.contacts.removeContact(0, ({ resolve }) => {
+    assert.deepEqual([], resolve, 'should be empty')ж
   });
 
   console.log('end-testing');
