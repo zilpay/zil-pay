@@ -60,6 +60,10 @@ export const Aes = Object.freeze({
     const decrypted = aes.decrypt(data, key);
     const content = decrypted.toString(Utf8);
 
-    return JSON.parse(content);
+    try {
+      return JSON.parse(content);
+    } catch {
+      return content;
+    }
   }
 });

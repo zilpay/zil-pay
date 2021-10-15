@@ -56,7 +56,7 @@ export class AccountController {
   public get lastIndexPrivKey() {
     return this._wallet
       .identities
-      .filter((acc) => acc.type === AccountTypes.privateKey)
+      .filter((acc) => acc.type === AccountTypes.PrivateKey)
       .length;
   }
 
@@ -184,7 +184,7 @@ export class AccountController {
           (el) => el.index === index
         );
         newAccount.privKey = this._guard.encryptPrivateKey(privateKey);
-        newAccount.type = AccountTypes.privateKey;
+        newAccount.type = AccountTypes.PrivateKey;
         newAccount.name = `Imported ${index}`;
         newAccount.pubKey = getPubKeyFromPrivateKey(privateKey);
       } else {
@@ -240,7 +240,7 @@ export class AccountController {
     const index = this.lastIndexPrivKey;
     const { pubKey, base16 } = this.fromPrivateKey(privKey);
     const bech32 = toBech32Address(base16);
-    const type = AccountTypes.privateKey;
+    const type = AccountTypes.PrivateKey;
     const encryptedPrivateKey = this._guard.encryptPrivateKey(privKey);
     const zrc2 = await this._zrc2.getBalance(base16);
     const account: Account = {

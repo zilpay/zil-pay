@@ -118,5 +118,10 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
     return new Promise<void>((resolve) => {
       Runtime.storage.local.remove(keys, () => resolve());
     });
+  },
+  clear() {
+    return new Promise<void>((resolve) => {
+      Runtime.storage.local.clear(() => resolve());
+    });
   }
 });

@@ -34,7 +34,7 @@ export class ZilPayWallet {
             resolve: keyPair
           });
           break;
-        case AccountTypes.privateKey:
+        case AccountTypes.PrivateKey:
           const encryptedPriveLey = this._core.account.selectedAccount.privKey;
           const privateKey = this._core.guard.decryptPrivateKey(encryptedPriveLey);
           sendResponse({
@@ -92,10 +92,10 @@ export class ZilPayWallet {
     try {
       const seed = this._core.guard.getSeed();
       const account = await this._core.account.addAccountFromSeed(seed, name);
-
       sendResponse({
         resolve: account
       });
+      return account;
     } catch (err) {
       sendResponse({
         reject: err.message
@@ -105,7 +105,7 @@ export class ZilPayWallet {
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {
-      const account = this._core.account.select(index);
+      const account = await this._core.account.select(index);
 
       sendResponse({
         resolve: account

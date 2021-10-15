@@ -1,6 +1,8 @@
 import type { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import assert from 'assert';
+import { AccountTypes } from 'config/account-type';
+import { Runtime } from 'lib/runtime';
 
 export async function testFromOld(core: ZIlPayBackground) {
   const oldStore = {
@@ -171,6 +173,9 @@ export async function testFromOld(core: ZIlPayBackground) {
   const privKey = '713982bd736eae69380a15602a6bd37b29a863f81c8871d6c53ea7815857ab01';
   const base16 = '0x7E74D6D8bACAb6B0812e059cF3cE7238d54Cab25';
   const bech32 = 'zil10e6ddk96e2mtpqfwqkw08nnj8r25e2e9aue2xk';
+  const privateKey = '3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8';
+
+  await BrowserStorage.clear();
 
   for (let index = 0; index < keys.length; index++) {
     const key = keys[index];
@@ -213,11 +218,62 @@ export async function testFromOld(core: ZIlPayBackground) {
   /// export seed
 
   /// export privateKey
-  await core.wallet.exportPrivateKey(({ resolve, reject }) => {
+  await core.wallet.exportPrivateKey(({ resolve }) => {
     assert.equal(resolve['base16'], base16, 'should be right keypair address');
     assert.equal(resolve['privKey'], privKey, 'should be right keypair privateKey');
     assert.equal(resolve['pubKey'], pubKey, 'should be right keypair pubKey');
   });
   /// export privateKey
+
+  await core.wallet.createAccountBySeed('test', ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+    assert.equal(resolve['base16'], '0x92548120aDFB23EBCC3D341c1c5316db5b5ea171', 'Incorrect base16 address');
+    assert.equal(resolve['bech32'], 'zil1jf2gzg9dlv37hnpaxswpc5ckmdd4agt3x7kqy2', 'Incorrect bech32 address');
+    assert.equal(resolve['index'], 1, 'incorrect index');
+    assert.equal(resolve['name'], 'test', 'Incorrect name');
+    assert.equal(resolve['pubKey'], '0259f80fc287bb314c0a7b2c1512125487fbd08c93563268fe1c31c1a04edc810a', 'Incorrect publicKey');
+    assert.equal(resolve['type'], AccountTypes.Seed, 'Incorrect account type');
+  });
+
+  core.popup.initPopup(({ resolve }) => {
+    assert.equal(resolve['wallet'].selectedAddress, 1, 'Incorrect index of account');
+    assert.equal(resolve['wallet'].identities.length, 2, 'Incorrect length of accounts');
+  });
+
+  await core.wallet.selectAccount(0, ({ resolve }) => {
+    assert.equal(resolve['index'], 0, 'incorrect index');
+  });
+
+  /// import privateKey
+  const payload = {
+    name: 'private account',
+    privKey: privateKey
+  };
+  await core.wallet.importPrivateKey(payload, ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+    assert.equal(resolve['index'], 0, 'incorrect index');
+    assert.equal(resolve['name'], payload.name, 'Incorrect name');
+    assert.equal(resolve['type'], AccountTypes.PrivateKey, 'Incorrect account type');
+    assert.equal(resolve['base16'], '0x8254b2C9aCdf181d5d6796d63320fBb20D4Edd12', 'should be right keypair address');
+    assert.equal(resolve['bech32'], 'zil1sf2t9jdvmuvp6ht8jmtrxg8mkgx5ahgj6h833r', 'should be right keypair address');
+    assert.equal(resolve['pubKey'], '02bd2d38bd776319e685134041615fe3b8e8c674b65353624d2da8e2a6823e1a5b', 'should be right keypair pubKey');
+  });
+  /// import privateKey
+
+  // export private account
+  await core.wallet.exportPrivateKey(({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+
+    assert.equal(resolve['base16'], '0x8254b2C9aCdf181d5d6796d63320fBb20D4Edd12', 'incorrect base16 address');
+    assert.equal(resolve['privKey'], privateKey, 'incorrect privateKey');
+    assert.equal(resolve['pubKey'], '02bd2d38bd776319e685134041615fe3b8e8c674b65353624d2da8e2a6823e1a5b', 'incorrect Pubkey');
+  });
+  // export private account
 
 }
