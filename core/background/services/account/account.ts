@@ -236,6 +236,17 @@ export class AccountController {
     return account;
   }
 
+  public async balanceUpdate() {
+    const zrc2 = await this._zrc2.getBalance(this.selectedAccount.base16);
+    this._wallet.identities[this._wallet.selectedAddress].zrc2 = zrc2;
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this._wallet)
+    );
+
+    return this.wallet;
+  }
+
   public async addAccountFromPrivateKey(privKey: string, name: string) {
     const index = this.lastIndexPrivKey;
     const { pubKey, base16 } = this.fromPrivateKey(privKey);

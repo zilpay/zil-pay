@@ -117,5 +117,17 @@ export class ZilPayWallet {
     }
   }
 
-  public async balanceUpdate(sendResponse?: StreamResponse) {}
+  public async balanceUpdate(sendResponse?: StreamResponse) {
+    try {
+      const accounts = await this._core.account.balanceUpdate();
+
+      sendResponse({
+        resolve: accounts
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 }

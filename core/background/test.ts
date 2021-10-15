@@ -3,6 +3,7 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 import assert from 'assert';
 import { AccountTypes } from 'config/account-type';
 import { Runtime } from 'lib/runtime';
+import { Contracts } from 'config/contracts';
 
 export async function testFromOld(core: ZIlPayBackground) {
   const oldStore = {
@@ -276,4 +277,19 @@ export async function testFromOld(core: ZIlPayBackground) {
   });
   // export private account
 
+  // await core.netwrok.updateSSN(({ resolve }) => {
+  //   assert(resolve['list'].length > 0, 'list cannot be epmty');
+  //   assert(resolve['selected'] === 0, 'start selected should be 0');
+  // });
+
+  await core.netwrok.select('testnet', ({ resolve }) => {
+    assert.equal('testnet', resolve, 'new net should be testnet');
+  });
+
+  await core.wallet.balanceUpdate(({ resolve }) => {
+    const account = resolve['identities'][resolve['selectedAddress']];
+    assert(Number(account.zrc2[Contracts.ZERO_ADDRESS]) > 0, 'balance didn not updated;');
+  });
+
+  console.log('end-testing');
 }
