@@ -13,7 +13,7 @@ import { Fields } from 'config/fields';
 import { ErrorMessages } from 'config/errors';
 
 export class CurrenciesController {
-  private _selected: string;
+  private _selected = 'usd';
 
   public get selected() {
     return this._selected;
