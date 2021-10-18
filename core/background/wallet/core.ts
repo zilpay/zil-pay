@@ -21,6 +21,7 @@ import { AppConnectController } from 'core/background/services/app-connect';
 import { ContactController } from 'core/background/services/contacts';
 import { GasController } from 'core/background/services/gas';
 import { TransactionsController } from 'core/background/services/transactions';
+import { NonceController } from 'core/background/services/nonce';
 
 export class ZIlPayCore {
   public readonly netwrok = new NetworkControl();
@@ -39,6 +40,7 @@ export class ZIlPayCore {
   public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
   public readonly blockchain = new BlockController(this.zilliqa);
   public readonly ssn = new SSnController(this.zilliqa, this.netwrok);
+  public readonly nonceCounter = new NonceController(this.zilliqa, this.transactions);
 
   public get state() {
     return {

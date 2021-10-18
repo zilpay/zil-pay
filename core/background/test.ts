@@ -3,6 +3,7 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 import assert from 'assert';
 import { AccountTypes } from 'config/account-type';
 import { Contracts } from 'config/contracts';
+import type { MinParams } from 'types/transaction';
 
 export async function testFromOld(core: ZIlPayBackground) {
   const oldStore = {
@@ -325,6 +326,21 @@ export async function testFromOld(core: ZIlPayBackground) {
 
   await core.contacts.removeContact(0, ({ resolve }) => {
     assert.deepEqual([], resolve, 'should be empty')
+  });
+
+  const newTx: MinParams = {
+    amount: '0',
+    code: '',
+    data: '',
+    gasLimit: '50',
+    gasPrice: '2000',
+    toAddr: '0x46Ede3060432ef81594F575E4eB2e6B535b062ef'
+  };
+  await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+    console.log(resolve);
   });
 
   console.log('end-testing');

@@ -172,7 +172,7 @@ export class ZilliqaControl {
     const responce = await fetch(this._network.provider, request);
     const { error, result } = await responce.json();
 
-    assert(!error, error.message);
+    assert(!error, error);
 
     if (result && result.TranID) {
       return result.TranID;

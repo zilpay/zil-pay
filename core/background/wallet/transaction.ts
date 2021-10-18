@@ -8,7 +8,7 @@
  */
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
-import type { TxParams } from 'types/transaction';
+import type { TxParams, MinParams } from 'types/transaction';
 import { Transaction } from 'lib/utils/tx-builder';
 
 export class ZilPayTransaction {
@@ -32,10 +32,11 @@ export class ZilPayTransaction {
     }
   }
 
-  public async signSendTx(params: TxParams, sendResponse: StreamResponse) {
+  public async signSendTx(params: MinParams, sendResponse: StreamResponse) {
     try {
       const account = this._core.account.selectedAccount;
       const keyPair = await this._core.account.getKeyPair();
+      const nonce = await this._core.nonceCounter.getNonce(account);
       const newTx = new Transaction(
         params.amount,
         params.gasLimit,
@@ -43,7 +44,7 @@ export class ZilPayTransaction {
         account,
         params.toAddr,
         this._core.netwrok.selected,
-        0,
+        nonce + 1,
         params.code,
         params.data
       );
@@ -56,13 +57,17 @@ export class ZilPayTransaction {
       }
 
       newTx.sign(keyPair.privKey);
+      const hash = await this._core.zilliqa.send(newTx);
+      newTx.setHash(hash);
+      const tx = newTx.self;
+      await this._core.transactions.addHistory(tx);
 
       sendResponse({
-        resolve: newTx
+        resolve: tx
       });
     } catch (err) {
       sendResponse({
-        reject: err.message
+        reject: err.message || err
       });
     }
   }

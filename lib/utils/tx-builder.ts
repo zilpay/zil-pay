@@ -12,6 +12,7 @@ import type { Account } from 'types/account';
 import type { GasController } from 'core/background/services/gas';
 
 import { ZilliqaMessage } from '@zilliqa-js/proto';
+import { Buffer } from 'buffer';
 import BN from 'bn.js';
 import Long from 'long';
 
@@ -105,6 +106,10 @@ export class Transaction {
 
   public setPriority(priority: boolean) {
     this.priority = priority;
+  }
+
+  public setHash(hash: string) {
+    this.hash = hash;
   }
 
   public setNonce(nonce: number) {

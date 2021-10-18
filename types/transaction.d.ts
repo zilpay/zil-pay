@@ -21,3 +21,15 @@ export interface TxParams {
   version?: number;
   hash?: string;
 }
+
+export interface MinParams {
+  amount: string;
+  code: string;
+  data: string;
+  gasLimit: string;
+  gasPrice: string;
+  nonce?: number;
+  priority?: boolean;
+  version?: number;
+  toAddr: string;
+}
