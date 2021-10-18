@@ -34,9 +34,42 @@ export class ZIlPayCore {
   public readonly contacts = new ContactController();
   public readonly zilliqa = new ZilliqaControl(this.netwrok);
   public readonly gas = new GasController(this.zilliqa);
-  public readonly transactions = new TransactionsController(this.netwrok);
   public readonly account = new AccountController(this.zilliqa, this.guard);
+  public readonly transactions = new TransactionsController(this.netwrok, this.account);
   public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
   public readonly blockchain = new BlockController(this.zilliqa);
   public readonly ssn = new SSnController(this.zilliqa, this.netwrok);
+
+  public get state() {
+    return {
+      wallet: this.account.wallet,
+      netwrok: {
+        config: this.netwrok.config,
+        selected: this.netwrok.selected
+      },
+      theme: this.theme,
+      guard: {
+        isReady: this.guard.isReady,
+        isEnable: this.guard.isEnable
+      },
+      rate: this.rate.rate,
+      apps: {
+        confirmApp: this.apps.confirmApp,
+        connections: this.apps.connections
+      },
+      currency: this.currencies.selected,
+      contacts: this.contacts.contacts,
+      gas: {
+        gasLimit: this.gas.gasLimit,
+        gasPrice: this.gas.gasPrice
+      },
+      transactions: {
+        forConfirm: this.transactions.forConfirm,
+        transactions: this.transactions.transactions
+      },
+      zrc2: this.zrc2.identities,
+      blocknumber: this.blockchain.blocknumber,
+      ssn: this.ssn.payload
+    };
+  }
 }

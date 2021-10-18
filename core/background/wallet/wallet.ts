@@ -71,10 +71,12 @@ export class ZilPayWallet {
     try {
       const seed = this._core.guard.getSeed();
       const account = await this._core.account.addAccountFromSeed(seed, name);
+
+      await this._core.transactions.sync();
+
       sendResponse({
         resolve: account
       });
-      return account;
     } catch (err) {
       sendResponse({
         reject: err.message
@@ -85,6 +87,8 @@ export class ZilPayWallet {
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {
       const account = await this._core.account.select(index);
+
+      await this._core.transactions.sync();
 
       sendResponse({
         resolve: account

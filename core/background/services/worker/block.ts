@@ -20,6 +20,10 @@ export class BlockController {
   private readonly _delay = 0.3; // approximately 18seconds.
   private _currentBlock = 0;
 
+  public get blocknumber() {
+    return this._currentBlock;
+  }
+
   constructor(zilliqa: ZilliqaControl) {
     this._zilliqa = zilliqa;
 

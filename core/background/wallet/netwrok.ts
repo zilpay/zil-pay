@@ -32,6 +32,7 @@ export class ZilPayNetwrok {
   public async select(net: string, sendResponse: StreamResponse) {
     try {
       await this._core.netwrok.changeNetwork(net);
+      await this._core.transactions.sync();
 
       this.reactNetwork();
 

@@ -7,6 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { NetworkControl } from './network';
+import type { AccountController } from './account/account';
 import type { TxParams } from 'types/transaction';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
@@ -16,6 +17,7 @@ export class TransactionsController {
   private _txns: TxParams[] = [];
   private _confirm: TxParams[] = [];
   private readonly _network: NetworkControl;
+  private readonly _account: AccountController;
 
   public get transactions() {
     return this._txns;
@@ -25,29 +27,30 @@ export class TransactionsController {
     return this._confirm;
   }
 
-  public get transactionsField() {
-    return `${Fields.TRANSACTIONS}/${this._network.selected}`;
+  private get _transactionsField() {
+    return `${Fields.TRANSACTIONS}/${this._network.selected}/${this._account.selectedAccount.base16}`;
   }
 
-  public get confirmField() {
-    return `${Fields.CONFIRM_TX}/${this._network.selected}`;
+  private get _confirmField() {
+    return `${Fields.CONFIRM_TX}/${this._network.selected}/${this._account.selectedAccount.base16}`;
   }
 
-  constructor(network: NetworkControl) {
+  constructor(network: NetworkControl, account: AccountController) {
     this._network = network;
+    this._account = account;
   }
 
   public async addHistory(tx: TxParams) {
     this._txns.push(tx);
     await BrowserStorage.set(
-      buildObject(this.transactionsField, this.transactions)
+      buildObject(this._transactionsField, this.transactions)
     );
   }
 
   public async clearHistory() {
     this._txns = [];
     await BrowserStorage.set(
-      buildObject(this.transactionsField, this.transactions)
+      buildObject(this._transactionsField, this.transactions)
     );
   }
 
@@ -55,7 +58,7 @@ export class TransactionsController {
     this._confirm = [];
 
     await BrowserStorage.set(
-      buildObject(this.confirmField, this.forConfirm)
+      buildObject(this._confirmField, this.forConfirm)
     );
 
     NotificationsControl.counter(this._confirm.length);
@@ -65,7 +68,7 @@ export class TransactionsController {
     this._confirm.push(tx);
     NotificationsControl.counter(this._confirm.length);
     await BrowserStorage.set(
-      buildObject(this.confirmField, this.forConfirm)
+      buildObject(this._confirmField, this.forConfirm)
     );
   }
 
@@ -76,13 +79,13 @@ export class TransactionsController {
     NotificationsControl.counter(this._confirm.length);
 
     await BrowserStorage.set(
-      buildObject(this.confirmField, this.forConfirm)
+      buildObject(this._confirmField, this.forConfirm)
     );
   }
 
   public async sync() {
-    const txnsJson = await BrowserStorage.get(this.transactionsField);
-    const confirmJson = await BrowserStorage.get(this.confirmField);
+    const txnsJson = await BrowserStorage.get(this._transactionsField);
+    const confirmJson = await BrowserStorage.get(this._confirmField);
 
     try {
       if (!txnsJson) {
@@ -93,7 +96,7 @@ export class TransactionsController {
       this._txns = txns;
     } catch {
       await BrowserStorage.set(
-        buildObject(this.transactionsField, this.transactions)
+        buildObject(this._transactionsField, this.transactions)
       );
     }
 
@@ -108,7 +111,7 @@ export class TransactionsController {
       NotificationsControl.counter(this._confirm.length);
     } catch {
       await BrowserStorage.set(
-        buildObject(this.confirmField, this.forConfirm)
+        buildObject(this._confirmField, this.forConfirm)
       );
     }
   }
