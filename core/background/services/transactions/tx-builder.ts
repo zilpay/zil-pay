@@ -59,7 +59,7 @@ export class Transaction {
   public direction?: string;
   public timestamp?: number;
 
-  public get transactionType() {
+  public get transactionType(): TransactionTypes {
     if (this.code) {
       return TransactionTypes.Deploy;
     }

@@ -108,10 +108,15 @@ export class ZRC2Controller {
     );
   }
 
+  public async getZRCInit(address: string) {
+    const init = await this._zilliqa.getSmartContractInit(address);
+
+    return this._toZRC2(init);
+  }
+
   public async getToken(address: string): Promise<ZRC2Info> {
     let balance = '0';
-    const init = await this._zilliqa.getSmartContractInit(address);
-    const zrc = this._toZRC2(init);
+    const zrc = await this.getZRCInit(address);
     const bech32 = toBech32Address(address);
 
     if (this._account.selectedAccount) {

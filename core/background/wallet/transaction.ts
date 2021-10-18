@@ -8,9 +8,10 @@
  */
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
-import type { MinParams, StoredTx } from 'types/transaction';
+import type { MinParams } from 'types/transaction';
 import { Transaction } from 'background/services/transactions/tx-builder';
-import { StatusCodes } from 'background/services/transactions';
+import { StatusCodes, TransactionTypes } from 'background/services/transactions';
+import { ZIL } from 'background/services/token';
 
 export class ZilPayTransaction {
   private readonly _core: ZIlPayCore;
@@ -33,8 +34,54 @@ export class ZilPayTransaction {
     }
   }
 
+  public async clearHistory(sendResponse: StreamResponse) {
+    try {
+      await this._core.transactions.clearHistory();
+
+      sendResponse({
+        resolve: this._core.transactions.transactions
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async rejectAll(sendResponse: StreamResponse) {
+    try {
+      await this._core.transactions.clearConfirm();
+
+      sendResponse({
+        resolve: this._core.transactions.forConfirm
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async rmConfirm(index: number, sendResponse: StreamResponse) {
+    try {
+      await this._core.transactions.rmConfirm(index);
+
+      sendResponse({
+        resolve: this._core.transactions.forConfirm
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async signSendTx(params: MinParams, sendResponse: StreamResponse) {
     try {
+      let token = {
+        decimals: ZIL.decimals,
+        symbol: ZIL.symbol
+      };
       const account = this._core.account.selectedAccount;
       const keyPair = await this._core.account.getKeyPair();
       const nonce = await this._core.nonceCounter.getNonce(account);
@@ -57,13 +104,21 @@ export class ZilPayTransaction {
         newTx.setVersion(params.version, this._core.netwrok);
       }
 
+      if (newTx.transactionType === TransactionTypes.Transfer) {
+        const init = await this._core.zrc2.getZRCInit(newTx.toAddr);
+
+        token.decimals = init.decimals;
+        token.symbol = init.symbol;
+      }
+
       newTx.sign(keyPair.privKey);
-      // const hash = await this._core.zilliqa.send(newTx);
-      newTx.setHash('hash');
-      // const tx = newTx.self;
+      const hash = await this._core.zilliqa.send(newTx);
+      newTx.setHash(hash);
       await this._core.transactions.addHistory({
+        token,
         timestamp: new Date().getTime(),
-        toAddr: newTx.recipient,
+        toAddr: newTx.toAddr,
+        recipient: newTx.recipient,
         status: StatusCodes.Pending,
         teg: newTx.tag,
         amount: newTx.tokenAmount,
@@ -71,15 +126,11 @@ export class ZilPayTransaction {
         fee: newTx.fee,
         nonce: newTx.nonce,
         from: account.bech32,
-        hash: newTx.hash,
-        token: {
-          decimals: 12,
-          symbol: ''
-        }
+        hash: newTx.hash
       });
 
       sendResponse({
-        resolve: newTx
+        resolve: this._core.transactions.transactions
       });
     } catch (err) {
       sendResponse({

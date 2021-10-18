@@ -43,6 +43,7 @@ export interface StoredTx {
     decimals: number;
     symbol: string;
   };
+  recipient: string;
   success?: boolean;
   info?: string;
   teg: string;

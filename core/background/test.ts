@@ -339,11 +339,14 @@ export async function testFromOld(core: ZIlPayBackground) {
   await core.transaction.addConfirm(newTx, ({ resolve }) => {
     assert.deepEqual(newTx, resolve, 'resolve is not equal');
   });
-  await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
-    if (reject) {
-      console.error(reject);
-    }
-    console.log(resolve);
+  // await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
+  //   if (reject) {
+  //     console.error(reject);
+  //   }
+  //   assert(resolve['hash'], 'Txns wans sent.');
+  // });
+  await core.transaction.rmConfirm(0, ({ resolve }) => {
+    assert.deepEqual([], resolve, 'resolve is not equal');
   });
 
   console.log('end-testing');
