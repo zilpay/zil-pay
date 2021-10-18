@@ -42,6 +42,7 @@ export class TransactionsController {
 
   public async addHistory(tx: TxParams) {
     this._txns.push(tx);
+
     await BrowserStorage.set(
       buildObject(this._transactionsField, this.transactions)
     );
@@ -84,6 +85,10 @@ export class TransactionsController {
   }
 
   public async sync() {
+    if (!this._account.selectedAccount) {
+      return null;
+    }
+
     const txnsJson = await BrowserStorage.get(this._transactionsField);
     const confirmJson = await BrowserStorage.get(this._confirmField);
 
@@ -95,9 +100,7 @@ export class TransactionsController {
 
       this._txns = txns;
     } catch {
-      await BrowserStorage.set(
-        buildObject(this._transactionsField, this.transactions)
-      );
+      ////
     }
 
     try {
@@ -110,9 +113,7 @@ export class TransactionsController {
 
       NotificationsControl.counter(this._confirm.length);
     } catch {
-      await BrowserStorage.set(
-        buildObject(this._confirmField, this.forConfirm)
-      );
+      ////
     }
   }
 

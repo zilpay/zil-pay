@@ -23,7 +23,7 @@ export class ZilPayTransaction {
       await this._core.transactions.addConfirm(params);
 
       sendResponse({
-        resolve: this._core.transactions.forConfirm
+        resolve: this._core.state
       });
     } catch (err) {
       sendResponse({
