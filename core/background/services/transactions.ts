@@ -33,10 +33,32 @@ export class TransactionsController {
     return `${Fields.CONFIRM_TX}/${this._network.selected}`;
   }
 
-  constructor(
-    network: NetworkControl
-  ) {
+  constructor(network: NetworkControl) {
     this._network = network;
+  }
+
+  public async addHistory(tx: TxParams) {
+    this._txns.push(tx);
+    await BrowserStorage.set(
+      buildObject(this.transactionsField, this.transactions)
+    );
+  }
+
+  public async clearHistory() {
+    this._txns = [];
+    await BrowserStorage.set(
+      buildObject(this.transactionsField, this.transactions)
+    );
+  }
+
+  public async clearConfirm() {
+    this._confirm = [];
+
+    await BrowserStorage.set(
+      buildObject(this.confirmField, this.forConfirm)
+    );
+
+    NotificationsControl.counter(this._confirm.length);
   }
 
   public async addConfirm(tx: TxParams) {
@@ -56,18 +78,6 @@ export class TransactionsController {
     await BrowserStorage.set(
       buildObject(this.confirmField, this.forConfirm)
     );
-  }
-
-  public async reset() {
-    this._txns = [];
-    this._confirm = [];
-
-    await BrowserStorage.set(
-      buildObject(this.transactionsField, this.transactions),
-      buildObject(this.confirmField, this.forConfirm)
-    );
-
-    NotificationsControl.counter(this._confirm.length);
   }
 
   public async sync() {

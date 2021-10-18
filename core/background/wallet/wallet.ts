@@ -8,8 +8,6 @@
  */
 import type { ZIlPayCore } from './core';
 import type { StreamResponse } from 'types/stream';
-import { AccountTypes } from 'config/account-type';
-import { ErrorMessages } from 'config/errors';
 
 interface PrivateKeyName {
   name: string;
@@ -25,29 +23,10 @@ export class ZilPayWallet {
 
   public async exportPrivateKey(sendResponse: StreamResponse) {
     try {
-      switch (this._core.account.selectedAccount.type) {
-        case AccountTypes.Seed:
-          const seed = this._core.guard.getSeed();
-          const index = this._core.account.selectedAccount.index;
-          const keyPair = await this._core.account.fromSeed(seed, index);
-          sendResponse({
-            resolve: keyPair
-          });
-          break;
-        case AccountTypes.PrivateKey:
-          const encryptedPriveLey = this._core.account.selectedAccount.privKey;
-          const privateKey = this._core.guard.decryptPrivateKey(encryptedPriveLey);
-          sendResponse({
-            resolve: {
-              pubKey: this._core.account.selectedAccount.pubKey,
-              privKey: privateKey,
-              base16: this._core.account.selectedAccount.base16
-            }
-          });
-          break;
-        case AccountTypes.Ledger:
-          throw new Error(ErrorMessages.CannotExportLedger);
-      }
+      const keyPair = await this._core.account.getKeyPair();
+      sendResponse({
+        resolve: keyPair
+      });
     } catch (err) {
       sendResponse({
         reject: err.message

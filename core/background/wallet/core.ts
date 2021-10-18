@@ -20,6 +20,7 @@ import { SSnController } from 'core/background/services/ssn';
 import { AppConnectController } from 'core/background/services/app-connect';
 import { ContactController } from 'core/background/services/contacts';
 import { GasController } from 'core/background/services/gas';
+import { TransactionsController } from 'core/background/services/transactions';
 
 export class ZIlPayCore {
   public readonly netwrok = new NetworkControl();
@@ -33,6 +34,7 @@ export class ZIlPayCore {
   public readonly contacts = new ContactController();
   public readonly zilliqa = new ZilliqaControl(this.netwrok);
   public readonly gas = new GasController(this.zilliqa);
+  public readonly transactions = new TransactionsController(this.netwrok);
   public readonly account = new AccountController(this.zilliqa, this.guard);
   public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
   public readonly blockchain = new BlockController(this.zilliqa);

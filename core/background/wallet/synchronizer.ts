@@ -22,6 +22,7 @@ export class ZilPaySynchronizer {
     await this._core.account.sync();
     await this._core.zrc2.sync();
     await this._core.blockchain.sync();
+    await this._core.transactions.sync();
     await this._core.ssn.sync();
     await this._core.theme.sync();
     await this._core.rate.sync();

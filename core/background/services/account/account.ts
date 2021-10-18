@@ -138,6 +138,27 @@ export class AccountController {
     );
   }
 
+  public async getKeyPair(): Promise<KeyPair> {
+    switch (this.selectedAccount.type) {
+      case AccountTypes.Seed:
+        const seed = this._guard.getSeed();
+        const index = this.selectedAccount.index;
+        const keyPair = await this.fromSeed(seed, index);
+        return keyPair;
+      case AccountTypes.PrivateKey:
+        const encryptedPriveLey = this.selectedAccount.privKey;
+        const privateKey = this._guard.decryptPrivateKey(encryptedPriveLey);
+        return {
+          pubKey: this.selectedAccount.pubKey,
+          privKey: privateKey,
+          base16: this.selectedAccount.base16
+        };
+        break;
+      case AccountTypes.Ledger:
+        throw new Error(ErrorMessages.CannotExportLedger);
+    }
+  }
+
   public async removeToken(token: ZRC2Token) {
     for (let index = 0; index < this.wallet.identities.length; index++) {
       delete this.wallet.identities[index].zrc2[token.base16];

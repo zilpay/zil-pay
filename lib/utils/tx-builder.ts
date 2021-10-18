@@ -48,7 +48,8 @@ export class Transaction {
 
   constructor(
     amount: string,
-    gas: GasController,
+    gasLimit: string | number,
+    gasPrice: string | number,
     account: Account,
     toAddr: string,
     net: string,
@@ -65,8 +66,8 @@ export class Transaction {
     this.amount = amount;
     this.code = code;
     this.data = data;
-    this.gasLimit = Long.fromNumber(Number(gas.gasLimit));
-    this.gasPrice = gas.gasPrice;
+    this.gasLimit = Long.fromNumber(Number(gasLimit));
+    this.gasPrice = Number(gasPrice);
     this.priority = priority;
     this.pubKey = account.pubKey;
     this.toAddr = toChecksumAddress(toAddr);
