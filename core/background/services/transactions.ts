@@ -8,14 +8,14 @@
  */
 import type { NetworkControl } from './network';
 import type { AccountController } from './account/account';
-import type { TxParams } from 'types/transaction';
+import type { MinParams, TxParams } from 'types/transaction';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { NotificationsControl } from './notifications'; 
 
 export class TransactionsController {
   private _txns: TxParams[] = [];
-  private _confirm: TxParams[] = [];
+  private _confirm: MinParams[] = [];
   private readonly _network: NetworkControl;
   private readonly _account: AccountController;
 
@@ -65,7 +65,7 @@ export class TransactionsController {
     NotificationsControl.counter(this._confirm.length);
   }
 
-  public async addConfirm(tx: TxParams) {
+  public async addConfirm(tx: MinParams) {
     this._confirm.push(tx);
     NotificationsControl.counter(this._confirm.length);
     await BrowserStorage.set(
@@ -110,11 +110,11 @@ export class TransactionsController {
       const txnsForConfirm = JSON.parse(String(confirmJson));
 
       this._confirm = txnsForConfirm;
-
-      NotificationsControl.counter(this._confirm.length);
     } catch {
       ////
     }
+
+    NotificationsControl.counter(this._confirm.length);
   }
 
 }

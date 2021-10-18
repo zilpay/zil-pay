@@ -336,12 +336,15 @@ export async function testFromOld(core: ZIlPayBackground) {
     gasPrice: '2000',
     toAddr: '0x46Ede3060432ef81594F575E4eB2e6B535b062ef'
   };
-  await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
-    if (reject) {
-      console.error(reject);
-    }
+  await core.transaction.addConfirm(newTx, ({ resolve }) => {
     console.log(resolve);
   });
+  // await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
+  //   if (reject) {
+  //     console.error(reject);
+  //   }
+  //   console.log(resolve);
+  // });
 
   console.log('end-testing');
 }

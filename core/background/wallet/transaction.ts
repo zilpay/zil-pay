@@ -18,7 +18,7 @@ export class ZilPayTransaction {
     this._core = core;
   }
 
-  public async addConfirm(params: TxParams, sendResponse: StreamResponse) {
+  public async addConfirm(params: MinParams, sendResponse: StreamResponse) {
     try {
       await this._core.transactions.addConfirm(params);
 
