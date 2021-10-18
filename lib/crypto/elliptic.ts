@@ -63,8 +63,8 @@ export class SchnorrControl {
     this._publicKey = getPubKeyFromPrivateKey(this._privateKey);
   }
 
-  public async getSignature(msg: Buffer) {
-    const sig = await this._sign(
+  public getSignature(msg: Buffer) {
+    const sig = this._sign(
       msg,
       Buffer.from(this._privateKey, 'hex'),
       Buffer.from(this._publicKey, 'hex')

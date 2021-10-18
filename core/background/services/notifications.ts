@@ -16,7 +16,7 @@ export class NotificationsControl {
    */
   static counter(number: number) {
     Runtime.browserAction.setBadgeText({
-      text: `${number}`
+      text: `${number === 0 ? '' : number}`
     });
   }
 

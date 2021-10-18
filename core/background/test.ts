@@ -324,7 +324,7 @@ export async function testFromOld(core: ZIlPayBackground) {
   });
 
   await core.contacts.removeContact(0, ({ resolve }) => {
-    assert.deepEqual([], resolve, 'should be empty')ж
+    assert.deepEqual([], resolve, 'should be empty')
   });
 
   console.log('end-testing');
