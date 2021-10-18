@@ -12,7 +12,6 @@ export class ZilPayElliptic {
   private readonly _core: ZIlPayCore;
 
   public async signMessage() {}
-  public async signTransaction() {}
 
   constructor(core: ZIlPayCore) {
     this._core = core;

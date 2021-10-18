@@ -349,5 +349,15 @@ export async function testFromOld(core: ZIlPayBackground) {
     assert.deepEqual([], resolve, 'resolve is not equal');
   });
 
+  await core.transaction.addConfirm(newTx, () => null);
+  await core.transaction.addConfirm(newTx, () => null);
+  await core.transaction.addConfirm(newTx, () => null);
+  await core.transaction.addConfirm(newTx, () => null);
+  await core.transaction.addConfirm(newTx, () => null);
+
+  await core.transaction.rejectAll(({ resolve }) => {
+    assert.deepEqual([], resolve, 'resolve is not equal');
+  });
+
   console.log('end-testing');
 }
