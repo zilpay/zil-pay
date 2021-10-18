@@ -337,14 +337,14 @@ export async function testFromOld(core: ZIlPayBackground) {
     toAddr: '0x46Ede3060432ef81594F575E4eB2e6B535b062ef'
   };
   await core.transaction.addConfirm(newTx, ({ resolve }) => {
+    assert.deepEqual(newTx, resolve, 'resolve is not equal');
+  });
+  await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
     console.log(resolve);
   });
-  // await core.transaction.signSendTx(newTx, ({ resolve, reject }) => {
-  //   if (reject) {
-  //     console.error(reject);
-  //   }
-  //   console.log(resolve);
-  // });
 
   console.log('end-testing');
 }

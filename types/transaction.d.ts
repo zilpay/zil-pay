@@ -6,6 +6,8 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import { StatusCodes } from 'core/background/services/transactions';
+import { TransactionTypes } from 'core/background/services/transactions/types';
 
 export interface TxParams {
   amount: string;
@@ -32,4 +34,24 @@ export interface MinParams {
   priority?: boolean;
   version?: number;
   toAddr: string;
+}
+
+export interface StoredTx {
+  status: StatusCodes;
+  confirmed?: boolean;
+  token: {
+    decimals: number;
+    symbol: string;
+  };
+  success?: boolean;
+  info?: string;
+  teg: string;
+  amount: string;
+  type: TransactionTypes;
+  fee: number;
+  nonce: number;
+  toAddr: string;
+  from: string;
+  hash: string;
+  timestamp: number;
 }

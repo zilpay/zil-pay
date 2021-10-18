@@ -7,15 +7,15 @@
  * Copyright (c) 2021 ZilPay
  */
 
-const _li = BigInt(10 ** 6);
+export const LI = BigInt(10 ** 6);
 
 export function toLi(value: string | number): string {
   const _value = BigInt(value);
-  return String(_value / _li);
+  return String(_value / LI);
 }
 
 export function fromLI(value: string | number) {
   const _value = BigInt(value);
 
-  return String(_value * _li);
+  return String(_value * LI);
 }

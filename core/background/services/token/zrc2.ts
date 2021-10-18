@@ -34,14 +34,14 @@ enum ZRC2Fields {
 
 const [mainnet, testnet, custom] = Object.keys(NETWORK);
 
-const ZIL = {
+export const ZIL = {
   base16: Contracts.ZERO_ADDRESS,
   bech32: 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz',
   decimals: 12,
   name: 'Zilliqa',
   symbol: 'ZIL'
 };
-const ZLP = {
+export const ZLP = {
   base16: Contracts.ZIlPay,
   bech32: 'zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4',
   decimals: 18,

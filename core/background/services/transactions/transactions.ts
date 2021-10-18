@@ -6,15 +6,15 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { NetworkControl } from './network';
-import type { AccountController } from './account/account';
-import type { MinParams, TxParams } from 'types/transaction';
+import type { NetworkControl } from 'core/background/services/network';
+import type { AccountController } from 'core/background/services/account';
+import type { MinParams, StoredTx } from 'types/transaction';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
-import { NotificationsControl } from './notifications'; 
+import { NotificationsControl } from 'core/background/services/notifications';
 
 export class TransactionsController {
-  private _txns: TxParams[] = [];
+  private _txns: StoredTx[] = [];
   private _confirm: MinParams[] = [];
   private readonly _network: NetworkControl;
   private readonly _account: AccountController;
@@ -40,7 +40,7 @@ export class TransactionsController {
     this._account = account;
   }
 
-  public async addHistory(tx: TxParams) {
+  public async addHistory(tx: StoredTx) {
     this._txns.push(tx);
 
     await BrowserStorage.set(

@@ -7,11 +7,13 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { NetworkControl } from 'core/background/services/network';
-import type { TxParams } from 'types/transaction';
+import type { TxParams, StoredTx } from 'types/transaction';
 import type { Account } from 'types/account';
 import type { GasController } from 'core/background/services/gas';
+import type { StatusCodes } from 'background/services/transactions';
 
 import { ZilliqaMessage } from '@zilliqa-js/proto';
+import assert from 'assert';
 import { Buffer } from 'buffer';
 import BN from 'bn.js';
 import Long from 'long';
@@ -26,8 +28,18 @@ import {
   tohexString
 } from 'lib/utils/address';
 
-import { fromLI } from 'lib/filters/gas-to-fee';
+import { ZIL } from 'core/background/services/token';
+import { fromLI, LI } from 'lib/filters/gas-to-fee';
 import { SchnorrControl } from 'lib/crypto/elliptic';
+import { ErrorMessages } from 'config/errors';
+import { TransactionTypes } from './types';
+import { toBech32Address } from 'lib/utils/bech32';
+
+export interface ContractItemType {
+  vname: string;
+  type: string;
+  value: string;
+}
 
 export class Transaction {
   public amount: string;
@@ -46,6 +58,87 @@ export class Transaction {
   public hash?: string;
   public direction?: string;
   public timestamp?: number;
+
+  public get transactionType() {
+    if (this.code) {
+      return TransactionTypes.Deploy;
+    }
+
+    if (this.data) {
+      return TransactionTypes.Triggered;
+    }
+
+    return TransactionTypes.Payment;
+  }
+
+  public get tag() {
+    if (this.data && this.code) {
+      return TransactionTypes.Deploy;
+    }
+
+    if (this.data) {
+      const parsed = JSON.parse(this.data);
+
+      return parsed._tag;
+    }
+
+    return TransactionTypes.Payment;
+  }
+
+  public get tokenAmount() {
+    try {
+      const parsed = JSON.parse(this.data);
+
+      if (parsed._tag === TransactionTypes.Transfer) {
+        const param = parsed.params.find(
+          (el: ContractItemType) => el.vname === 'amount'
+        );
+
+        if (param.value) {
+          return param.value;
+        }
+      }
+
+      return this.amount;
+    } catch {
+      return this.amount;
+    }
+  }
+
+  public get self(): TxParams {
+    return {
+      amount: this.amount,
+      code: this.code,
+      data: this.data,
+      gasLimit: this.gasLimit.toString(),
+      gasPrice: fromLI(this.gasPrice),
+      nonce: this.nonce,
+      priority: this.priority,
+      pubKey: this.pubKey,
+      signature: this.signature,
+      toAddr: this.toAddr,
+      version: this.version,
+      hash: this.hash
+    };
+  }
+
+  public get recipient() {
+    try {
+      if (this.tag === TransactionTypes.Transfer) {
+        const parsed = JSON.parse(this.data);
+
+        return toBech32Address(parsed.params[0].value);
+      }
+    } catch {
+      //
+    }
+
+    return toBech32Address(this.toAddr);
+  }
+
+  public get fee() {
+    return (this.gasPrice * Number(this.gasLimit)) / 10e5;
+  }
 
   constructor(
     amount: string,
@@ -76,27 +169,6 @@ export class Transaction {
     this.signature = signature || '';
     this.net = net;
     this.nonce = nonce;
-  }
-
-  public get self(): TxParams {
-    return {
-      amount: this.amount,
-      code: this.code,
-      data: this.data,
-      gasLimit: this.gasLimit.toString(),
-      gasPrice: fromLI(this.gasPrice),
-      nonce: this.nonce,
-      priority: this.priority,
-      pubKey: this.pubKey,
-      signature: this.signature,
-      toAddr: this.toAddr,
-      version: this.version,
-      hash: this.hash
-    };
-  }
-
-  public get serialize() {
-    return JSON.stringify(this.self);
   }
 
   public setGas(gas: GasController) {

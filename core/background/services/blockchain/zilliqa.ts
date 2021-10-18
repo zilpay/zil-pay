@@ -10,7 +10,7 @@
 import type { SSN } from 'types/ssn';
 import type { NetworkControl } from 'core/background/services/network';
 import type { TxParams } from 'types/transaction';
-import type { Transaction } from 'lib/utils/tx-builder';
+import type { Transaction } from 'background/services/transactions/tx-builder';
 
 import assert from 'assert';
 import { NETWORK, NETWORK_KEYS } from 'config/network';

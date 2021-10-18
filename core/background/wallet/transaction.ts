@@ -8,8 +8,9 @@
  */
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
-import type { TxParams, MinParams } from 'types/transaction';
-import { Transaction } from 'lib/utils/tx-builder';
+import type { MinParams, StoredTx } from 'types/transaction';
+import { Transaction } from 'background/services/transactions/tx-builder';
+import { StatusCodes } from 'background/services/transactions';
 
 export class ZilPayTransaction {
   private readonly _core: ZIlPayCore;
@@ -23,7 +24,7 @@ export class ZilPayTransaction {
       await this._core.transactions.addConfirm(params);
 
       sendResponse({
-        resolve: this._core.state
+        resolve: params
       });
     } catch (err) {
       sendResponse({
@@ -57,13 +58,28 @@ export class ZilPayTransaction {
       }
 
       newTx.sign(keyPair.privKey);
-      const hash = await this._core.zilliqa.send(newTx);
-      newTx.setHash(hash);
-      const tx = newTx.self;
-      await this._core.transactions.addHistory(tx);
+      // const hash = await this._core.zilliqa.send(newTx);
+      newTx.setHash('hash');
+      // const tx = newTx.self;
+      await this._core.transactions.addHistory({
+        timestamp: new Date().getTime(),
+        toAddr: newTx.recipient,
+        status: StatusCodes.Pending,
+        teg: newTx.tag,
+        amount: newTx.tokenAmount,
+        type: newTx.transactionType,
+        fee: newTx.fee,
+        nonce: newTx.nonce,
+        from: account.bech32,
+        hash: newTx.hash,
+        token: {
+          decimals: 12,
+          symbol: ''
+        }
+      });
 
       sendResponse({
-        resolve: tx
+        resolve: newTx
       });
     } catch (err) {
       sendResponse({
