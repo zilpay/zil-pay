@@ -11,7 +11,7 @@ import { Runtime } from 'lib/runtime';
 
 export interface ReqBody {
   type: string;
-  payload?: object;
+  payload?: any;
   domain?: string;
   from?: string;
 }

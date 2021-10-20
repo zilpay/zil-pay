@@ -41,6 +41,10 @@ export class AuthGuard {
     return this.#isReady;
   }
 
+  public get encrypted() {
+    return this.#encryptSeed;
+  }
+
   public async sync() {
     const data = await BrowserStorage.get(
       Fields.VAULT,

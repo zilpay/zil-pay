@@ -23,7 +23,7 @@ export const MTypePopup = {
   LOG_OUT: `@/${app}/popup-logout`,
   SET_SEED_AND_PASSWORD: `@/${app}/popup-set-seed-words-and-password`,
 
-  POPUP_INIT: `@/${app}/popup-init`,
+  GET_WALLET_STATE: `@/${app}/get-wallet-state`,
 
   EXPORT_SEED: `@/${app}/popup-export-seed-words`,
   EXPORT_PRIVATE_KEY: `@/${app}/popup-export-private-key`,
@@ -32,25 +32,22 @@ export const MTypePopup = {
   IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
 
   UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
-  BUILD_TX_PARAMS: `@/${app}/popup-need-to-build-tx-params`,
 
   SIGN_AND_SEND: `@/${app}/popup-send-to-sign-tx`,
   DOMAIN_RESOLVE: `@/${app}/popup-resolve-domain`,
   REJECT_CONFIRM_TX: `@/${app}/popup-reject-confirm-tx`,
+  REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
   CONFIRM_SIGN_MSG: `@/${app}/popup-confirm-sign-msg`,
 
   SET_PROXY_STORAGE: `@/${app}/set-data-through-bg`,
 
-  GET_TOKEN_INFO: `@/${app}/get-token-info`,
-  SET_TOKEN: `@/${app}/set-new-token`,
+  GET_ZRC2_TOKEN_INFO: `@/${app}/get-zrc2-token-info`,
+  ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
   RM_TOKEN: `@/${app}/remove-token`,
-  INIT_TOKEN: `@/${app}/init-default-token`,
-  GET_GAS_PRICE: `@/${app}/get-minimum-gas-price`,
 
-  SET_NETWORK: `@/${app}/set-network`,
-  PUT_WALLET: `@/${app}/update-wallet`,
+  SELECT_NETWORK: `@/${app}/select-network`,
+  SELECT_ACCOUNT: `@/${app}/select-account`,
 
-  GET_TOKEN_RATE: `@/${app}/get-token-rate`,
   UPDATE_SSN_LIST: `@/${app}/update-ssn-list`,
   GET_ACCOUNT_NONCE: `@/${app}/get-account-nonce`,
   ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`
@@ -71,5 +68,5 @@ export const MTypeTab = {
   NEW_BLOCK: `@/${app}/new-block-created`,
 
   CONNECT_APP: `@/${app}/request-to-connect-app`,
-  RESPONSE_TO_DAPP: `@/${app}/response-connect-app`
+  IS_CONNECTED_APP: `@/${app}/is-connected-app`
 };

@@ -34,6 +34,18 @@ export class ZilPayWallet {
     }
   }
 
+  public async exportEncrypted(sendResponse: StreamResponse) {
+    try {
+      sendResponse({
+        resolve: this.#core.guard.encrypted
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async exportSeedPhrase(sendResponse: StreamResponse) {
     try {
       const seed = this.#core.guard.getSeed();
@@ -100,7 +112,7 @@ export class ZilPayWallet {
     }
   }
 
-  public async balanceUpdate(sendResponse?: StreamResponse) {
+  public async balanceUpdate(sendResponse: StreamResponse) {
     try {
       const accounts = await this.#core.account.balanceUpdate();
 

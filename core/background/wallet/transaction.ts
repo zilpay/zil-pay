@@ -140,6 +140,20 @@ export class ZilPayTransaction {
     }
   }
 
+  public async getNextNonce(sendResponse: StreamResponse) {
+    try {
+      const account = this.#core.account.selectedAccount;
+      const nonce = await this.#core.nonceCounter.nextNonce(account);
+      sendResponse({
+        resolve: nonce
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   async #getToken(toAddr: string) {
     try {
       const init = await this.#core.zrc2.getZRCInit(toAddr);
