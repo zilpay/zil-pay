@@ -6,10 +6,18 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import LockPage from './pages/Lock.svelte';
+import { wrap } from 'svelte-spa-router/wrap';
+import LockPage from '../pages/Lock.svelte';
 
 export default {
-  '/': LockPage,
+  '/': wrap({
+    component: LockPage,
+    conditions: [
+      async () => {
+        return true;
+      }
+    ]
+  }),
 
   // Catch-all
   // This is optional, but if present it must be the last

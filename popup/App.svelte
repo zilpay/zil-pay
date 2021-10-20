@@ -1,11 +1,10 @@
 <script lang="ts">
 	import Router from 'svelte-spa-router';
-  import routes from 'popup/routes';
+  import routes from './routers';
 
-	import { Wallet } from './backend';
+	import { Wallet } from "popup/backend";
+
 	new Wallet().getState().then(console.log);
-
-	export let name: string;
 </script>
 
 <Router {routes} />
