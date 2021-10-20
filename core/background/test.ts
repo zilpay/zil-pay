@@ -373,6 +373,5 @@ export async function testFromOld(core: ZIlPayBackground) {
     console.log(resolve);
   });
 
-
   console.log('end-testing');
 }

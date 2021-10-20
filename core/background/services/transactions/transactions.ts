@@ -47,6 +47,8 @@ export class TransactionsController {
     // Circumcision Array.
     newList.length = Common.MAX_TX_QUEUE;
 
+    this._txns = newList.filter(Boolean);
+
     await BrowserStorage.set(
       buildObject(this._transactionsField, this.transactions)
     );
