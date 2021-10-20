@@ -11,18 +11,18 @@ import type { ZIlPayCore } from './core';
 import type { Contact } from 'types/contact';
 
 export class ZilPayContacts {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public async addContact(contact: Contact, sendResponse: StreamResponse) {
     try {
-      await this._core.contacts.add(contact);
+      await this.#core.contacts.add(contact);
 
       sendResponse({
-        resolve: this._core.contacts.contacts
+        resolve: this.#core.contacts.contacts
       });
     } catch (err) {
       sendResponse({
@@ -34,7 +34,7 @@ export class ZilPayContacts {
   public requestConnections(sendResponse: StreamResponse) {
     try {
       sendResponse({
-        resolve: this._core.contacts.contacts
+        resolve: this.#core.contacts.contacts
       });
     } catch (err) {
       sendResponse({
@@ -45,10 +45,10 @@ export class ZilPayContacts {
 
   public async removeContact(index: number, sendResponse: StreamResponse) {
     try {
-      await this._core.contacts.rm(index);
+      await this.#core.contacts.rm(index);
 
       sendResponse({
-        resolve: this._core.contacts.contacts
+        resolve: this.#core.contacts.contacts
       });
     } catch (err) {
       sendResponse({
@@ -59,10 +59,10 @@ export class ZilPayContacts {
 
   public async clear(sendResponse: StreamResponse) {
     try {
-      await this._core.contacts.reset();
+      await this.#core.contacts.reset();
 
       sendResponse({
-        resolve: this._core.contacts.contacts
+        resolve: this.#core.contacts.contacts
       });
     } catch (err) {
       sendResponse({

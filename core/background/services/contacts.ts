@@ -14,13 +14,13 @@ import { Fields } from 'config/fields';
 import { isBech32 } from 'lib/utils/address';
 
 export class ContactController {
-  private _identities: Contact[] = [];
+  #identities: Contact[] = [];
 
   public get contacts() {
-    return this._identities;
+    return this.#identities;
   }
 
-  private _isUnique(connect: Contact) {
+  #isUnique(connect: Contact) {
     for (const iterator of this.contacts) {
       assert(
         iterator.name.toLowerCase() !== connect.name.toLowerCase(),
@@ -34,11 +34,11 @@ export class ContactController {
   }
 
   public async add(connect: Contact) {
-    this._isUnique(connect);
+    this.#isUnique(connect);
 
     assert(isBech32(connect.address), ErrorMessages.IncorrectFormat);
 
-    this._identities.push(connect);
+    this.#identities.push(connect);
 
     await BrowserStorage.set(
       buildObject(Fields.CONTACTS, this.contacts)
@@ -46,9 +46,9 @@ export class ContactController {
   }
 
   public async rm(index: number) {
-    delete this._identities[index];
+    delete this.#identities[index];
 
-    this._identities = this._identities.filter(Boolean);
+    this.#identities = this.#identities.filter(Boolean);
 
     await BrowserStorage.set(
       buildObject(Fields.CONTACTS, this.contacts)
@@ -56,7 +56,7 @@ export class ContactController {
   }
 
   public async reset() {
-    this._identities = [];
+    this.#identities = [];
 
     await BrowserStorage.set(
       buildObject(Fields.CONTACTS, this.contacts)
@@ -67,7 +67,7 @@ export class ContactController {
     const jsonData = await BrowserStorage.get(Fields.CONTACTS);
 
     try {
-      this._identities = JSON.parse(String(jsonData));
+      this.#identities = JSON.parse(String(jsonData));
     } catch {
       await this.reset();
     }

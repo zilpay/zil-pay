@@ -7,13 +7,11 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { NetworkControl } from 'core/background/services/network';
-import type { TxParams, StoredTx } from 'types/transaction';
+import type { TxParams } from 'types/transaction';
 import type { Account } from 'types/account';
 import type { GasController } from 'core/background/services/gas';
-import type { StatusCodes } from 'background/services/transactions';
 
 import { ZilliqaMessage } from '@zilliqa-js/proto';
-import assert from 'assert';
 import { Buffer } from 'buffer';
 import BN from 'bn.js';
 import Long from 'long';
@@ -28,10 +26,8 @@ import {
   tohexString
 } from 'lib/utils/address';
 
-import { ZIL } from 'core/background/services/token';
-import { fromLI, LI } from 'lib/filters/gas-to-fee';
+import { fromLI } from 'lib/filters/gas-to-fee';
 import { SchnorrControl } from 'lib/crypto/elliptic';
-import { ErrorMessages } from 'config/errors';
 import { TransactionTypes } from './types';
 import { toBech32Address } from 'lib/utils/bech32';
 
@@ -197,17 +193,17 @@ export class Transaction {
   }
 
   public sign(privKey: string) {
-    const bytes = this._encodeTransactionProto();
+    const bytes = this.#encodeTransactionProto();
     const schnorrControl = new SchnorrControl(privKey);
 
     this.signature = schnorrControl.getSignature(bytes);
   }
 
   public encodedProto() {
-    return this._encodeTransactionProto();
+    return this.#encodeTransactionProto();
   }
 
-  private _encodeTransactionProto() {
+  #encodeTransactionProto() {
     const amount = new BN(this.amount);
     const gasPrice = new BN(fromLI(this.gasPrice));
     const msg = {

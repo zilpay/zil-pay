@@ -13,10 +13,10 @@ import { Fields } from 'config/fields';
 import { ErrorMessages } from 'config/errors';
 
 export class CurrenciesController {
-  private _selected = 'usd';
+  #selected = 'usd';
 
   public get selected() {
-    return this._selected;
+    return this.#selected;
   }
 
   public async update(newSelected: 'usd' | 'btc' | 'eth') {
@@ -25,7 +25,7 @@ export class CurrenciesController {
       `${ErrorMessages.IncorrectParams} newSelected`
     );
 
-    this._selected = newSelected;
+    this.#selected = newSelected;
 
     await BrowserStorage.set(
       buildObject(Fields.SELECTED_CURRENCY, this.selected)
@@ -40,11 +40,11 @@ export class CurrenciesController {
       return this.reset();
     }
 
-    this._selected = selected;
+    this.#selected = selected;
   }
 
   public async reset() {
-    this._selected = DEFAULT_CURRENCIES[0];
+    this.#selected = DEFAULT_CURRENCIES[0];
 
     await BrowserStorage.set(
       buildObject(Fields.SELECTED_CURRENCY, this.selected)

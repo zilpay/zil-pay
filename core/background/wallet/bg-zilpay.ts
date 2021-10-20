@@ -19,17 +19,17 @@ import { ZilPayContacts } from './contacts';
 import { ZilPayTransaction } from './transaction'
 
 export class ZIlPayBackground {
-  private readonly _core = new ZIlPayCore();
-  public readonly elliptic = new ZilPayElliptic(this._core);
-  public readonly netwrok = new ZilPayNetwrok(this._core);
-  public readonly popup = new ZilPayPopup(this._core);
-  public readonly synchronizer = new ZilPaySynchronizer(this._core);
-  public readonly ud = new ZilPayUnstoppableDomains(this._core);
-  public readonly wallet = new ZilPayWallet(this._core);
-  public readonly zrc2 = new ZilPayZRC(this._core);
-  public readonly apps = new ZilPayApps(this._core);
-  public readonly contacts = new ZilPayContacts(this._core);
-  public readonly transaction = new ZilPayTransaction(this._core);
+  readonly #core = new ZIlPayCore();
+  public readonly elliptic = new ZilPayElliptic(this.#core);
+  public readonly netwrok = new ZilPayNetwrok(this.#core);
+  public readonly popup = new ZilPayPopup(this.#core);
+  public readonly synchronizer = new ZilPaySynchronizer(this.#core);
+  public readonly ud = new ZilPayUnstoppableDomains(this.#core);
+  public readonly wallet = new ZilPayWallet(this.#core);
+  public readonly zrc2 = new ZilPayZRC(this.#core);
+  public readonly apps = new ZilPayApps(this.#core);
+  public readonly contacts = new ZilPayContacts(this.#core);
+  public readonly transaction = new ZilPayTransaction(this.#core);
 
   public async sync() {
     await this.synchronizer.sync();

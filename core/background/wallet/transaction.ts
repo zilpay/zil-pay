@@ -14,15 +14,15 @@ import { StatusCodes, TransactionTypes } from 'background/services/transactions'
 import { ZIL } from 'background/services/token';
 
 export class ZilPayTransaction {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public async addConfirm(params: MinParams, sendResponse: StreamResponse) {
     try {
-      await this._core.transactions.addConfirm(params);
+      await this.#core.transactions.addConfirm(params);
 
       sendResponse({
         resolve: params
@@ -36,10 +36,10 @@ export class ZilPayTransaction {
 
   public async clearHistory(sendResponse: StreamResponse) {
     try {
-      await this._core.transactions.clearHistory();
+      await this.#core.transactions.clearHistory();
 
       sendResponse({
-        resolve: this._core.transactions.transactions
+        resolve: this.#core.transactions.transactions
       });
     } catch (err) {
       sendResponse({
@@ -50,10 +50,10 @@ export class ZilPayTransaction {
 
   public async rejectAll(sendResponse: StreamResponse) {
     try {
-      await this._core.transactions.clearConfirm();
+      await this.#core.transactions.clearConfirm();
 
       sendResponse({
-        resolve: this._core.transactions.forConfirm
+        resolve: this.#core.transactions.forConfirm
       });
     } catch (err) {
       sendResponse({
@@ -64,10 +64,10 @@ export class ZilPayTransaction {
 
   public async rmConfirm(index: number, sendResponse: StreamResponse) {
     try {
-      await this._core.transactions.rmConfirm(index);
+      await this.#core.transactions.rmConfirm(index);
 
       sendResponse({
-        resolve: this._core.transactions.forConfirm
+        resolve: this.#core.transactions.forConfirm
       });
     } catch (err) {
       sendResponse({
@@ -78,43 +78,43 @@ export class ZilPayTransaction {
 
   public async signSendTx(accIndex: number, params: MinParams, sendResponse: StreamResponse) {
     try {
-      await this._core.account.select(accIndex);
-      await this._core.transactions.sync();
+      await this.#core.account.select(accIndex);
+      await this.#core.transactions.sync();
 
       let token = {
         decimals: ZIL.decimals,
         symbol: ZIL.symbol
       };
-      const account = this._core.account.selectedAccount;
-      const keyPair = await this._core.account.getKeyPair();
-      const nonce = await this._core.nonceCounter.nextNonce(account);
+      const account = this.#core.account.selectedAccount;
+      const keyPair = await this.#core.account.getKeyPair();
+      const nonce = await this.#core.nonceCounter.nextNonce(account);
       const newTx = new Transaction(
         params.amount,
         params.gasLimit,
         params.gasPrice,
         account,
         params.toAddr,
-        this._core.netwrok.selected,
+        this.#core.netwrok.selected,
         nonce,
         params.code,
         params.data
       );
 
       if (!params.version) {
-        const version = await this._core.zilliqa.getNetworkId();
-        newTx.setVersion(version, this._core.netwrok);
+        const version = await this.#core.zilliqa.getNetworkId();
+        newTx.setVersion(version, this.#core.netwrok);
       } else {
-        newTx.setVersion(params.version, this._core.netwrok);
+        newTx.setVersion(params.version, this.#core.netwrok);
       }
 
       if (newTx.transactionType === TransactionTypes.Transfer) {
-        token = await this._getToken(newTx.toAddr);
+        token = await this.#getToken(newTx.toAddr);
       }
 
       newTx.sign(keyPair.privKey);
-      const hash = await this._core.zilliqa.send(newTx);
+      const hash = await this.#core.zilliqa.send(newTx);
       newTx.setHash(hash);
-      await this._core.transactions.addHistory({
+      await this.#core.transactions.addHistory({
         token,
         confirmed: false,
         timestamp: new Date().getTime(),
@@ -131,7 +131,7 @@ export class ZilPayTransaction {
       });
 
       sendResponse({
-        resolve: this._core.transactions.transactions
+        resolve: this.#core.transactions.transactions
       });
     } catch (err) {
       sendResponse({
@@ -140,9 +140,9 @@ export class ZilPayTransaction {
     }
   }
 
-  private async _getToken(toAddr: string) {
+  async #getToken(toAddr: string) {
     try {
-      const init = await this._core.zrc2.getZRCInit(toAddr);
+      const init = await this.#core.zrc2.getZRCInit(toAddr);
 
       return {
         decimals: init.decimals,

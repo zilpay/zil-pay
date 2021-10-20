@@ -9,11 +9,11 @@
 import type { ZIlPayCore } from './core';
 
 export class ZilPayElliptic {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   public async signMessage() {}
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 }

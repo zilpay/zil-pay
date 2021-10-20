@@ -6,7 +6,6 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { ZilliqaControl } from 'core/background/services/blockchain';
 import type { ZRC2Controller } from 'core/background/services/token';
 import type { Account, KeyPair, Wallet } from 'types/account';
 import type { AuthGuard } from 'core/background/services/guard';
@@ -29,18 +28,18 @@ export class AccountController {
   public static readonly field0 = 'identities';
   public static readonly field1 = 'selectedAddress';
 
-  private readonly _hdKey = new HDKey();
-  private readonly _mnemonic = new MnemonicController();
-  private readonly _zilliqa: ZilliqaControl;
-  private readonly _guard: AuthGuard;
-  private _zrc2: ZRC2Controller;
-  private _wallet: Wallet = {
+  readonly #hdKey = new HDKey();
+  readonly #mnemonic = new MnemonicController();
+  readonly #guard: AuthGuard;
+
+  #zrc2: ZRC2Controller;
+  #wallet: Wallet = {
     selectedAddress: 0,
     identities: []
   };
 
   public get wallet() {
-    return this._wallet;
+    return this.#wallet;
   }
 
   public get selectedAccount(): undefined | Account {
@@ -54,55 +53,54 @@ export class AccountController {
   }
 
   public get lastIndexPrivKey() {
-    return this._wallet
+    return this.#wallet
       .identities
       .filter((acc) => acc.type === AccountTypes.PrivateKey)
       .length;
   }
 
   public get lastIndexSeed() {
-    return this._wallet
+    return this.#wallet
       .identities
       .filter((acc) => acc.type === AccountTypes.Seed)
       .length;
   }
 
   public get lastIndexLedger() {
-    return this._wallet
+    return this.#wallet
       .identities
       .filter((acc) => acc.type === AccountTypes.Ledger)
       .length;
   }
 
-  constructor(zilliqa: ZilliqaControl, guard: AuthGuard) {
-    this._zilliqa = zilliqa;
-    this._guard = guard;
+  constructor(guard: AuthGuard) {
+    this.#guard = guard;
   }
 
   public initZRC(rc2Controller: ZRC2Controller) {
-    this._zrc2 = rc2Controller;
+    this.#zrc2 = rc2Controller;
   }
 
   public async remove(index: number) {
     assert(index > 1, ErrorMessages.OutOfIndex);
 
-    delete this._wallet.identities[index];
+    delete this.#wallet.identities[index];
 
-    this._wallet.identities = this._wallet.identities.filter(Boolean);
+    this.#wallet.identities = this.#wallet.identities.filter(Boolean);
 
     if (this.wallet.selectedAddress === index) {
       this.wallet.selectedAddress -= 1;
     }
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
   }
 
   public async fromSeed(words: string, index = 0): Promise<KeyPair> {
-    const path = this._mnemonic.getKey(index);
-    const seed = await this._mnemonic.mnemonicToSeed(words);
-    const hdKey = this._hdKey.fromMasterSeed(seed);
+    const path = this.#mnemonic.getKey(index);
+    const seed = await this.#mnemonic.mnemonicToSeed(words);
+    const hdKey = this.#hdKey.fromMasterSeed(seed);
     const childKey = hdKey.derive(path);
 
     return childKey.keyPair;
@@ -134,20 +132,20 @@ export class AccountController {
     }));
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
   }
 
   public async getKeyPair(): Promise<KeyPair> {
     switch (this.selectedAccount.type) {
       case AccountTypes.Seed:
-        const seed = this._guard.getSeed();
+        const seed = this.#guard.getSeed();
         const index = this.selectedAccount.index;
         const keyPair = await this.fromSeed(seed, index);
         return keyPair;
       case AccountTypes.PrivateKey:
         const encryptedPriveLey = this.selectedAccount.privKey;
-        const privateKey = this._guard.decryptPrivateKey(encryptedPriveLey);
+        const privateKey = this.#guard.decryptPrivateKey(encryptedPriveLey);
         return {
           pubKey: this.selectedAccount.pubKey,
           privKey: privateKey,
@@ -165,7 +163,7 @@ export class AccountController {
     }
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
   }
 
@@ -182,7 +180,7 @@ export class AccountController {
     const identities = oldWallet[AccountController.field0];
     const selectedAddress = oldWallet[AccountController.field1];
     const newIdentities: Account[] = [];
-    const vault = this._guard.getWallet();
+    const vault = this.#guard.getWallet();
 
     for (let i = 0; i < identities.length; i++) {
       const { address, balance, isImport, index, hwType, name, pubKey } = identities[i];
@@ -206,7 +204,7 @@ export class AccountController {
         const { privateKey } = vault.decryptImported.find(
           (el) => el.index === index
         );
-        newAccount.privKey = this._guard.encryptPrivateKey(privateKey);
+        newAccount.privKey = this.#guard.encryptPrivateKey(privateKey);
         newAccount.type = AccountTypes.PrivateKey;
         newAccount.name = `Imported ${index}`;
         newAccount.pubKey = getPubKeyFromPrivateKey(privateKey);
@@ -219,11 +217,11 @@ export class AccountController {
       newIdentities.push(newAccount);
     }
 
-    this._wallet.selectedAddress = selectedAddress;
-    this._wallet.identities = newIdentities;
+    this.#wallet.selectedAddress = selectedAddress;
+    this.#wallet.identities = newIdentities;
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
   }
 
@@ -233,7 +231,7 @@ export class AccountController {
     try {
       const wallet = JSON.parse(String(walletJson));
 
-      this._wallet = wallet;
+      this.#wallet = wallet;
     } catch {
       //
     }
@@ -244,7 +242,7 @@ export class AccountController {
     const { pubKey, base16 } = await this.fromSeed(seed, index);
     const bech32 = toBech32Address(base16);
     const type = AccountTypes.Seed;
-    const zrc2 = await this._zrc2.getBalance(base16);
+    const zrc2 = await this.#zrc2.getBalance(base16);
     const account: Account = {
       name,
       bech32,
@@ -260,11 +258,11 @@ export class AccountController {
   }
 
   public async balanceUpdate() {
-    const zrc2 = await this._zrc2.getBalance(this.selectedAccount.base16);
-    this._wallet.identities[this._wallet.selectedAddress].zrc2 = zrc2;
+    const zrc2 = await this.#zrc2.getBalance(this.selectedAccount.base16);
+    this.#wallet.identities[this.#wallet.selectedAddress].zrc2 = zrc2;
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
 
     return this.wallet;
@@ -275,8 +273,8 @@ export class AccountController {
     const { pubKey, base16 } = this.fromPrivateKey(privKey);
     const bech32 = toBech32Address(base16);
     const type = AccountTypes.PrivateKey;
-    const encryptedPrivateKey = this._guard.encryptPrivateKey(privKey);
-    const zrc2 = await this._zrc2.getBalance(base16);
+    const encryptedPrivateKey = this.#guard.encryptPrivateKey(privKey);
+    const zrc2 = await this.#zrc2.getBalance(base16);
     const account: Account = {
       name,
       bech32,
@@ -295,20 +293,20 @@ export class AccountController {
   public async select(index: number) {
     assert(index < this.wallet.identities.length, ErrorMessages.OutOfIndex);
 
-    this._wallet.selectedAddress = index;
+    this.#wallet.selectedAddress = index;
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
 
     return this.selectedAccount;
   }
 
   public async changeAccountName(name: string) {
-    this._wallet.identities[this._wallet.selectedAddress].name = name;
+    this.#wallet.identities[this.#wallet.selectedAddress].name = name;
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
 
     return this.selectedAccount;
@@ -317,14 +315,14 @@ export class AccountController {
   private async _add(account: Account) {
     await this._checkAccount(account);
 
-    this._wallet
+    this.#wallet
       .identities
       .push(account);
-    this._wallet
+    this.#wallet
       .selectedAddress = this.wallet.identities.length - 1;
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this._wallet)
+      buildObject(Fields.WALLET, this.#wallet)
     );
 
     return this.wallet;

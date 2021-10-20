@@ -15,14 +15,14 @@ export enum Themes {
 }
 
 export class ThemeController {
-  private _selected: Themes;
+  #selected: Themes;
 
   public get selected() {
-    return this._selected;
+    return this.#selected;
   }
 
   public async update(newSelected: Themes) {
-    this._selected = newSelected;
+    this.#selected = newSelected;
 
     await BrowserStorage.set(
       buildObject(Fields.SELECTED_CURRENCY, String(this.selected))
@@ -37,11 +37,11 @@ export class ThemeController {
       return this.reset();
     }
 
-    this._selected = Number(content);
+    this.#selected = Number(content);
   }
 
   public async reset() {
-    this._selected = Themes.Light;
+    this.#selected = Themes.Light;
 
     await BrowserStorage.set(
       buildObject(Fields.THEME, String(Themes.Light))

@@ -26,10 +26,10 @@ const BITCOIN_VERSIONS = {
 };
 
 export class HDKey {
-  private _privateKey?: Uint8Array;
-  private _publicKey?: Buffer;
-  private _fingerprint = 0;
-  private _identifier?: Buffer;
+  #privateKey?: Uint8Array;
+  #publicKey?: Buffer;
+  #fingerprint = 0;
+  #identifier?: Buffer;
 
   public parentFingerprint = 0;
   public chainCode?: Buffer | number[];
@@ -41,10 +41,10 @@ export class HDKey {
     assert.equal(value.length, 32, ErrorMessages.PrivateKeyMustBe);
     assert(secp256k1.privateKeyVerify(value) === true, ErrorMessages.BadPrivateKey);
 
-    this._privateKey = value;
-    this._publicKey = Buffer.from(secp256k1.publicKeyCreate(value, true));
-    this._identifier = Buffer.from(this._hash160(this._publicKey));
-    this._fingerprint = this._identifier.slice(0, 4).readUInt32BE(0);
+    this.#privateKey = value;
+    this.#publicKey = Buffer.from(secp256k1.publicKeyCreate(value, true));
+    this.#identifier = Buffer.from(this.#hash160(this.#publicKey));
+    this.#fingerprint = this.#identifier.slice(0, 4).readUInt32BE(0);
   }
 
   public set publicKey(value: Buffer) {
@@ -52,10 +52,10 @@ export class HDKey {
     assert(secp256k1.publicKeyVerify(value) === true, ErrorMessages.BadPubKey);
 
     // force compressed point
-    this._publicKey = Buffer.from(secp256k1.publicKeyConvert(value, true));
-    this._identifier = this._hash160(this.publicKey);
-    this._fingerprint = this._identifier.slice(0, 4).readUInt32BE(0);
-    this._privateKey = null;
+    this.#publicKey = Buffer.from(secp256k1.publicKeyConvert(value, true));
+    this.#identifier = this.#hash160(this.publicKey);
+    this.#fingerprint = this.#identifier.slice(0, 4).readUInt32BE(0);
+    this.#privateKey = null;
   }
 
   public get keyPair() {
@@ -70,11 +70,11 @@ export class HDKey {
   }
 
   public get publicKey() {
-    return Buffer.from(this._publicKey);
+    return Buffer.from(this.#publicKey);
   }
 
   public get privateKey(): Buffer {
-    return Buffer.from(this._privateKey);
+    return Buffer.from(this.#privateKey);
   }
 
   constructor(versions?: typeof BITCOIN_VERSIONS) {
@@ -171,7 +171,7 @@ export class HDKey {
 
     hd.chainCode = Buffer.from(IR);
     hd.depth = this.depth + 1;
-    hd.parentFingerprint = this._fingerprint; // .readUInt32BE(0)
+    hd.parentFingerprint = this.#fingerprint; // .readUInt32BE(0)
     hd.index = index;
   
     return hd;
@@ -191,7 +191,7 @@ export class HDKey {
     return hdkey
   }
 
-  private _hash160(buf: Buffer) {
+  #hash160(buf: Buffer) {
     const hash = sha256()
       .update(buf)
       .digest();

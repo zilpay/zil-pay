@@ -19,7 +19,7 @@ export class MnemonicController {
   public generateMnemonic(strength = 128) {
     strength = strength || 128;
     assert(strength % 32 === 0, ErrorMessages.InvalidEntropy);
-    return this._entropyToMnemonic(randomBytes(strength / 8), wordlist);
+    return this.#entropyToMnemonic(randomBytes(strength / 8), wordlist);
   }
 
   public getKey(index: number) {
@@ -37,14 +37,14 @@ export class MnemonicController {
         }
       };
 
-      const mnemonicBuffer = Buffer.from(this._normalize(mnemonic));
-      const saltBuffer = Buffer.from(this._salt(this._normalize(password)));
+      const mnemonicBuffer = Buffer.from(this.#normalize(mnemonic));
+      const saltBuffer = Buffer.from(this.#salt(this.#normalize(password)));
 
       pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', callback);
     });
   }
 
-  private _entropyToMnemonic(entropy: string, wordlist: string[]) {
+  #entropyToMnemonic(entropy: string, wordlist: string[]) {
     const bufferEntropy = Buffer.from(entropy, 'hex');
 
     assert(Boolean(wordlist), ErrorMessages.WordListRequired);
@@ -55,48 +55,48 @@ export class MnemonicController {
     assert(bufferEntropy.length <= 32, ErrorMessages.InvalidEntropy);
     assert(bufferEntropy.length % 4 === 0, ErrorMessages.InvalidEntropy);
 
-    const entropyBits = this._bytesToBinary(Array.from(bufferEntropy));
-    const checksumBits = this._deriveChecksumBits(bufferEntropy);
+    const entropyBits = this.#bytesToBinary(Array.from(bufferEntropy));
+    const checksumBits = this.#deriveChecksumBits(bufferEntropy);
     const bits = entropyBits + checksumBits;
     const chunks = bits.match(/(.{1,11})/g);
     const words = chunks.map((binary) => {
-        const index = this._binaryToByte(binary);
+        const index = this.#binaryToByte(binary);
         return wordlist[index];
     });
 
     return words.join(' ');
   }
 
-  private _bytesToBinary(bytes: number[]) {
-    return bytes.map((x) => this._lpad(x.toString(2), '0', 8)).join('');
+  #bytesToBinary(bytes: number[]) {
+    return bytes.map((x) => this.#lpad(x.toString(2), '0', 8)).join('');
   }
 
-  private _salt(password: string) {
+  #salt(password: string) {
     return 'mnemonic' + (password || '');
   }
 
-  private _normalize(str: string) {
+  #normalize(str: string) {
     return (str || '').normalize('NFKD');
   }
 
-  private _lpad(str: string, padString: string, length: number) {
+  #lpad(str: string, padString: string, length: number) {
     while (str.length < length) {
         str = padString + str;
     }
     return str;
   }
 
-  private _binaryToByte(bin: string) {
+  #binaryToByte(bin: string) {
     return parseInt(bin, 2);
   }
 
-  private _deriveChecksumBits(entropyBuffer: Buffer) {
+  #deriveChecksumBits(entropyBuffer: Buffer) {
     const ENT = entropyBuffer.length * 8;
     const CS = ENT / 32;
     const hash = sha256()
       .update(entropyBuffer)
       .digest('hex');
 
-    return this._bytesToBinary(Array.from(hash)).slice(0, CS);
+    return this.#bytesToBinary(Array.from(hash)).slice(0, CS);
   }
 }

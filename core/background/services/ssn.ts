@@ -26,31 +26,31 @@ export const DEFAULT_SSN = {
   time: 420
 };
 export class SSnController {
-  private readonly _zilliqa: ZilliqaControl;
-  private readonly _network: NetworkControl;
-  private _ssnList: SSN[] = [DEFAULT_SSN];
-  private _selected = 0;
+  readonly #zilliqa: ZilliqaControl;
+  readonly #network: NetworkControl;
+  #ssnList: SSN[] = [DEFAULT_SSN];
+  #selected = 0;
 
   public get payload() {
     return {
-      selected: this._selected,
-      list: this._ssnList
+      selected: this.#selected,
+      list: this.#ssnList
     };
   }
 
   public get ssn() {
-    return this._ssnList[this._selected];
+    return this.#ssnList[this.#selected];
   }
 
   constructor(zilliqa: ZilliqaControl, netwrok: NetworkControl) {
-    this._zilliqa = zilliqa;
-    this._network = netwrok;
+    this.#zilliqa = zilliqa;
+    this.#network = netwrok;
   }
 
   public async update() {
-    const list = await this._zilliqa.getSSnList();
+    const list = await this.#zilliqa.getSSnList();
 
-    this._ssnList = list;
+    this.#ssnList = list;
 
     await BrowserStorage.set(
       buildObject(Fields.SSN, this.payload)
@@ -58,26 +58,26 @@ export class SSnController {
   }
 
   public async select(index: number) {
-    assert(index < this._ssnList.length, ErrorMessages.OutOfIndex);
+    assert(index < this.#ssnList.length, ErrorMessages.OutOfIndex);
 
-    this._selected = index;
+    this.#selected = index;
 
     await BrowserStorage.set(
       buildObject(Fields.SSN, this.payload)
     );
 
-    await this._network.changeConfig({
-      ...this._network.config,
+    await this.#network.changeConfig({
+      ...this.#network.config,
       mainnet: {
-        ...this._network.config.mainnet,
+        ...this.#network.config.mainnet,
         PROVIDER: this.ssn.api
       }
     });
   }
 
   public async reset() {
-    this._ssnList = [DEFAULT_SSN];
-    this._selected = 0;
+    this.#ssnList = [DEFAULT_SSN];
+    this.#selected = 0;
 
     await BrowserStorage.set(
       buildObject(Fields.SSN, this.payload)
@@ -99,8 +99,8 @@ export class SSnController {
         `selected ${ErrorMessages.RequiredParam}`
       );
 
-      this._ssnList = list;
-      this._selected = selected;
+      this.#ssnList = list;
+      this.#selected = selected;
     } catch(err) {
       await this.reset();
     }

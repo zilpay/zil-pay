@@ -14,16 +14,16 @@ import { Fields } from 'config/fields';
 import { toLi } from 'lib/filters/gas-to-fee';
 
 export class GasController {
-  private readonly _zilliqa: ZilliqaControl;
-  private _gasLimit = Gas.gasLimit;
-  private _gasPrice = Gas.gasPrice;
+  readonly #zilliqa: ZilliqaControl;
+  #gasLimit = Gas.gasLimit;
+  #gasPrice = Gas.gasPrice;
 
   public get gasLimit() {
-    return this._gasLimit;
+    return this.#gasLimit;
   }
 
   public get gasPrice() {
-    return this._gasPrice;
+    return this.#gasPrice;
   }
 
   public get self() {
@@ -34,13 +34,13 @@ export class GasController {
   }
 
   constructor(zilliqa: ZilliqaControl) {
-    this._zilliqa = zilliqa;
+    this.#zilliqa = zilliqa;
   }
 
   public async reset() {
-    const min = await this._zilliqa.getMinimumGasPrice();
+    const min = await this.#zilliqa.getMinimumGasPrice();
 
-    this._gasPrice = Number(toLi(min));
+    this.#gasPrice = Number(toLi(min));
 
     await BrowserStorage.set(
       buildObject(Fields.GAS, this.self)
@@ -51,8 +51,8 @@ export class GasController {
     const gas = await BrowserStorage.get(Fields.GAS);
 
     if (gas) {
-      this._gasLimit = Number(gas['gasLimit']);
-      this._gasPrice = Number(gas['gasPrice']);
+      this.#gasLimit = Number(gas['gasLimit']);
+      this.#gasPrice = Number(gas['gasPrice']);
     } else {
       await BrowserStorage.set(
         buildObject(Fields.GAS, this.self)

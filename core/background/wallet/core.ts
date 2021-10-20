@@ -36,7 +36,7 @@ export class ZIlPayCore {
   public readonly contacts = new ContactController();
   public readonly zilliqa = new ZilliqaControl(this.netwrok);
   public readonly gas = new GasController(this.zilliqa);
-  public readonly account = new AccountController(this.zilliqa, this.guard);
+  public readonly account = new AccountController(this.guard);
   public readonly transactions = new TransactionsController(this.netwrok, this.account);
   public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
   public readonly ssn = new SSnController(this.zilliqa, this.netwrok);

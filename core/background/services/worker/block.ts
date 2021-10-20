@@ -16,47 +16,47 @@ import { MTypeTab } from 'lib/streem/stream-keys';
 import type { TransactionsQueue } from "../transactions";
 
 export class BlockController {
-  private readonly _zilliqa: ZilliqaControl;
-  private readonly _queue: TransactionsQueue;
-  private readonly _name = `block/${Runtime.runtime.id}/zilpay`;
-  private readonly _delay = 0.3; // approximately 18seconds.
-  private _currentBlock = 0;
+  readonly #zilliqa: ZilliqaControl;
+  readonly #queue: TransactionsQueue;
+  readonly #name = `block/${Runtime.runtime.id}/zilpay`;
+  readonly #delay = 0.3; // approximately 18seconds.
+  #currentBlock = 0;
 
   public get blocknumber() {
-    return this._currentBlock;
+    return this.#currentBlock;
   }
 
   constructor(zilliqa: ZilliqaControl, queue: TransactionsQueue) {
-    this._zilliqa = zilliqa;
-    this._queue = queue;
+    this.#zilliqa = zilliqa;
+    this.#queue = queue;
 
     this.unsubscribe();
-    Runtime.alarms.create(this._name, {
-      delayInMinutes: this._delay,
-      periodInMinutes: this._delay
+    Runtime.alarms.create(this.#name, {
+      delayInMinutes: this.#delay,
+      periodInMinutes: this.#delay
     });
   }
 
   public async subscribe(cb?: (blocknumber: number) => void) {
-    await this._queue.checkProcessedTx();
+    await this.#queue.checkProcessedTx();
 
     Runtime.alarms.onAlarm.addListener(async() => {
-      const lastBalockNumber = this._currentBlock;
-      const result = await this._zilliqa.getLatestTxBlock();
+      const lastBalockNumber = this.#currentBlock;
+      const result = await this.#zilliqa.getLatestTxBlock();
       const blockNumber = Number(result.header.BlockNum);
 
       if (lastBalockNumber === blockNumber) {
         return null;
       }
 
-      await this._setBlock(blockNumber);
+      await this.#setBlock(blockNumber);
 
       if (cb) {
         cb(blockNumber);
       }
 
       try {
-        const { TxnHashes } = await this._zilliqa.getRecentTransactions();
+        const { TxnHashes } = await this.#zilliqa.getRecentTransactions();
         const block = {
           TxBlock: result,
           TxHashes: [TxnHashes]
@@ -71,7 +71,7 @@ export class BlockController {
         ///
       }
 
-      await this._queue.checkProcessedTx();
+      await this.#queue.checkProcessedTx();
     });
   }
 
@@ -85,20 +85,20 @@ export class BlockController {
 
     if (isNaN(block)) {
       await BrowserStorage.set(
-        buildObject(Fields.BLOCK_NUMBER, String(this._currentBlock))
+        buildObject(Fields.BLOCK_NUMBER, String(this.#currentBlock))
       );
 
       return;
     }
 
-    this._currentBlock = block;
+    this.#currentBlock = block;
   }
 
-  private async _setBlock(block: number) {
-    this._currentBlock = block;
+  async #setBlock(block: number) {
+    this.#currentBlock = block;
 
     await BrowserStorage.set(
-      buildObject(Fields.BLOCK_NUMBER, String(this._currentBlock))
+      buildObject(Fields.BLOCK_NUMBER, String(this.#currentBlock))
     );
   }
 }

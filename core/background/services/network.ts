@@ -15,17 +15,17 @@ import { ErrorMessages } from 'config/errors';
 const [mainnet] = NETWORK_KEYS;
 
 export class NetworkControl {
-  private _onlyMainnet: boolean;
+  #onlyMainnet: boolean;
 
   public config = NETWORK;
   public selected = mainnet;
 
   constructor(onlyMainnet = false) {
-    this._onlyMainnet = onlyMainnet;
+    this.#onlyMainnet = onlyMainnet;
   }
 
   get provider() {
-    return this._getURL(this.selected);
+    return this.#getURL(this.selected);
   }
 
   get nativeHttp() {
@@ -100,7 +100,7 @@ export class NetworkControl {
     );
   }
 
-  private _getURL(selected: string) {
+  #getURL(selected: string) {
     return this.config[selected].PROVIDER;
   }
 }

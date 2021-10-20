@@ -11,18 +11,18 @@ import type { ZIlPayCore } from './core';
 import type { AppConnect } from 'types/app-connect';
 
 export class ZilPayApps {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public async addApp(app: AppConnect, sendResponse: StreamResponse) {
     try {
-      await this._core.apps.add(app);
+      await this.#core.apps.add(app);
 
       sendResponse({
-        resolve: this._core.apps.connections
+        resolve: this.#core.apps.connections
       });
     } catch (err) {
       sendResponse({
@@ -33,7 +33,7 @@ export class ZilPayApps {
 
   public async addConfirm(app: AppConnect, sendResponse: StreamResponse) {
     try {
-      await this._core.apps.addConfirm(app);
+      await this.#core.apps.addConfirm(app);
 
       /// TODO: open popup.
       sendResponse({
@@ -49,7 +49,7 @@ export class ZilPayApps {
   public requestConnections(sendResponse: StreamResponse) {
     try {
       sendResponse({
-        resolve: this._core.apps.connections
+        resolve: this.#core.apps.connections
       });
     } catch (err) {
       sendResponse({
@@ -60,10 +60,10 @@ export class ZilPayApps {
 
   public async removeApp(index: number, sendResponse: StreamResponse) {
     try {
-      await this._core.apps.rm(index);
+      await this.#core.apps.rm(index);
 
       sendResponse({
-        resolve: this._core.apps.connections
+        resolve: this.#core.apps.connections
       });
     } catch (err) {
       sendResponse({
@@ -74,10 +74,10 @@ export class ZilPayApps {
 
   public async clearApps(sendResponse: StreamResponse) {
     try {
-      await this._core.apps.reset();
+      await this.#core.apps.reset();
 
       sendResponse({
-        resolve: this._core.apps.connections
+        resolve: this.#core.apps.connections
       });
     } catch (err) {
       sendResponse({

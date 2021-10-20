@@ -55,17 +55,17 @@ const INIT = {
 };
 
 export class ZRC2Controller {
-  private readonly _netwrok: NetworkControl;
-  private readonly _zilliqa: ZilliqaControl;
-  private readonly _account: AccountController;
-  private _identities: ZRC2Token[] = [];
+  readonly #netwrok: NetworkControl;
+  readonly #zilliqa: ZilliqaControl;
+  readonly #account: AccountController;
+  #identities: ZRC2Token[] = [];
 
   public get identities() {
-    return this._identities;
+    return this.#identities;
   }
 
   public get field() {
-    return `${Fields.TOKENS}/${this._netwrok.selected}`;
+    return `${Fields.TOKENS}/${this.#netwrok.selected}`;
   }
 
   constructor(
@@ -73,18 +73,18 @@ export class ZRC2Controller {
     zilliqa: ZilliqaControl,
     account: AccountController
   ) {
-    this._netwrok = netwrok;
-    this._zilliqa = zilliqa;
-    this._account = account;
-    this._account.initZRC(this);
+    this.#netwrok = netwrok;
+    this.#zilliqa = zilliqa;
+    this.#account = account;
+    this.#account.initZRC(this);
   }
 
   public async remove(index: number) {
     assert(index > 2, ErrorMessages.OutOfIndex);
 
-    await this._account.removeToken(this._identities[index]);
+    await this.#account.removeToken(this.#identities[index]);
 
-    delete this._identities[index];
+    delete this.#identities[index];
 
     await BrowserStorage.set(
       buildObject(this.field, this.identities)
@@ -99,19 +99,19 @@ export class ZRC2Controller {
       base16: token.base16,
       bech32: token.bech32
     };
-    this._isUnique(newToken);
-    this._identities.push(newToken);
+    this.#isUnique(newToken);
+    this.#identities.push(newToken);
 
-    await this._account.addToken(newToken, token.balance);
+    await this.#account.addToken(newToken, token.balance);
     await BrowserStorage.set(
       buildObject(this.field, this.identities)
     );
   }
 
   public async getZRCInit(address: string) {
-    const init = await this._zilliqa.getSmartContractInit(address);
+    const init = await this.#zilliqa.getSmartContractInit(address);
 
-    return this._toZRC2(init);
+    return this.#toZRC2(init);
   }
 
   public async getToken(address: string): Promise<ZRC2Info> {
@@ -119,9 +119,9 @@ export class ZRC2Controller {
     const zrc = await this.getZRCInit(address);
     const bech32 = toBech32Address(address);
 
-    if (this._account.selectedAccount) {
-      const userAddress = this._account.selectedAccount.base16.toLowerCase();
-      balance = await this._zilliqa.getSmartContractSubState(
+    if (this.#account.selectedAccount) {
+      const userAddress = this.#account.selectedAccount.base16.toLowerCase();
+      balance = await this.#zilliqa.getSmartContractSubState(
         address,
         ZRC2Fields.Balances,
         [userAddress]
@@ -154,13 +154,13 @@ export class ZRC2Controller {
       const token = this.identities[index];
       try {
         if (token.base16 === Contracts.ZERO_ADDRESS) {
-          const bal = await this._zilliqa.getBalance(owner);
+          const bal = await this.#zilliqa.getBalance(owner);
           balance[token.base16] = bal.balance;
           continue;
         }
 
         const addr = String(owner).toLowerCase();
-        const bal = await this._zilliqa.getSmartContractSubState(
+        const bal = await this.#zilliqa.getSmartContractSubState(
           tohexString(token.base16),
           ZRC2Fields.Balances,
           [addr]
@@ -188,30 +188,30 @@ export class ZRC2Controller {
         return this.reset();
       }
 
-      this._identities = list;
+      this.#identities = list;
     } catch {
       await this.reset();
     }
   }
 
   public async reset() {
-    const init = INIT[this._netwrok.selected];
-    this._identities = init;
+    const init = INIT[this.#netwrok.selected];
+    this.#identities = init;
     await BrowserStorage.set(
       buildObject(this.field, this.identities)
     );
   }
 
-  private _isUnique(token: ZRC2Token) {
-    for (let index = 0; index < this._identities.length; index++) {
-      const element = this._identities[index];
+  #isUnique(token: ZRC2Token) {
+    for (let index = 0; index < this.#identities.length; index++) {
+      const element = this.#identities[index];
       assert(element.base16 !== token.base16, ErrorMessages.MustBeUnique);
       assert(element.bech32 !== token.bech32, ErrorMessages.MustBeUnique);
       assert(element.name !== token.name, ErrorMessages.MustBeUnique);
     }
   }
 
-  private _toZRC2(init: InitItem[]) {
+  #toZRC2(init: InitItem[]) {
     const contractOwner = init.find((el) => el.vname === InitFields.ContractOwner)?.value;
     const name = init.find((el) => el.vname === InitFields.Name)?.value || '';
     const symbol = init.find((el) => el.vname === InitFields.Symbol)?.value;

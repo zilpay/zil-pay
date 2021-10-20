@@ -28,10 +28,10 @@ type Balance = {
 };
 
 export class ZilliqaControl {
-  private _network: NetworkControl;
+  #network: NetworkControl;
 
   constructor(network: NetworkControl) {
-    this._network = network;
+    this.#network = network;
   }
 
   /**
@@ -41,8 +41,8 @@ export class ZilliqaControl {
   public async getBalance(address: string): Promise<Balance> {
     address = tohexString(address);
 
-    const request = this._json(Methods.getBalance, [address]);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.getBalance, [address]);
+    const responce = await fetch(this.#network.provider, request);
 
     assert(responce.status === 200, ErrorMessages.RequestFailed);
 
@@ -69,8 +69,8 @@ export class ZilliqaControl {
   public async getSmartContractInit(contract: string) {
     contract = tohexString(contract);
 
-    const request = this._json(Methods.GetSmartContractInit, [contract]);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.GetSmartContractInit, [contract]);
+    const responce = await fetch(this.#network.provider, request);
     const data = await responce.json();
 
     assert(!data.error, data.error);
@@ -91,11 +91,11 @@ export class ZilliqaControl {
   ) {
     contract = tohexString(contract);
 
-    const request = this._json(
+    const request = this.#json(
       Methods.GetSmartContractSubState,
       [contract, field, params]
     );
-    const responce = await fetch(this._network.provider, request);
+    const responce = await fetch(this.#network.provider, request);
 
     assert(responce.status === 200, ErrorMessages.RequestFailed);
 
@@ -107,8 +107,8 @@ export class ZilliqaControl {
   }
 
   public async getLatestTxBlock() {
-    const request = this._json(Methods.GetLatestTxBlock, []);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.GetLatestTxBlock, []);
+    const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
@@ -118,8 +118,8 @@ export class ZilliqaControl {
   }
 
   public async getRecentTransactions() {
-    const request = this._json(Methods.GetRecentTransactions, []);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.GetRecentTransactions, []);
+    const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
@@ -129,8 +129,8 @@ export class ZilliqaControl {
   }
 
   public async getNetworkId() {
-    const request = this._json(Methods.GetNetworkId, []);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.GetNetworkId, []);
+    const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
@@ -166,10 +166,10 @@ export class ZilliqaControl {
   public async send(tx: Transaction): Promise<string> {
     await this.detectSacmAddress(tx.toAddr);
 
-    const request = this._json(Methods.CreateTransaction, [
+    const request = this.#json(Methods.CreateTransaction, [
       tx.self
     ]);
-    const responce = await fetch(this._network.provider, request);
+    const responce = await fetch(this.#network.provider, request);
     const { error, result } = await responce.json();
 
     assert(!error, error);
@@ -184,8 +184,8 @@ export class ZilliqaControl {
   public async getTransactionStatus(hash: string) {
     hash = tohexString(hash);
 
-    const request = this._json(Methods.GetTransactionStatus, [hash]);
-    const responce = await fetch(this._network.nativeHttp, request);
+    const request = this.#json(Methods.GetTransactionStatus, [hash]);
+    const responce = await fetch(this.#network.nativeHttp, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
@@ -195,8 +195,8 @@ export class ZilliqaControl {
   }
 
   public async getMinimumGasPrice() {
-    const request = this._json(Methods.GetMinimumGasPrice, []);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.GetMinimumGasPrice, []);
+    const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
@@ -208,8 +208,8 @@ export class ZilliqaControl {
   public async getTransaction(hash: string) {
     hash = tohexString(hash);
 
-    const request = this._json(Methods.GetTransaction, [hash]);
-    const responce = await fetch(this._network.provider, request);
+    const request = this.#json(Methods.GetTransaction, [hash]);
+    const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
 
@@ -221,13 +221,13 @@ export class ZilliqaControl {
 
   public async getSSnList(): Promise<SSN[]> {
     const [mainnet] = NETWORK_KEYS;
-    assert(this._network.selected === mainnet, ErrorMessages.SSnAllowNet);
+    assert(this.#network.selected === mainnet, ErrorMessages.SSnAllowNet);
 
     const field = 'ssnlist';
     const contract = tohexString(Contracts.SSN);
     const http = NETWORK.mainnet.PROVIDER;
 
-    const request = this._json(
+    const request = this.#json(
       Methods.GetSmartContractSubState,
       [contract, field, []]
     );
@@ -247,7 +247,7 @@ export class ZilliqaControl {
     const ssnList = [DEFAULT_SSN, ...list].map(async(ssn) => {
       const t0 = performance.now();
       try {
-        const r = this._json(
+        const r = this.#json(
           Methods.GetNetworkId,
           []
         );
@@ -282,7 +282,7 @@ export class ZilliqaControl {
     return gotSSN.filter((ssn) => ssn.ok);
   }
 
-  private _json(method: string, params: Params) {
+  #json(method: string, params: Params) {
     return {
       method: 'POST',
       headers: {

@@ -20,14 +20,14 @@ export class NotificationsControl {
     });
   }
 
-  private readonly url: string;
-  private readonly title: string;
-  private readonly message: string;
+  readonly #url: string;
+  readonly #title: string;
+  readonly #message: string;
 
   constructor(url: string, title: string, message: string) {
-    this.url = url;
-    this.title = title;
-    this.message = message;
+    this.#url = url;
+    this.#title = title;
+    this.#message = message;
   }
 
   /**
@@ -36,12 +36,12 @@ export class NotificationsControl {
   create() {
     const data = {
       type: 'basic',
-      title: this.title,
+      title: this.#title,
       iconUrl: Runtime.extension.getURL('icons/icon128.png'),
-      message: this.message
+      message: this.#message
     };
 
-    Runtime.notifications.create(this.url, data);
+    Runtime.notifications.create(this.#url, data);
 
     this._notificationClicked();
   }
@@ -49,7 +49,7 @@ export class NotificationsControl {
   /**
    * OS notification.
    */
-  private _notificationClicked() {
+  _notificationClicked() {
     if (!Runtime.notifications.onClicked.hasListener(this._viewOnViewBlock)) {
       Runtime.notifications.onClicked.addListener(this._viewOnViewBlock);
     }
@@ -59,7 +59,7 @@ export class NotificationsControl {
    * Action when click to OS notification.
    * @param url - url to viewblock block explore.
    */
-  private _viewOnViewBlock(url: string) {
+  _viewOnViewBlock(url: string) {
     Runtime.tabs.create({ url });
   }
 

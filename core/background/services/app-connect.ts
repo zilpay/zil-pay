@@ -14,18 +14,18 @@ import { Fields } from 'config/fields';
 import { NotificationsControl } from './notifications';
 
 export class AppConnectController {
-  private _identities: AppConnect[] = [];
-  private _confirm?: AppConnect;
+  #identities: AppConnect[] = [];
+  #confirm?: AppConnect;
 
   public get connections() {
-    return this._identities;
+    return this.#identities;
   }
 
   public get confirmApp() {
-    return this._confirm;
+    return this.#confirm;
   }
 
-  private _isUnique(connect: AppConnect) {
+  #isUnique(connect: AppConnect) {
     for (const iterator of this.connections) {
       assert(
         iterator.domain.toLowerCase() !== connect.domain.toLowerCase(),
@@ -35,19 +35,19 @@ export class AppConnectController {
   }
 
   public async add(connect: AppConnect) {
-    this._isUnique(connect);
+    this.#isUnique(connect);
 
-    this._identities.push(connect);
+    this.#identities.push(connect);
 
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_LIST, this.connections)
     );
 
-    this._confirm = undefined;
+    this.#confirm = undefined;
   }
 
   public async addConfirm(connect: AppConnect) {
-    this._confirm = connect;
+    this.#confirm = connect;
 
     NotificationsControl.counter(1);
     await BrowserStorage.set(
@@ -56,16 +56,16 @@ export class AppConnectController {
   }
 
   public async rejectConfirm() {
-    this._confirm = undefined;
+    this.#confirm = undefined;
 
     NotificationsControl.counter(0);
     await BrowserStorage.rm(Fields.CONNECT_DAPP);
   }
 
   public async rm(index: number) {
-    delete this._identities[index];
+    delete this.#identities[index];
 
-    this._identities = this._identities.filter(Boolean);
+    this.#identities = this.#identities.filter(Boolean);
 
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_LIST, this.connections)
@@ -73,7 +73,7 @@ export class AppConnectController {
   }
 
   public async reset() {
-    this._identities = [];
+    this.#identities = [];
 
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_LIST, this.connections)
@@ -86,9 +86,9 @@ export class AppConnectController {
 
     try {
       if (confirm) {
-        this._confirm = JSON.parse(String(confirm));
+        this.#confirm = JSON.parse(String(confirm));
 
-        if (Object.keys(this._confirm).length > 0) {
+        if (Object.keys(this.#confirm).length > 0) {
           NotificationsControl.counter(1);
         }
       }
@@ -97,7 +97,7 @@ export class AppConnectController {
     }
 
     try {
-      this._identities = JSON.parse(String(jsonData));
+      this.#identities = JSON.parse(String(jsonData));
     } catch {
       await this.reset();
     }

@@ -15,30 +15,30 @@ import { NotificationsControl } from 'core/background/services/notifications';
 import { Common } from 'config/common';
 
 export class TransactionsController {
-  private _txns: StoredTx[] = [];
-  private _confirm: MinParams[] = [];
-  private readonly _network: NetworkControl;
-  private readonly _account: AccountController;
+  #txns: StoredTx[] = [];
+  #confirm: MinParams[] = [];
+  readonly #network: NetworkControl;
+  readonly #account: AccountController;
 
   public get transactions() {
-    return this._txns;
+    return this.#txns;
   }
 
   public get forConfirm() {
-    return this._confirm;
+    return this.#confirm;
   }
 
-  private get _transactionsField() {
-    return `${Fields.TRANSACTIONS}/${this._network.selected}/${this._account.selectedAccount.base16}`;
+  get #transactionsField() {
+    return `${Fields.TRANSACTIONS}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
   }
 
-  private get _confirmField() {
-    return `${Fields.CONFIRM_TX}/${this._network.selected}/${this._account.selectedAccount.base16}`;
+  get #confirmField() {
+    return `${Fields.CONFIRM_TX}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
   }
 
   constructor(network: NetworkControl, account: AccountController) {
-    this._network = network;
-    this._account = account;
+    this.#network = network;
+    this.#account = account;
   }
 
   public async addHistory(tx: StoredTx) {
@@ -47,74 +47,74 @@ export class TransactionsController {
     // Circumcision Array.
     newList.length = Common.MAX_TX_QUEUE;
 
-    this._txns = newList.filter(Boolean);
+    this.#txns = newList.filter(Boolean);
 
     await BrowserStorage.set(
-      buildObject(this._transactionsField, this.transactions)
+      buildObject(this.#transactionsField, this.transactions)
     );
   }
 
   public async updateHistory(txns: StoredTx[]) {
-    this._txns = txns;
+    this.#txns = txns;
     await BrowserStorage.set(
-      buildObject(this._transactionsField, this.transactions)
+      buildObject(this.#transactionsField, this.transactions)
     );
   }
 
   public async clearHistory() {
-    this._txns = [];
+    this.#txns = [];
     await BrowserStorage.set(
-      buildObject(this._transactionsField, this.transactions)
+      buildObject(this.#transactionsField, this.transactions)
     );
   }
 
   public async clearConfirm() {
-    this._confirm = [];
+    this.#confirm = [];
 
     await BrowserStorage.set(
-      buildObject(this._confirmField, this.forConfirm)
+      buildObject(this.#confirmField, this.forConfirm)
     );
 
-    NotificationsControl.counter(this._confirm.length);
+    NotificationsControl.counter(this.#confirm.length);
   }
 
   public async addConfirm(tx: MinParams) {
-    this._confirm.push(tx);
-    NotificationsControl.counter(this._confirm.length);
+    this.#confirm.push(tx);
+    NotificationsControl.counter(this.#confirm.length);
     await BrowserStorage.set(
-      buildObject(this._confirmField, this.forConfirm)
+      buildObject(this.#confirmField, this.forConfirm)
     );
   }
 
   public async rmConfirm(index: number) {
-    delete this._confirm[index];
+    delete this.#confirm[index];
 
-    this._confirm = this._confirm.filter(Boolean);
-    NotificationsControl.counter(this._confirm.length);
+    this.#confirm = this.#confirm.filter(Boolean);
+    NotificationsControl.counter(this.#confirm.length);
 
     await BrowserStorage.set(
-      buildObject(this._confirmField, this.forConfirm)
+      buildObject(this.#confirmField, this.forConfirm)
     );
   }
 
   public async resetNonce(nonce: number) {
-    this._txns = this._txns.map((t) => ({
+    this.#txns = this.#txns.map((t) => ({
       ...t,
       nonce
     }));
 
     await BrowserStorage.set(
-      buildObject(this._transactionsField, this.transactions)
+      buildObject(this.#transactionsField, this.transactions)
     );
   }
 
   public async sync() {
-    if (!this._account.selectedAccount) {
+    if (!this.#account.selectedAccount) {
       return null;
     }
 
-    const txnsJson = await BrowserStorage.get(this._transactionsField);
-    const confirmJson = await BrowserStorage.get(this._confirmField);
+    const txnsJson = await BrowserStorage.get(this.#transactionsField);
+    const confirmJson = await BrowserStorage.get(this.#confirmField);
 
     try {
       if (!txnsJson) {
@@ -122,20 +122,20 @@ export class TransactionsController {
       }
       const txns = JSON.parse(String(txnsJson));
 
-      this._txns = txns;
+      this.#txns = txns;
     } catch {
       ////
     }
 
     try {
       if (confirmJson) {
-        this._confirm = JSON.parse(String(confirmJson));
+        this.#confirm = JSON.parse(String(confirmJson));
       }
     } catch {
       ////
     }
 
-    NotificationsControl.counter(this._confirm.length);
+    NotificationsControl.counter(this.#confirm.length);
   }
 
 }

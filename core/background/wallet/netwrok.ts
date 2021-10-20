@@ -13,31 +13,31 @@ import { MTypeTab } from 'lib/streem/stream-keys';
 import { TabsMessage } from 'lib/streem/tabs-message';
 
 export class ZilPayNetwrok {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public reactNetwork() {
     new TabsMessage({
       type: MTypeTab.NETWORK_CHANGED,
       payload: {
-        netwrok: this._core.netwrok.selected,
-        node: this._core.netwrok.provider
+        netwrok: this.#core.netwrok.selected,
+        node: this.#core.netwrok.provider
       }
     }).send();
   }
 
   public async select(net: string, sendResponse: StreamResponse) {
     try {
-      await this._core.netwrok.changeNetwork(net);
-      await this._core.transactions.sync();
+      await this.#core.netwrok.changeNetwork(net);
+      await this.#core.transactions.sync();
 
       this.reactNetwork();
 
       sendResponse({
-        resolve: this._core.netwrok.selected
+        resolve: this.#core.netwrok.selected
       });
     } catch (err) {
       sendResponse({
@@ -48,10 +48,10 @@ export class ZilPayNetwrok {
 
   public async updateSSN(sendResponse: StreamResponse) {
     try {
-      await this._core.ssn.update();
+      await this.#core.ssn.update();
 
       sendResponse({
-        resolve: this._core.ssn.payload
+        resolve: this.#core.ssn.payload
       });
     } catch (err) {
       sendResponse({
@@ -62,10 +62,10 @@ export class ZilPayNetwrok {
 
   public async changeConfig(config: typeof NETWORK, sendResponse: StreamResponse) {
     try {
-      await this._core.netwrok.changeConfig(config);
+      await this.#core.netwrok.changeConfig(config);
 
       sendResponse({
-        resolve: this._core.netwrok.config
+        resolve: this.#core.netwrok.config
       });
     } catch (err) {
       sendResponse({

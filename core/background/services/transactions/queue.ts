@@ -16,22 +16,22 @@ import { StatusCodes } from './statuses';
 import { viewTransaction } from 'lib/block-explorer/view';
 
 export class TransactionsQueue {
-  private readonly _zilliqa: ZilliqaControl;
-  private readonly _netwrok: NetworkControl;
-  private readonly _transactions: TransactionsController;
+  readonly #zilliqa: ZilliqaControl;
+  readonly #netwrok: NetworkControl;
+  readonly #transactions: TransactionsController;
 
   constructor(
     zilliqa: ZilliqaControl,
     netwrok: NetworkControl,
     transactions: TransactionsController
   ) {
-    this._zilliqa = zilliqa;
-    this._transactions = transactions;
-    this._netwrok = netwrok;
+    this.#zilliqa = zilliqa;
+    this.#transactions = transactions;
+    this.#netwrok = netwrok;
   }
 
   public async checkProcessedTx() {
-    const list =  this._transactions.transactions;
+    const list =  this.#transactions.transactions;
     const now = new Date().getTime();
     const dilaySeconds = 30000;
     let rejectAll = null;
@@ -53,7 +53,7 @@ export class TransactionsQueue {
       }
 
       try {
-        const result = await this._zilliqa.getTransactionStatus(element.hash);
+        const result = await this.#zilliqa.getTransactionStatus(element.hash);
 
         switch (result.status) {
           case StatusCodes.Confirmed:
@@ -62,7 +62,7 @@ export class TransactionsQueue {
             element.success = result.success;
             element.nonce = result.nonce;
             element.info = 'Transaction was confirmed.';
-            this._makeNotify(element.teg, element.hash, element.info);
+            this.#makeNotify(element.teg, element.hash, element.info);
             continue;
           case StatusCodes.Pending:
             element.status = result.status;
@@ -74,7 +74,7 @@ export class TransactionsQueue {
             element.confirmed = true;
             element.success = result.success;
             element.info = 'Transaction await to confirm.';
-            this._makeNotify(element.teg, element.hash, element.info);
+            this.#makeNotify(element.teg, element.hash, element.info);
             continue;
           default:
             element.status = result.status;
@@ -86,7 +86,7 @@ export class TransactionsQueue {
               info: element.info,
               status: result.status
             };
-            this._makeNotify(element.teg, element.hash, element.info);
+            this.#makeNotify(element.teg, element.hash, element.info);
             continue;
         }
       } catch (err) {
@@ -100,16 +100,16 @@ export class TransactionsQueue {
             info: element.info,
             status: element.status
           };
-          this._makeNotify(element.teg, element.hash, element.info);
+          this.#makeNotify(element.teg, element.hash, element.info);
         }
       }
     }
 
-    await this._transactions.updateHistory(list);
+    await this.#transactions.updateHistory(list);
   }
 
-  private _makeNotify(title: string, hash: string, message: string) {
-    const url = viewTransaction(hash, this._netwrok.selected);
+  #makeNotify(title: string, hash: string, message: string) {
+    const url = viewTransaction(hash, this.#netwrok.selected);
     new NotificationsControl(
       url,
       title,

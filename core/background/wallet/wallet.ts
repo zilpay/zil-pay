@@ -15,15 +15,15 @@ interface PrivateKeyName {
 }
 
 export class ZilPayWallet {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public async exportPrivateKey(sendResponse: StreamResponse) {
     try {
-      const keyPair = await this._core.account.getKeyPair();
+      const keyPair = await this.#core.account.getKeyPair();
       sendResponse({
         resolve: keyPair
       });
@@ -36,7 +36,7 @@ export class ZilPayWallet {
 
   public async exportSeedPhrase(sendResponse: StreamResponse) {
     try {
-      const seed = this._core.guard.getSeed();
+      const seed = this.#core.guard.getSeed();
 
       sendResponse({
         resolve: seed
@@ -50,7 +50,7 @@ export class ZilPayWallet {
 
   public async importPrivateKey(payload: PrivateKeyName, sendResponse: StreamResponse) {
     try {
-      const account = await this._core.account.addAccountFromPrivateKey(
+      const account = await this.#core.account.addAccountFromPrivateKey(
         payload.privKey,
         payload.name
       );
@@ -69,10 +69,10 @@ export class ZilPayWallet {
 
   public async createAccountBySeed(name: string, sendResponse?: StreamResponse) {
     try {
-      const seed = this._core.guard.getSeed();
-      const account = await this._core.account.addAccountFromSeed(seed, name);
+      const seed = this.#core.guard.getSeed();
+      const account = await this.#core.account.addAccountFromSeed(seed, name);
 
-      await this._core.transactions.sync();
+      await this.#core.transactions.sync();
 
       sendResponse({
         resolve: account
@@ -86,9 +86,9 @@ export class ZilPayWallet {
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {
-      const account = await this._core.account.select(index);
+      const account = await this.#core.account.select(index);
 
-      await this._core.transactions.sync();
+      await this.#core.transactions.sync();
 
       sendResponse({
         resolve: account
@@ -102,7 +102,7 @@ export class ZilPayWallet {
 
   public async balanceUpdate(sendResponse?: StreamResponse) {
     try {
-      const accounts = await this._core.account.balanceUpdate();
+      const accounts = await this.#core.account.balanceUpdate();
 
       sendResponse({
         resolve: accounts

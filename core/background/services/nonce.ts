@@ -15,41 +15,41 @@ import { Common } from 'config/common';
 import { ErrorMessages } from 'config/errors';
 
 export class NonceController {
-  private _zilliqa: ZilliqaControl;
-  private _txns: TransactionsController;
+  readonly #zilliqa: ZilliqaControl;
+  readonly #txns: TransactionsController;
 
   constructor(
     zilliqa: ZilliqaControl,
     transactions: TransactionsController
   ) {
-    this._zilliqa = zilliqa;
-    this._txns = transactions;
+    this.#zilliqa = zilliqa;
+    this.#txns = transactions;
   }
 
   public async getNonce(account: Account) {
-    const { nonce } = await this._zilliqa.getBalance(account.base16);
+    const { nonce } = await this.#zilliqa.getBalance(account.base16);
 
     return nonce;
   }
 
   public async resetNonce(account: Account) {
-    const result = await this._zilliqa.getBalance(account.base16);
+    const result = await this.#zilliqa.getBalance(account.base16);
 
-    await this._txns.resetNonce(result.nonce);
+    await this.#txns.resetNonce(result.nonce);
 
     return result.nonce;
   }
 
   public async nextNonce(account: Account): Promise<number> {
     const list = this
-      ._txns
+      .#txns
       .transactions
       .filter((t) => !t.confirmed)
       .map((t) => t.nonce);
     assert(list.length <= Common.NONCE_DIFFICULTY, ErrorMessages.HightNonce);
 
     const maxNonce = Math.max.apply(Math, list);
-    const { nonce } = await this._zilliqa.getBalance(account.base16);
+    const { nonce } = await this.#zilliqa.getBalance(account.base16);
     const currentNonce = nonce < maxNonce ? maxNonce : nonce;
 
     return currentNonce + 1;

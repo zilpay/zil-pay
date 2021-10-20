@@ -19,28 +19,28 @@ interface InitPayload {
 }
 
 export class ZilPayPopup {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public updateStatus() {
-    const { base16, bech32 } = this._core.account.selectedAccount;
+    const { base16, bech32 } = this.#core.account.selectedAccount;
 
-    if (this._core.guard.isEnable && this._core.guard.isReady) {
-      this._core.blockchain.subscribe();
-      this._core.rate.subscribe();
+    if (this.#core.guard.isEnable && this.#core.guard.isReady) {
+      this.#core.blockchain.subscribe();
+      this.#core.rate.subscribe();
     } else {
-      this._core.blockchain.unsubscribe();
-      this._core.rate.unsubscribe();
+      this.#core.blockchain.unsubscribe();
+      this.#core.rate.unsubscribe();
     }
 
     new TabsMessage({
       type: MTypeTab.LOCK_STAUS,
       payload: {
-        isReady: this._core.guard.isReady,
-        isEnable: this._core.guard.isEnable,
+        isReady: this.#core.guard.isReady,
+        isEnable: this.#core.guard.isEnable,
         account: {
           base16,
           bech32
@@ -50,29 +50,29 @@ export class ZilPayPopup {
   }
 
   public async logout(sendResponse: StreamResponse) {
-    await this._core.guard.logout();
+    await this.#core.guard.logout();
     this.updateStatus();
     sendResponse({
       resolve: {
-        isReady: this._core.guard.isReady,
-        isEnable: this._core.guard.isEnable
+        isReady: this.#core.guard.isReady,
+        isEnable: this.#core.guard.isEnable
       }
     });
   }
 
   public initPopup(sendResponse: StreamResponse) {
     sendResponse({
-      resolve: this._core.state
+      resolve: this.#core.state
     });
   }
 
   public async initSeedWallet(payload: InitPayload, sendResponse: StreamResponse) {
     try {
-      await this._core.guard.setSeed(
+      await this.#core.guard.setSeed(
         payload.seed,
         payload.password
       );
-      const { base16 } = await this._core.account.fromSeed(payload.seed, 0);
+      const { base16 } = await this.#core.account.fromSeed(payload.seed, 0);
       const bech32 = toBech32Address(base16);
 
       this.updateStatus();
@@ -81,8 +81,8 @@ export class ZilPayPopup {
         resolve: {
           bech32,
           base16,
-          isReady: this._core.guard.isReady,
-          isEnable: this._core.guard.isEnable
+          isReady: this.#core.guard.isReady,
+          isEnable: this.#core.guard.isEnable
         }
       });
     } catch (err) {
@@ -94,14 +94,14 @@ export class ZilPayPopup {
 
   public async unlock(password: string, sendResponse: StreamResponse) {
     try {
-      this._core.guard.setPassword(password);
-      await this._core.account.migrate();
+      this.#core.guard.setPassword(password);
+      await this.#core.account.migrate();
       this.updateStatus();
 
       sendResponse({
         resolve: {
-          isReady: this._core.guard.isReady,
-          isEnable: this._core.guard.isEnable
+          isReady: this.#core.guard.isReady,
+          isEnable: this.#core.guard.isEnable
         }
       });
     } catch (err) {
@@ -128,7 +128,7 @@ export class ZilPayPopup {
 
   public changeAccountName(name: string, sendResponse: StreamResponse) {
     try {
-      const account = this._core.account.changeAccountName(name);
+      const account = this.#core.account.changeAccountName(name);
 
       sendResponse({
         resolve: account

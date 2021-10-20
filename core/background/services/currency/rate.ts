@@ -19,19 +19,20 @@ export interface RateCurrencies {
 }
 
 export class RateController {
-  private readonly _name = `rate/${Runtime.runtime.id}/zilpay`;
-  private readonly _delay = 60; // approximately 1 hours.
-  private _rate: RateCurrencies;
+  readonly #name = `rate/${Runtime.runtime.id}/zilpay`;
+  readonly #delay = 60; // approximately 1 hours.
+
+  #rate: RateCurrencies;
 
   public get rate() {
-    return this._rate;
+    return this.#rate;
   }
 
   constructor() {
     this.unsubscribe();
-    Runtime.alarms.create(this._name, {
-      delayInMinutes: this._delay,
-      periodInMinutes: this._delay
+    Runtime.alarms.create(this.#name, {
+      delayInMinutes: this.#delay,
+      periodInMinutes: this.#delay
     });
   }
 
@@ -54,11 +55,11 @@ export class RateController {
     const data = await response.json();
     const rate = data.zilliqa as RateCurrencies;
 
-    await this._setRate(rate);
+    await this.#setRate(rate);
   }
 
   public async reset() {
-    this._rate = {
+    this.#rate = {
       btc: 0,
       eth: 0,
       usd: 0
@@ -75,14 +76,14 @@ export class RateController {
     try {
       const rate = JSON.parse(String(jsonData));
 
-      this._rate = rate;
+      this.#rate = rate;
     } catch {
       await this.reset();
     }
   }
 
-  private async _setRate(newRate: RateCurrencies) {
-    this._rate = newRate;
+  async #setRate(newRate: RateCurrencies) {
+    this.#rate = newRate;
 
     await BrowserStorage.set(
       buildObject(Fields.RATE_CURRENCIES, this.rate)

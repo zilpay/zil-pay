@@ -9,25 +9,25 @@
 import type { ZIlPayCore } from './core';
 
 export class ZilPaySynchronizer {
-  private readonly _core: ZIlPayCore;
+  readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
-    this._core = core;
+    this.#core = core;
   }
 
   public async sync() {
     console.log('start-sync');
-    await this._core.netwrok.sync();
-    await this._core.guard.sync();
-    await this._core.account.sync();
-    await this._core.zrc2.sync();
-    await this._core.blockchain.sync();
-    await this._core.transactions.sync();
-    await this._core.ssn.sync();
-    await this._core.theme.sync();
-    await this._core.apps.sync();
-    await this._core.rate.sync();
-    await this._core.currencies.sync();
+    await this.#core.netwrok.sync();
+    await this.#core.guard.sync();
+    await this.#core.account.sync();
+    await this.#core.zrc2.sync();
+    await this.#core.blockchain.sync();
+    await this.#core.transactions.sync();
+    await this.#core.ssn.sync();
+    await this.#core.theme.sync();
+    await this.#core.apps.sync();
+    await this.#core.rate.sync();
+    await this.#core.currencies.sync();
     console.log('end-sync');
   }
 }

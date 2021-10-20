@@ -10,10 +10,10 @@ import { Runtime } from 'lib/runtime';
 import { Common } from 'config/common';
 
 export class PromptService {
-  private readonly _height = Common.POPUP_HEIGHT;
-  private readonly _width = Common.POPUP_WIDTH;
-  private readonly _type = 'popup';
-  private _id: number;
+  readonly #height = Common.POPUP_HEIGHT;
+  readonly #width = Common.POPUP_WIDTH;
+  readonly #type = 'popup';
+  #id: number;
 
   public openTab() {
     Runtime.tabs.create({
@@ -29,20 +29,20 @@ export class PromptService {
       outerHeight
     } = window;
     const notificationTop = Math.round(
-      screenY + (outerHeight / 2) - (this._height / 2)
+      screenY + (outerHeight / 2) - (this.#height / 2)
     );
     const notificationLeft = Math.round(
-      screenX + (outerWidth / 2) - (this._width / 2)
+      screenX + (outerWidth / 2) - (this.#width / 2)
     );
     const createData = {
-      type: this._type,
+      type: this.#type,
       url: Common.PROMT_PAGE,
-      width: this._width,
-      height: this._height + 40,
+      width: this.#width,
+      height: this.#height + 40,
       top: Math.max(notificationTop, 0),
       left: Math.max(notificationLeft, 0)
     };
-    const lastPopups = await this._getPopup();
+    const lastPopups = await this.#getPopup();
 
     if (lastPopups && lastPopups.length > 0) {
       for (let index = 0; index < lastPopups.length; index++) {
@@ -53,16 +53,16 @@ export class PromptService {
     }
 
     try {
-      Runtime.windows.create(createData as any, (tab) => this._id = tab.id);
+      Runtime.windows.create(createData as any, (tab) => this.#id = tab.id);
     } catch (err) {
       console.error(err);
     }
   }
 
-  private _getPopup(): Promise<chrome.windows.Window[]> {
+  #getPopup(): Promise<chrome.windows.Window[]> {
     return new Promise((resolve) => {
       Runtime.windows.getAll({}, (tabs) => {
-        const list = tabs.filter(tab => tab.type === this._type);
+        const list = tabs.filter(tab => tab.type === this.#type);
         resolve(list);
       })
     });

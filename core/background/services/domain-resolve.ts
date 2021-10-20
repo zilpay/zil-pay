@@ -19,24 +19,24 @@ import type { DomainResolver } from 'types/domain';
 import { nameHash } from 'lib/utils/namehash';
 
 export class UnstoppableDomains {
-  private _field = 'records';
-  private _zilliqa: ZilliqaControl;
-  private _netwrok: NetworkControl;
+  #field = 'records';
+  readonly #zilliqa: ZilliqaControl;
+  readonly #netwrok: NetworkControl;
 
   constructor() {
-    this._netwrok = new NetworkControl(true);
-    this._zilliqa = new ZilliqaControl(this._netwrok);
+    this.#netwrok = new NetworkControl(true);
+    this.#zilliqa = new ZilliqaControl(this.#netwrok);
   }
 
   public async getAddressByDomain(domain: string): Promise<DomainResolver> {
-    await this._netwrok.sync();
+    await this.#netwrok.sync();
     domain = String(domain).toLowerCase();
 
     const domainHash: string = nameHash(domain);
     const zilRecords = 'crypto.ZIL.address';
-    const { records } = await this._zilliqa.getSmartContractSubState(
+    const { records } = await this.#zilliqa.getSmartContractSubState(
       Contracts.UD,
-      this._field,
+      this.#field,
       [domainHash]
     );
 
@@ -44,14 +44,14 @@ export class UnstoppableDomains {
     let address = null;
 
     if (resolver && resolver !== Contracts.ZERO_ADDRESS) {
-      const result = await this._zilliqa.getSmartContractSubState(
+      const result = await this.#zilliqa.getSmartContractSubState(
         resolver,
-        this._field,
+        this.#field,
         [zilRecords]
       );
 
-      if (result && result[this._field][zilRecords]) {
-        address = result[this._field][zilRecords];
+      if (result && result[this.#field][zilRecords]) {
+        address = result[this.#field][zilRecords];
       }
 
       try {
