@@ -33,7 +33,7 @@ export class TransactionsQueue {
   public async checkProcessedTx() {
     const list =  this._transactions.transactions;
     const now = new Date().getTime();
-    const dilaySeconds = 15000;
+    const dilaySeconds = 30000;
     let rejectAll = null;
 
     for (let index = 0; index < list.length; index++) {

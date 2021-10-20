@@ -112,7 +112,7 @@ export class ZilPayTransaction {
       }
 
       newTx.sign(keyPair.privKey);
-      const hash = 'dasdasdsa'// await this._core.zilliqa.send(newTx);
+      const hash = await this._core.zilliqa.send(newTx);
       newTx.setHash(hash);
       await this._core.transactions.addHistory({
         token,
