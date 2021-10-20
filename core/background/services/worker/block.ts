@@ -13,9 +13,11 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { MTypeTab } from 'lib/streem/stream-keys';
+import type { TransactionsQueue } from "../transactions";
 
 export class BlockController {
   private readonly _zilliqa: ZilliqaControl;
+  private readonly _queue: TransactionsQueue;
   private readonly _name = `block/${Runtime.runtime.id}/zilpay`;
   private readonly _delay = 0.3; // approximately 18seconds.
   private _currentBlock = 0;
@@ -24,8 +26,9 @@ export class BlockController {
     return this._currentBlock;
   }
 
-  constructor(zilliqa: ZilliqaControl) {
+  constructor(zilliqa: ZilliqaControl, queue: TransactionsQueue) {
     this._zilliqa = zilliqa;
+    this._queue = queue;
 
     this.unsubscribe();
     Runtime.alarms.create(this._name, {
@@ -34,7 +37,9 @@ export class BlockController {
     });
   }
 
-  public subscribe(cb?: (blocknumber: number) => void) {
+  public async subscribe(cb?: (blocknumber: number) => void) {
+    await this._queue.checkProcessedTx();
+
     Runtime.alarms.onAlarm.addListener(async() => {
       const lastBalockNumber = this._currentBlock;
       const result = await this._zilliqa.getLatestTxBlock();
@@ -50,17 +55,23 @@ export class BlockController {
         cb(blockNumber);
       }
 
-      const { TxnHashes } = await this._zilliqa.getRecentTransactions();
-      const block = {
-        TxBlock: result,
-        TxHashes: [TxnHashes]
-      };
-      new TabsMessage({
-        type: MTypeTab.NEW_BLOCK,
-        payload: {
-          block
-        }
-      }).send();
+      try {
+        const { TxnHashes } = await this._zilliqa.getRecentTransactions();
+        const block = {
+          TxBlock: result,
+          TxHashes: [TxnHashes]
+        };
+        new TabsMessage({
+          type: MTypeTab.NEW_BLOCK,
+          payload: {
+            block
+          }
+        }).send();
+      } catch {
+        ///
+      }
+
+      await this._queue.checkProcessedTx();
     });
   }
 

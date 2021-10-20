@@ -11,6 +11,7 @@ import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
+import { NotificationsControl } from './notifications';
 
 export class AppConnectController {
   private _identities: AppConnect[] = [];
@@ -48,6 +49,7 @@ export class AppConnectController {
   public async addConfirm(connect: AppConnect) {
     this._confirm = connect;
 
+    NotificationsControl.counter(1);
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_DAPP, this.confirmApp)
     );
@@ -56,6 +58,7 @@ export class AppConnectController {
   public async rejectConfirm() {
     this._confirm = undefined;
 
+    NotificationsControl.counter(0);
     await BrowserStorage.rm(Fields.CONNECT_DAPP);
   }
 
@@ -84,6 +87,10 @@ export class AppConnectController {
     try {
       if (confirm) {
         this._confirm = JSON.parse(String(confirm));
+
+        if (Object.keys(this._confirm).length > 0) {
+          NotificationsControl.counter(1);
+        }
       }
     } catch {
       ///

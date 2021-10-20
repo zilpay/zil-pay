@@ -76,15 +76,18 @@ export class ZilPayTransaction {
     }
   }
 
-  public async signSendTx(params: MinParams, sendResponse: StreamResponse) {
+  public async signSendTx(accIndex: number, params: MinParams, sendResponse: StreamResponse) {
     try {
+      await this._core.account.select(accIndex);
+      await this._core.transactions.sync();
+
       let token = {
         decimals: ZIL.decimals,
         symbol: ZIL.symbol
       };
       const account = this._core.account.selectedAccount;
       const keyPair = await this._core.account.getKeyPair();
-      const nonce = await this._core.nonceCounter.getNonce(account);
+      const nonce = await this._core.nonceCounter.nextNonce(account);
       const newTx = new Transaction(
         params.amount,
         params.gasLimit,
@@ -92,7 +95,7 @@ export class ZilPayTransaction {
         account,
         params.toAddr,
         this._core.netwrok.selected,
-        nonce + 1,
+        nonce,
         params.code,
         params.data
       );
@@ -105,17 +108,15 @@ export class ZilPayTransaction {
       }
 
       if (newTx.transactionType === TransactionTypes.Transfer) {
-        const init = await this._core.zrc2.getZRCInit(newTx.toAddr);
-
-        token.decimals = init.decimals;
-        token.symbol = init.symbol;
+        token = await this._getToken(newTx.toAddr);
       }
 
       newTx.sign(keyPair.privKey);
-      const hash = await this._core.zilliqa.send(newTx);
+      const hash = 'dasdasdsa'// await this._core.zilliqa.send(newTx);
       newTx.setHash(hash);
       await this._core.transactions.addHistory({
         token,
+        confirmed: false,
         timestamp: new Date().getTime(),
         toAddr: newTx.toAddr,
         recipient: newTx.recipient,
@@ -136,6 +137,22 @@ export class ZilPayTransaction {
       sendResponse({
         reject: err.message || err
       });
+    }
+  }
+
+  private async _getToken(toAddr: string) {
+    try {
+      const init = await this._core.zrc2.getZRCInit(toAddr);
+
+      return {
+        decimals: init.decimals,
+        symbol: init.symbol
+      };
+    } catch {
+      return {
+        decimals: ZIL.decimals,
+        symbol: ZIL.symbol
+      };
     }
   }
 }

@@ -62,15 +62,7 @@ export class ZilPayPopup {
 
   public initPopup(sendResponse: StreamResponse) {
     sendResponse({
-      resolve: {
-        // TODO: add txns.
-        // TODO: add zrc1.
-        zrc2: this._core.zrc2.identities,
-        netwrok: this._core.netwrok.selected,
-        wallet: this._core.account.wallet,
-        isReady: this._core.guard.isReady,
-        isEnable: this._core.guard.isEnable
-      }
+      resolve: this._core.state
     });
   }
 

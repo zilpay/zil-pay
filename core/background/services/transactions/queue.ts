@@ -33,7 +33,7 @@ export class TransactionsQueue {
   public async checkProcessedTx() {
     const list =  this._transactions.transactions;
     const now = new Date().getTime();
-    const dilaySeconds = 5000;
+    const dilaySeconds = 15000;
     let rejectAll = null;
 
     for (let index = 0; index < list.length; index++) {
@@ -57,21 +57,37 @@ export class TransactionsQueue {
 
         switch (result.status) {
           case StatusCodes.Confirmed:
-            break;
+            element.status = result.status;
+            element.confirmed = true;
+            element.success = result.success;
+            element.nonce = result.nonce;
+            element.info = 'Transaction was confirmed.';
+            this._makeNotify(element.teg, element.hash, element.info);
+            continue;
           case StatusCodes.Pending:
-            break;
+            element.status = result.status;
+            element.confirmed = true;
+            element.success = result.success;
+            continue;
           case StatusCodes.PendingAwait:
-            break;
+            element.status = result.status;
+            element.confirmed = true;
+            element.success = result.success;
+            element.info = 'Transaction await to confirm.';
+            this._makeNotify(element.teg, element.hash, element.info);
+            continue;
           default:
             element.status = result.status;
             element.confirmed = true;
             element.success = result.success;
             element.nonce = 0;
-            element.info = result.status; // test
+            element.info = `Transaction was rejected status is ${element.status}`;
             rejectAll = {
               info: element.info,
               status: result.status
             };
+            this._makeNotify(element.teg, element.hash, element.info);
+            continue;
         }
       } catch (err) {
         if ((now - element.timestamp) > dilaySeconds) {
@@ -79,15 +95,17 @@ export class TransactionsQueue {
           element.confirmed = true;
           element.success = false;
           element.nonce = 0;
-          element.info = `node_status_0`;
+          element.info = `Transaction rejected by timeout.`;
           rejectAll = {
             info: element.info,
             status: element.status
           };
-          this._makeNotify(element.type, element.hash, element.info);
+          this._makeNotify(element.teg, element.hash, element.info);
         }
       }
     }
+
+    await this._transactions.updateHistory(list);
   }
 
   private _makeNotify(title: string, hash: string, message: string) {
@@ -96,6 +114,6 @@ export class TransactionsQueue {
       url,
       title,
       message
-    );
+    ).create();
   }
 }

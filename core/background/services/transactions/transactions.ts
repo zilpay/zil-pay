@@ -48,6 +48,13 @@ export class TransactionsController {
     );
   }
 
+  public async updateHistory(txns: StoredTx[]) {
+    this._txns = txns;
+    await BrowserStorage.set(
+      buildObject(this._transactionsField, this.transactions)
+    );
+  }
+
   public async clearHistory() {
     this._txns = [];
     await BrowserStorage.set(
@@ -115,12 +122,9 @@ export class TransactionsController {
     }
 
     try {
-      if (!confirmJson) {
-        throw new Error();
+      if (confirmJson) {
+        this._confirm = JSON.parse(String(confirmJson));
       }
-      const txnsForConfirm = JSON.parse(String(confirmJson));
-
-      this._confirm = txnsForConfirm;
     } catch {
       ////
     }
