@@ -6,8 +6,8 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { ReqBody } from './message';
 import { Runtime } from 'lib/runtime';
-import { Message, ReqBody } from './message';
 
 /**
  * TabsMessage is class for send messages for any tabs.
@@ -18,7 +18,8 @@ import { Message, ReqBody } from './message';
  *   .send()
  *   .then(() => / Do something... /)
  */
-export class TabsMessage extends Message {
+export class TabsMessage {
+  private readonly _body: ReqBody;
 
   static tabs(): Promise<chrome.tabs.Tab[]> {
     return new Promise(resolve => {
@@ -30,13 +31,13 @@ export class TabsMessage extends Message {
    * Recieve msg object.
    */
   constructor(msg: ReqBody) {
-    super(msg);
+    this._body = msg;
   }
 
   /**
    * Send msg for tabs.
    */
-  async send() {
+  public async send() {
     // Get all active tabs.
     const tabs = await TabsMessage.tabs();
 

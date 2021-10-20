@@ -105,7 +105,7 @@ const background = {
 					dest: 'dist/'
 				},
 				{
-					src: 'public/popup.html',
+					src: 'public/index.html',
 					dest: 'dist/'
 				},
 				{

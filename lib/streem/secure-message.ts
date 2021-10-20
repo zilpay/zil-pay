@@ -7,16 +7,17 @@
  * Copyright (c) 2021 ZilPay
  */
 
-import { Message, ReqBody } from './message';
+import type { ReqBody } from './message';
 import type { TabStream } from './tab-stream';
 
 /**
  * Can send encrypted msg.
  */
- export class ContentMessage extends Message {
+ export class ContentMessage {
+  private readonly _body: ReqBody;
 
   constructor(msg: ReqBody) {
-    super(msg);
+    this._body = msg;
   }
 
   /**

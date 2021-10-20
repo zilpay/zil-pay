@@ -39,7 +39,7 @@ export interface ReqBody {
     });
   }
 
-  protected readonly _body: ReqBody;
+  private readonly _body: ReqBody;
 
   /**
    * Recieve msg object.
