@@ -8,12 +8,15 @@
  */
 import { wrap } from 'svelte-spa-router/wrap';
 import LockPage from '../pages/Lock.svelte';
+import guardStore from 'popup/store/guard';
 
 export default {
   '/': wrap({
     component: LockPage,
     conditions: [
       async () => {
+        guardStore.subscribe(console.log)();
+
         return true;
       }
     ]

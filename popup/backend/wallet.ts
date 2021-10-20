@@ -8,6 +8,7 @@
  */
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
+import guardStore from 'popup/store/guard';
 
 export class Wallet {
   public async getState() {
@@ -19,7 +20,9 @@ export class Wallet {
       throw new Error(String(data.reject));
     }
 
-    return data.resolve
+    guardStore.set(data.resolve['guard']);
+
+    return data.resolve;
   }
 }
 

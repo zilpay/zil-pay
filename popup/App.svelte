@@ -1,10 +1,17 @@
 <script lang="ts">
 	import Router from 'svelte-spa-router';
+	import { onMount } from 'svelte';
   import routes from './routers';
 
 	import { Wallet } from "popup/backend";
 
-	new Wallet().getState().then(console.log);
+	let state = null;
+
+	onMount(async () => {
+		state = await new Wallet().getState();
+	});
 </script>
 
-<Router {routes} />
+{#if state}
+	<Router {routes} />
+{/if}
