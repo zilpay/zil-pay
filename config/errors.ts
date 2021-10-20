@@ -33,5 +33,6 @@ export enum ErrorMessages {
   OutOfIndex = 'Out of index.',
   IncorrectParams = 'Incorrect argument',
   SSnAllowNet = 'SSn list allow on mainnet only.',
-  CannotExportLedger = 'Cannot export privateKey from ledger.'
+  CannotExportLedger = 'Cannot export privateKey from ledger.',
+  HightNonce = 'nonce too hight'
 }

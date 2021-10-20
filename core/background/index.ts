@@ -1,4 +1,5 @@
 import { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
+// import { NotificationsControl } from './services/notifications';
 import { testFromOld } from './test';
 
 (async function() {

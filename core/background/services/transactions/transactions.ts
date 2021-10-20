@@ -84,6 +84,17 @@ export class TransactionsController {
     );
   }
 
+  public async resetNonce(nonce: number) {
+    this._txns = this._txns.map((t) => ({
+      ...t,
+      nonce
+    }));
+
+    await BrowserStorage.set(
+      buildObject(this._transactionsField, this.transactions)
+    );
+  }
+
   public async sync() {
     if (!this._account.selectedAccount) {
       return null;

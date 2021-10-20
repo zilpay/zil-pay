@@ -7,5 +7,12 @@
  * Copyright (c) 2021 ZilPay
  */
 export enum APIs {
-  COIN_GECKO = 'https://api.coingecko.com/api/v3/simple/price'
+  COIN_GECKO = 'https://api.coingecko.com/api/v3/simple/price',
+  VIEW_BLOCK_URL = 'https://viewblock.io/zilliqa'
+}
+
+export enum ViewBlockMethods {
+  Transaction = 'tx',
+  Address = 'address',
+  Block = 'block'
 }
