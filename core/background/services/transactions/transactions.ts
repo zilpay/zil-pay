@@ -12,6 +12,7 @@ import type { MinParams, StoredTx } from 'types/transaction';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { NotificationsControl } from 'core/background/services/notifications';
+import { Common } from 'config/common';
 
 export class TransactionsController {
   private _txns: StoredTx[] = [];
@@ -41,7 +42,10 @@ export class TransactionsController {
   }
 
   public async addHistory(tx: StoredTx) {
-    this._txns.push(tx);
+    const newList = [tx, ...this.transactions];
+
+    // Circumcision Array.
+    newList.length = Common.MAX_TX_QUEUE;
 
     await BrowserStorage.set(
       buildObject(this._transactionsField, this.transactions)

@@ -12,5 +12,6 @@ export enum Common {
   POPUP_WIDTH = 320,
   POPUP_HEIGHT = 560,
   PROMT_PAGE = 'popup.html',
-  NONCE_DIFFICULTY = 10
+  NONCE_DIFFICULTY = 10,
+  MAX_TX_QUEUE = 20
 }
