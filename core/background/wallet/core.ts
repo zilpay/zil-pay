@@ -51,7 +51,7 @@ export class ZIlPayCore {
         config: this.netwrok.config,
         selected: this.netwrok.selected
       },
-      theme: this.theme,
+      theme: this.theme.selected,
       guard: {
         isReady: this.guard.isReady,
         isEnable: this.guard.isEnable

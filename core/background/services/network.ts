@@ -43,8 +43,13 @@ export class NetworkControl {
     );
 
     try {
-      this.selected = data[Fields.SELECTED_NET];
-      this.config = JSON.parse(data[Fields.CONFIG]);
+      if (data[Fields.SELECTED_NET]) {
+        this.selected = data[Fields.SELECTED_NET];
+      }
+
+      if (data[Fields.CONFIG]) {
+        this.config = JSON.parse(data[Fields.CONFIG]);
+      }
     } catch {
       await BrowserStorage.set(
         buildObject(Fields.CONFIG, this.config),

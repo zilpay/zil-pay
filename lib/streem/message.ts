@@ -7,6 +7,8 @@
  * Copyright (c) 2021 ZilPay
  */
 
+import type { SendResponseParams } from 'types/stream';
+
 import { Runtime } from 'lib/runtime';
 
 export interface ReqBody {
@@ -15,8 +17,6 @@ export interface ReqBody {
   domain?: string;
   from?: string;
 }
-
-const { window } = globalThis;
 
 /**
  * Message class can send payload or make signal message.
@@ -52,7 +52,7 @@ const { window } = globalThis;
   /**
    * Send MessageSelf object.
    */
-  public send() {
+  public send(): Promise<SendResponseParams> {
     return new Promise((resolve) => {
       try {
         Runtime
