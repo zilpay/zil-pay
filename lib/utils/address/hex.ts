@@ -6,13 +6,9 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import assert from 'assert';
 import BN from 'bn.js';
 import sha256 from 'hash.js/lib/hash/sha/256';
-import elliptic from 'elliptic';
 import { ErrorMessages } from 'config/errors';
-
-const secp256k1 = new elliptic.ec('secp256k1');
 
 export function tohexString(hex: string) {
   return String(hex).toLowerCase().replace('0x', '');
@@ -23,7 +19,9 @@ export const isByteString = (str: string, len: number) => {
 };
 
 export const isAddress = (address: string) => {
-  assert(isByteString(address, 40), ErrorMessages.Base16NotValid);
+  if (!isByteString(address, 40)) {
+    throw new Error(ErrorMessages.Base16NotValid);
+  }
 };
 
 export const toChecksumAddress = (address: string): string => {
@@ -49,36 +47,6 @@ export const toChecksumAddress = (address: string): string => {
   return ret;
 };
 
-export const getAddressFromPublicKey = (publicKey: string) => {
-  const pub = tohexString(publicKey);
-  const hash = sha256()
-    .update(pub, 'hex')
-    .digest('hex')
-    .slice(24);
-
-  return toChecksumAddress(hash);
-};
-
 export const isBech32 = (raw: string) => {
   return !!raw.match(/^zil1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}$/);
-};
-
-/**
- * getPubKeyFromPrivateKey
- *
- * takes a hex-encoded string (private key) and returns its corresponding
- * hex-encoded 33-byte public key.
- *
- * @param {string} privateKey
- * @returns {string}
- */
-export const getPubKeyFromPrivateKey = (privateKey: string) => {
-  const normalizedPrviateKey = tohexString(privateKey);
-  const keyPair = secp256k1.keyFromPrivate(normalizedPrviateKey, 'hex');
-
-  return keyPair.getPublic(true, 'hex');
-};
-
-export const isPrivateKey = (privateKey: string) => {
-  assert(isByteString(privateKey, 64), ErrorMessages.BadPrivateKey);
 };

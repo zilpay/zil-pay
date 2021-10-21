@@ -164,6 +164,8 @@ const inpage = {
 	},
 	plugins: [
 		commonjs(),
+		nodePolyfills(),
+		json(),
 		resolve({
 			jsnext: true,   
 			main: true,

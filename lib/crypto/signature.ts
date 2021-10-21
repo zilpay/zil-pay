@@ -4,7 +4,7 @@
  * -----
  * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
  * -----
- * Copyright (c) 2020 ZilPay
+ * Copyright (c) 2021 ZilPay
  */
 import BN from 'bn.js';
 

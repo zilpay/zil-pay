@@ -33,7 +33,8 @@ export class ZilPayApps {
         resolve: {
           account,
           netwrok: this.#core.netwrok.selected,
-          http: this.#core.netwrok.provider
+          http: this.#core.netwrok.provider,
+          nativeHttp: this.#core.netwrok.nativeHttp
         }
       });
     } catch (err) {

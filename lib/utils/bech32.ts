@@ -7,7 +7,6 @@
  * Copyright (c) 2021 ZilPay
  */
 import { Buffer } from 'buffer';
-import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { isAddress, toChecksumAddress, tohexString } from "./address";
 
@@ -173,18 +172,26 @@ export const toBech32Address = (address: string): string => {
     5,
   );
 
-  assert(Boolean(addrBz), ErrorMessages.CannotConvertBytes);
+  if (!addrBz) {
+    throw new Error(ErrorMessages.CannotConvertBytes);
+  }
 
   return encode(HRP, addrBz);
 };
 
 export const fromBech32Address = (address: string): string => {
   const res = decode(address);
-  assert(Boolean(res), ErrorMessages.InvalidBech32);
+  if (!res) {
+    throw new Error(ErrorMessages.InvalidBech32);
+  }
   const { hrp, data } = res;
   const shouldBe = HRP;
-  assert(hrp === shouldBe, ErrorMessages.ExpectedHRP);
+  if (hrp !== shouldBe) {
+    throw new Error(ErrorMessages.ExpectedHRP);
+  }
   const buf = convertBits(data, 5, 8, false);
-  assert(Boolean(buf), ErrorMessages.CannotConvertBytes);
+  if (!buf) {
+    throw new Error(ErrorMessages.CannotConvertBytes);
+  }
   return toChecksumAddress(buf.toString('hex'));
 };
