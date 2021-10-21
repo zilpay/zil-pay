@@ -12,6 +12,10 @@ export interface ZRC1Token {
   id: string;
   url: string;
 }
+export interface InpageWallet {
+  base16: string;
+  bech32: string;
+}
 
 export interface Account {
   name: string;

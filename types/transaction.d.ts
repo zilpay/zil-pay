@@ -24,6 +24,33 @@ export interface TxParams {
   hash?: string;
 }
 
+export interface ParamItem {
+  type: string;
+  value: string | unknown[];
+  vname: string;
+}
+export interface TxEvent {
+  address: string;
+  params: ParamItem[];
+  _eventname: string;
+}
+export interface DataParams {
+  params: ParamItem[];
+  _tag: string;
+}
+export interface TransitionMessage {
+  params: ParamItem[];
+  _amount: string;
+  _recipient: string;
+  _tag: string;
+}
+export interface Transition {
+  accepted: boolean;
+  addr: string;
+  depth: number;
+  msg: unknown
+}
+
 export interface MinParams {
   amount: string;
   code: string;
@@ -34,6 +61,20 @@ export interface MinParams {
   priority?: boolean;
   version?: number;
   toAddr: string;
+}
+
+export interface TransitionReceipt {
+  accepted: boolean;
+  cumulative_gas: string;
+  epoch_num: string;
+  success: boolean;
+  transitions: Transition[];
+  event_logs?: TxEvent[];
+  exceptions?: Array<number[]>;
+  errors?: {
+    line: number;
+    message: string;
+  }[];
 }
 
 export interface StoredTx {
