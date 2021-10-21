@@ -9,6 +9,10 @@
 
 import type { HTTPProvider } from "./provider";
 import type { Wallet } from './wallet';
+import assert from 'assert';
+import { Transaction, TransactionParams } from './transaction';
+import { CryptoUtils } from "./crypto";
+import { RPCMethod } from 'config/methods';
 
 export class Blockchain {
   #provider: HTTPProvider;
@@ -25,17 +29,34 @@ export class Blockchain {
   * Creates a transaction and polls the lookup node for a transaction
   * receipt. The transaction is considered to be lost if it is not confirmed
   * within the timeout period.
-  *
-  * @param {Transaction} tx
-  * @param {number} maxAttempts - (optional) number of times to poll before timing out
-  * @param {number} number - (optional) interval in ms
-  * @returns {Promise<Transaction>} - the Transaction that has been signed and
   * broadcasted to the network.
   */
-   async createTransaction(tx, priority = false) {
-    const transaction = new Transaction(tx, priority)
-    const result = await this.wallet.sign(transaction)
+  public async createTransaction(params: TransactionParams, priority = false) {
+    const transaction = new Transaction(params, priority);
+    const result = await this.#wallet.sign(transaction);
 
-    return new Transaction(result)
+    return new Transaction(result);
+  }
+
+  /**
+   * getTransaction
+   *
+   * Retrieves a transaction from the blockchain by its hash. If the result
+   * contains an Error, a rejected Promise is returned with the erorr message.
+   * If it does not contained an error, but `receipt.success` is `false`, then
+   * a rejected Transaction instance is returned.
+   */
+   async getTransaction(hash: string): Promise<Transaction> {
+    assert(Boolean(hash), 'hash is REQUIRED');
+    const fixedhash = CryptoUtils.toHex(hash);
+
+    const { error, result } = await this.#provider.send(
+      RPCMethod.GetTransaction,
+      String(fixedhash)
+    );
+
+    assert(Boolean(result), String(error['message']));
+
+    return new Transaction(result as TransactionParams);
   }
 }

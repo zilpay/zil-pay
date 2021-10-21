@@ -14,16 +14,23 @@ import { uuidv4 } from 'lib/crypto/uuid';
 import { MTypeTab, MTypeTabContent } from 'lib/streem/stream-keys';
 import { ContentMessage } from 'lib/streem/secure-message';
 
+export type Response = {
+  error?: unknown,
+  result?: unknown;
+}
+
 export class HTTPProvider {
   #stream: TabStream;
   #subject: Subject;
+
+  public RPCMethod = {};
 
   constructor(stream: TabStream, subject: Subject) {
     this.#stream = stream;
     this.#subject = subject;
   }
 
-  public send(method: string, ...params: Params) {
+  public send(method: string, ...params: Params): Promise<Response> {
     const type = MTypeTab.CONTENT_PROXY_MEHTOD;
     const recipient = MTypeTabContent.CONTENT;
     const uuid = uuidv4();

@@ -7,6 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 
+import type { Transaction } from "./transaction";
 import type { TabStream } from "lib/streem/tab-stream";
 import type { InpageWallet } from "types/account";
 import type { Subject } from "./subject";
@@ -49,7 +50,7 @@ export class Wallet {
 
   public addTransactionsQueue() {}
 
-  public sign() {}
+  public async sign(arg: Transaction | string): Promise<any> {}
 
   public connect() {}
 }
