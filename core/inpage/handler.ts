@@ -18,7 +18,6 @@ export class Handler {
 
   constructor() {
     this.stream.listen((msg) => {
-      console.log(msg);
       this.subject.emit(msg);
     });
   }

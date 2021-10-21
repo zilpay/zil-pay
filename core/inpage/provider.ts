@@ -57,7 +57,7 @@ export class HTTPProvider {
         }
 
         delete msg.payload.uuid;
-
+        sub();
         return resolve(msg.payload);
       });
     })

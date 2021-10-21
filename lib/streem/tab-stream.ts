@@ -10,6 +10,8 @@
 import type { ReqBody } from './message';
 import { MTypeTabContent } from './stream-keys';
 
+const { document } = globalThis;
+
 /**
  * Used for communication between a web page and an extension's content script.
  */
@@ -46,7 +48,7 @@ import { MTypeTabContent } from './stream-keys';
   public send(data: ReqBody, to: string) {
     data.from = this.#eventName;
 
-    if (to in MTypeTabContent) {
+    if (Object.values(MTypeTabContent).includes(to)) {
       this.#dispatch(JSON.stringify(data), to);
     }
   }

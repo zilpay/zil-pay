@@ -23,7 +23,7 @@ function json(method: string, params: Params) {
   };
 }
 
-export async function send(http: string, method: string, params: Params) {
+export async function httpProvider(http: string, method: string, params: Params) {
   const request = json(method, params);
   const responce = await fetch(http, request);
   const data = await responce.json();

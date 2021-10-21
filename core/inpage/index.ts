@@ -12,5 +12,3 @@ import { ZilPay } from './zilpay';
 const handler = Object.freeze(new Handler());
 handler.initialized();
 window['zilPay'] = Object.freeze(new ZilPay(handler.stream, handler.subject));
-
-console.log(window['zilPay']);

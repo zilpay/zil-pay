@@ -11,6 +11,8 @@ import { MTypeTab, MTypeTabContent } from 'lib/streem/stream-keys';
 import { TabStream } from 'lib/streem/tab-stream';
 import { ContentMessage } from 'lib/streem/secure-message';
 import { warpMessage } from 'lib/utils/warp-message';
+import { httpProvider } from './provider';
+import { RPCMethod } from 'config/methods';
 
 export class ContentTabStream {
   readonly #stream: TabStream;
@@ -25,12 +27,30 @@ export class ContentTabStream {
     this.onSyncAll();
   }
 
-  #listener(msg: ReqBody) {
+  async #listener(msg: ReqBody) {
     if (!msg) return null;
 
     msg.domain = window.document.domain;
 
     switch (msg.type) {
+      case MTypeTab.GET_WALLET_DATA:
+        this.onSyncAll();
+        break;
+      case MTypeTab.ADDRESS_CHANGED:
+        new Message(msg).send();
+        break;
+      case MTypeTab.CONNECT_APP:
+        new Message(msg).send();
+        break;
+      case MTypeTab.CALL_TO_SIGN_TX:
+        new Message(msg).send();
+        break;
+      case MTypeTab.SIGN_MESSAGE:
+        new Message(msg).send();
+        break;
+      case MTypeTab.CONTENT_PROXY_MEHTOD:
+        await this.#proxy(msg.payload);
+        break
       default:
         break;
     }
@@ -53,5 +73,46 @@ export class ContentTabStream {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async #proxy(payload: any) {
+    const { params, method, uuid } = payload;
+    const recipient = MTypeTabContent.INJECTED;
+    let result = {};
+
+    try {
+      if (!(method in RPCMethod)) {
+        throw new Error(`allow only ${RPCMethod}`);
+      }
+
+      const data = await Message.signal(
+        MTypeTab.GET_WALLET_DATA
+      ).send();
+      const wallet = warpMessage(data);
+      const http = method === RPCMethod.GetTransactionStatus ?
+        wallet['nativeHttp'] : wallet['http'];
+      // if (!wallet['isEnable']) {
+      //   throw new Error('DISABLED');
+      // } else if (!wallet['isConnect']) {
+      //   throw new Error('CONNECT');
+      // }
+
+      result = await httpProvider(
+        http,
+        method,
+        params
+      );
+    } catch (err) {
+      console.error(err);
+      result['error'] = err.message || err;
+    }
+
+    new ContentMessage({
+      type: MTypeTab.CONTENT_PROXY_RESULT,
+      payload: {
+        ...result,
+        uuid
+      },
+    }).send(this.#stream, recipient);
   }
 }
