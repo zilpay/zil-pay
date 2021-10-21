@@ -55,7 +55,7 @@ export class Blockchain {
       String(fixedhash)
     );
 
-    assert(Boolean(result), String(error['message']));
+    assert(Boolean(result), String(error));
 
     return new Transaction(result as TransactionParams);
   }
