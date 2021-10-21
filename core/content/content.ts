@@ -6,6 +6,10 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { startBrowserContent } from "./content";
+import { inject } from './inject';
+import { startStream } from './stream';
 
-startBrowserContent();
+export function startBrowserContent() {
+  startStream();
+  inject('inpage.js');
+}

@@ -16,6 +16,14 @@ import type { TabStream } from './tab-stream';
  export class ContentMessage {
   private readonly _body: ReqBody;
 
+  public get type() {
+    return this._body.type;
+  }
+
+  public get payload() {
+    return this._body.payload;
+  }
+
   constructor(msg: ReqBody) {
     this._body = msg;
   }
@@ -23,7 +31,7 @@ import type { TabStream } from './tab-stream';
   /**
    * Method for send message.
    */
-  public sendTabStream(stream: TabStream, recipient: string) {
+  public send(stream: TabStream, recipient: string) {
     const seralized = JSON.stringify(this._body);
     const deserialized = JSON.parse(seralized);
 

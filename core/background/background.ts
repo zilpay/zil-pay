@@ -21,7 +21,7 @@ export function startBackground(core: ZIlPayBackground) {
       /// contentDispenseMessage
       switch (msg.type) {
         case MTypeTab.GET_WALLET_DATA:
-          /// TODO: add get wallet data for inpage.js
+          core.apps.showWalletData(msg.domain, sendResponse);
           break;
         case MTypeTab.CONNECT_APP:
           await core.apps.addConfirm(msg.payload, sendResponse);

@@ -17,6 +17,32 @@ export class ZilPayApps {
     this.#core = core;
   }
 
+  public showWalletData(domain: string, sendResponse: StreamResponse) {
+    try {
+      const has = this.#core.apps.isConnected(domain);
+      let account = null;
+
+      if (has) {
+        account = {
+          base16: this.#core.account.selectedAccount.base16,
+          bech32: this.#core.account.selectedAccount.bech32
+        }
+      }
+
+      sendResponse({
+        resolve: {
+          account,
+          netwrok: this.#core.netwrok.selected,
+          http: this.#core.netwrok.provider
+        }
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async addApp(app: AppConnect, sendResponse: StreamResponse) {
     try {
       await this.#core.apps.add(app);

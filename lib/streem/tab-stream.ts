@@ -15,21 +15,21 @@ import { MTypeTabContent } from './stream-keys';
  */
  export class TabStream {
 
-  private readonly _eventName: string;
+  readonly #eventName: string;
 
   /**
    * Creates a new TabStream.
    * @param {String} eventName - Event type.
    */
   constructor(eventName: string) {
-    this._eventName = eventName
+    this.#eventName = eventName
   }
 
   /**
    * Message listener that returns decrypted messages when synced
    */
-  public listen(cb: (payload: object) => void) {
-    document.addEventListener(this._eventName, (event) => {
+  public listen(cb: (payload: ReqBody) => void) {
+    document.addEventListener(this.#eventName, (event) => {
       const detail = event['detail'];
 
       if (detail) {
@@ -44,21 +44,21 @@ import { MTypeTabContent } from './stream-keys';
    * @param to - The stream to send messages to.
    */
   public send(data: ReqBody, to: string) {
-    data.from = this._eventName;
+    data.from = this.#eventName;
 
     if (to in MTypeTabContent) {
-      this._dispatch(JSON.stringify(data), to);
+      this.#dispatch(JSON.stringify(data), to);
     }
   }
 
-  private _dispatch(data: string, to: string) {
-    document.dispatchEvent(this._getEvent(data, to));
+  #dispatch(data: string, to: string) {
+    document.dispatchEvent(this.#getEvent(data, to));
   }
 
   /**
    * Helper methods for building and sending events.
    */
-  private _getEventInit(detail: string) {
+  #getEventInit(detail: string) {
     return {
       detail
     };
@@ -69,7 +69,7 @@ import { MTypeTabContent } from './stream-keys';
  * @param encryptedData - No modifly data
  * @param to - Event name.
  */
- private _getEvent(detail: string, to: string) {
-    return new CustomEvent(to, this._getEventInit(detail));
+ #getEvent(detail: string, to: string) {
+    return new CustomEvent(to, this.#getEventInit(detail));
   }
 }

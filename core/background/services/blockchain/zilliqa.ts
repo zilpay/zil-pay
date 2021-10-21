@@ -9,8 +9,8 @@
 
 import type { SSN } from 'types/ssn';
 import type { NetworkControl } from 'core/background/services/network';
-import type { TxParams } from 'types/transaction';
 import type { Transaction } from 'background/services/transactions/tx-builder';
+import type { Params, Balance } from 'types/zilliqa';
 
 import assert from 'assert';
 import { NETWORK, NETWORK_KEYS } from 'config/network';
@@ -20,12 +20,6 @@ import { JsonRPCCodes } from './codes';
 import { Contracts } from 'config/contracts';
 import { ErrorMessages } from 'config/errors';
 import { DEFAULT_SSN } from 'core/background/services/ssn';
-
-type Params = TxParams[] | string[] | number[] | (string | string[] | number[])[];
-type Balance = {
-  nonce: number;
-  balance: string;
-};
 
 export class ZilliqaControl {
   #network: NetworkControl;

@@ -7,8 +7,8 @@
  * Copyright (c) 2021 ZilPay
  */
 
-import { Runtime } from 'lib/runtime';
 import type { ReqBody } from './message';
+import { Runtime } from 'lib/runtime';
 
 
 export type SendResponse = (response?: object) => void;

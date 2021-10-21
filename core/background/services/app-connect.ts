@@ -34,6 +34,10 @@ export class AppConnectController {
     }
   }
 
+  public isConnected(domain: string) {
+    return this.#identities.some((a) => a.domain === domain);
+  }
+
   public async add(connect: AppConnect) {
     this.#isUnique(connect);
 
