@@ -69,6 +69,31 @@ export class Blockchain {
     return this.#provider.send(RPCMethod.GetRecentTransactions);
   }
 
+  public getTransactionsForTxBlockEx(txBlock: number, page: number) {
+    assert(!isNaN(txBlock), 'Txblock should be number');
+    assert(!isNaN(page), 'page should be number');
+    return this.#provider.send(
+      RPCMethod.GetTransactionsForTxBlockEx,
+      String(txBlock),
+      String(page)
+    );
+  }
+
+  public getTxnBodiesForTxBlockEx(block: number, page: number) {
+    assert(!isNaN(block), 'Txblock should be number');
+    assert(!isNaN(page), 'page should be number');
+    return this.#provider.send(
+      RPCMethod.GetTxnBodiesForTxBlockEx,
+      String(block),
+      String(page)
+    );
+  }
+
+  public getTxnBodiesForTxBlock(block: number) {
+    assert(!isNaN(block), 'block should be number');
+    return this.#provider.send(RPCMethod.GetTxnBodiesForTxBlock, String(block));
+  }
+
    /**
    * getTransactionsForTxBlock
    *
@@ -145,5 +170,319 @@ export class Blockchain {
     assert(!isNaN(max), 'max should be number');
 
     return this.#provider.send(RPCMethod.DSBlockListing, String(max));
+  }
+
+  /**
+   * getTxBlock
+   *
+   * Get details of a Transaction block by block number.
+   */
+  public getTxBlock(blockNum: number) {
+     assert(!isNaN(blockNum), 'blockNum should be number');
+
+    return this.#provider.send(RPCMethod.GetTxBlock, String(blockNum));
+  }
+
+  /**
+   * getLatestTxBlock
+   *
+   * Get details of the most recent Transaction block.
+   */
+  public getLatestTxBlock() {
+    return this.#provider.send(RPCMethod.GetLatestTxBlock);
+  }
+
+  /**
+   * getNumTxBlocks
+   *
+   * Gets the total number of TxBlocks.
+   */
+  public getNumTxBlocks() {
+    return this.#provider.send(RPCMethod.GetNumTxBlocks);
+  }
+
+  /**
+   * getTxBlockRate
+   *
+   * Gets the average number of Tx blocks per second.
+   */
+  public getTxBlockRate() {
+    return this.#provider.send(RPCMethod.GetTxBlockRate);
+  }
+
+  /**
+   * getTxBlockListing
+   *
+   * Get a paginated list of Transaction blocks. Takes a page number as
+   * parameter, where each page contains a list of 10 blocks (max). Returns
+   * a maxPages variable that specifies the max number of pages. 1 - latest
+   * blocks, maxPages - oldest blocks.
+   */
+  public getTxBlockListing(max: number) {
+    assert(!isNaN(max), 'max should be number');
+
+    return this.#provider.send(RPCMethod.TxBlockListing, String(max));
+  }
+
+  /**
+   * getNumTransactions
+   *
+   * Gets the number of transactions processed by the network so far.
+   */
+  public getNumTransactions() {
+    return this.#provider.send(RPCMethod.GetNumTransactions);
+  }
+
+  /**
+   * getTransactionRate
+   *
+   * Gets the number of transactions processed per second
+   */
+  public getTransactionRate() {
+    return this.#provider.send(RPCMethod.GetTransactionRate);
+  }
+
+  /**
+   * getCurrentMiniEpoch
+   *
+   * Gets the current Tx Epoch.
+   */
+  public getCurrentMiniEpoch() {
+    return this.#provider.send(RPCMethod.GetCurrentMiniEpoch);
+  }
+
+  /**
+   * getCurrentDSEpoch
+   *
+   * Gets the current DS Epoch.
+   */
+  public getCurrentDSEpoch() {
+    return this.#provider.send(RPCMethod.GetCurrentDSEpoch);
+  }
+
+  /**
+   * getPrevDifficulty
+   *
+   * Gets shard difficulty for previous PoW round
+   */
+  public getPrevDifficulty() {
+    return this.#provider.send(RPCMethod.GetPrevDifficulty);
+  }
+
+  /**
+   * getPrevDSDifficulty
+   *
+   * Gets DS difficulty for previous PoW round
+   */
+  public getPrevDSDifficulty() {
+    return this.#provider.send(RPCMethod.GetPrevDSDifficulty);
+  }
+
+  /**
+   * getTotalCoinSupply
+   *
+   * Returns the total supply (ZIL) of coins in the network.
+   */
+  public getTotalCoinSupply() {
+    return this.#provider.send(RPCMethod.GetTotalCoinSupply);
+  }
+
+  /**
+   * getMinerInfo
+   *
+   * Returns the mining nodes (i.e., the members of the DS committee and shards) at the specified DS block.
+   *
+   * Notes:
+   * 1. Nodes owned by Zilliqa Research are omitted.
+   * 2. dscommittee has no size field since the DS committee size is fixed for a given chain.
+   * 3. For the Zilliqa Mainnet, this API is only available from DS block 5500 onwards.
+   */
+  public getMinerInfo(dsBlockNumber: number) {
+    assert(!isNaN(dsBlockNumber), 'dsBlockNumber should be number');
+    return this.#provider.send(RPCMethod.GetMinerInfo, String(dsBlockNumber));
+  }
+
+  /**
+   * getNumTxnsTxEpoch
+   *
+   * Gets the number of transactions procesed for a given Tx Epoch.
+   */
+  public getNumTxnsTxEpoch(epoch: number) {
+    assert(!isNaN(epoch), 'epoch should be number');
+
+    return this.#provider.send(RPCMethod.GetNumTxnsTxEpoch, String(epoch));
+  }
+
+  /**
+   * getNumTxnsDSEpoch
+   *
+   * Gets the number of transactions procesed for a given DS Epoch.
+   */
+  public getNumTxnsDSEpoch(epoch: number) {
+    assert(!isNaN(epoch), 'epoch should be number');
+
+    return this.#provider.send(RPCMethod.GetNumTxnsDSEpoch, String(epoch));
+  }
+
+  /**
+   * getMinimumGasPrice
+   *
+   * Gets the numeric minimum gas price
+   */
+  public getMinimumGasPrice() {
+    return this.#provider.send(RPCMethod.GetMinimumGasPrice);
+  }
+
+  /**
+   * *@deprecated
+   * getPendingTxn
+   * See the pending status of transaction
+   */
+  public getPendingTxn(hash: string) {
+    console.warn('Method "getPendingTxn" is deprecated and will be disabled');
+    assert(Boolean(hash), 'hash is REQUIRED');
+    const fixedhash = CryptoUtils.toHex(hash);
+    return this.#provider.send(RPCMethod.GetPendingTxn, fixedhash);
+  }
+
+  /**
+   * getPendingTxns
+   *@deprecated
+   * Returns the pending status of all unvalidated Transactions.
+   *
+   * For each entry, the possible results are:
+   *
+   * confirmed	code	     info
+   * false	     0	  Txn not pending
+   * false	     1	  Nonce too high
+   * false	     2	  Could not fit in as microblock gas limit reached
+   * false	     3	  Transaction valid but consensus not reached
+   */
+  public getPendingTxns() {
+    console.warn('Method "GetPendingTxns" is deprecated and will be disabled');
+    return this.#provider.send(RPCMethod.GetPendingTxns);
+  }
+
+  /**
+   * getBalance
+   *
+   * Gets the balance of an account by address
+   */
+   public getBalance(addr: string) {
+     assert(Boolean(addr), 'addr is REQUIRED');
+
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
+
+    return this.#provider.send(RPCMethod.GetBalance, address);
+  }
+
+  /**
+   * getSmartContractCode - returns the smart contract code of a deployed contract.
+   */
+  public getSmartContractCode(addr: string) {
+    assert(Boolean(addr), 'addr is REQUIRED');
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
+
+    return this.#provider.send(RPCMethod.GetSmartContractCode, address);
+  }
+
+  /**
+   * getSmartContractInit
+   *
+   * @param {string} address
+   * @returns {Promise<RPCResponse<Value[], string>>}
+   */
+  public async getSmartContractInit(addr: string) {
+    assert(Boolean(addr), 'addr is REQUIRED');
+
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
+
+    return this.#provider.send(RPCMethod.GetSmartContractInit, address);
+  }
+
+  /**
+   * getSmartContractState - retrieves the entire state of a smart contract
+   */
+  public getSmartContractState(addr: string) {
+    assert(Boolean(addr), 'addr is REQUIRED');
+
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr))
+
+    return this.#provider.send(RPCMethod.GetSmartContractState, address);
+  }
+
+  /**
+   * getSmartContractSubState - Queries the contract state, filtered by the variable names.
+   * This function is the filtered version of `getSmartContractState`.
+   * As `getSubState` performs the filtering, `variableName` of a field is required.
+   * If the `subState` is not found, this returns a `null` response.
+   *
+   * @param address - contract address.
+   * @param variableName - variable name within the state
+   * @param indices - (optional) If the variable is of map type, you can specify an index (or indices)
+   */
+  public getSmartContractSubState(addr: string, variableName: string, indices = []) {
+    assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(variableName), 'variableName is REQUIRED');
+    assert(Array.isArray(indices), 'indices must be array');
+
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
+
+    return this.#provider.send(
+      RPCMethod.GetSmartContractSubState,
+      address,
+      variableName,
+      indices
+    );
+  }
+
+  /**
+   * getSmartContracts
+   */
+  public getSmartContracts(addr: string) {
+    assert(Boolean(addr), 'addr is REQUIRED');
+
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
+
+    return this.#provider.send(RPCMethod.GetSmartContracts, address);
+  }
+
+  /**
+   * getContractAddressFromTransactionID
+   */
+  public getContractAddressFromTransactionID(hash: string) {
+    assert(Boolean(hash), 'hash is REQUIRED');
+
+    const fixedhash = CryptoUtils.toHex(hash);
+
+    return this.#provider.send(RPCMethod.GetContractAddressFromTransactionID, fixedhash);
+  }
+
+  public getTransactionStatus(hash: string) {
+    assert(Boolean(hash), 'hash is REQUIRED');
+
+    const fixedhash = CryptoUtils.toHex(hash);
+
+    return this.#provider.send(RPCMethod.GetTransactionStatus, fixedhash);
+  }
+
+  public getStateProof(addr: string, variableHash: string, txBlock: number) {
+    assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(variableHash), 'variableHash is REQUIRED');
+    assert(!isNaN(txBlock), 'txBlock should be number');
+
+    const fixedhash = CryptoUtils.toHex(variableHash);
+    const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
+
+    return this.#provider.send(
+      RPCMethod.GetStateProof,
+      address,
+      fixedhash,
+      [String(txBlock)]
+    );
+  }
+
+  public getNetworkId() {
+    return this.#provider.send(RPCMethod.GetNetworkId);
   }
 }

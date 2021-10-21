@@ -57,4 +57,9 @@ export enum RPCMethod {
 
   // Account-related methods
   GetBalance = 'GetBalance',
+
+  //// deprecated /////
+  GetPendingTxn = 'GetPendingTxn',
+  GetPendingTxns = 'GetPendingTxns'
+  //// deprecated /////
 }
