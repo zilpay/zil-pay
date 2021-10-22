@@ -139,7 +139,11 @@ export class Wallet {
     };
   }
 
+  /**
+   * @deprecated
+   */
   public observableTransaction(...txns: string[]) {
+    console.warn('this method is deprecated and will rework');
     assert(this.isEnable, 'ERROR_MSGS.DISABLED');
     assert(this.isConnect, 'ERROR_MSGS.CONNECT');
 
@@ -173,6 +177,7 @@ export class Wallet {
   }
 
   public addTransactionsQueue(...txns: string[]) {
+    console.warn('this method is deprecated and will rework');
     for (let index = 0; index < txns.length; index++) {
       const tx = txns[index];
       this.txns.add(CryptoUtils.toHex(tx));

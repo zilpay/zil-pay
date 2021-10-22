@@ -93,7 +93,9 @@ const background = {
 			inlineSources: !production
 		}),
 		json(),
-		production && visualizer(),
+		production && visualizer({
+			filename: 'background.html'
+		}),
 		copy({
 			targets: [
 				{
@@ -151,6 +153,9 @@ const content = {
 			sourceMap: !production,
 			inlineSources: !production
 		}),
+		production && visualizer({
+			filename: 'content.html'
+		}),
 		production && terser()
 	]
 };
@@ -175,6 +180,9 @@ const inpage = {
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
+		}),
+		production && visualizer({
+			filename: 'inpage.html'
 		}),
 		production && terser()
 	]

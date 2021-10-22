@@ -26,4 +26,6 @@ yarn-error.log*
 *.sw*
 *.zip
 
-stats.html
+inpage.html
+content.html
+background.html
