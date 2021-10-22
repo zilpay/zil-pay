@@ -39,7 +39,6 @@ export class ZilPayPopup {
     new TabsMessage({
       type: MTypeTab.LOCK_STAUS,
       payload: {
-        isReady: this.#core.guard.isReady,
         isEnable: this.#core.guard.isEnable,
         account: {
           base16,

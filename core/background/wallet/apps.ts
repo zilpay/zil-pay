@@ -9,6 +9,8 @@
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
 import type { AppConnect } from 'types/app-connect';
+import { MTypeTab } from 'lib/streem/stream-keys';
+import { TabsMessage } from 'lib/streem/tabs-message';
 
 export class ZilPayApps {
   readonly #core: ZIlPayCore;
@@ -34,7 +36,9 @@ export class ZilPayApps {
           account,
           netwrok: this.#core.netwrok.selected,
           http: this.#core.netwrok.provider,
-          nativeHttp: this.#core.netwrok.nativeHttp
+          nativeHttp: this.#core.netwrok.nativeHttp,
+          isConnect: has,
+          isEnable: this.#core.guard.isEnable
         }
       });
     } catch (err) {
@@ -59,13 +63,30 @@ export class ZilPayApps {
   }
 
   public async addConfirm(app: AppConnect, sendResponse: StreamResponse) {
+    sendResponse({
+      resolve: {
+        app
+      }
+    });
     try {
-      await this.#core.apps.addConfirm(app);
+      const has = this.#core.apps.isConnected(app.domain);
+      const account = {
+        base16: this.#core.account.selectedAccount.base16,
+        bech32: this.#core.account.selectedAccount.bech32
+      };
 
-      /// TODO: open popup.
-      sendResponse({
-        resolve: app
-      });
+      if (has) {
+        new TabsMessage({
+          type: MTypeTab.RESPONSE_TO_DAPP,
+          payload: {
+            account,
+            uuid: app.uuid
+          }
+        }).send();
+      } else {
+        await this.#core.apps.addConfirm(app);
+        await this.#core.prompt.open();
+      }
     } catch (err) {
       sendResponse({
         reject: err.message

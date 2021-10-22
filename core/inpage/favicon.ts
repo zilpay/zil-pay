@@ -7,9 +7,13 @@
  * Copyright (c) 2021 ZilPay
  */
 
-export interface AppConnect {
-  domain: string;
-  icon: string;
-  title: string;
-  uuid?: string;
+/**
+ * Get the favicon from current tab.
+ */
+ export function getFavicon() {
+  try {
+    return document.querySelector('link[rel*=\'icon\']')['href'];
+  } catch (err) {
+    return null;
+  }
 }

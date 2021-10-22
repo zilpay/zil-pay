@@ -34,23 +34,23 @@ export class ContentTabStream {
 
     switch (msg.type) {
       case MTypeTab.GET_WALLET_DATA:
-        this.onSyncAll();
+        await this.onSyncAll();
         break;
       case MTypeTab.ADDRESS_CHANGED:
-        new Message(msg).send();
+        await new Message(msg).send();
         break;
       case MTypeTab.CONNECT_APP:
-        new Message(msg).send();
+        await new Message(msg).send();
         break;
       case MTypeTab.CALL_TO_SIGN_TX:
-        new Message(msg).send();
+        await new Message(msg).send();
         break;
       case MTypeTab.SIGN_MESSAGE:
-        new Message(msg).send();
+        await new Message(msg).send();
         break;
       case MTypeTab.CONTENT_PROXY_MEHTOD:
         await this.#proxy(msg.payload);
-        break
+        break;
       default:
         break;
     }

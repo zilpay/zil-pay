@@ -17,8 +17,6 @@ export function startStream() {
   localStream((req, sendResponse) => {
     const msg = new ContentMessage(req);
 
-    console.log('localStream', msg);
-
     if (!msg.type || !msg.payload) {
       sendResponse({
         reject: 'type and payload is required.'

@@ -67,6 +67,7 @@ export const MTypeTab = {
   TX_RESULT: `@/${app}/response-tx-result`,
   NEW_BLOCK: `@/${app}/new-block-created`,
 
-  CONNECT_APP: `@/${app}/request-to-connect-app`,
-  IS_CONNECTED_APP: `@/${app}/is-connected-app`
+  CONNECT_APP: `@/${app}/request-to-connect-dapp`,
+  IS_CONNECTED_APP: `@/${app}/is-connected-app`,
+  RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`
 };

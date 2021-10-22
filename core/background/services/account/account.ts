@@ -23,6 +23,8 @@ import { Fields } from 'config/fields';
 import { AccountTypes } from 'config/account-type';
 import { Contracts } from 'config/contracts';
 import { ErrorMessages } from 'config/errors';
+import { MTypeTab } from 'lib/streem/stream-keys';
+import { TabsMessage } from 'lib/streem/tabs-message';
 
 export class AccountController {
   public static readonly field0 = 'identities';
@@ -294,6 +296,16 @@ export class AccountController {
     assert(index < this.wallet.identities.length, ErrorMessages.OutOfIndex);
 
     this.#wallet.selectedAddress = index;
+
+    new TabsMessage({
+      type: MTypeTab.ADDRESS_CHANGED,
+      payload: {
+        account: {
+          base16: this.selectedAccount.base16,
+          bech32: this.selectedAccount.bech32
+        }
+      }
+    }).send();
 
     await BrowserStorage.set(
       buildObject(Fields.WALLET, this.#wallet)
