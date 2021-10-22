@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZRC2Token, InitItem, ZRC2Info } from 'types/token';
-import type { ZilliqaControl } from 'core/background/services/blockchain';
+import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
 import assert from 'assert';
@@ -149,33 +149,37 @@ export class ZRC2Controller {
   }
 
   public async getBalance(owner: string) {
-    let balance = {};
-    for (let index = 0; index < this.identities.length; index++) {
-      const token = this.identities[index];
-      try {
-        if (token.base16 === Contracts.ZERO_ADDRESS) {
-          const bal = await this.#zilliqa.getBalance(owner);
-          balance[token.base16] = bal.balance;
-          continue;
-        }
-
-        const addr = String(owner).toLowerCase();
-        const bal = await this.#zilliqa.getSmartContractSubState(
-          tohexString(token.base16),
-          ZRC2Fields.Balances,
-          [addr]
+    const address = tohexString(owner);
+    const addr = String(owner).toLowerCase();
+    const identities = this.identities.map((token) => {
+      if (token.base16 === Contracts.ZERO_ADDRESS) {
+        return this.#zilliqa.provider.buildBody(
+          Methods.getBalance,
+          [address]
         );
-        if (!bal) {
-          balance[token.base16] = '0';
-        } else {
-          balance[token.base16] = bal[ZRC2Fields.Balances][addr];
-        }
-      } catch {
-        continue;
       }
-    }
 
-    return balance;
+      return this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [tohexString(token.base16), ZRC2Fields.Balances, [addr]]
+      );
+    });
+    const replies = await this.#zilliqa.sendJson(...identities);
+    assert(Array.isArray(replies), `${ErrorMessages.MustBe} array`);
+    const entries = replies.map((res, index) => {
+      const { base16 } = this.identities[index];
+      let balance = [base16, '0'];
+      if (res.result && base16 === Contracts.ZERO_ADDRESS) {
+        balance = [base16, res.result.balance];
+      } else if (res.result) {
+        const bal = res.result[ZRC2Fields.Balances][addr];
+        balance = [base16, bal];
+      }
+
+      return balance;
+    });
+
+    return Object.fromEntries(entries);
   }
 
   public async sync() {

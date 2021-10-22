@@ -6,14 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { Params } from 'types/zilliqa';
-
-export type RPCBody = {
-  id: number;
-  jsonrpc: string;
-  method: string;
-  params: Params;
-};
+import type { Params, RPCBody } from 'types/zilliqa';
 
 export class HttpProvider {
   readonly #rpc = {

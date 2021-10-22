@@ -285,10 +285,10 @@ export async function testFromOld(core: ZIlPayBackground) {
   });
   // export private account
 
-  await core.netwrok.updateSSN(({ resolve }) => {
-    assert(resolve['list'].length > 0, 'list cannot be epmty');
-    assert(resolve['selected'] === 0, 'start selected should be 0');
-  });
+  // await core.netwrok.updateSSN(({ resolve }) => {
+  //   assert(resolve['list'].length > 0, 'list cannot be epmty');
+  //   assert(resolve['selected'] === 0, 'start selected should be 0');
+  // });
 
   await core.netwrok.select('testnet', ({ resolve }) => {
     assert.equal('testnet', resolve, 'new net should be testnet');
@@ -339,12 +339,12 @@ export async function testFromOld(core: ZIlPayBackground) {
   await core.transaction.addConfirm(newTx, ({ resolve }) => {
     assert.deepEqual(newTx, resolve, 'resolve is not equal');
   });
-  await core.transaction.signSendTx(0, newTx, ({ resolve, reject }) => {
-    if (reject) {
-      console.error(reject);
-    }
-    assert(resolve[0]['hash'], 'Txns wans sent.');
-  });
+  // await core.transaction.signSendTx(0, newTx, ({ resolve, reject }) => {
+  //   if (reject) {
+  //     console.error(reject);
+  //   }
+  //   assert(resolve[0]['hash'], 'Txns wans sent.');
+  // });
   await core.transaction.rmConfirm(0, ({ resolve }) => {
     assert.deepEqual([], resolve, 'resolve is not equal');
   });

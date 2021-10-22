@@ -13,3 +13,21 @@ export type Balance = {
   nonce: number;
   balance: string;
 };
+
+export interface RPCBody {
+  id: number;
+  jsonrpc: string;
+  method: string;
+  params: Params;
+};
+
+export interface RPCResponse {
+  id: number;
+  jsonrpc: string;
+  result?: any;
+  error?: {
+    code: number;
+    data: unknown;
+    message: string;
+  };
+};

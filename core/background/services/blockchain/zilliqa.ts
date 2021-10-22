@@ -10,7 +10,7 @@
 import type { SSN } from 'types/ssn';
 import type { NetworkControl } from 'core/background/services/network';
 import type { Transaction } from 'background/services/transactions/tx-builder';
-import type { Balance } from 'types/zilliqa';
+import type { Balance, RPCResponse, RPCBody } from 'types/zilliqa';
 
 import assert from 'assert';
 import { NETWORK, NETWORK_KEYS } from 'config/network';
@@ -67,13 +67,7 @@ export class ZilliqaControl {
     contract = tohexString(contract);
 
     const body = this.provider.buildBody(Methods.GetSmartContractInit, [contract]);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   /**
@@ -93,52 +87,24 @@ export class ZilliqaControl {
       Methods.GetSmartContractSubState,
       [contract, field, params]
     );
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   public async getLatestTxBlock() {
     const body = this.provider.buildBody(Methods.GetLatestTxBlock, []);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   public async getRecentTransactions() {
     const body = this.provider.buildBody(Methods.GetRecentTransactions, []);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   public async getNetworkId() {
     const body = this.provider.buildBody(Methods.GetNetworkId, []);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-    const data = await responce.json();
+    const netID = await this.sendJson(body);
 
-    assert(!data.error, data.error);
-
-    return Number(data.result);
+    return Number(netID);
   }
 
   public async detectSacmAddress(address: string) {
@@ -187,43 +153,20 @@ export class ZilliqaControl {
 
   public async getTransactionStatus(hash: string) {
     hash = tohexString(hash);
-
     const body = this.provider.buildBody(Methods.GetTransactionStatus, [hash]);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.nativeHttp, request);
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   public async getMinimumGasPrice() {
     const body = this.provider.buildBody(Methods.GetMinimumGasPrice, []);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   public async getTransaction(hash: string) {
     hash = tohexString(hash);
 
     const body = this.provider.buildBody(Methods.GetTransaction, [hash]);
-    const request = this.provider.json(body);
-    const responce = await fetch(this.#network.provider, request);
-    assert(responce.status === 200, ErrorMessages.RequestFailed);
-    const data = await responce.json();
-
-    assert(!data.error, data.error);
-
-
-    return data.result;
+    return this.sendJson(body);
   }
 
   public async getSSnList(): Promise<SSN[]> {
@@ -289,5 +232,20 @@ export class ZilliqaControl {
     const gotSSN = await Promise.all(ssnList);
 
     return gotSSN.filter((ssn) => ssn.ok);
+  }
+
+  public async sendJson(...body: RPCBody[]) {
+    const request = this.provider.json(...body);
+    const responce = await fetch(this.#network.provider, request);
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
+    const data = await responce.json();
+
+    if (Array.isArray(data)) {
+      return data as RPCResponse[];
+    }
+
+    assert(!data.error, data.error);
+
+    return data.result as RPCResponse;
   }
 }
