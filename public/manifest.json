@@ -28,7 +28,8 @@
     "storage",
     "notifications",
     "activeTab",
-    "alarms"
+    "alarms",
+    "<all_urls>"
   ],
   "content_scripts": [
     {

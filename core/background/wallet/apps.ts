@@ -11,6 +11,7 @@ import type { ZIlPayCore } from './core';
 import type { AppConnect } from 'types/app-connect';
 import { MTypeTab } from 'lib/streem/stream-keys';
 import { TabsMessage } from 'lib/streem/tabs-message';
+import { ErrorMessages } from 'config/errors';
 
 export class ZilPayApps {
   readonly #core: ZIlPayCore;
@@ -63,19 +64,14 @@ export class ZilPayApps {
   }
 
   public async addConfirm(app: AppConnect, sendResponse: StreamResponse) {
-    sendResponse({
-      resolve: {
-        app
-      }
-    });
     try {
       const has = this.#core.apps.isConnected(app.domain);
-      const account = {
-        base16: this.#core.account.selectedAccount.base16,
-        bech32: this.#core.account.selectedAccount.bech32
-      };
 
-      if (has) {
+      if (has && this.#core.guard.isEnable) {
+        const account = {
+          base16: this.#core.account.selectedAccount.base16,
+          bech32: this.#core.account.selectedAccount.bech32
+        };
         new TabsMessage({
           type: MTypeTab.RESPONSE_TO_DAPP,
           payload: {
@@ -85,6 +81,11 @@ export class ZilPayApps {
         }).send();
       } else {
         await this.#core.apps.addConfirm(app);
+        sendResponse({
+          resolve: {
+            app
+          }
+        });
         await this.#core.prompt.open();
       }
     } catch (err) {

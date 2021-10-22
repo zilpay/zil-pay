@@ -34,7 +34,7 @@ export class PromptService {
     const notificationLeft = Math.round(
       screenX + (outerWidth / 2) - (this.#width / 2)
     );
-    const createData = {
+    const createData: object = {
       type: this.#type,
       url: Common.PROMT_PAGE,
       width: this.#width,
@@ -53,7 +53,7 @@ export class PromptService {
     }
 
     try {
-      Runtime.windows.create(createData as any, (tab) => this.#id = tab.id);
+      Runtime.windows.create(createData, (tab: object) => this.#id = tab['id']);
     } catch (err) {
       console.error(err);
     }
@@ -68,3 +68,5 @@ export class PromptService {
     });
   }
 }
+
+window['promptService'] = new PromptService();
