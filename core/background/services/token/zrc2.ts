@@ -17,7 +17,7 @@ import { Fields } from 'config/fields';
 import { TypeOf } from 'lib/type/type-checker';
 import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
-import { fromBech32Address, toBech32Address } from 'lib/utils/bech32';
+import { fromBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
 
 enum InitFields {

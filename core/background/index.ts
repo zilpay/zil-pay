@@ -1,6 +1,6 @@
 import { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
 import { startBackground } from './background';
-import { testFromOld } from './test';
+// import { testFromOld } from './test';
 
 (async function() {
   const core = new ZIlPayBackground();
@@ -9,5 +9,5 @@ import { testFromOld } from './test';
 
   startBackground(core);
 
-  testFromOld(core);
+  // testFromOld(core);
 }());
