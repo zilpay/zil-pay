@@ -359,5 +359,17 @@ export async function testFromOld(core: ZIlPayBackground) {
     assert.deepEqual([], resolve, 'resolve is not equal');
   });
 
+  await core.netwrok.select('mainnet', ({ resolve }) => {
+    assert.equal('mainnet', resolve, 'new net should be testnet');
+  });
+
+  const test = 'zil1tleu4cfvj7zslr9rmvkey84dzf5suwxr9n7lhj';
+  await core.zrc2.getZRC2Info(test, ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+    console.log(resolve);
+  });
+
   console.log('end-testing');
 }

@@ -17,9 +17,9 @@ export class ZilPayZRC {
     this.#core = core;
   }
 
-  public async getZRC2Info(address: string, sendResponse: StreamResponse) {
+  public async getZRC2Info(bech32: string, sendResponse: StreamResponse) {
     try {
-      const token = await this.#core.zrc2.getToken(address);
+      const token = await this.#core.zrc2.getToken(bech32);
 
       sendResponse({
         resolve: token

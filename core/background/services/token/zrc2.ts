@@ -17,7 +17,7 @@ import { Fields } from 'config/fields';
 import { TypeOf } from 'lib/type/type-checker';
 import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
-import { toBech32Address } from 'lib/utils/bech32';
+import { fromBech32Address, toBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
 
 enum InitFields {
@@ -114,28 +114,26 @@ export class ZRC2Controller {
     return this.#toZRC2(init);
   }
 
-  public async getToken(address: string): Promise<ZRC2Info> {
+  public async getToken(bech32: string): Promise<ZRC2Info> {
     let balance = '0';
-    const zrc = await this.getZRCInit(address);
-    const bech32 = toBech32Address(address);
+    const address = fromBech32Address(bech32);
+    const addr = tohexString(address);
+    const userAddress = Boolean(this.#account.selectedAccount) ?
+      String(this.#account.selectedAccount.base16).toLowerCase() :
+      String(Contracts.ZERO_ADDRESS).toLowerCase();
+    const identities = [
+      this.#zilliqa.provider.buildBody(Methods.GetSmartContractInit, [addr]),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [addr, ZRC2Fields.Balances, [userAddress]]
+      )
+    ];
+    const replies = await this.#zilliqa.sendJson(...identities);
+    assert(Array.isArray(replies), `${ErrorMessages.MustBe} array`);
+    const zrc = this.#toZRC2(replies[0].result);
 
-    if (this.#account.selectedAccount) {
-      const userAddress = this.#account.selectedAccount.base16.toLowerCase();
-      balance = await this.#zilliqa.getSmartContractSubState(
-        address,
-        ZRC2Fields.Balances,
-        [userAddress]
-      );
-
-      if (!balance) {
-        balance = '0';
-      }
-
-      try {
-        balance = balance[ZRC2Fields.Balances][userAddress];
-      } catch {
-        balance = '0';
-      }
+    if (replies[1].result) {
+      balance = replies[1].result[ZRC2Fields.Balances][userAddress];
     }
 
     return {

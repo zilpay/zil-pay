@@ -246,6 +246,6 @@ export class ZilliqaControl {
 
     assert(!data.error, data.error);
 
-    return data.result as RPCResponse;
+    return data.result;
   }
 }
