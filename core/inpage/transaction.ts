@@ -68,7 +68,11 @@ export class Transaction {
     return this.payload;
   }
 
+  /**
+   * @deprecated
+   */
   public get TranID() {
+    console.warn('This property is deprecated and will remove.');
     return this.ID;
   }
 

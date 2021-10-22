@@ -10,7 +10,7 @@
 import type { SSN } from 'types/ssn';
 import type { NetworkControl } from 'core/background/services/network';
 import type { Transaction } from 'background/services/transactions/tx-builder';
-import type { Params, Balance } from 'types/zilliqa';
+import type { Balance } from 'types/zilliqa';
 
 import assert from 'assert';
 import { NETWORK, NETWORK_KEYS } from 'config/network';
@@ -20,9 +20,11 @@ import { JsonRPCCodes } from './codes';
 import { Contracts } from 'config/contracts';
 import { ErrorMessages } from 'config/errors';
 import { DEFAULT_SSN } from 'core/background/services/ssn';
+import { HttpProvider } from './http-provider';
 
 export class ZilliqaControl {
   #network: NetworkControl;
+  public readonly provider = new HttpProvider();
 
   constructor(network: NetworkControl) {
     this.#network = network;
@@ -35,7 +37,8 @@ export class ZilliqaControl {
   public async getBalance(address: string): Promise<Balance> {
     address = tohexString(address);
 
-    const request = this.#json(Methods.getBalance, [address]);
+    const body = this.provider.buildBody(Methods.getBalance, [address]);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
 
     assert(responce.status === 200, ErrorMessages.RequestFailed);
@@ -63,7 +66,8 @@ export class ZilliqaControl {
   public async getSmartContractInit(contract: string) {
     contract = tohexString(contract);
 
-    const request = this.#json(Methods.GetSmartContractInit, [contract]);
+    const body = this.provider.buildBody(Methods.GetSmartContractInit, [contract]);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     const data = await responce.json();
 
@@ -85,10 +89,11 @@ export class ZilliqaControl {
   ) {
     contract = tohexString(contract);
 
-    const request = this.#json(
+    const body = this.provider.buildBody(
       Methods.GetSmartContractSubState,
       [contract, field, params]
     );
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
 
     assert(responce.status === 200, ErrorMessages.RequestFailed);
@@ -101,7 +106,8 @@ export class ZilliqaControl {
   }
 
   public async getLatestTxBlock() {
-    const request = this.#json(Methods.GetLatestTxBlock, []);
+    const body = this.provider.buildBody(Methods.GetLatestTxBlock, []);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
@@ -112,7 +118,8 @@ export class ZilliqaControl {
   }
 
   public async getRecentTransactions() {
-    const request = this.#json(Methods.GetRecentTransactions, []);
+    const body = this.provider.buildBody(Methods.GetRecentTransactions, []);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
@@ -123,7 +130,8 @@ export class ZilliqaControl {
   }
 
   public async getNetworkId() {
-    const request = this.#json(Methods.GetNetworkId, []);
+    const body = this.provider.buildBody(Methods.GetNetworkId, []);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
@@ -160,9 +168,11 @@ export class ZilliqaControl {
   public async send(tx: Transaction): Promise<string> {
     await this.detectSacmAddress(tx.toAddr);
 
-    const request = this.#json(Methods.CreateTransaction, [
-      tx.self
-    ]);
+    const body = this.provider.buildBody(
+      Methods.CreateTransaction,
+      [tx.self]
+    );
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     const { error, result } = await responce.json();
 
@@ -178,7 +188,8 @@ export class ZilliqaControl {
   public async getTransactionStatus(hash: string) {
     hash = tohexString(hash);
 
-    const request = this.#json(Methods.GetTransactionStatus, [hash]);
+    const body = this.provider.buildBody(Methods.GetTransactionStatus, [hash]);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.nativeHttp, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
@@ -189,7 +200,8 @@ export class ZilliqaControl {
   }
 
   public async getMinimumGasPrice() {
-    const request = this.#json(Methods.GetMinimumGasPrice, []);
+    const body = this.provider.buildBody(Methods.GetMinimumGasPrice, []);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
@@ -202,7 +214,8 @@ export class ZilliqaControl {
   public async getTransaction(hash: string) {
     hash = tohexString(hash);
 
-    const request = this.#json(Methods.GetTransaction, [hash]);
+    const body = this.provider.buildBody(Methods.GetTransaction, [hash]);
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     assert(responce.status === 200, ErrorMessages.RequestFailed);
     const data = await responce.json();
@@ -221,10 +234,11 @@ export class ZilliqaControl {
     const contract = tohexString(Contracts.SSN);
     const http = NETWORK.mainnet.PROVIDER;
 
-    const request = this.#json(
+    const body = this.provider.buildBody(
       Methods.GetSmartContractSubState,
       [contract, field, []]
     );
+    const request = this.provider.json(body);
     const responce = await fetch(http, request);
     const data = await responce.json();
 
@@ -241,10 +255,11 @@ export class ZilliqaControl {
     const ssnList = [DEFAULT_SSN, ...list].map(async(ssn) => {
       const t0 = performance.now();
       try {
-        const r = this.#json(
+        const body = this.provider.buildBody(
           Methods.GetNetworkId,
           []
         );
+        const r = this.provider.json(body);
         const res = await fetch(ssn.api, r);
         const { error, result } = await res.json();
 
@@ -274,20 +289,5 @@ export class ZilliqaControl {
     const gotSSN = await Promise.all(ssnList);
 
     return gotSSN.filter((ssn) => ssn.ok);
-  }
-
-  #json(method: string, params: Params) {
-    return {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        method,
-        params,
-        id: 1,
-        jsonrpc: '2.0'
-      })
-    };
   }
 }
