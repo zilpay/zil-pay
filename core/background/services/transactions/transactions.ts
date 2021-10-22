@@ -29,11 +29,19 @@ export class TransactionsController {
   }
 
   get #transactionsField() {
-    return `${Fields.TRANSACTIONS}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
+    if (this.#account.selectedAccount) {
+      return `${Fields.TRANSACTIONS}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
+    }
+
+    return Fields.CONFIRM_TX;
   }
 
   get #confirmField() {
-    return `${Fields.CONFIRM_TX}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
+    if (this.#account.selectedAccount) {
+      return `${Fields.CONFIRM_TX}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
+    }
+
+    return Fields.CONFIRM_TX;
   }
 
   constructor(network: NetworkControl, account: AccountController) {

@@ -66,10 +66,12 @@ export class ContentTabStream {
       ).send();
       const wallet = warpMessage(data);
 
-      new ContentMessage({
-        type: MTypeTab.GET_WALLET_DATA,
-        payload: wallet,
-      }).send(this.#stream, recipient);
+      if (wallet) {
+        new ContentMessage({
+          type: MTypeTab.GET_WALLET_DATA,
+          payload: wallet,
+        }).send(this.#stream, recipient);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -89,21 +91,20 @@ export class ContentTabStream {
         MTypeTab.GET_WALLET_DATA
       ).send();
       const wallet = warpMessage(data);
+      if (!wallet || !wallet['isEnable']) {
+        throw new Error('DISABLED');
+      } else if (!wallet['isConnect']) {
+        throw new Error('CONNECT');
+      }
+
       const http = method === RPCMethod.GetTransactionStatus ?
         wallet['nativeHttp'] : wallet['http'];
-      // if (!wallet['isEnable']) {
-      //   throw new Error('DISABLED');
-      // } else if (!wallet['isConnect']) {
-      //   throw new Error('CONNECT');
-      // }
-
       result = await httpProvider(
         http,
         method,
         params
       );
     } catch (err) {
-      console.error(err);
       result['error'] = err.message || err;
     }
 

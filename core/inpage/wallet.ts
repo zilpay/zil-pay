@@ -10,6 +10,7 @@
 import type { TabStream } from "lib/streem/tab-stream";
 import type { InpageWallet } from "types/account";
 import type { Subject } from "./subject";
+import type { TxBlock } from 'types/block';
 
 import assert from 'assert';
 import { uuidv4 } from 'lib/crypto/uuid';
@@ -18,6 +19,7 @@ import { MTypeTab, MTypeTabContent } from "lib/streem/stream-keys";
 import { TypeOf } from "lib/type/type-checker";
 import { getFavicon } from "./favicon";
 import { ContentMessage } from "lib/streem/secure-message";
+import { CryptoUtils } from "./crypto";
 
 export class Wallet {
   #stream: TabStream;
@@ -28,6 +30,8 @@ export class Wallet {
   #http: string | null;
   #net = 'mainnet';
   #defaultAccount: InpageWallet | null = null;
+
+  public txns = new Set<string>();
 
   public get isConnect() {
     return this.#isConnect;
@@ -95,7 +99,7 @@ export class Wallet {
     assert(this.isConnect, 'ERROR_MSGS.CONNECT');
 
     return {
-      subscribe: (cb: (account: InpageWallet) => void) => {
+      subscribe: (cb: (block: TxBlock) => void) => {
         const obs = this.#subject.on((msg) => {
           if (msg.type === MTypeTab.NEW_BLOCK) {
             cb(msg.payload.block);
@@ -135,9 +139,47 @@ export class Wallet {
     };
   }
 
-  public observableTransaction() {}
+  public observableTransaction(...txns: string[]) {
+    assert(this.isEnable, 'ERROR_MSGS.DISABLED');
+    assert(this.isConnect, 'ERROR_MSGS.CONNECT');
 
-  public addTransactionsQueue() {}
+    if (txns && txns.length !== 0) {
+      this.addTransactionsQueue(...txns);
+    }
+
+    return {
+      subscribe: (cb: (tx: string) => void) => {
+        const obs = this.#subject.on((msg) => {
+          if (msg.type !== MTypeTab.NEW_BLOCK) return;
+          const block = msg.payload.block as TxBlock;
+
+          for (let index = 0; index < block.TxHashes.length; index++) {
+            const elements = block.TxHashes[index];
+            for (let i = 0; i < elements.length; i++) {
+              const hash = elements[i];
+              if (this.txns.has(hash)) {
+                cb(hash);
+                this.txns.delete(hash);
+              }
+            }
+          }
+        });
+
+        return {
+          unsubscribe: () => obs()
+        };
+      }
+    };
+  }
+
+  public addTransactionsQueue(...txns: string[]) {
+    for (let index = 0; index < txns.length; index++) {
+      const tx = txns[index];
+      this.txns.add(CryptoUtils.toHex(tx));
+    }
+
+    return Array.from(this.txns);
+  }
 
   public async sign(arg: Transaction | string): Promise<any> {
     assert(this.isEnable, 'ERROR_MSGS.DISABLED');

@@ -8,12 +8,14 @@
  */
 
 import type { ZilliqaControl } from "core/background/services/blockchain";
+import type { TransactionsQueue } from "core/background/services/transactions";
+import type { TxBlock } from "types/block";
+
 import { Runtime } from 'lib/runtime';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { MTypeTab } from 'lib/streem/stream-keys';
-import type { TransactionsQueue } from "../transactions";
 
 export class BlockController {
   readonly #zilliqa: ZilliqaControl;
@@ -57,7 +59,7 @@ export class BlockController {
 
       try {
         const { TxnHashes } = await this.#zilliqa.getRecentTransactions();
-        const block = {
+        const block: TxBlock = {
           TxBlock: result,
           TxHashes: [TxnHashes]
         };
@@ -67,8 +69,8 @@ export class BlockController {
             block
           }
         }).send();
-      } catch {
-        ///
+      } catch (err) {
+        // console.error('BlockController.subscribe', err);
       }
 
       await this.#queue.checkProcessedTx();

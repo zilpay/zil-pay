@@ -28,6 +28,8 @@ export class ZilPaySynchronizer {
     await this.#core.apps.sync();
     await this.#core.rate.sync();
     await this.#core.currencies.sync();
+
+    await this.#core.blockchain.subscribe();
     console.log('end-sync');
   }
 }

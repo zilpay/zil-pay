@@ -9,6 +9,9 @@
 import type { SendResponseParams } from 'types/stream';
 
 export function warpMessage(msg: SendResponseParams) {
+  if (!msg) {
+    return null;
+  }
   if (msg.reject) {
     throw new Error(String(msg.reject));
   }
