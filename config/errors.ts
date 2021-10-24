@@ -27,12 +27,18 @@ export enum ErrorMessages {
   PublicKeyMustBe = 'Public key must be 33 or 65 bytes.',
   CouldNotDeriveHardened = 'Could not derive hardened child key',
   Scam = 'Scam detected.',
+  ShouldBeNumber = 'should be number',
   MustBeUnique = 'Address must be unique.',
   MustBe = 'must be unique.',
+  MustBeObject = 'Must be object.',
+  MustBeString = 'Must be string.',
   RequiredParam = 'is required.',
   OutOfIndex = 'Out of index.',
   IncorrectParams = 'Incorrect argument',
   SSnAllowNet = 'SSn list allow on mainnet only.',
   CannotExportLedger = 'Cannot export privateKey from ledger.',
-  HightNonce = 'nonce too hight'
+  HightNonce = 'nonce too hight',
+
+  Disabled = 'ZilPay is disabled.',
+  Connect = 'User is\'t connections.'
 }

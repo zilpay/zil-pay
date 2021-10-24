@@ -14,6 +14,7 @@ import Long from 'long';
 import { Validator, CryptoUtils } from './crypto';
 import { Gas } from 'config/gas';
 import { TypeOf } from 'lib/type/type-checker';
+import { ErrorMessages } from 'config/errors';
 
 export interface TransactionParams extends TxParams {
   ContractAddress?: string;
@@ -120,7 +121,7 @@ export class Transaction {
     this.priority = priority;
     this.receipt = params.receipt;
 
-    assert(Boolean(this.toAddr), 'toAddr is requered.');
+    assert(Boolean(this.toAddr), `toAddr ${ErrorMessages.RequiredParam}`);
 
     if (Validator.isAddress(this.toAddr)) {
       this.toAddr = CryptoUtils.toChecksumAddress(this.toAddr);

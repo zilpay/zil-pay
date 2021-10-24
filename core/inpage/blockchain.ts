@@ -13,6 +13,7 @@ import assert from 'assert';
 import { Transaction, TransactionParams } from './transaction';
 import { CryptoUtils } from "./crypto";
 import { RPCMethod } from 'config/methods';
+import { ErrorMessages } from "config/errors";
 
 export class Blockchain {
   #provider: HTTPProvider;
@@ -47,7 +48,7 @@ export class Blockchain {
    * a rejected Transaction instance is returned.
    */
   public async getTransaction(hash: string): Promise<Transaction> {
-    assert(Boolean(hash), 'hash is REQUIRED');
+    assert(Boolean(hash), `hash ${ErrorMessages.RequiredParam}`);
     const fixedhash = CryptoUtils.toHex(hash);
 
     const { error, result } = await this.#provider.send(
@@ -70,8 +71,8 @@ export class Blockchain {
   }
 
   public getTransactionsForTxBlockEx(txBlock: number, page: number) {
-    assert(!isNaN(txBlock), 'Txblock should be number');
-    assert(!isNaN(page), 'page should be number');
+    assert(!isNaN(page), `page ${ErrorMessages.ShouldBeNumber}`);
+    assert(!isNaN(txBlock), `txBlock ${ErrorMessages.ShouldBeNumber}`);
     return this.#provider.send(
       RPCMethod.GetTransactionsForTxBlockEx,
       String(txBlock),
@@ -80,8 +81,9 @@ export class Blockchain {
   }
 
   public getTxnBodiesForTxBlockEx(block: number, page: number) {
-    assert(!isNaN(block), 'Txblock should be number');
-    assert(!isNaN(page), 'page should be number');
+    assert(!isNaN(page), `page ${ErrorMessages.ShouldBeNumber}`);
+    assert(!isNaN(block), `block ${ErrorMessages.ShouldBeNumber}`);
+
     return this.#provider.send(
       RPCMethod.GetTxnBodiesForTxBlockEx,
       String(block),
@@ -90,7 +92,7 @@ export class Blockchain {
   }
 
   public getTxnBodiesForTxBlock(block: number) {
-    assert(!isNaN(block), 'block should be number');
+    assert(!isNaN(block), `block ${ErrorMessages.ShouldBeNumber}`);
     return this.#provider.send(RPCMethod.GetTxnBodiesForTxBlock, String(block));
   }
 
@@ -127,7 +129,7 @@ export class Blockchain {
    * Get details of a Directory Service block by block number.
    */
   public getDSBlock(blockNum: number) {
-    assert(!isNaN(blockNum), 'blockNum should be number');
+    assert(!isNaN(blockNum), `blockNum ${ErrorMessages.ShouldBeNumber}`);
 
     return this.#provider.send(RPCMethod.GetDSBlock, String(blockNum));
   }
@@ -167,7 +169,7 @@ export class Blockchain {
    * pages. 1 - latest blocks, maxPages - oldest blocks.
    */
   public getDSBlockListing(max: number) {
-    assert(!isNaN(max), 'max should be number');
+    assert(!isNaN(max), `max ${ErrorMessages.ShouldBeNumber}`);
 
     return this.#provider.send(RPCMethod.DSBlockListing, String(max));
   }
@@ -178,7 +180,7 @@ export class Blockchain {
    * Get details of a Transaction block by block number.
    */
   public getTxBlock(blockNum: number) {
-     assert(!isNaN(blockNum), 'blockNum should be number');
+    assert(!isNaN(blockNum), `blockNum ${ErrorMessages.ShouldBeNumber}`);
 
     return this.#provider.send(RPCMethod.GetTxBlock, String(blockNum));
   }
@@ -219,7 +221,7 @@ export class Blockchain {
    * blocks, maxPages - oldest blocks.
    */
   public getTxBlockListing(max: number) {
-    assert(!isNaN(max), 'max should be number');
+    assert(!isNaN(max), `max ${ErrorMessages.ShouldBeNumber}`);
 
     return this.#provider.send(RPCMethod.TxBlockListing, String(max));
   }
@@ -298,7 +300,7 @@ export class Blockchain {
    * 3. For the Zilliqa Mainnet, this API is only available from DS block 5500 onwards.
    */
   public getMinerInfo(dsBlockNumber: number) {
-    assert(!isNaN(dsBlockNumber), 'dsBlockNumber should be number');
+    assert(!isNaN(dsBlockNumber), `dsBlockNumber ${ErrorMessages.ShouldBeNumber}`);
     return this.#provider.send(RPCMethod.GetMinerInfo, String(dsBlockNumber));
   }
 
@@ -308,7 +310,7 @@ export class Blockchain {
    * Gets the number of transactions procesed for a given Tx Epoch.
    */
   public getNumTxnsTxEpoch(epoch: number) {
-    assert(!isNaN(epoch), 'epoch should be number');
+    assert(!isNaN(epoch), `epoch ${ErrorMessages.ShouldBeNumber}`);
 
     return this.#provider.send(RPCMethod.GetNumTxnsTxEpoch, String(epoch));
   }
@@ -319,7 +321,7 @@ export class Blockchain {
    * Gets the number of transactions procesed for a given DS Epoch.
    */
   public getNumTxnsDSEpoch(epoch: number) {
-    assert(!isNaN(epoch), 'epoch should be number');
+    assert(!isNaN(epoch), `epoch ${ErrorMessages.ShouldBeNumber}`);
 
     return this.#provider.send(RPCMethod.GetNumTxnsDSEpoch, String(epoch));
   }
@@ -340,7 +342,7 @@ export class Blockchain {
    */
   public getPendingTxn(hash: string) {
     console.warn('Method "getPendingTxn" is deprecated and will be disabled');
-    assert(Boolean(hash), 'hash is REQUIRED');
+    assert(Boolean(hash), `hash ${ErrorMessages.RequiredParam}`);
     const fixedhash = CryptoUtils.toHex(hash);
     return this.#provider.send(RPCMethod.GetPendingTxn, fixedhash);
   }
@@ -369,7 +371,7 @@ export class Blockchain {
    * Gets the balance of an account by address
    */
    public getBalance(addr: string) {
-     assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
 
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
 
@@ -380,7 +382,7 @@ export class Blockchain {
    * getSmartContractCode - returns the smart contract code of a deployed contract.
    */
   public getSmartContractCode(addr: string) {
-    assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
 
     return this.#provider.send(RPCMethod.GetSmartContractCode, address);
@@ -393,7 +395,7 @@ export class Blockchain {
    * @returns {Promise<RPCResponse<Value[], string>>}
    */
   public async getSmartContractInit(addr: string) {
-    assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
 
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
 
@@ -404,7 +406,7 @@ export class Blockchain {
    * getSmartContractState - retrieves the entire state of a smart contract
    */
   public getSmartContractState(addr: string) {
-    assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
 
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr))
 
@@ -422,8 +424,8 @@ export class Blockchain {
    * @param indices - (optional) If the variable is of map type, you can specify an index (or indices)
    */
   public getSmartContractSubState(addr: string, variableName: string, indices = []) {
-    assert(Boolean(addr), 'addr is REQUIRED');
-    assert(Boolean(variableName), 'variableName is REQUIRED');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
+    assert(Boolean(variableName), `variableName ${ErrorMessages.RequiredParam}`);
     assert(Array.isArray(indices), 'indices must be array');
 
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
@@ -440,7 +442,7 @@ export class Blockchain {
    * getSmartContracts
    */
   public getSmartContracts(addr: string) {
-    assert(Boolean(addr), 'addr is REQUIRED');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
 
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));
 
@@ -451,7 +453,7 @@ export class Blockchain {
    * getContractAddressFromTransactionID
    */
   public getContractAddressFromTransactionID(hash: string) {
-    assert(Boolean(hash), 'hash is REQUIRED');
+    assert(Boolean(hash), `hash ${ErrorMessages.RequiredParam}`);
 
     const fixedhash = CryptoUtils.toHex(hash);
 
@@ -459,7 +461,7 @@ export class Blockchain {
   }
 
   public getTransactionStatus(hash: string) {
-    assert(Boolean(hash), 'hash is REQUIRED');
+    assert(Boolean(hash), `hash ${ErrorMessages.RequiredParam}`);
 
     const fixedhash = CryptoUtils.toHex(hash);
 
@@ -467,9 +469,9 @@ export class Blockchain {
   }
 
   public getStateProof(addr: string, variableHash: string, txBlock: number) {
-    assert(Boolean(addr), 'addr is REQUIRED');
-    assert(Boolean(variableHash), 'variableHash is REQUIRED');
-    assert(!isNaN(txBlock), 'txBlock should be number');
+    assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
+    assert(Boolean(variableHash), `variableHash ${ErrorMessages.RequiredParam}`);
+    assert(!isNaN(txBlock), `txBlock ${ErrorMessages.ShouldBeNumber}`);
 
     const fixedhash = CryptoUtils.toHex(variableHash);
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));

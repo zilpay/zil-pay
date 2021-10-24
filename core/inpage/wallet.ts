@@ -20,6 +20,7 @@ import { TypeOf } from "lib/type/type-checker";
 import { getFavicon } from "./favicon";
 import { ContentMessage } from "lib/streem/secure-message";
 import { CryptoUtils } from "./crypto";
+import { ErrorMessages } from "config/errors";
 
 export class Wallet {
   #stream: TabStream;
@@ -60,8 +61,8 @@ export class Wallet {
   }
 
   public observableAccount() {
-    assert(this.isEnable, 'ERROR_MSGS.DISABLED');
-    assert(this.isConnect, 'ERROR_MSGS.CONNECT');
+    assert(this.isEnable, ErrorMessages.Disabled);
+    assert(this.isConnect, ErrorMessages.Connect);
 
     return {
       subscribe: (cb: (account: InpageWallet) => void) => {
@@ -95,8 +96,8 @@ export class Wallet {
    * Observable for new block was created.
    */
   public observableBlock() {
-    assert(this.isEnable, 'ERROR_MSGS.DISABLED');
-    assert(this.isConnect, 'ERROR_MSGS.CONNECT');
+    assert(this.isEnable, ErrorMessages.Disabled);
+    assert(this.isConnect, ErrorMessages.Connect);
 
     return {
       subscribe: (cb: (block: TxBlock) => void) => {
@@ -114,8 +115,8 @@ export class Wallet {
   }
 
   public observableNetwork() {
-    assert(this.isEnable, 'ERROR_MSGS.DISABLED');
-    assert(this.isConnect, 'ERROR_MSGS.CONNECT');
+    assert(this.isEnable, ErrorMessages.Disabled);
+    assert(this.isConnect, ErrorMessages.Connect);
 
     return {
       subscribe: (cb: (net: string) => void) => {
@@ -144,8 +145,8 @@ export class Wallet {
    */
   public observableTransaction(...txns: string[]) {
     console.warn('this method is deprecated and will rework');
-    assert(this.isEnable, 'ERROR_MSGS.DISABLED');
-    assert(this.isConnect, 'ERROR_MSGS.CONNECT');
+    assert(this.isEnable, ErrorMessages.Disabled);
+    assert(this.isConnect, ErrorMessages.Connect);
 
     if (txns && txns.length !== 0) {
       this.addTransactionsQueue(...txns);
@@ -187,8 +188,8 @@ export class Wallet {
   }
 
   public async sign(arg: Transaction | string): Promise<any> {
-    assert(this.isEnable, 'ERROR_MSGS.DISABLED');
-    assert(this.isConnect, 'ERROR_MSGS.CONNECT');
+    assert(this.isEnable, ErrorMessages.Disabled);
+    assert(this.isConnect, ErrorMessages.Connect);
 
     if (TypeOf.isString(arg)) {
       return this.#signMessage(String(arg));
@@ -197,7 +198,7 @@ export class Wallet {
     }
 
     return Promise.reject(
-      new TypeError(`payload 'MUST_BE_OBJECT' or MUST_BE_STRING`)
+      new TypeError(`payload ${ErrorMessages.MustBeObject} or ${ErrorMessages.MustBeString}`)
     );
   }
 
@@ -260,7 +261,70 @@ export class Wallet {
     });
   }
 
-  #signMessage(message: string) {}
+  #signMessage(message: string) {
+    const type = MTypeTab.SIGN_MESSAGE;
+    const recipient = MTypeTabContent.CONTENT;
+    const uuid = uuidv4();
+    const title = window.document.title;
+    const icon = getFavicon();
+    const payload = {
+      message,
+      uuid,
+      title,
+      icon
+    };
 
-  #signTransaction(payload: Transaction) {}
+    new ContentMessage({
+      type,
+      payload
+    }).send(this.#stream, recipient);
+
+    return new Promise((resolve, reject) => {
+      const obs = this.#subject.on((msg) => {
+        if (msg.type !== MTypeTab.SING_MESSAGE_RES) return;
+        if (msg.payload.uuid !== uuid) return;
+
+        if (msg.payload && msg.payload.reject) {
+          obs();
+          return reject(msg.payload.reject);
+        }
+
+        obs();
+        return resolve(msg.payload.resolve);
+      });
+    });
+  }
+
+  #signTransaction(tx: Transaction) {
+    const type = MTypeTab.CALL_TO_SIGN_TX;
+    const recipient = MTypeTabContent.CONTENT;
+    const uuid = uuidv4();
+    const payload = {
+      ...tx.payload,
+      uuid,
+      title: window.document.title,
+      icon: getFavicon()
+    };
+
+    // Send transaction to content.js > background.js.
+    new ContentMessage({
+      type,
+      payload
+    }).send(this.#stream, recipient);
+
+    return new Promise((resolve, reject) => {
+      const obs = this.#subject.on((msg) => {
+        if (msg.type !== MTypeTab.TX_RESULT) return;
+        if (msg.payload.uuid !== uuid) return;
+
+        if (msg.payload && msg.payload.reject) {
+          obs();
+          return reject(msg.payload.reject);
+        }
+
+        obs();
+        return resolve(msg.payload.resolve);
+      });
+    });
+  }
 }
