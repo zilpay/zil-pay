@@ -9,6 +9,10 @@
   @include box-sizing(border-box);
 }
 
+:global(*) {
+  user-select: none;
+}
+
 :global(body),
 :global(html) {
   margin: 0;
