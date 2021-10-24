@@ -8,21 +8,19 @@
  */
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
-import guardStore from 'popup/store/guard';
+import { warpMessage } from "lib/utils/warp-message";
+import guardStore, { GuardType } from 'popup/store/guard';
 
 export class Wallet {
   public async getState() {
     const data = await Message.signal(
       MTypePopup.GET_WALLET_STATE
     ).send();
+    const state = warpMessage(data);
 
-    if (data.reject) {
-      throw new Error(String(data.reject));
-    }
+    guardStore.set(state['guard'] as GuardType);
 
-    guardStore.set(data.resolve['guard']);
-
-    return data.resolve;
+    return state;
   }
 }
 

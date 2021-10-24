@@ -53,7 +53,7 @@
       "38": "icons/icon38.png"
     },
     "default_title": "ZilPay",
-    "default_popup": "popup.html"
+    "default_popup": "index.html"
   },
   "background": {
     "scripts": [
