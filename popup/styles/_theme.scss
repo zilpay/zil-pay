@@ -1,0 +1,15 @@
+@import "./fonts";
+@import "./variables";
+@import "./mixins";
+
+:global(:root) {
+  --app-background-color: #fff;
+}
+
+:global(body[theme="dark"]) {
+  --app-background-color: #000;
+}
+
+:global(*) {
+  user-select: none;
+}
