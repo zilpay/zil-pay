@@ -74,7 +74,7 @@ export interface WalletState {
   guard: GuardType;
   rate: RateCurrencies,
   apps: {
-    confirmApp: AppConnect;
+    confirmApp?: AppConnect;
     connections: AppConnect[];
   };
   currency: string;

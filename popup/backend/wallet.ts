@@ -11,6 +11,17 @@ import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import guardStore from 'popup/store/guard';
+import walletStore from 'popup/store/wallet';
+import netStore from 'popup/store/netwrok';
+import themeStore from 'popup/store/theme';
+import appStore from 'popup/store/apps';
+import contactsStore from 'popup/store/contacts';
+import currencyStore from 'popup/store/currency';
+import gasStore from 'popup/store/gas';
+import rateStore from 'app/store/rate';
+import ssnStore from 'app/store/ssn';
+import transactionsStore from 'app/store/transactions';
+import zrc2Store from 'app/store/zrc2';
 
 export async function getState() {
   const data = await Message.signal(
@@ -19,6 +30,17 @@ export async function getState() {
   const state = warpMessage(data) as WalletState;
 
   guardStore.set(state.guard);
+  walletStore.set(state.wallet);
+  netStore.set(state.netwrok);
+  themeStore.set(state.theme);
+  appStore.set(state.apps);
+  contactsStore.set(state.contacts);
+  currencyStore.set(state.currency);
+  gasStore.set(state.gas);
+  rateStore.set(state.rate);
+  ssnStore.set(state.ssn);
+  transactionsStore.set(state.transactions);
+  zrc2Store.set(state.zrc2);
 
   return state;
 }
