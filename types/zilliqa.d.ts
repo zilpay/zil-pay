@@ -31,3 +31,9 @@ export interface RPCResponse {
     message: string;
   };
 };
+
+export interface RateCurrencies {
+  btc: number;
+  eth: number;
+  usd: number;
+}

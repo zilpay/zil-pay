@@ -6,7 +6,14 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { AccountTypes } from 'config/account-type';
+import type { ZRC2Token } from 'types/token';
+import type { SSN } from 'types/ssn';
+import type { Contact } from 'types/contact';
+import type { AppConnect } from 'types/app-connect';
+import type { RateCurrencies } from 'types/zilliqa';
+import type { NETWORK } from 'config/network';
+import type { MinParams, StoredTx } from 'types/transaction';
+import type { AccountTypes } from 'config/account-type';
 
 export interface ZRC1Token {
   id: string;
@@ -50,4 +57,40 @@ export interface GuardVault {
     index: number;
     privateKey: string;
   }[];
+}
+
+export interface GuardType {
+  isEnable: boolean;
+  isReady: boolean;
+};
+
+export interface WalletState {
+  wallet: Wallet;
+  netwrok: {
+    config: typeof NETWORK;
+    selected: string;
+  };
+  theme: number;
+  guard: GuardType;
+  rate: RateCurrencies,
+  apps: {
+    confirmApp: AppConnect;
+    connections: AppConnect[];
+  };
+  currency: string;
+  contacts: Contact[];
+  gas: {
+    gasLimit: number;
+    gasPrice: number;
+  };
+  transactions: {
+    forConfirm: MinParams[];
+    transactions: StoredTx[];
+  };
+  zrc2: ZRC2Token[];
+  blocknumber: number;
+  ssn: {
+    selected: number;
+    list: SSN[];
+  };
 }

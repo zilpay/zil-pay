@@ -34,6 +34,6 @@
 
 <style type="text/scss">
   svg > path {
-    fill: var(--primary-color);
+    fill: var(--text-color);
   }
 </style>

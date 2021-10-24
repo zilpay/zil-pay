@@ -13,21 +13,9 @@ import LockPage from '../pages/Lock.svelte';
 import LetStarted from '../pages/LetStarted.svelte';
 import Home from '../pages/Home.svelte';
 import Loading from '../pages/Loading.svelte';
-import { storeToPromise } from 'lib/utils/store-to-promise';
 
 export default {
-  '/': wrap({
-    component: Loading,
-    conditions: [
-      async () => {
-        const guard = await storeToPromise<GuardType>(guardStore.subscribe);
-
-        console.log(guard, 'storeToPromise');
-
-        return true;
-      }
-    ]
-  }),
+  '/': Loading,
   '/home': wrap({
     component: Home,
     conditions: [

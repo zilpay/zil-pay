@@ -23,6 +23,7 @@ import { GasController } from 'core/background/services/gas';
 import { TransactionsController } from 'core/background/services/transactions';
 import { NonceController } from 'core/background/services/nonce';
 import { TransactionsQueue } from 'core/background/services/transactions';
+import type { WalletState } from 'types/account';
 
 export class ZIlPayCore {
   public readonly netwrok = new NetworkControl();
@@ -44,7 +45,7 @@ export class ZIlPayCore {
   public readonly transactionsQueue = new TransactionsQueue(this.zilliqa, this.netwrok, this.transactions);
   public readonly blockchain = new BlockController(this.zilliqa, this.transactionsQueue);
 
-  public get state() {
+  public get state(): WalletState {
     return {
       wallet: this.account.wallet,
       netwrok: {

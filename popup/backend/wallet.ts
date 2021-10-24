@@ -6,23 +6,19 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { WalletState } from 'types/account';
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
-import guardStore, { GuardType } from 'popup/store/guard';
+import guardStore from 'popup/store/guard';
 
-export class Wallet {
-  public async getState() {
-    const data = await Message.signal(
-      MTypePopup.GET_WALLET_STATE
-    ).send();
-    const state = warpMessage(data);
+export async function getState() {
+  const data = await Message.signal(
+    MTypePopup.GET_WALLET_STATE
+  ).send();
+  const state = warpMessage(data) as WalletState;
 
-    console.log(state);
+  guardStore.set(state.guard);
 
-    guardStore.set(state['guard'] as GuardType);
-
-    return state;
-  }
+  return state;
 }
-

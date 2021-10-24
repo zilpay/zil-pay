@@ -6,17 +6,12 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { RateCurrencies } from 'types/zilliqa';
 import { APIs } from 'config/api-list';
 import { DEFAULT_CURRENCIES } from 'config/currencies';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Runtime } from 'lib/runtime';
 import { Fields } from 'config/fields';
-
-export interface RateCurrencies {
-  btc: number;
-  eth: number;
-  usd: number;
-}
 
 export class RateController {
   readonly #name = `rate/${Runtime.runtime.id}/zilpay`;
