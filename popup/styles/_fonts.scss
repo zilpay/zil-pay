@@ -1,0 +1,24 @@
+@font-face {
+	font-family: AvenirNextLTPro-Bold;
+	src: url('/fonts/AvenirNextLTPro-Bold.otf');
+}
+
+@font-face {
+	font-family: AvenirNextLTPro-Demi;
+	src: url('/fonts/AvenirNextLTPro-Demi.otf');
+}
+
+@font-face {
+	font-family: AvenirNextLTPro-Medium;
+	src: url('/fonts/AvenirNextLTPro-MediumCn.otf');
+}
+
+@font-face {
+	font-family: AvenirNextLTPro-Regular;
+	src: url('/fonts/AvenirNextLTPro-Regular.otf');
+}
+
+$font-family-Bold:    AvenirNextLTPro-Bold    !default;
+$font-family-Medium:  AvenirNextLTPro-Medium  !default;
+$font-family-Regular: AvenirNextLTPro-Regular !default;
+$font-family-Light:   AvenirNextLTPro-Demi    !default;

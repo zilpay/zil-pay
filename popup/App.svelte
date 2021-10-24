@@ -15,3 +15,7 @@
 {#if state}
 	<Router {routes} />
 {/if}
+
+<style type="text/scss">
+	@import "./styles/general";
+</style>

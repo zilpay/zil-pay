@@ -7,12 +7,36 @@
  * Copyright (c) 2021 ZilPay
  */
 import { wrap } from 'svelte-spa-router/wrap';
-import LockPage from '../pages/Lock.svelte';
 import guardStore from 'popup/store/guard';
+
+import LockPage from '../pages/Lock.svelte';
+import LetStarted from '../pages/LetStarted.svelte';
+import Home from '../pages/Home.svelte';
+
 
 export default {
   '/': wrap({
+    component: Home,
+    conditions: [
+      async () => {
+        guardStore.subscribe(console.log)();
+
+        return true;
+      }
+    ]
+  }),
+  '/lock': wrap({
     component: LockPage,
+    conditions: [
+      async () => {
+        guardStore.subscribe(console.log)();
+
+        return true;
+      }
+    ]
+  }),
+  '/start': wrap({
+    component: LetStarted,
     conditions: [
       async () => {
         guardStore.subscribe(console.log)();
@@ -24,5 +48,5 @@ export default {
 
   // Catch-all
   // This is optional, but if present it must be the last
-  '*': LockPage
+  '*': Home
 };

@@ -1,0 +1,30 @@
+@import "./fonts";
+@import "./variables";
+
+:root {
+  --app-background-color: #fff;
+}
+
+* {
+  user-select: none;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+
+  min-width: 320px;
+  min-height: 560px;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: initial;
+}
+
+::-webkit-scrollbar { 
+  display: none; 
+}
