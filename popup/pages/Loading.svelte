@@ -1,20 +1,21 @@
 <script lang="ts">
-	import Loader from '../components/Loader.svelte';
 	import { onMount } from 'svelte';
+	import { push } from 'svelte-spa-router';
+	import Loader from '../components/Loader.svelte';
 	import { getState } from "popup/backend";
 
 	let state = null;
 
 	onMount(async () => {
 		state = await getState();
-		const guard = state['guard'];
+		const guard = state.guard;
 
 		if (guard.isReady && guard.isEnable) {
-			console.log('Home');
+			push('/home');
 		} else if (guard.isReady && !guard.isEnable) {
-			console.log('Lock');
+			push('/lock');
 		} else if (!guard.isReady) {
-			console.log('Start');
+			push('/start');
 		}
 	});
 </script>
