@@ -18,6 +18,8 @@ export class Wallet {
     ).send();
     const state = warpMessage(data);
 
+    console.log(state);
+
     guardStore.set(state['guard'] as GuardType);
 
     return state;
