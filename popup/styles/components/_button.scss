@@ -1,0 +1,24 @@
+@import "../mixins";
+
+:global(button) {
+  outline: none;
+  border: none;
+  cursor: pointer;
+
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+
+  font-family: Demi;
+  border-color: var(--card-color);
+  background: #01B2C9;
+
+  font-size: 16px;
+  line-height: 21px;
+  padding: 0.9rem;
+
+  width: inherit;
+
+  border-radius: 6px;
+}

@@ -3,6 +3,7 @@
 	import { _ } from 'popup/i18n';
 
 	let inputEl;
+	let password: string;
 
 	onMount(() => {
     if (focus) {
@@ -14,17 +15,33 @@
     await tick();
     inputEl.focus();
   };
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		console.log(password);
+	}
 </script>
 
 <main>
-	<img src="/imgs/logo.webp" alt="logo">
+	<img
+		src="/imgs/logo.webp"
+		alt="logo"
+	>
 	<h1>
 		{$_('lock.title')}
 	</h1>
-	<input
-		bind:this={inputEl}
-		on:blur={handleBlur}
-	>
+	<form on:submit={handleSubmit}>
+		<label>
+			<input
+				bind:this={inputEl}
+				bind:value={password}
+				placeholder={$_('lock.placeholder')}
+				on:blur={handleBlur}
+			>
+		</label>
+		<button>
+			{$_('lock.btn')}
+		</button>
+	</form>
 </main>
 
 <style type="text/scss">
@@ -39,6 +56,19 @@
 		background-color: var(--background-color);
 		height: 100vh;
 
+		@include flex-center-column;
+	}
+
+	label {
+		width: inherit;
+	}
+
+	button {
+		margin-top: 12px;
+	}
+
+	form {
+		width: 290px;
 		@include flex-center-column;
 	}
 </style>
