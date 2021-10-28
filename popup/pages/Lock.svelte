@@ -1,9 +1,27 @@
 <script lang="ts">
+  import { tick, onMount } from 'svelte';
+
+	let inputEl;
+
+	onMount(() => {
+    if (focus) {
+      inputEl.focus();
+    }
+  });
+
+	const handleBlur = async (_) => {
+    await tick();
+    inputEl.focus();
+  };
 </script>
 
 <main>
 	<img src="/imgs/logo.webp" >
 	<h1>Welcome back</h1>
+	<input
+		bind:this={inputEl}
+		on:blur={handleBlur}
+	>
 </main>
 
 <style type="text/scss">

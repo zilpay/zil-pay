@@ -1,0 +1,15 @@
+@import "../mixins";
+
+:global(input) {
+  outline: none;
+  border: none;
+  font-family: Demi;
+  background: var(--card-color);
+  border-color: var(--card-color);
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-indent: 5px;
+
+  font-size: 22px;
+  line-height: 35.596px;
+}
