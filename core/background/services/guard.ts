@@ -72,16 +72,20 @@ export class AuthGuard {
   public setPassword(password: string) {
     assert(this.#isReady, ErrorMessages.WalletNotReady);
 
-    const hash = Aes.hash(password);
-    Aes.decrypt(this.#encryptSeed, hash);
-
-    if (this.#encryptImported) {
-      Aes.decrypt(this.#encryptImported, hash);
+    try {
+      const hash = Aes.hash(password);
+      Aes.decrypt(this.#encryptSeed, hash);
+  
+      if (this.#encryptImported) {
+        Aes.decrypt(this.#encryptImported, hash);
+      }
+  
+      this.#isEnable = true;
+      this.#updateSession();
+      this.#hash.set(this, hash);
+    } catch {
+      this.logout();
     }
-
-    this.#updateSession();
-    this.#isEnable = true;
-    this.#hash.set(this, hash);
   }
 
   public getWallet(): GuardVault {

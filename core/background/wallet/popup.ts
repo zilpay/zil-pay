@@ -26,6 +26,7 @@ export class ZilPayPopup {
   }
 
   public updateStatus() {
+    if (!this.#core.account.selectedAccount) return null;
     const { base16, bech32 } = this.#core.account.selectedAccount;
 
     if (this.#core.guard.isEnable && this.#core.guard.isReady) {
@@ -98,10 +99,7 @@ export class ZilPayPopup {
       this.updateStatus();
 
       sendResponse({
-        resolve: {
-          isReady: this.#core.guard.isReady,
-          isEnable: this.#core.guard.isEnable
-        }
+        resolve: this.#core.state
       });
     } catch (err) {
       console.log(err)

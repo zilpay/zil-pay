@@ -189,8 +189,7 @@ export async function testFromOld(core: ZIlPayBackground) {
 
   /// unlock
   await core.popup.unlock('qazqaz', (params) => {
-    assert(params.resolve['isReady'], 'Guard should be ready.');
-    assert(params.resolve['isEnable'], 'Guard should be enabled.');
+    assert(params.resolve, 'Guard should be ready.');
   });
   /// unlock
 
