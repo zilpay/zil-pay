@@ -103,6 +103,10 @@ const background = {
 					dest: 'dist/'
 				},
 				{
+					src: 'public/imgs',
+					dest: 'dist/'
+				},
+				{
 					src: 'public/phishing.html',
 					dest: 'dist/'
 				},

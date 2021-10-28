@@ -1,27 +1,23 @@
+<script lang="ts">
+</script>
+
 <main>
+	<img src="/imgs/logo.webp" >
 	<h1>Welcome back</h1>
 </main>
 
 <style type="text/scss">
-	$primary: blue;
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 340px;
-		
-		margin: 0 auto;
-	}
+	@import "../styles/mixins";
 
 	h1 {
-		color: $primary;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
+		color: var(--text-color);
+		@include fluid-font(320px, 1024px, 22px, 55px);
 	}
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
+	main {
+		background-color: var(--background-color);
+		height: 100vh;
+
+		@include flex-center-column;
 	}
 </style>
