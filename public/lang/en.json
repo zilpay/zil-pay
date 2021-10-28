@@ -4,7 +4,8 @@
   "lock": {
       "title": "Welcome back!",
       "placeholder": "Password",
-      "btn": "Unlock"
+      "btn": "Unlock",
+      "error": "Wrong password!"
   },
   "loading": {
     "title": "Loading!"

@@ -9,16 +9,6 @@ $breakpoints:  (
   "xxl": 90em // 1440px
 );
 
-$colors: (
-  'primary': #01B2C9,
-  'success': #fff,
-  'info': #fff,
-  'warning': #fff,
-  'danger': #fff,
-  'dark': #fff,
-  'second': #DBE1F9
-);
-
 $light: (
   'Primary': #01B2C9,
   'Background': #DBE1F9,
@@ -26,7 +16,15 @@ $light: (
   'Notification': #8E8EAE,
   'Card': #E7F1FF,
   'Button': #F6F9FF,
-  'Text': #32335A
+  'Text': #32335A,
+
+  'primary': #01B2C9,
+  'success': #fff,
+  'info': #fff,
+  'warning': #fff,
+  'danger': #dc3545,
+  'dark': #fff,
+  'second': #DBE1F9
 );
 
 $dark: (
@@ -36,5 +34,13 @@ $dark: (
   'Notification': #8A8A8F,
   'Card': #18191D,
   'Button': #2F353C,
-  'Text': #FFFFFF
+  'Text': #FFFFFF,
+
+  'primary': #01B2C9,
+  'success': #fff,
+  'info': #fff,
+  'warning': #fff,
+  'danger': #dc3545,
+  'dark': #fff,
+  'second': #DBE1F9
 );

@@ -10,6 +10,8 @@
   --card-color:  #{inspect(map-get($light , "Card"))};
   --button-color:  #{inspect(map-get($light , "Button"))};
   --text-color:  #{inspect(map-get($light , "Text"))};
+
+  --danger-color: #{inspect(map-get($light , "danger"))};
 }
 
 :global(body[theme="dark"]) {
@@ -20,4 +22,6 @@
   --card-color:  #{inspect(map-get($dark , "Card"))};
   --button-color:  #{inspect(map-get($dark , "Button"))};
   --text-color:  #{inspect(map-get($dark , "Text"))};
+
+  --danger-color: #{inspect(map-get($dark , "danger"))};
 }
