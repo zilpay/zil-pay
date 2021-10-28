@@ -8,136 +8,111 @@
  */
 import type { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
 
-import { localStream } from 'lib/streem/local-stream';
 import { MTypePopup, MTypeTab } from 'lib/streem/stream-keys';
+import { Runtime } from 'lib/runtime';
 
 export function startBackground(core: ZIlPayBackground) {
-  localStream(async(msg, sendResponse) => {
-    if (!msg || !msg.type) {
-      return null;
+  Runtime.runtime.onMessage.addListener(async(msg, sender, sendResponse) => {
+    if (sender.id !== Runtime.runtime.id) {
+      return null
+    }
+    switch (msg.type) {
+      case MTypeTab.GET_WALLET_DATA:
+        core.apps.showWalletData(msg.domain, sendResponse);
+        break;
+      case MTypeTab.CONNECT_APP:
+        core.apps.addConfirm(msg.payload, sendResponse);
+        break;
+      case MTypeTab.IS_CONNECTED_APP:
+        /// TODO: add info about connection app.
+        break
+      case MTypeTab.CALL_TO_SIGN_TX:
+        core.transaction.addConfirm(msg.payload, sendResponse);
+        break;
+
+      case MTypeTab.SIGN_MESSAGE:
+        /// add sign message controller for core.
+        break;
+      case MTypePopup.SELECT_ACCOUNT:
+        core.wallet.selectAccount(msg.payload.index, sendResponse);
+        break;
+      case MTypePopup.SELECT_NETWORK:
+        core.netwrok.select(msg.payload.net, sendResponse);
+        break;
+      case MTypePopup.UPDATE_SSN_LIST:
+        core.netwrok.updateSSN(sendResponse);
+        break;
+      case MTypePopup.GET_ZRC2_TOKEN_INFO:
+        core.zrc2.getZRC2Info(msg.payload.address, sendResponse);
+        break;
+      case MTypePopup.RM_TOKEN:
+        core.zrc2.removeToken(msg.payload.index, sendResponse);
+        break;
+      case MTypePopup.ADD_ZRC2_TOKEN:
+        core.zrc2.addZRC2(msg.payload, sendResponse);
+        break;
+      case MTypePopup.GET_WALLET_STATE:
+        core.popup.initPopup(sendResponse);
+        break;
+      case MTypePopup.EXPORT_SEED:
+        core.wallet.exportSeedPhrase(sendResponse);
+        break;
+      case MTypePopup.ENCRYPT_WALLET:
+        core.wallet.exportEncrypted(sendResponse);
+        break;
+      case MTypePopup.EXPORT_PRIVATE_KEY:
+        core.wallet.exportPrivateKey(sendResponse);
+        break;
+      case MTypePopup.IMPORT_PRIVATE_KEY:
+        core.wallet.importPrivateKey(msg.payload, sendResponse);
+        break;
+      case MTypePopup.IMPORT_KEYSTORE:
+        /// TODO: make a keystore method in core.
+        break;
+      case MTypePopup.GET_RANDOM_SEED:
+        core.popup.randomizeWords(msg.payload.length, sendResponse);
+        break
+      case MTypePopup.GET_ACCOUNT_NONCE:
+        core.transaction.getNextNonce(sendResponse);
+        break;
+      case MTypePopup.CREATE_ACCOUNT_BY_SEED:
+        core.wallet.createAccountBySeed(msg.payload.name, sendResponse);
+        break;
+      case MTypePopup.UPDATE_BALANCE:
+        core.wallet.balanceUpdate(sendResponse);
+        break;
+      case MTypePopup.SIGN_AND_SEND:
+        core.transaction.signSendTx(
+          msg.payload.index,
+          msg.payload.params,
+          sendResponse
+        );
+        break;
+      case MTypePopup.DOMAIN_RESOLVE:
+        core.ud.getOwner(msg.payload.domain, sendResponse);
+        break;
+      case MTypePopup.REJECT_CONFIRM_TX:
+        core.transaction.rmConfirm(msg.payload.index, sendResponse);
+        break;
+      case MTypePopup.REJECT_ALL_CONFIRM_TXNS:
+        core.transaction.rejectAll(sendResponse);
+        break;
+  
+      case MTypePopup.CONFIRM_SIGN_MSG:
+        /// TODO: add sign message stuff for core.
+        break;
+      case MTypePopup.SET_PASSWORD:
+        return core.popup.unlock(msg.payload.password, sendResponse);
+      case MTypePopup.LOG_OUT:
+        core.popup.logout(sendResponse);
+        break;
+      case MTypePopup.SET_SEED_AND_PASSWORD:
+        core.popup.initSeedWallet(msg.payload, sendResponse);
+        break;
+      default:
+        break;
     }
 
-    try {
-      /// contentDispenseMessage
-      switch (msg.type) {
-        case MTypeTab.GET_WALLET_DATA:
-          core.apps.showWalletData(msg.domain, sendResponse);
-          break;
-        case MTypeTab.CONNECT_APP:
-          await core.apps.addConfirm(msg.payload, sendResponse);
-          break;
-        case MTypeTab.IS_CONNECTED_APP:
-          /// TODO: add info about connection app.
-          break
-        case MTypeTab.CALL_TO_SIGN_TX:
-          await core.transaction.addConfirm(msg.payload, sendResponse);
-          break;
-    
-        case MTypeTab.SIGN_MESSAGE:
-          /// add sign message controller for core.
-          break;
-        default:
-          break
-        }
-    } catch (err) {
-      console.error('contentDispenseMessage', err);
-    }
-
-    try {
-      /// popupDispenseMessage
-      switch (msg.type) {
-        case MTypePopup.SELECT_ACCOUNT:
-          await core.wallet.selectAccount(msg.payload.index, sendResponse);
-          break;
-        case MTypePopup.SELECT_NETWORK:
-          await core.netwrok.select(msg.payload.net, sendResponse);
-          break;
-        case MTypePopup.UPDATE_SSN_LIST:
-          await core.netwrok.updateSSN(sendResponse);
-          break;
-        case MTypePopup.GET_ZRC2_TOKEN_INFO:
-          core.zrc2.getZRC2Info(msg.payload.address, sendResponse);
-          break;
-        case MTypePopup.RM_TOKEN:
-          core.zrc2.removeToken(msg.payload.index, sendResponse);
-          break;
-        case MTypePopup.ADD_ZRC2_TOKEN:
-          core.zrc2.addZRC2(msg.payload, sendResponse);
-          break;
-        case MTypePopup.GET_WALLET_STATE:
-          core.popup.initPopup(sendResponse);
-          break;
-        case MTypePopup.EXPORT_SEED:
-          await core.wallet.exportSeedPhrase(sendResponse);
-          break;
-        case MTypePopup.ENCRYPT_WALLET:
-          core.wallet.exportEncrypted(sendResponse);
-          break;
-        case MTypePopup.EXPORT_PRIVATE_KEY:
-          await core.wallet.exportPrivateKey(sendResponse);
-          break;
-        case MTypePopup.IMPORT_PRIVATE_KEY:
-          await core.wallet.importPrivateKey(msg.payload, sendResponse);
-          break;
-        case MTypePopup.IMPORT_KEYSTORE:
-          /// TODO: make a keystore method in core.
-          break;
-        case MTypePopup.GET_RANDOM_SEED:
-          core.popup.randomizeWords(msg.payload.length, sendResponse);
-          break
-        case MTypePopup.GET_ACCOUNT_NONCE:
-          await core.transaction.getNextNonce(sendResponse);
-          break;
-        case MTypePopup.CREATE_ACCOUNT_BY_SEED:
-          await core.wallet.createAccountBySeed(msg.payload.name, sendResponse);
-          break;
-        case MTypePopup.UPDATE_BALANCE:
-          await core.wallet.balanceUpdate(sendResponse);
-          break;
-        case MTypePopup.SIGN_AND_SEND:
-          await core.transaction.signSendTx(
-            msg.payload.index,
-            msg.payload.params,
-            sendResponse
-          );
-          break;
-        case MTypePopup.DOMAIN_RESOLVE:
-          await core.ud.getOwner(msg.payload.domain, sendResponse);
-          break;
-        case MTypePopup.REJECT_CONFIRM_TX:
-          await core.transaction.rmConfirm(msg.payload.index, sendResponse);
-          break;
-        case MTypePopup.REJECT_ALL_CONFIRM_TXNS:
-          await core.transaction.rejectAll(sendResponse);
-          break;
-    
-        case MTypePopup.CONFIRM_SIGN_MSG:
-          /// TODO: add sign message stuff for core.
-          break
-        default:
-          break
-        }
-    } catch (err) {
-      console.error('popupDispenseMessage', err);
-    }
-
-    try {
-      /// authDispenseMessage
-      switch (msg.type) {
-        case MTypePopup.SET_PASSWORD:
-          await core.popup.unlock(msg.payload.password, sendResponse);
-          break;
-        case MTypePopup.LOG_OUT:
-          await core.popup.logout(sendResponse);
-          break;
-        case MTypePopup.SET_SEED_AND_PASSWORD:
-          core.popup.initSeedWallet(msg.payload, sendResponse);
-          break;
-        default:
-          break;
-        }
-    } catch (err) {
-      console.error('contentDispenseMessage', err);
-    }
+    return true;
   });
 }

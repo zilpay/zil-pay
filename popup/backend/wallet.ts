@@ -23,12 +23,7 @@ import ssnStore from 'app/store/ssn';
 import transactionsStore from 'app/store/transactions';
 import zrc2Store from 'app/store/zrc2';
 
-export async function getState() {
-  const data = await Message.signal(
-    MTypePopup.GET_WALLET_STATE
-  ).send();
-  const state = warpMessage(data) as WalletState;
-
+function updateState(state: WalletState) {
   guardStore.set(state.guard);
   walletStore.set(state.wallet);
   netStore.set(state.netwrok);
@@ -41,6 +36,26 @@ export async function getState() {
   ssnStore.set(state.ssn);
   transactionsStore.set(state.transactions);
   zrc2Store.set(state.zrc2);
+}
 
+export async function getState() {
+  const data = await Message.signal(
+    MTypePopup.GET_WALLET_STATE
+  ).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}
+
+export async function unlockWallet(password: string) {
+  const data = await new Message({
+    type: MTypePopup.SET_PASSWORD,
+    payload: {
+      password
+    }
+  }).send();
+  console.log(data);
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
   return state;
 }

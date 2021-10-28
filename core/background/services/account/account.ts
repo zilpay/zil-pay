@@ -171,9 +171,9 @@ export class AccountController {
 
   public async migrate() {
     const newWallet = await BrowserStorage.get(Fields.WALLET);
-    if (newWallet) return null;
+    if (newWallet) return;
     let oldWallet = await BrowserStorage.get(Fields.OLD_WALLET);
-    if (!oldWallet) return null;
+    if (!oldWallet) return;
     try {
       oldWallet = JSON.parse(String(oldWallet));
     } catch {

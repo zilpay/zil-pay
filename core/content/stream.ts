@@ -6,15 +6,19 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { localStream } from 'lib/streem/local-stream';
 import { MTypeTabContent } from 'lib/streem/stream-keys';
 import { ContentMessage } from 'lib/streem/secure-message';
 import { ContentTabStream } from './tab-stream';
+import { Runtime } from 'lib/runtime';
 
 export function startStream() {
   const tabStream = new ContentTabStream();
 
-  localStream((req, sendResponse) => {
+  Runtime.runtime.onMessage.addListener((req, sender, sendResponse) => {
+    if (sender.id !== Runtime.runtime.id) {
+      return null
+    }
+
     const msg = new ContentMessage(req);
 
     if (!msg.type || !msg.payload) {

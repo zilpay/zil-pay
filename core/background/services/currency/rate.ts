@@ -43,14 +43,18 @@ export class RateController {
   }
 
   public async updateRate() {
-    const currencies = DEFAULT_CURRENCIES.join();
-    const url = `${APIs.COIN_GECKO}?ids=zilliqa&vs_currencies=${currencies}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-    const rate = data.zilliqa as RateCurrencies;
-
-    await this.#setRate(rate);
+    try {
+      const currencies = DEFAULT_CURRENCIES.join();
+      const url = `${APIs.COIN_GECKO}?ids=zilliqa&vs_currencies=${currencies}`;
+  
+      const response = await fetch(url);
+      const data = await response.json();
+      const rate = data.zilliqa as RateCurrencies;
+  
+      await this.#setRate(rate); 
+    } catch (err) {
+      console.error('updateRate', err);
+    }
   }
 
   public async reset() {

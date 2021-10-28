@@ -27,6 +27,8 @@
 			const guard = await unlockWallet(password);
 			console.log(guard);
 		} catch (err) {
+			console.error(err);
+			
 			error = `${$_('lock.error')}-(${err.message})`;
 		}
 	}

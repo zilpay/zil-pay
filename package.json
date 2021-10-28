@@ -42,7 +42,7 @@
     "@zilliqa-js/proto": "^3.0.0",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.0.0",
     "elliptic": "^6.5.4",
     "hash.js": "^1.1.7",
     "secp256k1": "^4.0.2",

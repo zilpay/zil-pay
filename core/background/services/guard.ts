@@ -61,7 +61,6 @@ export class AuthGuard {
   
   public async logout() {
     this.#isEnable = false;
-    this.#isReady = false;
     this.#encryptSeed = undefined;
     this.#encryptImported = undefined;
     this.#endSession = new Date(-1);
@@ -70,7 +69,7 @@ export class AuthGuard {
   }
 
   public setPassword(password: string) {
-    assert(this.#isReady, ErrorMessages.WalletNotReady);
+    assert(this.isReady, ErrorMessages.WalletNotReady);
 
     try {
       const hash = Aes.hash(password);
@@ -83,8 +82,9 @@ export class AuthGuard {
       this.#isEnable = true;
       this.#updateSession();
       this.#hash.set(this, hash);
-    } catch {
+    } catch (err) {
       this.logout();
+      throw new Error(ErrorMessages.IncorrectPassword);
     }
   }
 

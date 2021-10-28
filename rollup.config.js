@@ -64,7 +64,7 @@ const background = {
 	input: 'core/background/index.ts',
 	output: {
 		sourcemap: !production,
-		format: 'umd',
+		format: 'iife',
 		name: 'background',
 		file: 'dist/background.js'
 	},
