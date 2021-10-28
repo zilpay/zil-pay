@@ -1,0 +1,12 @@
+{
+  "home": {
+  },
+  "lock": {
+      "title": "Welcome back ssss",
+      "placeholder": "Password",
+      "btn": "Unlock"
+  },
+  "loading": {
+    "title": "Loading!"
+  }
+}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tick, onMount } from 'svelte';
+	import { _ } from 'popup/i18n';
 
 	let inputEl;
 
@@ -16,8 +17,10 @@
 </script>
 
 <main>
-	<img src="/imgs/logo.webp" >
-	<h1>Welcome back</h1>
+	<img src="/imgs/logo.webp" alt="logo">
+	<h1>
+		{$_('lock.title')}
+	</h1>
 	<input
 		bind:this={inputEl}
 		on:blur={handleBlur}

@@ -3,6 +3,7 @@
 	import { push } from 'svelte-spa-router';
 	import Loader from '../components/Loader.svelte';
 	import { getState } from "popup/backend";
+	import { _ } from 'popup/i18n';
 
 	let state = null;
 
@@ -21,7 +22,9 @@
 </script>
 
 <main>
-	<h1>Loading!</h1>
+	<h1>
+		{$_('loading.title')}
+	</h1>
 	<Loader />
 </main>
 

@@ -107,6 +107,10 @@ const background = {
 					dest: 'dist/'
 				},
 				{
+					src: 'public/lang',
+					dest: 'dist/'
+				},
+				{
 					src: 'public/imgs',
 					dest: 'dist/'
 				},
