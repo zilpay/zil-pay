@@ -84,6 +84,13 @@
   display: flex;
   flex-direction: column;
 }
+
+@mixin flex-center-top-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
  
 @mixin flex-center {
   display: flex;

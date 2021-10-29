@@ -15,5 +15,9 @@
     "subt_title": "Create or restore your Zilliqa wallet.",
     "btn_restore": "Restore",
     "btn_create": "Create"
+  },
+  "restore": {
+    "title": "Restore.",
+    "placeholder": "Input secret phrase, with a space between words."
   }
 }
