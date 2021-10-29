@@ -61,8 +61,6 @@ export class AuthGuard {
   
   public async logout() {
     this.#isEnable = false;
-    this.#encryptSeed = undefined;
-    this.#encryptImported = undefined;
     this.#endSession = new Date(-1);
 
     this.#hash.delete(this);

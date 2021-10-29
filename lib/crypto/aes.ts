@@ -7,37 +7,32 @@
  * Copyright (c) 2021 ZilPay
  */
 
+import assert from 'assert';
 import aes from 'crypto-js/aes';
 import { lib } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import Utf8 from 'crypto-js/enc-utf8';
 import Base64 from 'crypto-js/enc-base64';
 import ENCHex from 'crypto-js/enc-hex';
+import { ErrorMessages } from 'config/errors';
 
-export const Aes = Object.freeze({
-
+export class Aes  {
   /**
    * Create sha256 hash string.
    * @example
    * new Aes().hash('my any string';
    */
-  hash(content: string) {
+  public static hash(content: string) {
     return sha256(content).toString();
-  },
+  }
 
-  /**
-   * Ecnrypt payload through password.
-   */
-  encrypt(data: string, key: string) {
+  public static encrypt(data: string, key: string) {
     return aes
       .encrypt(data, key)
       .toString();
-  },
+  }
 
-  /**
-   * Encrypt data and return the object of AES.
-   */
-  getEncrypted<T>(data: object | Array<T>, key: string) {
+  public static getEncrypted<T>(data: object | Array<T>, key: string) {
     const content = JSON.stringify(data);
     const keyAsHex = ENCHex.parse(key);
     const iv = lib.WordArray.random(128 / 8);
@@ -51,19 +46,14 @@ export const Aes = Object.freeze({
       iv: encryptData.iv.toString(),
       cipher: encryptData.ciphertext.toString(Base64)
     };
-  },
+  }
 
-  /**
-   * Decrypt payload through password.
-   */
-  decrypt(data: string, key: string) {
+  public static decrypt(data: string, key: string) {
     const decrypted = aes.decrypt(data, key);
     const content = decrypted.toString(Utf8);
 
-    try {
-      return JSON.parse(content);
-    } catch {
-      return content;
-    }
+    assert(Boolean(content), ErrorMessages.IncorrectPassword);
+
+    return JSON.parse(content);
   }
-});
+}
