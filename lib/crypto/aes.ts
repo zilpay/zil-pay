@@ -23,10 +23,14 @@ export class Aes  {
    * new Aes().hash('my any string';
    */
   public static hash(content: string) {
+    assert(Boolean(content), ErrorMessages.IncorrectParams);
     return sha256(content).toString();
   }
 
   public static encrypt(data: string, key: string) {
+    assert(Boolean(data), ErrorMessages.IncorrectParams);
+    assert(Boolean(key), ErrorMessages.IncorrectParams);
+
     return aes
       .encrypt(data, key)
       .toString();
@@ -49,6 +53,9 @@ export class Aes  {
   }
 
   public static decrypt(data: string, key: string) {
+    assert(Boolean(data), ErrorMessages.IncorrectParams);
+    assert(Boolean(key), ErrorMessages.IncorrectParams);
+
     const decrypted = aes.decrypt(data, key);
     const content = decrypted.toString(Utf8);
 

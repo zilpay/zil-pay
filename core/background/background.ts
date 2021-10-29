@@ -13,112 +13,107 @@ import { Runtime } from 'lib/runtime';
 
 export function startBackground(core: ZIlPayBackground) {
   Runtime.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    core.popup.unlock(msg.payload.password, sendResponse);
+    if (sender.id !== Runtime.runtime.id) {
+      sendResponse();
+      return null
+    }
+    switch (msg.type) {
+      case MTypeTab.GET_WALLET_DATA:
+        core.apps.showWalletData(msg.domain, sendResponse);
+        return true;
+      case MTypeTab.CONNECT_APP:
+        core.apps.addConfirm(msg.payload, sendResponse);
+        return true;
+      case MTypeTab.IS_CONNECTED_APP:
+        /// TODO: add info about connection app.
+        return true;
+      case MTypeTab.CALL_TO_SIGN_TX:
+        core.transaction.addConfirm(msg.payload, sendResponse);
+        return true;
 
-    return true;
-  });
-  // Runtime.runtime.onMessage.addListener(async(msg, sender, sendResponse) => {
-  //   if (sender.id !== Runtime.runtime.id) {
-  //     return null
-  //   }
-  //   switch (msg.type) {
-  //     case MTypeTab.GET_WALLET_DATA:
-  //       core.apps.showWalletData(msg.domain, sendResponse);
-  //       break;
-  //     case MTypeTab.CONNECT_APP:
-  //       core.apps.addConfirm(msg.payload, sendResponse);
-  //       break;
-  //     case MTypeTab.IS_CONNECTED_APP:
-  //       /// TODO: add info about connection app.
-  //       break
-  //     case MTypeTab.CALL_TO_SIGN_TX:
-  //       core.transaction.addConfirm(msg.payload, sendResponse);
-  //       break;
-
-  //     case MTypeTab.SIGN_MESSAGE:
-  //       /// add sign message controller for core.
-  //       break;
-  //     case MTypePopup.SELECT_ACCOUNT:
-  //       core.wallet.selectAccount(msg.payload.index, sendResponse);
-  //       break;
-  //     case MTypePopup.SELECT_NETWORK:
-  //       core.netwrok.select(msg.payload.net, sendResponse);
-  //       break;
-  //     case MTypePopup.UPDATE_SSN_LIST:
-  //       core.netwrok.updateSSN(sendResponse);
-  //       break;
-  //     case MTypePopup.GET_ZRC2_TOKEN_INFO:
-  //       core.zrc2.getZRC2Info(msg.payload.address, sendResponse);
-  //       break;
-  //     case MTypePopup.RM_TOKEN:
-  //       core.zrc2.removeToken(msg.payload.index, sendResponse);
-  //       break;
-  //     case MTypePopup.ADD_ZRC2_TOKEN:
-  //       core.zrc2.addZRC2(msg.payload, sendResponse);
-  //       break;
-  //     case MTypePopup.GET_WALLET_STATE:
-  //       core.popup.initPopup(sendResponse);
-  //       break;
-  //     case MTypePopup.EXPORT_SEED:
-  //       core.wallet.exportSeedPhrase(sendResponse);
-  //       break;
-  //     case MTypePopup.ENCRYPT_WALLET:
-  //       core.wallet.exportEncrypted(sendResponse);
-  //       break;
-  //     case MTypePopup.EXPORT_PRIVATE_KEY:
-  //       core.wallet.exportPrivateKey(sendResponse);
-  //       break;
-  //     case MTypePopup.IMPORT_PRIVATE_KEY:
-  //       core.wallet.importPrivateKey(msg.payload, sendResponse);
-  //       break;
-  //     case MTypePopup.IMPORT_KEYSTORE:
-  //       /// TODO: make a keystore method in core.
-  //       break;
-  //     case MTypePopup.GET_RANDOM_SEED:
-  //       core.popup.randomizeWords(msg.payload.length, sendResponse);
-  //       break
-  //     case MTypePopup.GET_ACCOUNT_NONCE:
-  //       core.transaction.getNextNonce(sendResponse);
-  //       break;
-  //     case MTypePopup.CREATE_ACCOUNT_BY_SEED:
-  //       core.wallet.createAccountBySeed(msg.payload.name, sendResponse);
-  //       break;
-  //     case MTypePopup.UPDATE_BALANCE:
-  //       core.wallet.balanceUpdate(sendResponse);
-  //       break;
-  //     case MTypePopup.SIGN_AND_SEND:
-  //       core.transaction.signSendTx(
-  //         msg.payload.index,
-  //         msg.payload.params,
-  //         sendResponse
-  //       );
-  //       break;
-  //     case MTypePopup.DOMAIN_RESOLVE:
-  //       core.ud.getOwner(msg.payload.domain, sendResponse);
-  //       break;
-  //     case MTypePopup.REJECT_CONFIRM_TX:
-  //       core.transaction.rmConfirm(msg.payload.index, sendResponse);
-  //       break;
-  //     case MTypePopup.REJECT_ALL_CONFIRM_TXNS:
-  //       core.transaction.rejectAll(sendResponse);
-  //       break;
+      case MTypeTab.SIGN_MESSAGE:
+        /// add sign message controller for core.
+        return true;
+      case MTypePopup.SELECT_ACCOUNT:
+        core.wallet.selectAccount(msg.payload.index, sendResponse);
+        return true;
+      case MTypePopup.SELECT_NETWORK:
+        core.netwrok.select(msg.payload.net, sendResponse);
+        return true;
+      case MTypePopup.UPDATE_SSN_LIST:
+        core.netwrok.updateSSN(sendResponse);
+        return true;
+      case MTypePopup.GET_ZRC2_TOKEN_INFO:
+        core.zrc2.getZRC2Info(msg.payload.address, sendResponse);
+        return true;
+      case MTypePopup.RM_TOKEN:
+        core.zrc2.removeToken(msg.payload.index, sendResponse);
+        return true;
+      case MTypePopup.ADD_ZRC2_TOKEN:
+        core.zrc2.addZRC2(msg.payload, sendResponse);
+        return true;
+      case MTypePopup.GET_WALLET_STATE:
+        core.popup.initPopup(sendResponse);
+        return true;
+      case MTypePopup.EXPORT_SEED:
+        core.wallet.exportSeedPhrase(sendResponse);
+        return true;
+      case MTypePopup.ENCRYPT_WALLET:
+        core.wallet.exportEncrypted(sendResponse);
+        return true;
+      case MTypePopup.EXPORT_PRIVATE_KEY:
+        core.wallet.exportPrivateKey(sendResponse);
+        return true;
+      case MTypePopup.IMPORT_PRIVATE_KEY:
+        core.wallet.importPrivateKey(msg.payload, sendResponse);
+        return true;
+      case MTypePopup.IMPORT_KEYSTORE:
+        /// TODO: make a keystore method in core.
+        return true;
+      case MTypePopup.GET_RANDOM_SEED:
+        core.popup.randomizeWords(msg.payload.length, sendResponse);
+        return true;
+      case MTypePopup.GET_ACCOUNT_NONCE:
+        core.transaction.getNextNonce(sendResponse);
+        return true;
+      case MTypePopup.CREATE_ACCOUNT_BY_SEED:
+        core.wallet.createAccountBySeed(msg.payload.name, sendResponse);
+        return true;
+      case MTypePopup.UPDATE_BALANCE:
+        core.wallet.balanceUpdate(sendResponse);
+        return true;
+      case MTypePopup.SIGN_AND_SEND:
+        core.transaction.signSendTx(
+          msg.payload.index,
+          msg.payload.params,
+          sendResponse
+        );
+        return true;
+      case MTypePopup.DOMAIN_RESOLVE:
+        core.ud.getOwner(msg.payload.domain, sendResponse);
+        return true;
+      case MTypePopup.REJECT_CONFIRM_TX:
+        core.transaction.rmConfirm(msg.payload.index, sendResponse);
+        return true;
+      case MTypePopup.REJECT_ALL_CONFIRM_TXNS:
+        core.transaction.rejectAll(sendResponse);
+        return true;
   
-  //     case MTypePopup.CONFIRM_SIGN_MSG:
-  //       /// TODO: add sign message stuff for core.
-  //       break;
-  //     case MTypePopup.SET_PASSWORD:
-  //       core.popup.unlock(msg.payload.password, sendResponse);
-  //       break;
-  //     case MTypePopup.LOG_OUT:
-  //       core.popup.logout(sendResponse);
-  //       break;
-  //     case MTypePopup.SET_SEED_AND_PASSWORD:
-  //       core.popup.initSeedWallet(msg.payload, sendResponse);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-
-  //   return false;
-  // });
+      case MTypePopup.CONFIRM_SIGN_MSG:
+        /// TODO: add sign message stuff for core.
+        break;
+      case MTypePopup.SET_PASSWORD:
+        core.popup.unlock(msg.payload.password, sendResponse);
+        return true;
+      case MTypePopup.LOG_OUT:
+        core.popup.logout(sendResponse);
+        return true;
+      case MTypePopup.SET_SEED_AND_PASSWORD:
+        core.popup.initSeedWallet(msg.payload, sendResponse);
+        return true;
+      default:
+        sendResponse();
+        return false;
+    }
+  });
 }
