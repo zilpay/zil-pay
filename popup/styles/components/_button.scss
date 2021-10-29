@@ -17,8 +17,7 @@
   font-family: Demi;
 
   font-size: 16px;
-  line-height: 21px;
-  padding: 0.9rem;
+  line-height: 47px;
 
   width: inherit;
 
@@ -27,11 +26,16 @@
   transition: background-color 150ms linear;
 }
 
+:global(button:disabled) {
+  opacity: 0.7;
+  cursor: auto;
+}
+
 :global(button.primary) {
   border-color: var(--primary-color);
   background: var(--primary-color);
 
-  &:hover {
+  &:hover, &:disabled {
     border-color: var(--button-color);
     background: var(--button-color);
     color: var(--Text-color);

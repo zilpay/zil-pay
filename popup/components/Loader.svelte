@@ -1,15 +1,12 @@
 <script lang="ts">
+  export let width = '40px';
+  export let height = '40px';
 </script>
 
 <svg
-  version="1.1"
-  id="loader-1"
-  x="0px"
-  y="0px"
-  width="40px"
-  height="40px"
-  viewBox="0 0 40 40"
-  enable-background="new 0 0 40 40"
+  width={width}
+  height={height}
+  viewBox="0 0 35 35"
   xml:space="preserve"
 >
   <path

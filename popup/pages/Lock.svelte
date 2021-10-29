@@ -1,11 +1,17 @@
 <script lang="ts">
   import { tick, onMount } from 'svelte';
+	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import { unlockWallet } from "popup/backend";
 
+	import Loader from '../components/Loader.svelte';
+
 	let inputEl;
-	let password: string;
+	let password: string | null;
 	let error: string | null = null;
+	let loading = false;
+
+	$: disabled = loading || !password;
 
 	onMount(() => {
     if (focus) {
@@ -20,17 +26,22 @@
     await tick();
     inputEl.focus();
   };
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		try {
-			const guard = await unlockWallet(password);
-			console.log(guard);
+			loading = true;
+			const state = await unlockWallet(password);
+
+			if (state.guard.isEnable && state.guard.isReady) {
+				loading = false;
+				push('/home');
+			}
 		} catch (err) {
-			console.error(err);
-			
 			error = `${$_('lock.error')}-(${err.message})`;
 		}
+		loading = false;
 	}
 </script>
 
@@ -56,8 +67,20 @@
 				{error || ''}
 			</span>
 		</label>
-		<button class="primary">
-			{$_('lock.btn')}
+		<button
+			class="primary"
+			disabled={disabled}
+		>
+			{#if loading}
+				<span>
+					<Loader
+						width="25px"
+						height="25px"
+					/>
+				</span>
+			{:else}
+				{$_('lock.btn')}
+			{/if}
 		</button>
 	</form>
 </main>
