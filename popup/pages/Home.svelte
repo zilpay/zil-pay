@@ -1,10 +1,12 @@
 <script lang="ts">
-	import fade from 'popup/transitions/fade';
+		import { fly } from 'svelte/transition';
+		import flyTransition from 'popup/transitions/fly';
+
 </script>
 
 <main
-	in:fade.in
-	out:fade.out
+	in:fly={flyTransition.in}
+	out:fly={flyTransition.out}
 >
 	<h1>Home!</h1>
 </main>

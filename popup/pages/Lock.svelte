@@ -1,9 +1,10 @@
 <script lang="ts">
   import { tick, onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import { unlockWallet } from "popup/backend";
-	import fade from 'popup/transitions/fade';
+	import flyTransition from 'popup/transitions/fly';
 
 	import Loader from '../components/Loader.svelte';
 
@@ -47,8 +48,8 @@
 </script>
 
 <main
-	in:fade.in
-	out:fade.out
+	in:fly={flyTransition.in}
+	out:fly={flyTransition.out}
 >
 	<img
 		src="/imgs/logo.webp"
