@@ -16,7 +16,7 @@
 	$: disabled = loading || !password;
 
 	onMount(() => {
-    if (focus) {
+    if (inputEl && inputEl.focus) {
       inputEl.focus();
     }
   });
@@ -26,7 +26,10 @@
 	};
 	const handleBlur = async (_) => {
     await tick();
-    inputEl.focus();
+		
+    if (inputEl && inputEl.focus) {
+      inputEl.focus();
+    }
   };
 
 	const handleSubmit = async (e) => {
@@ -96,6 +99,11 @@
 	h1 {
 		color: var(--text-color);
 		@include fluid-font(320px, 1024px, 22px, 55px);
+	}
+
+	img {
+		max-width: 500px;
+    width: calc(100vw - 90px);
 	}
 
 	main {

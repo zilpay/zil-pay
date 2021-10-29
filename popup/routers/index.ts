@@ -13,9 +13,10 @@ import LockPage from '../pages/Lock.svelte';
 import LetStarted from '../pages/LetStarted.svelte';
 import Home from '../pages/Home.svelte';
 import Loading from '../pages/Loading.svelte';
+import Create from '../pages/Create.svelte';
+import Restore from '../pages/Restore.svelte';
 
 export default {
-  '/': Loading,
   '/home': wrap({
     component: Home,
     conditions: [
@@ -36,18 +37,11 @@ export default {
       }
     ]
   }),
-  '/start': wrap({
-    component: LetStarted,
-    conditions: [
-      async () => {
-        guardStore.subscribe(console.log)();
-
-        return true;
-      }
-    ]
-  }),
+  '/start': LetStarted,
+  '/restore': Restore,
+  '/create': Create,
 
   // Catch-all
   // This is optional, but if present it must be the last
-  '*': Home
+  '*': Loading
 };

@@ -54,7 +54,6 @@ export async function unlockWallet(password: string) {
       password
     }
   }).send();
-  console.log(data);
   const state = warpMessage(data) as WalletState;
   updateState(state);
   return state;

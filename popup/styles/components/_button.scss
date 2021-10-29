@@ -1,6 +1,7 @@
 @import "../mixins";
 
-:global(button) {
+:global(button),
+:global(.btn) {
   outline: none;
   border: none;
   cursor: pointer;
@@ -23,7 +24,11 @@
 
   border-radius: 6px;
 
-  transition: background-color 150ms linear;
+  transition: background-color 250ms linear;
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 :global(button:disabled) {
@@ -31,9 +36,23 @@
   cursor: auto;
 }
 
-:global(button.primary) {
+:global(button.primary),
+:global(.btn.primary) {
   border-color: var(--primary-color);
   background: var(--primary-color);
+
+  &:hover, &:disabled {
+    border-color: var(--button-color);
+    background: var(--button-color);
+    color: var(--Text-color);
+  }
+}
+
+:global(button.secondary),
+:global(.btn.secondary) {
+  border-color: var(--secondary-color);
+  background: var(--secondary-color);
+  color: var(--background-color);
 
   &:hover, &:disabled {
     border-color: var(--button-color);

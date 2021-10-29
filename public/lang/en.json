@@ -9,5 +9,11 @@
   },
   "loading": {
     "title": "Loading!"
+  },
+  "start": {
+    "title": "Let’s get started",
+    "subt_title": "Create or restore your Zilliqa wallet.",
+    "btn_restore": "Restore",
+    "btn_create": "Create"
   }
 }

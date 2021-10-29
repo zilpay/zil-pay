@@ -3,7 +3,6 @@
 @import "./mixins";
 
 :global(:root) {
-  --primary-color: #{inspect(map-get($light , "Primary"))};
   --background-color: #{inspect(map-get($light , "Background"))};
   --border-color:  #{inspect(map-get($light , "Border"))};
   --notification-color:  #{inspect(map-get($light , "Notification"))};
@@ -11,11 +10,12 @@
   --button-color:  #{inspect(map-get($light , "Button"))};
   --text-color:  #{inspect(map-get($light , "Text"))};
 
+  --secondary-color:  #{inspect(map-get($light , "Secondary"))};
+  --primary-color: #{inspect(map-get($light , "Primary"))};
   --danger-color: #{inspect(map-get($light , "danger"))};
 }
 
 :global(body[theme="dark"]) {
-  --primary-color:  #{inspect(map-get($dark , "Primary"))};
   --background-color:  #{inspect(map-get($dark , "Background"))};
   --border-color:  #{inspect(map-get($dark , "Border"))};
   --notification-color:  #{inspect(map-get($dark , "Notification"))};
@@ -23,5 +23,7 @@
   --button-color:  #{inspect(map-get($dark , "Button"))};
   --text-color:  #{inspect(map-get($dark , "Text"))};
 
+  --primary-color:  #{inspect(map-get($dark , "Primary"))};
+  --secondary-color:  #{inspect(map-get($dark , "Secondary"))};
   --danger-color: #{inspect(map-get($dark , "danger"))};
 }
