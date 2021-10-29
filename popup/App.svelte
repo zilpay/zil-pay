@@ -8,8 +8,9 @@
 	}
 </script>
 
+
 {#if $isLocaleLoaded}
-	<Router {routes} />
+	<Router  {routes} />
 {/if}
 
 <style type="text/scss">

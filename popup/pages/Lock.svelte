@@ -3,6 +3,7 @@
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import { unlockWallet } from "popup/backend";
+	import fade from 'popup/transitions/fade';
 
 	import Loader from '../components/Loader.svelte';
 
@@ -26,7 +27,7 @@
     await tick();
     inputEl.focus();
   };
-	
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -45,7 +46,10 @@
 	}
 </script>
 
-<main>
+<main
+	in:fade.in
+	out:fade.out
+>
 	<img
 		src="/imgs/logo.webp"
 		alt="logo"
