@@ -17,6 +17,7 @@
 <style type="text/scss">
   @import "../styles/mixins";
   h1 {
+    color: var(--text-color);
     @include fluid-font(320px, 720px, 30px, 55px);
   }
   nav {
