@@ -28,5 +28,21 @@
     "title": "Setup account.",
     "name_placeholder": "Name of account (3-25 characters)",
     "name_description": "A wallet name is using to help you distinguish different account from one another."
+  },
+  "wallet_created": {
+    "title": "Wallet is generated!",
+    "subt_title": "Your account has been created - Keep your secret phase safe, it’s your responsibility!",
+    "btn": "Start using!",
+    "tips": {
+      "title": "Tips on storing it safely",
+      "list": [
+        "Save a backup in multiple places",
+        "Never share the phrase with anyone",
+        "Be careful of phising! ZilPay will never spontaneously ask for your secret phrase",
+        "If you need to back up your secret phrase again, you can find it in Security",
+        "If you ever have a question or see something fishy, contact us."
+      ],
+      "warn": "ZilPay team cannot recover your secret phrase!"
+    }
   }
 }

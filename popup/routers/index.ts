@@ -16,6 +16,7 @@ import Loading from '../pages/Loading.svelte';
 import Create from '../pages/Create.svelte';
 import Restore from '../pages/Restore.svelte';
 import SetupAccount from '../pages/SetupAccount.svelte';
+import WalletCreated from '../pages/WalletCreated.svelte';
 
 export default {
   '/home': wrap({
@@ -26,6 +27,12 @@ export default {
   }),
   '/setup-account': wrap({
     component: SetupAccount,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/created': wrap({
+    component: WalletCreated,
     conditions: [
       routerGuard
     ]

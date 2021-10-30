@@ -11,3 +11,7 @@
   font-family: Regular;
   font-size: 14px;
 }
+
+:global(h1, h2, h3) {
+  font-family: Bold;
+}

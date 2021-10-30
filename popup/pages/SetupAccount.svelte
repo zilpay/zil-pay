@@ -22,7 +22,7 @@
 
 		try {
       await createNextSeedAccount(name);
-      push('/home');
+      push('/created');
 			loading = false;
 		} catch (err) {
       loading = false;
