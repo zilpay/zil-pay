@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import { wrap } from 'svelte-spa-router/wrap';
-import guardStore from 'popup/store/guard';
+import { routerGuard } from './guard';
 
 import LockPage from '../pages/Lock.svelte';
 import LetStarted from '../pages/LetStarted.svelte';
@@ -21,29 +21,19 @@ export default {
   '/home': wrap({
     component: Home,
     conditions: [
-      async () => {
-        guardStore.subscribe(console.log)();
-
-        return true;
-      }
+      routerGuard
     ]
   }),
-  '/lock': wrap({
-    component: LockPage,
+  '/setup-account': wrap({
+    component: SetupAccount,
     conditions: [
-      async () => {
-        guardStore.subscribe(console.log)();
-
-        return true;
-      }
+      routerGuard
     ]
   }),
+  '/lock': LockPage,
   '/start': LetStarted,
   '/restore': Restore,
   '/create': Create,
-  '/setup-account': wrap({
-    component: SetupAccount
-  }),
 
   // Catch-all
   // This is optional, but if present it must be the last

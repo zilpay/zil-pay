@@ -22,6 +22,7 @@ import rateStore from 'app/store/rate';
 import ssnStore from 'app/store/ssn';
 import transactionsStore from 'app/store/transactions';
 import zrc2Store from 'app/store/zrc2';
+import loadedStore from 'app/store/loaded';
 
 function updateState(state: WalletState) {
   guardStore.set(state.guard);
@@ -36,6 +37,7 @@ function updateState(state: WalletState) {
   ssnStore.set(state.ssn);
   transactionsStore.set(state.transactions);
   zrc2Store.set(state.zrc2);
+  loadedStore.set(true);
 }
 
 export async function getState() {
