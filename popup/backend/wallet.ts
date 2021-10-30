@@ -58,3 +58,16 @@ export async function unlockWallet(password: string) {
   updateState(state);
   return state;
 }
+
+export async function restorePhrase(seed: string, password: string) {
+  const data = await new Message({
+    type: MTypePopup.SET_SEED_AND_PASSWORD,
+    payload: {
+      seed,
+      password
+    }
+  }).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}

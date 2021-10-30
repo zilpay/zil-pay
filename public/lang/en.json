@@ -20,6 +20,7 @@
     "title": "Restore.",
     "placeholder": "Input secret phrase, with a space between words.",
     "pass_placeholder": "Password",
-    "conf_placeholder": "Confirm Password"
+    "conf_placeholder": "Confirm Password",
+    "pass_len_error": "Password error, max length is 6"
   }
 }

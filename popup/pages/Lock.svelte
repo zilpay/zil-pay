@@ -22,7 +22,7 @@
   });
 
 	const handleInput = () => {
-		error = null;
+		error = '';
 	};
 	const handleBlur = async (_) => {
     await tick();
@@ -72,7 +72,7 @@
 				on:input={handleInput}
 			>
 			<span>
-				{error || ''}
+				{error}
 			</span>
 		</label>
 		<button

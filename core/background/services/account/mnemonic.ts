@@ -44,6 +44,39 @@ export class MnemonicController {
     });
   }
 
+  public mnemonicToEntropy(mnemonic: string) {
+    const words = this.#normalize(mnemonic).split(' ');
+    assert(words.length >= 12, ErrorMessages.IncorrectMnemonic);
+    assert(words.length % 3 === 0, ErrorMessages.IncorrectMnemonic);
+    // convert word indices to 11 bit binary strings
+    const bits = words.map((word) => {
+      const index = wordlist.indexOf(word);
+      assert(index !== -1, ErrorMessages.IncorrectMnemonic);
+      return this.#lpad(index.toString(2), '0', 11);
+    }).join('');
+    // split the binary string into ENT/CS
+    const dividerIndex = Math.floor(bits.length / 33) * 32;
+    const entropyBits = bits.slice(0, dividerIndex);
+    // calculate the checksum and compare
+    const entropyBytes = entropyBits
+      .match(/(.{1,8})/g)
+      .map(this.#binaryToByte);
+    assert(entropyBytes.length >= 16, ErrorMessages.InvalidEntropy);
+    assert(entropyBytes.length <= 32, ErrorMessages.InvalidEntropy);
+    assert(entropyBytes.length % 4 === 0, ErrorMessages.InvalidEntropy);
+    const entropy = Buffer.from(entropyBytes);
+    return entropy.toString('hex');
+  }
+
+  public validateMnemonic(mnemonic: string) {
+    try {
+      this.mnemonicToEntropy(mnemonic);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   #entropyToMnemonic(entropy: string, wordlist: string[]) {
     const bufferEntropy = Buffer.from(entropy, 'hex');
 

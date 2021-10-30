@@ -4,6 +4,8 @@
 	import Loader from '../components/Loader.svelte';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
+  import { fly } from 'svelte/transition';
+  import flyTransition from 'popup/transitions/fly';
 
 	let state = null;
 
@@ -21,7 +23,10 @@
 	});
 </script>
 
-<main>
+<main
+	in:fly={flyTransition.in}
+	out:fly={flyTransition.out}
+>
 	<h1>
 		{$_('loading.title')}
 	</h1>

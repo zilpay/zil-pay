@@ -38,6 +38,7 @@
     cursor: pointer;
     rect {
       fill: var(--secondary-color);
+      transition: fill 200ms linear;
     }
     line {
       stroke: var(--primary-color);

@@ -68,22 +68,14 @@ export class ZilPayPopup {
 
   public async initSeedWallet(payload: InitPayload, sendResponse: StreamResponse) {
     try {
+      this.#core.account.mnemonic.mnemonicToEntropy(payload.seed);
       await this.#core.guard.setSeed(
         payload.seed,
         payload.password
       );
-      const { base16 } = await this.#core.account.fromSeed(payload.seed, 0);
-      const bech32 = toBech32Address(base16);
-
-      this.updateStatus();
 
       sendResponse({
-        resolve: {
-          bech32,
-          base16,
-          isReady: this.#core.guard.isReady,
-          isEnable: this.#core.guard.isEnable
-        }
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

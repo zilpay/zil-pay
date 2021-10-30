@@ -15,6 +15,7 @@ import Home from '../pages/Home.svelte';
 import Loading from '../pages/Loading.svelte';
 import Create from '../pages/Create.svelte';
 import Restore from '../pages/Restore.svelte';
+import SetupAccount from '../pages/SetupAccount.svelte';
 
 export default {
   '/home': wrap({
@@ -40,6 +41,9 @@ export default {
   '/start': LetStarted,
   '/restore': Restore,
   '/create': Create,
+  '/setup-account': wrap({
+    component: SetupAccount
+  }),
 
   // Catch-all
   // This is optional, but if present it must be the last

@@ -30,8 +30,9 @@ export class AccountController {
   public static readonly field0 = 'identities';
   public static readonly field1 = 'selectedAddress';
 
+  public readonly mnemonic = new MnemonicController();
+
   readonly #hdKey = new HDKey();
-  readonly #mnemonic = new MnemonicController();
   readonly #guard: AuthGuard;
 
   #zrc2: ZRC2Controller;
@@ -100,8 +101,8 @@ export class AccountController {
   }
 
   public async fromSeed(words: string, index = 0): Promise<KeyPair> {
-    const path = this.#mnemonic.getKey(index);
-    const seed = await this.#mnemonic.mnemonicToSeed(words);
+    const path = this.mnemonic.getKey(index);
+    const seed = await this.mnemonic.mnemonicToSeed(words);
     const hdKey = this.#hdKey.fromMasterSeed(seed);
     const childKey = hdKey.derive(path);
 

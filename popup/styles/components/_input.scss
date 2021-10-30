@@ -5,7 +5,8 @@
   border: none;
   font-family: Demi;
   background: var(--card-color);
-  border-color: var(--card-color);
+  color: var(--text-color);
+  border: solid 1px var(--card-color);
   border-radius: 8px;
   padding: 0.9rem;
   text-indent: 5px;
@@ -14,4 +15,9 @@
   line-height: 21px;
 
   width: inherit;
+}
+
+:global(input.error) {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
 }

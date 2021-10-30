@@ -12,7 +12,7 @@
 
   --secondary-color:  #{inspect(map-get($light , "Secondary"))};
   --primary-color: #{inspect(map-get($light , "Primary"))};
-  --danger-color: #{inspect(map-get($light , "danger"))};
+  --danger-color: #{inspect(map-get($light , "Danger"))};
 }
 
 :global(body[theme="dark"]) {
@@ -25,5 +25,5 @@
 
   --primary-color:  #{inspect(map-get($dark , "Primary"))};
   --secondary-color:  #{inspect(map-get($dark , "Secondary"))};
-  --danger-color: #{inspect(map-get($dark , "danger"))};
+  --danger-color: #{inspect(map-get($dark , "Danger"))};
 }
