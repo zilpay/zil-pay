@@ -21,11 +21,12 @@
 
   const handleSubmit = async (e) => {
 		e.preventDefault();
+    loading = true;
 
 		try {
       await restorePhrase(words, password);
+      loading = false;
       push('/setup-account');
-			loading = true;
 		} catch (err) {
 			error = err.message;
 		}

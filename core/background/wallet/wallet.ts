@@ -82,12 +82,11 @@ export class ZilPayWallet {
   public async createAccountBySeed(name: string, sendResponse?: StreamResponse) {
     try {
       const seed = this.#core.guard.getSeed();
-      const account = await this.#core.account.addAccountFromSeed(seed, name);
-
+      await this.#core.account.addAccountFromSeed(seed, name);
       await this.#core.transactions.sync();
 
       sendResponse({
-        resolve: account
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

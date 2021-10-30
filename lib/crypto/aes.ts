@@ -61,6 +61,10 @@ export class Aes  {
 
     assert(Boolean(content), ErrorMessages.IncorrectPassword);
 
-    return JSON.parse(content);
+    try {
+      return JSON.parse(content);
+    } catch {
+      return content;
+    }
   }
 }

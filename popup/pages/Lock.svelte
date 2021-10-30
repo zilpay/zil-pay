@@ -10,7 +10,7 @@
 
 	let inputEl;
 	let password: string | null;
-	let error: string | null = null;
+	let error = '';
 	let loading = false;
 
 	$: disabled = loading || !password;
