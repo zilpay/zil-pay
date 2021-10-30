@@ -1,0 +1,13 @@
+@import "../mixins";
+
+:global(p) {
+  color: var(--muted-color);
+  line-height: 1rem;
+
+  display: block;
+  margin-block-start: 0.7em;
+  margin-block-end: 0.7em;
+
+  font-family: Regular;
+  font-size: 14px;
+}

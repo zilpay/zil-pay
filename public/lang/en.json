@@ -18,9 +18,15 @@
   },
   "restore": {
     "title": "Restore.",
+    "btn": "Continue",
     "placeholder": "Input secret phrase, with a space between words.",
     "pass_placeholder": "Password",
     "conf_placeholder": "Confirm Password",
     "pass_len_error": "Password error, max length is 6"
+  },
+  "setup_acc": {
+    "title": "Setup account.",
+    "name_placeholder": "Name of account (3-25 characters)",
+    "name_description": "A wallet name is using to help you distinguish different account from one another."
   }
 }

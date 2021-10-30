@@ -66,7 +66,7 @@
         class:error="{Boolean(passError)}"
         type="password"
         placeholder={$_('restore.pass_placeholder')}
-        min={MIN_LEN}
+        minlength={MIN_LEN}
         required
         on:input={handleInputPassword}
         on:blur={handleOnBlurPassword}
@@ -77,7 +77,7 @@
       bind:value={confirmPassword}
       type="password"
       placeholder={$_('restore.conf_placeholder')}
-      min={MIN_LEN}
+      minlength={MIN_LEN}
       required
     >
     <button
@@ -92,7 +92,7 @@
 					/>
 				</span>
 			{:else}
-				{$_('restore.title')}
+				{$_('restore.btn')}
 			{/if}
 		</button>
   </form>
