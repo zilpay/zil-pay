@@ -41,8 +41,5 @@ export default {
   '/start': LetStarted,
   '/restore': Restore,
   '/create': Create,
-
-  // Catch-all
-  // This is optional, but if present it must be the last
-  '*': Loading
+  '/loading': Loading
 };

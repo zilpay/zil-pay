@@ -11,6 +11,7 @@
 
 	onMount(async () => {
 		state = await getState();
+
 		const guard = state.guard;
 
 		if (guard.isReady && guard.isEnable) {
