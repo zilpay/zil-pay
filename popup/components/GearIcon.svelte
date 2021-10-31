@@ -1,11 +1,13 @@
 <script lang="ts">
-  export let width = '25';
-  export let height = '25';
+  export let width = '36px';
+  export let height = '36px';
+  export let selected = false;
 </script>
 
 <svg
   width={width}
   height={height}
+  class:selected={selected}
   viewBox="0 0 25 25"
   fill="none"
 >
@@ -19,6 +21,13 @@
     & > path {
       transition: fill 250ms linear;
       fill: var(--muted-color);
+    }
+  }
+  svg.selected {
+    cursor: auto;
+
+    & > path {
+      fill: var(--primary-color);
     }
   }
 </style>

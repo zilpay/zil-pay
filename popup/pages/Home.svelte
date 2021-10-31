@@ -44,7 +44,11 @@
       {/each}
 		</div>
 		<button class="add">
-			<GearIcon />{$_('home.token_list')}
+			<GearIcon
+				width="25px"
+				height="25px"
+			/>
+			{$_('home.token_list')}
 		</button>
 	</main>
 	<BottomTabs />
