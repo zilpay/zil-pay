@@ -35,13 +35,22 @@
 <style type="text/scss">
   @import "../styles/mixins";
   div.token-card {
+    cursor: pointer;
+
     padding: 12px;
     margin: 9px;
     min-width: 142px;
     border-radius: 6px;
     background-color: var(--card-color);
+    box-shadow: 0 10px 16px 0 rgb(0 0 0 / 10%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 
     @include flex-between-row;
+
+    &:hover {
+      transition: all 150ms linear;
+
+      opacity: 0.7;
+    }
   }
   p.symbol {
     font-size: 16px;

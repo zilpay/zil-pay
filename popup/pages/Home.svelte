@@ -7,6 +7,7 @@
 	import walletStore from 'popup/store/wallet';
 
 	import TopBar from '../components/TopBar.svelte';
+	import GearIcon from '../components/GearIcon.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
 
@@ -27,10 +28,10 @@
 			$300
 		</h1>
 		<div class="btns">
-			<button>
+			<button class="action">
 				{$_('home.btns.send')}
 			</button>
-			<button>
+			<button class="action">
 				{$_('home.btns.receive')}
 			</button>
 		</div>
@@ -42,6 +43,9 @@
 				/>
       {/each}
 		</div>
+		<button class="add">
+			<GearIcon />{$_('home.token_list')}
+		</button>
 	</main>
 	<BottomTabs />
 </section>
@@ -83,8 +87,19 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
-	button {
+	button.action {
 		min-width: 120px;
 		line-height: 30px;
+	}
+	button.add {
+		min-width: 300px;
+		color: var(--muted-color);
+
+		&:hover {
+			color: var(--background-color);
+		}
+	}
+	:global(button.add:hover > svg > path) {
+		fill: var(--background-color);
 	}
 </style>

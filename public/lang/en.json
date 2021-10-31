@@ -3,7 +3,8 @@
     "btns": {
       "send": "Send",
       "receive": "Receive"
-    }
+    },
+    "token_list": "Token list"
   },
   "lock": {
       "title": "Welcome back!",
