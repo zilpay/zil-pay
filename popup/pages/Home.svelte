@@ -97,13 +97,16 @@
 	}
 	button.add {
 		min-width: 300px;
-		color: var(--muted-color);
+		color: var(--primary-color);
 
 		&:hover {
 			color: var(--background-color);
 		}
 	}
+	:global(button.add > svg > path) {
+		fill: var(--primary-color) !important;
+	}
 	:global(button.add:hover > svg > path) {
-		fill: var(--background-color);
+		fill: var(--background-color) !important;
 	}
 </style>
