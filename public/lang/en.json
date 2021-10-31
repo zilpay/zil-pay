@@ -1,5 +1,9 @@
 {
   "home": {
+    "btns": {
+      "send": "Send",
+      "receive": "Receive"
+    }
   },
   "lock": {
       "title": "Welcome back!",

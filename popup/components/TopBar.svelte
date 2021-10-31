@@ -23,12 +23,18 @@
 <style type="text/scss">
   @import "../styles/mixins";
   nav {
-    max-width: 600px;
+    max-width: 900px;
     height: 36px;
     width: 100%;
     background-color: var(--card-color);
+    z-index: 2;
 
     @include flex-between-row;
+
+    @media screen and (min-width: 1024px) {
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
   }
   div.account {
     font-family: Demi;
