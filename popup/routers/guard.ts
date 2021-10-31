@@ -11,7 +11,6 @@ import guardStore from 'popup/store/guard';
 import loadedStore from 'app/store/loaded';
 import { getState } from 'popup/backend';
 
-
 export const routerGuard = async () => {
   const loaded = get(loadedStore);
   if (!loaded) {

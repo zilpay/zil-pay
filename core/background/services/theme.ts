@@ -8,11 +8,7 @@
  */
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
-
-export enum Themes {
-  Light,
-  Dark
-}
+import { Themes } from 'config/theme';
 
 export class ThemeController {
   #selected: Themes;

@@ -13,7 +13,7 @@
     background-color: var(--card-color);
     z-index: 2;
 
-    @media screen and (min-width: 1024px) {
+    @media screen and (min-width: 899px) {
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
     }

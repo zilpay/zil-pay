@@ -31,7 +31,7 @@
 
     @include flex-between-row;
 
-    @media screen and (min-width: 1024px) {
+    @media screen and (min-width: 899px) {
       border-bottom-left-radius: 8px;
       border-bottom-right-radius: 8px;
     }

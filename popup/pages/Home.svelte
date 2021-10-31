@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
+	import flyTransition from 'popup/transitions/fly';
+
+	import walletStore from 'popup/store/wallet';
 
 	import TopBar from '../components/TopBar.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
+	import TokenCard from '../components/TokenCard.svelte';
+
+	$: zrc2Tokens = $walletStore.identities[$walletStore.selectedAddress].zrc2;
 </script>
 
 <section
@@ -29,7 +34,14 @@
 				{$_('home.btns.receive')}
 			</button>
 		</div>
-		<div></div>
+		<div class="wrapper">
+			{#each Object.keys(zrc2Tokens) as addr}
+        <TokenCard
+					address={addr}
+					balance={zrc2Tokens[addr]}
+				/>
+      {/each}
+		</div>
 	</main>
 	<BottomTabs />
 </section>
@@ -39,6 +51,8 @@
 	main {
 		height: calc(100vh - 96px);
 		z-index: 3;
+
+		@include flex-center-top-column;
 	}
 	h1 {
 		text-align: center;
@@ -57,6 +71,13 @@
 		right: auto;
 		top: -47px;
 		opacity: 0.5;
+	}
+	div.wrapper {
+		margin-top: 30px;
+		min-width: 290px;
+		flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
 	}
 	section {
 		background-color: var(--background-color);

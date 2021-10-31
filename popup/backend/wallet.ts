@@ -18,11 +18,11 @@ import appStore from 'popup/store/apps';
 import contactsStore from 'popup/store/contacts';
 import currencyStore from 'popup/store/currency';
 import gasStore from 'popup/store/gas';
-import rateStore from 'app/store/rate';
-import ssnStore from 'app/store/ssn';
-import transactionsStore from 'app/store/transactions';
-import zrc2Store from 'app/store/zrc2';
-import loadedStore from 'app/store/loaded';
+import rateStore from 'popup/store/rate';
+import ssnStore from 'popup/store/ssn';
+import transactionsStore from 'popup/store/transactions';
+import zrcStore from 'app/store/zrc';
+import loadedStore from 'popup/store/loaded';
 
 function updateState(state: WalletState) {
   guardStore.set(state.guard);
@@ -36,7 +36,7 @@ function updateState(state: WalletState) {
   rateStore.set(state.rate);
   ssnStore.set(state.ssn);
   transactionsStore.set(state.transactions);
-  zrc2Store.set(state.zrc2);
+  zrcStore.set(state.zrc2);
   loadedStore.set(true);
 }
 

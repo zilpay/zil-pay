@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import { Themes } from 'config/theme';
 import { writable } from 'svelte/store';
 
-export default writable<number>(0);
+export default writable<Themes>(Themes.Light);
