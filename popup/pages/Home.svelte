@@ -63,6 +63,7 @@
 		@include flex-center-top-column;
 	}
 	h1 {
+		color: var(--text-color);
 		text-align: center;
     margin-top: 30px;
 		font-family: Demi;

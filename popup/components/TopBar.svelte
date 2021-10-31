@@ -17,7 +17,7 @@
       ({trim(account.bech32)})
     </span>
   </div>
-  <span class="netwrok"/>
+  <span class="netwrok" />
 </nav>
 
 <style type="text/scss">
@@ -45,7 +45,14 @@
     }
   }
   span.netwrok {
-    height: 36px;
-    width: 36px;
+    cursor: pointer;
+
+    height: 15px;
+    width: 15px;
+
+    margin: 11px;
+
+    border-radius: 100%;
+    background-color: var(--primary-color);
   }
 </style>
