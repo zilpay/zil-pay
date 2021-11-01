@@ -21,6 +21,14 @@
     "btn_restore": "Restore",
     "btn_create": "Create"
   },
+  "create": {
+    "title": "Secret phrase",
+    "sub_title": "Remember your 12 words in order!",
+    "btns": {
+      "refresh": "Random words",
+      "continue": "Continue"
+    }
+  },
   "restore": {
     "title": "Restore.",
     "btn": "Continue",
