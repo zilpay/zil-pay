@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { push } from 'svelte-spa-router';
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
@@ -23,6 +24,10 @@
     length = value ? 256 : 128;
 
     hanldeRandomWords();
+  };
+  const hanldeOnContinue = () => {
+    window['words'] = words;
+    push('/verify');
   };
 
   onMount(() => {
@@ -72,6 +77,7 @@
     <button
       class="primary"
       disabled={disabled}
+      on:click={hanldeOnContinue}
     >
       {$_('create.btns.continue')}
     </button>

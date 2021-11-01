@@ -29,6 +29,11 @@
       "continue": "Continue"
     }
   },
+  "verify": {
+    "title": "Words verify",
+    "placeholder": "Pick words here in order and recreate your secret phrase.",
+    "btn": "Continue"
+  },
   "restore": {
     "title": "Restore.",
     "btn": "Continue",

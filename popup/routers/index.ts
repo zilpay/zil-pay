@@ -17,6 +17,7 @@ import Create from '../pages/Create.svelte';
 import Restore from '../pages/Restore.svelte';
 import SetupAccount from '../pages/SetupAccount.svelte';
 import WalletCreated from '../pages/WalletCreated.svelte';
+import PhraseVerify from '../pages/PhraseVerify.svelte';
 
 export default {
   '/home': wrap({
@@ -41,5 +42,6 @@ export default {
   '/start': LetStarted,
   '/restore': Restore,
   '/create': Create,
-  '/loading': Loading
+  '/loading': Loading,
+  '/verify': PhraseVerify
 };
