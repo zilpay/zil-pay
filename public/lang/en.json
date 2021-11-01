@@ -23,7 +23,7 @@
   },
   "create": {
     "title": "Secret phrase",
-    "sub_title": "Remember your 12 words in order!",
+    "sub_title": "Remember your words in order!",
     "btns": {
       "refresh": "Random words",
       "continue": "Continue"
