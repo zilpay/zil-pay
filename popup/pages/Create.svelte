@@ -2,15 +2,23 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
+	import { getRandomSeed } from "popup/backend/phrase";
 
   import SwitchButton from '../components/SwitchButton.svelte';
 
-  let numbers = 128;
+  let length = 128;
+  let words = [];
 
+  const hanldeRandomWords = async() => {
+    const seed = await getRandomSeed(length);
+    words = seed.split(' ');
+  };
   const hanldeSelectNumber = (e) => {
     const value = e.detail;
 
-    numbers = value ? 256 : 128;
+    length = value ? 256 : 128;
+
+    hanldeRandomWords();
   };
 </script>
 
@@ -28,6 +36,17 @@ out:fly={flyTransition.out}
     items={['12', '24']}
     on:select={hanldeSelectNumber}
   />
+  <div class="btns">
+    <button
+      class="secondary"
+      on:click={hanldeRandomWords}
+    >
+      {$_('create.btns.refresh')}
+    </button>
+    <button class="primary">
+      {$_('create.btns.continue')}
+    </button>
+  </div>
 </main>
 
 <style type="text/scss">
@@ -41,4 +60,12 @@ out:fly={flyTransition.out}
 
     @include flex-center-top-column;
 	}
+  div.btns {
+    width: 290px;
+    @include flex-center-column;
+
+    button {
+      margin: 10px;
+    }
+  }
 </style>
