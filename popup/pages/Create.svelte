@@ -6,6 +6,7 @@
 	import { getRandomSeed } from "popup/backend/phrase";
 
   import SwitchButton from '../components/SwitchButton.svelte';
+  import BackBar from '../components/BackBar.svelte';
 
   let length = 128;
   let words = [];
@@ -30,9 +31,13 @@
 </script>
 
 <main
-in:fly={flyTransition.in}
-out:fly={flyTransition.out}
+  in:fly={flyTransition.in}
+  out:fly={flyTransition.out}
 >
+  <BackBar
+    length={3}
+    selected={0}
+  />
   <h1>
     {$_('create.title')}
   </h1>
@@ -98,7 +103,6 @@ out:fly={flyTransition.out}
 
     height: fit-content;
     max-height: calc(100vh - 90px);
-    width: calc(100vw - 10px);
     max-width: 350px;
 
     display: flex;
