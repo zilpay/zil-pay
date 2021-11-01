@@ -5,15 +5,22 @@
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
 	import { getRandomSeed } from "popup/backend/phrase";
+  import { shuffle } from 'lib/utils/shuffle';
 
   import BackBar from '../components/BackBar.svelte';
+  import PickButton from '../components/PickButton.svelte';
 
-  let words = window['words'];
+  let words = [];
+  let shuffled = [];
 
   onMount(() => {
+    words = window['words'];
+    
     if (!Array.isArray(words) || words.length < 12) {
-      push('/create');
+      return push('/create');
     }
+
+    shuffled = shuffle<string>(words);
   });
 </script>
 
@@ -33,7 +40,11 @@
       {$_('verify.placeholder')}
     </p>
   </div>
-  <div></div>
+  <div class="wrapper">
+    {#each shuffled as word}
+      <PickButton text={word}/>
+    {/each}
+  </div>
   <button
     class="primary"
   >
@@ -52,6 +63,17 @@
 
     @include flex-center-top-column;
 	}
+  div.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+
+    height: fit-content;
+    width: calc(100vw - 10px);
+
+    max-width: 500px;
+  }
   div.picker {
 		background-color: var(--card-color);
     border-radius: 6px;
