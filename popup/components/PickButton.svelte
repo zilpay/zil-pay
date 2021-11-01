@@ -1,7 +1,15 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+
   export let index = -1;
   export let text: string;
   export let closer = false;
+
+  const hanldeOnClose = () => {
+    dispatch('close', index);
+  };
 </script>
 
 <div class="picker">
@@ -19,6 +27,7 @@
       height="17"
       viewBox="0 0 17 17"
       fill="none"
+      on:click={hanldeOnClose}
     >
       <line
         x1="4.37958"
@@ -54,9 +63,13 @@
     text-align: center;
     min-width: 99px;
 
+    @include flex-between-row;
+
     & > span {
       font-size: 16px;
       line-height: 21px;
+      margin-left: 5px;
+      margin-right: 5px;
     }
 
     & > span.index {

@@ -14,14 +14,20 @@
   let shuffled = [];
 
   onMount(() => {
-    words = window['words'];
+    const list = window['words'];
     
-    if (!Array.isArray(words) || words.length < 12) {
+    if (!Array.isArray(list) || list.length < 12) {
       return push('/create');
     }
 
-    shuffled = shuffle<string>(words);
+    shuffled = shuffle<string>(list);
   });
+
+  const hanldeOnAdd = (w: string) => {
+    words = [...words, w];
+    shuffled = shuffled.filter((el) => el !== w);
+  };
+  const hanldeOnRemove = () => {};
 </script>
 
 <main
@@ -36,13 +42,24 @@
     {$_('verify.title')}
   </h1>
   <div class="picker">
-    <p>
-      {$_('verify.placeholder')}
-    </p>
+    {#if words.length === 0}
+      <p>
+        {$_('verify.placeholder')}
+      </p>
+    {/if}
+    {#each words as word, i}
+      <PickButton
+        index={i + 1}
+        text={word}
+        closer
+      />
+    {/each}
   </div>
   <div class="wrapper">
     {#each shuffled as word}
-      <PickButton text={word}/>
+      <div on:click={() => hanldeOnAdd(word)}>
+        <PickButton text={word}/>
+      </div>
     {/each}
   </div>
   <button
@@ -75,9 +92,9 @@
     max-width: 500px;
   }
   div.picker {
-		background-color: var(--card-color);
+		background-color: var(--border-color);
     border-radius: 6px;
-    border: 1px dashed var(--border-color);
+    border: 1px dashed var(--text-color);
 
     height: fit-content;
     width: calc(100vw - 10px);
@@ -85,12 +102,14 @@
     min-height: 300px;
 
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 
     & > p {
       font-size: 16px;
       text-align: center;
+      width: 100%;
     }
   }
   button {
