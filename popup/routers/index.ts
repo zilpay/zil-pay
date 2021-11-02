@@ -26,12 +26,6 @@ export default {
       routerGuard
     ]
   }),
-  '/setup-account': wrap({
-    component: SetupAccount,
-    conditions: [
-      routerGuard
-    ]
-  }),
   '/created': wrap({
     component: WalletCreated,
     conditions: [
@@ -43,5 +37,6 @@ export default {
   '/restore': Restore,
   '/create': Create,
   '/loading': Loading,
-  '/verify': PhraseVerify
+  '/verify': PhraseVerify,
+  '/setup-account': SetupAccount
 };

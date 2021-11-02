@@ -6,6 +6,7 @@
 	import { _ } from 'popup/i18n';
 	import { getRandomSeed } from "popup/backend/phrase";
   import { printMnemonic } from 'lib/utils/printer';
+  import wordsStore from 'popup/store/words';
 
   import SwitchButton from '../components/SwitchButton.svelte';
   import BackBar from '../components/BackBar.svelte';
@@ -28,7 +29,7 @@
     hanldeRandomWords();
   };
   const hanldeOnContinue = () => {
-    window['words'] = words;
+    wordsStore.set(words);
     push('/verify');
   };
   const handleOnPrint = () => {

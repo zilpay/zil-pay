@@ -4,6 +4,7 @@
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
 	import { createNextSeedAccount } from "popup/backend";
+  import wordsStore from 'popup/store/words';
 
 	import NavClose from '../components/NavClose.svelte';
 	import Loader from '../components/Loader.svelte';

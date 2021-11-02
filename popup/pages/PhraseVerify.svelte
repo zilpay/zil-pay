@@ -6,32 +6,33 @@
 	import { _ } from 'popup/i18n';
 	import { getRandomSeed } from "popup/backend/phrase";
   import { shuffle } from 'lib/utils/shuffle';
+  import wordsStore from 'popup/store/words';
 
   import BackBar from '../components/BackBar.svelte';
   import PickButton from '../components/PickButton.svelte';
 
   let words = [];
   let shuffled = [];
-
-  $: disabled = words.join(' ') !== Array(window['words']).join(' ');
+  let disabled = true;
 
   onMount(() => {
-    const list = window['words'];
-    
-    if (!Array.isArray(list) || list.length < 12) {
+    const list = JSON.stringify($wordsStore);
+    shuffled = shuffle<string>(JSON.parse(list));
+
+    if ($wordsStore.length < 12) {
       return push('/create');
     }
-
-    shuffled = shuffle<string>(list);
   });
 
   const hanldeOnAdd = (w: string) => {
     words = [...words, w];
     shuffled = shuffled.filter((el) => el !== w);
+    disabled = words.join(' ') !== $wordsStore.join(' ');
   };
   const hanldeOnRemove = (word: string) => {
     words = words.filter((el) => el !== word);
-    shuffled = [...shuffled, word]
+    shuffled = [word, ...shuffled];
+    disabled = words.join(' ') !== $wordsStore.join(' ');
   };
 </script>
 
@@ -71,6 +72,7 @@
   <button
     class="primary"
     disabled={disabled}
+    on:click={() => push('/setup-account')}
   >
     {$_('verify.btn')}
   </button>
