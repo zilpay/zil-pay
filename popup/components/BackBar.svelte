@@ -26,7 +26,8 @@
     max-width: 900px;
     width: 100%;
     z-index: 2;
-    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 
     @include flex-between-row;
   }

@@ -5,6 +5,7 @@
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
 	import { getRandomSeed } from "popup/backend/phrase";
+  import { printMnemonic } from 'lib/utils/printer';
 
   import SwitchButton from '../components/SwitchButton.svelte';
   import BackBar from '../components/BackBar.svelte';
@@ -29,6 +30,16 @@
   const hanldeOnContinue = () => {
     window['words'] = words;
     push('/verify');
+  };
+  const handleOnPrint = () => {
+    const phrase = words.join(' ');
+    const html = printMnemonic(phrase, $_('create.print'));
+    const win = window.open('', 'win');
+    win.document.write(html);
+
+    setTimeout(() => {
+      win.print();
+    }, 500);
   };
 
   onMount(() => {
@@ -72,6 +83,12 @@
       {$_('create.btns.refresh')}
     </button>
     <button
+      class="secondary"
+      on:click={handleOnPrint}
+    >
+      {$_('create.btns.print')}
+    </button>
+    <button
       class="primary"
       disabled={disabled}
       on:click={hanldeOnContinue}
@@ -85,6 +102,8 @@
 	@import "../styles/mixins";
   h1, h3 {
     color: var(--text-color);
+    margin-block-start: 0;
+    margin-block-end: 0.2em;
   }
   main {
 		background-color: var(--background-color);
@@ -97,7 +116,7 @@
     @include flex-center-column;
 
     button {
-      margin: 10px;
+      margin: 5px;
     }
   }
   div.wrapper {
