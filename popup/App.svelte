@@ -18,13 +18,13 @@
 
 		loaded = true;
 
-		// if (guard.isReady && guard.isEnable) {
-		// 	push('/home');
-		// } else if (guard.isReady && !guard.isEnable) {
-		// 	push('/lock');
-		// } else if (!guard.isReady) {
-		// 	push('/start');
-		// }
+		if (guard.isReady && guard.isEnable) {
+			push('/home');
+		} else if (guard.isReady && !guard.isEnable) {
+			push('/lock');
+		} else if (!guard.isReady) {
+			push('/start');
+		}
 	});
 </script>
 

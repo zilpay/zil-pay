@@ -61,7 +61,7 @@
     padding: 10px;
     margin: 5px;
     text-align: center;
-    min-width: 99px;
+    min-width: 140px;
 
     @include flex-between-row;
 

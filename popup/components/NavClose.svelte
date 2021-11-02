@@ -9,9 +9,9 @@
   <h1>
     {title}
   </h1>
-  <a on:click={pop}>
+  <div on:click={pop}>
     <CloseIcon />
-  </a>
+  </div>
 </nav>
 
 <style type="text/scss">

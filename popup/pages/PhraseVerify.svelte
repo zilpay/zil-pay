@@ -13,6 +13,8 @@
   let words = [];
   let shuffled = [];
 
+  $: disabled = words.join(' ') !== Array(window['words']).join(' ');
+
   onMount(() => {
     const list = window['words'];
     
@@ -27,7 +29,10 @@
     words = [...words, w];
     shuffled = shuffled.filter((el) => el !== w);
   };
-  const hanldeOnRemove = () => {};
+  const hanldeOnRemove = (word: string) => {
+    words = words.filter((el) => el !== word);
+    shuffled = [...shuffled, word]
+  };
 </script>
 
 <main
@@ -52,18 +57,20 @@
         index={i + 1}
         text={word}
         closer
+        on:close={() => hanldeOnRemove(word)}
       />
     {/each}
   </div>
   <div class="wrapper">
     {#each shuffled as word}
       <div on:click={() => hanldeOnAdd(word)}>
-        <PickButton text={word}/>
+        <PickButton text={word} />
       </div>
     {/each}
   </div>
   <button
     class="primary"
+    disabled={disabled}
   >
     {$_('verify.btn')}
   </button>
@@ -71,8 +78,9 @@
 
 <style type="text/scss">
 	@import "../styles/mixins";
-  h1, h3 {
+  h1 {
     color: var(--text-color);
+    margin-block-start: 0;
   }
   main {
 		background-color: var(--background-color);
@@ -85,6 +93,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    overflow-y: scroll;
 
     height: fit-content;
     width: calc(100vw - 10px);
@@ -92,18 +101,19 @@
     max-width: 500px;
   }
   div.picker {
+    overflow-y: scroll;
 		background-color: var(--border-color);
     border-radius: 6px;
     border: 1px dashed var(--text-color);
 
     height: fit-content;
     width: calc(100vw - 10px);
-    max-width: 600px;
-    min-height: 300px;
+    min-height: 100px;
+    max-width: 550px;
 
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
 
     & > p {

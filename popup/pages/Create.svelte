@@ -8,6 +8,7 @@
 
   import SwitchButton from '../components/SwitchButton.svelte';
   import BackBar from '../components/BackBar.svelte';
+  import PickButton from '../components/PickButton.svelte';
 
   let length = 128;
   let words = [];
@@ -57,14 +58,10 @@
   </div>
   <div class="wrapper">
     {#each words as w, i}
-      <div>
-        <span class="number">
-          {i + 1}
-        </span>
-        <span class="word">
-          {w}
-        </span>
-      </div>
+      <PickButton
+        text={w}
+        index={i + 1}
+      />
     {/each}
   </div>
   <div class="btns">
@@ -108,31 +105,13 @@
     overflow-y: scroll;
 
     height: fit-content;
-    max-height: calc(100vh - 90px);
-    max-width: 350px;
+    max-height: calc(100vh - 30px);
+    width: 100%;
+    max-width: 450px;
 
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
-
-    & > div {
-      padding: 10px;
-      line-height: 16px;
-      min-width: 103px;
-      text-align: center;
-
-      & > span {
-        font-size: 14px;
-        line-height: 21px;
-      }
-
-      & > span.number {
-        color: var(--muted-color);
-      }
-      & > span.word {
-        color: var(--text-color);
-      }
-    }
   }
 </style>
