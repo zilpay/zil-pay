@@ -4,7 +4,9 @@
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
 
+	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
+	import currencyStore from 'popup/store/currency';
 
 	import TopBar from '../components/TopBar.svelte';
 	import GearIcon from '../components/GearIcon.svelte';
@@ -12,6 +14,12 @@
 	import TokenCard from '../components/TokenCard.svelte';
 
 	$: zrc2Tokens = $walletStore.identities[$walletStore.selectedAddress].zrc2;
+	$: rate = $rateStore[$currencyStore];
+
+	onMount(() => {
+		console.log(rate);
+  });
+	
 </script>
 
 <section

@@ -19,6 +19,8 @@ import SetupAccount from '../pages/SetupAccount.svelte';
 import WalletCreated from '../pages/WalletCreated.svelte';
 import PhraseVerify from '../pages/PhraseVerify.svelte';
 
+import Netwrok from '../pages/settings/Netwrok.svelte';
+
 export default {
   '/home': wrap({
     component: Home,
@@ -28,6 +30,12 @@ export default {
   }),
   '/created': wrap({
     component: WalletCreated,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/settings/netwrok': wrap({
+    component: Netwrok,
     conditions: [
       routerGuard
     ]

@@ -73,5 +73,9 @@
       ],
       "warn": "ZilPay team cannot recover your secret phrase!"
     }
+  },
+  "netwrok": {
+    "title": "Netwrok",
+    "nodes": "Zilliqa nodes"
   }
 }

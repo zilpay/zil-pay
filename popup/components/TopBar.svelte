@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { link } from 'svelte-spa-router';
   import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
 
@@ -17,7 +18,11 @@
       ({trim(account.bech32)})
     </span>
   </div>
-  <span class="netwrok" />
+  <a
+    class="netwrok"
+    href="/settings/netwrok"
+    use:link
+  />
 </nav>
 
 <style type="text/scss">
@@ -44,9 +49,7 @@
       color: var(--muted-color);
     }
   }
-  span.netwrok {
-    cursor: pointer;
-
+  a.netwrok {
     height: 15px;
     width: 15px;
 
