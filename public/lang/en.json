@@ -53,9 +53,10 @@
     "pass_len_error": "Password error, max length is 6"
   },
   "setup_acc": {
-    "title": "Setup account.",
+    "title": "Account setup",
     "name_placeholder": "Name of account (3-25 characters)",
-    "name_description": "A wallet name is using to help you distinguish different account from one another."
+    "name_description": "A wallet name is using to help you distinguish different account from one another.",
+    "pass_description": "A password required for encrypt and protect your keys."
   },
   "wallet_created": {
     "title": "Wallet is generated!",

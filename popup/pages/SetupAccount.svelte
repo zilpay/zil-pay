@@ -1,31 +1,59 @@
 <script lang="ts">
 	import { pop, push } from 'svelte-spa-router';
+	import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
-	import { createNextSeedAccount } from "popup/backend";
+	import { createNextSeedAccount, restorePhrase } from "popup/backend/wallet";
   import wordsStore from 'popup/store/words';
+  import {
+    MIN_PASSWORD_LEN,
+    MAX_NAME_LEN,
+    MIN_NAME_LEN,
+    DEFAULT_NAME
+  } from 'popup/config/account';
 
-	import NavClose from '../components/NavClose.svelte';
 	import Loader from '../components/Loader.svelte';
-
-  const MAX_LEN = 25;
-  const MIN_LEN = 3;
+  import BackBar from '../components/BackBar.svelte';
 
 	let loading = false;
-  let name = 'Account 0';
+  let name = `${DEFAULT_NAME} 0`;
+	let error = '';
+  let passError = '';
+  let password: string;
+  let confirmPassword: string;
 
-	$: disabled = loading || !name;
+  $: disabled = loading || !password || confirmPassword !== password || name.length < MIN_NAME_LEN;
 
+	onMount(() => {
+    if ($wordsStore.length < 12) {
+      return push('/create');
+    }
+  });
+
+	const handleInputTextarea = () => {
+		error = '';
+	};
+  const handleInputPassword = () => {
+    passError = '';
+	};
+	const handleOnBlurPassword = () => {
+    if (password && password.length < MIN_PASSWORD_LEN) {
+      passError = $_('restore.pass_len_error');
+    }
+	};
   const handleSubmit = async (e) => {
 		e.preventDefault();
     loading = true;
 
 		try {
+			const seed = $wordsStore.join(' ');
+			await restorePhrase(seed, password);
       await createNextSeedAccount(name);
       push('/created');
 			loading = false;
 		} catch (err) {
+			passError = err.message;
       loading = false;
 		}
 	}
@@ -35,18 +63,49 @@
   in:fly={flyTransition.in}
   out:fly={flyTransition.out}
 >
-  <NavClose title={$_('setup_acc.title')}/>
+	<BackBar
+    length={3}
+    selected={2}
+  />
+	<h1>
+    {$_('setup_acc.title')}
+  </h1>
   <form on:submit={handleSubmit}>
     <label>
 			<input
 				bind:value={name}
-        maxlength={MAX_LEN}
-        minlength={MIN_LEN}
+        maxlength={MAX_NAME_LEN}
+        minlength={MIN_NAME_LEN}
 				placeholder={$_('setup_acc.name_placeholder')}
         required
 			>
 			<p>
 				{$_('setup_acc.name_description')}
+      </p>
+		</label>
+		<label>
+      <input
+        bind:value={password}
+        class:error="{Boolean(passError)}"
+        type="password"
+        placeholder={$_('restore.pass_placeholder')}
+        minlength={MIN_NAME_LEN}
+        required
+        on:input={handleInputPassword}
+        on:blur={handleOnBlurPassword}
+      >
+      {passError}
+    </label>
+		<label>
+			<input
+				bind:value={confirmPassword}
+				type="password"
+				placeholder={$_('restore.conf_placeholder')}
+				minlength={MIN_NAME_LEN}
+				required
+			>
+			<p>
+				{$_('setup_acc.pass_description')}
       </p>
 		</label>
     <button

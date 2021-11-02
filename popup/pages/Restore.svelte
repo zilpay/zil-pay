@@ -3,21 +3,26 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
-	import { restorePhrase } from "popup/backend";
+  import { createNextSeedAccount, restorePhrase } from "popup/backend/wallet";
+  import {
+    MIN_PASSWORD_LEN,
+    MAX_NAME_LEN,
+    MIN_NAME_LEN,
+    DEFAULT_NAME
+  } from 'popup/config/account';
 
 	import NavClose from '../components/NavClose.svelte';
 	import Loader from '../components/Loader.svelte';
 
-  const MIN_LEN = 6;
-
   let error = '';
   let passError = '';
+  let name = `${DEFAULT_NAME} 0`;
   let words: string;
   let password: string;
   let confirmPassword: string;
 	let loading = false;
 
-	$: disabled = loading || !password || confirmPassword !== password;
+	$: disabled = loading || !password || confirmPassword !== password || name.length < MIN_NAME_LEN;
 
   const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -25,8 +30,9 @@
 
 		try {
       await restorePhrase(words, password);
+      await createNextSeedAccount(name);
       loading = false;
-      push('/setup-account');
+      push('/created');
 		} catch (err) {
 			error = err.message;
 		}
@@ -39,7 +45,7 @@
     passError = '';
 	};
   const handleOnBlurPassword = () => {
-    if (password && password.length < MIN_LEN) {
+    if (password && password.length < MIN_PASSWORD_LEN) {
       passError = $_('restore.pass_len_error');
     }
 	};
@@ -61,13 +67,20 @@
         on:input={handleInputTextarea}
       />
     </label>
+    <input
+      bind:value={name}
+      maxlength={MAX_NAME_LEN}
+      minlength={MIN_NAME_LEN}
+      placeholder={$_('setup_acc.name_placeholder')}
+      required
+    >
     <label>
       <input
         bind:value={password}
         class:error="{Boolean(passError)}"
         type="password"
         placeholder={$_('restore.pass_placeholder')}
-        minlength={MIN_LEN}
+        minlength={MIN_PASSWORD_LEN}
         required
         on:input={handleInputPassword}
         on:blur={handleOnBlurPassword}
@@ -78,7 +91,7 @@
       bind:value={confirmPassword}
       type="password"
       placeholder={$_('restore.conf_placeholder')}
-      minlength={MIN_LEN}
+      minlength={MIN_PASSWORD_LEN}
       required
     >
     <button
