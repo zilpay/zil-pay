@@ -8,7 +8,9 @@
 
 	import NavClose from '../../components/NavClose.svelte';
 	import MultiSwitcher from '../../components/MultiSwitcher.svelte';
+	import Modal from '../../components/Modal.svelte';
 
+  let showSSN = false;
   let config = $netStore.config[$netStore.selected];
 
   $: keys = Object.keys($netStore.config);
@@ -33,6 +35,9 @@
   const handleOnReset = async () => {
     await resetNetwrok();
   };
+  const handleOnShowSSNModal = () => {
+    showSSN = !showSSN;
+  };
 </script>
 
 <main
@@ -45,9 +50,14 @@
     selected={selected}
     on:select={handleOnSelectNet}
   />
-  <button class="secondary ssn">
-    {selectedSSN.name}
-  </button>
+  {#if $netStore.selected === keys[0]}
+    <button
+      class="secondary ssn"
+      on:click={handleOnShowSSNModal}
+    >
+      {selectedSSN.name}
+    </button>
+  {/if}
   <form on:submit={hanldeOnChangeConfig}>
     <label>
       {$_('netwrok.config.node')}
@@ -79,6 +89,14 @@
     {$_('netwrok.btns.reset')}
   </button>
 </main>
+
+<Modal
+  title={'ssn'}
+  show={showSSN}
+  on:close={handleOnShowSSNModal}
+>
+  ds
+</Modal>
 
 <style lang="scss">
   @import "../../styles/mixins";
