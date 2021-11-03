@@ -3,7 +3,7 @@
 
   const dispatch = createEventDispatcher();
 
-  export let title: string;
+  export let title = '';
   export let show: boolean;
 
   let node = null;
@@ -46,7 +46,7 @@
       & > div.modal {
         right: 0;
         left: 0;
-        margin: 10% auto 50px;
+        margin: 40% auto 50px;
         max-width: 400px;
         width: 100%;
         background: var(--background-color);

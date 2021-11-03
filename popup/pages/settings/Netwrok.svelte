@@ -91,11 +91,21 @@
 </main>
 
 <Modal
-  title={'ssn'}
   show={showSSN}
   on:close={handleOnShowSSNModal}
 >
-  ds
+  <div class="modal-wrapper">
+    <ul>
+      {#each $ssnStore.list as ssn}
+        <li>
+          {ssn.name}
+        </li>
+      {/each}
+    </ul>
+    <button class="primary" >
+      {$_('netwrok.btns.update')}
+    </button>
+  </div>
 </Modal>
 
 <style lang="scss">
@@ -136,5 +146,9 @@
       max-width: 290px;
       margin: 10px;
     }
+  }
+  div.modal-wrapper {
+    padding: 17px;
+    @include flex-center-column;
   }
 </style>
