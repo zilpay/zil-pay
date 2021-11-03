@@ -126,7 +126,7 @@
   </form>
 </main>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/mixins";
   main {
 		background-color: var(--background-color);

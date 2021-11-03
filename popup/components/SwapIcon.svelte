@@ -15,7 +15,7 @@
   <path d="M25.0027 28.0509V30.026V32.1474L30.4699 26.6802L25.0027 21.2131V23.3344V25.0509L10.9393 25.0509L10.9393 28.0509L25.0027 28.0509Z"/>
 </svg>
 
-<style type="text/scss">
+<style lang="scss">
   svg {
     cursor: pointer;
 

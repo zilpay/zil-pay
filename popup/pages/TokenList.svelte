@@ -17,7 +17,7 @@
 	</main>
 </section>
 
-<style type="text/scss">
+<style lang="scss">
 	@import "../styles/mixins";
 	main {
 		height: calc(100vh - 96px);

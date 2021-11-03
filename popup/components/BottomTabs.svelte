@@ -16,7 +16,7 @@
   <GearIcon />
 </nav>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/mixins";
   nav {
     max-width: 320px;

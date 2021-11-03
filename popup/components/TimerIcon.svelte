@@ -18,7 +18,7 @@
   />
 </svg>
 
-<style type="text/scss">
+<style lang="scss">
   svg {
     cursor: pointer;
 

@@ -26,7 +26,6 @@ import loadedStore from 'popup/store/loaded';
 
 function updateState(state: WalletState) {
   console.log(state);
-  
   guardStore.set(state.guard);
   walletStore.set(state.wallet);
   netStore.set(state.netwrok);

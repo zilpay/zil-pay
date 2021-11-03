@@ -16,7 +16,7 @@
   />
 </svg>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/mixins";
   svg {
     cursor: pointer;

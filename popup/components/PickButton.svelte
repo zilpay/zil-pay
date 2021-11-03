@@ -50,7 +50,7 @@
   {/if}
 </div>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/mixins";
 
   div.picker {

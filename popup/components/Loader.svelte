@@ -31,7 +31,7 @@
   </path>
 </svg>
 
-<style type="text/scss">
+<style lang="scss">
   svg > path {
     fill: var(--text-color);
   }

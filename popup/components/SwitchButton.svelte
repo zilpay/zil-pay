@@ -25,7 +25,7 @@
   </label>
 </div>
 
-<style type="text/scss">
+<style lang="scss">
   .switch-button {
     background: var(--card-color);
     border-radius: 30px;
