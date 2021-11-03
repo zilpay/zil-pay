@@ -22,3 +22,22 @@ export async function selectNetwrok(net: string) {
   updateState(state);
   return state;
 }
+
+export async function changeConfig(config: object) {
+  const data = await new Message({
+    type: MTypePopup.SET_NET_CONFIG,
+    payload: config
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
+export async function resetNetwrok() {
+  const data = await Message
+    .signal(MTypePopup.RESET_NETWROK)
+    .send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

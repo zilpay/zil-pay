@@ -45,6 +45,8 @@ export const MTypePopup = {
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
   RM_TOKEN: `@/${app}/remove-token`,
 
+  RESET_NETWROK: `@/${app}/reset-netwrok-settings`,
+  SET_NET_CONFIG: `@/${app}/set-netwrok-config`,
   SELECT_NETWORK: `@/${app}/select-network`,
   SELECT_ACCOUNT: `@/${app}/select-account`,
 

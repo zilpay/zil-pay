@@ -76,6 +76,14 @@
   },
   "netwrok": {
     "title": "Netwrok",
-    "nodes": "Zilliqa nodes"
+    "nodes": "Zilliqa nodes",
+    "config": {
+      "node": "JSON-RPC API URL",
+      "msg": "Blockchain MSG"
+    },
+    "btns": {
+      "update": "Update",
+      "reset": "reset"
+    }
   }
 }

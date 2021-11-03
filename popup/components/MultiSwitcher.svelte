@@ -50,12 +50,15 @@
       padding-right: 10px;
       margin: 5px;
 
+      transition: all 300ms linear;
+
       @include fluid-font(320px, 1024px, 16px, 20px);
     }
 
     & > li.selected {
       cursor: auto;
-      background-color: var(--background-color);
+      background-color: var(--secondary-color);
+      color: var(--background-color);
     }
   }
 </style>

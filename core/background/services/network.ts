@@ -15,13 +15,10 @@ import { ErrorMessages } from 'config/errors';
 const [mainnet] = NETWORK_KEYS;
 
 export class NetworkControl {
-  #onlyMainnet: boolean;
-
   public config = NETWORK;
   public selected = mainnet;
 
-  constructor(onlyMainnet = false) {
-    this.#onlyMainnet = onlyMainnet;
+  constructor() {
   }
 
   get provider() {
@@ -56,6 +53,16 @@ export class NetworkControl {
         buildObject(Fields.SELECTED_NET, this.selected)
       );
     }
+  }
+
+  public async reset() {
+    this.selected = mainnet;
+    this.config = NETWORK;
+
+    await BrowserStorage.set(
+      buildObject(Fields.CONFIG, this.config),
+      buildObject(Fields.SELECTED_NET, this.selected)
+    );
   }
 
   /**

@@ -7,10 +7,10 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZIlPayCore } from './core';
-import type { NETWORK } from 'config/network';
 import type { StreamResponse } from 'types/stream';
 import { MTypeTab } from 'lib/streem/stream-keys';
 import { TabsMessage } from 'lib/streem/tabs-message';
+import { NETWORK, NETWORK_KEYS } from 'config/network';
 
 export class ZilPayNetwrok {
   readonly #core: ZIlPayCore;
@@ -27,6 +27,24 @@ export class ZilPayNetwrok {
         node: this.#core.netwrok.provider
       }
     }).send();
+  }
+
+  public async reset(sendResponse: StreamResponse) {
+    try {
+      await this.#core.netwrok.reset();
+      await this.#core.transactions.sync();
+      await this.#core.zrc2.sync();
+
+      this.reactNetwork();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
   }
 
   public async select(net: string, sendResponse: StreamResponse) {
@@ -63,10 +81,17 @@ export class ZilPayNetwrok {
 
   public async changeConfig(config: typeof NETWORK, sendResponse: StreamResponse) {
     try {
-      await this.#core.netwrok.changeConfig(config);
+      const [,, custom] = NETWORK_KEYS;
+      const newConfig = {
+        ...this.#core.netwrok.config,
+        [custom]: config
+      };
+      await this.#core.netwrok.changeConfig(newConfig);
+      await this.#core.transactions.sync();
+      await this.#core.zrc2.sync();
 
       sendResponse({
-        resolve: this.#core.netwrok.config
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

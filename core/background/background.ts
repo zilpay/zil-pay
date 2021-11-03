@@ -40,6 +40,12 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.SELECT_NETWORK:
         core.netwrok.select(msg.payload.net, sendResponse);
         return true;
+      case MTypePopup.RESET_NETWROK:
+        core.netwrok.reset(sendResponse);
+        return true;
+      case MTypePopup.SET_NET_CONFIG:
+        core.netwrok.changeConfig(msg.payload, sendResponse);
+        return true;
       case MTypePopup.UPDATE_SSN_LIST:
         core.netwrok.updateSSN(sendResponse);
         return true;

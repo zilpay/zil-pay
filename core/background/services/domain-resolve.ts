@@ -24,7 +24,7 @@ export class UnstoppableDomains {
   readonly #netwrok: NetworkControl;
 
   constructor() {
-    this.#netwrok = new NetworkControl(true);
+    this.#netwrok = new NetworkControl();
     this.#zilliqa = new ZilliqaControl(this.#netwrok);
   }
 
