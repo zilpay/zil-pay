@@ -7,6 +7,7 @@
 	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
 	import currencyStore from 'popup/store/currency';
+	import zrcStore from 'popup/store/zrc';
 
 	import TopBar from '../components/TopBar.svelte';
 	import GearIcon from '../components/GearIcon.svelte';
@@ -19,7 +20,6 @@
 	onMount(() => {
 		console.log(rate);
   });
-	
 </script>
 
 <section
@@ -44,10 +44,11 @@
 			</button>
 		</div>
 		<div class="wrapper">
-			{#each Object.keys(zrc2Tokens) as addr}
+			{#each $zrcStore as token}
         <TokenCard
-					address={addr}
-					balance={zrc2Tokens[addr]}
+					address={token.bech32}
+					symbol={token.symbol}
+					balance={zrc2Tokens[token.base16] || '0'}
 				/>
       {/each}
 		</div>

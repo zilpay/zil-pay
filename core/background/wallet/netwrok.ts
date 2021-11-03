@@ -33,11 +33,12 @@ export class ZilPayNetwrok {
     try {
       await this.#core.netwrok.changeNetwork(net);
       await this.#core.transactions.sync();
+      await this.#core.zrc2.sync();
 
       this.reactNetwork();
 
       sendResponse({
-        resolve: this.#core.netwrok.selected
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

@@ -5,15 +5,15 @@
 
   export let address: string;
   export let balance: string;
+  export let symbol: string;
 
-  $: token = $zrcStore.find((t) => t.base16 === address);
-  $: img = viewIcon(token.bech32, $themeStore);
+  $: img = viewIcon(address, $themeStore);
 </script>
 
 <div class="token-card">
   <div>
     <p class="symbol">
-      {token.symbol}
+      {symbol}
     </p>
     <p class="balance">
       {balance}
@@ -25,7 +25,7 @@
   <div class="img-wrapper">
     <img
       src={img}
-      alt={token.symbol}
+      alt={symbol}
       width="28"
       height="28"
     />

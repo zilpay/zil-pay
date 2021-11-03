@@ -1,11 +1,24 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+
   export let items = [];
   export let selected = 0;
+
+  const hanldeOnSelect = (index: number) => {
+    if (selected !== index) {
+      dispatch('select', index);
+    }
+  };
 </script>
 
 <ul>
   {#each items as item, i}
-    <li class:selected={selected === i}>
+    <li
+      class:selected={selected === i}
+      on:click={() => hanldeOnSelect(i)}
+    >
       {item}
     </li>
   {/each}
