@@ -78,9 +78,10 @@
 	h1 {
 		color: var(--text-color);
 		text-align: center;
-    margin-top: 30px;
+    // margin-top: 30px;
 		font-family: Demi;
-		margin-block-end: 15px;
+		margin-block-end: 0;
+		margin-block-start: 0;
 
 		@include fluid-font(320px, 900px, 38px, 60px);
 	}
@@ -95,7 +96,7 @@
 		opacity: 0.5;
 	}
 	div.wrapper {
-		margin-top: 30px;
+		margin-top: 15px;
 		min-width: 290px;
 		flex-wrap: wrap;
     display: flex;

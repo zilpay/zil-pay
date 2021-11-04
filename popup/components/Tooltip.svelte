@@ -48,9 +48,23 @@
     display: inline-block;
     padding: 8px 16px;
     border-radius: 6px;
-    color: inherit;
-    background-color: var(--hover-color);
+    background-color: var(--card-color);
     color: var(--text-color);
+    min-width: 100px;
+    text-align: center;
+
+    &:before {
+      content: '';
+      border-style: solid;
+      position: absolute;
+
+      border-width: 0 5px 5px 5px;
+      border-bottom-color: var(--card-color);
+      border-left-color: transparent;
+      border-right-color: transparent;
+      top: -5px;
+      transform: translate(100%, 10%);
+    }
   }
 
   .tooltip.top {
@@ -63,7 +77,6 @@
     left: 50%;
     bottom: 0;
     transform: translate(-50%, 100%);
-    margin-bottom: -8px;
   }
 
   .tooltip.left {
