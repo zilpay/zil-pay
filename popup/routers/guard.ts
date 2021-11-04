@@ -7,16 +7,28 @@
  * Copyright (c) 2021 ZilPay
  */
 import { get } from 'svelte/store';
+import { push } from 'svelte-spa-router';
+
 import guardStore from 'popup/store/guard';
 import loadedStore from 'app/store/loaded';
 import { getState } from 'popup/backend';
 
-export const routerGuard = async () => {
+export const routerGuard = async (e) => {
+  console.log(e);
+  
   const loaded = get(loadedStore);
   if (!loaded) {
     await getState();
   }
   const guard = get(guardStore);
+
+  if (!guard.isReady) {
+    push('/start');
+  }
+
+  if (guard.isReady && !guard.isEnable) {
+    push('/lock');
+  }
 
   return guard.isEnable && guard.isReady;
 }
