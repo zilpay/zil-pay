@@ -13,6 +13,7 @@
 	import GearIcon from '../components/GearIcon.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
+	import CopyAccount from '../components/CopyAccount.svelte';
 
 	$: zrc2Tokens = $walletStore.identities[$walletStore.selectedAddress].zrc2;
 	$: rate = $rateStore[$currencyStore];
@@ -32,6 +33,9 @@
 		in:fly={flyTransition.in}
 		out:fly={flyTransition.out}
 	>
+		<div>
+			<CopyAccount />
+		</div>
 		<h1 class="amount">
 			$300
 		</h1>

@@ -14,6 +14,7 @@
   --primary-color: #{inspect(map-get($light , "Primary"))};
   --danger-color: #{inspect(map-get($light , "Danger"))};
   --muted-color: #{inspect(map-get($light , "Muted"))};
+  --hover-color: #{inspect(map-get($light , "Hover"))};
 }
 
 :global(body[theme="dark"]) {
@@ -28,4 +29,5 @@
   --secondary-color:  #{inspect(map-get($dark , "Secondary"))};
   --danger-color: #{inspect(map-get($dark , "Danger"))};
   --muted-color: #{inspect(map-get($dark , "Muted"))};
+  --hover-color: #{inspect(map-get($dark , "Hover"))};
 }

@@ -4,6 +4,10 @@
       "send": "Send",
       "receive": "Receive"
     },
+    "clipboard": {
+      "copy": "Copy",
+      "copied": "Copied"
+    },
     "token_list": "Token list"
   },
   "lock": {
