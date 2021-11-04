@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
+	import { fly } from 'svelte/transition';
 
 	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
@@ -66,7 +66,7 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-		height: calc(100vh - 96px);
+		height: calc(100vh - 86px);
 		z-index: 3;
 
 		@include flex-center-top-column;
@@ -96,6 +96,7 @@
 		flex-wrap: wrap;
     display: flex;
     justify-content: space-between;
+		overflow-y: scroll;
 	}
 	section {
 		background-color: var(--background-color);

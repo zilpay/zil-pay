@@ -55,7 +55,10 @@
 <section>
 	<TopBar />
 	<main>
-		<ul>
+		<ul
+			in:fly={flyTransition.in}
+			out:fly={flyTransition.out}
+		>
 			{#each items as item, i}
 				<li
 					class:border={i !== items.length - 1}
@@ -93,7 +96,7 @@
     overflow-y: scroll;
     list-style: none;
 
-		height: calc(100vh - 97px);
+		height: calc(100vh - 86px);
 
 		& > li {
 			cursor: pointer;

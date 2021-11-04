@@ -53,7 +53,7 @@
   @import "../styles/mixins";
   nav {
     max-width: 320px;
-    height: 60px;
+    height: 50px;
     width: 100%;
     background-color: var(--card-color);
     z-index: 2;
