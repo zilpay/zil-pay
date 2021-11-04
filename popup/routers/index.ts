@@ -20,10 +20,17 @@ import WalletCreated from '../pages/WalletCreated.svelte';
 import PhraseVerify from '../pages/PhraseVerify.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
+import Settings from '../pages/Settings.svelte';
 
 export default {
   '/home': wrap({
     component: Home,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/settings': wrap({
+    component: Settings,
     conditions: [
       routerGuard
     ]
