@@ -70,7 +70,21 @@ export class ZilPayNetwrok {
       await this.#core.ssn.update();
 
       sendResponse({
-        resolve: this.#core.ssn.payload
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async selectFromSSN(index: number, sendResponse: StreamResponse) {
+    try {
+      await this.#core.ssn.select(index);
+
+      sendResponse({
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

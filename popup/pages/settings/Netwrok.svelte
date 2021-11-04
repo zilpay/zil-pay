@@ -3,15 +3,23 @@
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
   import netStore from 'popup/store/netwrok';
-  import { selectNetwrok, changeConfig, resetNetwrok } from 'popup/backend/netwrok';
+  import {
+    selectNetwrok,
+    changeConfig,
+    resetNetwrok,
+    updateSSN,
+    selectSSN
+  } from 'popup/backend/netwrok';
   import ssnStore from 'popup/store/ssn';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import MultiSwitcher from '../../components/MultiSwitcher.svelte';
 	import Modal from '../../components/Modal.svelte';
+	import Loader from '../../components/Loader.svelte';
 
   let showSSN = false;
   let config = $netStore.config[$netStore.selected];
+	let loading = false;
 
   $: keys = Object.keys($netStore.config);
   $: selected = keys.findIndex((n) => n === $netStore.selected);
@@ -37,6 +45,25 @@
   };
   const handleOnShowSSNModal = () => {
     showSSN = !showSSN;
+  };
+  const hanldeUpdateSSN = async () => {
+    loading = true;
+    try {
+      await updateSSN();
+    } catch (err) {
+      console.error(err);
+    }
+    loading = false;
+  };
+  const handleOnSelectSSN = async (index: number) => {
+    loading = true;
+    try {
+      await selectSSN(index);
+      showSSN = false;
+    } catch (err) {
+      console.error(err);
+    }
+    loading = false;
   };
 </script>
 
@@ -96,14 +123,35 @@
 >
   <div class="modal-wrapper">
     <ul>
-      {#each $ssnStore.list as ssn}
-        <li>
-          {ssn.name}
+      {#each $ssnStore.list as ssn, i}
+        <li
+          class:border={i !== $ssnStore.list.length - 1}
+          on:click={() => handleOnSelectSSN(i)}
+        >
+          <span>
+            {ssn.name}
+          </span>
+          <span>
+            {Number(ssn.time).toFixed()} ms
+          </span>
         </li>
       {/each}
     </ul>
-    <button class="primary" >
-      {$_('netwrok.btns.update')}
+    <button
+      class="primary"
+      disabled={loading}
+      on:click={hanldeUpdateSSN}
+    >
+      {#if loading}
+        <span>
+          <Loader
+            width="25px"
+            height="25px"
+          />
+        </span>
+      {:else}
+        {$_('netwrok.btns.update')}
+      {/if}
     </button>
   </div>
 </Modal>
@@ -150,5 +198,32 @@
   div.modal-wrapper {
     padding: 17px;
     @include flex-center-column;
+
+    & > ul {
+      padding: 0;
+      list-style: none;
+
+      & > li {
+        cursor: pointer;
+        padding: 10px;
+        @include flex-between-row;
+        @include fluid-font(320px, 600px, 18px, 22px);
+
+        color: var(--text-color);
+        font-family: Regular;
+
+        &.border {
+          border-bottom: solid 1px;
+        }
+        & > span {
+          @include text-shorten;
+          margin-left: 10px;
+          margin-right: 10px;
+        }
+        &:hover {
+          color: var(--muted-color);
+        }
+      }
+    }
   }
 </style>

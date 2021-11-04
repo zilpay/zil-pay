@@ -41,3 +41,22 @@ export async function resetNetwrok() {
   updateState(state);
   return state;
 }
+
+export async function updateSSN() {
+  const data = await Message
+  .signal(MTypePopup.UPDATE_SSN_LIST)
+  .send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
+export async function selectSSN(index: number) {
+  const data = await new Message({
+    type: MTypePopup.SELECT_SSN,
+    payload: index
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

@@ -58,6 +58,7 @@ export class SSnController {
   }
 
   public async select(index: number) {
+    assert(TypeOf.isNumber(index), ErrorMessages.IncorrectType);
     assert(index < this.#ssnList.length, ErrorMessages.OutOfIndex);
 
     this.#selected = index;

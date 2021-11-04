@@ -46,7 +46,7 @@
       & > div.modal {
         right: 0;
         left: 0;
-        margin: 40% auto 50px;
+        margin: 10% auto 50px;
         max-width: 400px;
         width: 100%;
         background: var(--background-color);
@@ -54,10 +54,6 @@
         z-index: 100;
         border-radius: 8px;
         // box-shadow: 0 0 8px var(--border-color);
-
-        @media screen and (min-width: 400px) {
-          margin: 30% auto 50px;
-        }
       }
     }
   }

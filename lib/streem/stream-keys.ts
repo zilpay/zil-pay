@@ -39,12 +39,11 @@ export const MTypePopup = {
   REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
   CONFIRM_SIGN_MSG: `@/${app}/popup-confirm-sign-msg`,
 
-  SET_PROXY_STORAGE: `@/${app}/set-data-through-bg`,
-
   GET_ZRC2_TOKEN_INFO: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
   RM_TOKEN: `@/${app}/remove-token`,
 
+  SELECT_SSN: `@/${app}/select-from-ssn-list`,
   RESET_NETWROK: `@/${app}/reset-netwrok-settings`,
   SET_NET_CONFIG: `@/${app}/set-netwrok-config`,
   SELECT_NETWORK: `@/${app}/select-network`,

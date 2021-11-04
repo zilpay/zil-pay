@@ -11,6 +11,7 @@ export enum ErrorMessages {
   WalletNotReady = 'Wallet is not sync.',
   IncorrectPassword = 'Incorect password',
   WalletNotEnabled = 'Wallet is not enabled.',
+  IncorrectType = 'Incorect params type',
   IncorrectFormat = 'Incorect address format',
   IncorrectKey = 'Incorrect Key.',
   InvalidEntropy = 'Invalid entropy.',

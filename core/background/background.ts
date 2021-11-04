@@ -49,6 +49,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.UPDATE_SSN_LIST:
         core.netwrok.updateSSN(sendResponse);
         return true;
+      case MTypePopup.SELECT_SSN:
+        core.netwrok.selectFromSSN(msg.payload, sendResponse);
+        return true;
       case MTypePopup.GET_ZRC2_TOKEN_INFO:
         core.zrc2.getZRC2Info(msg.payload.address, sendResponse);
         return true;
