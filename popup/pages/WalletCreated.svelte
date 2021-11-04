@@ -5,7 +5,7 @@
 	import { _ } from 'popup/i18n';
 
   const handleOnStart = () => {
-    push('/home');
+    push('/');
   };
 </script>
 

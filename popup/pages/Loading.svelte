@@ -8,20 +8,6 @@
   import flyTransition from 'popup/transitions/fly';
 
 	let state = null;
-
-	onMount(async () => {
-		state = await getState();
-
-		const guard = state.guard;
-
-		if (guard.isReady && guard.isEnable) {
-			push('/home');
-		} else if (guard.isReady && !guard.isEnable) {
-			push('/lock');
-		} else if (!guard.isReady) {
-			push('/start');
-		}
-	});
 </script>
 
 <main

@@ -23,7 +23,7 @@ import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
 
 export default {
-  '/home': wrap({
+  '/': wrap({
     component: Home,
     conditions: [
       routerGuard

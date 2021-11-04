@@ -41,7 +41,7 @@
 
 			if (state.guard.isEnable && state.guard.isReady) {
 				loading = false;
-				push('/home');
+				push('/');
 			}
 		} catch (err) {
 			error = `${$_('lock.error')}-(${err.message})`;

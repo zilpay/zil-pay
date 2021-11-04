@@ -8,7 +8,7 @@
   import TimerIcon from './TimerIcon.svelte';
 
   const links = {
-    home: '/home',
+    home: '/',
     settings: '/settings',
     collect: '/collect',
     history: '/history',
