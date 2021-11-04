@@ -21,6 +21,14 @@ import PhraseVerify from '../pages/PhraseVerify.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
+import About from '../pages/settings/About.svelte';
+import Account from '../pages/settings/Account.svelte';
+import Advanced from '../pages/settings/Advanced.svelte';
+import Connections from '../pages/settings/Connections.svelte';
+import Contacts from '../pages/settings/Contacts.svelte';
+import Security from '../pages/settings/Security.svelte';
+import General from '../pages/settings/General.svelte';
+
 
 export default {
   '/': wrap({
@@ -41,8 +49,50 @@ export default {
       routerGuard
     ]
   }),
-  '/settings/netwrok': wrap({
+  '/netwrok': wrap({
     component: Netwrok,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/account': wrap({
+    component: Account,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/general': wrap({
+    component: General,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/contacts': wrap({
+    component: Contacts,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/advanced': wrap({
+    component: Advanced,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/connections': wrap({
+    component: Connections,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/security': wrap({
+    component: Security,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/about': wrap({
+    component: About,
     conditions: [
       routerGuard
     ]

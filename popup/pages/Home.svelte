@@ -22,16 +22,16 @@
   });
 </script>
 
-<section
-	in:fly={flyTransition.in}
-	out:fly={flyTransition.out}
->
+<section>
 	<TopBar />
 	<img
 		src="/imgs/logo.webp"
 		alt="logo"
 	>
-	<main>
+	<main
+		in:fly={flyTransition.in}
+		out:fly={flyTransition.out}
+	>
 		<h1 class="amount">
 			$300
 		</h1>

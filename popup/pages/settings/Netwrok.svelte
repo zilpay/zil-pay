@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
-  import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
   import netStore from 'popup/store/netwrok';
   import {
@@ -69,10 +67,7 @@
   };
 </script>
 
-<main
-  in:fly={flyTransition.in}
-  out:fly={flyTransition.out}
->
+<main>
   <NavClose title={$_('netwrok.title')}/>
   <MultiSwitcher
     items={Object.keys($netStore.config)}

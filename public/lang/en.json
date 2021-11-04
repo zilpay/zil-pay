@@ -85,5 +85,39 @@
       "update": "Update",
       "reset": "reset"
     }
+  },
+  "settings": {
+    "account": {
+      "title": "Account",
+      "description": "Account information, nonce counter."
+    },
+    "general": {
+      "title": "General",
+      "description": "Currency conversion, primary currency, language, theme."
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "Add, edit, remove, and manage your contacts."
+    },
+    "advanced": {
+      "title": "Advanced",
+      "description": "Gas controller, address format, popup settings."
+    },
+    "networks": {
+      "title": "Networks",
+      "description": "Add and edit custom RPC networks."
+    },
+    "connections": {
+      "title": "Connections",
+      "description": "Dapps list, manage your connections, add, remove."
+    },
+    "security": {
+      "title": "Security & Privacy",
+      "description": "Privacy settings and wallet Secret Recovery Phrase."
+    },
+    "about": {
+      "title": "About",
+      "description": "Version, support center, and contact info."
+    }
   }
 }

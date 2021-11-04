@@ -20,7 +20,7 @@
   </div>
   <a
     class="netwrok"
-    href="/settings/netwrok"
+    href="/netwrok"
     use:link
   />
 </nav>
