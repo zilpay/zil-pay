@@ -5,6 +5,7 @@
 
   import TopBar from '../components/TopBar.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
+	import SvgLoader from '../components/SvgLoader.svelte';
 </script>
 
 <section
@@ -13,6 +14,7 @@
 >
 	<TopBar />
 	<main>
+		<SvgLoader src="/test.svg"/>
 	</main>
 	<BottomTabs />
 </section>
@@ -21,7 +23,6 @@
 	@import "../styles/mixins";
 	main {
 		height: calc(100vh - 96px);
-		z-index: 3;
 
 		@include flex-center-top-column;
 	}
