@@ -42,6 +42,7 @@
   };
   const handleOnReset = async () => {
     await resetNetwrok();
+    config = $netStore.config[$netStore.selected];
   };
   const handleOnShowSSNModal = () => {
     showSSN = !showSSN;
@@ -59,6 +60,7 @@
     loading = true;
     try {
       await selectSSN(index);
+      config = $netStore.config[$netStore.selected];
       showSSN = false;
     } catch (err) {
       console.error(err);

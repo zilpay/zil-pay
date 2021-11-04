@@ -32,6 +32,7 @@ export class ZilPayNetwrok {
   public async reset(sendResponse: StreamResponse) {
     try {
       await this.#core.netwrok.reset();
+      await this.#core.ssn.select(0);
       await this.#core.transactions.sync();
       await this.#core.zrc2.sync();
 
