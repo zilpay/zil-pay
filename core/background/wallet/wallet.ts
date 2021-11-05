@@ -97,12 +97,11 @@ export class ZilPayWallet {
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {
-      const account = await this.#core.account.select(index);
-
+      await this.#core.account.select(index);
       await this.#core.transactions.sync();
 
       sendResponse({
-        resolve: account
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

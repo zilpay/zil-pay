@@ -6,18 +6,25 @@
 	import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
 
+	import { selectAccount } from 'popup/backend/wallet';
+
 	import NavClose from '../components/NavClose.svelte';
 	import AccountCard from '../components/AccountCard.svelte';
+
+	const onSelectAccount = async (index: number) => {
+		await selectAccount(index);
+		push('/');
+	};
 </script>
 
 <main>
-	<NavClose title="Accounts"/>
+	<NavClose title={$_('accounts.title')}/>
 	<ul
 		in:fly={flyTransition.in}
 		out:fly={flyTransition.out}
 	>
 		{#each $walletStore.identities as account, index}
-			<li on:click={() => console.log(account)}>
+			<li on:click={() => onSelectAccount(index)}>
 				<AccountCard
 					account={account}
 					selected={index === $walletStore.selectedAddress}

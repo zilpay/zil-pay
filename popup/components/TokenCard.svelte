@@ -1,13 +1,24 @@
 <script lang="ts">
   import { viewIcon } from 'lib/block-explorer/view';
+  import { fromDecimals } from 'popup/filters/units';
+  import { convertRate } from 'popup/filters/convert-rate';
+  import { formatNumber } from 'popup/filters/n-format';
+
+  import rateStore from 'popup/store/rate';
+	import currencyStore from 'popup/store/currency';
+
   import themeStore from 'popup/store/theme';
 	import zrcStore from 'popup/store/zrc';
 
   export let address: string;
   export let balance: string;
   export let symbol: string;
+  export let decimal: number;
 
   $: img = viewIcon(address, $themeStore);
+  $: balance = fromDecimals(balance, decimal).round(2);
+	$: rate = $rateStore[$currencyStore];
+  $: converted = convertRate(rate, balance).round();
 </script>
 
 <div class="token-card">
@@ -16,10 +27,10 @@
       {symbol}
     </p>
     <p class="balance">
-      {balance}
+      {formatNumber(balance, symbol)}
     </p>
     <p class="conv">
-      $300
+      {formatNumber(converted, $currencyStore)}
     </p>
   </div>
   <div class="img-wrapper">
@@ -39,7 +50,7 @@
 
     padding: 12px;
     margin: 9px;
-    min-width: 142px;
+    width: 142px;
     border-radius: 6px;
     background-color: var(--card-color);
     box-shadow: 0 5px 5px 0 rgb(0 0 0 / 10%), 0 6px 5px 0 rgb(0 0 0 / 19%);
@@ -59,14 +70,15 @@
     font-family: Demi;
   }
   p.balance {
-    font-size: 16px;
+    font-size: 13px;
     line-height: 0px;
     font-family: Bold;
     color: var(--text-color);
-    margin-block-end: 15px;
+    margin-block-end: 10px;
+    margin-block-start: 30px;
   }
   p.conv {
-    font-size: 14px;
+    font-size: 12px;
     line-height: 5px;
   }
   div.img-wrapper {

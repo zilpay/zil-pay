@@ -64,6 +64,7 @@
         <TokenCard
 					address={token.bech32}
 					symbol={token.symbol}
+					decimal={token.decimals}
 					balance={zrc2Tokens[token.base16] || '0'}
 				/>
       {/each}

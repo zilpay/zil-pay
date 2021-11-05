@@ -30,7 +30,6 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypeTab.CALL_TO_SIGN_TX:
         core.transaction.addConfirm(msg.payload, sendResponse);
         return true;
-
       case MTypeTab.SIGN_MESSAGE:
         /// add sign message controller for core.
         return true;

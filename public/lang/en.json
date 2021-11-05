@@ -25,6 +25,9 @@
     "btn_restore": "Restore",
     "btn_create": "Create"
   },
+  "accounts": {
+    "title": "Accounts"
+  },
   "create": {
     "title": "Secret phrase",
     "sub_title": "Remember your words in order!",

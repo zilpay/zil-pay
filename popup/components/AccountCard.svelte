@@ -1,11 +1,20 @@
 <script lang="ts">
   import { trim } from 'popup/filters/trim';
+  import { fromDecimals } from 'popup/filters/units';
+  import { convertRate } from 'popup/filters/convert-rate';
+  import { formatNumber } from 'popup/filters/n-format';
 
-  export let account = {
-    name: '',
-    bech32: ''
-  };
+  import zrcStore from 'popup/store/zrc';
+  import rateStore from 'popup/store/rate';
+	import currencyStore from 'popup/store/currency';
+
+  export let account;
   export let selected = false;
+
+  $: ZIL = $zrcStore[0];
+  $: balance = fromDecimals(account.zrc2[ZIL.base16], ZIL.decimals).round(1);
+	$: rate = $rateStore[$currencyStore];
+  $: converted = convertRate(rate, balance).round();
 </script>
 
 <div class="wrapper">
@@ -28,10 +37,10 @@
 </div>
 <div>
   <h2>
-    {0} ZIL
+    {formatNumber(balance, ZIL.symbol)}
   </h2>
-  <p>
-    ${0}
+  <p class="converted">
+    {formatNumber(converted, $currencyStore)}
   </p>
 </div>
 
@@ -49,7 +58,11 @@
     color: var(--muted-color);
 		margin-block-end: 0.8;
 		margin-block-start: 0em;
-    font-size: 10px;
+    font-size: 12px;
+
+    &.converted {
+      text-transform: uppercase;
+    }
   }
   div.radio {
     width: 20px;

@@ -46,6 +46,18 @@ export async function restorePhrase(seed: string, password: string) {
   return state;
 }
 
+export async function selectAccount(index: number) {
+  const data = await new Message({
+    type: MTypePopup.SELECT_ACCOUNT,
+    payload: {
+      index
+    }
+  }).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}
+
 export async function createNextSeedAccount(name: string) {
   const data = await new Message({
     type: MTypePopup.CREATE_ACCOUNT_BY_SEED,
