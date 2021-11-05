@@ -8,11 +8,12 @@
  */
 
 export function formatNumber(balance: number | string, currency?: string) {
-  const locale = 'en'; // navigator.language;
-  let opt = {
+  const locale = 'en';// navigator.language;
+  let opt: Intl.NumberFormatOptions = {
     style: undefined,
     currency: undefined,
-    maximumSignificantDigits: 20
+    maximumSignificantDigits: 5,
+    notation: "compact"
   };
 
   if (currency) {
