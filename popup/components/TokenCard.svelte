@@ -42,7 +42,7 @@
     min-width: 142px;
     border-radius: 6px;
     background-color: var(--card-color);
-    box-shadow: 0 10px 16px 0 rgb(0 0 0 / 10%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+    box-shadow: 0 5px 5px 0 rgb(0 0 0 / 10%), 0 6px 5px 0 rgb(0 0 0 / 19%);
 
     @include flex-between-row;
 

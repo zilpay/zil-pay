@@ -18,6 +18,7 @@ import Restore from '../pages/Restore.svelte';
 import SetupAccount from '../pages/SetupAccount.svelte';
 import WalletCreated from '../pages/WalletCreated.svelte';
 import PhraseVerify from '../pages/PhraseVerify.svelte';
+import Accounts from '../pages/Accounts.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -33,6 +34,12 @@ import General from '../pages/settings/General.svelte';
 export default {
   '/': wrap({
     component: Home,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/accounts': wrap({
+    component: Accounts,
     conditions: [
       routerGuard
     ]
