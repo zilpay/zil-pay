@@ -39,6 +39,7 @@
     "typescript": "4.4.2"
   },
   "dependencies": {
+    "@metamask/jazzicon": "^2.0.0",
     "@zilliqa-js/proto": "^3.0.0",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",

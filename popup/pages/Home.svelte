@@ -2,24 +2,28 @@
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
+  import { link } from 'svelte-spa-router';
 	import { fly } from 'svelte/transition';
 
 	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
 	import currencyStore from 'popup/store/currency';
 	import zrcStore from 'popup/store/zrc';
+	import { jazziconCreate } from 'popup/mixins/jazzicon';
 
 	import TopBar from '../components/TopBar.svelte';
 	import GearIcon from '../components/GearIcon.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
+  import Burger from '../components/Burger.svelte';
 
-	$: zrc2Tokens = $walletStore.identities[$walletStore.selectedAddress].zrc2;
+	$: account = $walletStore.identities[$walletStore.selectedAddress];
+	$: zrc2Tokens = account.zrc2;
 	$: rate = $rateStore[$currencyStore];
 
 	onMount(() => {
-		console.log(rate);
+		jazziconCreate('jazzicon', account.base16);
   });
 </script>
 
@@ -33,8 +37,16 @@
 		in:fly={flyTransition.in}
 		out:fly={flyTransition.out}
 	>
-		<div>
+		<div class="bar-wrapper">
+			<Burger />
 			<CopyAccount />
+			<a
+				href="/accounts"
+				id="jazzicon"
+				use:link
+			>
+				<div />
+			</a>
 		</div>
 		<h1 class="amount">
 			$300
@@ -118,6 +130,11 @@
 		&:hover {
 			color: var(--background-color);
 		}
+	}
+	div.bar-wrapper {
+		max-width: 500px;
+    width: calc(100vw - 15px);
+		@include flex-between-row;
 	}
 	:global(button.add > svg > path) {
 		fill: var(--primary-color) !important;
