@@ -27,7 +27,7 @@
       {symbol}
     </p>
     <p class="balance">
-      {formatNumber(balance, symbol)}
+      {formatNumber(balance)}
     </p>
     <p class="conv">
       {formatNumber(converted, $currencyStore)}

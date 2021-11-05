@@ -7,10 +7,19 @@
  * Copyright (c) 2021 ZilPay
  */
 
-export function formatNumber(balance: number | string, currency: string) {
+export function formatNumber(balance: number | string, currency?: string) {
   const locale = 'en'; // navigator.language;
-  return new Intl.NumberFormat(locale, {
-    currency,
-    style: 'currency'
-  }).format(Number(balance));
+  let opt = {
+    style: undefined,
+    currency: undefined,
+    maximumSignificantDigits: 20
+  };
+
+  if (currency) {
+    opt.style = 'currency';
+    opt.currency = currency;
+  }
+  return new Intl
+    .NumberFormat(locale, opt)
+    .format(Number(balance));
 }

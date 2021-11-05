@@ -5,6 +5,10 @@
   import { link } from 'svelte-spa-router';
 	import { fly } from 'svelte/transition';
 
+	import { fromDecimals } from 'popup/filters/units';
+  import { convertRate } from 'popup/filters/convert-rate';
+  import { formatNumber } from 'popup/filters/n-format';
+
 	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
 	import currencyStore from 'popup/store/currency';
@@ -18,9 +22,12 @@
 	import CopyAccount from '../components/CopyAccount.svelte';
   import Burger from '../components/Burger.svelte';
 
+	$: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: zrc2Tokens = account.zrc2;
 	$: rate = $rateStore[$currencyStore];
+  $: balance = fromDecimals(zrc2Tokens[ZIL.base16], ZIL.decimals).round(2);
+  $: converted = convertRate(rate, balance).round();
 
 	onMount(() => {
 		jazziconCreate('jazzicon', account.base16);
@@ -49,7 +56,7 @@
 			</a>
 		</div>
 		<h1 class="amount">
-			$300
+			{formatNumber(converted, $currencyStore)}
 		</h1>
 		<div class="btns">
 			<button class="action">

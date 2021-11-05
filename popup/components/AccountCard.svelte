@@ -12,7 +12,7 @@
   export let selected = false;
 
   $: ZIL = $zrcStore[0];
-  $: balance = fromDecimals(account.zrc2[ZIL.base16], ZIL.decimals).round(1);
+  $: balance = fromDecimals(account.zrc2[ZIL.base16], ZIL.decimals).round();
 	$: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, balance).round();
 </script>
