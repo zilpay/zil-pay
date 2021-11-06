@@ -32,6 +32,7 @@
 <main>
 	<NavClose title={$_('accounts.title')}/>
 	<SearchBox
+		placeholder={$_('accounts.placeholder')}
 		focus
 		on:input={onInputSearch}
 	/>

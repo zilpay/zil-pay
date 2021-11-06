@@ -18,12 +18,14 @@
 
 	import TopBar from '../components/TopBar.svelte';
 	import GearIcon from '../components/GearIcon.svelte';
+	import LeftNavBar from '../components/LeftNavBar.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
   import Burger from '../components/Burger.svelte';
 
 	let loading = false;
+	let leftBar = false;
 
 	$: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
@@ -46,8 +48,15 @@
 		}
 		loading = false;
   };
+	const onToggleLeftBar = () => {
+		leftBar = !leftBar;
+	};
 </script>
 
+<LeftNavBar
+	show={leftBar}
+	on:close={onToggleLeftBar}
+/>
 <section>
 	<TopBar
 		refresh
@@ -62,7 +71,9 @@
 		out:fly={flyTransition.out}
 	>
 		<div class="bar-wrapper">
-			<Burger />
+			<div on:click={onToggleLeftBar}>
+				<Burger />
+			</div>
 			<CopyAccount />
 			<a
 				href="/accounts"

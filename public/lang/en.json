@@ -8,7 +8,16 @@
       "copy": "Copy",
       "copied": "Copied"
     },
-    "token_list": "Token list"
+    "token_list": "Token list",
+    "nav": {
+      "title": "ZIlPay wallet",
+      "optinos": {
+        "add": "Add next account.",
+        "import": "Import privateKey.",
+        "connect": "Connect ledger.",
+        "remove": "Remove current account."
+      }
+    }
   },
   "lock": {
       "title": "Welcome back!",
@@ -27,7 +36,8 @@
   },
   "accounts": {
     "title": "Accounts",
-    "no_accounts": "No accounts with name:"
+    "no_accounts": "No accounts with name:",
+    "placeholder": "Search"
   },
   "create": {
     "title": "Secret phrase",

@@ -8,6 +8,7 @@
 	let inputEl;
 
   export let focus = false;
+  export let placeholder = '';
 
   onMount(() => {
     if (focus && inputEl && inputEl.focus) {
@@ -27,6 +28,7 @@
   </div>
   <input
     bind:this={inputEl}
+    placeholder={placeholder}
     on:input={onInput}
   >
 </label>

@@ -103,6 +103,12 @@
   flex-direction: column;
 }
 
+@mixin flex-left-column {
+  display: flex;
+  align-items: left;
+  flex-direction: column;
+}
+
 @mixin flex-between-row {
   display: flex;
   align-items: center;
