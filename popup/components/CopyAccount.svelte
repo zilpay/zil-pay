@@ -42,6 +42,7 @@
     & > h1 {
       margin-block-start: 0;
       margin-block-end: 0.2em;
+      font-size: clamp(0.8rem, 2vw, 1rem);
     }
 
     & > span {

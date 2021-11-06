@@ -6,28 +6,49 @@
 	import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
 
-	import { selectAccount } from 'popup/backend/wallet';
+	import { selectAccount, balanceUpdate } from 'popup/backend/wallet';
 
 	import NavClose from '../components/NavClose.svelte';
 	import AccountCard from '../components/AccountCard.svelte';
+	import SearchBox from '../components/SearchBox.svelte';
+
+	let search = '';
+
+	$: identities = $walletStore.identities.filter(
+		(acc) => acc.name.includes(search)
+	);
+	$: selectedAccount = $walletStore.identities[$walletStore.selectedAddress];
 
 	const onSelectAccount = async (index: number) => {
 		await selectAccount(index);
+		balanceUpdate();
 		push('/');
+	};
+	const onInputSearch = (e) => {
+		search = e.detail;
 	};
 </script>
 
 <main>
 	<NavClose title={$_('accounts.title')}/>
+	<SearchBox
+		focus
+		on:input={onInputSearch}
+	/>
+	{#if identities.length === 0}
+		<p>
+			{$_('accounts.no_accounts')} {search}
+		</p>
+	{/if}
 	<ul
 		in:fly={flyTransition.in}
 		out:fly={flyTransition.out}
 	>
-		{#each $walletStore.identities as account, index}
+		{#each identities as account, index}
 			<li on:click={() => onSelectAccount(index)}>
 				<AccountCard
 					account={account}
-					selected={index === $walletStore.selectedAddress}
+					selected={account.base16 === selectedAccount.base16}
 				/>
 			</li>
 		{/each}
@@ -49,11 +70,12 @@
     list-style: none;
 
 		max-width: 390px;
-		width: calc(100vw - 15px);
+		width: 100%;
 		height: calc(100vh - 97px);
 
 		& > li {
 			cursor: pointer;
+			margin: 15px;
 			background-color: var(--card-color);
 			border-radius: 8px;
 			border: solid 1px var(--card-color);

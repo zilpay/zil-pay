@@ -103,6 +103,10 @@ const background = {
 					dest: 'dist/'
 				},
 				{
+					src: 'public/vectors',
+					dest: 'dist/'
+				},
+				{
 					src: 'public/fonts',
 					dest: 'dist/'
 				},

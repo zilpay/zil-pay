@@ -4,8 +4,8 @@
   import { uuidv4 } from 'lib/crypto/uuid';
 
   export let src;
-  export let width = '40px';
-  export let height = '40px';
+  export let width = null;
+  export let height = null;
 
   let ref;
 
@@ -18,8 +18,12 @@
     ref.parentNode.innerHTML = content.replace(xmlns, `id="${id}"`);
     ref = document.getElementById(id);
 
-    ref.setAttribute('width', width);
-    ref.setAttribute('height', height);
+    if (width) {
+      ref.setAttribute('width', width);
+    }
+    if (height) {
+      ref.setAttribute('height', height);
+    }
   });
 </script>
 

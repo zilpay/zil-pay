@@ -26,7 +26,8 @@
     "btn_create": "Create"
   },
   "accounts": {
-    "title": "Accounts"
+    "title": "Accounts",
+    "no_accounts": "No accounts with name:"
   },
   "create": {
     "title": "Secret phrase",
