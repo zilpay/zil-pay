@@ -26,8 +26,8 @@
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: zrc2Tokens = account.zrc2;
 	$: rate = $rateStore[$currencyStore];
-  $: balance = fromDecimals(zrc2Tokens[ZIL.base16], ZIL.decimals).round(2);
-  $: converted = convertRate(rate, balance).round();
+  $: balance = fromDecimals(zrc2Tokens[ZIL.base16], ZIL.decimals);
+  $: converted = convertRate(rate, balance);
 
 	onMount(() => {
 		jazziconCreate('jazzicon', account.base16);
@@ -103,7 +103,7 @@
 		margin-block-end: 0;
 		margin-block-start: 0;
 
-		@include fluid-font(320px, 900px, 38px, 60px);
+		@include fluid-font(320px, 900px, 28px, 60px);
 	}
 	img {
 		position: fixed;

@@ -16,9 +16,9 @@
   export let decimal: number;
 
   $: img = viewIcon(address, $themeStore);
-  $: balance = fromDecimals(balance, decimal).round(2);
+  $: balance = fromDecimals(balance, decimal).round(7);
 	$: rate = $rateStore[$currencyStore];
-  $: converted = convertRate(rate, balance).round();
+  $: converted = convertRate(rate, balance).round(7);
 </script>
 
 <div class="token-card">
