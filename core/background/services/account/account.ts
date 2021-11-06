@@ -262,10 +262,11 @@ export class AccountController {
 
   public async balanceUpdate() {
     const zrc2 = await this.#zrc2.getBalance(this.selectedAccount.base16);
+    
     this.#wallet.identities[this.#wallet.selectedAddress].zrc2 = zrc2;
 
     await BrowserStorage.set(
-      buildObject(Fields.WALLET, this.#wallet)
+      buildObject(Fields.WALLET, this.wallet)
     );
 
     return this.wallet;

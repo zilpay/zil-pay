@@ -14,6 +14,7 @@
 	import currencyStore from 'popup/store/currency';
 	import zrcStore from 'popup/store/zrc';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
+	import { balanceUpdate } from 'popup/backend/wallet';
 
 	import TopBar from '../components/TopBar.svelte';
 	import GearIcon from '../components/GearIcon.svelte';
@@ -21,6 +22,8 @@
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
   import Burger from '../components/Burger.svelte';
+
+	let loading = false;
 
 	$: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
@@ -32,10 +35,24 @@
 	onMount(() => {
 		jazziconCreate('jazzicon', account.base16);
   });
+
+  const onRefresh = async () => {
+		loading = true;
+		try {
+			await balanceUpdate();
+		} catch (err) {
+			console.error(err);
+			///
+		}
+		loading = false;
+  };
 </script>
 
 <section>
-	<TopBar />
+	<TopBar
+		refresh
+		on:refresh={onRefresh}
+	/>
 	<img
 		src="/imgs/logo.webp"
 		alt="logo"

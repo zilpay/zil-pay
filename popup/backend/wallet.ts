@@ -69,3 +69,12 @@ export async function createNextSeedAccount(name: string) {
   updateState(state);
   return state;
 }
+
+export async function balanceUpdate() {
+  const data = await Message.signal(
+    MTypePopup.UPDATE_BALANCE
+  ).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}

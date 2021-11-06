@@ -4,7 +4,6 @@
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
 
-  import TopBar from '../components/TopBar.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import Arrow from '../components/icons/Arrow.svelte';
 
@@ -53,7 +52,6 @@
 </script>
 
 <section>
-	<TopBar />
 	<main>
 		<ul
 			in:fly={flyTransition.in}
@@ -96,7 +94,7 @@
     overflow-y: scroll;
     list-style: none;
 
-		height: calc(100vh - 86px);
+		height: calc(100vh - 50px);
 
 		& > li {
 			cursor: pointer;

@@ -1,9 +1,17 @@
 <script lang="ts">
   import { link } from 'svelte-spa-router';
-  import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
+  import { createEventDispatcher } from 'svelte';
 
-  $: account = $walletStore.identities[$walletStore.selectedAddress];
+  import Refresh from './icons/Refresh.svelte';
+
+  const dispatch = createEventDispatcher();
+
+  export let refresh = false;
+
+  const onRefresh = () => {
+    dispatch('refresh');
+  };
 </script>
 
 <nav>
@@ -11,7 +19,17 @@
     class="netwrok"
     href="/netwrok"
     use:link
-  />
+  >
+    <span />
+  </a>
+  {#if refresh}
+    <span
+      class="refresh"
+      on:click={onRefresh}
+    >
+      <Refresh />
+    </span>
+  {/if}
 </nav>
 
 <style lang="scss">
@@ -38,5 +56,9 @@
 
     border-radius: 100%;
     background-color: var(--primary-color);
+  }
+  span.refresh {
+    cursor: pointer;
+    margin: 11px;
   }
 </style>

@@ -19,6 +19,7 @@ import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
 import { fromBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
+import type { RPCResponse } from 'types/zilliqa';
 
 enum InitFields {
   ContractOwner = 'contract_owner',
@@ -162,9 +163,13 @@ export class ZRC2Controller {
         [tohexString(token.base16), ZRC2Fields.Balances, [addr]]
       );
     });
-    const replies = await this.#zilliqa.sendJson(...identities);
-    assert(Array.isArray(replies), `${ErrorMessages.MustBe} array`);
-    const entries = replies.map((res, index) => {
+    let replies = await this.#zilliqa.sendJson(...identities);
+
+    if (!Array.isArray(replies)) {
+      replies = [replies];
+    }
+
+    const entries = replies.map((res: RPCResponse, index: number) => {
       const { base16 } = this.identities[index];
       let balance = [base16, '0'];
       if (res.result && base16 === Contracts.ZERO_ADDRESS) {

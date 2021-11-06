@@ -112,10 +112,10 @@ export class ZilPayWallet {
 
   public async balanceUpdate(sendResponse: StreamResponse) {
     try {
-      const accounts = await this.#core.account.balanceUpdate();
+      await this.#core.account.balanceUpdate();
 
       sendResponse({
-        resolve: accounts
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

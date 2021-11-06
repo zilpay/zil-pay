@@ -40,9 +40,7 @@ export class ZilliqaControl {
     const body = this.provider.buildBody(Methods.getBalance, [address]);
     const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
-
     assert(responce.status === 200, ErrorMessages.RequestFailed);
-
     const data = await responce.json();
 
     if (data && data.result && data.result.balance) {
@@ -56,7 +54,7 @@ export class ZilliqaControl {
       };
     }
 
-    throw new Error(data.error);
+    throw new Error(data.error.message);
   }
 
   /**
@@ -67,7 +65,8 @@ export class ZilliqaControl {
     contract = tohexString(contract);
 
     const body = this.provider.buildBody(Methods.GetSmartContractInit, [contract]);
-    return this.sendJson(body);
+    const { result } = await this.sendJson(body);
+    return result;
   }
 
   /**
@@ -87,31 +86,34 @@ export class ZilliqaControl {
       Methods.GetSmartContractSubState,
       [contract, field, params]
     );
-    return this.sendJson(body);
+    const { result } = await this.sendJson(body);
+    return result;
   }
 
   public async getLatestTxBlock() {
     const body = this.provider.buildBody(Methods.GetLatestTxBlock, []);
-    return this.sendJson(body);
+    const { result } = await this.sendJson(body);
+    return result;
   }
 
   public async getRecentTransactions() {
     const body = this.provider.buildBody(Methods.GetRecentTransactions, []);
-    return this.sendJson(body);
+    const { result } = await this.sendJson(body);
+    return result;
   }
 
   public async getNetworkId() {
     const body = this.provider.buildBody(Methods.GetNetworkId, []);
-    const netID = await this.sendJson(body);
+    const { result } = await this.sendJson(body);
 
-    return Number(netID);
+    return Number(result);
   }
 
   public async detectSacmAddress(address: string) {
     const field = 'balances';
     let isScam = false;
 
-    address = toChecksumAddress(address).toLowerCase();
+    address = tohexString(address);
 
     try {
       const result = await this.getSmartContractSubState(
@@ -154,19 +156,14 @@ export class ZilliqaControl {
   public async getTransactionStatus(hash: string) {
     hash = tohexString(hash);
     const body = this.provider.buildBody(Methods.GetTransactionStatus, [hash]);
-    return this.sendJson(body);
+    const { result } = await this.sendJson(body);
+    return result;
   }
 
   public async getMinimumGasPrice() {
     const body = this.provider.buildBody(Methods.GetMinimumGasPrice, []);
-    return this.sendJson(body);
-  }
-
-  public async getTransaction(hash: string) {
-    hash = tohexString(hash);
-
-    const body = this.provider.buildBody(Methods.GetTransaction, [hash]);
-    return this.sendJson(body);
+    const { result } = await this.sendJson(body);
+    return result;
   }
 
   public async getSSnList(): Promise<SSN[]> {
@@ -176,12 +173,10 @@ export class ZilliqaControl {
     const field = 'ssnlist';
     const contract = tohexString(Contracts.SSN);
     const http = NETWORK.mainnet.PROVIDER;
-
-    const body = this.provider.buildBody(
+    const request = this.provider.json(this.provider.buildBody(
       Methods.GetSmartContractSubState,
       [contract, field, []]
-    );
-    const request = this.provider.json(body);
+    ));
     const responce = await fetch(http, request);
     const data = await responce.json();
 
@@ -237,15 +232,19 @@ export class ZilliqaControl {
   public async sendJson(...body: RPCBody[]) {
     const request = this.provider.json(...body);
     const responce = await fetch(this.#network.provider, request);
+
     assert(responce.status === 200, ErrorMessages.RequestFailed);
+
     const data = await responce.json();
 
     if (Array.isArray(data)) {
       return data as RPCResponse[];
     }
 
-    assert(!data.error, data.error);
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
 
-    return data.result;
+    return data;
   }
 }

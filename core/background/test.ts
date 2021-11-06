@@ -229,12 +229,14 @@ export async function testFromOld(core: ZIlPayBackground) {
     if (reject) {
       console.error(reject);
     }
-    assert.equal(resolve['base16'], '0x92548120aDFB23EBCC3D341c1c5316db5b5ea171', 'Incorrect base16 address');
-    assert.equal(resolve['bech32'], 'zil1jf2gzg9dlv37hnpaxswpc5ckmdd4agt3x7kqy2', 'Incorrect bech32 address');
-    assert.equal(resolve['index'], 1, 'incorrect index');
-    assert.equal(resolve['name'], 'test', 'Incorrect name');
-    assert.equal(resolve['pubKey'], '0259f80fc287bb314c0a7b2c1512125487fbd08c93563268fe1c31c1a04edc810a', 'Incorrect publicKey');
-    assert.equal(resolve['type'], AccountTypes.Seed, 'Incorrect account type');
+    const wallet = resolve['wallet'];
+    const account = wallet.identities[wallet.selectedAddress];
+    assert.equal(account['base16'], '0x92548120aDFB23EBCC3D341c1c5316db5b5ea171', 'Incorrect base16 address');
+    assert.equal(account['bech32'], 'zil1jf2gzg9dlv37hnpaxswpc5ckmdd4agt3x7kqy2', 'Incorrect bech32 address');
+    assert.equal(account['index'], 1, 'incorrect index');
+    assert.equal(account['name'], 'test', 'Incorrect name');
+    assert.equal(account['pubKey'], '0259f80fc287bb314c0a7b2c1512125487fbd08c93563268fe1c31c1a04edc810a', 'Incorrect publicKey');
+    assert.equal(account['type'], AccountTypes.Seed, 'Incorrect account type');
   });
 
   core.popup.initPopup(({ resolve }) => {
@@ -243,7 +245,10 @@ export async function testFromOld(core: ZIlPayBackground) {
   });
 
   await core.wallet.selectAccount(0, ({ resolve }) => {
-    assert.equal(resolve['index'], 0, 'incorrect index');
+    const wallet = resolve['wallet'];
+    const account = wallet.identities[wallet.selectedAddress];
+    
+    assert.equal(account['index'], 0, 'incorrect index');
   });
 
   core.popup.randomizeWords(256, ({ resolve }) => {
@@ -284,17 +289,20 @@ export async function testFromOld(core: ZIlPayBackground) {
   });
   // export private account
 
-  // await core.netwrok.updateSSN(({ resolve }) => {
-  //   assert(resolve['list'].length > 0, 'list cannot be epmty');
-  //   assert(resolve['selected'] === 0, 'start selected should be 0');
-  // });
+  await core.netwrok.updateSSN(({ resolve }) => {
+    assert(resolve['list'].length > 0, 'list cannot be epmty');
+    assert(resolve['selected'] === 0, 'start selected should be 0');
+  });
 
   await core.netwrok.select('testnet', ({ resolve }) => {
-    assert.equal('testnet', resolve, 'new net should be testnet');
+    const netwrok = resolve['netwrok'].selected;
+    assert.equal('testnet', netwrok, 'new net should be testnet');
   });
 
   await core.wallet.balanceUpdate(({ resolve }) => {
-    const account = resolve['identities'][resolve['selectedAddress']];
+    const wallet = resolve['wallet'];
+    const account = wallet.identities[wallet.selectedAddress];
+
     assert(Number(account.zrc2[Contracts.ZERO_ADDRESS]) > 0, 'balance didn not updated;');
   });
 
@@ -338,12 +346,12 @@ export async function testFromOld(core: ZIlPayBackground) {
   await core.transaction.addConfirm(newTx, ({ resolve }) => {
     assert.deepEqual(newTx, resolve, 'resolve is not equal');
   });
-  // await core.transaction.signSendTx(0, newTx, ({ resolve, reject }) => {
-  //   if (reject) {
-  //     console.error(reject);
-  //   }
-  //   assert(resolve[0]['hash'], 'Txns wans sent.');
-  // });
+  await core.transaction.signSendTx(0, newTx, ({ resolve, reject }) => {
+    if (reject) {
+      console.error(reject);
+    }
+    assert(resolve[0]['hash'], 'Txns wans sent.');
+  });
   await core.transaction.rmConfirm(0, ({ resolve }) => {
     assert.deepEqual([], resolve, 'resolve is not equal');
   });
@@ -359,7 +367,8 @@ export async function testFromOld(core: ZIlPayBackground) {
   });
 
   await core.netwrok.select('mainnet', ({ resolve }) => {
-    assert.equal('mainnet', resolve, 'new net should be testnet');
+    const netwrok = resolve['netwrok'].selected;
+    assert.equal('mainnet', netwrok, 'new net should be mainnet');
   });
 
   const test = 'zil1tleu4cfvj7zslr9rmvkey84dzf5suwxr9n7lhj';
