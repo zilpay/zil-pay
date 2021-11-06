@@ -9,10 +9,7 @@
   };
 </script>
 
-<main
-  in:fly={flyTransition.in}
-  out:fly={flyTransition.out}
->
+<main in:fly={flyTransition.in}>
   <h1>
     {$_('wallet_created.title')}
   </h1>

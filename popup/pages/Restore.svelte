@@ -51,10 +51,7 @@
 	};
 </script>
 
-<main
-  in:fly={flyTransition.in}
-  out:fly={flyTransition.out}
->
+<main in:fly={flyTransition.in}>
   <NavClose title={$_('restore.title')}/>
   <form on:submit={handleSubmit}>
     <label>

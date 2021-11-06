@@ -5,10 +5,7 @@
 	import flyTransition from 'popup/transitions/fly';
 </script>
 
-<section
-	in:fly={flyTransition.in}
-	out:fly={flyTransition.out}
->
+<section in:fly={flyTransition.in}>
 	<TopBar />
 	<main>
 		<button>

@@ -59,10 +59,7 @@
 	}
 </script>
 
-<main
-  in:fly={flyTransition.in}
-  out:fly={flyTransition.out}
->
+<main in:fly={flyTransition.in}>
 	<BackBar
     length={3}
     selected={2}

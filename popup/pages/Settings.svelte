@@ -53,10 +53,7 @@
 
 <section>
 	<main>
-		<ul
-			in:fly={flyTransition.in}
-			out:fly={flyTransition.out}
-		>
+		<ul in:fly={flyTransition.in}>
 			{#each items as item, i}
 				<li
 					class:border={i !== items.length - 1}

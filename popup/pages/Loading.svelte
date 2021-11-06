@@ -10,10 +10,7 @@
 	let state = null;
 </script>
 
-<main
-	in:fly={flyTransition.in}
-	out:fly={flyTransition.out}
->
+<main in:fly={flyTransition.in}>
 	<h1>
 		{$_('loading.title')}
 	</h1>

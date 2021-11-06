@@ -66,10 +66,7 @@
 		src="/imgs/logo.webp"
 		alt="logo"
 	>
-	<main
-		in:fly={flyTransition.in}
-		out:fly={flyTransition.out}
-	>
+	<main in:fly={flyTransition.in}>
 		<div class="bar-wrapper">
 			<div on:click={onToggleLeftBar}>
 				<Burger />

@@ -6,10 +6,7 @@
 
 </script>
 
-<main
-	in:fly={flyTransition.in}
-	out:fly={flyTransition.out}
->
+<main in:fly={flyTransition.in}>
 	<img
 		src="/imgs/logo.webp"
 		alt="logo"

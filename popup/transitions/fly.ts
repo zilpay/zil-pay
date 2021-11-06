@@ -10,7 +10,7 @@ export default {
   in: {
     delay: 100,
     duration: 400,
-    y: -10
+    y: -20
   },
   out: {
     duration: 100,

@@ -41,10 +41,7 @@
 			{$_('accounts.no_accounts')} {search}
 		</p>
 	{/if}
-	<ul
-		in:fly={flyTransition.in}
-		out:fly={flyTransition.out}
-	>
+	<ul in:fly={flyTransition.in} >
 		{#each identities as account, index}
 			<li on:click={() => onSelectAccount(index)}>
 				<AccountCard
