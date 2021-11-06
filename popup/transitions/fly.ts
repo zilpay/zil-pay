@@ -9,7 +9,7 @@
 export default {
   in: {
     delay: 100,
-    duration: 200,
+    duration: 400,
     y: -10
   },
   out: {
