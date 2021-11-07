@@ -66,6 +66,7 @@ export class ZilPayWallet {
         payload.privKey,
         payload.name
       );
+      await this.#core.transactions.sync();
 
       sendResponse({
         resolve: this.#core.state
