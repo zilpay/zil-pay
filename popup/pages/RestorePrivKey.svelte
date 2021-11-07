@@ -11,7 +11,7 @@
     DEFAULT_KEY_NAME
   } from 'popup/config/account';
 	import walletStore from 'popup/store/wallet';
-	import { createNextSeedAccount } from 'popup/backend/wallet';
+	import { importPrivateKey } from 'popup/backend/wallet';
 
   import NavClose from '../components/NavClose.svelte';
 	import Loader from '../components/Loader.svelte';
@@ -25,7 +25,7 @@
   let name = `${DEFAULT_KEY_NAME} ${lastIndex}`;
 	let loading = false;
 
-  $: disabled = loading || name.length < MIN_NAME_LEN;
+  $: disabled = loading || name.length < MIN_NAME_LEN || key.length !== 64;
 
   const handleInputTextarea = () => {
 		error = '';
@@ -35,11 +35,12 @@
     loading = true;
 
 		try {
-      // await createNextSeedAccount(name);
-      error = 'dasdsadsadsa';
-      // push('/');
+      await importPrivateKey(key, name);
+      balanceUpdate();
+      push('/');
 			loading = false;
 		} catch (err) {
+      error = String(err.message);
       loading = false;
 		}
   };
@@ -51,7 +52,7 @@
     in:fly={flyTransition.in}
     on:submit={handleSubmit}
   >
-    <label>
+    <label class:error="{Boolean(error)}">
       {error}
       <textarea
         bind:value={key}
@@ -102,10 +103,18 @@
   form {
     width: 100%;
     @include flex-center-column;
-
-    & > input, button {
-      max-width: 290px;
-      margin: 10px;
-    }
+  }
+  input,
+  button {
+    margin: 10px;
+  }
+  input {
+    width: 100%;
+  }
+  button {
+    max-width: 290px;
+  }
+  label {
+    @include flex-column;
   }
 </style>

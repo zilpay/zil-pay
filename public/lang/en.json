@@ -89,7 +89,7 @@
   },
   "import_priv_key": {
     "title": "Import PrivateKey",
-    "placeholder": "Input PrivateKey (64 length byte string)."
+    "placeholder": "Input PrivateKey (32 bytes)."
   },
   "wallet_created": {
     "title": "Wallet is generated!",

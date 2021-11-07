@@ -78,3 +78,16 @@ export async function balanceUpdate() {
   updateState(state);
   return state;
 }
+
+export async function importPrivateKey(privKey: string, name: string) {
+  const data = await new Message({
+    type: MTypePopup.IMPORT_PRIVATE_KEY,
+    payload: {
+      name,
+      privKey
+    }
+  }).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}

@@ -22,7 +22,7 @@
   };
 </script>
 
-<label>
+<label class="search-box">
   <div>
     <SvgLoader src="/vectors/search.svg" />
   </div>
@@ -36,7 +36,7 @@
 <style lang="scss">
   @import "../styles/mixins";
 
-  label {
+  label.search-box {
     background: var(--card-color);
     border-radius: 8px;
 

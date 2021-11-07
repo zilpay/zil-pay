@@ -289,7 +289,7 @@ export class AccountController {
       privKey: encryptedPrivateKey,
       zrc2,
       nft: {}
-    };
+    };    
     await this._add(account);
     return account;
   }

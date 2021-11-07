@@ -14,7 +14,7 @@
   export let show = false;
 
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
-  $: canRemove = account.index !== 0 && account.type !== AccountTypes.seed;
+  $: canRemove = !(account.index === 0 && account.type === AccountTypes.Seed);
 
   const onClose = () => {
     dispatch('close');

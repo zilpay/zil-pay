@@ -11,7 +11,7 @@
     DEFAULT_NAME
   } from 'popup/config/account';
 	import walletStore from 'popup/store/wallet';
-	import { createNextSeedAccount } from 'popup/backend/wallet';
+	import { createNextSeedAccount, balanceUpdate } from 'popup/backend/wallet';
 
   import NavClose from '../components/NavClose.svelte';
 	import Loader from '../components/Loader.svelte';
@@ -31,6 +31,7 @@
 
 		try {
       await createNextSeedAccount(name);
+      balanceUpdate();
       push('/');
 			loading = false;
 		} catch (err) {
