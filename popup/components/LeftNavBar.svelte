@@ -1,12 +1,19 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 	import { _ } from 'popup/i18n';
+  import { AccountTypes } from 'config/account-type';
 
-  import SvgLoader from './SvgLoader.svelte';
+	import walletStore from 'popup/store/wallet';
+
+  import Close from './Close.svelte';
+	import TextElement from './TextElement.svelte';
 
   const dispatch = createEventDispatcher();
 
   export let show = false;
+
+	$: account = $walletStore.identities[$walletStore.selectedAddress];
+  $: canRemove = account.index !== 0 && account.type !== AccountTypes.seed;
 
   const onClose = () => {
     dispatch('close');
@@ -15,28 +22,39 @@
 
 <nav class:show={show}>
   <h1>
-    {$_('home.nav.title')}
-    <span
-      class="close"
-      on:click={onClose}
-    >
-      <SvgLoader src="/vectors/close.svg" />
+    {account.name}
+    <span on:click={onClose}>
+      <Close />
     </span>
   </h1>
   <hr />
   <a href="/">
-    {$_('home.nav.optinos.add')}
+    <TextElement
+      title={$_('home.nav.optinos.add.title')}
+      description={$_('home.nav.optinos.add.description')}
+    />
   </a>
   <a href="/">
-    {$_('home.nav.optinos.import')}
+    <TextElement
+      title={$_('home.nav.optinos.import.title')}
+      description={$_('home.nav.optinos.import.description')}
+    />
   </a>
   <a href="/">
-    {$_('home.nav.optinos.connect')}
+    <TextElement
+      title={$_('home.nav.optinos.connect.title')}
+      description={$_('home.nav.optinos.connect.description')}
+    />
   </a>
   <hr />
-  <a href="/">
-    {$_('home.nav.optinos.remove')}
-  </a>
+  {#if canRemove}
+    <a href="/">
+      <TextElement
+        title={$_('home.nav.optinos.remove.title')}
+        description={$_('home.nav.optinos.remove.description')}
+      />
+    </a>
+  {/if}
 </nav>
 <div
   class:show={show}
@@ -67,6 +85,7 @@
     }
   }
   h1 {
+    margin-block-end: 0;
     @include flex-between-row;
 
     & > span {
@@ -83,8 +102,9 @@
     padding-left: 15px;
 
     display: none;
-    min-width: 220px;
-    width: fit-content;
+    min-width: 270px;
+    max-width: 400px;
+    width: calc(100vw - 30px);
     height: 100vh;
     z-index: 5;
 
@@ -99,19 +119,6 @@
     animation: backInLeft 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
   }
-  a {
-    color: var(--text-color);
-    font-family: Demi;
-    line-height: 20px;
-
-    font-size: 16px;
-    line-height: 25px;
-
-    &:hover {
-      color: var(--primary-color);
-    }
-  }
-
   @keyframes backInLeft {
     0% {
       transform: translateX(-2000px);

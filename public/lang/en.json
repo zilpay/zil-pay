@@ -10,12 +10,23 @@
     },
     "token_list": "Token list",
     "nav": {
-      "title": "ZIlPay wallet",
       "optinos": {
-        "add": "Add next account.",
-        "import": "Import privateKey.",
-        "connect": "Connect ledger.",
-        "remove": "Remove current account."
+        "add": {
+          "title": "Add account",
+          "description": "Generate next account from secret phrase."
+        },
+        "import": {
+          "title": "Import account",
+          "description": "Restore your account from PrivateKey."
+        },
+        "connect": {
+          "title": "Connect ledger.",
+          "description": "Generate hardware account from ledger device."
+        },
+        "remove": {
+          "title": "Remove current account.",
+          "description": "Remove/Hide your selected account."
+        }
       }
     }
   },
