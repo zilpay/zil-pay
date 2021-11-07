@@ -19,6 +19,7 @@ import SetupAccount from '../pages/SetupAccount.svelte';
 import WalletCreated from '../pages/WalletCreated.svelte';
 import PhraseVerify from '../pages/PhraseVerify.svelte';
 import Accounts from '../pages/Accounts.svelte';
+import AddAccount from '../pages/AddAccount.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -40,6 +41,12 @@ export default {
   }),
   '/accounts': wrap({
     component: Accounts,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/add-account': wrap({
+    component: AddAccount,
     conditions: [
       routerGuard
     ]

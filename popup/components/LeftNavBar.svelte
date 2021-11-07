@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import { link } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
   import { AccountTypes } from 'config/account-type';
 
@@ -28,7 +29,7 @@
     </span>
   </h1>
   <hr />
-  <a href="/">
+  <a href="/add-account" use:link>
     <TextElement
       title={$_('home.nav.optinos.add.title')}
       description={$_('home.nav.optinos.add.description')}
@@ -48,7 +49,10 @@
   </a>
   <hr />
   {#if canRemove}
-    <a href="/">
+    <a
+      href="/"
+      class="remove"
+    >
       <TextElement
         title={$_('home.nav.optinos.remove.title')}
         description={$_('home.nav.optinos.remove.description')}
@@ -118,6 +122,9 @@
 
     animation: backInLeft 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
+  }
+  a.remove {
+    margin-block-start: 30px;
   }
   @keyframes backInLeft {
     0% {
