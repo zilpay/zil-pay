@@ -20,6 +20,7 @@ import WalletCreated from '../pages/WalletCreated.svelte';
 import PhraseVerify from '../pages/PhraseVerify.svelte';
 import Accounts from '../pages/Accounts.svelte';
 import AddAccount from '../pages/AddAccount.svelte';
+import RestorePrivKey from '../pages/RestorePrivKey.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -47,6 +48,12 @@ export default {
   }),
   '/add-account': wrap({
     component: AddAccount,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/import-privkey': wrap({
+    component: RestorePrivKey,
     conditions: [
       routerGuard
     ]

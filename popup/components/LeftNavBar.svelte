@@ -35,7 +35,7 @@
       description={$_('home.nav.optinos.add.description')}
     />
   </a>
-  <a href="/">
+  <a href="/import-privkey" use:link>
     <TextElement
       title={$_('home.nav.optinos.import.title')}
       description={$_('home.nav.optinos.import.description')}

@@ -136,30 +136,4 @@
       min-width: 290px;
     }
   }
-  textarea {
-    outline: none;
-    resize: none;
-    overflow: hidden;
-
-    border-radius: 8px;
-    padding: 14px;
-    margin-bottom: 30px;
-    box-sizing: border-box;
-
-    height: calc(100vh - 600px);
-    min-height: 200px;
-    width: calc(100vw - 30px);
-    max-width: 600px;
-
-    background: var(--background-color);
-    border-color: var(--text-color);
-    color: var(--text-color);
-
-		@include fluid-font(320px, 600px, 16px, 33px);
-
-    &.error {
-      color: var(--danger-color);
-      border-color: var(--danger-color);
-    }
-  }
 </style>

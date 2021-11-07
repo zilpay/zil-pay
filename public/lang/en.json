@@ -87,6 +87,10 @@
     "name_description": "A wallet name is using to help you distinguish different account from one another.",
     "pass_description": "A password required for encrypt and protect your keys."
   },
+  "import_priv_key": {
+    "title": "Import PrivateKey",
+    "placeholder": "Input PrivateKey (64 length byte string)."
+  },
   "wallet_created": {
     "title": "Wallet is generated!",
     "subt_title": "Your account has been created - Keep your secret phase safe, it’s your responsibility!",

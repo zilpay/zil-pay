@@ -1,0 +1,16 @@
+@import "../mixins";
+
+:global(label) {
+  color: var(--danger-color);
+  @include fluid-font(320px, 600px, 13px, 20px);
+  @include flex-column;
+  font-family: Regular;
+
+  padding-left: 15px;
+  padding-right: 15px;
+
+  & > input {
+    width: 100%;
+    min-width: 290px;
+  }
+}
