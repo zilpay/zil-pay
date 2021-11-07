@@ -19,7 +19,10 @@
 	);
 	$: selectedAccount = $walletStore.identities[$walletStore.selectedAddress];
 
-	const onSelectAccount = async (index: number) => {
+	const onSelectAccount = async (account) => {
+		const index = $walletStore.identities.findIndex(
+			(a) => a.base16 === account.base16
+		);
 		await selectAccount(index);
 		balanceUpdate();
 		push('/');
@@ -43,7 +46,7 @@
 	{/if}
 	<ul in:fly={flyTransition.in} >
 		{#each identities as account, index}
-			<li on:click={() => onSelectAccount(index)}>
+			<li on:click={() => onSelectAccount(account)}>
 				<AccountCard
 					account={account}
 					selected={account.base16 === selectedAccount.base16}
@@ -66,6 +69,7 @@
     margin: 0;
     overflow-y: scroll;
     list-style: none;
+		padding-top: 10px;
 
 		max-width: 390px;
 		width: 100%;
@@ -73,7 +77,7 @@
 
 		& > li {
 			cursor: pointer;
-			margin: 15px;
+			margin: 10px;
 			background-color: var(--card-color);
 			border-radius: 8px;
 			border: solid 1px var(--card-color);

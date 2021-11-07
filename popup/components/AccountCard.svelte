@@ -51,6 +51,7 @@
 		margin-block-end: 0;
 		margin-block-start: 0.8em;
     font-size: 16px;
+    max-width: 127px;
 
     @include text-shorten;
 	}
