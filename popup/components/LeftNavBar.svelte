@@ -5,6 +5,7 @@
   import { AccountTypes } from 'config/account-type';
 
 	import walletStore from 'popup/store/wallet';
+	import { removeAccount } from 'popup/backend/wallet';
 
   import Close from './Close.svelte';
 	import TextElement from './TextElement.svelte';
@@ -18,6 +19,10 @@
 
   const onClose = () => {
     dispatch('close');
+  };
+  const onRemoveAccount = async () => {
+    await removeAccount();
+    onClose();
   };
 </script>
 
@@ -49,15 +54,15 @@
   </a>
   <hr />
   {#if canRemove}
-    <a
-      href="/"
+    <span
       class="remove"
+      on:click={onRemoveAccount}
     >
       <TextElement
         title={$_('home.nav.optinos.remove.title')}
         description={$_('home.nav.optinos.remove.description')}
       />
-    </a>
+    </span>
   {/if}
 </nav>
 <div
@@ -123,7 +128,8 @@
     animation: backInLeft 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
   }
-  a.remove {
+  span.remove {
+    cursor: pointer;
     margin-block-start: 30px;
   }
   @keyframes backInLeft {

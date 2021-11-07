@@ -91,3 +91,12 @@ export async function importPrivateKey(privKey: string, name: string) {
   updateState(state);
   return state;
 }
+
+export async function removeAccount() {
+  const data = await Message.signal(
+    MTypePopup.RM_ACCOUNT
+  ).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}

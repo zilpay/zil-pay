@@ -77,6 +77,22 @@ export class ZilPayWallet {
     }
   }
 
+  public async removeAccount(sendResponse: StreamResponse) {
+    try {
+      const index = this.#core.account.wallet.selectedAddress;
+      await this.#core.account.remove(index);
+      await this.#core.transactions.sync();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async importKeyStore(sendResponse?: StreamResponse) {}
 
   public async createAccountBySeed(name: string, sendResponse?: StreamResponse) {

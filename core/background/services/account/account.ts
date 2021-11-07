@@ -85,7 +85,9 @@ export class AccountController {
   }
 
   public async remove(index: number) {
-    assert(index > 1, ErrorMessages.OutOfIndex);
+    const account = this.wallet.identities[index];
+    assert(Boolean(account), ErrorMessages.OutOfIndex);
+    assert(!(account.index === 0 && account.type === AccountTypes.Seed), ErrorMessages.OutOfIndex);
 
     delete this.#wallet.identities[index];
 

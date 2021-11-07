@@ -57,6 +57,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.RM_TOKEN:
         core.zrc2.removeToken(msg.payload.index, sendResponse);
         return true;
+      case MTypePopup.RM_ACCOUNT:
+        core.wallet.removeAccount(sendResponse);
+        return true;
       case MTypePopup.ADD_ZRC2_TOKEN:
         core.zrc2.addZRC2(msg.payload, sendResponse);
         return true;

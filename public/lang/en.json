@@ -24,7 +24,7 @@
           "description": "Generate hardware account from ledger device."
         },
         "remove": {
-          "title": "Remove current account.",
+          "title": "Remove account.",
           "description": "Remove/Hide your selected account."
         }
       }
