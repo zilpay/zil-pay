@@ -31,12 +31,17 @@
 
 		try {
       await createNextSeedAccount(name);
-      balanceUpdate();
-      push('/');
-			loading = false;
 		} catch (err) {
-      loading = false;
+      ////
 		}
+
+    try {
+      await balanceUpdate();
+    } catch {
+      ///
+    }
+    push('/');
+    loading = false;
   };
 </script>
 

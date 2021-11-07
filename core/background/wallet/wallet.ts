@@ -62,13 +62,13 @@ export class ZilPayWallet {
 
   public async importPrivateKey(payload: PrivateKeyName, sendResponse: StreamResponse) {
     try {
-      const account = await this.#core.account.addAccountFromPrivateKey(
+      await this.#core.account.addAccountFromPrivateKey(
         payload.privKey,
         payload.name
       );
 
       sendResponse({
-        resolve: account
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
