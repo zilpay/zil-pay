@@ -35,11 +35,11 @@
     </p>
   </div>
 </div>
-<div>
+<div class="values">
   <h2>
     {formatNumber(balance, ZIL.symbol)}
   </h2>
-  <p class="converted">
+  <p>
     {formatNumber(converted, $currencyStore)}
   </p>
 </div>
@@ -50,7 +50,7 @@
 		color: var(--text-color);
 		margin-block-end: 0;
 		margin-block-start: 0.8em;
-    font-size: 16px;
+    font-size: 14px;
     max-width: 127px;
 
     @include text-shorten;
@@ -60,9 +60,12 @@
 		margin-block-end: 0.8;
 		margin-block-start: 0em;
     font-size: 12px;
-
-    &.converted {
+  }
+  div.values {
+    & > h2,
+    & > p {
       text-transform: uppercase;
+      text-align: right;
     }
   }
   div.radio {
@@ -71,7 +74,7 @@
     background: var(--background-color);
     border: solid 3px var(--background-color);
     border-radius: 100%;
-    margin-right: 15px;
+    margin-right: 10px;
 
     &.selected {
       border: solid 3px var(--background-color);

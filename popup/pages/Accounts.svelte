@@ -15,7 +15,7 @@
 	let search = '';
 
 	$: identities = $walletStore.identities.filter(
-		(acc) => acc.name.includes(search)
+		(acc) => String(acc.name).toLowerCase().includes(String(search).toLowerCase())
 	);
 	$: selectedAccount = $walletStore.identities[$walletStore.selectedAddress];
 
@@ -82,8 +82,8 @@
 			border-radius: 8px;
 			border: solid 1px var(--card-color);
 
-			padding-left: 20px;
-			padding-right: 20px;
+			padding-left: 10px;
+			padding-right: 10px;
 
 			@include flex-between-row;
 

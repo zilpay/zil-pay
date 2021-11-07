@@ -46,6 +46,6 @@
   p {
     margin: 0;
     @include text-shorten;
-    @include fluid-font(320px, 1024px, 11px, 14px);
+    @include fluid-font(320px, 1024px, 10px, 14px);
   }
 </style>
