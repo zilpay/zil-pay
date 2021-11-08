@@ -43,7 +43,7 @@
 <main>
 	<NavClose title={$_('send.title')}/>
   <div in:fly={flyTransition.in}>
-    <div class="card-wrapper">
+    <div>
       <SelectCard
         title={$_('send.cards.transfer')}
         header={account.name}
@@ -66,13 +66,23 @@
         />
       </SelectCard>
     </div>
-    <div>
-
-    </div>
-    <div></div>
-    <button class="primary">
-      {$_('send.send_btn')}
-    </button>
+    <form>
+      <label>
+        {$_('send.input_to.title')}
+        <input
+          placeholder={$_('send.input_to.placeholder')}
+        >
+      </label>
+      <label>
+        {$_('send.input_value.title')}
+        <input
+          placeholder={$_('send.input_value.placeholder')}
+        >
+      </label>
+      <button class="primary">
+        {$_('send.send_btn')}
+      </button>
+    </form>
   </div>
 </main>
 
@@ -83,8 +93,20 @@
 		height: 100vh;
 
 		@include flex-center-top-column;
+
+    & > div {
+      width: 100%;
+      max-width: 500px;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
 	}
-  div.card-wrapper {
-    margin: 15px;
+  form {
+    margin-block-start: 30px;
+		@include flex-center-top-column;
+
+    & > button {
+      width: 290px;
+    }
   }
 </style>

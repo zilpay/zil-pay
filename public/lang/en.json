@@ -31,11 +31,19 @@
     }
   },
   "send": {
-    "title": "Send",
+    "title": "Token transfer",
     "send_btn": "Continue",
     "cards": {
       "transfer": "Sender account",
       "token": "Token to send"
+    },
+    "input_to": {
+      "title": "Recipient",
+      "placeholder": "Enter address (zil1) or .zil domain name"
+    },
+    "input_value": {
+      "title": "Amount",
+      "placeholder": "0"
     }
   },
   "lock": {
