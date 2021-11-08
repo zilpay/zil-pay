@@ -21,6 +21,7 @@ import PhraseVerify from '../pages/PhraseVerify.svelte';
 import Accounts from '../pages/Accounts.svelte';
 import AddAccount from '../pages/AddAccount.svelte';
 import RestorePrivKey from '../pages/RestorePrivKey.svelte';
+import Send from '../pages/Send.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -32,7 +33,6 @@ import Contacts from '../pages/settings/Contacts.svelte';
 import Security from '../pages/settings/Security.svelte';
 import General from '../pages/settings/General.svelte';
 
-
 export default {
   '/': wrap({
     component: Home,
@@ -42,6 +42,12 @@ export default {
   }),
   '/accounts': wrap({
     component: Accounts,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/send': wrap({
+    component: Send,
     conditions: [
       routerGuard
     ]

@@ -30,6 +30,14 @@
       }
     }
   },
+  "send": {
+    "title": "Send",
+    "send_btn": "Continue",
+    "cards": {
+      "transfer": "Sender account",
+      "token": "Token to send"
+    }
+  },
   "lock": {
       "title": "Welcome back!",
       "placeholder": "Password",

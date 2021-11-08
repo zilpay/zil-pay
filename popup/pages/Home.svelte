@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
-  import { link } from 'svelte-spa-router';
+  import { link, push } from 'svelte-spa-router';
 	import { fly } from 'svelte/transition';
 
 	import { fromDecimals } from 'popup/filters/units';
@@ -84,7 +84,10 @@
 			{formatNumber(converted, $currencyStore)}
 		</h1>
 		<div class="btns">
-			<button class="action">
+			<button
+				class="action"
+				on:click={() => push('/send')}
+			>
 				{$_('home.btns.send')}
 			</button>
 			<button class="action">

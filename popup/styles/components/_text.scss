@@ -16,3 +16,8 @@
   font-family: Bold;
   color: var(--text-color);
 }
+
+:global(b) {
+  font-family: Demi;
+  color: var(--muted-color);
+}

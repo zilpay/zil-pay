@@ -51,14 +51,6 @@
 
     & > div {
       margin: 10px;
-
-      & > svg {
-        width: 24px;
-        height: 24px;
-        & > path {
-          fill: var(--muted-color);
-        }
-      }
     }
   }
 </style>
