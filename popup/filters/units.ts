@@ -11,7 +11,7 @@ import Big from 'big.js';
 Big.PE = 99;
 
 export function fromDecimals(balance: string, decimals: number) {
-  if (Number(balance) === 0) {
+  if (!balance || Number(balance) === 0) {
     return Big(0);
   }
 

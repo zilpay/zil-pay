@@ -6,12 +6,17 @@
 	import flyTransition from 'popup/transitions/fly';
 
   import { trim } from 'popup/filters/trim';
+  import { fromDecimals } from 'popup/filters/units';
   import { viewIcon } from 'lib/block-explorer/view';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
+  import { formatNumber } from 'popup/filters/n-format';
+  import { convertRate } from 'popup/filters/convert-rate';
 
   import zrcStore from 'app/store/zrc';
 	import walletStore from 'popup/store/wallet';
+  import rateStore from 'popup/store/rate';
   import themeStore from 'popup/store/theme';
+	import currencyStore from 'popup/store/currency';
 
 	import { balanceUpdate } from 'popup/backend/wallet';
 
@@ -22,8 +27,13 @@
   let selectedToken = 0;
 
 	$: account = $walletStore.identities[selectedAccount];
+
   $: token = $zrcStore[selectedToken];
   $: tokenIcon = viewIcon(token.bech32, $themeStore);
+
+  $: balance = fromDecimals(account.zrc2[token.base16], token.decimals).round(7);
+	$: rate = $rateStore[$currencyStore];
+  $: converted = convertRate(rate, balance).round(7);
 
   onMount(() => {
 		jazziconCreate('jazzicon', account.base16);
@@ -46,6 +56,8 @@
         title={$_('send.cards.token')}
         header={token.symbol}
         text={token.name}
+        rightHeader={formatNumber(balance)}
+        rightText={formatNumber(converted, $currencyStore)}
       >
         <img
           src={tokenIcon}
@@ -54,8 +66,10 @@
         />
       </SelectCard>
     </div>
-    <div class="card"></div>
-    <div class="card"></div>
+    <div>
+
+    </div>
+    <div></div>
     <button class="primary">
       {$_('send.send_btn')}
     </button>
@@ -72,33 +86,5 @@
 	}
   div.card-wrapper {
     margin: 15px;
-
-    & > .card {
-      & > p {
-        margin: 0;
-      }
-      & > div {
-        cursor: pointer;
-        padding-left: 15px;
-        padding-right: 15px;
-        min-width: 290px;
-        @include flex-between-row;
-
-        & > span {
-          margin-right: 10px;
-        }
-        & > div {
-          width: 100%;
-
-          & > h3 {
-            margin-block-end: 0;
-          }
-          & > p {
-            font-size: 12px;
-            margin-block-start: 0;
-          }
-        }
-      }
-    }
   }
 </style>

@@ -3,6 +3,8 @@
   export let title = '';
   export let header = '';
   export let text = '';
+  export let rightHeader = '';
+  export let rightText = '';
 </script>
 
 <div class="card">
@@ -21,7 +23,19 @@
         {text}
       </p>
     </div>
-    <Arrow />
+    {#if rightHeader && rightText}
+      <div class="right">
+        <h3>
+          {rightHeader}
+        </h3>
+        <p>
+          {rightText}
+        </p>
+      </div>
+    {/if}
+    <b>
+      <Arrow />
+    </b>
   </div>
 </div>
 
@@ -44,6 +58,10 @@
       }
       & > div {
         width: 100%;
+
+        &.right {
+          text-align: right;
+        }
 
         & > h3 {
           margin-block-end: 0;
