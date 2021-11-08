@@ -79,6 +79,7 @@
           placeholder={$_('send.input_value.placeholder')}
         >
       </label>
+      <hr />
       <button class="primary">
         {$_('send.send_btn')}
       </button>
@@ -102,10 +103,19 @@
     }
 	}
   form {
+    padding-left: 10px;
+    padding-right: 10px;
     margin-block-start: 30px;
 		@include flex-center-top-column;
 
+    & > label {
+      margin-block-start: 0.5rem;
+      margin-block-end: 0.5rem;
+      width: 100%;
+    }
+
     & > button {
+      margin-block-start: 1rem;
       width: 290px;
     }
   }

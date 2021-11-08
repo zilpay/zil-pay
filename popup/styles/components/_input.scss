@@ -11,8 +11,7 @@
   padding: 0.9rem;
   text-indent: 5px;
 
-  font-size: 16px;
-  line-height: 21px;
+  @include fluid-font(320px, 1024px, 13px, 16px);
 
   width: inherit;
 }
