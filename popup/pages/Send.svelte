@@ -4,6 +4,8 @@
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
+	import { TokenType } from 'popup/config/token-type';
+  import { uuidv4 } from 'lib/crypto/uuid';
 
   import { trim } from 'popup/filters/trim';
   import { fromDecimals } from 'popup/filters/units';
@@ -23,8 +25,14 @@
 	import NavClose from '../components/NavClose.svelte';
   import SelectCard from '../components/SelectCard.svelte';
 
+  export let params = {
+    type: TokenType.ZRC2,
+    index: 0
+  };
+
+  let uuid = uuidv4();
   let selectedAccount = $walletStore.selectedAddress;
-  let selectedToken = 0;
+  let selectedToken = params.index;
 
 	$: account = $walletStore.identities[selectedAccount];
 
@@ -36,7 +44,7 @@
   $: converted = convertRate(rate, balance).round(7);
 
   onMount(() => {
-		jazziconCreate('jazzicon', account.base16);
+		jazziconCreate(uuid, account.base16);
   });
 </script>
 
@@ -49,7 +57,7 @@
         header={account.name}
         text={trim(account.bech32)}
       >
-        <div id="jazzicon"/>
+        <div id={uuid}/>
       </SelectCard>
       <hr />
       <SelectCard

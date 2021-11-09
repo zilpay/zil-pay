@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import { viewIcon } from 'lib/block-explorer/view';
   import { fromDecimals } from 'popup/filters/units';
   import { convertRate } from 'popup/filters/convert-rate';
@@ -10,6 +11,8 @@
   import themeStore from 'popup/store/theme';
 	import zrcStore from 'popup/store/zrc';
 
+  const dispatch = createEventDispatcher();
+
   export let address: string;
   export let balance: string;
   export let symbol: string;
@@ -19,9 +22,16 @@
   $: balance = fromDecimals(balance, decimal).round(7);
 	$: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, balance).round(7);
+
+  const onClick = () => {
+    dispatch('select');
+  };
 </script>
 
-<div class="token-card">
+<div
+  class="token-card"
+  on:click={onClick}
+>
   <div>
     <p class="symbol">
       {symbol}

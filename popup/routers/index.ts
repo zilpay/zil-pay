@@ -46,7 +46,7 @@ export default {
       routerGuard
     ]
   }),
-  '/send': wrap({
+  '/send/:type/:index': wrap({
     component: Send,
     conditions: [
       routerGuard
