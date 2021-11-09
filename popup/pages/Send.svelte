@@ -24,12 +24,16 @@
 
 	import NavClose from '../components/NavClose.svelte';
   import SelectCard from '../components/SelectCard.svelte';
+  import SvgLoader from '../components/SvgLoader.svelte';
 
   export let params = {
     type: TokenType.ZRC2,
     index: 0
   };
 
+  let contactsModal = false;
+  let accountsModal = false;
+  let tokensModal = false;
   let uuid = uuidv4();
   let selectedAccount = $walletStore.selectedAddress;
   let selectedToken = params.index;
@@ -56,6 +60,7 @@
         title={$_('send.cards.transfer')}
         header={account.name}
         text={trim(account.bech32)}
+        on:click={() => accountsModal = !accountsModal}
       >
         <div id={uuid}/>
       </SelectCard>
@@ -66,6 +71,7 @@
         text={token.name}
         rightHeader={formatNumber(balance)}
         rightText={formatNumber(converted, $currencyStore)}
+        on:click={() => tokensModal = !tokensModal}
       >
         <img
           src={tokenIcon}
@@ -75,12 +81,22 @@
       </SelectCard>
     </div>
     <form>
-      <label>
-        {$_('send.input_to.title')}
-        <input
-          placeholder={$_('send.input_to.placeholder')}
-        >
-      </label>
+      <div class="input-element">
+        <p>
+          {$_('send.input_to.title')}
+        </p>
+        <label>
+          <div on:click={() => contactsModal = !contactsModal}>
+            <SvgLoader
+              src="/vectors/contact.svg"
+              className="cont-icon"
+            />
+          </div>
+          <input
+            placeholder={$_('send.input_to.placeholder')}
+          >
+        </label>
+      </div>
       <label>
         {$_('send.input_value.title')}
         <input
@@ -115,6 +131,34 @@
     padding-right: 10px;
     margin-block-start: 30px;
 		@include flex-center-top-column;
+
+    & > div.input-element {
+      width: 100%;
+
+      @include flex-column;
+
+      & > label {
+        background-color: var(--card-color);
+
+        @include flex-between-row;
+        @include border-radius(8px);
+
+        & > input {
+          width: 100%;
+          padding-left: 0;
+        }
+        & > div {
+          cursor: pointer;
+          padding: 20px;
+
+          &:hover {
+            :global(svg.cont-icon > path) {
+              fill: var(--primary-color);
+            }
+          }
+        }
+      }
+    }
 
     & > label {
       margin-block-start: 0.5rem;

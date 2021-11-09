@@ -6,6 +6,7 @@
   export let src;
   export let width = null;
   export let height = null;
+  export let className = '';
 
   let ref;
 
@@ -23,6 +24,9 @@
     }
     if (height) {
       ref.setAttribute('height', height);
+    }
+    if (className) {
+      ref.classList.add(className);
     }
   });
 </script>

@@ -42,7 +42,7 @@
       "placeholder": "Enter address (zil1) or .zil domain name"
     },
     "input_value": {
-      "title": "Amount",
+      "title": "Token amount",
       "placeholder": "0"
     }
   },

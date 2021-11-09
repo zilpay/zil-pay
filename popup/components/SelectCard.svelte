@@ -1,13 +1,24 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import Arrow from './icons/Arrow.svelte';
+
+  const dispatch = createEventDispatcher();
+
   export let title = '';
   export let header = '';
   export let text = '';
   export let rightHeader = '';
   export let rightText = '';
+
+  const onClick = () => {
+    dispatch('click');
+  };
 </script>
 
-<div class="card">
+<div
+  class="card"
+  on:click={onClick}
+>
   <p>
     {title}
   </p>

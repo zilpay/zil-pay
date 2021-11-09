@@ -38,11 +38,11 @@
 
   label.search-box {
     background: var(--card-color);
-    border-radius: 8px;
 
     max-width: 360px;
     width: calc(100vw - 25px);
 
+    @include border-radius(8px);
     @include flex-center-vert;
 
     & > input {
