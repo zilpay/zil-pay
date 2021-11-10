@@ -81,7 +81,7 @@
       </SelectCard>
     </div>
     <form>
-      <div class="input-element">
+      <div class="input">
         <p>
           {$_('send.input_to.title')}
         </p>
@@ -97,12 +97,29 @@
           >
         </label>
       </div>
-      <label>
-        {$_('send.input_value.title')}
-        <input
-          placeholder={$_('send.input_value.placeholder')}
-        >
-      </label>
+      <div class="input">
+        <p>
+          {$_('send.input_value.title')}
+        </p>
+        <label>
+          <div on:click={() => contactsModal = !contactsModal}>
+            <img
+              src={tokenIcon}
+              alt={token.symbol}
+              width="19"
+            />
+          </div>
+          <input
+            placeholder={$_('send.input_value.placeholder')}
+          >
+        </label>
+        <div class="percentage">
+          <span>0%</span>
+          <span>25%</span>
+          <span>50%</span>
+          <span>100%</span>
+        </div>
+      </div>
       <hr />
       <button class="primary">
         {$_('send.send_btn')}
@@ -129,16 +146,38 @@
   form {
     padding-left: 10px;
     padding-right: 10px;
-    margin-block-start: 30px;
+    margin-block-start: 15px;
 		@include flex-center-top-column;
 
-    & > div.input-element {
+    & > div.input {
       width: 100%;
 
       @include flex-column;
 
+      & > div.percentage {
+        margin-block-start: 10px;
+        margin-block-end: 10px;
+        padding-left: 30px;
+        padding-right: 30px;
+
+        @include flex-between-row;
+
+        & > span {
+          font-family: Demi;
+          color: var(--text-color);
+          cursor: pointer;
+
+          @include fluid-font(320px, 1024px, 13px, 16px);
+
+          &:hover {
+            color: var(--primary-color);
+          }
+        }
+      }
       & > label {
         background-color: var(--card-color);
+
+        max-height: 60px;
 
         @include flex-between-row;
         @include border-radius(8px);
