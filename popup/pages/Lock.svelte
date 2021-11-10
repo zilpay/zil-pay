@@ -63,14 +63,12 @@
 			<input
 				bind:this={inputEl}
 				bind:value={password}
+				class:error={Boolean(error)}
 				type="password"
 				placeholder={$_('lock.placeholder')}
 				on:blur={handleBlur}
 				on:input={handleInput}
 			>
-			<span>
-				{error}
-			</span>
 		</label>
 		<button
 			class="primary"
@@ -113,10 +111,9 @@
 	label {
 		width: inherit;
 
-		span {
-			width: inherit;
-			color: var(--danger-color);
-			@include text-shorten;
+		& > input.error {
+			outline-color: var(--danger-color);
+			animation: shake .4s linear;
 		}
 	}
 
