@@ -13,11 +13,14 @@
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
   import { formatNumber } from 'popup/filters/n-format';
   import { convertRate } from 'popup/filters/convert-rate';
+  import { fromPercent } from 'popup/filters/from-percent';
+  import { gasToFee } from 'popup/filters/gas-to-fee';
 
   import zrcStore from 'app/store/zrc';
 	import walletStore from 'popup/store/wallet';
   import rateStore from 'popup/store/rate';
   import themeStore from 'popup/store/theme';
+  import gasStore from 'popup/store/gas';
 	import currencyStore from 'popup/store/currency';
 
 	import { balanceUpdate } from 'popup/backend/wallet';
@@ -37,6 +40,9 @@
   let uuid = uuidv4();
   let selectedAccount = $walletStore.selectedAddress;
   let selectedToken = params.index;
+  let percentageList = [0, 25, 50, 100];
+  let amount;
+  let qaAmount = '0';
 
 	$: account = $walletStore.identities[selectedAccount];
 
@@ -50,6 +56,14 @@
   onMount(() => {
 		jazziconCreate(uuid, account.base16);
   });
+  const handleOnPercentage = (percent: number) => {
+    const { gasLimit, gasPrice } = $gasStore;
+    const { _fee } = gasToFee(gasLimit, gasPrice);
+    const value = fromPercent(token, account.zrc2[token.base16], _fee, percent);
+    const formated = fromDecimals(value, token.decimals);
+    qaAmount = String(value);
+    amount = String(formated);
+  };
 </script>
 
 <main>
@@ -110,14 +124,14 @@
             />
           </div>
           <input
+            bind:value={amount}
             placeholder={$_('send.input_value.placeholder')}
           >
         </label>
         <div class="percentage">
-          <span>0%</span>
-          <span>25%</span>
-          <span>50%</span>
-          <span>100%</span>
+          {#each percentageList as percentage}
+            <span on:click={() => handleOnPercentage(percentage)}>{percentage}%</span>
+          {/each}
         </div>
       </div>
       <hr />
