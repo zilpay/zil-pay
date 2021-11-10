@@ -165,6 +165,7 @@
 
     & > div.input {
       width: 100%;
+      max-width: 290px;
 
       @include flex-column;
 
@@ -211,12 +212,6 @@
           }
         }
       }
-    }
-
-    & > label {
-      margin-block-start: 0.5rem;
-      margin-block-end: 0.5rem;
-      width: 100%;
     }
 
     & > button {
