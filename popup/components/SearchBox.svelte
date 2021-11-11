@@ -39,9 +39,8 @@
   label.search-box {
     background: var(--card-color);
 
-    max-width: 360px;
-    width: calc(100vw - 25px);
-
+    max-width: 300px;
+    width: 100%;
     @include border-radius(8px);
     @include flex-center-vert;
 

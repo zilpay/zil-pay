@@ -1,15 +1,19 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
+  import Close from './Close.svelte';
+
   const dispatch = createEventDispatcher();
 
   export let title = '';
   export let show: boolean;
 
   let node = null;
+
+  const onClose = () => dispatch('close');
   const onToggle = (e) => {
-    if (e.target == node) {
-      dispatch('close');
+    if (e.target === node) {
+      onClose();
     }
   };
 </script>
@@ -21,7 +25,12 @@
 >
   <div class="modal">
     <div class="title">
-      <h1>{title}</h1>
+      <h1>
+        {title}
+      </h1>
+      <span on:click={onClose}>
+        <Close />
+      </span>
     </div>
     <div>
       <slot />
@@ -54,11 +63,13 @@
         z-index: 100;
 
         & > div.title {
-          padding-top: 10px;
-          padding-left: 10px;
+          padding-block-start: 0.4em;
+          padding-left: 15px;
+          padding-right: 15px;
           font-size: 26px;
 
           @include fluid-font(320px, 720px, 16px, 22px);
+          @include flex-between-row;
         }
 
         @media screen and (min-width: 899px) {
