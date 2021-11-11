@@ -54,7 +54,8 @@ export const MTypePopup = {
   GET_ACCOUNT_NONCE: `@/${app}/get-account-nonce`,
   ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
 
-  USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`
+  USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
+  RM_APP: `@/${app}/remove-dapp`
 };
 
 export const MTypeTab = {

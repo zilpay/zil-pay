@@ -21,11 +21,6 @@
 
   @include fluid-font(320px, 600px, 16px, 33px);
 
-  &.error {
-    color: var(--danger-color);
-    border-color: var(--danger-color);
-  }
-
   &:focus {
     border-color: var(--text-color);
   }

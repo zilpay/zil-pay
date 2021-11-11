@@ -311,9 +311,6 @@ export async function testFromOld(core: ZIlPayBackground) {
     icon: 'https://zilpay.io/favicon/apple-icon-192x192.png',
     title: 'zilpay'
   };
-  await core.apps.addApp(newApp, ({ resolve }) => {
-    assert.deepEqual(resolve[0], newApp, 'App doesn not mach');
-  });
 
   await core.apps.addConfirm(newApp, ({ resolve }) => {
     assert.deepEqual(resolve, newApp, 'App doesn not mach');

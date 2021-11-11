@@ -9,6 +9,15 @@
   }
 }
 
+:global(label) {
+  color: var(--text-color);
+  font-family: Regular;
+  & > input {
+    width: 100%;
+    min-width: 290px;
+  }
+}
+
 :global(label.error) {
   color: var(--danger-color);
 }

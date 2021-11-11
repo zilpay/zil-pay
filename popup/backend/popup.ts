@@ -22,3 +22,15 @@ export async function userResponseConnection(confirmed: boolean) {
   updateState(state);
   return state;
 }
+
+export async function removeConnection(index: number) {
+  const data = await new Message({
+    type: MTypePopup.RM_APP,
+    payload: {
+      index
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

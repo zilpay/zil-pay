@@ -8,6 +8,7 @@
 </script>
 
 <div class="card-btn">
+  <slot />
   <div>
     <b>
       {title}

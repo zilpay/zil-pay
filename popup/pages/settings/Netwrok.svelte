@@ -190,7 +190,7 @@
     margin-top: 30px;
     @include flex-center-column;
 
-    & > input, button {
+    & > button {
       max-width: 290px;
       margin: 10px;
     }

@@ -24,6 +24,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypeTab.CONNECT_APP:
         core.apps.addConfirm(msg.payload, sendResponse);
         return true;
+      case MTypePopup.RM_APP:
+        core.apps.removeApp(msg.payload.index, sendResponse);
+        return true;
       case MTypePopup.USER_RESPONSE_DAPP:
         core.apps.userResponse(msg.payload.confirmed, sendResponse);
         return true;
