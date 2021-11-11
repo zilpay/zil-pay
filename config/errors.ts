@@ -44,5 +44,6 @@ export enum ErrorMessages {
   HightNonce = 'nonce too hight',
 
   Disabled = 'ZilPay is disabled.',
-  Connect = 'User is\'t connections.'
+  Connect = 'User is\'t connections.',
+  Rejected = 'Rejected by user'
 }

@@ -24,8 +24,8 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypeTab.CONNECT_APP:
         core.apps.addConfirm(msg.payload, sendResponse);
         return true;
-      case MTypeTab.IS_CONNECTED_APP:
-        /// TODO: add info about connection app.
+      case MTypePopup.USER_RESPONSE_DAPP:
+        core.apps.userResponse(msg.payload.confirmed, sendResponse);
         return true;
       case MTypeTab.CALL_TO_SIGN_TX:
         core.transaction.addConfirm(msg.payload, sendResponse);

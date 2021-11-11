@@ -41,13 +41,16 @@ export class AppConnectController {
   public async add(connect: AppConnect) {
     this.#isUnique(connect);
 
+    connect.uuid = undefined;
     this.#identities.push(connect);
+    this.#confirm = undefined;
+
+    NotificationsControl.counter(0);
 
     await BrowserStorage.set(
-      buildObject(Fields.CONNECT_LIST, this.connections)
+      buildObject(Fields.CONNECT_LIST, this.connections),
+      buildObject(Fields.CONNECT_DAPP, this.confirmApp)
     );
-
-    this.#confirm = undefined;
   }
 
   public async addConfirm(connect: AppConnect) {

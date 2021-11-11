@@ -11,7 +11,6 @@ import type { ZIlPayCore } from './core';
 import type { AppConnect } from 'types/app-connect';
 import { MTypeTab } from 'lib/streem/stream-keys';
 import { TabsMessage } from 'lib/streem/tabs-message';
-import { ErrorMessages } from 'config/errors';
 
 export class ZilPayApps {
   readonly #core: ZIlPayCore;
@@ -49,12 +48,29 @@ export class ZilPayApps {
     }
   }
 
-  public async addApp(app: AppConnect, sendResponse: StreamResponse) {
+  public async userResponse(confiremd: boolean, sendResponse: StreamResponse) {
     try {
-      await this.#core.apps.add(app);
+      if (confiremd) {
+        const account = {
+          base16: this.#core.account.selectedAccount.base16,
+          bech32: this.#core.account.selectedAccount.bech32
+        };
+        const app = this.#core.apps.confirmApp;
+        const uuid = String(app.uuid);
+        new TabsMessage({
+          type: MTypeTab.RESPONSE_TO_DAPP,
+          payload: {
+            account,
+            uuid
+          }
+        }).send();
+        await this.#core.apps.add(app);
+      } else {
+        await this.#core.apps.rejectConfirm();
+      }
 
       sendResponse({
-        resolve: this.#core.apps.connections
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
@@ -88,18 +104,6 @@ export class ZilPayApps {
         });
         await this.#core.prompt.open();
       }
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
-  public requestConnections(sendResponse: StreamResponse) {
-    try {
-      sendResponse({
-        resolve: this.#core.apps.connections
-      });
     } catch (err) {
       sendResponse({
         reject: err.message

@@ -52,7 +52,9 @@ export const MTypePopup = {
 
   UPDATE_SSN_LIST: `@/${app}/update-ssn-list`,
   GET_ACCOUNT_NONCE: `@/${app}/get-account-nonce`,
-  ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`
+  ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
+
+  USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`
 };
 
 export const MTypeTab = {
@@ -71,6 +73,5 @@ export const MTypeTab = {
   NEW_BLOCK: `@/${app}/new-block-created`,
 
   CONNECT_APP: `@/${app}/request-to-connect-dapp`,
-  IS_CONNECTED_APP: `@/${app}/is-connected-app`,
   RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`
 };
