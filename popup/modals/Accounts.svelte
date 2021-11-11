@@ -65,7 +65,7 @@
 
 		max-width: 390px;
 		width: 100%;
-		height: fit-content;
+    min-height: 600px;
 
 		& > li {
 			cursor: pointer;

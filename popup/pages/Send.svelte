@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+  import { tick, onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
@@ -68,10 +68,12 @@
     amount = String(formated);
   };
   const onSelectAccount = async ({ detail }) => {
+    await tick();
     selectedAccount = detail;
     accountsModal = false;
 	};
   const onSelectToken = async ({ detail }) => {
+    await tick();
     selectedToken = detail;
     tokensModal = false;
 	};
@@ -83,12 +85,14 @@
   on:close={() => tokensModal = !tokensModal}
 >
   <div class="m-warp">
-    <TokensModal
-      list={$zrcStore}
-      index={selectedToken}
-      account={account}
-      on:selected={onSelectToken}
-    />
+    {#if account && tokensModal}
+      <TokensModal
+        list={$zrcStore}
+        index={selectedToken}
+        account={account}
+        on:selected={onSelectToken}
+      />
+    {/if}
   </div>
 </Modal>
 <Modal
@@ -97,11 +101,13 @@
   on:close={() => accountsModal = !accountsModal}
 >
   <div class="m-warp">
-    <AccountsModal
-      list={$walletStore.identities}
-      index={selectedAccount}
-      on:selected={onSelectAccount}
-    />
+    {#if accountsModal && account}
+      <AccountsModal
+        list={$walletStore.identities}
+        index={selectedAccount}
+        on:selected={onSelectAccount}
+      />
+    {/if}
   </div>
 </Modal>
 <main>
