@@ -34,3 +34,12 @@ export async function removeConnection(index: number) {
   updateState(state);
   return state;
 }
+
+export async function clearConnection() {
+  const data = await Message.signal(
+    MTypePopup.CLEAR_APPS
+  ).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

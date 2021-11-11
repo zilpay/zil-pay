@@ -55,7 +55,8 @@ export const MTypePopup = {
   ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
 
   USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
-  RM_APP: `@/${app}/remove-dapp`
+  RM_APP: `@/${app}/remove-dapp`,
+  CLEAR_APPS: `@/${app}/clear-all-apps`
 };
 
 export const MTypeTab = {

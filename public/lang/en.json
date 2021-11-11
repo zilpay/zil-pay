@@ -146,6 +146,11 @@
       "reset": "reset"
     }
   },
+  "connections": {
+    "title": "Connections",
+    "no_apps": "You have no apps yet!",
+    "btn_reset": "Clear all"
+  },
   "settings": {
     "account": {
       "title": "Account",

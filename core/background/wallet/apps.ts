@@ -130,7 +130,7 @@ export class ZilPayApps {
       await this.#core.apps.reset();
 
       sendResponse({
-        resolve: this.#core.apps.connections
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

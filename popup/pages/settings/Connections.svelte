@@ -6,7 +6,7 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import appStore from 'popup/store/apps';
-	import { removeConnection } from 'popup/backend/popup';
+	import { removeConnection, clearConnection } from 'popup/backend/popup';
 	import LinkMixin from 'popup/mixins/link';
 
 	import NavClose from '../../components/NavClose.svelte';
@@ -36,13 +36,18 @@
 </script>
 
 <main in:fly={flyTransition.in}>
-	<NavClose title={'Connections'}/>
+	<NavClose title={$_('connections.title')}/>
 	<SearchBox
 		placeholder={$_('accounts.placeholder')}
 		focus
 		on:input={onInputSearch}
 	/>
 	<ul>
+		{#if $appStore.connections.length === 0}
+			<p>
+				{$_('connections.no_apps')}
+			</p>
+		{/if}
 		{#each connections as item}
 			<li class="card">
 				<img
@@ -70,6 +75,13 @@
 			</li>
 		{/each}
 	</ul>
+	<div>
+		{#if $appStore.connections.length !== 0}
+			<button on:click={clearConnection}>
+				{$_('connections.btn_reset')}
+			</button>
+		{/if}
+	</div>
 </main>
 
 <style lang="scss">
@@ -79,13 +91,22 @@
 		height: 100vh;
 		background-color: var(--background-color);
 		@include flex-center-top-column;
+
+		& > div {
+			width: 290px;
+			& > button {
+				margin-block-start: 15px;
+				margin-block-end: 15px;
+			}
+		}
 	}
 	ul {
 		padding: 0;
     margin: 0;
     list-style: none;
+    overflow-y: scroll;
 		margin-block-start: 16px;
-
+		height: 100%;
     & > li {
 			min-width: 290px;
 			height: 60px;
