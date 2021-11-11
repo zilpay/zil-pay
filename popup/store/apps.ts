@@ -6,8 +6,9 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { Apps } from 'types/account';
 import { writable } from 'svelte/store';
 
-export default writable({
+export default writable<Apps>({
   connections: []
 });

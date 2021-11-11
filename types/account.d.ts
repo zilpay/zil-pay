@@ -59,6 +59,11 @@ export interface GuardVault {
   }[];
 }
 
+export interface Apps {
+  confirmApp?: AppConnect;
+  connections: AppConnect[];
+}
+
 export interface GuardType {
   isEnable: boolean;
   isReady: boolean;
@@ -73,10 +78,7 @@ export interface WalletState {
   theme: number;
   guard: GuardType;
   rate: RateCurrencies,
-  apps: {
-    confirmApp?: AppConnect;
-    connections: AppConnect[];
-  };
+  apps: Apps;
   currency: string;
   contacts: Contact[];
   gas: {

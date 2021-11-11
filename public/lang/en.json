@@ -30,6 +30,17 @@
       }
     }
   },
+  "connect": {
+    "question": [
+      "Would you like to connect to",
+      "application?"
+    ],
+    "btns": {
+      "conf": "Connect",
+      "reject": "Reject"
+    },
+    "warn": "After confirmation, this application will be able to request data from the blockchain and see your accounts."
+  },
   "send": {
     "title": "Token transfer",
     "send_btn": "Continue",

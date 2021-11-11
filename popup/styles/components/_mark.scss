@@ -1,0 +1,6 @@
+@import "../mixins";
+
+:global(mark) {
+  color: var(--text-color);
+  // background-color: var(--warning-color);
+}

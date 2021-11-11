@@ -22,6 +22,7 @@ import Accounts from '../pages/Accounts.svelte';
 import AddAccount from '../pages/AddAccount.svelte';
 import RestorePrivKey from '../pages/RestorePrivKey.svelte';
 import Send from '../pages/Send.svelte';
+import AppConnect from '../pages/Connect.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -36,6 +37,12 @@ import General from '../pages/settings/General.svelte';
 export default {
   '/': wrap({
     component: Home,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/app-connect': wrap({
+    component: AppConnect,
     conditions: [
       routerGuard
     ]
