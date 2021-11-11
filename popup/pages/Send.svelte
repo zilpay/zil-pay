@@ -85,14 +85,12 @@
   on:close={() => tokensModal = !tokensModal}
 >
   <div class="m-warp">
-    {#if account && tokensModal}
-      <TokensModal
-        list={$zrcStore}
-        index={selectedToken}
-        account={account}
-        on:selected={onSelectToken}
-      />
-    {/if}
+    <TokensModal
+      list={$zrcStore}
+      index={selectedToken}
+      account={account}
+      on:selected={onSelectToken}
+    />
   </div>
 </Modal>
 <Modal
@@ -101,13 +99,11 @@
   on:close={() => accountsModal = !accountsModal}
 >
   <div class="m-warp">
-    {#if accountsModal && account}
-      <AccountsModal
-        list={$walletStore.identities}
-        index={selectedAccount}
-        on:selected={onSelectAccount}
-      />
-    {/if}
+    <AccountsModal
+      list={$walletStore.identities}
+      index={selectedAccount}
+      on:selected={onSelectAccount}
+    />
   </div>
 </Modal>
 <main>
