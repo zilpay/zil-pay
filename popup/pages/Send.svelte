@@ -77,11 +77,13 @@
   title={$_('send.cards.transfer')}
   on:close={() => accountsModal = !accountsModal}
 >
-  <AccountsModal
-    list={$walletStore.identities}
-    index={selectedAccount}
-    on:selected={onSelectAccount}
-  />
+  <div class="m-warp">
+    <AccountsModal
+      list={$walletStore.identities}
+      index={selectedAccount}
+      on:selected={onSelectAccount}
+    />
+  </div>
 </Modal>
 <main>
 	<NavClose title={$_('send.title')}/>
@@ -173,6 +175,12 @@
       padding-left: 5px;
       padding-right: 5px;
     }
+	}
+  div.m-warp {
+		background-color: var(--background-color);
+		max-height: 600px;
+    @include border-radius(8px);
+		@include flex-center-top-column;
 	}
   form {
     padding-left: 10px;

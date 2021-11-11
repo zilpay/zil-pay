@@ -35,37 +35,29 @@
 	};
 </script>
 
-<div class="warp">
-	<SearchBox
-		placeholder={$_('accounts.placeholder')}
-		focus
-		on:input={onInputSearch}
-	/>
-	{#if identities.length === 0}
-		<p>
-			{$_('accounts.no_accounts')} {search}
-		</p>
-	{/if}
-	<ul in:fly={flyTransition.in} >
-		{#each identities as account, index}
-			<li on:click={() => onSelectAccount(account)}>
-				<AccountCard
-					account={account}
-					selected={account.base16 === selectedAccount.base16}
-				/>
-			</li>
-		{/each}
-	</ul>
-</div>
+<SearchBox
+	placeholder={$_('accounts.placeholder')}
+	focus
+	on:input={onInputSearch}
+/>
+{#if identities.length === 0}
+	<p>
+		{$_('accounts.no_accounts')} {search}
+	</p>
+{/if}
+<ul in:fly={flyTransition.in} >
+	{#each identities as account, index}
+		<li on:click={() => onSelectAccount(account)}>
+			<AccountCard
+				account={account}
+				selected={account.base16 === selectedAccount.base16}
+			/>
+		</li>
+	{/each}
+</ul>
 
 <style lang="scss">
 	@import "../styles/mixins";
-	div.warp {
-		background-color: var(--background-color);
-		height: 100vh;
-
-		@include flex-center-top-column;
-	}
 	ul {
 		padding: 0;
     margin: 0;
