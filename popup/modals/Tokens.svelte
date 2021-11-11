@@ -94,12 +94,23 @@
 
 		max-width: 390px;
 		width: 100%;
+    min-height: 600px;
+
+    padding-left: 5px;
+    padding-right: 5px;
 
 		& > li {
 			cursor: pointer;
 			background-color: var(--card-color);
+      border: solid 1px var(--card-color);
+
+      margin: 5px;
+
 			@include border-radius(8px);
 
+      &:hover {
+        border-color: var(--primary-color);
+      }
 		}
 	}
   img {
