@@ -1,13 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
 	import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
-
-	import { selectAccount, balanceUpdate } from 'popup/backend/wallet';
 
 	import AccountCard from '../components/AccountCard.svelte';
 	import SearchBox from '../components/SearchBox.svelte';

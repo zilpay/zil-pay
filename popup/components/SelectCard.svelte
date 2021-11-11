@@ -19,9 +19,11 @@
   class="card"
   on:click={onClick}
 >
-  <p>
-    {title}
-  </p>
+  {#if title}
+    <p>
+      {title}
+    </p>
+  {/if}
   <div>
     <span>
       <slot />

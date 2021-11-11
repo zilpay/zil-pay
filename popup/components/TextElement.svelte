@@ -36,6 +36,10 @@
     @include flex-between-row;
     @include border-radius(8px);
 
+    & > div {
+      width: 100%;
+    }
+
     &:hover {
       border-color: var(--primary-color);
     }

@@ -41,6 +41,9 @@
     },
     "warn": "After confirmation, this application will be able to request data from the blockchain and see your accounts."
   },
+  "tokens": {
+    "no_tokens_serach": "No tokens with name or symbol:"
+  },
   "send": {
     "title": "Token transfer",
     "send_btn": "Continue",

@@ -30,6 +30,7 @@
   import SvgLoader from '../components/SvgLoader.svelte';
   import Modal from '../components/Modal.svelte';
   import AccountsModal from '../modals/Accounts.svelte';
+  import TokensModal from '../modals/Tokens.svelte';
 
   export let params = {
     type: TokenType.ZRC2,
@@ -70,11 +71,29 @@
     selectedAccount = detail;
     accountsModal = false;
 	};
+  const onSelectToken = async ({ detail }) => {
+    selectedToken = detail;
+    tokensModal = false;
+	};
 </script>
 
 <Modal
-  show={accountsModal}
+  show={tokensModal}
   title={$_('send.cards.transfer')}
+  on:close={() => tokensModal = !tokensModal}
+>
+  <div class="m-warp">
+    <TokensModal
+      list={$zrcStore}
+      index={selectedToken}
+      account={account}
+      on:selected={onSelectToken}
+    />
+  </div>
+</Modal>
+<Modal
+  show={accountsModal}
+  title={$_('send.cards.token')}
   on:close={() => accountsModal = !accountsModal}
 >
   <div class="m-warp">
