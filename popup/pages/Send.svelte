@@ -28,6 +28,8 @@
 	import NavClose from '../components/NavClose.svelte';
   import SelectCard from '../components/SelectCard.svelte';
   import SvgLoader from '../components/SvgLoader.svelte';
+  import Modal from '../components/Modal.svelte';
+  import AccountsModal from '../modals/Accounts.svelte';
 
   export let params = {
     type: TokenType.ZRC2,
@@ -64,8 +66,23 @@
     qaAmount = String(value);
     amount = String(formated);
   };
+  const onSelectAccount = async ({ detail }) => {
+    selectedAccount = detail;
+    accountsModal = false;
+	};
 </script>
 
+<Modal
+  show={accountsModal}
+  title={$_('send.cards.transfer')}
+  on:close={() => accountsModal = !accountsModal}
+>
+  <AccountsModal
+    list={$walletStore.identities}
+    index={selectedAccount}
+    on:selected={onSelectAccount}
+  />
+</Modal>
 <main>
 	<NavClose title={$_('send.title')}/>
   <div in:fly={flyTransition.in}>

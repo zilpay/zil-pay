@@ -20,7 +20,9 @@
   on:click={onToggle}
 >
   <div class="modal">
-    {title}
+    <div class="title">
+      <h1>{title}</h1>
+    </div>
     <div>
       <slot />
     </div>
@@ -32,7 +34,6 @@
   aside {
     position: fixed;
     display: none;
-    overflow: auto;
     width: 100%;
     height: 100%;
     top: 0;
@@ -46,14 +47,20 @@
       & > div.modal {
         right: 0;
         left: 0;
-        margin: 10% auto 50px;
-        max-width: 400px;
+        margin: 0 auto 50px;
+        max-width: 500px;
         width: 100%;
         background: var(--background-color);
         padding: 0;
         z-index: 100;
-        border-radius: 8px;
-        // box-shadow: 0 0 8px var(--border-color);
+
+        & > div.title {
+          padding-top: 10px;
+          padding-left: 10px;
+          font-size: 26px;
+
+          @include fluid-font(320px, 720px, 16px, 22px);
+        }
       }
     }
   }

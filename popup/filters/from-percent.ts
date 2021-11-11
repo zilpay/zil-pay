@@ -16,6 +16,9 @@ Big.PE = 99;
 export const _100 = Big(100);
 
 export function fromPercent(token: ZRC2Token, balance: string, fee: Big, percent: number) {
+  if (Number(balance) === 0) {
+    return Big(0);
+  }
   const [zilliqa] = get(zrcStore);
   const _amount = token.symbol === zilliqa.symbol ?
       Big(balance).sub(fee) : Big(balance);
