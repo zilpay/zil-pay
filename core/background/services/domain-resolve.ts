@@ -11,11 +11,11 @@
  * Unstoppabledomains service domain resolver.
  * [more info](http://unstoppabledomains.com/)
  */
+import type { DomainResolver } from 'types/domain';
 import { ZilliqaControl } from './blockchain';
 import { NetworkControl } from './network';
 import { Contracts } from 'config/contracts';
-import { fromBech32Address } from 'lib/utils/bech32';
-import type { DomainResolver } from 'types/domain';
+import { fromBech32Address, toBech32Address } from 'lib/utils/bech32';
 import { nameHash } from 'lib/utils/namehash';
 
 export class UnstoppableDomains {
@@ -41,7 +41,8 @@ export class UnstoppableDomains {
     );
 
     const [owner, resolver] = records[domainHash].arguments;
-    let address = null;
+    let resolve = null;
+    let address = undefined;
 
     if (resolver && resolver !== Contracts.ZERO_ADDRESS) {
       const result = await this.#zilliqa.getSmartContractSubState(
@@ -51,18 +52,32 @@ export class UnstoppableDomains {
       );
 
       if (result && result[this.#field][zilRecords]) {
-        address = result[this.#field][zilRecords];
+        resolve = result[this.#field][zilRecords];
       }
 
       try {
-        address = fromBech32Address(address);
+        address = {
+          base16: fromBech32Address(resolve),
+          bech32: resolve
+        };
+      } catch {
+        ///
+      }
+      try {
+        address = {
+          base16: resolve,
+          bech32: toBech32Address(resolve)
+        };
       } catch {
         ///
       }
     }
 
     return {
-      owner,
+      owner: {
+        base16: owner,
+        bech32: toBech32Address(owner)
+      },
       address,
       domain
     };

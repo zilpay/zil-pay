@@ -24,7 +24,9 @@
   title={$_('contacts.new_contact')}
   on:close={() => addContact = !addContact}
 >
-	<AddContactModal />
+	<AddContactModal
+		on:close={() => addContact = false}
+	/>
 </Modal>
 <main in:fly={flyTransition.in}>
 	<NavClose title={$_('contacts.title')}/>

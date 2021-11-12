@@ -56,7 +56,9 @@ export const MTypePopup = {
 
   USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
   RM_APP: `@/${app}/remove-dapp`,
-  CLEAR_APPS: `@/${app}/clear-all-apps`
+  CLEAR_APPS: `@/${app}/clear-all-apps`,
+
+  ADD_CONTACT: `@/${app}/add-a-contact`
 };
 
 export const MTypeTab = {

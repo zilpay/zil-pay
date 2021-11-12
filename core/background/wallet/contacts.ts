@@ -22,7 +22,7 @@ export class ZilPayContacts {
       await this.#core.contacts.add(contact);
 
       sendResponse({
-        resolve: this.#core.contacts.contacts
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

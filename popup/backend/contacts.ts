@@ -6,15 +6,16 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { Contact } from "types/contact";
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 
-export async function getZNS(domain: string) {
+export async function addContact(contact: Contact) {
   const data = await new Message({
-    type: MTypePopup.DOMAIN_RESOLVE,
+    type: MTypePopup.ADD_CONTACT,
     payload: {
-      domain
+      contact
     }
   }).send();
   return warpMessage(data);

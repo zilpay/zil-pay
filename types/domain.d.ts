@@ -8,7 +8,13 @@
  */
 
 export interface DomainResolver {
-  owner: string;
-  address?: string;
+  owner: {
+    base16: string;
+    bech32: string;
+  };
+  address?: {
+    base16: string;
+    bech32: string;
+  };
   domain: string;
 }
