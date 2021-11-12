@@ -154,6 +154,15 @@
     "no_apps": "You have no apps yet!",
     "btn_reset": "Clear all"
   },
+  "contacts": {
+    "title": "Contacts",
+    "add_btn": "Add new one",
+    "new_contact": "A new contact",
+    "form": {
+      "add": "Add to contacts",
+      "name_placeholder": "Enter contact name"
+    }
+  },
   "settings": {
     "account": {
       "title": "Account",

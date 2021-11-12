@@ -17,3 +17,9 @@
     transform: translateX(0);
   }
 }
+
+@keyframes -global-loading {  
+  to {
+    background-position: 290px 0, 0 0, 0 290px, 0px 290px;
+  }
+}
