@@ -12,7 +12,10 @@
     <Arrow className="arrow-icon"/>
   </div>
   {#if show}
-    <div class="close"/>
+    <div
+      class="close"
+      on:click={() => show = false}
+    />
     <div class="menu">
       <span
         class="close-arrow-icon"
