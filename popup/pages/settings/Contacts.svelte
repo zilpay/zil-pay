@@ -6,15 +6,23 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 
+	import { jazziconCreate } from 'popup/mixins/jazzicon';
+  import { trim } from 'popup/filters/trim';
+
 	import contactsStore from 'popup/store/contacts';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import SearchBox from '../../components/SearchBox.svelte';
   import Modal from '../../components/Modal.svelte';
   import AddContactModal from '../../modals/AddContact.svelte';
+	import Arrow from '../../components/icons/Arrow.svelte';
 
 	let search = '';
 	let addContact = false;
+
+	$: contacts = $contactsStore.filter(
+		(contact) => String(contact.name).toLowerCase().includes(String(search).toLowerCase())
+	);
 
 	const onInputSearch = (e) => {
 		search = e.detail;
@@ -38,10 +46,19 @@
 		on:input={onInputSearch}
 	/>
 	<ul>
-		{#each $contactsStore as contact}
-			<li>
-				{contact.name}
-				{contact.address}
+		{#each contacts as contact, index}
+			<li class:border={index !== $contactsStore.length - 1}>
+				<div class="text">
+					<b>
+						{contact.name}
+					</b>
+					<p>
+						{trim(contact.address)}
+					</p>
+				</div>
+				<div class="arrow">
+					<Arrow className="arrow-icon"/>
+				</div>
 			</li>
 		{/each}
 	</ul>
@@ -72,5 +89,44 @@
     overflow-y: scroll;
 		margin-block-start: 16px;
 		height: 100%;
+
+		& > li {
+			min-width: 280px;
+			max-width: 380px;
+			margin: 10px;
+			text-indent: 10px;
+			@include flex-between-row;
+			&.border {
+				border-bottom: solid 1px var(--muted-color);
+			}
+			& > div {
+				cursor: pointer;
+			}
+			& > div.arrow {
+				margin: 10px;
+				transform: rotate(90deg);
+
+				:global(svg.arrow-icon > path) {
+					fill: var(--text-color);
+				}
+
+				&:hover {
+					:global(svg.arrow-icon > path) {
+						fill: var(--primary-color);
+					}
+				}
+			}
+			& > div.text {
+				width: 100%;
+				& > b {
+					font-size: 16px;
+					color: var(--text-color);
+					font-family: Bold;
+				}
+				& > p {
+					font-size: 13px;
+				}
+			}
+		}
 	}
 </style>
