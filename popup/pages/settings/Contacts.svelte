@@ -6,6 +6,8 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 
+	import contactsStore from 'popup/store/contacts';
+
 	import NavClose from '../../components/NavClose.svelte';
 	import SearchBox from '../../components/SearchBox.svelte';
   import Modal from '../../components/Modal.svelte';
@@ -36,7 +38,12 @@
 		on:input={onInputSearch}
 	/>
 	<ul>
-		<li></li>
+		{#each $contactsStore as contact}
+			<li>
+				{contact.name}
+				{contact.address}
+			</li>
+		{/each}
 	</ul>
 	<button
 		class="primary"
@@ -55,5 +62,15 @@
 	}
 	button {
 		width: 290px;
+		margin-block-end: 30px;
+		margin-block-start: 30px;
+	}
+	ul {
+		padding: 0;
+    margin: 0;
+    list-style: none;
+    overflow-y: scroll;
+		margin-block-start: 16px;
+		height: 100%;
 	}
 </style>

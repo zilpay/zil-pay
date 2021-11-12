@@ -33,6 +33,10 @@
     margin: 5px;
     border: solid 1px var(--card-color);
 
+    min-width: 100px;
+    max-width: 490px;
+    width: inherit;
+
     @include flex-between-row;
     @include border-radius(8px);
 
@@ -51,6 +55,8 @@
   }
   p {
     margin: 0;
+    width: 30vw;
+    min-width: 230px;
     @include text-shorten;
     @include fluid-font(320px, 1024px, 10px, 14px);
   }

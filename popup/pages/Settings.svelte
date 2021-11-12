@@ -5,7 +5,7 @@
 	import flyTransition from 'popup/transitions/fly';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
-	import Arrow from '../components/icons/Arrow.svelte';
+	import TextElement from '../components/TextElement.svelte';
 
 	let items = [
 		{
@@ -55,19 +55,11 @@
 	<main>
 		<ul in:fly={flyTransition.in}>
 			{#each items as item, i}
-				<li
-					class:border={i !== items.length - 1}
-					on:click={() => push(item.link)}
-				>
-					<div>
-						<h1>
-							{item.title}
-						</h1>
-						<p>
-							{item.description}
-						</p>
-					</div>
-					<Arrow />
+				<li on:click={() => push(item.link)}>
+					<TextElement
+						title={item.title}
+						description={item.description}
+					/>
 				</li>
 			{/each}
 		</ul>
@@ -95,19 +87,10 @@
 
 		& > li {
 			cursor: pointer;
-			padding-left: 20px;
-			padding-right: 20px;
 			color: var(--text-color);
-			min-height: 90px;
+			min-width: 290px;
 
 			@include flex-between-row;
-
-			& > div > h1 {
-				margin-block-end: 0.1em;
-			}
-		}
-		& > li.border {
-			border-bottom: solid 1px var(--muted-color);
 		}
 	}
 </style>

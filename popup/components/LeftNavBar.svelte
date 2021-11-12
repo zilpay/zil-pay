@@ -124,7 +124,6 @@
     &.show {
       @include flex-left-column;
     }
-
     animation: backInLeft 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
   }
