@@ -15,7 +15,7 @@
 	import SearchBox from '../../components/SearchBox.svelte';
   import Modal from '../../components/Modal.svelte';
   import AddContactModal from '../../modals/AddContact.svelte';
-	import Arrow from '../../components/icons/Arrow.svelte';
+	import DropDown from '../../components/DropDown.svelte';
 
 	let search = '';
 	let addContact = false;
@@ -56,9 +56,7 @@
 						{trim(contact.address)}
 					</p>
 				</div>
-				<div class="arrow">
-					<Arrow className="arrow-icon"/>
-				</div>
+				<DropDown />
 			</li>
 		{/each}
 	</ul>
@@ -101,20 +99,6 @@
 			}
 			& > div {
 				cursor: pointer;
-			}
-			& > div.arrow {
-				margin: 10px;
-				transform: rotate(90deg);
-
-				:global(svg.arrow-icon > path) {
-					fill: var(--text-color);
-				}
-
-				&:hover {
-					:global(svg.arrow-icon > path) {
-						fill: var(--primary-color);
-					}
-				}
 			}
 			& > div.text {
 				width: 100%;
