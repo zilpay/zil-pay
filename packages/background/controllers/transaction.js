@@ -339,7 +339,6 @@ export class Transaction {
       //
     }
 
-    console.log(this.payload)
 
     try {
       const zilliqa = new ZilliqaControl(networkControl.provider)

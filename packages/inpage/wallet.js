@@ -33,11 +33,12 @@ let _isConnect = false
 let _isEnable = false
 let _net = null
 // Private variables. //
-
 function _answer(payload, uuid) {
   return from(_subject).pipe(
     // Waiting an answer by uuid.
-    filter(res => res.type === MTypeTab.TX_RESULT),
+    filter(res =>{
+      return  res.type === MTypeTab.TX_RESULT
+    }),
     map(res => res.payload),
     filter(res => res.uuid && res.uuid === uuid),
     map(res => {

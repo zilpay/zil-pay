@@ -150,7 +150,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.connect)
     setTimeout(() => this.onReject(), DEFAULT.POPUP_CALL_TIMEOUT)
   }
 }

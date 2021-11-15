@@ -293,7 +293,7 @@ export class Wallet {
         confirm: true
       }
 
-      new TabsMessage({ type, payload }).send()
+      await new TabsMessage({ type, payload }).send()
 
       return sendResponse({ resolve: true })
     }
