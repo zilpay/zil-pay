@@ -38,20 +38,15 @@
             round
           />
         </li>
-        <li v-show="radioGroup.model === RADIO_ELEMENTS[2]">
-            <P>
-              {{ local.IMPORT_HW }}:
-            </P>
-            <Input
-              v-model="ledger.index"
-              :error="ledger.error"
-              :placeholder="local.WALLET_ID"
-              :type="INPUT_TYPES.number"
-              round
-              @input="ledger.error = null"
-            />
-        </li>
       </ul>
+      <Button
+        :color="COLOR_VARIANTS.negative"
+        block
+        round
+        @click="onLedger"
+      >
+        LEDGER CONNECT
+      </Button>
       <Tabs
         :elements="tabElements"
         @input="onEvent"
@@ -73,28 +68,32 @@ import {
 } from '@/config'
 
 import homePage from '@/pages/Home'
+import LedgerConnect from '@/pages/LedgerConnect'
 
 import P from '@/components/P'
 import Input, { INPUT_TYPES } from '@/components/Input'
 import TopBar from '@/components/TopBar'
 import RadioGroup from '@/components/RadioGroup'
+import Button from '@/components/Button'
 import Tabs from '@/components/Tabs'
 
-import { Background, ledgerImportAccount, walletUpdate } from '@/services'
+import { Background, walletUpdate } from '@/services'
 import { UNIQUE } from 'lib/errors/annotations'
+import LinkMixin from '@/mixins/links'
 
 const { FileReader } = global
 const RADIO_ELEMENTS = [
   'Private key',
-  'Key store',
-  'Ledger'
+  'Key store'
 ]
 
 export default {
   name: 'Import',
+  mixins: [LinkMixin],
   components: {
     TopBar,
     RadioGroup,
+    Button,
     P,
     Input,
     Tabs
@@ -117,10 +116,6 @@ export default {
       },
       privateKey: {
         model: null,
-        error: null
-      },
-      ledger: {
-        index: 0,
         error: null
       }
     }
@@ -157,6 +152,9 @@ export default {
       accountsStore.MUTATIONS_NAMES.setWallet
     ]),
 
+    onLedger() {
+      this.linksExpand(LedgerConnect.name)
+    },
     /**
      * Listing all events for import type/
      */
@@ -173,9 +171,6 @@ export default {
         break
       case this.radioGroup.elements[1]:
         this.onJsonFile()
-        break
-      case this.radioGroup.elements[2]:
-        this.onLedger()
         break
       default:
         break
@@ -245,25 +240,6 @@ export default {
       }
 
       reader.readAsText(file)
-    },
-    /**
-     * When import type is ledger hardware wallet.
-     */
-    async onLedger() {
-      this.ledger.error = null
-      this.setLoad()
-      try {
-        const result = await ledgerImportAccount(this.ledger.index)
-
-        await this.onAddAccount(result)
-
-        this.$router.push({ name: homePage.name })
-      } catch (err) {
-        this.ledger.error = err
-        // Denied or any errors.
-      } finally {
-        this.setLoad()
-      }
     }
   }
 }

@@ -38,6 +38,7 @@ import TxData from '@/pages/popup/TxData'
 
 // Accounts children pages.
 import Import from '@/pages/accounts/Import'
+import LedgerConnect from '@/pages/LedgerConnect'
 
 Vue.use(VueRouter)
 
@@ -55,6 +56,12 @@ const routes = [
     name: FirstStart.name,
     component: FirstStart,
     meta: { requiresAuth: false }
+  },
+  {
+    path: `/${LedgerConnect.name.toLowerCase()}`,
+    name: LedgerConnect.name,
+    component: LedgerConnect,
+    meta: { requiresAuth: true }
   },
   {
     path: `/${Create.name.toLowerCase()}`,

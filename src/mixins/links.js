@@ -16,8 +16,8 @@ export default {
     linksToFaucet() {
       extension.tabs.create({ url: faucet })
     },
-    linksExpand() {
-      extension.tabs.create({ url: DEFAULT.PROMT_PAGE })
+    linksExpand(url = '') {
+      extension.tabs.create({ url: DEFAULT.PROMT_PAGE + `#/${url}` })
       window.close()
     },
     linkToDomain(domain) {
