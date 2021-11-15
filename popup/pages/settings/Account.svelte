@@ -1,13 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { fade, blur, fly, slide, scale } from "svelte/transition";
 	import { _ } from 'popup/i18n';
 	import { getQrCOde } from 'popup/backend/wallet';
+  import { trim } from 'popup/filters/trim';
+  import { clipboardCopy } from 'lib/utils/clipboard';
 
 	import walletStore from 'popup/store/wallet';
 
 	import NavClose from '../../components/NavClose.svelte';
+	import Arrow from '../../components/icons/Arrow.svelte';
+  import Modal from '../../components/Modal.svelte';
+  import AccountsModal from '../../modals/Accounts.svelte';
 
+	let accountsModal = false;
 	let base58 = '';
 	let index = $walletStore.selectedAddress;
 
@@ -16,15 +22,59 @@
 	onMount(async() => {
 		base58 = await getQrCOde(index);
 	});
+
+	const onSelectAccount = async ({ detail }) => {
+    index = detail;
+		base58 = '';
+		base58 = await getQrCOde(index);
+    await tick();
+    accountsModal = false;
+	};
 </script>
 
+<Modal
+  show={accountsModal}
+  title={$_('send.cards.token')}
+  on:close={() => accountsModal = !accountsModal}
+>
+  <div class="m-warp">
+    <AccountsModal
+      list={$walletStore.identities}
+      index={index}
+      on:selected={onSelectAccount}
+    />
+  </div>
+</Modal>
 <main>
 	<NavClose title={$_('account.title')}/>
-	<div class="warp">
+	<div>
 		{#if base58}
-			<img in:blur src={base58}/>
+			<img
+				in:blur
+				src={base58}
+				alt="qrcode"
+			/>
 		{/if}
 	</div>
+	<div
+		class="card"
+		on:click={() => accountsModal = !accountsModal}
+	>
+		<div>
+			<h3>
+				{account.name}
+			</h3>
+			<p>
+				{trim(account.bech32)}
+			</p>
+		</div>
+		<span>
+			<Arrow />
+		</span>
+	</div>
+	<button on:click={() => clipboardCopy(account.bech32)}>
+		{$_('home.clipboard.copy')}
+	</button>
 </main>
 
 <style lang="scss">
@@ -34,7 +84,47 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
-	div.warp {
+	img {
+		max-width: 500px;
+		width: calc(100vw - 30px);
+	}
+	div.card {
+		cursor: pointer;
+		min-width: 290px;
 
+		text-indent: 10px;
+
+		margin: 16px;
+		padding: 5px;
+		background-color: var(--card-color);
+		border: solid 1px var(--card-color);
+
+		@include border-radius(8px);
+		@include flex-between-row;
+
+		&:hover {
+			border-color: var(--primary-color);
+		}
+
+		& > div > h3 {
+			margin-block-start: 0.4em;
+			margin-block-end: 0.2em;
+		}
+		& > div > p {
+			margin-block-start: 0em;
+			margin-block-end: 0.4em;
+		}
+		& > span {
+			transform: rotate(90deg);
+		}
+	}
+	button {
+		width: 290px;
+	}
+	div.m-warp {
+		background-color: var(--background-color);
+		max-height: 600px;
+    @include border-radius(8px);
+		@include flex-center-top-column;
 	}
 </style>

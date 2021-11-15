@@ -91,7 +91,10 @@
 			>
 				{$_('home.btns.send')}
 			</button>
-			<button class="action">
+			<button
+				class="action"
+				on:click={() => push('/account')}
+			>
 				{$_('home.btns.receive')}
 			</button>
 		</div>
