@@ -31,6 +31,7 @@
   import Modal from '../components/Modal.svelte';
   import AccountsModal from '../modals/Accounts.svelte';
   import TokensModal from '../modals/Tokens.svelte';
+  import AccountSelectorModal from '../modals/AccountSelector.svelte';
 
   export let params = {
     type: TokenType.ZRC2,
@@ -45,6 +46,7 @@
   let selectedToken = params.index;
   let percentageList = [0, 25, 50, 100];
   let amount;
+  let recipient = '';
   let qaAmount = '0';
 
 	$: account = $walletStore.identities[selectedAccount];
@@ -77,6 +79,10 @@
     selectedToken = detail;
     tokensModal = false;
 	};
+  const onSelectRecipient = ({ detail }) => {
+    recipient = detail;
+    contactsModal = false;
+  };
 </script>
 
 <Modal
@@ -91,6 +97,15 @@
       account={account}
       on:selected={onSelectToken}
     />
+  </div>
+</Modal>
+<Modal
+  show={contactsModal}
+  title={$_('send.input_to.title')}
+  on:close={() => contactsModal = !contactsModal}
+>
+  <div class="m-warp">
+    <AccountSelectorModal on:selected={onSelectRecipient}/>
   </div>
 </Modal>
 <Modal
@@ -147,6 +162,7 @@
             />
           </div>
           <input
+            bind:value={recipient}
             placeholder={$_('send.input_to.placeholder')}
           >
         </label>

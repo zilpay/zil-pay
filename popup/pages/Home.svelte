@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import flyTransition from 'popup/transitions/fly';
   import { link, push } from 'svelte-spa-router';
-	import { fly } from 'svelte/transition';
 	import { TokenType } from 'popup/config/token-type';
   import { uuidv4 } from 'lib/crypto/uuid';
 
@@ -69,7 +67,7 @@
 		src="/imgs/logo.webp"
 		alt="logo"
 	>
-	<main in:fly={flyTransition.in}>
+	<main>
 		<div class="bar-wrapper">
 			<div on:click={onToggleLeftBar}>
 				<Burger />

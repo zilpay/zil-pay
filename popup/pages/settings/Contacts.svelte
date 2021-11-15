@@ -66,7 +66,7 @@
 	/>
 	<ul>
 		{#each contacts as contact, index}
-			<li class:border={index !== $contactsStore.length - 1}>
+			<li class:border={index !== contacts.length - 1}>
 				<div class="text">
 					<b>
 						{contact.name}

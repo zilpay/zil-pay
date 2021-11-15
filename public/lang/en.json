@@ -64,7 +64,11 @@
     "input_value": {
       "title": "Token amount",
       "placeholder": "0"
-    }
+    },
+    "options": [
+      "Accounts",
+      "Contacts"
+    ]
   },
   "lock": {
       "title": "Welcome back!",
