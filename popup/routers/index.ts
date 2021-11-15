@@ -23,6 +23,7 @@ import AddAccount from '../pages/AddAccount.svelte';
 import RestorePrivKey from '../pages/RestorePrivKey.svelte';
 import Send from '../pages/Send.svelte';
 import AppConnect from '../pages/Connect.svelte';
+import LedgerConnect from '../pages/LedgerConnect.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -61,6 +62,12 @@ export default {
   }),
   '/add-account': wrap({
     component: AddAccount,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/ledger-connect': wrap({
+    component: LedgerConnect,
     conditions: [
       routerGuard
     ]

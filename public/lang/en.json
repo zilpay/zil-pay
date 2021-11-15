@@ -30,6 +30,12 @@
       }
     }
   },
+  "ledger": {
+    "title": "Ledger connect",
+    "placeholder": "Select an index your ledger address.",
+    "info": "ledger is separated your addresses by index, for restore your account you can select any index from 0 to 256",
+    "btn": "Connect"
+  },
   "connect": {
     "question": [
       "Would you like to connect to",
