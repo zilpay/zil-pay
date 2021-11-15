@@ -38,7 +38,7 @@ export async function ledgerImportAccount(index) {
   if (isHid) {
     const transport = await getHidTransport()
     const ledger = new LedgerHit(transport)
-    payload = await ledger.getPublicAddress(0)
+    payload = await ledger.getPublicAddress(index)
   } else {
     payload = await ledgerControll.getAddresses(index)
   }
