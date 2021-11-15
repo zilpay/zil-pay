@@ -65,6 +65,7 @@
 				bind:value={password}
 				class:error={Boolean(error)}
 				type="password"
+				autocomplete="off"
 				placeholder={$_('lock.placeholder')}
 				on:blur={handleBlur}
 				on:input={handleInput}

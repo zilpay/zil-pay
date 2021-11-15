@@ -21,6 +21,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.ADD_CONTACT:
         core.contacts.addContact(msg.payload.contact, sendResponse);
         return true;
+      case MTypePopup.RM_CONTACT:
+        core.contacts.removeContact(msg.payload.index, sendResponse);
+        return true;
       case MTypeTab.GET_WALLET_DATA:
         core.apps.showWalletData(msg.domain, sendResponse);
         return true;

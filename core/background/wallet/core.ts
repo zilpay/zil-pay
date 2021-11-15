@@ -26,24 +26,24 @@ import { TransactionsQueue } from 'core/background/services/transactions';
 import type { WalletState } from 'types/account';
 
 export class ZIlPayCore {
-  public readonly netwrok = new NetworkControl();
+  public netwrok = new NetworkControl();
   public readonly guard = new AuthGuard();
-  public readonly ud = new UnstoppableDomains();
-  public readonly prompt = new PromptService();
-  public readonly rate = new RateController();
-  public readonly theme = new ThemeController();
-  public readonly apps = new AppConnectController();
-  public readonly currencies = new CurrenciesController();
-  public readonly contacts = new ContactController();
-  public readonly zilliqa = new ZilliqaControl(this.netwrok);
-  public readonly gas = new GasController(this.zilliqa);
+  public ud = new UnstoppableDomains();
+  public prompt = new PromptService();
+  public rate = new RateController();
+  public theme = new ThemeController();
+  public apps = new AppConnectController();
+  public currencies = new CurrenciesController();
+  public contacts = new ContactController();
+  public zilliqa = new ZilliqaControl(this.netwrok);
+  public gas = new GasController(this.zilliqa);
   public readonly account = new AccountController(this.guard);
-  public readonly transactions = new TransactionsController(this.netwrok, this.account);
-  public readonly zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
-  public readonly ssn = new SSnController(this.zilliqa, this.netwrok);
-  public readonly nonceCounter = new NonceController(this.zilliqa, this.transactions);
-  public readonly transactionsQueue = new TransactionsQueue(this.zilliqa, this.netwrok, this.transactions);
-  public readonly blockchain = new BlockController(this.zilliqa, this.transactionsQueue);
+  public transactions = new TransactionsController(this.netwrok, this.account);
+  public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
+  public ssn = new SSnController(this.zilliqa, this.netwrok);
+  public nonceCounter = new NonceController(this.zilliqa, this.transactions);
+  public transactionsQueue = new TransactionsQueue(this.zilliqa, this.netwrok, this.transactions);
+  public blockchain = new BlockController(this.zilliqa, this.transactionsQueue);
 
   public get state(): WalletState {
     return {

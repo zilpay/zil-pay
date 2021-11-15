@@ -1,7 +1,18 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+
 	import Arrow from './icons/Arrow.svelte';
 
+  const dispatch = createEventDispatcher();
+
   let show = false;
+
+  export let list = [];
+
+  const hanldeOnSelect = (index: number) => {
+    show = false;
+    dispatch('select', index);
+  };
 </script>
 
 <div>
@@ -23,8 +34,14 @@
       >
         <Arrow/>
       </span>
-      <div>Remove</div>
-      <div>Copy address</div>
+      {#each list as item, i}
+        <div
+          class="item"
+          on:click={() => hanldeOnSelect(i)}
+        >
+          {item}
+        </div>
+      {/each}
     </div>
   {/if}
 </div>
@@ -46,6 +63,15 @@
       }
     }
   }
+  div.item {
+    margin-block-end: 10px;
+    font-size: 13px;
+    font-family: Demi;
+    cursor: pointer;
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
   div.close {
     cursor: pointer;
     position: fixed;
@@ -54,6 +80,7 @@
     left: 0;
     right: 0;
     backdrop-filter: blur(3px);
+    background-color: #0000008f;
   }
   span.close-arrow-icon {
     cursor: pointer;
@@ -64,6 +91,8 @@
     background-color: var(--card-color);
     transform: translate(-35%, -56%);
     padding: 5px;
+    z-index: 20;
+    width: fit-content;
 
     align-items: flex-end;
     @include flex-column;

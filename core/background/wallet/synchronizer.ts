@@ -26,6 +26,7 @@ export class ZilPaySynchronizer {
     await this.#core.ssn.sync();
     await this.#core.theme.sync();
     await this.#core.apps.sync();
+    await this.#core.contacts.sync();
     await this.#core.rate.sync();
     await this.#core.currencies.sync();
     console.log('end-sync');

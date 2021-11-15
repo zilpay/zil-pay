@@ -21,7 +21,7 @@ export class BlockController {
   readonly #zilliqa: ZilliqaControl;
   readonly #queue: TransactionsQueue;
   readonly #name = `block/${Runtime.runtime.id}/zilpay`;
-  readonly #delay = 0.3; // approximately 18seconds.
+  readonly #delay = 0.5;
   #currentBlock = 0;
 
   public get blocknumber() {

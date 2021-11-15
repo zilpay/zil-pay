@@ -8,6 +8,8 @@
 
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
   import { trim } from 'popup/filters/trim';
+  import { removeContact } from 'popup/backend/contacts';
+  import { clipboardCopy } from 'lib/utils/clipboard';
 
 	import contactsStore from 'popup/store/contacts';
 
@@ -19,6 +21,10 @@
 
 	let search = '';
 	let addContact = false;
+	let dropDownList = [
+		$_('contacts.items.rm'),
+		$_('contacts.items.copy'),
+	];
 
 	$: contacts = $contactsStore.filter(
 		(contact) => String(contact.name).toLowerCase().includes(String(search).toLowerCase())
@@ -26,6 +32,19 @@
 
 	const onInputSearch = (e) => {
 		search = e.detail;
+	};
+	const onDropDown = async (event, contact) => {
+		switch (event.detail) {
+			case 0:
+				const foundIndex = $contactsStore.findIndex((c) => contact.address === c.address);
+				await removeContact(foundIndex);
+				break;
+			case 1:
+				clipboardCopy(contact.address);
+				break;
+			default:
+				break;
+		}
 	};
 </script>
 
@@ -56,7 +75,10 @@
 						{trim(contact.address)}
 					</p>
 				</div>
-				<DropDown />
+				<DropDown
+					list={dropDownList}
+					on:select={(e) => onDropDown(e, contact)}
+				/>
 			</li>
 		{/each}
 	</ul>

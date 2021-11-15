@@ -76,6 +76,7 @@
         bind:value={password}
         class:error="{Boolean(passError)}"
         type="password"
+        autocomplete="off"
         placeholder={$_('restore.pass_placeholder')}
         minlength={MIN_PASSWORD_LEN}
         required
@@ -87,6 +88,7 @@
     <input
       bind:value={confirmPassword}
       type="password"
+      autocomplete="off"
       placeholder={$_('restore.conf_placeholder')}
       minlength={MIN_PASSWORD_LEN}
       required

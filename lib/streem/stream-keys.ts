@@ -58,7 +58,8 @@ export const MTypePopup = {
   RM_APP: `@/${app}/remove-dapp`,
   CLEAR_APPS: `@/${app}/clear-all-apps`,
 
-  ADD_CONTACT: `@/${app}/add-a-contact`
+  ADD_CONTACT: `@/${app}/add-a-contact`,
+  RM_CONTACT: `@/${app}/remove-a-contact`
 };
 
 export const MTypeTab = {

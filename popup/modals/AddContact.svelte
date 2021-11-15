@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
   import { uuidv4 } from 'lib/crypto/uuid';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
@@ -10,12 +10,19 @@
   const dispatch = createEventDispatcher();
   const uuid = uuidv4();
 
+  let nameElement = null;
   let loading = false;
   let address = '';
   let name = '';
   let error = '';
 
   $: buttonDisabled = loading || error || !address || !name;
+
+  onMount(() => {
+    if (nameElement && nameElement.focus) {
+      nameElement.focus();
+    }
+  });
 
   const handleOnInput = async (e) => {
     const content = e.target.value;
@@ -62,6 +69,7 @@
   <label class:error={Boolean(error)}>
     {error}
     <input
+      bind:this={nameElement}
       bind:value={address}
       class:error={Boolean(error)}
       placeholder={$_('send.input_to.placeholder')}

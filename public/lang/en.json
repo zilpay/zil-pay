@@ -158,6 +158,10 @@
     "title": "Contacts",
     "add_btn": "Add new one",
     "new_contact": "A new contact",
+    "items": {
+      "rm": "Remove",
+      "copy": "Copy address"
+    },
     "form": {
       "add": "Add to contacts",
       "name_placeholder": "Enter contact name"

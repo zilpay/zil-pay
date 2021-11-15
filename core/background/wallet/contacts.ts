@@ -31,24 +31,12 @@ export class ZilPayContacts {
     }
   }
 
-  public requestConnections(sendResponse: StreamResponse) {
-    try {
-      sendResponse({
-        resolve: this.#core.contacts.contacts
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
   public async removeContact(index: number, sendResponse: StreamResponse) {
     try {
       await this.#core.contacts.rm(index);
 
       sendResponse({
-        resolve: this.#core.contacts.contacts
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
