@@ -33,5 +33,9 @@ export class ZIlPayBackground {
 
   public async sync() {
     await this.synchronizer.sync();
+
+    if (!this.#core.guard.isReady && !this.#core.guard.isEnable) {
+      this.#core.prompt.openTab();
+    }
   }
 }
