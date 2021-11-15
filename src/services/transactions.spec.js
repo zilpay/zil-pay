@@ -37,20 +37,6 @@ describe('store:transactions', () => {
     expect(state.confirmationTx).toEqual([])
   })
 
-  it('should have some mutations', () => {
-    const keys = Object.keys(mutations)
-
-    expect(mutations.setCurrentGas).toBeTruthy()
-    expect(mutations.setConfirmationTx).toBeTruthy()
-    expect(mutations.setNeedConfirmTxs).toBeTruthy()
-    expect(mutations.setEmpty).toBeTruthy()
-    expect(mutations.setClearTxHistory).toBeTruthy()
-    expect(mutations.setTxHistory).toBeTruthy()
-    expect(mutations.setPriority).toBeTruthy()
-
-    expect(keys.length).toBe(9)
-  })
-
   it('should have some actions', () => {
     const keys = Object.keys(actions)
 
