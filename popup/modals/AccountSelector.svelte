@@ -41,7 +41,7 @@
 />
 <div class="switcher">
   <SwitchButton
-    items={$_('send.options')}
+    items={[$_('send.options.acc'), $_('send.options.con')]}
     on:select={() => tab = !tab}
   />
 </div>

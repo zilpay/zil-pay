@@ -92,6 +92,16 @@ export async function importPrivateKey(privKey: string, name: string) {
   return state;
 }
 
+export async function getQrCOde(index: number) {
+  const data = await new Message({
+    type: MTypePopup.EXPORT_QR_CODE,
+    payload: {
+      index
+    }
+  }).send();
+  return warpMessage(data);
+}
+
 export async function removeAccount() {
   const data = await Message.signal(
     MTypePopup.RM_ACCOUNT

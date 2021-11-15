@@ -7,7 +7,6 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
-
 import { MTypePopup, MTypeTab } from 'lib/streem/stream-keys';
 import { Runtime } from 'lib/runtime';
 
@@ -47,6 +46,9 @@ export function startBackground(core: ZIlPayBackground) {
         return true;
       case MTypePopup.SELECT_ACCOUNT:
         core.wallet.selectAccount(msg.payload.index, sendResponse);
+        return true;
+      case MTypePopup.EXPORT_QR_CODE:
+        core.wallet.exportAccountQRCode(msg.payload.index, sendResponse);
         return true;
       case MTypePopup.SELECT_NETWORK:
         core.netwrok.select(msg.payload.net, sendResponse);

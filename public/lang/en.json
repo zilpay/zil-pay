@@ -65,10 +65,10 @@
       "title": "Token amount",
       "placeholder": "0"
     },
-    "options": [
-      "Accounts",
-      "Contacts"
-    ]
+    "options": {
+      "acc": "Accounts",
+      "con": "Contacts"
+    }
   },
   "lock": {
       "title": "Welcome back!",
@@ -177,6 +177,9 @@
       "add": "Add to contacts",
       "name_placeholder": "Enter contact name"
     }
+  },
+  "account": {
+    "title": "Account"
   },
   "settings": {
     "account": {
