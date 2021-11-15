@@ -66,7 +66,11 @@ import uiStore from '@/store/ui'
 import walletStore from '@/store/wallet'
 import accountsStore from '@/store/accounts'
 
-import { SIZE_VARIANS, COLOR_VARIANTS, FONT_VARIANTS } from '@/config'
+import {
+  SIZE_VARIANS,
+  COLOR_VARIANTS,
+  FONT_VARIANTS
+} from '@/config'
 
 import homePage from '@/pages/Home'
 
@@ -246,6 +250,7 @@ export default {
      * When import type is ledger hardware wallet.
      */
     async onLedger() {
+      this.ledger.error = null
       this.setLoad()
       try {
         const result = await ledgerImportAccount(this.ledger.index)

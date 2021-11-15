@@ -339,6 +339,8 @@ export class Transaction {
       //
     }
 
+    console.log(this.payload)
+
     try {
       const zilliqa = new ZilliqaControl(networkControl.provider)
       const account = await accountControl.getCurrentAccount()

@@ -421,6 +421,7 @@ export default {
         if (account.hwType && account.hwType === HW_VARIANTS.ledger) {
 
           txParams = await ledgerSendTransaction(account.index, txParams)
+          console.log(txParams)
         }
 
         await bg.sendToSignBroadcasting(txParams)
