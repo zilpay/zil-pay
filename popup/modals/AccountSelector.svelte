@@ -4,6 +4,7 @@
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
 	import walletStore from 'popup/store/wallet';
+  import { trim } from 'popup/filters/trim';
 
 	import walletStore from 'popup/store/wallet';
 	import contactsStore from 'popup/store/contacts';
@@ -53,7 +54,7 @@
 						{contact.name}
 					</b>
 					<p>
-						{contact.address}
+						{trim(contact.address, 10)}
 					</p>
 				</div>
 			</li>
@@ -68,7 +69,7 @@
             {account.name}
           </b>
           <p>
-            {account.bech32}
+            {trim(account.bech32, 10)}
           </p>
         </div>
       </li>

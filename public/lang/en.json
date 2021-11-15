@@ -172,6 +172,7 @@
       "rm": "Remove",
       "copy": "Copy address"
     },
+    "no_content": "No contacts yet!",
     "form": {
       "add": "Add to contacts",
       "name_placeholder": "Enter contact name"

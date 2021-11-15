@@ -64,6 +64,11 @@
 		focus
 		on:input={onInputSearch}
 	/>
+	{#if contacts.length === 0}
+		<p class="no-content">
+			{$_('contacts.no_content')}
+		</p>
+	{/if}
 	<ul>
 		{#each contacts as contact, index}
 			<li class:border={index !== contacts.length - 1}>
@@ -101,6 +106,12 @@
 		width: 290px;
 		margin-block-end: 30px;
 		margin-block-start: 30px;
+	}
+	p.no-content {
+		text-align: left;
+		width: 290px;
+		text-indent: 10px;
+		margin-block-start: 15px;
 	}
 	ul {
 		padding: 0;
