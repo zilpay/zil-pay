@@ -16,6 +16,12 @@ interface PrivateKeyName {
   privKey: string;
 }
 
+interface LedgerParams {
+  index: number;
+  name: string;
+  productId: number;
+}
+
 export class ZilPayWallet {
   readonly #core: ZIlPayCore;
 
@@ -100,6 +106,29 @@ export class ZilPayWallet {
     }
   }
 
+  public async loadLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
+    try {
+      await this.#core.ledger.init(payload.productId);
+      const { pubAddr, publicKey } = await this.#core.ledger.interface.getPublicAddress(payload.index);
+      await this.#core.account.addLedgerAccount(
+        publicKey,
+        pubAddr,
+        payload.index,
+        payload.name,
+        payload.productId
+      );
+      await this.#core.transactions.sync();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async removeAccount(sendResponse: StreamResponse) {
     try {
       const index = this.#core.account.wallet.selectedAddress;
@@ -133,6 +162,8 @@ export class ZilPayWallet {
       });
     }
   }
+
+
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {

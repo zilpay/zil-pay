@@ -26,35 +26,31 @@ export class LedgerWebHID {
     assert(isHid, ErrorMessages.WebHidNotSupported);
   }
 
-  public async getHidTransport() {
+  public async getHidTransport(productId: number) {
     await this.isSupported();
 
     let devices = [];
     devices = await window.navigator.hid.getDevices({
-      filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
+      filters: [{
+        productId,
+        vendorId: LEDGER_USB_VENDOR_ID
+      }]
     });
-    if (devices.length === 0) {
-      devices = await window.navigator.hid.requestDevice({
-        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
-      });
-    }
-    const userApprovedWebHidConnection = devices.some(
-      (device) => device.vendorId === Number(LEDGER_USB_VENDOR_ID),
-    );
+    const [device] = devices.filter((d) => d.productId === productId);
 
-    assert(userApprovedWebHidConnection, ErrorMessages.NoFoundDeviced);
+    assert(Boolean(device), ErrorMessages.NoFoundDeviced);
 
     if (this.#transport) {
-      return this.#transport;
+      await this.#transport.close();
     }
-    
-    this.#transport = await TransportWebHID.create();
+
+    this.#transport = await TransportWebHID.open(device);;
 
     return this.#transport;
   }
 
-  public async init() {
-    await this.getHidTransport();
+  public async init(productId: number) {
+    await this.getHidTransport(productId);
 
     this.#interface = new LedgerInterface(this.#transport);
 

@@ -60,7 +60,9 @@ export const MTypePopup = {
   CLEAR_APPS: `@/${app}/clear-all-apps`,
 
   ADD_CONTACT: `@/${app}/add-a-contact`,
-  RM_CONTACT: `@/${app}/remove-a-contact`
+  RM_CONTACT: `@/${app}/remove-a-contact`,
+
+  LEDGER_LOAD_ACCOUNT: `@/${app}/ledger-load-account`
 };
 
 export const MTypeTab = {

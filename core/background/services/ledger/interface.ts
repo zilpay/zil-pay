@@ -8,6 +8,7 @@
  */
 import type { Transaction } from 'core/background/services/transactions/tx-builder';
 import type Transport from '@ledgerhq/hw-transport';
+import { Buffer } from 'buffer';
 import assert from 'assert';
 import sha256 from 'crypto-js/sha256';
 

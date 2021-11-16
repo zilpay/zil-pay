@@ -13,7 +13,8 @@
   } from 'popup/config/account';
   import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
 	import walletStore from 'popup/store/wallet';
-	import { createNextSeedAccount, balanceUpdate } from 'popup/backend/wallet';
+	import { balanceUpdate } from 'popup/backend/wallet';
+  import { loadLedgerAccount } from 'popup/backend/ledger';
 
   import BackBar from '../../components/BackBar.svelte';
 	import Loader from '../../components/Loader.svelte';
@@ -24,10 +25,16 @@
 
   let lastIndex = $walletStore
     .identities
-    .filter((acc) => acc.type === AccountTypes.Ledger)
+    .filter((acc) => {
+      const t0 = acc.type === AccountTypes.Ledger;
+      const t1 = acc.productId === Number(params.id);
+
+      return t0 && t1;
+    })
     .length;
+  let error = '';
   let name = `${DEFAULT_LEDGER_NAME} ${lastIndex}`;
-  let index = 0;
+  let index = lastIndex;
 	let loading = false;
   let device;
 
@@ -51,15 +58,30 @@
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    loading = true;
+
+    try {
+      await loadLedgerAccount(index, Number(params.id), name);
+
+      push('/');
+    } catch (err) {
+      error = err.message;
+    }
+    loading = false;
   };
 </script>
 
 <main>
 	<BackBar
-    title={$_('ledger.title')}
     length={2}
     selected={1}
   />
+  <h1>
+    {$_('ledger.title')}
+  </h1>
+  <h2>
+    {error}
+  </h2>
   <form
     in:fly={flyTransition.in}
     on:submit={handleSubmit}
@@ -84,6 +106,7 @@
         min={0}
 				placeholder={$_('ledger.placeholder')}
         required
+        on:input={() => error = ''}
 			>
 			<p>
 				{$_('ledger.info')}
@@ -115,14 +138,25 @@
 
 		@include flex-center-top-column;
 	}
+  h1 {
+    @include fluid-font(320px, 1024px, 22px, 55px);
+  }
+  h2 {
+    color: var(--danger-color);
+    @include fluid-font(320px, 1024px, 17px, 22px);
+  }
   form {
     width: 100%;
     @include flex-center-column;
 
+    & > label > p {
+      margin-left: 10px;
+    }
+
     & > label, button {
       width: 100%;
       max-width: 290px;
-      margin: 10px;
+      margin: 5px;
     }
   }
 </style>

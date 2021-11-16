@@ -26,8 +26,6 @@
       if (devices.length > 0) {
         accepted = true;
       }
-      console.log(devices);
-      
     } catch (err) {
       error = err.message;
     } finally {

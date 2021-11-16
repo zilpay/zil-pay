@@ -32,6 +32,7 @@ export interface Account {
   bech32: string;
   privKey?: string;
   pubKey: string;
+  productId?: number;
   zrc2: {
     [key: string]: string;
   };

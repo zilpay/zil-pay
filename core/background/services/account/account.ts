@@ -16,7 +16,7 @@ import { HDKey } from './hd-key';
 import { MnemonicController } from './mnemonic';
 import secp256k1 from 'secp256k1/elliptic';
 import { getAddressFromPublicKey, toChecksumAddress } from 'lib/utils/address';
-import { toBech32Address } from 'lib/utils/bech32';
+import { fromBech32Address, toBech32Address } from 'lib/utils/bech32';
 import { getPubKeyFromPrivateKey } from 'lib/utils/address';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
@@ -296,6 +296,25 @@ export class AccountController {
     return account;
   }
 
+  public async addLedgerAccount(pubKey: string, bech32: string, index: number, name: string, productId: number) {
+    const base16 = fromBech32Address(bech32);
+    const type = AccountTypes.Ledger;
+    const zrc2 = await this.#zrc2.getBalance(base16);
+    const account: Account = {
+      name,
+      bech32,
+      index,
+      base16,
+      type,
+      pubKey,
+      zrc2,
+      productId,
+      nft: {}
+    };
+    await this._add(account);
+    return account;
+  }
+
   public async select(index: number) {
     assert(index < this.wallet.identities.length, ErrorMessages.OutOfIndex);
 
@@ -350,9 +369,13 @@ export class AccountController {
     const isUnique = this.wallet.identities.some(
       (acc) => (acc.base16 === account.base16)
     );
-    const isIndex = this.wallet.identities.some(
-      (acc) => (acc.index === account.index) && (acc.type === account.type)
-    );
+    const isIndex = this.wallet.identities.some((acc) => {
+      const t0 = acc.index === account.index;
+      const t1 = acc.type === account.type;
+      const t2 = Boolean(acc.productId) && acc.productId === account.productId;
+
+      return t0 && t1 && t2;
+    });
 
     assert(!isUnique, 'Account must be unique');
     assert(!isIndex, 'Incorect index and account type');

@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.LEDGER_LOAD_ACCOUNT:
+        core.wallet.loadLedgerAccount(msg.payload, sendResponse);
+        return true;
       case MTypePopup.ADD_CONTACT:
         core.contacts.addContact(msg.payload.contact, sendResponse);
         return true;
