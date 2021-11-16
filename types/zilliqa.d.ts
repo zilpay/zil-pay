@@ -37,3 +37,12 @@ export interface RateCurrencies {
   eth: number;
   usd: number;
 }
+
+declare global {
+  interface Navigator {
+    hid: {
+      getDevices(opt: any): Promise<any[]>,
+      requestDevice(opt: any): Promise<any[]>
+    }
+  }
+}
