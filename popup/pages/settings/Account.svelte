@@ -115,6 +115,8 @@
 			margin-block-end: 0.4em;
 		}
 		& > span {
+			width: 50px;
+			height: 40px;
 			transform: rotate(90deg);
 		}
 	}
