@@ -14,6 +14,10 @@
   @include fluid-font(320px, 1024px, 13px, 16px);
 
   width: inherit;
+
+  &:focus {
+    border: solid 1px var(--text-color);
+  }
 }
 
 :global(input.error) {

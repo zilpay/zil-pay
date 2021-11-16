@@ -29,6 +29,7 @@
   <input
     bind:this={inputEl}
     placeholder={placeholder}
+    type="search"
     on:input={onInput}
   >
 </label>
@@ -38,6 +39,7 @@
 
   label.search-box {
     background: var(--card-color);
+    border: solid 1px var(--card-color);
 
     max-width: 300px;
     width: 100%;
@@ -46,10 +48,13 @@
 
     & > input {
       padding-left: 0;
+      border-color: var(--card-color);
     }
-
     & > div {
       margin: 10px;
+    }
+    &:focus-within {
+      border: solid 1px var(--text-color);
     }
   }
 </style>
