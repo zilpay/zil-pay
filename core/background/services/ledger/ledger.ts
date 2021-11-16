@@ -11,8 +11,7 @@ import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { LedgerInterface } from './interface';
-
-const LEDGER_USB_VENDOR_ID = '0x2c97';
+import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
 
 export class LedgerWebHID {
   #transport?: Transport;

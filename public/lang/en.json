@@ -38,7 +38,8 @@
   },
   "ledger_finder": {
     "title": "Looking at devices",
-    "no_devices": "ZIlPay did not find any device, make sure your device is connected!"
+    "list_title": "Ledger devices:",
+    "accept": "Accept USB"
   },
   "connect": {
     "question": [

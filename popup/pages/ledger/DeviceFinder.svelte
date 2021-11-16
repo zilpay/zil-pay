@@ -1,15 +1,38 @@
 <script lang="ts">
+  import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
+
 	import { push } from 'svelte-spa-router';
 	import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
+  import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
 
   import BackBar from '../../components/BackBar.svelte';
-  import ListCardSkelet from '../../components/skelet/ListCard.svelte';
+  import RefreshIcon from '../../components/icons/Refresh.svelte';
 
+  let error = '';
   let loading = true;
+  let accepted = false;
   let devices = [];
 
-  onMount(() => {});
+  const getHidTransport = async () => {
+    loading = true;
+    try {
+      devices = await window.navigator.hid.requestDevice({
+        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
+      });
+      devices = await window.navigator.hid.getDevices({
+        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
+      });
+      if (devices.length > 0) {
+        accepted = true;
+      }
+    } catch (err) {
+      error = err.message;
+    } finally {
+      loading = false;
+    }
+  }
 </script>
 
 <main>
@@ -20,24 +43,44 @@
   <h1>
     {$_('ledger_finder.title')}
   </h1>
-  {#if false}
-    <p>
-      {$_('ledger_finder.no_devices')}
-    </p>
+  {#if !accepted}
+    <button
+      class="primary"
+      on:click={getHidTransport}
+    >
+      {$_('ledger_finder.accept')}
+    </button>
+  {:else}
+    <div class="list-header">
+      <b>
+        {$_('ledger_finder.list_title')}
+      </b>
+      <span on:click={getHidTransport}>
+        <RefreshIcon className="refresh"/>
+      </span>
+    </div>
+    <ul>
+      {#each devices as device}
+        <li in:fly={flyTransition.in}>
+          <div class="ledger-card">
+            <img
+              src="/imgs/ledger.webp"
+              alt="ledger"
+              height="30"
+            />
+            <div>
+              <h3>
+                {device.productName}
+              </h3>
+              <p>
+                ID:-{device.productId}
+              </p>
+            </div>
+          </div>
+        </li>
+      {/each}
+    </ul>
   {/if}
-  <ul>
-    {#if loading}
-      <li>
-        <ListCardSkelet />
-      </li>
-      <li>
-        <ListCardSkelet />
-      </li>
-      <li>
-        <ListCardSkelet />
-      </li>
-    {/if}
-  </ul>
 </main>
 
 <style lang="scss">
@@ -48,17 +91,73 @@
 
     @include flex-center-top-column;
 	}
+  h1 {
+    @include fluid-font(320px, 1024px, 22px, 55px);
+  }
+  .ledger-card {
+    cursor: pointer;
+
+    background-color: var(--card-color);
+    padding: 5px;
+    border: solid 1px var(--card-color);
+
+    @include flex-between-row;
+    @include border-radius(8px);
+
+    & > img {
+      margin: 10px;
+    }
+    & > div {
+      width: 100%;
+
+      & > h3,
+      & > p {
+        margin: 0;
+      }
+    }
+    &:hover {
+      border: solid 1px var(--primary-color);
+    }
+  }
+  .list-header {
+    width: 100%;
+    max-width: 315px;
+    @include flex-between-row;
+
+    & > b {
+      color: var(--text-color);
+    }
+    & > span {
+      cursor: pointer;
+
+      :global(svg.refresh > path) {
+        fill: var(--text-color);
+      }
+      &:hover {
+        :global(svg.refresh > path) {
+          fill: var(--primary-color);
+        }
+      }
+    }
+  }
   ul {
     padding: 0;
     margin: 0;
+    margin-block-start: 0;
     list-style: none;
     overflow-y: scroll;
-		margin-block-start: 16px;
 		height: 100%;
 
+    @include flex-center-top-column;
+
     & > li {
-			min-width: 290px;
-      margin: 5px;
+			min-width: 280px;
+      max-width: 500px;
+      width: 100%;
+      margin-block-end: 5px;
     }
+  }
+  button {
+    width: 290px;
   }
 </style>
