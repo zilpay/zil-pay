@@ -1,24 +1,18 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
-	import flyTransition from 'popup/transitions/fly';
+
+  import NavClose from '../components/NavClose.svelte';
 </script>
 
-<section in:fly={flyTransition.in}>
-	<TopBar />
-	<main>
-		<button>
-			{$_('home.token_list')}
-		</button>
-	</main>
-</section>
+<main>
+	<NavClose title={$_('tokens_list.title')}/>
+</main>
 
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-		height: calc(100vh - 96px);
-		z-index: 3;
+		background-color: var(--background-color);
+		height: 100vh;
 
 		@include flex-center-top-column;
 	}

@@ -30,6 +30,9 @@
       }
     }
   },
+  "tokens_list": {
+    "title": "Tokens"
+  },
   "ledger": {
     "title": "Ledger connect",
     "placeholder": "Select an index your ledger address.",

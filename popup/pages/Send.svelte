@@ -173,7 +173,7 @@
           {$_('send.input_value.title')}
         </p>
         <label>
-          <div on:click={() => contactsModal = !contactsModal}>
+          <div>
             <img
               src={tokenIcon}
               alt={token.symbol}

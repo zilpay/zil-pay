@@ -23,6 +23,7 @@ import AddAccount from '../pages/AddAccount.svelte';
 import RestorePrivKey from '../pages/RestorePrivKey.svelte';
 import Send from '../pages/Send.svelte';
 import AppConnect from '../pages/Connect.svelte';
+import TokenList from '../pages/TokenList.svelte';
 import LedgerConnect from '../pages/ledger/LedgerConnect.svelte';
 import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 
@@ -45,6 +46,12 @@ export default {
   }),
   '/app-connect': wrap({
     component: AppConnect,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/tokens-list': wrap({
+    component: TokenList,
     conditions: [
       routerGuard
     ]

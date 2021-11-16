@@ -109,7 +109,10 @@
 				/>
       {/each}
 		</div>
-		<button class="add">
+		<button
+			class="add"
+			on:click={() => push('/tokens-list')}
+		>
 			<GearIcon
 				width="25px"
 				height="25px"
