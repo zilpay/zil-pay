@@ -57,6 +57,7 @@
   $: balance = fromDecimals(account.zrc2[token.base16], token.decimals).round(7);
 	$: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, balance).round(7);
+	$: disabled = !qaAmount || !recipient;
 
   onMount(() => {
 		jazziconCreate(uuid, account.base16);
@@ -191,7 +192,10 @@
         </div>
       </div>
       <hr />
-      <button class="primary">
+      <button
+        class="primary"
+        disabled={disabled}
+      >
         {$_('send.send_btn')}
       </button>
     </form>
@@ -253,6 +257,7 @@
       }
       & > label {
         background-color: var(--card-color);
+        border: solid 1px var(--card-color);
 
         max-height: 60px;
 
@@ -262,6 +267,7 @@
         & > input {
           width: 100%;
           padding-left: 0;
+          border-color: var(--card-color);
         }
         & > div {
           cursor: pointer;
@@ -272,6 +278,9 @@
               fill: var(--primary-color);
             }
           }
+        }
+        &:focus-within {
+          border: solid 1px var(--text-color);
         }
       }
     }
