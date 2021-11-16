@@ -23,7 +23,8 @@ import AddAccount from '../pages/AddAccount.svelte';
 import RestorePrivKey from '../pages/RestorePrivKey.svelte';
 import Send from '../pages/Send.svelte';
 import AppConnect from '../pages/Connect.svelte';
-import LedgerConnect from '../pages/LedgerConnect.svelte';
+import LedgerConnect from '../pages/ledger/LedgerConnect.svelte';
+import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -68,6 +69,12 @@ export default {
   }),
   '/ledger-connect': wrap({
     component: LedgerConnect,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/ledger-device-finder': wrap({
+    component: DeviceFinder,
     conditions: [
       routerGuard
     ]

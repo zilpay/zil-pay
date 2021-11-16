@@ -46,7 +46,7 @@
       description={$_('home.nav.optinos.import.description')}
     />
   </a>
-  <a href="/ledger-connect" use:link>
+  <a href="/ledger-device-finder" use:link>
     <TextElement
       title={$_('home.nav.optinos.connect.title')}
       description={$_('home.nav.optinos.connect.description')}

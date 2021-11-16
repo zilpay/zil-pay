@@ -36,6 +36,10 @@
     "info": "ledger is separated your addresses by index, for restore your account you can select any index from 0 to 256",
     "btn": "Connect"
   },
+  "ledger_finder": {
+    "title": "Looking at devices",
+    "no_devices": "ZIlPay did not find any device, make sure your device is connected!"
+  },
   "connect": {
     "question": [
       "Would you like to connect to",

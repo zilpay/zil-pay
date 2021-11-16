@@ -26,14 +26,6 @@
 }
 
 :global(input.loading) {
-  cursor: progress;
-  background: 
-    linear-gradient(0.25turn, transparent, var(--card-color), transparent),
-    linear-gradient(var(--background-color), var(--background-color)),
-    radial-gradient(38px circle at 19px 19px, var(--background-color) 50%, transparent 51%),
-    linear-gradient(var(--background-color), var(--background-color));  
-  background-repeat: no-repeat;
-  background-size: 315px 250px, 515px 580px, 500px 500px, 537px 24px;
-  background-position: -315px 0, 0 0, 0px 190px, 50px 195px; 
-  animation: loading 2.5s infinite;
+  @include loading-gradient(var(--background-color), var(--card-color));
+  border-color: var(--background-color);
 }

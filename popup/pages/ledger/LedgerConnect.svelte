@@ -13,8 +13,8 @@
 	import walletStore from 'popup/store/wallet';
 	import { createNextSeedAccount, balanceUpdate } from 'popup/backend/wallet';
 
-  import NavClose from '../components/NavClose.svelte';
-	import Loader from '../components/Loader.svelte';
+  import BackBar from '../../components/BackBar.svelte';
+	import Loader from '../../components/Loader.svelte';
 
   let lastIndex = $walletStore
     .identities
@@ -32,7 +32,11 @@
 </script>
 
 <main>
-	<NavClose title={$_('ledger.title')}/>
+	<BackBar
+    title={$_('ledger.title')}
+    length={2}
+    selected={1}
+  />
   <form
     in:fly={flyTransition.in}
     on:submit={handleSubmit}
@@ -81,7 +85,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../../styles/mixins";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;
