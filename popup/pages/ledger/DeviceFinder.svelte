@@ -2,7 +2,6 @@
   import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
 
 	import { push } from 'svelte-spa-router';
-	import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
@@ -27,6 +26,8 @@
       if (devices.length > 0) {
         accepted = true;
       }
+      console.log(devices);
+      
     } catch (err) {
       error = err.message;
     } finally {
@@ -61,7 +62,10 @@
     </div>
     <ul>
       {#each devices as device}
-        <li in:fly={flyTransition.in}>
+        <li
+          in:fly={flyTransition.in}
+          on:click={() => push(`/ledger-connect/${device.productId}`)}
+        >
           <div class="ledger-card">
             <img
               src="/imgs/ledger.webp"

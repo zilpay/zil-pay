@@ -67,7 +67,7 @@ export default {
       routerGuard
     ]
   }),
-  '/ledger-connect': wrap({
+  '/ledger-connect/:id': wrap({
     component: LedgerConnect,
     conditions: [
       routerGuard

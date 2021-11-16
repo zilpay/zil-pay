@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
+	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
   import { AccountTypes } from 'config/account-type';
 	import flyTransition from 'popup/transitions/fly';
@@ -10,11 +11,16 @@
     MIN_NAME_LEN,
     DEFAULT_LEDGER_NAME
   } from 'popup/config/account';
+  import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
 	import walletStore from 'popup/store/wallet';
 	import { createNextSeedAccount, balanceUpdate } from 'popup/backend/wallet';
 
   import BackBar from '../../components/BackBar.svelte';
 	import Loader from '../../components/Loader.svelte';
+
+  export let params = {
+    id: 0
+  };
 
   let lastIndex = $walletStore
     .identities
@@ -23,8 +29,25 @@
   let name = `${DEFAULT_LEDGER_NAME} ${lastIndex}`;
   let index = 0;
 	let loading = false;
+  let device;
 
   $: disabled = loading || name.length < MIN_NAME_LEN;
+
+  onMount(async () => {
+    const devices = await window.navigator.hid.getDevices({
+      filters: [{
+        productId: Number(params.id),
+        vendorId: LEDGER_USB_VENDOR_ID
+      }]
+    });
+    device = devices.filter((d) => d.productId === Number(params.id))[0];
+
+    if (!device) {
+      push('/ledger-device-finder');
+    }
+
+    name = `${device.productName} ${lastIndex}`;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,8 +80,8 @@
 			<input
 				bind:value={index}
         type="number"
-        maxlength={256}
-        minlength={0}
+        max={256}
+        min={0}
 				placeholder={$_('ledger.placeholder')}
         required
 			>
