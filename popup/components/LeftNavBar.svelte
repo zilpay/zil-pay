@@ -3,6 +3,7 @@
   import { link } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
   import { AccountTypes } from 'config/account-type';
+  import { linksExpand } from 'popup/mixins/link';
 
 	import walletStore from 'popup/store/wallet';
 	import { removeAccount } from 'popup/backend/wallet';
@@ -46,12 +47,12 @@
       description={$_('home.nav.optinos.import.description')}
     />
   </a>
-  <a href="/ledger-device-finder" use:link>
+  <span on:click={() => linksExpand('/ledger-device-finder')}>
     <TextElement
       title={$_('home.nav.optinos.connect.title')}
       description={$_('home.nav.optinos.connect.description')}
     />
-  </a>
+  </span>
   <hr />
   {#if canRemove}
     <span
@@ -127,8 +128,10 @@
     animation: backInLeft 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
   }
-  span.remove {
+  span {
     cursor: pointer;
+  }
+  span.remove {
     margin-block-start: 30px;
   }
   @keyframes backInLeft {

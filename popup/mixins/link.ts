@@ -7,6 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import { Runtime } from 'lib/runtime';
+import { Common } from 'config/common'
 
 export default {
   linkToDomain(domain: string) {
@@ -17,3 +18,8 @@ export default {
     Runtime.tabs.create({ url: domain });
   }
 };
+
+export function linksExpand(url = '') {
+  Runtime.tabs.create({ url: Common.PROMT_PAGE + `#${url}` });
+  window.close();
+}
