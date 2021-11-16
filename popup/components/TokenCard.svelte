@@ -62,15 +62,13 @@
     margin: 9px;
     width: 142px;
     border-radius: 6px;
+    border: solid 1px var(--card-color);
     background-color: var(--card-color);
-    box-shadow: 0 5px 5px 0 rgb(0 0 0 / 10%), 0 6px 5px 0 rgb(0 0 0 / 19%);
 
     @include flex-between-row;
 
     &:hover {
-      transition: all 150ms linear;
-
-      opacity: 0.7;
+      border: solid 1px var(--primary-color);
     }
   }
   p.symbol {
