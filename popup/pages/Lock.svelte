@@ -67,6 +67,7 @@
 				type="password"
 				autocomplete="off"
 				placeholder={$_('lock.placeholder')}
+				required
 				on:blur={handleBlur}
 				on:input={handleInput}
 			>

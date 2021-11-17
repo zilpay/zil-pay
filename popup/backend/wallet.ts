@@ -102,6 +102,16 @@ export async function getQrCOde(index: number) {
   return warpMessage(data);
 }
 
+export async function exportSecrePhrase(password: string) {
+  const data = await new Message({
+    type: MTypePopup.EXPORT_SEED,
+    payload: {
+      password
+    }
+  }).send();
+  return warpMessage(data);
+}
+
 export async function removeAccount() {
   const data = await Message.signal(
     MTypePopup.RM_ACCOUNT

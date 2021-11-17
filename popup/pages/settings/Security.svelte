@@ -8,10 +8,24 @@
 
 	import NavClose from '../../components/NavClose.svelte';
 	import Toggle from '../../components/Toggle.svelte';
+  import Modal from '../../components/Modal.svelte';
+  import RevealPhraseModal from '../../modals/RevealPhrase.svelte';
 
 	let phishing = false;
+	let phraseModal = false;
 </script>
 
+<Modal
+  show={phraseModal}
+  title={$_('security.p_modal.title')}
+  on:close={() => phraseModal = !phraseModal}
+>
+  <div class="m-warp">
+    <RevealPhraseModal
+      on:close={() => phraseModal = !phraseModal}
+    />
+  </div>
+</Modal>
 <main in:fly={flyTransition.in}>
 	<NavClose title={$_('security.title')}/>
 	<div>
@@ -22,7 +36,10 @@
 			<p>
 				{$_('security.phrase.description')}
 			</p>
-			<button class="warning">
+			<button
+				class="warning"
+				on:click={() => phraseModal = !phraseModal}
+			>
 				{$_('security.phrase.btn')}
 			</button>
 		</div>
