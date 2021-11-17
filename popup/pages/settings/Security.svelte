@@ -20,11 +20,7 @@
   title={$_('security.p_modal.title')}
   on:close={() => phraseModal = !phraseModal}
 >
-  <div class="m-warp">
-    <RevealPhraseModal
-      on:close={() => phraseModal = !phraseModal}
-    />
-  </div>
+	<RevealPhraseModal />
 </Modal>
 <main in:fly={flyTransition.in}>
 	<NavClose title={$_('security.title')}/>

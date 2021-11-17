@@ -84,7 +84,7 @@ export function startBackground(core: ZIlPayBackground) {
         core.popup.initPopup(sendResponse);
         return true;
       case MTypePopup.EXPORT_SEED:
-        core.wallet.exportSeedPhrase(sendResponse);
+        core.wallet.exportSeedPhrase(msg.payload.password, sendResponse);
         return true;
       case MTypePopup.ENCRYPT_WALLET:
         core.wallet.exportEncrypted(sendResponse);

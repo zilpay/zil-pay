@@ -74,8 +74,9 @@ export class ZilPayWallet {
     }
   }
 
-  public async exportSeedPhrase(sendResponse: StreamResponse) {
+  public async exportSeedPhrase(password: string, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.setPassword(password);
       const seed = this.#core.guard.getSeed();
 
       sendResponse({

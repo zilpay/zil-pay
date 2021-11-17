@@ -1,16 +1,13 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 	import {  } from "module";
 
   import { getZNS } from 'popup/backend/zns';
   import { exportSecrePhrase } from 'popup/backend/wallet';
 
-  const dispatch = createEventDispatcher();
-
   let passwordElement = null;
   let loading = false;
-  let address = '';
   let password = '';
   let error = '';
   let words = '';
@@ -29,7 +26,6 @@
 		try {
 			loading = true;
       words = await exportSecrePhrase(password);
-      // dispatch('close');
 		} catch (err) {
       error = err.message;
 		}
@@ -59,6 +55,7 @@
         autocomplete="off"
         placeholder={$_('lock.placeholder')}
         required
+        on:input={() => error = ''}
       >
     </label>
     <button
@@ -82,6 +79,10 @@
       margin-block-end: 10px;
       width: 290px;
     }
+  }
+  input.error {
+    outline-color: var(--danger-color);
+    animation: shake .4s linear;
   }
   .warn-message {
     text-align: center;
