@@ -90,7 +90,7 @@ export function startBackground(core: ZIlPayBackground) {
         core.wallet.exportEncrypted(sendResponse);
         return true;
       case MTypePopup.EXPORT_PRIVATE_KEY:
-        core.wallet.exportPrivateKey(sendResponse);
+        core.wallet.exportPrivateKey(msg.payload.password, sendResponse);
         return true;
       case MTypePopup.IMPORT_PRIVATE_KEY:
         core.wallet.importPrivateKey(msg.payload, sendResponse);

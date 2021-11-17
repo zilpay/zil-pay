@@ -29,8 +29,9 @@ export class ZilPayWallet {
     this.#core = core;
   }
 
-  public async exportPrivateKey(sendResponse: StreamResponse) {
+  public async exportPrivateKey(password: string, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.setPassword(password);
       const keyPair = await this.#core.account.getKeyPair();
       sendResponse({
         resolve: keyPair

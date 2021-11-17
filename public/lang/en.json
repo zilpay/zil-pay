@@ -204,7 +204,6 @@
     "key": {
       "title": "Show Private Keys",
       "warn": "Warning: Never disclose this key. Anyone with your private keys can steal any assets held in your account.",
-      "label": "Enter password to continue",
       "btn": "Export"
     },
     "phishing": {

@@ -5,15 +5,23 @@
 	import { _ } from 'popup/i18n';
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
+  import { AccountTypes } from 'config/account-type';
+
+	import walletStore from 'popup/store/wallet';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import Toggle from '../../components/Toggle.svelte';
   import Modal from '../../components/Modal.svelte';
   import Jumbotron from '../../components/Jumbotron.svelte';
   import RevealPhraseModal from '../../modals/RevealPhrase.svelte';
+  import ExportKeyModal from '../../modals/ExportKey.svelte';
 
 	let phishing = false;
 	let phraseModal = false;
+	let keyModal = false;
+
+	$: account = $walletStore.identities[$walletStore.selectedAddress];
+	$: keybtndisbaled = AccountTypes.Ledger === account.type;
 </script>
 
 <Modal
@@ -22,6 +30,13 @@
   on:close={() => phraseModal = !phraseModal}
 >
 	<RevealPhraseModal />
+</Modal>
+<Modal
+  show={keyModal}
+  title={$_('security.key.title')}
+  on:close={() => keyModal = !keyModal}
+>
+	<ExportKeyModal />
 </Modal>
 <main in:fly={flyTransition.in}>
 	<NavClose title={$_('security.title')}/>
@@ -41,7 +56,11 @@
 			title={$_('security.key.title')}
 			description={$_('security.key.warn')}
 		>
-			<button class="warning">
+			<button
+				class="warning"
+				disabled={keybtndisbaled}
+				on:click={() => keyModal = !keyModal}
+			>
 				{$_('security.key.btn')}
 			</button>
 		</Jumbotron>

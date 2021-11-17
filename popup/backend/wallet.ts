@@ -112,6 +112,16 @@ export async function exportSecrePhrase(password: string) {
   return warpMessage(data);
 }
 
+export async function exportPrivateKey(password: string) {
+  const data = await new Message({
+    type: MTypePopup.EXPORT_PRIVATE_KEY,
+    payload: {
+      password
+    }
+  }).send();
+  return warpMessage(data);
+}
+
 export async function removeAccount() {
   const data = await Message.signal(
     MTypePopup.RM_ACCOUNT
