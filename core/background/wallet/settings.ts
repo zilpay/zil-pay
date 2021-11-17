@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { Themes } from 'config/theme';
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
 
@@ -14,6 +15,20 @@ export class ZilPaySettings {
 
   constructor(core: ZIlPayCore) {
     this.#core = core;
+  }
+
+  public async changeTheme(theme: Themes, sendResponse: StreamResponse) {
+    try {
+      await this.#core.theme.update(theme);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
   }
 
   public async changeCurrency(currecny: string, sendResponse: StreamResponse) {

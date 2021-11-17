@@ -31,3 +31,15 @@ export async function resetCurrency() {
   updateState(state);
   return state;
 }
+
+export async function changeTheme(theme: string) {
+  const data = await new Message({
+    type: MTypePopup.SET_THEME,
+    payload: {
+      theme
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

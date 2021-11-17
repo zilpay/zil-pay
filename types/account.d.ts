@@ -14,6 +14,7 @@ import type { RateCurrencies } from 'types/zilliqa';
 import type { NETWORK } from 'config/network';
 import type { MinParams, StoredTx } from 'types/transaction';
 import type { AccountTypes } from 'config/account-type';
+import type { Themes } from 'config/theme';
 
 export interface ZRC1Token {
   id: string;
@@ -76,7 +77,7 @@ export interface WalletState {
     config: typeof NETWORK;
     selected: string;
   };
-  theme: number;
+  theme: string | Themes;
   guard: GuardType;
   rate: RateCurrencies,
   apps: Apps;

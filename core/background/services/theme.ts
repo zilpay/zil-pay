@@ -27,13 +27,12 @@ export class ThemeController {
 
   public async sync() {
     const content = await BrowserStorage.get(Fields.THEME);
-    const theme = Number(content);
 
-    if (!content || isNaN(theme)) {
+    if (!content) {
       return this.reset();
     }
 
-    this.#selected = Number(content);
+    this.#selected = content as Themes;
   }
 
   public async reset() {

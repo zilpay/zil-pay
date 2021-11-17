@@ -3,16 +3,28 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { DEFAULT_CURRENCIES } from 'config/currencies';
-	import { changeCurrency, resetCurrency } from 'popup/backend/settings';
+	import { Themes } from 'config/theme';
+	import {
+		changeCurrency,
+		resetCurrency,
+		changeTheme
+	} from 'popup/backend/settings';
 
 	import currencyStore from 'popup/store/currency';
+	import themeStore from 'popup/store/theme';
 
 	import NavClose from '../../components/NavClose.svelte';
   import Jumbotron from '../../components/Jumbotron.svelte';
 
+	const themesList = Object.values(Themes);
+
 	const hanldeChangeCurrency = async (e) => {
 		const currency = e.target.value;
 		await changeCurrency(currency);
+	};
+	const hanldeChangeTheme = async (e) => {
+		const theme = e.target.value;
+		await changeTheme(theme);
 	};
 	const hanldeOnReset = async () => {
 		await resetCurrency();
@@ -41,13 +53,13 @@
 			title={$_('general.theme.title')}
 			description={$_('general.theme.description')}
 		>
-			<select on:input={hanldeChangeCurrency}>
-				{#each DEFAULT_CURRENCIES as currency}
+			<select on:input={hanldeChangeTheme}>
+				{#each themesList as theme}
 					<option
-						value={currency}
-						selected={currency === $currencyStore}
+						value={theme}
+						selected={theme === $themeStore}
 					>
-						{currency}
+						{theme}
 					</option>
 				{/each}
 			</select>

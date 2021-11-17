@@ -65,7 +65,9 @@ export const MTypePopup = {
   LEDGER_LOAD_ACCOUNT: `@/${app}/ledger-load-account`,
 
   CHANGE_CURRENCY: `@/${app}/change-currency`,
-  RESET_CURRENCY: `@/${app}/reset-currency`
+  RESET_CURRENCY: `@/${app}/reset-currency`,
+
+  SET_THEME: `@/${app}/set-theme-mode`
 };
 
 export const MTypeTab = {
