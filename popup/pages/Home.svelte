@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade } from "svelte/transition";
 	import { _ } from 'popup/i18n';
   import { link, push } from 'svelte-spa-router';
 	import { TokenType } from 'popup/config/token-type';
@@ -67,7 +68,7 @@
 		src="/imgs/logo.webp"
 		alt="logo"
 	>
-	<main>
+	<main in:fade>
 		<div class="bar-wrapper">
 			<div on:click={onToggleLeftBar}>
 				<Burger />
@@ -134,7 +135,6 @@
 	h1 {
 		color: var(--text-color);
 		text-align: center;
-    // margin-top: 30px;
 		font-family: Demi;
 		margin-block-end: 0;
 		margin-block-start: 0;
@@ -170,6 +170,7 @@
 	button.add {
 		min-width: 300px;
 		color: var(--primary-color);
+		margin-block-start: 5px;
 
 		&:hover {
 			color: var(--background-color);

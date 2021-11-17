@@ -59,7 +59,7 @@
     cursor: pointer;
 
     padding: 12px;
-    margin: 9px;
+    margin: 3px;
     width: 142px;
     border-radius: 6px;
     border: solid 1px var(--card-color);

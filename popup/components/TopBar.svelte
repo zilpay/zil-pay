@@ -25,7 +25,7 @@
   >
     <span />
   </a>
-  <div>
+  <div class="icons-warp">
     {#if expand}
       <span
         class="expand"
@@ -71,6 +71,10 @@
 
     border-radius: 100%;
     background-color: var(--primary-color);
+  }
+  .icons-warp {
+    text-align: end;
+    width: 200px;
   }
   span {
     cursor: pointer;

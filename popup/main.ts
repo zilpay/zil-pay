@@ -9,13 +9,13 @@
 import App from './App.svelte';
 import { getState } from './backend/wallet';
 
+let app = {};
+
 getState()
 	.then(() => {
-		new App({
+		app = new App({
 			target: document.body
 		});
 	});
 
-// const app = new App();
-
-export default {};
+export default app;
