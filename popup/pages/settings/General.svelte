@@ -7,8 +7,6 @@
   import flyTransition from 'popup/transitions/fly';
 
 	import NavClose from '../../components/NavClose.svelte';
-
-	let state = null;
 </script>
 
 <main in:fly={flyTransition.in}>
