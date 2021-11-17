@@ -66,3 +66,9 @@
     color: var(--Text-color);
   }
 }
+:global(button.warning),
+:global(.btn.warning) {
+  border-color: var(--warning-color);
+  background: var(--warning-color);
+  color: var(--background-color);
+}

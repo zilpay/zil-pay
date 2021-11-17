@@ -12,7 +12,39 @@
 </script>
 
 <main in:fly={flyTransition.in}>
-	<NavClose title={'Security'}/>
+	<NavClose title={$_('security.title')}/>
+	<div>
+		<div class="card">
+			<h3>
+				{$_('security.phrase.title')}
+			</h3>
+			<p>
+				{$_('security.phrase.description')}
+			</p>
+			<button class="warning">
+				{$_('security.phrase.btn')}
+			</button>
+		</div>
+		<div class="card">
+			<h3>
+				{$_('security.key.title')}
+			</h3>
+			<p>
+				{$_('security.key.warn')}
+			</p>
+			<button class="warning">
+				{$_('security.key.btn')}
+			</button>
+		</div>
+		<div class="card">
+			<h3>
+				{$_('security.phishing.title')}
+			</h3>
+			<p>
+				{$_('security.phishing.warn')}
+			</p>
+		</div>
+	</div>
 </main>
 
 <style lang="scss">
@@ -22,5 +54,22 @@
 		height: 100vh;
 		background-color: var(--background-color);
 		@include flex-center-top-column;
+	}
+	.card {
+		background-color: var(--card-color);
+
+    width: 100%;
+    min-width: 290px;
+    max-width: 500px;
+    padding: 16px;
+		margin-block-end: 16px;
+
+		& > h3 {
+			margin: 0;
+		}
+
+		@media screen and (min-width: 400px) {
+			@include border-radius(8px);
+    }
 	}
 </style>
