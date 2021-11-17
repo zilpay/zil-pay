@@ -62,7 +62,10 @@ export const MTypePopup = {
   ADD_CONTACT: `@/${app}/add-a-contact`,
   RM_CONTACT: `@/${app}/remove-a-contact`,
 
-  LEDGER_LOAD_ACCOUNT: `@/${app}/ledger-load-account`
+  LEDGER_LOAD_ACCOUNT: `@/${app}/ledger-load-account`,
+
+  CHANGE_CURRENCY: `@/${app}/change-currency`,
+  RESET_CURRENCY: `@/${app}/reset-currency`
 };
 
 export const MTypeTab = {

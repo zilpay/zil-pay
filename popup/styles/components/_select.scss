@@ -1,0 +1,11 @@
+:global(select) {
+  width: 100%;
+  min-width: 290px;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25em;
+  padding: 0.25em 0.5em;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1.1;
+  background: transparent;
+}

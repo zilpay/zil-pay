@@ -218,7 +218,7 @@
     },
     "general": {
       "title": "General",
-      "description": "Currency conversion, primary currency, language, theme."
+      "description": "Currency conversion, language, theme."
     },
     "contacts": {
       "title": "Contacts",
@@ -244,5 +244,17 @@
       "title": "About",
       "description": "Version, support center, and contact info."
     }
+  },
+  "general": {
+    "title": "General",
+    "currency": {
+      "title": "Currency Conversion",
+      "description": "You can switch to another currency to track your balance in it."
+    },
+    "theme": {
+      "title": "Interface theme.",
+      "description": "ZIlPay can change colors between light and dark mode"
+    },
+    "reset": "Reset settings"
   }
 }

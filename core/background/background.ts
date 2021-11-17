@@ -17,6 +17,12 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.CHANGE_CURRENCY:
+        core.settings.changeCurrency(msg.payload.currency, sendResponse);
+        return true;
+      case MTypePopup.RESET_CURRENCY:
+        core.settings.resetCurrency(sendResponse);
+        return true;
       case MTypePopup.LEDGER_LOAD_ACCOUNT:
         core.wallet.loadLedgerAccount(msg.payload, sendResponse);
         return true;

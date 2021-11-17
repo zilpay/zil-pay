@@ -19,7 +19,7 @@ export class CurrenciesController {
     return this.#selected;
   }
 
-  public async update(newSelected: 'usd' | 'btc' | 'eth') {
+  public async update(newSelected: string) {
     assert(
       DEFAULT_CURRENCIES.includes(newSelected),
       `${ErrorMessages.IncorrectParams} newSelected`

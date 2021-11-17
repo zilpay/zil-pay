@@ -16,7 +16,8 @@ import { ZilPayWallet } from './wallet';
 import { ZilPayZRC } from './zrc';
 import { ZilPayApps } from './apps';
 import { ZilPayContacts } from './contacts';
-import { ZilPayTransaction } from './transaction'
+import { ZilPayTransaction } from './transaction';
+import { ZilPaySettings } from './settings';
 
 export class ZIlPayBackground {
   readonly #core = new ZIlPayCore();
@@ -30,6 +31,7 @@ export class ZIlPayBackground {
   public readonly apps = new ZilPayApps(this.#core);
   public readonly contacts = new ZilPayContacts(this.#core);
   public readonly transaction = new ZilPayTransaction(this.#core);
+  public readonly settings = new ZilPaySettings(this.#core);
 
   public async sync() {
     await this.synchronizer.sync();
