@@ -31,6 +31,20 @@ export class ZilPaySettings {
     }
   }
 
+  public async resetTheme(sendResponse: StreamResponse) {
+    try {
+      await this.#core.theme.reset();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async changeCurrency(currecny: string, sendResponse: StreamResponse) {
     try {
       await this.#core.currencies.update(currecny);

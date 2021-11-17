@@ -21,7 +21,7 @@ export class ThemeController {
     this.#selected = newSelected;
 
     await BrowserStorage.set(
-      buildObject(Fields.SELECTED_CURRENCY, String(this.selected))
+      buildObject(Fields.THEME, String(this.selected))
     );
   }
 

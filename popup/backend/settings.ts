@@ -43,3 +43,12 @@ export async function changeTheme(theme: string) {
   updateState(state);
   return state;
 }
+
+export async function resetTheme() {
+  const data = await Message
+    .signal(MTypePopup.RESET_THEME)
+    .send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

@@ -22,6 +22,7 @@ import zrcStore from 'app/store/zrc';
 import loadedStore from 'popup/store/loaded';
 
 export function updateState(state: WalletState) {
+  document.body.setAttribute('theme', state.theme);
   console.log(state);
   guardStore.set(state.guard);
   walletStore.set(state.wallet);

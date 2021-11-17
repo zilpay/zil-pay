@@ -7,7 +7,8 @@
 	import {
 		changeCurrency,
 		resetCurrency,
-		changeTheme
+		changeTheme,
+		resetTheme
 	} from 'popup/backend/settings';
 
 	import currencyStore from 'popup/store/currency';
@@ -28,6 +29,7 @@
 	};
 	const hanldeOnReset = async () => {
 		await resetCurrency();
+		await resetTheme();
 	};
 </script>
 

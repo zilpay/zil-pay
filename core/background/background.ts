@@ -20,6 +20,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.SET_THEME:
         core.settings.changeTheme(msg.payload.theme, sendResponse);
         return true;
+      case MTypePopup.RESET_THEME:
+        core.settings.resetTheme(sendResponse);
+        return true;
       case MTypePopup.CHANGE_CURRENCY:
         core.settings.changeCurrency(msg.payload.currency, sendResponse);
         return true;

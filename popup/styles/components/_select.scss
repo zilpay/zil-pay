@@ -1,6 +1,8 @@
 :global(select) {
+  outline: none;
   width: 100%;
   min-width: 290px;
+  color: var(--text-color);
   border: 1px solid var(--border-color);
   border-radius: 0.25em;
   padding: 0.25em 0.5em;
