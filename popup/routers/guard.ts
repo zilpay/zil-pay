@@ -11,14 +11,8 @@ import { push } from 'svelte-spa-router';
 
 import appStore from 'popup/store/apps';
 import guardStore from 'popup/store/guard';
-import loadedStore from 'app/store/loaded';
-import { getState } from 'popup/backend';
 
-export const routerGuard = async (e) => {
-  const loaded = get(loadedStore);
-  if (!loaded) {
-    await getState();
-  }
+export const routerGuard = (e: { location: string; }) => {
   const guard = get(guardStore);
   const apps = get(appStore);
 

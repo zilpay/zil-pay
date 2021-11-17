@@ -7,9 +7,15 @@
  * Copyright (c) 2021 ZilPay
  */
 import App from './App.svelte';
+import { getState } from './backend/wallet';
 
-const app = new App({
-	target: document.body
-});
+getState()
+	.then(() => {
+		new App({
+			target: document.body
+		});
+	});
 
-export default app;
+// const app = new App();
+
+export default {};

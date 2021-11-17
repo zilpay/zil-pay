@@ -19,7 +19,6 @@ import rateStore from 'popup/store/rate';
 import ssnStore from 'popup/store/ssn';
 import transactionsStore from 'popup/store/transactions';
 import zrcStore from 'app/store/zrc';
-import loadedStore from 'popup/store/loaded';
 import localeStore from 'popup/store/locale';
 
 export function updateState(state: WalletState) {
@@ -38,5 +37,4 @@ export function updateState(state: WalletState) {
   ssnStore.set(state.ssn);
   transactionsStore.set(state.transactions);
   zrcStore.set(state.zrc2);
-  loadedStore.set(true);
 }

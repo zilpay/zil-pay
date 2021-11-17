@@ -2,18 +2,27 @@
 	import Router from 'svelte-spa-router';
 	import { onMount } from 'svelte';
   import routes from './routers';
-	import { setupI18n, isLocaleLoaded } from 'popup/i18n';
-	import { getState } from "popup/backend";
+	import { setupI18n } from 'popup/i18n';
+	import { Locales } from 'config/locale';
+
+	import localeStore from 'popup/store/locale';
 
 	let loaded = false;
 
 	onMount(async () => {
-		if (!$isLocaleLoaded) {
-			await setupI18n({ withLocale: 'en' });
+		try {
+			if ($localeStore === Locales.Auto) {
+				await setupI18n();
+			} else {
+				await setupI18n({
+					withLocale: $localeStore
+				});
+			}
+		} catch {
+			await setupI18n({
+				withLocale: Locales.EN
+			});
 		}
-
-		const state = await getState();
-		const guard = state.guard;
 
 		loaded = true;
 	});
