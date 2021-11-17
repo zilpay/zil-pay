@@ -18,9 +18,9 @@
   .card {
 		background-color: var(--card-color);
 
-    width: 100%;
     min-width: 290px;
     max-width: 500px;
+    width: 100vw;
     padding: 16px;
 		margin-block-end: 16px;
 

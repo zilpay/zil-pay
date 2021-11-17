@@ -86,11 +86,11 @@
 	}
 	img {
 		max-width: 500px;
-		width: calc(100vw - 30px);
+		width: calc(100vw - 50px);
 	}
 	div.card {
 		cursor: pointer;
-		min-width: 290px;
+		min-width: 270px;
 
 		text-indent: 10px;
 

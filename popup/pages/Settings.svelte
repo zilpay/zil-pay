@@ -84,6 +84,7 @@
     list-style: none;
 
 		height: calc(100vh - 50px);
+		max-width: 500px;
 
 		& > li {
 			cursor: pointer;

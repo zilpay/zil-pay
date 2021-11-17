@@ -84,4 +84,7 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
+	button {
+		width: 290px;
+	}
 </style>
