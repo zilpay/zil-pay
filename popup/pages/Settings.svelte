@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
-	import flyTransition from 'popup/transitions/fly';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TextElement from '../components/TextElement.svelte';
@@ -53,7 +51,7 @@
 
 <section>
 	<main>
-		<ul in:fly={flyTransition.in}>
+		<ul>
 			{#each items as item, i}
 				<li on:click={() => push(item.link)}>
 					<TextElement

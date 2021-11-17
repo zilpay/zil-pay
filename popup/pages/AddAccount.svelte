@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
   import { AccountTypes } from 'config/account-type';
-	import flyTransition from 'popup/transitions/fly';
   import {
     MIN_PASSWORD_LEN,
     MAX_NAME_LEN,
@@ -47,10 +45,7 @@
 
 <main>
 	<NavClose title={$_('setup_acc.title')}/>
-  <form
-    in:fly={flyTransition.in}
-    on:submit={handleSubmit}
-  >
+  <form on:submit={handleSubmit}>
     <label>
 			<input
 				bind:value={name}

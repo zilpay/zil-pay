@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
-	import flyTransition from 'popup/transitions/fly';
 	import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
+  import { scale } from 'svelte/transition';
 
 	import { selectAccount, balanceUpdate } from 'popup/backend/wallet';
 
@@ -20,7 +19,7 @@
 	};
 </script>
 
-<main>
+<main in:scale>
 	<NavClose title={$_('accounts.title')}/>
 	<AccountsModal
 		list={$walletStore.identities}

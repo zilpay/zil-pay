@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fade } from "svelte/transition";
 	import { _ } from 'popup/i18n';
   import { link, push } from 'svelte-spa-router';
 	import { TokenType } from 'popup/config/token-type';
@@ -68,7 +67,7 @@
 		src="/imgs/logo.webp"
 		alt="logo"
 	>
-	<main in:fade>
+	<main>
 		<div class="bar-wrapper">
 			<div on:click={onToggleLeftBar}>
 				<Burger />

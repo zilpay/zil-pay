@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tick, onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
@@ -122,9 +122,9 @@
     />
   </div>
 </Modal>
-<main>
+<main in:scale>
 	<NavClose title={$_('send.title')}/>
-  <div in:fly={flyTransition.in}>
+  <div>
     <div>
       <SelectCard
         title={$_('send.cards.transfer')}

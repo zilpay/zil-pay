@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
-	import flyTransition from 'popup/transitions/fly';
 	import { onMount } from 'svelte';
 	import { push } from 'svelte-spa-router';
 
@@ -41,7 +40,7 @@
 </script>
 
 {#if Boolean(app)}
-	<main>
+	<main in:scale>
 		<h1>{app.title}</h1>
 		<div class="img-wrap">
 			<img

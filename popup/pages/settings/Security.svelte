@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
-  import { fly } from 'svelte/transition';
-  import flyTransition from 'popup/transitions/fly';
+	import { scale } from 'svelte/transition';
+
   import { AccountTypes } from 'config/account-type';
 
 	import walletStore from 'popup/store/wallet';
@@ -38,7 +37,7 @@
 >
 	<ExportKeyModal />
 </Modal>
-<main in:fly={flyTransition.in}>
+<main in:scale>
 	<NavClose title={$_('security.title')}/>
 	<div>
 		<Jumbotron

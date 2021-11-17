@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
+	import { scale } from 'svelte/transition';
 
   import NavClose from '../components/NavClose.svelte';
 </script>
 
-<main>
+<main in:scale>
 	<NavClose title={$_('tokens_list.title')}/>
 </main>
 

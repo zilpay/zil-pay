@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { fade, blur, fly, slide, scale } from "svelte/transition";
+	import { scale } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import { getQrCOde } from 'popup/backend/wallet';
   import { trim } from 'popup/filters/trim';
@@ -45,12 +45,11 @@
     />
   </div>
 </Modal>
-<main>
+<main in:scale>
 	<NavClose title={$_('account.title')}/>
 	<div>
 		{#if base58}
 			<img
-				in:blur
 				src={base58}
 				alt="qrcode"
 			/>
