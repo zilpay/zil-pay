@@ -96,7 +96,11 @@
 		@include flex-center-column;
 	}
 	h1 {
+		@include fluid-font(320px, 720px, 20px, 30px);
 		@include text-shorten;
+	}
+	h2 {
+		@include fluid-font(320px, 720px, 15px, 20px);
 	}
 	img {
 		display: auto;
@@ -107,13 +111,14 @@
 	div,
 	h1 {
 		max-width: 500px;
+		width: calc(100vw - 30px);
 		padding-left: 16px;
 		padding-right: 16px;
 	}
 	div {
 		&.img-wrap {
-			margin-block-start: 5vh;
-			margin-block-end: 5vh;
+			margin-block-start: 2vh;
+			margin-block-end: 2vh;
 		}
 		&.btn-wrap {
 			max-width: 400px;
