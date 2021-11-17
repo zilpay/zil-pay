@@ -68,7 +68,10 @@ export const MTypePopup = {
   RESET_CURRENCY: `@/${app}/reset-currency`,
 
   SET_THEME: `@/${app}/set-theme-mode`,
-  RESET_THEME: `@/${app}/reset-theme`
+  RESET_THEME: `@/${app}/reset-theme`,
+
+  SET_LOCALE: `@/${app}/set-locale`,
+  RESET_LOCALE: `@/${app}/reset-locale`,
 };
 
 export const MTypeTab = {

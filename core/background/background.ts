@@ -17,6 +17,12 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.SET_LOCALE:
+        core.settings.changeLocale(msg.payload.locale, sendResponse);
+        return true;
+      case MTypePopup.RESET_LOCALE:
+        core.settings.resetLocale(sendResponse);
+        return true;
       case MTypePopup.SET_THEME:
         core.settings.changeTheme(msg.payload.theme, sendResponse);
         return true;

@@ -4,20 +4,25 @@
   import flyTransition from 'popup/transitions/fly';
 	import { DEFAULT_CURRENCIES } from 'config/currencies';
 	import { Themes } from 'config/theme';
+	import { Locales } from 'config/locale';
 	import {
 		changeCurrency,
 		resetCurrency,
 		changeTheme,
-		resetTheme
+		resetTheme,
+		changeLocale,
+		resetLocale
 	} from 'popup/backend/settings';
 
 	import currencyStore from 'popup/store/currency';
 	import themeStore from 'popup/store/theme';
+	import localeStore from 'popup/store/locale';
 
 	import NavClose from '../../components/NavClose.svelte';
   import Jumbotron from '../../components/Jumbotron.svelte';
 
 	const themesList = Object.values(Themes);
+	const locales = Object.values(Locales);
 
 	const hanldeChangeCurrency = async (e) => {
 		const currency = e.target.value;
@@ -27,9 +32,14 @@
 		const theme = e.target.value;
 		await changeTheme(theme);
 	};
+	const hanldeChangeLocale = async (e) => {
+		const locale = e.target.value;
+		await changeLocale(locale);
+	};
 	const hanldeOnReset = async () => {
 		await resetCurrency();
 		await resetTheme();
+		await resetLocale();
 	};
 </script>
 
@@ -62,6 +72,21 @@
 						selected={theme === $themeStore}
 					>
 						{theme}
+					</option>
+				{/each}
+			</select>
+		</Jumbotron>
+		<Jumbotron
+			title={$_('general.lang.title')}
+			description={$_('general.lang.description')}
+		>
+			<select on:input={hanldeChangeLocale}>
+				{#each locales as locale}
+					<option
+						value={locale}
+						selected={locale === $localeStore}
+					>
+						{locale}
 					</option>
 				{/each}
 			</select>

@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { Locales } from 'config/locale';
 import type { Themes } from 'config/theme';
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
@@ -17,9 +18,37 @@ export class ZilPaySettings {
     this.#core = core;
   }
 
+  public async changeLocale(locale: Locales, sendResponse: StreamResponse) {
+    try {
+      await this.#core.locale.setLocale(locale);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async resetLocale(sendResponse: StreamResponse) {
+    try {
+      await this.#core.locale.reset();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async changeTheme(theme: Themes, sendResponse: StreamResponse) {
     try {
-      await this.#core.theme.update(theme);
+      await this.#core.theme.setTheme(theme);
 
       sendResponse({
         resolve: this.#core.state

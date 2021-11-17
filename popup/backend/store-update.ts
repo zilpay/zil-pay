@@ -20,6 +20,7 @@ import ssnStore from 'popup/store/ssn';
 import transactionsStore from 'popup/store/transactions';
 import zrcStore from 'app/store/zrc';
 import loadedStore from 'popup/store/loaded';
+import localeStore from 'popup/store/locale';
 
 export function updateState(state: WalletState) {
   document.body.setAttribute('theme', state.theme);
@@ -28,6 +29,7 @@ export function updateState(state: WalletState) {
   walletStore.set(state.wallet);
   netStore.set(state.netwrok);
   themeStore.set(state.theme);
+  localeStore.set(state.locale);
   appStore.set(state.apps);
   contactsStore.set(state.contacts);
   currencyStore.set(state.currency);

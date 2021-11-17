@@ -8,16 +8,16 @@
  */
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
-import { Themes } from 'config/theme';
+import { Locales } from 'config/locale';
 
-export class ThemeController {
-  #selected: Themes;
+export class LocalesController {
+  #selected: Locales;
 
   public get selected() {
     return this.#selected;
   }
 
-  public async setTheme(newSelected: Themes) {
+  public async setLocale(newSelected: Locales) {
     this.#selected = newSelected;
 
     await BrowserStorage.set(
@@ -26,20 +26,20 @@ export class ThemeController {
   }
 
   public async sync() {
-    const content = await BrowserStorage.get(Fields.THEME);
+    const content = await BrowserStorage.get(Fields.LOCALE);
 
     if (!content) {
       return this.reset();
     }
 
-    this.#selected = content as Themes;
+    this.#selected = content as Locales;
   }
 
   public async reset() {
-    this.#selected = Themes.Light;
+    this.#selected = Locales.Auto;
 
     await BrowserStorage.set(
-      buildObject(Fields.THEME, String(Themes.Light))
+      buildObject(Fields.LOCALE, String(this.selected))
     );
   }
 }

@@ -52,3 +52,24 @@ export async function resetTheme() {
   updateState(state);
   return state;
 }
+
+export async function changeLocale(locale: string) {
+  const data = await new Message({
+    type: MTypePopup.SET_LOCALE,
+    payload: {
+      locale
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
+export async function resetLocale() {
+  const data = await Message
+    .signal(MTypePopup.RESET_LOCALE)
+    .send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

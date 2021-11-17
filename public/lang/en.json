@@ -255,6 +255,10 @@
       "title": "Interface theme.",
       "description": "ZIlPay can change colors between light and dark mode"
     },
+    "lang": {
+      "title": "Interface language.",
+      "description": "ZIlPay support multi languages interface."
+    },
     "reset": "Reset settings"
   }
 }

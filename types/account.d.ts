@@ -15,6 +15,7 @@ import type { NETWORK } from 'config/network';
 import type { MinParams, StoredTx } from 'types/transaction';
 import type { AccountTypes } from 'config/account-type';
 import type { Themes } from 'config/theme';
+import type { Locales } from 'config/locale';
 
 export interface ZRC1Token {
   id: string;
@@ -77,6 +78,7 @@ export interface WalletState {
     config: typeof NETWORK;
     selected: string;
   };
+  locale: string | Locales;
   theme: string | Themes;
   guard: GuardType;
   rate: RateCurrencies,

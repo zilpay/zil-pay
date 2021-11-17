@@ -25,6 +25,7 @@ import { TransactionsController } from 'core/background/services/transactions';
 import { NonceController } from 'core/background/services/nonce';
 import { TransactionsQueue } from 'core/background/services/transactions';
 import { LedgerWebHID } from 'core/background/services/ledger';
+import { LocalesController } from 'core/background/services/locale';
 
 export class ZIlPayCore {
   public netwrok = new NetworkControl();
@@ -33,6 +34,7 @@ export class ZIlPayCore {
   public prompt = new PromptService();
   public rate = new RateController();
   public theme = new ThemeController();
+  public locale = new LocalesController();
   public apps = new AppConnectController();
   public currencies = new CurrenciesController();
   public contacts = new ContactController();
@@ -54,6 +56,7 @@ export class ZIlPayCore {
         config: this.netwrok.config,
         selected: this.netwrok.selected
       },
+      locale: this.locale.selected,
       theme: this.theme.selected,
       guard: {
         isReady: this.guard.isReady,

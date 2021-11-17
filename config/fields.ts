@@ -28,5 +28,6 @@ export enum Fields {
   SSN = 'ssn-list',
   GAS = 'chain-gas',
   RATE_CURRENCIES = 'rate-of-currencies',
-  SELECTED_CURRENCY = 'selected-currency'
+  SELECTED_CURRENCY = 'selected-currency',
+  LOCALE = 'selected-local'
 }
