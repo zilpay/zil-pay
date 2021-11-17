@@ -7,8 +7,9 @@
   import flyTransition from 'popup/transitions/fly';
 
 	import NavClose from '../../components/NavClose.svelte';
+	import Toggle from '../../components/Toggle.svelte';
 
-	let state = null;
+	let phishing = false;
 </script>
 
 <main in:fly={flyTransition.in}>
@@ -43,6 +44,10 @@
 			<p>
 				{$_('security.phishing.warn')}
 			</p>
+			<Toggle
+				checked={phishing}
+				on:toggle={() => phishing = !phishing}
+			/>
 		</div>
 	</div>
 </main>

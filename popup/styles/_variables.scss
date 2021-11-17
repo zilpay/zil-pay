@@ -1,14 +1,3 @@
-
-
-$breakpoints:  (
-  "xs": 25em, // 400px
-  "sm": 34em, // 544px
-  "md": 48em, // 768px
-  "lg": 60em, // 960px
-  "xl": 80em, // 1280px
-  "xxl": 90em // 1440px
-);
-
 $light: (
   'Primary': #01B2C9,
   'Secondary': #2F353C,
@@ -16,6 +5,7 @@ $light: (
   'Muted': #8E8EAE,
   'Warning': #ff8300,
   'Hover': #e7f1ffb0,
+  'Success': #2FEB50,
 
   'Background': #DBE1F9,
   'Border': #C9C9E6,
@@ -32,6 +22,7 @@ $dark: (
   'Muted': #6e6e6e,
   'Warning': #ff8300,
   'Hover': #45454cbf,
+  'Success': #2FEB50,
 
   'Background': #18191D,
   'Border': #363942,

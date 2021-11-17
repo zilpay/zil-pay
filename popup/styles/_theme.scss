@@ -12,6 +12,7 @@
 
   --secondary-color:  #{inspect(map-get($light , "Secondary"))};
   --primary-color: #{inspect(map-get($light , "Primary"))};
+  --success-color:  #{inspect(map-get($light , "Success"))};
   --danger-color: #{inspect(map-get($light , "Danger"))};
   --warning-color: #{inspect(map-get($light , "Warning"))};
   --muted-color: #{inspect(map-get($light , "Muted"))};
@@ -28,6 +29,7 @@
 
   --primary-color:  #{inspect(map-get($dark , "Primary"))};
   --secondary-color:  #{inspect(map-get($dark , "Secondary"))};
+  --success-color:  #{inspect(map-get($dark , "Success"))};
   --danger-color: #{inspect(map-get($dark , "Danger"))};
   --warning-color: #{inspect(map-get($dark , "Warning"))};
   --muted-color: #{inspect(map-get($dark , "Muted"))};

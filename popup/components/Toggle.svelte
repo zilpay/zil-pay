@@ -1,0 +1,117 @@
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+  import { uuidv4 } from 'lib/crypto/uuid';
+
+  const dispatch = createEventDispatcher();
+  const id = uuidv4();
+  export let checked = false;
+
+  const handleOnChange = (e) => {
+    dispatch('toggle', !checked);
+  };
+</script>
+
+<input
+  class="tgl tgl-ios"
+  id={id}
+  type="checkbox"
+  checked={checked}
+  on:input={handleOnChange}
+/>
+<label
+  class="tgl-btn"
+  for={id}
+/>
+
+<style lang="scss">
+  @import "../styles/mixins";
+
+  .tgl {
+    display: none;
+
+    // add default box-sizing for this scope
+    &,
+    &:after,
+    &:before,
+    & *,
+    & *:after,
+    & *:before,
+    & + .tgl-btn {
+      box-sizing: border-box;
+      &::selection {
+        background: none;
+      }
+    }
+
+    + .tgl-btn {
+      outline: 0;
+      display: block;
+      width: 4em;
+      height: 2em;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      &:after,
+      &:before {
+        position: relative;
+        display: block;
+        content: "";
+        width: 50%;
+        height: 100%;
+      }
+
+      &:after {
+        left: 0;
+      }
+
+      &:before {
+        display: none;
+      }
+    }
+
+    &:checked + .tgl-btn:after {
+      left: 50%;
+    }
+  }
+  .tgl-ios {
+    + .tgl-btn {
+      background: var(--button-color);
+      border-radius: 2em;
+      padding: 2px;
+      transition: all .4s ease;
+      border: 1px solid var(--border-color);
+      &:after {
+        border-radius: 2em;
+        background: var(--button-color);
+        transition:
+          left .3s cubic-bezier(
+            0.175, 0.885, 0.320, 1.275
+          ),
+          padding .3s ease, margin .3s ease;
+        box-shadow:
+          0 0 0 1px rgba(0,0,0,.1),
+          0 4px 0 rgba(0,0,0,.08);
+      }
+
+      &:hover:after {
+        will-change: padding;
+      }
+
+      &:active {
+        &:after {
+          padding-right: .8em;
+        }
+      }
+    }
+
+    &:checked + .tgl-btn {
+      background: var(--success-color);
+      &:active {
+        box-shadow: none;
+        &:after {
+          margin-left: -.8em;
+        }
+      }
+    }
+  }
+</style>
