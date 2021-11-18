@@ -12,6 +12,11 @@
 
 	import NavClose from '../../components/NavClose.svelte';
 	import GasControl from '../../components/GasControl.svelte';
+  import Jumbotron from '../../components/Jumbotron.svelte';
+	import Toggle from '../../components/Toggle.svelte';
+
+	let base16 = false;
+	let popup = true;
 
 	const handleOnChangeGasMultiplier = async ({ detail }) => {
 		await changeGasMultiplier(detail);
@@ -23,13 +28,35 @@
 
 <main>
 	<NavClose title={'Advanced'}/>
-
 	<div>
-    <GasControl
-			multiplier={$gasStore.multiplier}
-			gasLimit={$gasStore.gasLimit}
-			on:select={handleOnChangeGasMultiplier}
-		/>
+		<Jumbotron
+			title={$_('advanced.gas.title')}
+			description={$_('advanced.gas.description')}
+		>
+			<GasControl
+				multiplier={$gasStore.multiplier}
+				gasLimit={$gasStore.gasLimit}
+				on:select={handleOnChangeGasMultiplier}
+			/>
+		</Jumbotron>
+		<Jumbotron
+			title={$_('advanced.base16.title')}
+			description={$_('advanced.base16.description')}
+		>
+			<Toggle
+				checked={base16}
+				on:toggle={() => base16 = !base16}
+			/>
+		</Jumbotron>
+		<Jumbotron
+			title={$_('advanced.popup.title')}
+			description={$_('advanced.popup.description')}
+		>
+			<Toggle
+				checked={popup}
+				on:toggle={() => popup = !popup}
+			/>
+		</Jumbotron>
 	</div>
 </main>
 

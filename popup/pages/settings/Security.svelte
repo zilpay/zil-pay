@@ -43,24 +43,24 @@
 			title={$_('security.phrase.title')}
 			description={$_('security.phrase.description')}
 		>
-			<button
+			<span
 				class="warning"
 				on:click={() => phraseModal = !phraseModal}
 			>
 				{$_('security.phrase.btn')}
-			</button>
+			</span>
 		</Jumbotron>
 		<Jumbotron
 			title={$_('security.key.title')}
 			description={$_('security.key.warn')}
 		>
-			<button
+			<span
 				class="warning"
 				disabled={keybtndisbaled}
 				on:click={() => keyModal = !keyModal}
 			>
 				{$_('security.key.btn')}
-			</button>
+			</span>
 		</Jumbotron>
 		<Jumbotron
 			title={$_('security.phishing.title')}
@@ -82,7 +82,9 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
-	button {
-		width: 290px;
+	span.warning {
+		cursor: pointer;
+		font-size: 16px;
+		color: var(--warning-color);
 	}
 </style>

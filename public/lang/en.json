@@ -264,5 +264,20 @@
   "history": {
     "title": "Transactions History",
     "no_txns": "You have no transactions yet."
+  },
+  "advanced": {
+    "title": "Advanced",
+    "gas": {
+      "title": "Gas controls.",
+      "description": "Choose your default gas price, all your transactions will use these gas parameters."
+    },
+    "base16": {
+      "title": "Base16 address format.",
+      "description": "you can change the address format to base16, be careful and do not send other currencies to this address!"
+    },
+    "popup": {
+      "title": "Popup",
+      "description": "You can disable the appearance of the transaction confirmation window."
+    }
   }
 }

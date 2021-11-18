@@ -95,6 +95,7 @@
     & > strong {
       width: 280px;
       font-family: Demi;
+      color: var(--text-color);
       text-shadow: 2px 1px 4px var(--danger-color);
       font-size: 16px;
     }
