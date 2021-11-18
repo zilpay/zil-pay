@@ -39,6 +39,7 @@
 <main>
 	<NavClose title={$_('security.title')}/>
 	<div>
+
 		<Jumbotron
 			title={$_('security.phrase.title')}
 			description={$_('security.phrase.description')}
@@ -80,6 +81,8 @@
 	main {
 		height: 100vh;
 		background-color: var(--background-color);
+    overflow-y: scroll;
+
 		@include flex-center-top-column;
 	}
 	span.warning {

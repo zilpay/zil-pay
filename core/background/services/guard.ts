@@ -29,6 +29,11 @@ export class AuthGuard {
   #encryptSeed?: string;
   // Current time + some hours.
   #endSession = new Date(-1);
+  #time = Common.TIME_BEFORE_LOCK;
+
+  public get lockTime() {
+    return Number(this.#time);
+  }
 
   public get isEnable() {
     const now = new Date().getTime();
@@ -48,15 +53,33 @@ export class AuthGuard {
   public async sync() {
     const data = await BrowserStorage.get(
       Fields.VAULT,
-      Fields.VAULT_IMPORTED
+      Fields.VAULT_IMPORTED,
+      Fields.LOCK_TIME
     );
 
     this.#encryptImported = data[Fields.VAULT_IMPORTED];
     this.#encryptSeed = data[Fields.VAULT];
 
+    if (data[Fields.LOCK_TIME]) {
+      this.#time = Number(data[Fields.LOCK_TIME]);
+    } else {
+      await BrowserStorage.set(
+        buildObject(Fields.LOCK_TIME, String(Common.TIME_BEFORE_LOCK))
+      );
+    }
+
     if (this.#encryptSeed) {
       this.#isReady = Boolean(this.#encryptSeed);
     }
+  }
+
+  public async setLockTime(h: number) {
+    assert(h > 0, ErrorMessages.CannotBeZero);
+
+    this.#time = h;
+    await BrowserStorage.set(
+      buildObject(Fields.LOCK_TIME, String(this.lockTime))
+    );
   }
   
   public async logout() {
@@ -158,8 +181,7 @@ export class AuthGuard {
 
   async #updateSession() {
     const now = new Date().getTime();
-    const time = Number(await BrowserStorage.get(Fields.LOCK_TIME));
-    const h = !isNaN(time) ? Number(time) : Common.TIME_BEFORE_LOCK;
+    const h = Number(this.#time);
     const newSession = new Date();
 
     newSession.setTime(now + (h * 60 * 60 * 1000));

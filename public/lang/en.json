@@ -278,6 +278,9 @@
     "popup": {
       "title": "Popup",
       "description": "You can disable the appearance of the transaction confirmation window."
+    },
+    "time": {
+      "title": "Auto logout time (hours)"
     }
   }
 }

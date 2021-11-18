@@ -130,4 +130,17 @@ export class ZilPaySettings {
     }
   }
 
+  public async setLockTime(h: number, sendResponse: StreamResponse) {
+    try {
+      await this.#core.guard.setLockTime(h);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 }

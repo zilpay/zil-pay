@@ -56,6 +56,7 @@ export class ZIlPayCore {
         config: this.netwrok.config,
         selected: this.netwrok.selected
       },
+      lockTime: this.guard.lockTime,
       locale: this.locale.selected,
       theme: this.theme.selected,
       guard: {

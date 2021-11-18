@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.SET_LOCK_TIME:
+        core.settings.setLockTime(msg.payload.h, sendResponse);
+        return true;
       case MTypePopup.RESET_GAS:
         core.settings.resetGas(sendResponse);
         return true;

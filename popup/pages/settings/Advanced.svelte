@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
@@ -7,8 +7,10 @@
 		changeGasMultiplier,
 		resetGas
 	} from 'popup/backend/gas';
+	import { changeLockTimer } from 'popup/backend/settings';
 
 	import gasStore from 'popup/store/gas';
+	import timeLock from 'popup/store/lock-time';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import GasControl from '../../components/GasControl.svelte';
@@ -17,10 +19,18 @@
 
 	let base16 = false;
 	let popup = true;
+	let time = $timeLock;
 
 	const handleOnChangeGasMultiplier = async ({ detail }) => {
 		await changeGasMultiplier(detail);
 	};
+	const handleBlurLockTimer = async (_) => {
+		if (time !== $timeLock) {
+			await tick();
+			const t = Math.round(time)
+			await changeLockTimer(Math.abs(t));
+		}
+  };
 	const hanldeOnReset = async () => {
 		await resetGas();
 	};
@@ -38,6 +48,20 @@
 				gasLimit={$gasStore.gasLimit}
 				on:select={handleOnChangeGasMultiplier}
 			/>
+		</Jumbotron>
+		<Jumbotron
+			title={$_('advanced.time.title')}
+		>
+			<div>
+				<input
+					bind:value={time}
+					type="number"
+					step="1"
+					min="1"
+					max="24"
+					on:blur={handleBlurLockTimer}
+				/>
+			</div>
 		</Jumbotron>
 		<Jumbotron
 			title={$_('advanced.base16.title')}
@@ -66,6 +90,15 @@
 	main {
 		height: 100vh;
 		background-color: var(--background-color);
+    overflow-y: scroll;
 		@include flex-center-top-column;
+	}
+	input {
+		width: 100%;
+		border-color: var(--muted-color);
+
+		&:focus {
+			border-color: var(--text-color);
+		}
 	}
 </style>

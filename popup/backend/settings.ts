@@ -73,3 +73,15 @@ export async function resetLocale() {
   updateState(state);
   return state;
 }
+
+export async function changeLockTimer(h: number) {
+  const data = await new Message({
+    type: MTypePopup.SET_LOCK_TIME,
+    payload: {
+      h
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

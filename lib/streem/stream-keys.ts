@@ -74,7 +74,9 @@ export const MTypePopup = {
   RESET_LOCALE: `@/${app}/reset-locale`,
 
   SET_GAS_MULTIPLIER: `@/${app}/set-gas-multiplier`,
-  RESET_GAS: `@/${app}/reset-gas`
+  RESET_GAS: `@/${app}/reset-gas`,
+
+  SET_LOCK_TIME: `@/${app}/set-lock-timer`
 };
 
 export const MTypeTab = {
