@@ -88,6 +88,7 @@ export interface WalletState {
   gas: {
     gasLimit: number;
     gasPrice: number;
+    multiplier: number;
   };
   transactions: {
     forConfirm: MinParams[];

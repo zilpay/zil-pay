@@ -3,14 +3,34 @@
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
+	import {
+		changeGasMultiplier,
+		resetGas
+	} from 'popup/backend/gas';
+
+	import gasStore from 'popup/store/gas';
 
 	import NavClose from '../../components/NavClose.svelte';
+	import GasControl from '../../components/GasControl.svelte';
 
-	let state = null;
+	const handleOnChangeGasMultiplier = async ({ detail }) => {
+		await changeGasMultiplier(detail);
+	};
+	const hanldeOnReset = async () => {
+		await resetGas();
+	};
 </script>
 
 <main>
 	<NavClose title={'Advanced'}/>
+
+	<div>
+    <GasControl
+			multiplier={$gasStore.multiplier}
+			gasLimit={$gasStore.gasLimit}
+			on:select={handleOnChangeGasMultiplier}
+		/>
+	</div>
 </main>
 
 <style lang="scss">

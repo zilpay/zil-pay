@@ -71,7 +71,8 @@ export class ZIlPayCore {
       contacts: this.contacts.contacts,
       gas: {
         gasLimit: this.gas.gasLimit,
-        gasPrice: this.gas.gasPrice
+        gasPrice: this.gas.gasPrice,
+        multiplier: this.gas.multiplier
       },
       transactions: {
         forConfirm: this.transactions.forConfirm,

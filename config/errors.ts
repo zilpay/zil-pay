@@ -48,5 +48,7 @@ export enum ErrorMessages {
   Rejected = 'Rejected by user',
 
   WebHidNotSupported = 'WEBHID is not supported.',
-  NoFoundDeviced = 'No one device connected'
+  NoFoundDeviced = 'No one device connected',
+
+  CannotBeZero = 'A param cannot be zero.'
 }

@@ -17,6 +17,12 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.RESET_GAS:
+        core.settings.resetGas(sendResponse);
+        return true;
+      case MTypePopup.SET_GAS_MULTIPLIER:
+        core.settings.changeGasMultiplier(msg.payload.multiplier, sendResponse);
+        return true;
       case MTypePopup.SET_LOCALE:
         core.settings.changeLocale(msg.payload.locale, sendResponse);
         return true;

@@ -18,6 +18,34 @@ export class ZilPaySettings {
     this.#core = core;
   }
 
+  public async changeGasMultiplier(multiplier: number, sendResponse: StreamResponse) {
+    try {
+      await this.#core.gas.setMultiplier(multiplier);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async resetGas(sendResponse: StreamResponse) {
+    try {
+      await this.#core.gas.reset();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async changeLocale(locale: Locales, sendResponse: StreamResponse) {
     try {
       await this.#core.locale.setLocale(locale);
