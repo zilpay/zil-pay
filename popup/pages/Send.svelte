@@ -56,7 +56,7 @@
   $: balance = fromDecimals(account.zrc2[token.base16], token.decimals).round(7);
 	$: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, balance).round(7);
-	$: disabled = !qaAmount || !recipient;
+	$: disabled = !amount || !recipient;
 
   onMount(() => {
 		jazziconCreate(uuid, account.base16);
@@ -82,6 +82,12 @@
   const onSelectRecipient = ({ detail }) => {
     recipient = detail;
     contactsModal = false;
+  };
+  const handleSubmit = async (e) => {
+		e.preventDefault();
+    if (!disabled) {
+      push('/confirm');
+    }
   };
 </script>
 
@@ -149,7 +155,7 @@
         />
       </SelectCard>
     </div>
-    <form>
+    <form on:submit={handleSubmit}>
       <div class="input">
         <p>
           {$_('send.input_to.title')}
