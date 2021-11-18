@@ -29,5 +29,6 @@ export enum Fields {
   GAS = 'chain-gas',
   RATE_CURRENCIES = 'rate-of-currencies',
   SELECTED_CURRENCY = 'selected-currency',
-  LOCALE = 'selected-local'
+  LOCALE = 'selected-local',
+  FORMAT = 'address-format'
 }

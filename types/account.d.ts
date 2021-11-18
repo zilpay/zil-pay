@@ -78,6 +78,7 @@ export interface WalletState {
     config: typeof NETWORK;
     selected: string;
   };
+  format: string;
   lockTime: number;
   locale: string | Locales;
   theme: string | Themes;

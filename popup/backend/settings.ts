@@ -10,6 +10,7 @@ import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
+import { Formats } from 'config/formats';
 
 export async function changeCurrency(currency: string) {
   const data = await new Message({
@@ -79,6 +80,18 @@ export async function changeLockTimer(h: number) {
     type: MTypePopup.SET_LOCK_TIME,
     payload: {
       h
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
+export async function changeAddressFormat(format = Formats.Bech32) {
+  const data = await new Message({
+    type: MTypePopup.SET_ADDRESS_FORMAT,
+    payload: {
+      format
     }
   }).send();
   const state = warpMessage(data);

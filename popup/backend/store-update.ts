@@ -21,6 +21,7 @@ import transactionsStore from 'popup/store/transactions';
 import zrcStore from 'app/store/zrc';
 import localeStore from 'popup/store/locale';
 import timeLock from 'popup/store/lock-time';
+import addressFormatStore from 'popup/store/format';
 
 export function updateState(state: WalletState) {
   document.body.setAttribute('theme', state.theme);
@@ -39,4 +40,5 @@ export function updateState(state: WalletState) {
   transactionsStore.set(state.transactions);
   zrcStore.set(state.zrc2);
   timeLock.set(state.lockTime);
+  addressFormatStore.set(state.format);
 }

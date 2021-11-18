@@ -26,6 +26,7 @@ import { NonceController } from 'core/background/services/nonce';
 import { TransactionsQueue } from 'core/background/services/transactions';
 import { LedgerWebHID } from 'core/background/services/ledger';
 import { LocalesController } from 'core/background/services/locale';
+import { AddressController } from 'core/background/services/address';
 
 export class ZIlPayCore {
   public netwrok = new NetworkControl();
@@ -39,6 +40,7 @@ export class ZIlPayCore {
   public currencies = new CurrenciesController();
   public contacts = new ContactController();
   public ledger = new LedgerWebHID();
+  public addressFormat = new AddressController();
   public zilliqa = new ZilliqaControl(this.netwrok);
   public gas = new GasController(this.zilliqa);
   public readonly account = new AccountController(this.guard);
@@ -56,6 +58,7 @@ export class ZIlPayCore {
         config: this.netwrok.config,
         selected: this.netwrok.selected
       },
+      format: this.addressFormat.format,
       lockTime: this.guard.lockTime,
       locale: this.locale.selected,
       theme: this.theme.selected,

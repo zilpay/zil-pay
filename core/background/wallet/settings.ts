@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { Formats } from 'config/formats';
 import type { Locales } from 'config/locale';
 import type { Themes } from 'config/theme';
 import type { StreamResponse } from 'types/stream';
@@ -133,6 +134,20 @@ export class ZilPaySettings {
   public async setLockTime(h: number, sendResponse: StreamResponse) {
     try {
       await this.#core.guard.setLockTime(h);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async setAddressFormat(format: Formats, sendResponse: StreamResponse) {
+    try {
+      await this.#core.addressFormat.setFormat(format);
 
       sendResponse({
         resolve: this.#core.state

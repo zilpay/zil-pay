@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.SET_ADDRESS_FORMAT:
+        core.settings.setAddressFormat(msg.payload.format, sendResponse);
+        return true;
       case MTypePopup.SET_LOCK_TIME:
         core.settings.setLockTime(msg.payload.h, sendResponse);
         return true;

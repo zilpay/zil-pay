@@ -3,21 +3,27 @@
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
+	import { Formats } from 'config/formats';
+
 	import {
 		changeGasMultiplier,
 		resetGas
 	} from 'popup/backend/gas';
-	import { changeLockTimer } from 'popup/backend/settings';
+	import {
+		changeLockTimer,
+		changeAddressFormat
+	} from 'popup/backend/settings';
 
 	import gasStore from 'popup/store/gas';
 	import timeLock from 'popup/store/lock-time';
+	import addressFormatStore from 'popup/store/format';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import GasControl from '../../components/GasControl.svelte';
   import Jumbotron from '../../components/Jumbotron.svelte';
 	import Toggle from '../../components/Toggle.svelte';
 
-	let base16 = false;
+	let base16 = $addressFormatStore === Formats.Base16;
 	let popup = true;
 	let time = $timeLock;
 
@@ -33,6 +39,16 @@
   };
 	const hanldeOnReset = async () => {
 		await resetGas();
+		await changeAddressFormat();
+	};
+	const handleToggleAddressFormat = async () => {
+		console.log(base16);
+		if (base16) {
+			await changeAddressFormat(Formats.Bech32);
+		} else {
+			await changeAddressFormat(Formats.Base16);
+		}
+		base16 = $addressFormatStore === Formats.base16;
 	};
 </script>
 
@@ -69,7 +85,7 @@
 		>
 			<Toggle
 				checked={base16}
-				on:toggle={() => base16 = !base16}
+				on:toggle={handleToggleAddressFormat}
 			/>
 		</Jumbotron>
 		<Jumbotron
