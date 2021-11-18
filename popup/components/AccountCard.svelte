@@ -7,6 +7,7 @@
   import zrcStore from 'popup/store/zrc';
   import rateStore from 'popup/store/rate';
 	import currencyStore from 'popup/store/currency';
+	import format from 'popup/store/format';
 
   export let account;
   export let selected = false;
@@ -31,7 +32,7 @@
       {account.name}
     </h2>
     <p>
-      {trim(account.bech32)}
+      {trim(account[$format])}
     </p>
   </div>
 </div>

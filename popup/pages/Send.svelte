@@ -21,6 +21,7 @@
   import themeStore from 'popup/store/theme';
   import gasStore from 'popup/store/gas';
 	import currencyStore from 'popup/store/currency';
+	import format from 'popup/store/format';
 
 	import { balanceUpdate } from 'popup/backend/wallet';
 
@@ -134,7 +135,7 @@
       <SelectCard
         title={$_('send.cards.transfer')}
         header={account.name}
-        text={trim(account.bech32)}
+        text={trim(account[$format])}
         on:click={() => accountsModal = !accountsModal}
       >
         <div id={uuid}/>

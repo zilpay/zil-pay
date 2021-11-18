@@ -8,6 +8,7 @@
 
 	import walletStore from 'popup/store/wallet';
 	import contactsStore from 'popup/store/contacts';
+	import format from 'popup/store/format';
 
   import SwitchButton from '../components/SwitchButton.svelte';
 	import AccountCard from '../components/AccountCard.svelte';
@@ -63,13 +64,13 @@
 {:else}
   <ul in:fly={flyTransition.in} >
     {#each accounts as account}
-      <li on:click={() => onSelect(account.bech32)}>
+      <li on:click={() => onSelect(account[$format])}>
         <div class="text">
           <b>
             {account.name}
           </b>
           <p>
-            {trim(account.bech32, 10)}
+            {trim(account[$format], 10)}
           </p>
         </div>
       </li>

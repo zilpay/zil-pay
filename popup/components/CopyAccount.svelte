@@ -4,13 +4,15 @@
   import { clipboardCopy } from 'lib/utils/clipboard';
 	import { _ } from 'popup/i18n';
 
+	import format from 'popup/store/format';
+
   import Tooltip from './Tooltip.svelte';
 
   let tip = $_('home.clipboard.copy');
   $: account = $walletStore.identities[$walletStore.selectedAddress];
 
   const handleOnCopy = () => {
-    clipboardCopy(account.bech32);
+    clipboardCopy(account[$format]);
     tip = $_('home.clipboard.copied');
     setTimeout(() => {
       tip = $_('home.clipboard.copy');
@@ -24,7 +26,7 @@
       {account.name}
     </h1>
     <span>
-      {trim(account.bech32)}
+      {trim(account[$format])}
     </span>
   </div>
 </Tooltip>

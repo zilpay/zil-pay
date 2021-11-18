@@ -12,6 +12,7 @@
   import themeStore from 'popup/store/theme';
 	import currencyStore from 'popup/store/currency';
   import rateStore from 'popup/store/rate';
+	import format from 'popup/store/format';
 
 	import AccountCard from '../components/AccountCard.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
@@ -73,7 +74,7 @@
         rightText={formatNumber(getConverted(token), $currencyStore)}
       >
         <img
-          src={viewIcon(token.bech32, $themeStore)}
+          src={viewIcon(token[$format], $themeStore)}
           alt={token.symbol}
           width="36"
         />

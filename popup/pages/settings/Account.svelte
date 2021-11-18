@@ -6,6 +6,7 @@
   import { clipboardCopy } from 'lib/utils/clipboard';
 
 	import walletStore from 'popup/store/wallet';
+	import format from 'popup/store/format';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import Arrow from '../../components/icons/Arrow.svelte';
@@ -63,14 +64,14 @@
 				{account.name}
 			</h3>
 			<p>
-				{trim(account.bech32)}
+				{trim(account[$format])}
 			</p>
 		</div>
 		<span>
 			<Arrow />
 		</span>
 	</div>
-	<button on:click={() => clipboardCopy(account.bech32)}>
+	<button on:click={() => clipboardCopy(account[$format])}>
 		{$_('home.clipboard.copy')}
 	</button>
 </main>
