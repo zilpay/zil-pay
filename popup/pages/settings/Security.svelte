@@ -2,7 +2,6 @@
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
-	import { scale } from 'svelte/transition';
 
   import { AccountTypes } from 'config/account-type';
 
@@ -37,7 +36,7 @@
 >
 	<ExportKeyModal />
 </Modal>
-<main in:scale>
+<main>
 	<NavClose title={$_('security.title')}/>
 	<div>
 		<Jumbotron

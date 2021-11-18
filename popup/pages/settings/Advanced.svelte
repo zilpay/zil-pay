@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
@@ -10,7 +9,7 @@
 	let state = null;
 </script>
 
-<main in:scale>
+<main>
 	<NavClose title={'Advanced'}/>
 </main>
 

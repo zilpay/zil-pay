@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { scale } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import { getQrCOde } from 'popup/backend/wallet';
   import { trim } from 'popup/filters/trim';
@@ -45,7 +44,7 @@
     />
   </div>
 </Modal>
-<main in:scale>
+<main>
 	<NavClose title={$_('account.title')}/>
 	<div>
 		{#if base58}

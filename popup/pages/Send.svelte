@@ -1,6 +1,5 @@
 <script lang="ts">
   import { tick, onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
@@ -122,7 +121,7 @@
     />
   </div>
 </Modal>
-<main in:scale>
+<main>
 	<NavClose title={$_('send.title')}/>
   <div>
     <div>

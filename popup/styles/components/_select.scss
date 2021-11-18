@@ -4,10 +4,14 @@
   min-width: 270px;
   color: var(--text-color);
   border: 1px solid var(--border-color);
-  border-radius: 0.25em;
   padding: 0.25em 0.5em;
-  font-size: 1.25rem;
   cursor: pointer;
-  line-height: 1.1;
   background: transparent;
+  font-family: Demi;
+
+  padding-block-start: 5px;
+  padding-block-end: 5px;
+
+  @include border-radius(8px);
+  @include fluid-font(320px, 720px, 15px, 20px);
 }

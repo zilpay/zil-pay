@@ -106,13 +106,12 @@
 
 		@include flex-center-top-column;
 	}
-  form {
-    width: 100%;
-    @include flex-center-column;
+  textarea {
+    width: calc(100vw - 30px);
   }
-  input,
-  button {
-    margin: 10px;
+  form {
+    width: calc(100vw - 30px);
+    @include flex-center-column;
   }
   input {
     width: 100%;

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { scale } from 'svelte/transition';
   import netStore from 'popup/store/netwrok';
   import {
     selectNetwrok,
@@ -71,7 +70,7 @@
   };
 </script>
 
-<main in:scale>
+<main>
   <NavClose title={$_('netwrok.title')}/>
   <MultiSwitcher
     items={Object.keys($netStore.config)}

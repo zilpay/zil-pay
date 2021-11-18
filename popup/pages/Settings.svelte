@@ -4,6 +4,7 @@
 
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TextElement from '../components/TextElement.svelte';
+	import TopBar from '../components/TopBar.svelte';
 
 	let items = [
 		{
@@ -50,6 +51,7 @@
 </script>
 
 <section>
+	<TopBar refresh/>
 	<main>
 		<ul>
 			{#each items as item, i}
@@ -81,7 +83,7 @@
     overflow-y: scroll;
     list-style: none;
 
-		height: calc(100vh - 50px);
+		height: calc(100vh - 86px);
 		max-width: 500px;
 
 		& > li {

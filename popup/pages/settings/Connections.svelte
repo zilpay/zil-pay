@@ -3,7 +3,6 @@
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
-  import { scale } from 'svelte/transition';
 	import appStore from 'popup/store/apps';
 	import { removeConnection, clearConnection } from 'popup/backend/popup';
 	import LinkMixin from 'popup/mixins/link';
@@ -34,7 +33,7 @@
 	};
 </script>
 
-<main in:scale>
+<main>
 	<NavClose title={$_('connections.title')}/>
 	<SearchBox
 		placeholder={$_('accounts.placeholder')}

@@ -3,15 +3,13 @@
 	import { push } from 'svelte-spa-router';
 	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
-  import { fly } from 'svelte/transition';
-  import flyTransition from 'popup/transitions/fly';
 
 	import NavClose from '../../components/NavClose.svelte';
 
 	let state = null;
 </script>
 
-<main in:fly={flyTransition.in}>
+<main>
 	<NavClose title={'About'}/>
 </main>
 

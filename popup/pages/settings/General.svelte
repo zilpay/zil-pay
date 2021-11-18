@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { scale } from 'svelte/transition';
 
 	import { DEFAULT_CURRENCIES } from 'config/currencies';
 	import { Themes } from 'config/theme';
@@ -45,7 +44,7 @@
 
 <main>
 	<NavClose title={$_('general.title')}/>
-	<div in:scale>
+	<div>
 		<Jumbotron
 			title={$_('general.currency.title')}
 			description={$_('general.currency.description')}

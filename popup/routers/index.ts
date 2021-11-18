@@ -12,6 +12,7 @@ import { routerGuard } from './guard';
 import LockPage from '../pages/Lock.svelte';
 import LetStarted from '../pages/LetStarted.svelte';
 import Home from '../pages/Home.svelte';
+import History from '../pages/History.svelte';
 import Loading from '../pages/Loading.svelte';
 import Create from '../pages/Create.svelte';
 import Restore from '../pages/Restore.svelte';
@@ -40,6 +41,12 @@ import General from '../pages/settings/General.svelte';
 export default {
   '/': wrap({
     component: Home,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/history': wrap({
+    component: History,
     conditions: [
       routerGuard
     ]

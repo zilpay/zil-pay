@@ -260,5 +260,9 @@
       "description": "ZIlPay support multi languages interface."
     },
     "reset": "Reset settings"
+  },
+  "history": {
+    "title": "Transactions History",
+    "no_txns": "You have no transactions yet."
   }
 }
