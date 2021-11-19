@@ -93,7 +93,7 @@
 
 		max-width: 390px;
 		width: 100%;
-    min-height: 600px;
+    height: 400px;
 
 		& > li {
 			cursor: pointer;
