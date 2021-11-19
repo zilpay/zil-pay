@@ -18,7 +18,9 @@
 	import Loader from '../components/Loader.svelte';
 	import Toggle from '../components/Toggle.svelte';
 
-	let loading = true;
+	let loadingImg = true;
+	let loading = false;
+  let error = '';
 	let accountsModal = false;
 	let accountIndex = $walletStore.selectedAddress;
   let isHash = false;
@@ -35,7 +37,7 @@
   const onload = (target) => {
 		const event = 'load';
 		target.addEventListener(event, () => {
-			loading = false;
+			loadingImg = false;
 			target.removeEventListener(event, () => null, true);
 		});
 	}
@@ -49,8 +51,14 @@
     window.close();
   };
   const handleOnSign = async () => {
-    await signMessageApprove(accountIndex);
-    window.close();
+    loading = true;
+    try {
+      await signMessageApprove(accountIndex);
+      window.close();
+    } catch (err) {
+      error = err.message;
+    }
+    loading = false;
   };
 </script>
 
@@ -82,13 +90,13 @@
   <div class="img-wrap">
     <img
       src={message.icon}
-      class:loading={loading}
+      class:loadingImg={loadingImg}
       alt={message.title}
       width="55px"
       height="55px"
       use:onload
     />
-    {#if loading}
+    {#if loadingImg}
       <Loader
         width="55px"
         height="55px"
@@ -114,11 +122,22 @@
   <div class="btns">
     <button
       class="primary"
+      disabled={loading}
       on:click={handleOnSign}
     >
-      {$_('sig_message.btns.confirm')}
+      {#if loading}
+        <Loader
+          width="30px"
+          height="30px"
+        />
+      {:else}
+        {$_('sig_message.btns.confirm')}
+      {/if}
     </button>
-    <button on:click={handleOnReject}>
+    <button
+      on:click={handleOnReject}
+      disabled={loading}
+    >
       {$_('sig_message.btns.reject')}
     </button>
   </div>
@@ -160,6 +179,7 @@
     @include flex-between-row;
 
     & > button {
+      min-height: 50px;
       margin: 10px;
     }
   }

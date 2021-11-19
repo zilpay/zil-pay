@@ -88,13 +88,12 @@ export class LedgerInterface {
     return { pubAddr, publicKey };
   }
 
-  public async signHash(index: number, message: string) {
+  public async signHash(index: number, hash: string) {
     const P1 = 0x00;
     const P2 = 0x00;
-    const hashStr = sha256(message).toString();
     let indexBytes = Buffer.alloc(4);
     indexBytes.writeInt32LE(index);
-    const hashBytes = Buffer.from(hashStr, 'hex');
+    const hashBytes = Buffer.from(hash, 'hex');
     let hashLen = hashBytes.length;
 
     assert(hashLen > 0, `Hash length ${hashLen} is invalid`);

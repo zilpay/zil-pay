@@ -18,6 +18,7 @@ import { ErrorMessages } from 'config/errors';
 import { Aes } from 'lib/crypto/aes';
 import { SchnorrControl } from 'lib/crypto/elliptic';
 import { Buffer } from 'buffer';
+import { AccountTypes } from 'config/account-type';
 
 export class ZilPayTransaction {
 
@@ -163,11 +164,19 @@ export class ZilPayTransaction {
 
   public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
     try {
-      const keyPair = await this.#core.account.getKeyPair(index);
+      const account = this.#core.account.wallet.identities[index];
       const message = this.#core.transactions.message;
-      const schnorrControl = new SchnorrControl(keyPair.privKey);
-      const bytes = Buffer.from(message.hash, 'hex');
-      const signature = schnorrControl.getSignature(bytes);
+      let signature: string;
+
+      if (account.type === AccountTypes.Ledger) {
+        const transport = await this.#core.ledger.init(account.productId);
+        signature = await transport.signHash(account.index, message.hash);
+      } else {
+        const keyPair = await this.#core.account.getKeyPair(index);
+        const schnorrControl = new SchnorrControl(keyPair.privKey);
+        const bytes = Buffer.from(message.hash, 'hex');
+        signature = schnorrControl.getSignature(bytes);
+      }
 
       new TabsMessage({
         type: MTypeTab.SING_MESSAGE_RES,
@@ -176,7 +185,7 @@ export class ZilPayTransaction {
           resolve: {
             signature,
             message: message.content,
-            publicKey: keyPair.pubKey
+            publicKey: account.pubKey
           }
         }
       }).send();
