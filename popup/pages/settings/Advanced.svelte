@@ -52,8 +52,11 @@
 	};
 	const hanldeOnReset = async () => {
 		await resetGas();
+		await changeLockTimer();
 		await changeAddressFormat();
 		await changePromtEnabled();
+		time = $timeLock;
+		base16 = $addressFormatStore === Formats.Base16;
 	};
 </script>
 
@@ -103,6 +106,12 @@
 			/>
 		</Jumbotron>
 	</div>
+	<button
+		class="warning"
+		on:click={hanldeOnReset}
+	>
+		{$_('advanced.reset_btn')}
+	</button>
 </main>
 
 <style lang="scss">
@@ -121,5 +130,8 @@
 		&:focus {
 			border-color: var(--text-color);
 		}
+	}
+	button.warning {
+		width: 290px;
 	}
 </style>

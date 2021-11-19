@@ -281,6 +281,7 @@
     },
     "time": {
       "title": "Auto logout time (hours)"
-    }
+    },
+    "reset_btn": "Reset"
   }
 }

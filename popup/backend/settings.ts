@@ -11,6 +11,7 @@ import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
 import { Formats } from 'config/formats';
+import { Common } from "config/common";
 
 export async function changeCurrency(currency: string) {
   const data = await new Message({
@@ -75,7 +76,7 @@ export async function resetLocale() {
   return state;
 }
 
-export async function changeLockTimer(h: number) {
+export async function changeLockTimer(h = Common.TIME_BEFORE_LOCK) {
   const data = await new Message({
     type: MTypePopup.SET_LOCK_TIME,
     payload: {
