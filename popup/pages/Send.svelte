@@ -94,7 +94,7 @@
 
 <Modal
   show={tokensModal}
-  title={$_('send.cards.transfer')}
+  title={$_('send.input_to.title')}
   on:close={() => tokensModal = !tokensModal}
 >
   <div class="m-warp">
@@ -108,7 +108,7 @@
 </Modal>
 <Modal
   show={contactsModal}
-  title={$_('send.input_to.title')}
+  title={$_('send.cards.transfer')}
   on:close={() => contactsModal = !contactsModal}
 >
   <div class="m-warp">
