@@ -98,3 +98,15 @@ export async function changeAddressFormat(format = Formats.Bech32) {
   updateState(state);
   return state;
 }
+
+export async function changePromtEnabled(enabled = true) {
+  const data = await new Message({
+    type: MTypePopup.SET_PROMT_ENABLED,
+    payload: {
+      enabled
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

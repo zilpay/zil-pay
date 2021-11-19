@@ -73,6 +73,7 @@ export interface GuardType {
 };
 
 export interface WalletState {
+  popup: boolean;
   wallet: Wallet;
   netwrok: {
     config: typeof NETWORK;

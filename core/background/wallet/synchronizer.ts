@@ -31,6 +31,7 @@ export class ZilPaySynchronizer {
     await this.#core.rate.sync();
     await this.#core.addressFormat.sync();
     await this.#core.currencies.sync();
+    await this.#core.prompt.sync();
     console.log('end-sync');
   }
 }

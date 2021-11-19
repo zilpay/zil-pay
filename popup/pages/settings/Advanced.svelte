@@ -11,12 +11,14 @@
 	} from 'popup/backend/gas';
 	import {
 		changeLockTimer,
-		changeAddressFormat
+		changeAddressFormat,
+		changePromtEnabled
 	} from 'popup/backend/settings';
 
 	import gasStore from 'popup/store/gas';
 	import timeLock from 'popup/store/lock-time';
 	import addressFormatStore from 'popup/store/format';
+	import promtStore from 'app/store/promt';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import GasControl from '../../components/GasControl.svelte';
@@ -24,7 +26,6 @@
 	import Toggle from '../../components/Toggle.svelte';
 
 	let base16 = $addressFormatStore === Formats.Base16;
-	let popup = true;
 	let time = $timeLock;
 
 	const handleOnChangeGasMultiplier = async ({ detail }) => {
@@ -37,18 +38,22 @@
 			await changeLockTimer(Math.abs(t));
 		}
   };
-	const hanldeOnReset = async () => {
-		await resetGas();
-		await changeAddressFormat();
-	};
 	const handleToggleAddressFormat = async () => {
-		console.log(base16);
 		if (base16) {
 			await changeAddressFormat(Formats.Bech32);
 		} else {
 			await changeAddressFormat(Formats.Base16);
 		}
 		base16 = $addressFormatStore === Formats.base16;
+	};
+	const handleOnChangePromt = async () => {
+		await changePromtEnabled(!$promtStore);
+		popup = $promtStore;
+	};
+	const hanldeOnReset = async () => {
+		await resetGas();
+		await changeAddressFormat();
+		await changePromtEnabled();
 	};
 </script>
 
@@ -93,8 +98,8 @@
 			description={$_('advanced.popup.description')}
 		>
 			<Toggle
-				checked={popup}
-				on:toggle={() => popup = !popup}
+				checked={$promtStore}
+				on:toggle={handleOnChangePromt}
 			/>
 		</Jumbotron>
 	</div>

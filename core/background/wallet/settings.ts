@@ -158,4 +158,18 @@ export class ZilPaySettings {
       });
     }
   }
+
+  public async setPromtEnabled(value: boolean, sendResponse: StreamResponse) {
+    try {
+      await this.#core.prompt.setEnabled(value);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 }

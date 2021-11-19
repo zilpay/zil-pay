@@ -53,6 +53,7 @@ export class ZIlPayCore {
 
   public get state(): WalletState {
     return {
+      popup: this.prompt.enabled,
       wallet: this.account.wallet,
       netwrok: {
         config: this.netwrok.config,

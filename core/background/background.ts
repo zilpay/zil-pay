@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.SET_PROMT_ENABLED:
+        core.settings.setPromtEnabled(msg.payload.enabled, sendResponse);
+        return true;
       case MTypePopup.SET_ADDRESS_FORMAT:
         core.settings.setAddressFormat(msg.payload.format, sendResponse);
         return true;

@@ -30,5 +30,6 @@ export enum Fields {
   RATE_CURRENCIES = 'rate-of-currencies',
   SELECTED_CURRENCY = 'selected-currency',
   LOCALE = 'selected-local',
-  FORMAT = 'address-format'
+  FORMAT = 'address-format',
+  POPUP_ENABLED = 'popup-enabled'
 }

@@ -78,6 +78,7 @@ export const MTypePopup = {
 
   SET_LOCK_TIME: `@/${app}/set-lock-timer`,
   SET_ADDRESS_FORMAT: `@/${app}/set-address-format`,
+  SET_PROMT_ENABLED: `@/${app}/set-promt-enabled`
 };
 
 export const MTypeTab = {

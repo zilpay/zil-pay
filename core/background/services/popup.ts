@@ -8,12 +8,20 @@
  */
 import { Runtime } from 'lib/runtime';
 import { Common } from 'config/common';
+import { Fields } from 'config/fields';
+import { BrowserStorage, buildObject } from 'lib/storage';
 
 export class PromptService {
   readonly #height = Common.POPUP_HEIGHT;
   readonly #width = Common.POPUP_WIDTH;
   readonly #type = 'popup';
+
+  #enabled = true;
   #id: number;
+
+  public get enabled() {
+    return this.#enabled;
+  }
 
   public openTab() {
     Runtime.tabs.create({
@@ -21,7 +29,10 @@ export class PromptService {
     });
   }
 
-  public async open() {
+  public async open(): Promise<void> {
+    if (!this.enabled) {
+      return;
+    }
     const {
       screenX,
       screenY,
@@ -57,6 +68,33 @@ export class PromptService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  public async setEnabled(value: boolean) {
+    this.#enabled = Boolean(value);
+
+    await BrowserStorage.set(
+      buildObject(Fields.POPUP_ENABLED, String(this.#enabled ? 1 : 0))
+    );
+  }
+
+  public async sync() {
+    const enabled = await BrowserStorage.get(
+      Fields.POPUP_ENABLED
+    );
+
+    if (!enabled) {
+      await this.reset();
+    } else {
+      this.#enabled = Number(enabled) === 1;
+    }
+  }
+
+  public async reset() {
+    this.#enabled = true;
+    await BrowserStorage.set(
+      buildObject(Fields.POPUP_ENABLED, String(1))
+    );
   }
 
   #getPopup(): Promise<chrome.windows.Window[]> {
