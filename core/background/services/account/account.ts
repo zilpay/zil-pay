@@ -141,11 +141,11 @@ export class AccountController {
     );
   }
 
-  public async getKeyPair(): Promise<KeyPair> {
-    switch (this.selectedAccount.type) {
+  public async getKeyPair(index = this.wallet.selectedAddress): Promise<KeyPair> {
+    const account = this.wallet.identities[index];
+    switch (account.type) {
       case AccountTypes.Seed:
         const seed = this.#guard.getSeed();
-        const index = this.selectedAccount.index;
         const keyPair = await this.fromSeed(seed, index);
         return keyPair;
       case AccountTypes.PrivateKey:
@@ -156,7 +156,6 @@ export class AccountController {
           privKey: privateKey,
           base16: this.selectedAccount.base16
         };
-        break;
       case AccountTypes.Ledger:
         throw new Error(ErrorMessages.CannotExportLedger);
     }

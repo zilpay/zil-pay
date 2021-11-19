@@ -11,10 +11,12 @@ import { push } from 'svelte-spa-router';
 
 import appStore from 'popup/store/apps';
 import guardStore from 'popup/store/guard';
+import transactionsStore from 'popup/store/transactions';
 
 export const routerGuard = (e: { location: string; }) => {
   const guard = get(guardStore);
   const apps = get(appStore);
+  const txns = get(transactionsStore);
 
   if (!guard.isReady) {
     push('/start');
@@ -27,6 +29,10 @@ export const routerGuard = (e: { location: string; }) => {
   const router = '/app-connect';
   if (apps.confirmApp && e.location !== router) {
     push(router);
+  }
+
+  if (txns.message) {
+    push('/sign-message');
   }
 
   return guard.isEnable && guard.isReady;

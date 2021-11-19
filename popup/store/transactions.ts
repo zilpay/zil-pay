@@ -6,10 +6,16 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { MinParams, StoredTx } from 'types/transaction';
+import type { MessagePayload, MinParams, StoredTx } from 'types/transaction';
 import { writable } from 'svelte/store';
 
-export default writable({
-  forConfirm: [] as MinParams[],
-  transactions: [] as StoredTx[]
+interface TxStore {
+  forConfirm: MinParams[],
+  transactions: StoredTx[],
+  message?: MessagePayload;
+}
+export default writable<TxStore>({
+  forConfirm: [],
+  transactions: [],
+  message: undefined
 });

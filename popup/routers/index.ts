@@ -14,6 +14,7 @@ import LetStarted from '../pages/LetStarted.svelte';
 import Home from '../pages/Home.svelte';
 import History from '../pages/History.svelte';
 import Confirm from '../pages/Confirm.svelte';
+import SignMessage from '../pages/SignMessage.svelte';
 import Loading from '../pages/Loading.svelte';
 import Create from '../pages/Create.svelte';
 import Restore from '../pages/Restore.svelte';
@@ -54,6 +55,12 @@ export default {
   }),
   '/confirm': wrap({
     component: Confirm,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/sign-message': wrap({
+    component: SignMessage,
     conditions: [
       routerGuard
     ]

@@ -283,5 +283,13 @@
       "title": "Auto logout time (hours)"
     },
     "reset_btn": "Reset"
+  },
+  "sig_message": {
+    "title": "Signature Request",
+    "hash": "Show sha256",
+    "btns": {
+      "confirm": "Sign",
+      "reject": "Reject"
+    }
   }
 }

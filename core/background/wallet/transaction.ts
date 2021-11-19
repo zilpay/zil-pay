@@ -161,9 +161,9 @@ export class ZilPayTransaction {
     }
   }
 
-  public async confirmSignMessage(sendResponse: StreamResponse) {
+  public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
     try {
-      const keyPair = await this.#core.account.getKeyPair();
+      const keyPair = await this.#core.account.getKeyPair(index);
       const message = this.#core.transactions.message;
       const schnorrControl = new SchnorrControl(keyPair.privKey);
       const bytes = Buffer.from(message.hash, 'hex');

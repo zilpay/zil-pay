@@ -80,6 +80,12 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypeTab.SIGN_MESSAGE:
         core.transaction.addMessage(msg.payload, sendResponse);
         return true;
+      case MTypePopup.REJECT_SIGN_MESSAGE:
+        core.transaction.rejectMessage(sendResponse);
+        return true;
+      case MTypePopup.SIGN_MESSAGE_APPROVE:
+        core.transaction.confirmSignMessage(msg.payload.index, sendResponse);
+        return true;
       case MTypePopup.SELECT_ACCOUNT:
         core.wallet.selectAccount(msg.payload.index, sendResponse);
         return true;
