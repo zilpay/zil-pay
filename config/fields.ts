@@ -17,6 +17,7 @@ export enum Fields {
   BLOCK_NUMBER = 'blocknumber',
   TRANSACTIONS = 'transactions',
   CONFIRM_TX = 'confirm',
+  CONFIRM_MESSAGE = 'confirm-message',
   STATIC = 'static',
   LOCK_TIME = 'time_before_lock',
   CONNECT_DAPP = 'connect',

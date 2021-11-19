@@ -63,6 +63,16 @@ export interface MinParams {
   toAddr: string;
 }
 
+export interface MessageParams {
+  content: string;
+  uuid: string;
+  title: string;
+  icon: string;
+};
+export interface MessagePayload extends MessageParams {
+  hash: string;
+}
+
 export interface TransitionReceipt {
   accepted: boolean;
   cumulative_gas: string;

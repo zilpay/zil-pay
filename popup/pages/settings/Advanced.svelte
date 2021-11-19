@@ -133,5 +133,6 @@
 	}
 	button.warning {
 		width: 290px;
+		margin-block-end: 16px;
 	}
 </style>

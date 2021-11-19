@@ -91,9 +91,11 @@ export const MTypeTab = {
   CONTENT_PROXY_RESULT: `@/${app}/response-from-content`,
 
   CALL_TO_SIGN_TX: `@/${app}/request-to-sign-tx`,
-  SIGN_MESSAGE: `@/${app}/request-to-sign-message`,
   TX_RESULT: `@/${app}/response-tx-result`,
+
+  SIGN_MESSAGE: `@/${app}/request-to-sign-message`,
   SING_MESSAGE_RES: `@/${app}/response-sign-message`,
+
   NEW_BLOCK: `@/${app}/new-block-created`,
 
   CONNECT_APP: `@/${app}/request-to-connect-dapp`,

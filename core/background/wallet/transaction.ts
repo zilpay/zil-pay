@@ -8,12 +8,19 @@
  */
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
-import type { MinParams } from 'types/transaction';
+import type { MessageParams, MessagePayload, MinParams } from 'types/transaction';
 import { Transaction } from 'background/services/transactions/tx-builder';
 import { StatusCodes, TransactionTypes } from 'background/services/transactions';
 import { ZIL } from 'background/services/token';
+import { MTypeTab } from 'lib/streem/stream-keys';
+import { TabsMessage } from 'lib/streem/tabs-message';
+import { ErrorMessages } from 'config/errors';
+import { Aes } from 'lib/crypto/aes';
+import { SchnorrControl } from 'lib/crypto/elliptic';
+import { Buffer } from 'buffer';
 
 export class ZilPayTransaction {
+
   readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
@@ -146,6 +153,77 @@ export class ZilPayTransaction {
       const nonce = await this.#core.nonceCounter.nextNonce(account);
       sendResponse({
         resolve: nonce
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async confirmSignMessage(sendResponse: StreamResponse) {
+    try {
+      const keyPair = await this.#core.account.getKeyPair();
+      const message = this.#core.transactions.message;
+      const schnorrControl = new SchnorrControl(keyPair.privKey);
+      const bytes = Buffer.from(message.hash, 'hex');
+      const signature = schnorrControl.getSignature(bytes);
+
+      new TabsMessage({
+        type: MTypeTab.SING_MESSAGE_RES,
+        payload: {
+          uuid: this.#core.transactions.message.uuid,
+          resolve: {
+            signature,
+            message: message.content,
+            publicKey: keyPair.pubKey
+          }
+        }
+      }).send();
+      await this.#core.transactions.rmMessage();
+
+      sendResponse({
+        resolve: null
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async addMessage(params: MessageParams, sendResponse: StreamResponse) {
+    try {
+      const message: MessagePayload = {
+        ...params,
+        hash: Aes.hash(params.content)
+      };
+      await this.#core.transactions.addMessage(message);
+      await this.#core.prompt.open();
+
+      sendResponse({
+        resolve: null
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async rejectMessage(sendResponse: StreamResponse) {
+    try {
+      new TabsMessage({
+        type: MTypeTab.SING_MESSAGE_RES,
+        payload: {
+          uuid: this.#core.transactions.message.uuid,
+          reject: ErrorMessages.Rejected
+        }
+      }).send();
+      await this.#core.transactions.rmMessage();
+
+      sendResponse({
+        resolve: null
       });
     } catch (err) {
       sendResponse({

@@ -96,6 +96,7 @@ export interface WalletState {
   transactions: {
     forConfirm: MinParams[];
     transactions: StoredTx[];
+    message: Message;
   };
   zrc2: ZRC2Token[];
   blocknumber: number;

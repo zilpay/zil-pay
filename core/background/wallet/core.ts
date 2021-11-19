@@ -81,7 +81,8 @@ export class ZIlPayCore {
       },
       transactions: {
         forConfirm: this.transactions.forConfirm,
-        transactions: this.transactions.transactions
+        transactions: this.transactions.transactions,
+        message: this.transactions.message
       },
       zrc2: this.zrc2.identities,
       blocknumber: this.blockchain.blocknumber,

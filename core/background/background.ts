@@ -78,7 +78,7 @@ export function startBackground(core: ZIlPayBackground) {
         core.transaction.addConfirm(msg.payload, sendResponse);
         return true;
       case MTypeTab.SIGN_MESSAGE:
-        /// add sign message controller for core.
+        core.transaction.addMessage(msg.payload, sendResponse);
         return true;
       case MTypePopup.SELECT_ACCOUNT:
         core.wallet.selectAccount(msg.payload.index, sendResponse);

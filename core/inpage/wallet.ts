@@ -8,6 +8,7 @@
  */
 
 import type { TabStream } from "lib/streem/tab-stream";
+import type { MessageParams } from "types/transaction";
 import type { InpageWallet } from "types/account";
 import type { Subject } from "./subject";
 import type { TxBlock } from 'types/block';
@@ -267,8 +268,8 @@ export class Wallet {
     const uuid = uuidv4();
     const title = window.document.title;
     const icon = getFavicon();
-    const payload = {
-      message,
+    const payload: MessageParams = {
+      content: message,
       uuid,
       title,
       icon

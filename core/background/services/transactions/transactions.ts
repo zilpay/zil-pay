@@ -8,7 +8,7 @@
  */
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account';
-import type { MinParams, StoredTx } from 'types/transaction';
+import type { MinParams, StoredTx, MessagePayload } from 'types/transaction';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { NotificationsControl } from 'core/background/services/notifications';
@@ -17,6 +17,7 @@ import { Common } from 'config/common';
 export class TransactionsController {
   #txns: StoredTx[] = [];
   #confirm: MinParams[] = [];
+  #message?: MessagePayload;
   readonly #network: NetworkControl;
   readonly #account: AccountController;
 
@@ -26,6 +27,10 @@ export class TransactionsController {
 
   public get forConfirm() {
     return this.#confirm;
+  }
+
+  public get message() {
+    return this.#message;
   }
 
   get #transactionsField() {
@@ -92,6 +97,24 @@ export class TransactionsController {
     await BrowserStorage.set(
       buildObject(this.#confirmField, this.forConfirm)
     );
+  }
+
+  public async addMessage(message: MessagePayload) {
+    this.#message = message;
+
+    NotificationsControl.counter(1);
+
+    await BrowserStorage.set(
+      buildObject(Fields.CONFIRM_MESSAGE, this.message)
+    );
+  }
+
+  public async rmMessage() {
+    this.#message = undefined;
+
+    NotificationsControl.counter(0);
+
+    await BrowserStorage.rm(Fields.CONFIRM_MESSAGE);
   }
 
   public async rmConfirm(index: number) {
