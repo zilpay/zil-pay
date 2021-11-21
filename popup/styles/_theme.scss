@@ -9,6 +9,7 @@
   --card-color:  #{inspect(map-get($light , "Card"))};
   --button-color:  #{inspect(map-get($light , "Button"))};
   --text-color:  #{inspect(map-get($light , "Text"))};
+  --modal-color:  #{inspect(map-get($light , "Modal"))};
 
   --secondary-color:  #{inspect(map-get($light , "Secondary"))};
   --primary-color: #{inspect(map-get($light , "Primary"))};
@@ -26,7 +27,8 @@
   --card-color:  #{inspect(map-get($dark , "Card"))};
   --button-color:  #{inspect(map-get($dark , "Button"))};
   --text-color:  #{inspect(map-get($dark , "Text"))};
-
+  --modal-color:  #{inspect(map-get($dark , "Modal"))};
+  
   --primary-color:  #{inspect(map-get($dark , "Primary"))};
   --secondary-color:  #{inspect(map-get($dark , "Secondary"))};
   --success-color:  #{inspect(map-get($dark , "Success"))};

@@ -72,10 +72,4 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
-	div.m-warp {
-		background-color: var(--background-color);
-		max-height: 600px;
-    @include border-radius(8px);
-		@include flex-center-top-column;
-	}
 </style>

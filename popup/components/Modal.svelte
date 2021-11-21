@@ -63,7 +63,7 @@
       left: 0;
       max-width: 500px;
       width: 100%;
-      background: var(--background-color);
+      background: var(--modal-color);
       padding: 0;
       z-index: 100;
 

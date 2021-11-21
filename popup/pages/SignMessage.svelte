@@ -124,12 +124,6 @@
 		height: 100vh;
 		@include flex-center-column;
 	}
-	div.m-warp {
-		background-color: var(--background-color);
-		max-height: 600px;
-    @include border-radius(8px);
-		@include flex-center-top-column;
-	}
   h1 {
     @include fluid-font(320px, 1024px, 22px, 55px);
   }

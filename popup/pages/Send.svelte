@@ -223,12 +223,6 @@
       padding-right: 5px;
     }
 	}
-  div.m-warp {
-		background-color: var(--background-color);
-		max-height: 600px;
-    @include border-radius(8px);
-		@include flex-center-top-column;
-	}
   form {
     padding-left: 10px;
     padding-right: 10px;
