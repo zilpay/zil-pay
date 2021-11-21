@@ -64,6 +64,7 @@
     }
   }
   div.item {
+    color: var(--text-color);
     margin-block-end: 10px;
     font-size: 13px;
     font-family: Demi;
@@ -88,7 +89,7 @@
   }
   div.menu {
     position: absolute;
-    background-color: var(--card-color);
+    background-color: var(--notification-color);
     transform: translate(-35%, -56%);
     padding: 5px;
     z-index: 20;

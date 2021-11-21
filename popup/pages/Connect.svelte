@@ -9,24 +9,14 @@
 
 	import Loader from '../components/Loader.svelte';
 
-	let loading = true;
 	let app = $appStore.confirmApp;
 
 	onMount(() => {
-		console.log($appStore.confirmApp);
-		
 		if (!$appStore.confirmApp) {
 			push('/');
 		}
 	});
 
-	const onload = (target) => {
-		const event = 'load';
-		target.addEventListener(event, () => {
-			loading = false;
-			target.removeEventListener(event, () => null, true);
-		});
-	}
 	const hanldeOnConfirm = async () => {
 		await userResponseConnection(true);
 		window.close();
@@ -42,22 +32,12 @@
 {#if Boolean(app)}
 	<main in:scale>
 		<h1>{app.title}</h1>
-		<div class="img-wrap">
-			<img
-				src={app.icon}
-				class:loading={loading}
-				alt="logo"
-				width="55px"
-				height="55px"
-				use:onload
-			/>
-			{#if loading}
-				<Loader
-					width="55px"
-					height="55px"
-				/>
-			{/if}
-		</div>
+		<img
+			src={app.icon}
+			alt="logo"
+			width="55px"
+			height="55px"
+		/>
 		<div>
 			<h2>
 				{$_('connect.question')[0]}
@@ -103,10 +83,8 @@
 		@include fluid-font(320px, 720px, 15px, 20px);
 	}
 	img {
+		margin: 16px;
 		display: auto;
-		&.loading {
-			display: none;
-		}
 	}
 	div,
 	h1 {
@@ -116,10 +94,6 @@
 		padding-right: 16px;
 	}
 	div {
-		&.img-wrap {
-			margin-block-start: 2vh;
-			margin-block-end: 2vh;
-		}
 		&.btn-wrap {
 			max-width: 400px;
 			min-width: 290px;

@@ -15,10 +15,8 @@
   import SelectCard from '../components/SelectCard.svelte';
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
-	import Loader from '../components/Loader.svelte';
 	import Toggle from '../components/Toggle.svelte';
 
-	let loadingImg = true;
 	let loading = false;
   let error = '';
 	let accountsModal = false;
@@ -33,14 +31,6 @@
 	onMount(() => {
 		jazziconCreate(uuid, account.base16);
   });
-
-  const onload = (target) => {
-		const event = 'load';
-		target.addEventListener(event, () => {
-			loadingImg = false;
-			target.removeEventListener(event, () => null, true);
-		});
-	}
 
 	const onSelectAccount = async ({ detail }) => {
     accountIndex = detail;
@@ -87,22 +77,12 @@
   <h1>
     {$_('sig_message.title')}
   </h1>
-  <div class="img-wrap">
-    <img
-      src={message.icon}
-      class:loadingImg={loadingImg}
-      alt={message.title}
-      width="55px"
-      height="55px"
-      use:onload
-    />
-    {#if loadingImg}
-      <Loader
-        width="55px"
-        height="55px"
-      />
-    {/if}
-  </div>
+  <img
+    src={message.icon}
+    alt={message.title}
+    width="55px"
+    height="55px"
+  />
   <h2>
     {message.title}
   </h2>
@@ -153,7 +133,7 @@
   h1 {
     @include fluid-font(320px, 1024px, 22px, 55px);
   }
-  div.img-wrap {
+  img {
     margin: 16px;
   }
   .toggle {

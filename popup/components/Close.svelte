@@ -37,7 +37,7 @@
   svg {
     cursor: pointer;
     rect {
-      fill: var(--secondary-color);
+      fill: var(--card-color);
       transition: fill 200ms linear;
     }
     line {
@@ -46,10 +46,10 @@
 
     &:hover {
       rect {
-        fill: var(--card-color);
+        fill: var(--primary-color);
       }
       line {
-        stroke: var(--text-color);
+        stroke: var(--card-color);
       }
     }
   }

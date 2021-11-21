@@ -75,7 +75,7 @@
   }
   .tgl-ios {
     + .tgl-btn {
-      background: var(--button-color);
+      background: var(--background-color);
       border-radius: 2em;
       padding: 2px;
       transition: all .4s ease;

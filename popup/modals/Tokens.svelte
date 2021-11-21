@@ -74,7 +74,7 @@
         rightText={formatNumber(getConverted(token), $currencyStore)}
       >
         <img
-          src={viewIcon(token[$format], $themeStore)}
+          src={viewIcon(token.bech32, $themeStore)}
           alt={token.symbol}
           width="36"
         />
