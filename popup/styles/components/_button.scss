@@ -72,3 +72,26 @@
   background: var(--warning-color);
   color: var(--background-color);
 }
+
+:global(button.loading) {
+  color: transparent !important;
+  pointer-events: none;
+  position: relative;
+
+  &::after {
+    animation: loading-button 500ms infinite linear;
+    border: .2rem solid var(--primary-color);
+    border-radius: .8rem;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    content: "";
+    display: block;
+    height: 1.2rem;
+    left: 50%;
+    margin-left: -.8rem;
+    margin-top: -.8rem;
+    position: absolute;
+    top: 50%;
+    width: 1.2rem;
+  }
+}

@@ -122,17 +122,11 @@
   <div class="btns">
     <button
       class="primary"
+      class:loading={loading}
       disabled={loading}
       on:click={handleOnSign}
     >
-      {#if loading}
-        <Loader
-          width="30px"
-          height="30px"
-        />
-      {:else}
-        {$_('sig_message.btns.confirm')}
-      {/if}
+      {$_('sig_message.btns.confirm')}
     </button>
     <button
       on:click={handleOnReject}

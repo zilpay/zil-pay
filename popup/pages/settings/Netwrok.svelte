@@ -139,19 +139,11 @@
     </ul>
     <button
       class="primary"
+      class:loading={loading}
       disabled={loading}
       on:click={hanldeUpdateSSN}
     >
-      {#if loading}
-        <span>
-          <Loader
-            width="25px"
-            height="25px"
-          />
-        </span>
-      {:else}
-        {$_('netwrok.btns.update')}
-      {/if}
+      {$_('netwrok.btns.update')}
     </button>
   </div>
 </Modal>

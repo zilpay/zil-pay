@@ -114,18 +114,10 @@
 		</label>
     <button
       class="primary"
+      class:loading={loading}
       disabled={disabled}
     >
-      {#if loading}
-        <span>
-          <Loader
-            width="25px"
-            height="25px"
-          />
-        </span>
-      {:else}
-        {$_('ledger.btn')}
-      {/if}
+      {$_('ledger.btn')}
     </button>
   </form>
 </main>

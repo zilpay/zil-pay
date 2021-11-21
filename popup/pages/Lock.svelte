@@ -6,8 +6,6 @@
 	import { unlockWallet } from "popup/backend";
 	import flyTransition from 'popup/transitions/fly';
 
-	import Loader from '../components/Loader.svelte';
-
 	let inputEl;
 	let password: string | null;
 	let error = '';
@@ -74,18 +72,10 @@
 		</label>
 		<button
 			class="primary"
+			class:loading={loading}
 			disabled={disabled}
 		>
-			{#if loading}
-				<span>
-					<Loader
-						width="25px"
-						height="25px"
-					/>
-				</span>
-			{:else}
-				{$_('lock.btn')}
-			{/if}
+			{$_('lock.btn')}
 		</button>
 	</form>
 </main>

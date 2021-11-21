@@ -95,18 +95,10 @@
     >
     <button
 			class="primary"
+      class:loading={loading}
 			disabled={disabled}
 		>
-			{#if loading}
-				<span>
-					<Loader
-						width="25px"
-						height="25px"
-					/>
-				</span>
-			{:else}
-				{$_('restore.btn')}
-			{/if}
+      {$_('restore.btn')}
 		</button>
   </form>
 </main>
