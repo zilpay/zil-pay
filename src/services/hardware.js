@@ -71,9 +71,21 @@ export async function ledgerSendTransaction(index, payload) {
   txParams.gasLimit = String(txParams.gasLimit)
   txParams.gasPrice = String(txParams.gasPrice)
 
+  if (payload.uuid) {
+    txParams.uuid = payload.uuid
+  }
+
   return txParams
 }
 
-export function ledgerSignMessage(index, message) {
+export async function ledgerSignMessage(index, message) {
+  const isHid = await TransportWebHID.isSupported()
+
+  if (isHid) {
+    const transport = await getHidTransport()
+    const ledger = new LedgerHit(transport)
+    return ledger.signHash(index, message)
+  }
+
   return ledgerControll.signMessage(index, message)
 }

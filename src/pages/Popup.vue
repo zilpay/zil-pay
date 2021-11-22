@@ -418,6 +418,8 @@ export default {
           txParams.gasPrice = minGasPrice
         }
 
+        console.log(txParams);
+
         if (account.hwType && account.hwType === HW_VARIANTS.ledger) {
           txParams = await ledgerSendTransaction(account.index, txParams)
         }
