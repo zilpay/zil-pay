@@ -8,6 +8,7 @@
   color: var(--text-color);
   border: solid 1px var(--card-color);
   padding: 1.5vh;
+  height: 49px;
   text-indent: 5px;
 
   @include fluid-font(320px, 1024px, 13px, 16px);

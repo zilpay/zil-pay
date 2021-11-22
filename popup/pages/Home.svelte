@@ -141,7 +141,7 @@
 		@include fluid-font(320px, 900px, 28px, 60px);
 	}
 	a.acc {
-		border: solid 2px var(--button-color);
+		border: solid 2px var(--primary-color);
 
 		@include border-radius(100%);
 

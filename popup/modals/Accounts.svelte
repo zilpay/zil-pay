@@ -60,12 +60,11 @@
     margin: 0;
     overflow-y: scroll;
     list-style: none;
-		padding-block-end: 10px;
-		padding-block-start: 10px;
+		padding-block-end: 70px;
 
 		max-width: 390px;
 		width: 100%;
-    min-height: 600px;
+    min-height: 530px;
 
 		& > li {
 			cursor: pointer;
