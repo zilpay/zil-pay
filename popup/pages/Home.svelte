@@ -75,10 +75,10 @@
 			<CopyAccount />
 			<a
 				href="/accounts"
-				id={uuid}
+				class="acc"
 				use:link
 			>
-				<div />
+				<div id={uuid}/>
 			</a>
 		</div>
 		<h1 class="amount">
@@ -139,6 +139,16 @@
 		margin-block-start: 0;
 
 		@include fluid-font(320px, 900px, 28px, 60px);
+	}
+	a.acc {
+		border: solid 2px var(--button-color);
+
+		@include border-radius(100%);
+
+		& > div {
+			height: 36px;
+			width: 36px;
+		}
 	}
 	img {
 		position: fixed;
