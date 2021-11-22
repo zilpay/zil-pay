@@ -55,12 +55,13 @@ export interface MinParams {
   amount: string;
   code: string;
   data: string;
-  gasLimit: string;
-  gasPrice: string;
+  gasLimit: number;
+  gasPrice: number;
   nonce?: number;
   priority?: boolean;
   version?: number;
   toAddr: string;
+  uuid?: string;
 }
 
 export interface MessageParams {
@@ -87,12 +88,31 @@ export interface TransitionReceipt {
   }[];
 }
 
+export interface TransactionForConfirm {
+  token?: {
+    decimals: number;
+    symbol: string;
+    bech32: string;
+  };
+  code: string;
+  toAddr: string;
+  data: string;
+  gasLimit: string | number;
+  gasPrice: string | number;
+  teg: string;
+  amount: string;
+  fee: number;
+  uuid?: string;
+  priority?: boolean;
+}
+
 export interface StoredTx {
   status: StatusCodes;
   confirmed?: boolean;
   token: {
     decimals: number;
     symbol: string;
+    bech32: string;
   };
   recipient: string;
   success?: boolean;

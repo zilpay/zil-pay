@@ -39,7 +39,6 @@ export const MTypePopup = {
   DOMAIN_RESOLVE: `@/${app}/popup-resolve-domain`,
   REJECT_CONFIRM_TX: `@/${app}/popup-reject-confirm-tx`,
   REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
-  CONFIRM_SIGN_MSG: `@/${app}/popup-confirm-sign-msg`,
 
   GET_ZRC2_TOKEN_INFO: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
@@ -81,7 +80,9 @@ export const MTypePopup = {
   SET_PROMT_ENABLED: `@/${app}/set-promt-enabled`,
 
   REJECT_SIGN_MESSAGE: `@/${app}/reject-sign-message`,
-  SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`
+  SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`,
+
+  FROM_BECH32: `@/${app}/convert-from-bech32`,
 };
 
 export const MTypeTab = {

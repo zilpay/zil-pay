@@ -6,8 +6,9 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { MinParams } from "types/transaction";
 import { Message } from "lib/streem/message";
-import { MTypePopup } from "lib/streem/stream-keys";
+import { MTypePopup, MTypeTab } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
 
@@ -26,4 +27,14 @@ export async function signMessageApprove(index: number) {
     }
   }).send();
   warpMessage(data);
+}
+
+export async function sendToSignTx(params: MinParams) {
+  const data = await new Message({
+    type: MTypeTab.CALL_TO_SIGN_TX,
+    payload: params
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
 }

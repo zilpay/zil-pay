@@ -94,7 +94,7 @@ export interface WalletState {
     multiplier: number;
   };
   transactions: {
-    forConfirm: MinParams[];
+    forConfirm: TransactionForConfirm[];
     transactions: StoredTx[];
     message: Message;
   };

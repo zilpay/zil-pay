@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
+	import { fade } from "svelte/transition";
 
   import { uuidv4 } from 'lib/crypto/uuid';
   import { trim } from 'popup/filters/trim';
@@ -8,6 +9,7 @@
 
 	import format from 'popup/store/format';
 	import walletStore from 'popup/store/wallet';
+	import transactionsStore from 'popup/store/transactions';
 
 	import TopBar from '../components/TopBar.svelte';
   import SelectCard from '../components/SelectCard.svelte';
@@ -18,8 +20,9 @@
     index: 0
   };
 
+	let uuid = uuidv4();
 	let accountsModal = false;
-	let accountIndex = params.index;
+	let accountIndex = params.index || $walletStore.selectedAddress;
 
 	let tabs = [
 		$_('confirm.tabs.tab_0'),
@@ -28,9 +31,8 @@
 	];
 	let selectedTab = 0;
 
+	$: list = $transactionsStore.forConfirm;
 	$: account = $walletStore.identities[accountIndex];
-
-  const uuid = uuidv4();
 
 	onMount(() => {
 		jazziconCreate(uuid, account.base16);
@@ -38,6 +40,7 @@
 	const onSelectAccount = async ({ detail }) => {
     accountIndex = detail;
     accountsModal = false;
+		jazziconCreate(uuid, account.base16);
 	};
 </script>
 
@@ -66,6 +69,7 @@
 				<div id={uuid}/>
 			</SelectCard>
 		</div>
+		<hr/>
 		<div class="tabs">
 			<ul>
 				{#each tabs as tab, index}
@@ -79,15 +83,15 @@
 			</ul>
 			<div class:bordered={selectedTab !== 0}>
 				{#if selectedTab === 2}
-					<h1>
+					<h1 in:fade>
 						data
 					</h1>
 				{:else if  selectedTab === 1}
-					<h1>
+					<h1 in:fade>
 						gas
 					</h1>
 				{:else}
-					<h1>
+					<h1 in:fade>
 						params
 					</h1>
 				{/if}

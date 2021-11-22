@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.FROM_BECH32:
+        core.settings.fromBech32(msg.payload.bech32, sendResponse);
+        return true;
       case MTypePopup.SET_PROMT_ENABLED:
         core.settings.setPromtEnabled(msg.payload.enabled, sendResponse);
         return true;
@@ -166,9 +169,6 @@ export function startBackground(core: ZIlPayBackground) {
         core.transaction.rejectAll(sendResponse);
         return true;
   
-      case MTypePopup.CONFIRM_SIGN_MSG:
-        /// TODO: add sign message stuff for core.
-        break;
       case MTypePopup.SET_PASSWORD:
         core.popup.unlock(msg.payload.password, sendResponse);
         return true;

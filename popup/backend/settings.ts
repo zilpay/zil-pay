@@ -111,3 +111,14 @@ export async function changePromtEnabled(enabled = true) {
   updateState(state);
   return state;
 }
+
+
+export async function fromBech32(bech32: string) {
+  const data = await new Message({
+    type: MTypePopup.FROM_BECH32,
+    payload: {
+      bech32
+    }
+  }).send();
+  return warpMessage(data);;
+}

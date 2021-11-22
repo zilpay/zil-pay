@@ -5,8 +5,10 @@
 	import flyTransition from 'popup/transitions/fly';
 	import { TokenType } from 'popup/config/token-type';
   import { uuidv4 } from 'lib/crypto/uuid';
+  import { fromBech32 } from 'popup/backend/settings';
 
   import { trim } from 'popup/filters/trim';
+  import { sendToSignTx } from 'popup/backend/sign';
   import { fromDecimals } from 'popup/filters/units';
   import { viewIcon } from 'lib/block-explorer/view';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
@@ -14,6 +16,7 @@
   import { convertRate } from 'popup/filters/convert-rate';
   import { fromPercent } from 'popup/filters/from-percent';
   import { gasToFee } from 'popup/filters/gas-to-fee';
+  import { buildTx } from 'popup/mixins/tx-build';
 
   import zrcStore from 'app/store/zrc';
 	import walletStore from 'popup/store/wallet';
@@ -41,13 +44,14 @@
   let contactsModal = false;
   let accountsModal = false;
   let tokensModal = false;
+  let loading = false;
   let uuid = uuidv4();
   let selectedAccount = $walletStore.selectedAddress;
   let selectedToken = params.index;
   let percentageList = [0, 25, 50, 100];
   let amount;
   let recipient = '';
-  let qaAmount = '0';
+  let recipientError = '';
 
 	$: account = $walletStore.identities[selectedAccount];
 
@@ -67,7 +71,6 @@
     const { _fee } = gasToFee(gasLimit, gasPrice);
     const value = fromPercent(token, account.zrc2[token.base16], _fee, percent);
     const formated = fromDecimals(value, token.decimals);
-    qaAmount = String(value);
     amount = String(formated);
   };
   const onSelectAccount = async ({ detail }) => {
@@ -81,14 +84,31 @@
     tokensModal = false;
 	};
   const onSelectRecipient = ({ detail }) => {
+    recipientError = '';
     recipient = detail;
     contactsModal = false;
   };
   const handleSubmit = async (e) => {
 		e.preventDefault();
-    if (!disabled) {
-      push('/confirm');
+    loading = true;
+    let toAddr = '';
+    try {
+      toAddr = await fromBech32(recipient);
+    } catch (err) {
+      recipientError = err.message;
+      loading = false;
+      return null;
     }
+
+    try {
+      await buildTx(toAddr, amount, token);
+      if (!disabled) {
+        push('/confirm/' + selectedAccount);
+      }
+    } catch {
+      ///
+    }
+    loading = false;
   };
 </script>
 
@@ -161,7 +181,7 @@
         <p>
           {$_('send.input_to.title')}
         </p>
-        <label>
+        <label class:error={recipientError}>
           <div on:click={() => contactsModal = !contactsModal}>
             <SvgLoader
               src="/vectors/contact.svg"
@@ -171,6 +191,7 @@
           <input
             bind:value={recipient}
             placeholder={$_('send.input_to.placeholder')}
+            on:input={() => recipientError = ''}
           >
         </label>
       </div>
@@ -200,6 +221,7 @@
       <hr />
       <button
         class="primary"
+        class:loading={loading}
         disabled={disabled}
       >
         {$_('send.send_btn')}
@@ -262,6 +284,12 @@
         @include flex-between-row;
         @include border-radius(8px);
 
+        &.error {
+          border-color: var(--danger-color);
+          input {
+            color: var(--danger-color);
+          }
+        }
         & > input {
           width: 100%;
           padding-left: 0;

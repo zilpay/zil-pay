@@ -6,11 +6,11 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { MessagePayload, MinParams, StoredTx } from 'types/transaction';
+import type { MessagePayload, TransactionForConfirm, StoredTx } from 'types/transaction';
 import { writable } from 'svelte/store';
 
 interface TxStore {
-  forConfirm: MinParams[],
+  forConfirm: TransactionForConfirm[],
   transactions: StoredTx[],
   message?: MessagePayload;
 }

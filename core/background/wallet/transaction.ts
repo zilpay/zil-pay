@@ -19,6 +19,7 @@ import { Aes } from 'lib/crypto/aes';
 import { SchnorrControl } from 'lib/crypto/elliptic';
 import { Buffer } from 'buffer';
 import { AccountTypes } from 'config/account-type';
+import { toBech32Address } from 'lib/utils/bech32';
 
 export class ZilPayTransaction {
 
@@ -29,11 +30,50 @@ export class ZilPayTransaction {
   }
 
   public async addConfirm(params: MinParams, sendResponse: StreamResponse) {
+    let token = {
+      decimals: ZIL.decimals,
+      symbol: ZIL.symbol,
+      bech32: ZIL.bech32
+    };
+
     try {
-      await this.#core.transactions.addConfirm(params);
+      const payload = new Transaction(
+        params.amount,
+        params.gasLimit,
+        params.gasPrice,
+        this.#core.account.selectedAccount,
+        params.toAddr,
+        this.#core.netwrok.selected,
+        0,
+        params.code,
+        params.data,
+        params.priority
+      );
+
+      if (payload.tag === TransactionTypes.Transfer) {
+        token = await this.#getToken(payload.toAddr);
+      }
+
+      await this.#core.transactions.addConfirm({
+        token,
+        toAddr: payload.toAddr,
+        teg: payload.tag,
+        amount: payload.tokenAmount,
+        fee: payload.fee,
+        code: payload.code,
+        data: payload.data,
+        gasLimit: Number(payload.gasLimit),
+        gasPrice: payload.gasPrice,
+        uuid: params.uuid,
+        priority: payload.priority
+      });
+
+      if (params.uuid) {
+        await this.#core.prompt.open();
+      }
 
       sendResponse({
-        resolve: params
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
@@ -85,14 +125,16 @@ export class ZilPayTransaction {
   }
 
   public async signSendTx(accIndex: number, params: MinParams, sendResponse: StreamResponse) {
+    let token = {
+      decimals: ZIL.decimals,
+      symbol: ZIL.symbol,
+      bech32: ZIL.bech32
+    };
+
     try {
       await this.#core.account.select(accIndex);
       await this.#core.transactions.sync();
 
-      let token = {
-        decimals: ZIL.decimals,
-        symbol: ZIL.symbol
-      };
       const account = this.#core.account.selectedAccount;
       const keyPair = await this.#core.account.getKeyPair();
       const nonce = await this.#core.nonceCounter.nextNonce(account);
@@ -115,7 +157,7 @@ export class ZilPayTransaction {
         newTx.setVersion(params.version, this.#core.netwrok);
       }
 
-      if (newTx.transactionType === TransactionTypes.Transfer) {
+      if (newTx.tag === TransactionTypes.Transfer) {
         token = await this.#getToken(newTx.toAddr);
       }
 
@@ -242,17 +284,30 @@ export class ZilPayTransaction {
   }
 
   async #getToken(toAddr: string) {
+    const foundToken = this.#core.zrc2.identities.find(
+      (t) => String(t.base16).toLowerCase() === String(toAddr).toLowerCase()
+    );
+
+    if (foundToken) {
+      return {
+        decimals: foundToken.decimals,
+        symbol: foundToken.symbol,
+        bech32: foundToken.bech32
+      };
+    }
     try {
       const init = await this.#core.zrc2.getZRCInit(toAddr);
 
       return {
         decimals: init.decimals,
-        symbol: init.symbol
+        symbol: init.symbol,
+        bech32: toBech32Address(toAddr)
       };
     } catch {
       return {
         decimals: ZIL.decimals,
-        symbol: ZIL.symbol
+        symbol: ZIL.symbol,
+        bech32: ZIL.bech32
       };
     }
   }

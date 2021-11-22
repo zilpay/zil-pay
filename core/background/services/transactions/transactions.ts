@@ -8,7 +8,7 @@
  */
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account';
-import type { MinParams, StoredTx, MessagePayload } from 'types/transaction';
+import type { StoredTx, MessagePayload, TransactionForConfirm } from 'types/transaction';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { NotificationsControl } from 'core/background/services/notifications';
@@ -16,7 +16,7 @@ import { Common } from 'config/common';
 
 export class TransactionsController {
   #txns: StoredTx[] = [];
-  #confirm: MinParams[] = [];
+  #confirm: TransactionForConfirm[] = [];
   #message?: MessagePayload;
   readonly #network: NetworkControl;
   readonly #account: AccountController;
@@ -42,11 +42,7 @@ export class TransactionsController {
   }
 
   get #confirmField() {
-    if (this.#account.selectedAccount) {
-      return `${Fields.CONFIRM_TX}/${this.#network.selected}/${this.#account.selectedAccount.base16}`;
-    }
-
-    return Fields.CONFIRM_TX;
+    return `${Fields.CONFIRM_TX}/${this.#network.selected}`;
   }
 
   constructor(network: NetworkControl, account: AccountController) {
@@ -91,8 +87,8 @@ export class TransactionsController {
     NotificationsControl.counter(this.#confirm.length);
   }
 
-  public async addConfirm(tx: MinParams) {
-    this.#confirm.push(tx);
+  public async addConfirm(params: TransactionForConfirm) {
+    this.#confirm.push(params);
     NotificationsControl.counter(this.#confirm.length);
     await BrowserStorage.set(
       buildObject(this.#confirmField, this.forConfirm)

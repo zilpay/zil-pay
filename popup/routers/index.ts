@@ -53,7 +53,7 @@ export default {
       routerGuard
     ]
   }),
-  '/confirm': wrap({
+  '/confirm/:index?': wrap({
     component: Confirm,
     conditions: [
       routerGuard
