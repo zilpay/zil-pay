@@ -7,11 +7,11 @@
   background: var(--card-color);
   color: var(--text-color);
   border: solid 1px var(--card-color);
-  border-radius: 8px;
-  padding: 0.9rem;
+  padding: 1.5vh;
   text-indent: 5px;
 
   @include fluid-font(320px, 1024px, 13px, 16px);
+  @include border-radius(8px);
 
   width: inherit;
 

@@ -259,8 +259,6 @@
         background-color: var(--card-color);
         border: solid 1px var(--card-color);
 
-        max-height: 60px;
-
         @include flex-between-row;
         @include border-radius(8px);
 
@@ -271,7 +269,7 @@
         }
         & > div {
           cursor: pointer;
-          padding: 20px;
+          padding: 13px;
 
           &:hover {
             :global(svg.cont-icon > path) {

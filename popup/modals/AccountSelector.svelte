@@ -10,14 +10,11 @@
 	import contactsStore from 'popup/store/contacts';
 	import format from 'popup/store/format';
 
-  import SwitchButton from '../components/SwitchButton.svelte';
 	import AccountCard from '../components/AccountCard.svelte';
-	import SearchBox from '../components/SearchBox.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
 
   const dispatch = createEventDispatcher();
 
-  let tab = false;
 	let search = '';
 
 	$: accounts = $walletStore.identities.filter(
@@ -40,16 +37,13 @@
   focus
   on:input={onInputSearch}
 />
-<div class="switcher">
-  <SwitchButton
-    items={[$_('send.options.acc'), $_('send.options.con')]}
-    on:select={() => tab = !tab}
-  />
-</div>
-{#if tab}
-  <ul in:fly={flyTransition.in} >
-    {#each contacts as contact}
-      <li on:click={() => onSelect(contact.address)}>
+<ul>
+	{#if contacts.length > 0}
+		<p>
+			Contacts
+		</p>
+		{#each contacts as contact}
+			<li on:click={() => onSelect(contact.address)}>
 				<div class="text">
 					<b>
 						{contact.name}
@@ -59,41 +53,41 @@
 					</p>
 				</div>
 			</li>
-    {/each}
-  </ul>
-{:else}
-  <ul in:fly={flyTransition.in} >
-    {#each accounts as account}
-      <li on:click={() => onSelect(account[$format])}>
-        <div class="text">
-          <b>
-            {account.name}
-          </b>
-          <p>
-            {trim(account[$format], 10)}
-          </p>
-        </div>
-      </li>
-    {/each}
-  </ul>
-{/if}
+		{/each}
+	{/if}
+	{#if accounts.length > 0}
+		<p>
+			Accounts
+		</p>
+		{#each accounts as account}
+			<li on:click={() => onSelect(account[$format])}>
+				<div class="text">
+					<b>
+						{account.name}
+					</b>
+					<p>
+						{trim(account[$format], 10)}
+					</p>
+				</div>
+			</li>
+		{/each}
+	{/if}
+</ul>
 
 <style lang="scss">
 	@import "../styles/mixins";
-  div.switcher {
-    margin: 10px;
-  }
 	ul {
 		padding: 0;
     margin: 0;
     overflow-y: scroll;
     list-style: none;
-		padding-block-end: 10px;
-		padding-block-start: 10px;
+		padding-block-end: 70px;
+		// padding-block-start: 10px;
 
 		max-width: 390px;
 		width: 100%;
-    height: 400px;
+    min-height: 530px;
+		height: 100%;
 
 		& > li {
 			cursor: pointer;

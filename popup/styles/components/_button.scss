@@ -37,7 +37,7 @@
 }
 
 :global(button:disabled) {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: auto;
 }
 
@@ -47,10 +47,8 @@
   background: var(--primary-color);
   color: var(--background-color);
 
-  &:hover, &:disabled {
-    border-color: var(--button-color);
-    background: var(--button-color);
-    color: var(--Text-color);
+  &:hover:enabled {
+    opacity: 0.9;
   }
 }
 
@@ -80,7 +78,7 @@
 
   &::after {
     animation: loading-button 500ms infinite linear;
-    border: .2rem solid var(--primary-color);
+    border: .2rem solid var(--text-color);
     border-radius: .8rem;
     border-right-color: transparent;
     border-top-color: transparent;
