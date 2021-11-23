@@ -60,7 +60,8 @@ export class ZilPayTransaction {
         toAddr: payload.toAddr,
         teg: payload.tag,
         amount: payload.tokenAmount,
-        fee: payload.fee 
+        fee: payload.fee,
+        recipient: payload.recipient
       });
 
       if (params.uuid) {

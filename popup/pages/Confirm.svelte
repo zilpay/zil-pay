@@ -20,6 +20,7 @@
   import SelectCard from '../components/SelectCard.svelte';
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
+	import Params from '../components/confirm/Params.svelte';
 
 	export let params = {
     index: 0
@@ -40,8 +41,6 @@
 	$: account = $walletStore.identities[accountIndex];
 	$: tx = list[list.length - 1];
 
-	$: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
-
 	onMount(() => {
 		console.log(tx);
 		jazziconCreate(uuid, account.base16);
@@ -52,6 +51,7 @@
 		jazziconCreate(uuid, account.base16);
 	};
 	const handleOnReject = async () => {
+		const isExtends = Boolean(tx.uuid);
 		try {
 			await rejectForSignTx(list.length - 1);
 		} catch {
@@ -59,7 +59,11 @@
 		}
 
 		if (list.length === 0) {
-			window.close();
+			if (isExtends) {
+				window.close();
+			}
+
+			push('/');
 		}
 	};
 	const handleOnConfirm = () => {};
@@ -91,17 +95,22 @@
 			</SelectCard>
 		</div>
 		<hr/>
-		<div class="header">
-			<h1>
-				{tx.title}
-			</h1>
-			<img
-				src={tx.icon}
-				alt="logo"
-				width="55px"
-				height="55px"
-			/>
-		</div>
+		{#if tx}
+			<div
+				class="header"
+				in:fade
+			>
+				<h1>
+					{tx.title}
+				</h1>
+				<img
+					src={tx.icon}
+					alt="logo"
+					width="55px"
+					height="55px"
+				/>
+			</div>
+		{/if}
 		<div class="tabs">
 			<ul>
 				{#each tabs as tab, index}
@@ -114,7 +123,7 @@
 				{/each}
 			</ul>
 			<div class:bordered={selectedTab !== 0}>
-				{#if selectedTab === 2}
+				{#if selectedTab === 2 && tx}
 					<ul>
 						<li>
 							<span>
@@ -125,56 +134,12 @@
 							</span>
 						</li>
 					</ul>
-				{:else if  selectedTab === 1}
+				{:else if  selectedTab === 1 && tx}
 					<h1 in:fade>
 						gas
 					</h1>
-				{:else}
-					<ul
-						in:fade
-						class="params"
-					>
-						<li>
-							<span>
-								{$_('confirm.params.amount')}
-							</span>
-							<span>
-								{formatNumber(amount)} {tx.token.symbol} + {tx.fee} ZIL
-							</span>
-						</li>
-						<li>
-							<span>
-								{$_('confirm.params.teg')}
-							</span>
-							<span>
-								{tx.teg}
-							</span>
-						</li>
-						<li>
-							<span>
-								{$_('confirm.params.fee')}
-							</span>
-							<span>
-								{tx.fee} ZIL
-							</span>
-						</li>
-						<li>
-							<span>
-								{$_('confirm.params.nonce')}
-							</span>
-							<span>
-								{tx.nonce || 0}
-							</span>
-						</li>
-						<li>
-							<span>
-								{$_('confirm.params.to')}
-							</span>
-							<span>
-								{trim(tx.toAddr)}
-							</span>
-						</li>
-					</ul>
+				{:else if  selectedTab === 0 && tx}
+					<Params tx={tx}/>
 				{/if}
 			</div>
 		</div>
@@ -218,29 +183,6 @@
 		& > button {
 			margin: 10px;
 			min-width: 140px;
-		}
-	}
-	ul.params {
-		margin: 0;
-    padding: 0;
-    list-style: none;
-
-		& > li {
-			line-height: 20px;
-			padding: 5px;
-			font-family: Regular;
-			font-size: 16px;
-			border-bottom: solid 1px var(--border-color);
-			color: var(--text-color);
-
-			@include flex-between-row;
-
-			&:last-child {
-				border-bottom: solid 1px transparent;
-			}
-			& > span:last-child {
-				font-family: Demi;
-			}
 		}
 	}
 	div.tabs {
