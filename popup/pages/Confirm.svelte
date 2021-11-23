@@ -24,6 +24,8 @@
 	import Params from '../components/confirm/Params.svelte';
 	import GasControl from '../components/GasControl.svelte';
 
+	const QA = 1000000;
+
 	export let params = {
     index: 0
   };
@@ -33,6 +35,7 @@
 	let accountIndex = params.index || $walletStore.selectedAddress;
 	let gasMultiplier = $gasStore.multiplier;
 	let tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
+	let startGasPrice = Number(tx.gasPrice);
 
 	let tabs = [
 		$_('confirm.tabs.tab_0'),
@@ -48,6 +51,11 @@
 		console.log(tx);
 		jazziconCreate(uuid, account.base16);
   });
+
+	const onGasChanged = () => {
+		tx.fee = (tx.gasPrice * tx.gasLimit) / QA;
+	};
+
 	const onSelectAccount = async ({ detail }) => {
     accountIndex = detail;
     accountsModal = false;
@@ -55,8 +63,8 @@
 	};
 	const handleOnChangeGasMultiplier = async ({ detail }) => {
 		gasMultiplier = detail;
-		tx.gasPrice = tx.gasPrice * gasMultiplier;
-		tx.fee = (tx.gasPrice * tx.gasLimit) / 1000000;
+		tx.gasPrice = startGasPrice * gasMultiplier;
+		onGasChanged();
 	};
 
 	const handleOnReject = async () => {
@@ -76,6 +84,7 @@
 		}
 
 		tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
+		startGasPrice = Number(tx.gasPrice);
 	};
 	const handleOnConfirm = () => {};
 </script>
@@ -146,20 +155,42 @@
 						</li>
 					</ul>
 				{:else if  selectedTab === 1 && tx}
-					<div in:fade>
+					<div
+						in:fade
+						class="gas-warp"
+					>
 						<GasControl
 							multiplier={gasMultiplier}
 							gasLimit={tx.gasLimit}
+							gasPrice={startGasPrice}
 							on:select={handleOnChangeGasMultiplier}
 						/>
+						<label>
+							<p>
+								GasLimit
+							</p>
+							<input
+								bind:value={tx.gasLimit}
+								type="number"
+								on:input={() => onGasChanged()}
+							>
+						</label>
+						<label>
+							<p>
+								GasPrice (Li)
+							</p>
+							<input
+								bind:value={tx.gasPrice}
+								type="number"
+								on:input={() => onGasChanged()}
+							>
+						</label>
 					</div>
 				{:else if  selectedTab === 0 && tx}
 					<Params tx={tx}/>
 				{/if}
 			</div>
 		</div>
-		<br />
-		<hr />
 		<div class="btns">
 			<button
 				class="primary"
@@ -178,6 +209,7 @@
 	@import "../styles/mixins";
 	main {
 		height: calc(100vh - 36px);
+    overflow-y: scroll;
 
 		@include flex-center-top-column;
 	}
@@ -200,19 +232,37 @@
 			min-width: 140px;
 		}
 	}
+	div.gas-warp {
+		@include flex-center-top-column;
+
+		& > label {
+			width: 300px;
+			margin-block-start: 5px;
+			margin-block-end: 5px;
+			& > p {
+				font-size: 11px;
+				line-height: 0px;
+				text-indent: 10px;
+			}
+			& > input {
+				border-color: var(--muted-color);
+			}
+		}
+	}
 	div.tabs {
-		width: calc(100vw - 20px);
-		max-width: 600px;
+		width: calc(100vw - 10px);
+		max-width: 400px;
+		box-shadow: 0 10px 6px -6px #777;
 
 		& > div {
 			background-color: var(--card-color);
 			padding: 5px;
 
-			@include border-bottom-radius(8px);
-			@include border-right-radius(8px);
+			@include border-bottom-radius(10px);
+			@include border-right-radius(10px);
 
 			&.bordered {
-				@include border-radius(8px);
+				@include border-radius(10px);
 			}
 		}
 		& > ul {
