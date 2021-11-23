@@ -189,10 +189,8 @@ export class Wallet {
   }
 
   public async sign(arg: Transaction | string): Promise<any> {
-    console.log(arg);
     assert(this.isEnable, ErrorMessages.Disabled);
     assert(this.isConnect, ErrorMessages.Connect);
-
 
     if (TypeOf.isString(arg)) {
       return this.#signMessage(String(arg));

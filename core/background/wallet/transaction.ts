@@ -36,6 +36,8 @@ export class ZilPayTransaction {
       bech32: ZIL.bech32
     };
 
+    console.log(params);
+
     try {
       const payload = new Transaction(
         params.amount,
@@ -56,16 +58,11 @@ export class ZilPayTransaction {
 
       await this.#core.transactions.addConfirm({
         token,
+        ...params,
         toAddr: payload.toAddr,
         teg: payload.tag,
         amount: payload.tokenAmount,
-        fee: payload.fee,
-        code: payload.code,
-        data: payload.data,
-        gasLimit: Number(payload.gasLimit),
-        gasPrice: payload.gasPrice,
-        uuid: params.uuid,
-        priority: payload.priority
+        fee: payload.fee 
       });
 
       if (params.uuid) {

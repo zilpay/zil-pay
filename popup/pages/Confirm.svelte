@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
+	import { push } from 'svelte-spa-router';
 	import { fade } from "svelte/transition";
 
   import { uuidv4 } from 'lib/crypto/uuid';
@@ -35,6 +36,9 @@
 	$: account = $walletStore.identities[accountIndex];
 
 	onMount(() => {
+		if (list.length === 0) {
+			push('/');
+		}
 		jazziconCreate(uuid, account.base16);
   });
 	const onSelectAccount = async ({ detail }) => {

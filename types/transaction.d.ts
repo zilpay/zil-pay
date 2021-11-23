@@ -62,6 +62,8 @@ export interface MinParams {
   version?: number;
   toAddr: string;
   uuid?: string;
+  title?: string;
+  icon?: string;
 }
 
 export interface MessageParams {
@@ -88,22 +90,14 @@ export interface TransitionReceipt {
   }[];
 }
 
-export interface TransactionForConfirm {
+export interface TransactionForConfirm extends MinParams {
   token?: {
     decimals: number;
     symbol: string;
     bech32: string;
   };
-  code: string;
-  toAddr: string;
-  data: string;
-  gasLimit: string | number;
-  gasPrice: string | number;
   teg: string;
-  amount: string;
   fee: number;
-  uuid?: string;
-  priority?: boolean;
 }
 
 export interface StoredTx {
