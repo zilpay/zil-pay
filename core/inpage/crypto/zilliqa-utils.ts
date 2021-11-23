@@ -40,6 +40,8 @@ export const ZilliqaUtils = {
   Long,
   validation: Validator,
   units: {
-    Units
+    Units,
+    fromQa,
+    toQa
   }
 };

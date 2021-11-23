@@ -309,8 +309,6 @@ export class Wallet {
       icon: getFavicon()
     };
 
-    console.log(payload);
-
     // Send transaction to content.js > background.js.
     new ContentMessage({
       type,

@@ -66,7 +66,11 @@ export class ZilPayApps {
             resolve: account
           }
         }).send();
-        await this.#core.apps.add(app);
+        try {
+          await this.#core.apps.add(app);
+        } catch {
+          await this.#core.apps.rejectConfirm();
+        }
       } else {
         await new TabsMessage({
           type: MTypeTab.RESPONSE_TO_DAPP,

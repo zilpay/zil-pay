@@ -13,6 +13,7 @@ import { ContentMessage } from 'lib/streem/secure-message';
 import { warpMessage } from 'lib/utils/warp-message';
 import { httpProvider } from './provider';
 import { RPCMethod } from 'config/methods';
+import { ErrorMessages } from 'config/errors';
 
 export class ContentTabStream {
   readonly #stream: TabStream;
@@ -80,7 +81,9 @@ export class ContentTabStream {
   async #proxy(payload: any) {
     const { params, method, uuid } = payload;
     const recipient = MTypeTabContent.INJECTED;
-    let result = {};
+    let result = {
+      error: undefined
+    };
 
     try {
       if (!(method in RPCMethod)) {
@@ -91,21 +94,22 @@ export class ContentTabStream {
         MTypeTab.GET_WALLET_DATA
       ).send();
       const wallet = warpMessage(data);
-      if (!wallet || !wallet['isEnable']) {
-        throw new Error('DISABLED');
-      } else if (!wallet['isConnect']) {
-        throw new Error('CONNECT');
+
+      if (!wallet || !wallet.isEnable) {
+        throw ErrorMessages.Disabled;
+      } else if (!wallet.isConnect) {
+        throw ErrorMessages.Connect;
       }
 
       const http = method === RPCMethod.GetTransactionStatus ?
-        wallet['nativeHttp'] : wallet['http'];
+        wallet.nativeHttp : wallet.http;
       result = await httpProvider(
         http,
         method,
         params
       );
     } catch (err) {
-      result['error'] = err.message || err;
+      result.error = err.message || err;
     }
 
     new ContentMessage({
