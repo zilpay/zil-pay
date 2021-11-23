@@ -13,6 +13,7 @@ import type { Subject } from './subject';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { MTypeTab, MTypeTabContent } from 'lib/streem/stream-keys';
 import { ContentMessage } from 'lib/streem/secure-message';
+import { RPCMethod } from 'config/methods';
 
 export type Response = {
   error?: unknown,
@@ -23,7 +24,7 @@ export class HTTPProvider {
   #stream: TabStream;
   #subject: Subject;
 
-  public RPCMethod = {};
+  public RPCMethod = RPCMethod;
 
   constructor(stream: TabStream, subject: Subject) {
     this.#stream = stream;

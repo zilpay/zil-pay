@@ -7,6 +7,8 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { DataParams, TransitionReceipt, TxParams } from 'types/transaction';
+import type { HTTPProvider } from './provider';
+import type { Wallet } from './wallet';
 
 import assert from 'assert';
 import BN from 'bn.js';
@@ -169,6 +171,15 @@ export class Transaction {
 }
 
 export class TransactionFactory {
+  public readonly provider: HTTPProvider;
+  public readonly wallet: Wallet;
+  public Transaction = Transaction;
+
+  constructor(provider: HTTPProvider, wallet: Wallet) {
+    this.provider = provider;
+    this.wallet = wallet;
+  }
+
   new(params: TransactionParams, priority = false) {
     return new Transaction(params, priority);
   }

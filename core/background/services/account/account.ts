@@ -241,6 +241,14 @@ export class AccountController {
     }
   }
 
+  public async reset() {
+    this.#wallet.identities = [];
+    this.#wallet.selectedAddress = 0;
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this.#wallet)
+    );
+  }
+
   public async addAccountFromSeed(seed: string, name: string) {
     const index = this.lastIndexSeed;
     const { pubKey, base16 } = await this.fromSeed(seed, index);

@@ -69,6 +69,7 @@ export class ZilPayPopup {
   public async initSeedWallet(payload: InitPayload, sendResponse: StreamResponse) {
     try {
       this.#core.account.mnemonic.mnemonicToEntropy(payload.seed);
+      await this.#core.account.reset();
       await this.#core.guard.setSeed(
         payload.seed,
         payload.password

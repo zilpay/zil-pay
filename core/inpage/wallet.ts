@@ -189,8 +189,10 @@ export class Wallet {
   }
 
   public async sign(arg: Transaction | string): Promise<any> {
+    console.log(arg);
     assert(this.isEnable, ErrorMessages.Disabled);
     assert(this.isConnect, ErrorMessages.Connect);
+
 
     if (TypeOf.isString(arg)) {
       return this.#signMessage(String(arg));
@@ -227,10 +229,10 @@ export class Wallet {
         if (msg.type !== MTypeTab.RESPONSE_TO_DAPP) return;
         if (msg.payload.uuid !== uuid) return;
 
-        this.#defaultAccount = msg.payload.account;
+        this.#defaultAccount = msg.payload.resolve || null;
 
         obs();
-        return resolve(Boolean(msg.payload.account));
+        return resolve(Boolean(msg.payload.resolve));
       });
     });
   }
@@ -306,6 +308,8 @@ export class Wallet {
       title: window.document.title,
       icon: getFavicon()
     };
+
+    console.log(payload);
 
     // Send transaction to content.js > background.js.
     new ContentMessage({

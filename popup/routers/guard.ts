@@ -27,15 +27,15 @@ export const routerGuard = (e: { location: string; }) => {
   }
 
   const router = '/app-connect';
-  if (apps.confirmApp && e.location !== router) {
+  if (apps.confirmApp && e.location !== router && guard.isEnable) {
     push(router);
   }
 
-  if (txns.message) {
+  if (txns.message && guard.isEnable) {
     push('/sign-message');
   }
 
-  if (txns.forConfirm.length !== 0) {
+  if (txns.forConfirm.length !== 0 && guard.isEnable) {
     push('/confirm');
   }
 

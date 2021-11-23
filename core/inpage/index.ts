@@ -9,6 +9,7 @@
 import { Handler } from './handler';
 import { ZilPay } from './zilpay';
 
-const handler = Object.freeze(new Handler());
+export const handler = Object.freeze(new Handler());
+export const zilPay = Object.freeze(new ZilPay(handler.stream, handler.subject));
 handler.initialized();
-window['zilPay'] = Object.freeze(new ZilPay(handler.stream, handler.subject));
+window['zilPay'] = zilPay;

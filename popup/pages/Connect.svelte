@@ -18,7 +18,11 @@
 	});
 
 	const hanldeOnConfirm = async () => {
-		await userResponseConnection(true);
+		try {
+			await userResponseConnection(true);
+		} catch {
+			///
+		}
 		window.close();
 		push('/');
 	};
