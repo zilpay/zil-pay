@@ -36,8 +36,6 @@ export class ZilPayTransaction {
       bech32: ZIL.bech32
     };
 
-    console.log(params);
-
     try {
       const payload = new Transaction(
         params.amount,
@@ -109,10 +107,20 @@ export class ZilPayTransaction {
 
   public async rmConfirm(index: number, sendResponse: StreamResponse) {
     try {
+      const tx = this.#core.transactions.forConfirm[index];
+
+      await new TabsMessage({
+        type: MTypeTab.TX_RESULT,
+        payload: {
+          uuid: tx.uuid,
+          reject: ErrorMessages.Rejected
+        }
+      }).send();
+
       await this.#core.transactions.rmConfirm(index);
 
       sendResponse({
-        resolve: this.#core.transactions.forConfirm
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

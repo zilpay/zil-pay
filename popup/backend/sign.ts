@@ -38,3 +38,16 @@ export async function sendToSignTx(params: MinParams) {
   updateState(state);
   return state;
 }
+
+
+export async function rejectForSignTx(index: number) {
+  const data = await new Message({
+    type: MTypePopup.REJECT_CONFIRM_TX,
+    payload: {
+      index
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

@@ -13,6 +13,9 @@ import appStore from 'popup/store/apps';
 import guardStore from 'popup/store/guard';
 import transactionsStore from 'popup/store/transactions';
 
+const confirmRouter = '/app-connect';
+const confirmTx = '/confirm';
+
 export const routerGuard = (e: { location: string; }) => {
   const guard = get(guardStore);
   const apps = get(appStore);
@@ -26,9 +29,8 @@ export const routerGuard = (e: { location: string; }) => {
     push('/lock');
   }
 
-  const router = '/app-connect';
-  if (apps.confirmApp && e.location !== router && guard.isEnable) {
-    push(router);
+  if (apps.confirmApp && e.location !== confirmRouter && guard.isEnable) {
+    push(confirmRouter);
   }
 
   if (txns.message && guard.isEnable) {
@@ -36,7 +38,10 @@ export const routerGuard = (e: { location: string; }) => {
   }
 
   if (txns.forConfirm.length !== 0 && guard.isEnable) {
-    push('/confirm');
+    push(confirmTx);
+  }
+  if (confirmTx === e.location && txns.forConfirm.length === 0) {
+    push('/');
   }
 
   return guard.isEnable && guard.isReady;

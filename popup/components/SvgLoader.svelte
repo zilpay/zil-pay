@@ -16,17 +16,19 @@
     const id = uuidv4();
     const xmlns = 'xmlns="http://www.w3.org/2000/svg"';
 
-    ref.parentNode.innerHTML = content.replace(xmlns, `id="${id}"`);
-    ref = document.getElementById(id);
+    if (ref && ref.parentNode) {
+      ref.parentNode.innerHTML = content.replace(xmlns, `id="${id}"`);
+      ref = document.getElementById(id);
 
-    if (width) {
-      ref.setAttribute('width', width);
-    }
-    if (height) {
-      ref.setAttribute('height', height);
-    }
-    if (className) {
-      ref.classList.add(className);
+      if (width) {
+        ref.setAttribute('width', width);
+      }
+      if (height) {
+        ref.setAttribute('height', height);
+      }
+      if (className) {
+        ref.classList.add(className);
+      } 
     }
   });
 </script>

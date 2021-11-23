@@ -7,6 +7,10 @@
   import { uuidv4 } from 'lib/crypto/uuid';
   import { trim } from 'popup/filters/trim';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
+	import { fromDecimals } from 'popup/filters/units';
+  import { convertRate } from 'popup/filters/convert-rate';
+	import { rejectForSignTx } from 'popup/backend/sign';
+  import { formatNumber } from 'popup/filters/n-format';
 
 	import format from 'popup/store/format';
 	import walletStore from 'popup/store/wallet';
@@ -34,11 +38,12 @@
 
 	$: list = $transactionsStore.forConfirm;
 	$: account = $walletStore.identities[accountIndex];
+	$: tx = list[list.length - 1];
+
+	$: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
 
 	onMount(() => {
-		if (list.length === 0) {
-			push('/');
-		}
+		console.log(tx);
 		jazziconCreate(uuid, account.base16);
   });
 	const onSelectAccount = async ({ detail }) => {
@@ -46,6 +51,18 @@
     accountsModal = false;
 		jazziconCreate(uuid, account.base16);
 	};
+	const handleOnReject = async () => {
+		try {
+			await rejectForSignTx(list.length - 1);
+		} catch {
+			////
+		}
+
+		if (list.length === 0) {
+			window.close();
+		}
+	};
+	const handleOnConfirm = () => {};
 </script>
 
 <Modal
@@ -74,6 +91,17 @@
 			</SelectCard>
 		</div>
 		<hr/>
+		<div class="header">
+			<h1>
+				{tx.title}
+			</h1>
+			<img
+				src={tx.icon}
+				alt="logo"
+				width="55px"
+				height="55px"
+			/>
+		</div>
 		<div class="tabs">
 			<ul>
 				{#each tabs as tab, index}
@@ -87,19 +115,81 @@
 			</ul>
 			<div class:bordered={selectedTab !== 0}>
 				{#if selectedTab === 2}
-					<h1 in:fade>
-						data
-					</h1>
+					<ul>
+						<li>
+							<span>
+								{$_('confirm.params.amount')}
+							</span>
+							<span>
+								sadasdsa
+							</span>
+						</li>
+					</ul>
 				{:else if  selectedTab === 1}
 					<h1 in:fade>
 						gas
 					</h1>
 				{:else}
-					<h1 in:fade>
-						params
-					</h1>
+					<ul
+						in:fade
+						class="params"
+					>
+						<li>
+							<span>
+								{$_('confirm.params.amount')}
+							</span>
+							<span>
+								{formatNumber(amount)} {tx.token.symbol} + {tx.fee} ZIL
+							</span>
+						</li>
+						<li>
+							<span>
+								{$_('confirm.params.teg')}
+							</span>
+							<span>
+								{tx.teg}
+							</span>
+						</li>
+						<li>
+							<span>
+								{$_('confirm.params.fee')}
+							</span>
+							<span>
+								{tx.fee} ZIL
+							</span>
+						</li>
+						<li>
+							<span>
+								{$_('confirm.params.nonce')}
+							</span>
+							<span>
+								{tx.nonce || 0}
+							</span>
+						</li>
+						<li>
+							<span>
+								{$_('confirm.params.to')}
+							</span>
+							<span>
+								{trim(tx.toAddr)}
+							</span>
+						</li>
+					</ul>
 				{/if}
 			</div>
+		</div>
+		<br />
+		<hr />
+		<div class="btns">
+			<button
+				class="primary"
+				on:click={handleOnConfirm}
+			>
+				{$_('confirm.btns.confirm')}
+			</button>
+			<button on:click={handleOnReject}>
+				{$_('confirm.btns.reject')}
+			</button>
 		</div>
 	</main>
 </section>
@@ -117,6 +207,41 @@
 		min-width: 300px;
 
 		@include border-radius(8px);
+	}
+	.header {
+		margin-block-end: 16px;
+		text-align: center;
+	}
+	.btns {
+		@include flex-between-row;
+
+		& > button {
+			margin: 10px;
+			min-width: 140px;
+		}
+	}
+	ul.params {
+		margin: 0;
+    padding: 0;
+    list-style: none;
+
+		& > li {
+			line-height: 20px;
+			padding: 5px;
+			font-family: Regular;
+			font-size: 16px;
+			border-bottom: solid 1px var(--border-color);
+			color: var(--text-color);
+
+			@include flex-between-row;
+
+			&:last-child {
+				border-bottom: solid 1px transparent;
+			}
+			& > span:last-child {
+				font-family: Demi;
+			}
+		}
 	}
 	div.tabs {
 		width: calc(100vw - 20px);

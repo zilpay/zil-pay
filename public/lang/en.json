@@ -297,6 +297,17 @@
       "tab_0": "Params",
       "tab_1": "Gas",
       "tab_2": "Data"
+    },
+    "params": {
+      "amount": "Total",
+      "fee": "Max transaction cost",
+      "teg": "Method",
+      "nonce": "Nonce",
+      "to": "Recipient"
+    },
+    "btns": {
+      "confirm": "Confirm",
+      "reject": "Reject"
     }
   }
 }

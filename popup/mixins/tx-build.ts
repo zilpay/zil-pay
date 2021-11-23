@@ -15,6 +15,7 @@ import { toDecimals } from 'popup/filters/units';
 import gasStore from 'popup/store/gas';
 import { Contracts } from 'config/contracts';
 import { sendToSignTx } from 'app/backend/sign';
+import { Runtime } from 'lib/runtime';
 
 export async function buildTx(toAddr: string, amount: string, token: ZRC2Token) {
   const { gasLimit, gasPrice } = get(gasStore);
@@ -24,7 +25,9 @@ export async function buildTx(toAddr: string, amount: string, token: ZRC2Token) 
     data: '',
     code: '',
     gasLimit,
-    gasPrice
+    gasPrice,
+    icon: Runtime.runtime.getURL('/icons/icon128.png'),
+    title: 'ZilPay'
   };
   /// IF ZRC2
   if (token.base16 !== Contracts.ZERO_ADDRESS) {
