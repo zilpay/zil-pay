@@ -61,7 +61,9 @@ export class ZilPayTransaction {
         teg: payload.tag,
         amount: payload.tokenAmount,
         fee: payload.fee,
-        recipient: payload.recipient
+        recipient: payload.recipient,
+        gasLimit: Number(params.gasLimit),
+        gasPrice: Number(params.gasPrice)
       });
 
       if (params.uuid) {

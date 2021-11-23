@@ -16,6 +16,13 @@ export function viewTransaction(hash: string, netwrok: string) {
   return `${url}/${type}/${hash}?network=${netwrok}`;
 }
 
+export function viewAddress(address: string, netwrok: string) {
+  const url = APIs.VIEW_BLOCK_URL;
+  const type = ViewBlockMethods.Address;
+
+  return `${url}/${type}/${address}?network=${netwrok}`;
+}
+
 export function viewIcon(addr: string, theme: Themes) {
   addr = (addr === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz') ? 'ZIL' : addr;
 

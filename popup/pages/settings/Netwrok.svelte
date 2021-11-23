@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-  import netStore from 'popup/store/netwrok';
   import {
     selectNetwrok,
     changeConfig,
@@ -11,6 +10,7 @@
 	import { balanceUpdate } from 'popup/backend/wallet';
 
   import ssnStore from 'popup/store/ssn';
+  import netStore from 'popup/store/netwrok';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import MultiSwitcher from '../../components/MultiSwitcher.svelte';

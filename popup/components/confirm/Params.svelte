@@ -4,9 +4,13 @@
 
   import { trim } from 'popup/filters/trim';
 	import { fromDecimals } from 'popup/filters/units';
+  import { viewIcon } from 'lib/block-explorer/view';
   import { formatNumber } from 'popup/filters/n-format';
+  import { viewAddress } from 'lib/block-explorer/view';
 
 	import zrcStore from 'popup/store/zrc';
+  import themeStore from 'popup/store/theme';
+  import netStore from 'popup/store/netwrok';
 
 	export let tx = {
     amount: 0,
@@ -17,6 +21,7 @@
   };
 
 	$: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
+  $: img = viewIcon(tx.token.bech32, $themeStore);
 </script>
 
 <ul in:fade>
@@ -25,6 +30,10 @@
       {$_('confirm.params.amount')}
     </span>
     <span>
+      <img
+        src={img}
+        width="15"
+      />
       {formatNumber(amount)} {tx.token.symbol} + {tx.fee} ZIL
     </span>
   </li>
@@ -57,7 +66,12 @@
       {$_('confirm.params.to')}
     </span>
     <span>
-      {trim(tx.recipient)}
+      <a
+        href={viewAddress(tx.recipient, $netStore.selected)}
+        target="_blank"
+      >
+        {trim(tx.recipient)}
+      </a>
     </span>
   </li>
 </ul>

@@ -15,12 +15,14 @@
 	import format from 'popup/store/format';
 	import walletStore from 'popup/store/wallet';
 	import transactionsStore from 'popup/store/transactions';
+	import gasStore from 'popup/store/gas';
 
 	import TopBar from '../components/TopBar.svelte';
   import SelectCard from '../components/SelectCard.svelte';
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
 	import Params from '../components/confirm/Params.svelte';
+	import GasControl from '../components/GasControl.svelte';
 
 	export let params = {
     index: 0
@@ -29,6 +31,8 @@
 	let uuid = uuidv4();
 	let accountsModal = false;
 	let accountIndex = params.index || $walletStore.selectedAddress;
+	let gasMultiplier = $gasStore.multiplier;
+	let tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
 
 	let tabs = [
 		$_('confirm.tabs.tab_0'),
@@ -39,7 +43,6 @@
 
 	$: list = $transactionsStore.forConfirm;
 	$: account = $walletStore.identities[accountIndex];
-	$: tx = list[list.length - 1];
 
 	onMount(() => {
 		console.log(tx);
@@ -50,6 +53,12 @@
     accountsModal = false;
 		jazziconCreate(uuid, account.base16);
 	};
+	const handleOnChangeGasMultiplier = async ({ detail }) => {
+		gasMultiplier = detail;
+		tx.gasPrice = tx.gasPrice * gasMultiplier;
+		tx.fee = (tx.gasPrice * tx.gasLimit) / 1000000;
+	};
+
 	const handleOnReject = async () => {
 		const isExtends = Boolean(tx.uuid);
 		try {
@@ -65,6 +74,8 @@
 
 			push('/');
 		}
+
+		tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
 	};
 	const handleOnConfirm = () => {};
 </script>
@@ -135,9 +146,13 @@
 						</li>
 					</ul>
 				{:else if  selectedTab === 1 && tx}
-					<h1 in:fade>
-						gas
-					</h1>
+					<div in:fade>
+						<GasControl
+							multiplier={gasMultiplier}
+							gasLimit={tx.gasLimit}
+							on:select={handleOnChangeGasMultiplier}
+						/>
+					</div>
 				{:else if  selectedTab === 0 && tx}
 					<Params tx={tx}/>
 				{/if}
