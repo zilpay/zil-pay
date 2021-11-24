@@ -4,6 +4,8 @@
 	import { push } from 'svelte-spa-router';
 	import { fade } from "svelte/transition";
 
+	import { QA } from 'popup/config/gas';
+
   import { uuidv4 } from 'lib/crypto/uuid';
   import { trim } from 'popup/filters/trim';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
@@ -21,10 +23,9 @@
   import SelectCard from '../components/SelectCard.svelte';
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
+	import EditParamsModal from '../modals/EditParams.svelte';
 	import Params from '../components/confirm/Params.svelte';
 	import GasControl from '../components/GasControl.svelte';
-
-	const QA = 1000000;
 
 	export let params = {
     index: 0
@@ -32,6 +33,8 @@
 
 	let uuid = uuidv4();
 	let accountsModal = false;
+	let editModal = false;
+
 	let accountIndex = params.index || $walletStore.selectedAddress;
 	let gasMultiplier = $gasStore.multiplier;
 	let tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
@@ -64,6 +67,22 @@
 	const handleOnChangeGasMultiplier = async ({ detail }) => {
 		gasMultiplier = detail;
 		tx.gasPrice = startGasPrice * gasMultiplier;
+		onGasChanged();
+	};
+	const hanldeOnUpdateParams = ({ detail }) => {
+		editModal = !editModal;
+		const { gasLimit, gasPrice, nonce } = detail;
+
+		tx.gasLimit = Math.abs(gasLimit);
+		tx.gasPrice = Math.abs(gasPrice);
+		tx.nonce = Math.abs(nonce);
+
+		tx = {
+			...tx,
+			gasLimit,
+			gasPrice,
+			nonce
+		};
 		onGasChanged();
 	};
 
@@ -102,10 +121,20 @@
     />
   </div>
 </Modal>
+<Modal
+  show={editModal}
+  title={$_('confirm.parmas_modal.title')}
+  on:close={() => editModal = !editModal}
+>
+	<EditParamsModal
+		tx={tx}
+		on:update={hanldeOnUpdateParams}
+	/>
+</Modal>
 <section>
 	<TopBar expand={false}/>
 	<main>
-		<div class="border">
+		<div>
 			<SelectCard
 				header={account.name}
 				text={trim(account[$format])}
@@ -113,8 +142,8 @@
 			>
 				<div id={uuid}/>
 			</SelectCard>
+			<hr/>
 		</div>
-		<hr/>
 		{#if tx}
 			<div
 				class="header"
@@ -131,66 +160,19 @@
 				/>
 			</div>
 		{/if}
-		<div class="tabs">
-			<ul>
-				{#each tabs as tab, index}
-					<li
-						class:selected={selectedTab === index}
-						on:click={() => selectedTab = index}
-					>
-						{tab}
-					</li>
-				{/each}
-			</ul>
-			<div class:bordered={selectedTab !== 0}>
-				{#if selectedTab === 2 && tx}
-					<ul>
-						<li>
-							<span>
-								{$_('confirm.params.amount')}
-							</span>
-							<span>
-								sadasdsa
-							</span>
-						</li>
-					</ul>
-				{:else if  selectedTab === 1 && tx}
-					<div
-						in:fade
-						class="gas-warp"
-					>
-						<GasControl
-							multiplier={gasMultiplier}
-							gasLimit={tx.gasLimit}
-							gasPrice={startGasPrice}
-							on:select={handleOnChangeGasMultiplier}
-						/>
-						<label>
-							<p>
-								GasLimit
-							</p>
-							<input
-								bind:value={tx.gasLimit}
-								type="number"
-								on:input={() => onGasChanged()}
-							>
-						</label>
-						<label>
-							<p>
-								GasPrice (Li)
-							</p>
-							<input
-								bind:value={tx.gasPrice}
-								type="number"
-								on:input={() => onGasChanged()}
-							>
-						</label>
-					</div>
-				{:else if  selectedTab === 0 && tx}
-					<Params tx={tx}/>
-				{/if}
-			</div>
+		<div class="params">
+			<GasControl
+				multiplier={gasMultiplier}
+				gasLimit={tx.gasLimit}
+				gasPrice={startGasPrice}
+				on:select={handleOnChangeGasMultiplier}
+			/>
+			<h3 on:click={() => editModal = !editModal}>
+				(Edit)
+			</h3>
+			<Params tx={tx}/>
 		</div>
+		<!-- <hr/> -->
 		<div class="btns">
 			<button
 				class="primary"
@@ -209,20 +191,23 @@
 	@import "../styles/mixins";
 	main {
 		height: calc(100vh - 36px);
+		max-height: 600px;
     overflow-y: scroll;
 
-		@include flex-center-top-column;
-	}
-	div.border {
-		background-color: var(--card-color);
-		margin: 10px;
-		min-width: 300px;
-
-		@include border-radius(8px);
+		@include flex-center-column;
+		justify-content: space-between;
 	}
 	.header {
 		margin-block-end: 16px;
 		text-align: center;
+
+		& > h1 {
+			margin: 0;
+			line-height: 38px;
+
+			@include fluid-font(320px, 720px, 20px, 30px);
+			@include text-shorten;
+		}
 	}
 	.btns {
 		@include flex-between-row;
@@ -232,62 +217,20 @@
 			min-width: 140px;
 		}
 	}
-	div.gas-warp {
-		@include flex-center-top-column;
+	div.params {
+		box-shadow:
+			rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+			rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
-		& > label {
-			width: 300px;
-			margin-block-start: 5px;
-			margin-block-end: 5px;
-			& > p {
-				font-size: 11px;
-				line-height: 0px;
-				text-indent: 10px;
-			}
-			& > input {
-				border-color: var(--muted-color);
-			}
-		}
-	}
-	div.tabs {
-		width: calc(100vw - 10px);
-		max-width: 400px;
-		box-shadow: 0 10px 6px -6px #777;
+		background-color: var(--card-color);
+		@include border-radius(8px);
 
-		& > div {
-			background-color: var(--card-color);
-			padding: 5px;
-
-			@include border-bottom-radius(10px);
-			@include border-right-radius(10px);
-
-			&.bordered {
-				@include border-radius(10px);
-			}
-		}
-		& > ul {
-			margin: 0;
-			padding: 0;
-			list-style: none;
-
-			@include flex-left-horiz;
-
-			& > li {
-				cursor: pointer;
-				padding: 10px;
-				min-width: 80px;
-				text-align: center;
-				font-family: Demi;
-				font-size: 16px;
-
-				background-color: transparent;
-
-				&.selected {
-					background-color: var(--card-color);
-
-					@include border-top-radius(8px);
-				}
-			}
+		& > h3 {
+			cursor: pointer;
+			text-align: right;
+			margin-right: 16px;
+			color: var(--warning-color);
+			margin-block-end: 0;
 		}
 	}
 	section {

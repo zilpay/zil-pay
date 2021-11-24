@@ -34,7 +34,9 @@
         src={img}
         width="15"
       />
-      {formatNumber(amount)} {tx.token.symbol} + {tx.fee} ZIL
+      {formatNumber(amount)} {tx.token.symbol} <span>
+        + {tx.fee} ZIL
+      </span>
     </span>
   </li>
   <li>
@@ -80,17 +82,20 @@
 	@import "../../styles/mixins";
 	ul {
 		margin: 0;
-    padding: 0;
     list-style: none;
+    padding: 5px;
+
+    width: calc(100vw - 15px);
+    max-width: 500px;
 
 		& > li {
 			line-height: 20px;
 			padding: 5px;
 			font-family: Regular;
-			font-size: 16px;
 			border-bottom: solid 1px var(--border-color);
 			color: var(--text-color);
 
+			@include fluid-font(320px, 720px, 16px, 20px);
 			@include flex-between-row;
 
 			&:last-child {
@@ -98,6 +103,10 @@
 			}
 			& > span:last-child {
 				font-family: Demi;
+
+        & > span {
+          color: var(--muted-color);
+        }
 			}
 		}
 	}

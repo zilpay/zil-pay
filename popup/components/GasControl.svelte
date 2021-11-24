@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Gas } from 'config/gas';
   import { createEventDispatcher } from 'svelte';
+	import { QA } from 'popup/config/gas';
 
   import Speed from './icons/Speed.svelte';
 
   const dispatch = createEventDispatcher();
-  const qa = 1000000;
 
   export let multiplier = 1;
   export let gasPrice = Gas.gasPrice;
@@ -27,7 +27,7 @@
     >
       <Speed length={index + 1}/>
       <h3>
-        {(zil * (index + 1)) / qa} ZIL
+        {(zil * (index + 1)) / QA} ZIL
       </h3>
     </li>
   {/each}

@@ -308,6 +308,12 @@
     "btns": {
       "confirm": "Confirm",
       "reject": "Reject"
+    },
+    "parmas_modal": {
+      "title": "Params",
+      "limit": "GasLimit",
+      "price": "GasPrice",
+      "btn": "Update"
     }
   }
 }
