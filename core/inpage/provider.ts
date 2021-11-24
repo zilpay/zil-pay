@@ -54,7 +54,7 @@ export class HTTPProvider {
 
         if (msg.payload && msg.payload.error) {
           sub();
-          return reject(new Error(msg.payload.error));
+          return reject(new Error(msg.payload.error.message || msg.payload.error));
         }
 
         delete msg.payload.uuid;
