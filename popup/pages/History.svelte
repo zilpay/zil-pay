@@ -8,8 +8,11 @@
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TopBar from '../components/TopBar.svelte';
 	import Transaction from '../components/Transaction.svelte';
+  import Modal from '../components/Modal.svelte';
+  import TransactionModal from '../modals/Transaction.svelte';
 
   let loading = false;
+  let showTx = null;
 
   $: history = $transactionsStore.transactions.filter((t) => t.confirmed);
   $: queue = $transactionsStore.transactions.filter((t) => !t.confirmed);
@@ -25,6 +28,13 @@
   };
 </script>
 
+<Modal
+  show={Boolean(showTx)}
+  title={$_('history.modals.details.title')}
+  on:close={() => showTx = null}
+>
+  <TransactionModal />
+</Modal>
 <section>
 	<TopBar
     refresh
@@ -46,7 +56,7 @@
         </b>
         <ul>
           {#each queue as tx}
-            <li>
+            <li on:click={() => showTx = tx}>
               <Transaction
                 tx={tx}
                 loading={loading}
@@ -61,7 +71,7 @@
         </b>
         <ul>
           {#each history as tx}
-            <li>
+            <li on:click={() => showTx = tx}>
               <Transaction tx={tx}/>
             </li>
           {/each}

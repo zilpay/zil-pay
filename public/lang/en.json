@@ -265,7 +265,12 @@
     "title": "Transactions",
     "no_txns": "You have no transactions yet.",
     "queue": "Queue",
-    "history": "History"
+    "history": "History",
+    "modals": {
+      "details": {
+        "title": "Details"
+      }
+    }
   },
   "advanced": {
     "title": "Advanced",

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import {  } from "module";
 
   import { getZNS } from 'popup/backend/zns';
   import { exportSecrePhrase } from 'popup/backend/wallet';
