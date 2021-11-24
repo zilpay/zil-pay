@@ -262,8 +262,10 @@
     "reset": "Reset settings"
   },
   "history": {
-    "title": "Transactions History",
-    "no_txns": "You have no transactions yet."
+    "title": "Transactions",
+    "no_txns": "You have no transactions yet.",
+    "queue": "Queue",
+    "history": "History"
   },
   "advanced": {
     "title": "Advanced",

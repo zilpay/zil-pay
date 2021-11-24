@@ -7,31 +7,67 @@
 
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TopBar from '../components/TopBar.svelte';
+	import Transaction from '../components/Transaction.svelte';
 
-  $: transactions = $transactionsStore.transactions;
+  let loading = false;
+
+  $: history = $transactionsStore.transactions.filter((t) => t.confirmed);
+  $: queue = $transactionsStore.transactions.filter((t) => !t.confirmed);
+
+  const hanldeOnUpdate = async () => {
+    loading = true;
+    try {
+      await checkProcessedTx();l
+    } catch {
+      ////
+    }
+    loading = false;
+  };
 </script>
 
 <section>
 	<TopBar
     refresh
-    on:refresh={checkProcessedTx}
+    on:refresh={hanldeOnUpdate}
   />
 	<main>
     <h2>
       {$_('history.title')}
     </h2>
-    {#if transactions.length === 0}
+    {#if history.length === 0 && queue.length === 0}
       <p>
         {$_('history.no_txns')}
       </p>
     {/if}
-    <ul>
-      {#each transactions as transaction}
-        <li>
-          {transaction.hash}
-        </li>
-      {/each}
-    </ul>
+    <div class="list">
+      {#if queue.length > 0}
+        <b>
+          {$_('history.queue')} ({queue.length})
+        </b>
+        <ul>
+          {#each queue as tx}
+            <li>
+              <Transaction
+                tx={tx}
+                loading={loading}
+              />
+            </li>
+          {/each}
+        </ul>
+      {/if}
+      {#if history.length > 0}
+        <b>
+          {$_('history.history')} ({history.length})
+        </b>
+        <ul>
+          {#each history as tx}
+            <li>
+              <Transaction tx={tx}/>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
 	</main>
 	<BottomTabs />
 </section>
@@ -43,7 +79,23 @@
     max-width: 500px;
     width: calc(100vw - 15px);
 		@include flex-center-top-column;
+
+    & > b {
+      width: 100%;
+    }
 	}
+  div.list {
+    overflow-y: scroll;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & > li {
+      margin: 10px;
+    }
+  }
   section {
 		background-color: var(--background-color);
 		@include flex-center-top-column;

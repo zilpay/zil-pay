@@ -33,7 +33,7 @@ export class TransactionsQueue {
   public async checkProcessedTx() {
     const list =  this.#transactions.transactions;
     const now = new Date().getTime();
-    const dilaySeconds = 15000;
+    const dilaySeconds = 30000;
 
     const identities = list.filter((t) => {
       return !t.confirmed && (now - t.timestamp) > dilaySeconds;
