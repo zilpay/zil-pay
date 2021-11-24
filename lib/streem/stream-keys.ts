@@ -32,8 +32,10 @@ export const MTypePopup = {
   IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
   IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
   RM_ACCOUNT: `@/${app}/remove-selected-account`,
+  SELECT_ACCOUNT: `@/${app}/select-account`,
 
   UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
+  UPDATE_TXNS: `@/${app}/check-processed-txns`,
 
   DOMAIN_RESOLVE: `@/${app}/popup-resolve-domain`,
 
@@ -50,9 +52,8 @@ export const MTypePopup = {
   RESET_NETWROK: `@/${app}/reset-netwrok-settings`,
   SET_NET_CONFIG: `@/${app}/set-netwrok-config`,
   SELECT_NETWORK: `@/${app}/select-network`,
-  SELECT_ACCOUNT: `@/${app}/select-account`,
-
   UPDATE_SSN_LIST: `@/${app}/update-ssn-list`,
+
   ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
 
   USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
@@ -83,7 +84,7 @@ export const MTypePopup = {
   REJECT_SIGN_MESSAGE: `@/${app}/reject-sign-message`,
   SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`,
 
-  FROM_BECH32: `@/${app}/convert-from-bech32`,
+  FROM_BECH32: `@/${app}/convert-from-bech32`
 };
 
 export const MTypeTab = {

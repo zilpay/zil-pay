@@ -247,4 +247,23 @@ export class ZilliqaControl {
 
     return data;
   }
+
+  public async sendJsonNative(...body: RPCBody[]) {
+    const request = this.provider.json(...body);
+    const responce = await fetch(this.#network.nativeHttp, request);
+
+    assert(responce.status === 200, ErrorMessages.RequestFailed);
+
+    const data = await responce.json();
+
+    if (Array.isArray(data)) {
+      return data as RPCResponse[];
+    }
+
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    return data;
+  }
 }

@@ -34,16 +34,19 @@ export class NotificationsControl {
    * Create popUp window for confirm transaction.
    */
   create() {
-    const data = {
-      type: 'basic',
-      title: this.#title,
-      iconUrl: Runtime.extension.getURL('icons/icon128.png'),
-      message: this.#message
-    };
+    try {
+      const data = {
+        type: 'basic',
+        title: this.#title,
+        iconUrl: Runtime.extension.getURL('/icons/icon128.png'),
+        message: this.#message
+      };
+      Runtime.notifications.create(this.#url, data);
 
-    Runtime.notifications.create(this.#url, data);
-
-    this._notificationClicked();
+      this._notificationClicked();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   /**

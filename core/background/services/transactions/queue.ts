@@ -7,7 +7,7 @@
  * Copyright (c) 2020 ZilPay
  */
 
-import type { ZilliqaControl } from 'core/background/services/blockchain';
+import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
 import type { NetworkControl } from 'core/background/services/network';
 import type { TransactionsController } from './transactions';
 
@@ -33,75 +33,72 @@ export class TransactionsQueue {
   public async checkProcessedTx() {
     const list =  this.#transactions.transactions;
     const now = new Date().getTime();
-    const dilaySeconds = 30000;
-    let rejectAll = null;
+    const dilaySeconds = 15000;
 
-    for (let index = 0; index < list.length; index++) {
-      const element = list[index];
+    const identities = list.filter((t) => {
+      return !t.confirmed && (now - t.timestamp) > dilaySeconds;
+    });
+    if (identities.length === 0) {
+      return null;
+    }
 
-      if (element.confirmed) {
-        continue;
-      }
+    const requests = identities.map(({ hash }) => {
+      return this.#zilliqa.provider.buildBody(
+        Methods.GetTransactionStatus,
+        [hash]
+      );
+    });
+    let replies = await this.#zilliqa.sendJsonNative(...requests);
 
-      if (rejectAll) {
-        element.info = rejectAll.info;
-        element.status = rejectAll.status;
+    if (!Array.isArray(replies)) {
+      replies = [replies];
+    }
+
+    for (let index = 0; index < replies.length; index++) {
+      const { error, result } = replies[index];
+      const indicator = identities[index];
+      const listIndex = list.findIndex((t) => t.hash === indicator.hash);
+      const element = list[listIndex];
+
+      if (error) {
+        element.status = 0;
         element.confirmed = true;
+        element.success = false;
         element.nonce = 0;
-
+        element.info = String(error.message);
+        this.#makeNotify(element.teg, element.hash, element.info);
         continue;
       }
 
-      try {
-        const result = await this.#zilliqa.getTransactionStatus(element.hash);
-
-        switch (result.status) {
-          case StatusCodes.Confirmed:
-            element.status = result.status;
-            element.confirmed = true;
-            element.success = result.success;
-            element.nonce = result.nonce;
-            element.info = 'Transaction was confirmed.';
-            this.#makeNotify(element.teg, element.hash, element.info);
-            continue;
-          case StatusCodes.Pending:
-            element.status = result.status;
-            element.confirmed = true;
-            element.success = result.success;
-            continue;
-          case StatusCodes.PendingAwait:
-            element.status = result.status;
-            element.confirmed = true;
-            element.success = result.success;
-            element.info = 'Transaction await to confirm.';
-            this.#makeNotify(element.teg, element.hash, element.info);
-            continue;
-          default:
-            element.status = result.status;
-            element.confirmed = true;
-            element.success = result.success;
-            element.nonce = 0;
-            element.info = `Transaction was rejected status is ${element.status}`;
-            rejectAll = {
-              info: element.info,
-              status: result.status
-            };
-            this.#makeNotify(element.teg, element.hash, element.info);
-            continue;
-        }
-      } catch (err) {
-        if ((now - element.timestamp) > dilaySeconds) {
-          element.status = 0;
+      switch (result.status) {
+        case StatusCodes.Confirmed:
+          element.status = result.status;
           element.confirmed = true;
-          element.success = false;
-          element.nonce = 0;
-          element.info = `Transaction rejected by timeout.`;
-          rejectAll = {
-            info: element.info,
-            status: element.status
-          };
+          element.success = result.success;
+          element.nonce = result.nonce;
+          element.info = 'Transaction was confirmed.';
           this.#makeNotify(element.teg, element.hash, element.info);
-        }
+          continue;
+        case StatusCodes.Pending:
+          element.status = result.status;
+          element.confirmed = true;
+          element.success = result.success;
+          continue;
+        case StatusCodes.PendingAwait:
+          element.status = result.status;
+          element.confirmed = true;
+          element.success = result.success;
+          element.info = 'Transaction await to confirm.';
+          this.#makeNotify(element.teg, element.hash, element.info);
+          continue;
+        default:
+          element.status = result.status;
+          element.confirmed = true;
+          element.success = result.success;
+          element.nonce = 0;
+          element.info = `Transaction was rejected status is ${element.status}`;
+          this.#makeNotify(element.teg, element.hash, element.info);
+          continue;
       }
     }
 

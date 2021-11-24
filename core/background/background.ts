@@ -152,6 +152,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.UPDATE_BALANCE:
         core.wallet.balanceUpdate(sendResponse);
         return true;
+      case MTypePopup.UPDATE_TXNS:
+        core.transaction.checkProcessedHistory(sendResponse);
+        return true;
       case MTypePopup.SEND_TO_SIGN_TX:
         core.transaction.signSendTx(
           msg.payload.txIndex,

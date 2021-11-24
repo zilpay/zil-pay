@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
+  import { checkProcessedTx } from 'popup/backend/transactions';
 
   import transactionsStore from 'popup/store/transactions';
 
@@ -11,7 +12,10 @@
 </script>
 
 <section>
-	<TopBar refresh/>
+	<TopBar
+    refresh
+    on:refresh={checkProcessedTx}
+  />
 	<main>
     <h2>
       {$_('history.title')}

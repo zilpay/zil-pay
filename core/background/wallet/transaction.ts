@@ -253,6 +253,20 @@ export class ZilPayTransaction {
     }
   }
 
+  public async checkProcessedHistory(sendResponse: StreamResponse) {
+    try {
+      await this.#core.transactionsQueue.checkProcessedTx();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
     try {
       const account = this.#core.account.wallet.identities[index];
