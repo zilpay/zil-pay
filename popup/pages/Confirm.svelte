@@ -70,7 +70,7 @@
 				window.close();
 			}
 
-			push('/');
+			push('/history');
 		} else {
 			tx = $transactionsStore.forConfirm[txIndex];
 			startGasPrice = Number(tx.gasPrice);
