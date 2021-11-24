@@ -48,18 +48,33 @@
 
 	$: list = $transactionsStore.forConfirm;
 	$: account = $walletStore.identities[accountIndex];
+	$: txIndex = $transactionsStore.forConfirm.length - 1;
 
 	const onUpdateParams = async () => {
 		loading = true;
+		error = '';
 		try {
 			const params = await getTxRequiredParams(accountIndex);
 			tx.version = params.version;
 			tx.nonce = params.nonce;
 			startGasPrice = params.minGasPrice;
 		} catch (err) {
-			console.log(err);
+			error = err.message;
 		}
 		loading = false;
+	};
+	const onNextTx = () => {
+		const isExtends = Boolean(tx.uuid);
+		if (list.length === 0) {
+			if (isExtends) {
+				window.close();
+			}
+
+			push('/');
+		} else {
+			tx = $transactionsStore.forConfirm[txIndex];
+			startGasPrice = Number(tx.gasPrice);
+		}
 	};
 
 	onMount(async() => {
@@ -85,6 +100,7 @@
 	};
 	const hanldeOnUpdateParams = ({ detail }) => {
 		editModal = !editModal;
+		error = '';
 		const { gasLimit, gasPrice, nonce } = detail;
 
 		tx.gasLimit = Math.abs(gasLimit);
@@ -101,31 +117,25 @@
 	};
 
 	const handleOnReject = async () => {
-		const isExtends = Boolean(tx.uuid);
+		error = '';
 		try {
 			await rejectForSignTx(list.length - 1);
 		} catch {
 			////
 		}
 
-		if (list.length === 0) {
-			if (isExtends) {
-				window.close();
-			}
-
-			push('/');
-		}
-
-		tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
-		startGasPrice = Number(tx.gasPrice);
+		onNextTx();
 	};
 	const handleOnConfirm = async () => {
+		loading = true;
+		error = '';
 		try {
-			await sendTransactionToSign(accountIndex, tx);
+			await sendTransactionToSign(txIndex, accountIndex, tx);
+			onNextTx();
 		} catch (err) {
-			console.log(err);
 			error = err.message;
 		}
+		loading = false;
 	};
 </script>
 
@@ -153,7 +163,11 @@
 	/>
 </Modal>
 <section>
-	<TopBar expand={false}/>
+	<TopBar
+		expand={false}
+		refresh
+		on:refresh={onUpdateParams}
+	/>
 	<main>
 		<div>
 			<SelectCard
@@ -176,9 +190,12 @@
 				<img
 					src={tx.icon}
 					alt="logo"
-					width="55px"
-					height="55px"
+					width="30px"
+					height="30px"
 				/>
+				<h2>
+					{error}
+				</h2>
 			</div>
 		{/if}
 		<div
@@ -223,14 +240,19 @@
 		justify-content: space-between;
 	}
 	.header {
-		margin-block-end: 16px;
 		text-align: center;
+		min-height: 133px;
 
 		& > h1 {
 			margin: 0;
 			line-height: 38px;
 
 			@include fluid-font(320px, 720px, 20px, 30px);
+			@include text-shorten;
+		}
+		& > h2 {
+			color: var(--danger-color);
+			width: calc(100vw - 16px);
 			@include text-shorten;
 		}
 	}

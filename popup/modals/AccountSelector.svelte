@@ -82,12 +82,13 @@
     overflow-y: scroll;
     list-style: none;
 		padding-block-end: 70px;
-		// padding-block-start: 10px;
 
 		max-width: 390px;
 		width: 100%;
     min-height: 530px;
 		height: 100%;
+		padding-left: 15px;
+		padding-right: 15px;
 
 		& > li {
 			cursor: pointer;

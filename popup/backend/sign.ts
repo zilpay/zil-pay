@@ -39,7 +39,6 @@ export async function sendToSignTx(params: MinParams) {
   return state;
 }
 
-
 export async function rejectForSignTx(index: number) {
   const data = await new Message({
     type: MTypePopup.REJECT_CONFIRM_TX,
@@ -62,11 +61,12 @@ export async function getTxRequiredParams(index: number) {
   return warpMessage(data);
 }
 
-export async function sendTransactionToSign(index: number, params: TransactionForConfirm) {
+export async function sendTransactionToSign(txIndex: number, index: number, params: TransactionForConfirm) {
   const data = await new Message({
     type: MTypePopup.SEND_TO_SIGN_TX,
     payload: {
       index,
+      txIndex,
       params
     }
   }).send();

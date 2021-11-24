@@ -9,7 +9,7 @@
 
   import { trim } from 'popup/filters/trim';
   import { sendToSignTx } from 'popup/backend/sign';
-  import { fromDecimals } from 'popup/filters/units';
+  import { fromDecimals, toDecimals } from 'popup/filters/units';
   import { viewIcon } from 'lib/block-explorer/view';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
   import { formatNumber } from 'popup/filters/n-format';
@@ -101,7 +101,8 @@
     }
 
     try {
-      await buildTx(toAddr, amount, token);
+      const qa = toDecimals(amount, token.decimals);
+      await buildTx(toAddr, qa, token);
       if (!disabled) {
         push('/confirm/' + selectedAccount);
       }
@@ -209,6 +210,7 @@
           </div>
           <input
             bind:value={amount}
+            type="text"
             placeholder={$_('send.input_value.placeholder')}
           >
         </label>

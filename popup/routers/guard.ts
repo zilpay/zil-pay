@@ -31,6 +31,7 @@ export const routerGuard = (e: { location: string; }) => {
 
   if (apps.confirmApp && e.location !== confirmRouter && guard.isEnable) {
     push(confirmRouter);
+    return guard.isEnable && guard.isReady;
   }
 
   if (txns.message && guard.isEnable) {

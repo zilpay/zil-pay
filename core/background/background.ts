@@ -154,6 +154,7 @@ export function startBackground(core: ZIlPayBackground) {
         return true;
       case MTypePopup.SEND_TO_SIGN_TX:
         core.transaction.signSendTx(
+          msg.payload.txIndex,
           msg.payload.index,
           msg.payload.params,
           sendResponse

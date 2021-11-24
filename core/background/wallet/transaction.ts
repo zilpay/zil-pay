@@ -179,7 +179,7 @@ export class ZilPayTransaction {
     }
   }
 
-  public async signSendTx(accIndex: number, params: TransactionForConfirm, sendResponse: StreamResponse) {
+  public async signSendTx(txIndex: number, accIndex: number, params: TransactionForConfirm, sendResponse: StreamResponse) {
     let token = {
       decimals: ZIL.decimals,
       symbol: ZIL.symbol,
@@ -191,7 +191,6 @@ export class ZilPayTransaction {
       await this.#core.transactions.sync();
 
       const account = this.#core.account.selectedAccount;
-      const keyPair = await this.#core.account.getKeyPair();
       const nonce = isNaN(params.nonce) ?
         await this.#core.nonceCounter.nextNonce(account) : params.nonce;
       const newTx = new Transaction(
@@ -217,11 +216,13 @@ export class ZilPayTransaction {
         token = await this.#getToken(newTx.toAddr);
       }
 
-      newTx.sign(keyPair.privKey);
-
-      console.log(newTx);
-
-      throw new Error('test');
+      if (account.type === AccountTypes.Ledger) {
+        const transport = await this.#core.ledger.init(account.productId);
+        newTx.signature = await transport.signTxn(account.index, newTx);
+      } else {
+        const keyPair = await this.#core.account.getKeyPair(accIndex);
+        newTx.sign(keyPair.privKey);
+      }
 
       const hash = await this.#core.zilliqa.send(newTx);
       newTx.setHash(hash);
@@ -240,9 +241,10 @@ export class ZilPayTransaction {
         from: account.bech32,
         hash: newTx.hash
       });
+      await this.#core.transactions.rmConfirm(txIndex);
 
       sendResponse({
-        resolve: this.#core.transactions.transactions
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
