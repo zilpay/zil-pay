@@ -29,6 +29,7 @@ import { toBech32Address } from 'lib/utils/bech32';
 import { Methods } from 'background/services/blockchain';
 import { tohexString } from 'lib/utils/address';
 import { toLi } from 'lib/filters/gas-to-fee';
+import { TypeOf } from 'lib/type/type-checker';
 
 
 export class ZilPayTransaction {
@@ -247,8 +248,10 @@ export class ZilPayTransaction {
         resolve: this.#core.state
       });
     } catch (err) {
+      let message = TypeOf.isObject(err.message) ?
+        err.message.message : err.message;
       sendResponse({
-        reject: err.message || err
+        reject: message
       });
     }
   }
