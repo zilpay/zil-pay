@@ -107,6 +107,9 @@
         & > span {
           color: var(--muted-color);
         }
+        & > a {
+          color: inherit;
+        }
 			}
 		}
 	}

@@ -8,7 +8,13 @@
  */
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
-import type { MessageParams, MessagePayload, MinParams } from 'types/transaction';
+import type {
+  MessageParams,
+  MessagePayload,
+  MinParams,
+  TransactionForConfirm
+} from 'types/transaction';
+
 import { Transaction } from 'background/services/transactions/tx-builder';
 import { StatusCodes, TransactionTypes } from 'background/services/transactions';
 import { ZIL } from 'background/services/token';
@@ -20,6 +26,10 @@ import { SchnorrControl } from 'lib/crypto/elliptic';
 import { Buffer } from 'buffer';
 import { AccountTypes } from 'config/account-type';
 import { toBech32Address } from 'lib/utils/bech32';
+import { Methods } from 'background/services/blockchain';
+import { tohexString } from 'lib/utils/address';
+import { toLi } from 'lib/filters/gas-to-fee';
+
 
 export class ZilPayTransaction {
 
@@ -132,7 +142,44 @@ export class ZilPayTransaction {
     }
   }
 
-  public async signSendTx(accIndex: number, params: MinParams, sendResponse: StreamResponse) {
+  public async getRequiredParams(accIndex: number, sendResponse: StreamResponse) {
+    try {
+      const account = this.#core.account.getAccount(accIndex);
+      const identities = [
+        this.#core.zilliqa.provider.buildBody(
+          Methods.GetNetworkId,
+          []
+        ),
+        this.#core.zilliqa.provider.buildBody(
+          Methods.getBalance,
+          [tohexString(account.base16)]
+        ),
+        this.#core.zilliqa.provider.buildBody(
+          Methods.GetMinimumGasPrice,
+          []
+        )
+      ];
+      const [netIdRes, accountRes, gasRes] = await this.#core.zilliqa.sendJson(...identities);
+      const version = netIdRes.result;
+      const currentNonce = Boolean(accountRes.result) ? accountRes.result.nonce : 0;
+      const minGasPrice = Number(toLi(gasRes.result));
+      const nonce = this.#core.nonceCounter.calcNextNonce(currentNonce);
+
+      sendResponse({
+        resolve: {
+          version,
+          nonce,
+          minGasPrice
+        }
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async signSendTx(accIndex: number, params: TransactionForConfirm, sendResponse: StreamResponse) {
     let token = {
       decimals: ZIL.decimals,
       symbol: ZIL.symbol,
@@ -145,7 +192,8 @@ export class ZilPayTransaction {
 
       const account = this.#core.account.selectedAccount;
       const keyPair = await this.#core.account.getKeyPair();
-      const nonce = await this.#core.nonceCounter.nextNonce(account);
+      const nonce = isNaN(params.nonce) ?
+        await this.#core.nonceCounter.nextNonce(account) : params.nonce;
       const newTx = new Transaction(
         params.amount,
         params.gasLimit,
@@ -170,6 +218,11 @@ export class ZilPayTransaction {
       }
 
       newTx.sign(keyPair.privKey);
+
+      console.log(newTx);
+
+      throw new Error('test');
+
       const hash = await this.#core.zilliqa.send(newTx);
       newTx.setHash(hash);
       await this.#core.transactions.addHistory({
@@ -194,20 +247,6 @@ export class ZilPayTransaction {
     } catch (err) {
       sendResponse({
         reject: err.message || err
-      });
-    }
-  }
-
-  public async getNextNonce(sendResponse: StreamResponse) {
-    try {
-      const account = this.#core.account.selectedAccount;
-      const nonce = await this.#core.nonceCounter.nextNonce(account);
-      sendResponse({
-        resolve: nonce
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
       });
     }
   }

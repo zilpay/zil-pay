@@ -35,10 +35,12 @@ export const MTypePopup = {
 
   UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
 
-  SIGN_AND_SEND: `@/${app}/popup-send-to-sign-tx`,
   DOMAIN_RESOLVE: `@/${app}/popup-resolve-domain`,
+
   REJECT_CONFIRM_TX: `@/${app}/popup-reject-confirm-tx`,
   REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
+  SEND_TO_SIGN_TX: `@/${app}/popup-send-to-sign-tx`,
+  GET_REQUIRED_PARAMS: `@/${app}/get-required-params`,
 
   GET_ZRC2_TOKEN_INFO: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
@@ -51,7 +53,6 @@ export const MTypePopup = {
   SELECT_ACCOUNT: `@/${app}/select-account`,
 
   UPDATE_SSN_LIST: `@/${app}/update-ssn-list`,
-  GET_ACCOUNT_NONCE: `@/${app}/get-account-nonce`,
   ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
 
   USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,

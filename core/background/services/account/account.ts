@@ -141,6 +141,11 @@ export class AccountController {
     );
   }
 
+  public getAccount(index: number) {
+    assert(index <= this.wallet.identities.length - 1, ErrorMessages.OutOfIndex);
+    return this.wallet.identities[index];
+  }
+
   public async getKeyPair(index = this.wallet.selectedAddress): Promise<KeyPair> {
     const account = this.wallet.identities[index];
     switch (account.type) {

@@ -293,11 +293,6 @@
     }
   },
   "confirm": {
-    "tabs": {
-      "tab_0": "Params",
-      "tab_1": "Gas",
-      "tab_2": "Data"
-    },
     "params": {
       "amount": "Total",
       "fee": "Max transaction cost",

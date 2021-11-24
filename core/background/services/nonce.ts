@@ -40,18 +40,22 @@ export class NonceController {
     return result.nonce;
   }
 
-  public async nextNonce(account: Account): Promise<number> {
+  public calcNextNonce(fetchedNonce: number) {
     const list = this
       .#txns
       .transactions
       .filter((t) => !t.confirmed)
       .map((t) => t.nonce);
+
     assert(list.length <= Common.NONCE_DIFFICULTY, ErrorMessages.HightNonce);
 
     const maxNonce = Math.max.apply(Math, list);
-    const { nonce } = await this.#zilliqa.getBalance(account.base16);
-    const currentNonce = nonce < maxNonce ? maxNonce : nonce;
-
+    const currentNonce = fetchedNonce < maxNonce ? maxNonce :fetchedNonce;
     return currentNonce + 1;
+  }
+
+  public async nextNonce(account: Account): Promise<number> {
+    const { nonce } = await this.#zilliqa.getBalance(account.base16);
+    return this.calcNextNonce(nonce);
   }
 }

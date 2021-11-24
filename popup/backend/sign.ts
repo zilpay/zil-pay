@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { MinParams } from "types/transaction";
+import type { MinParams, TransactionForConfirm } from "types/transaction";
 import { Message } from "lib/streem/message";
 import { MTypePopup, MTypeTab } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
@@ -45,6 +45,29 @@ export async function rejectForSignTx(index: number) {
     type: MTypePopup.REJECT_CONFIRM_TX,
     payload: {
       index
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
+export async function getTxRequiredParams(index: number) {
+  const data = await new Message({
+    type: MTypePopup.GET_REQUIRED_PARAMS,
+    payload: {
+      index
+    }
+  }).send();
+  return warpMessage(data);
+}
+
+export async function sendTransactionToSign(index: number, params: TransactionForConfirm) {
+  const data = await new Message({
+    type: MTypePopup.SEND_TO_SIGN_TX,
+    payload: {
+      index,
+      params
     }
   }).send();
   const state = warpMessage(data);

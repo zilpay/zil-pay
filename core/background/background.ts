@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return null
     }
     switch (msg.type) {
+      case MTypePopup.GET_REQUIRED_PARAMS:
+        core.transaction.getRequiredParams(msg.payload.index, sendResponse);
+        return true;
       case MTypePopup.FROM_BECH32:
         core.settings.fromBech32(msg.payload.bech32, sendResponse);
         return true;
@@ -143,16 +146,13 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.GET_RANDOM_SEED:
         core.popup.randomizeWords(msg.payload.length, sendResponse);
         return true;
-      case MTypePopup.GET_ACCOUNT_NONCE:
-        core.transaction.getNextNonce(sendResponse);
-        return true;
       case MTypePopup.CREATE_ACCOUNT_BY_SEED:
         core.wallet.createAccountBySeed(msg.payload.name, sendResponse);
         return true;
       case MTypePopup.UPDATE_BALANCE:
         core.wallet.balanceUpdate(sendResponse);
         return true;
-      case MTypePopup.SIGN_AND_SEND:
+      case MTypePopup.SEND_TO_SIGN_TX:
         core.transaction.signSendTx(
           msg.payload.index,
           msg.payload.params,

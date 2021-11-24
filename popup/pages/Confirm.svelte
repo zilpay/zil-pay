@@ -11,7 +11,11 @@
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
 	import { fromDecimals } from 'popup/filters/units';
   import { convertRate } from 'popup/filters/convert-rate';
-	import { rejectForSignTx } from 'popup/backend/sign';
+	import {
+		rejectForSignTx,
+		sendTransactionToSign,
+		getTxRequiredParams
+	} from 'popup/backend/sign';
   import { formatNumber } from 'popup/filters/n-format';
 
 	import format from 'popup/store/format';
@@ -34,25 +38,33 @@
 	let uuid = uuidv4();
 	let accountsModal = false;
 	let editModal = false;
+	let error = '';
+	let loading = true;
 
 	let accountIndex = params.index || $walletStore.selectedAddress;
 	let gasMultiplier = $gasStore.multiplier;
 	let tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
 	let startGasPrice = Number(tx.gasPrice);
 
-	let tabs = [
-		$_('confirm.tabs.tab_0'),
-		$_('confirm.tabs.tab_1'),
-		$_('confirm.tabs.tab_2'),
-	];
-	let selectedTab = 0;
-
 	$: list = $transactionsStore.forConfirm;
 	$: account = $walletStore.identities[accountIndex];
 
-	onMount(() => {
-		console.log(tx);
+	const onUpdateParams = async () => {
+		loading = true;
+		try {
+			const params = await getTxRequiredParams(accountIndex);
+			tx.version = params.version;
+			tx.nonce = params.nonce;
+			startGasPrice = params.minGasPrice;
+		} catch (err) {
+			console.log(err);
+		}
+		loading = false;
+	};
+
+	onMount(async() => {
 		jazziconCreate(uuid, account.base16);
+		await onUpdateParams();
   });
 
 	const onGasChanged = () => {
@@ -63,6 +75,8 @@
     accountIndex = detail;
     accountsModal = false;
 		jazziconCreate(uuid, account.base16);
+
+		await onUpdateParams();
 	};
 	const handleOnChangeGasMultiplier = async ({ detail }) => {
 		gasMultiplier = detail;
@@ -105,7 +119,14 @@
 		tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
 		startGasPrice = Number(tx.gasPrice);
 	};
-	const handleOnConfirm = () => {};
+	const handleOnConfirm = async () => {
+		try {
+			await sendTransactionToSign(accountIndex, tx);
+		} catch (err) {
+			console.log(err);
+			error = err.message;
+		}
+	};
 </script>
 
 <Modal
@@ -160,7 +181,10 @@
 				/>
 			</div>
 		{/if}
-		<div class="params">
+		<div
+			class="params"
+			class:loading={loading}
+		>
 			<GasControl
 				multiplier={gasMultiplier}
 				gasLimit={tx.gasLimit}
@@ -170,12 +194,13 @@
 			<h3 on:click={() => editModal = !editModal}>
 				(Edit)
 			</h3>
-			<Params tx={tx}/>
+			<Params tx={tx} />
 		</div>
-		<!-- <hr/> -->
 		<div class="btns">
 			<button
 				class="primary"
+				class:loading={loading}
+				disabled={loading}
 				on:click={handleOnConfirm}
 			>
 				{$_('confirm.btns.confirm')}
@@ -225,6 +250,9 @@
 		background-color: var(--card-color);
 		@include border-radius(8px);
 
+		&.loading {
+      @include loading-gradient(var(--background-color), var(--card-color));
+    }
 		& > h3 {
 			cursor: pointer;
 			text-align: right;
@@ -235,6 +263,8 @@
 	}
 	section {
 		background-color: var(--background-color);
+		height: 100vh;
+
 		@include flex-center-top-column;
 	}
 </style>
