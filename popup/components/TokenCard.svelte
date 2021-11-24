@@ -17,6 +17,7 @@
   export let balance: string;
   export let symbol: string;
   export let decimal: number;
+  export let loading = false;
 
   $: img = viewIcon(address, $themeStore);
   $: balance = fromDecimals(balance, decimal).round(7);
@@ -30,6 +31,7 @@
 
 <div
   class="token-card"
+  class:loading={loading}
   on:click={onClick}
 >
   <div>
@@ -61,12 +63,17 @@
     padding: 12px;
     margin: 3px;
     width: 142px;
-    border-radius: 6px;
+
     border: solid 2px var(--card-color);
     background-color: var(--card-color);
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 
     @include flex-between-row;
+    @include border-radius(8px);
 
+    &.loading {
+      @include loading-gradient(var(--background-color), var(--card-color));
+    }
     &:hover {
       border-color: var(--primary-color);
     }

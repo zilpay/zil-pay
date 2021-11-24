@@ -43,8 +43,7 @@
 		loading = true;
 		try {
 			await balanceUpdate();
-		} catch (err) {
-			console.error(err);
+		} catch {
 			///
 		}
 		loading = false;
@@ -105,6 +104,7 @@
 					symbol={token.symbol}
 					decimal={token.decimals}
 					balance={zrc2Tokens[token.base16] || '0'}
+					loading={loading}
 					on:select={() => push(`/send/${TokenType.ZRC2}/${index}`)}
 				/>
       {/each}
