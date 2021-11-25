@@ -94,6 +94,7 @@
     padding: 5px;
     z-index: 20;
     width: fit-content;
+    min-width: 100px;
 
     align-items: flex-end;
     @include flex-column;
