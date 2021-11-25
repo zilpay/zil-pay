@@ -20,7 +20,10 @@
   };
 </script>
 
-<Tooltip tip={tip} bottom>
+<Tooltip
+  tip={tip}
+  bottom
+>
   <div on:click={handleOnCopy}>
     <h1>
       {account.name}

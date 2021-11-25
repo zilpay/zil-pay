@@ -49,9 +49,9 @@
   background: var(--primary-color);
   color: var(--background-color);
 
-  &:hover:enabled {
-    opacity: 0.9;
-  }
+  // &:hover:enabled {
+  //   opacity: 0.9;
+  // }
 }
 
 :global(button.secondary),

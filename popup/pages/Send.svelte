@@ -102,6 +102,7 @@
 
     try {
       const qa = toDecimals(amount, token.decimals);
+      
       await buildTx(toAddr, qa, token);
       if (!disabled) {
         push('/confirm/' + selectedAccount);

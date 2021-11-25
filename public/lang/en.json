@@ -268,7 +268,21 @@
     "history": "History",
     "modals": {
       "details": {
-        "title": "Details"
+        "title": "Details",
+        "amount": "Amount",
+        "recipient": "Recipient",
+        "method": "Method",
+        "fee": "Fee",
+        "from": "From",
+        "hash": "Hash",
+        "nonce": "Nonce",
+        "time": "Sent time",
+        "info": "Info",
+        "btns": {
+          "view": "View",
+          "cancel": "Cancel",
+          "repeat": "Repeat"
+        }
       }
     }
   },

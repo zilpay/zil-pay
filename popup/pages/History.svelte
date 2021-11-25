@@ -33,9 +33,7 @@
   title={$_('history.modals.details.title')}
   on:close={() => showTx = null}
 >
-  {#if showTx}
-    <TransactionModal />
-  {/if}
+  <TransactionModal tx={showTx}/>
 </Modal>
 <section>
 	<TopBar

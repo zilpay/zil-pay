@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
+	import { onMount } from 'svelte';
 	import { fade } from "svelte/transition";
 
   import { trim } from 'popup/filters/trim';
@@ -17,7 +18,9 @@
     fee: 0,
     recipient: '',
     teg: '',
-    token: $zrcStore[0]
+    token: $zrcStore[0],
+    gasLimit: 0,
+    gasPrice: 0
   };
 
 	$: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);

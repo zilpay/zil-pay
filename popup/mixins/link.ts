@@ -23,3 +23,7 @@ export function linksExpand(url = '') {
   Runtime.tabs.create({ url: Common.PROMT_PAGE + `#${url}` });
   window.close();
 }
+
+export function openTab(url: string) {
+  Runtime.tabs.create({ url });
+}
