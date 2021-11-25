@@ -57,11 +57,13 @@
 </Modal>
 <main>
 	<NavClose title={$_('contacts.title')}/>
-	<SearchBox
-		placeholder={$_('accounts.placeholder')}
-		focus
-		on:input={onInputSearch}
-	/>
+	<div>
+		<SearchBox
+			placeholder={$_('accounts.placeholder')}
+			focus
+			on:input={onInputSearch}
+		/>
+	</div>
 	{#if contacts.length === 0}
 		<p class="no-content">
 			{$_('contacts.no_content')}

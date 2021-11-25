@@ -40,7 +40,7 @@
 <ul>
 	{#if contacts.length > 0}
 		<p>
-			Contacts
+			{$_('send.options.con')}
 		</p>
 		{#each contacts as contact}
 			<li on:click={() => onSelect(contact.address)}>
@@ -57,7 +57,7 @@
 	{/if}
 	{#if accounts.length > 0}
 		<p>
-			Accounts
+			{$_('send.options.acc')}
 		</p>
 		{#each accounts as account}
 			<li on:click={() => onSelect(account[$format])}>

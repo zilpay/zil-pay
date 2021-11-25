@@ -232,8 +232,8 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-		height: calc(100vh - 36px);
-		max-height: 600px;
+		height: calc(100vh - 39px);
+		min-height: 600px;
     overflow-y: scroll;
 
 		@include flex-center-column;
@@ -245,7 +245,7 @@
 
 		& > h1 {
 			margin: 0;
-			line-height: 38px;
+			line-height: 30px;
 
 			@include fluid-font(320px, 720px, 20px, 30px);
 			@include text-shorten;
@@ -253,6 +253,7 @@
 		& > h2 {
 			color: var(--danger-color);
 			width: calc(100vw - 16px);
+			@include fluid-font(320px, 720px, 14px, 20px);
 			@include text-shorten;
 		}
 	}
@@ -281,11 +282,12 @@
 			margin-right: 16px;
 			color: var(--warning-color);
 			margin-block-end: 0;
+			font-size: 15px;
 		}
 	}
 	section {
 		background-color: var(--background-color);
-		height: 100vh;
+		height: 100%;
 
 		@include flex-center-top-column;
 	}

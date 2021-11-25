@@ -8,6 +8,7 @@
  */
 import type { ZRC2Token } from 'types/token';
 import type { MinParams } from 'types/transaction';
+import type Big from 'big.js';
 
 import { get } from 'svelte/store';
 import { toDecimals } from 'popup/filters/units';
@@ -17,11 +18,11 @@ import { Contracts } from 'config/contracts';
 import { sendToSignTx } from 'app/backend/sign';
 import { Runtime } from 'lib/runtime';
 
-export async function buildTx(toAddr: string, amount: string, token: ZRC2Token) {
+export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
   const { gasLimit, gasPrice } = get(gasStore);
   const params: MinParams = {
     toAddr,
-    amount,
+    amount: String(amount),
     data: '',
     code: '',
     gasLimit,
@@ -42,7 +43,7 @@ export async function buildTx(toAddr: string, amount: string, token: ZRC2Token) 
         {
           vname: 'amount',
           type: 'Uint128',
-          value: toDecimals(amount, token.decimals)
+          value: toDecimals(String(amount), token.decimals)
         }
       ]
     });

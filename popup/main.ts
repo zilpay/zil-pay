@@ -20,6 +20,10 @@ getState()
 		});
 		const events = Runtime.storage.local['onChanged'];
 
+		if (!events) {
+			return null;
+		}
+
 		if (events.hasListeners()) {
 			events.removeListener();
 		}

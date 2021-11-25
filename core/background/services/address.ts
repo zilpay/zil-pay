@@ -13,7 +13,7 @@ import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 
 export class AddressController {
-  #format: Formats;
+  #format: Formats = Formats.Bech32;
 
   public get format() {
     return this.#format;
