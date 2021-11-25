@@ -33,7 +33,7 @@ export class TransactionsQueue {
   public async checkProcessedTx() {
     const list =  this.#transactions.transactions;
     const now = new Date().getTime();
-    const dilaySeconds = 30000;
+    const dilaySeconds = 15000;
 
     const identities = list.filter((t) => {
       return !t.confirmed && (now - t.timestamp) > dilaySeconds;
@@ -80,14 +80,12 @@ export class TransactionsQueue {
           this.#makeNotify(element.teg, element.hash, element.info);
           continue;
         case StatusCodes.Pending:
-          element.status = result.status;
-          element.confirmed = true;
-          element.success = result.success;
           continue;
         case StatusCodes.PendingAwait:
           element.status = result.status;
           element.confirmed = true;
           element.success = result.success;
+          element.nonce = result.nonce;
           element.info = 'Transaction await to confirm.';
           this.#makeNotify(element.teg, element.hash, element.info);
           continue;
@@ -101,7 +99,6 @@ export class TransactionsQueue {
           continue;
       }
     }
-
     await this.#transactions.updateHistory(list);
   }
 
