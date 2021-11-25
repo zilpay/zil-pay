@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { onMount } from 'svelte';
 	import { fade } from "svelte/transition";
 
   import { trim } from 'popup/filters/trim';

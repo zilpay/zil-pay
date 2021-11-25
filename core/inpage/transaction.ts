@@ -129,6 +129,12 @@ export class Transaction {
       this.toAddr = CryptoUtils.toBech32Address(this.toAddr);
     }
 
+    try {
+      this.from = CryptoUtils.toBech32Address(this.from);
+    } catch {
+      ///
+    }
+
     if (params.data && TypeOf.isString(params.data)) {
       this.data = JSON.parse(params.data);
     } else {

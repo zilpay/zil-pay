@@ -43,7 +43,7 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
         {
           vname: 'amount',
           type: 'Uint128',
-          value: toDecimals(String(amount), token.decimals)
+          value: String(amount)
         }
       ]
     });

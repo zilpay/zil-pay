@@ -249,7 +249,10 @@ export class ZilPayTransaction {
         type: MTypeTab.TX_RESULT,
         payload: {
           uuid: params.uuid,
-          resolve: newTx.self
+          resolve: {
+            ...newTx.self,
+            from: account.base16
+          }
         }
       }).send();
       sendResponse({

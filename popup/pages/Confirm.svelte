@@ -63,7 +63,7 @@
 		}
 		loading = false;
 	};
-	const onNextTx = () => {
+	const onNextTx = async () => {
 		const isExtends = Boolean(tx.uuid);
 		if (list.length === 0) {
 			if (isExtends) {
@@ -74,6 +74,8 @@
 		} else {
 			tx = $transactionsStore.forConfirm[txIndex];
 			startGasPrice = Number(tx.gasPrice);
+
+			await onUpdateParams();
 		}
 	};
 
@@ -124,14 +126,14 @@
 			////
 		}
 
-		onNextTx();
+		await onNextTx();
 	};
 	const handleOnConfirm = async () => {
 		loading = true;
 		error = '';
 		try {
 			await sendTransactionToSign(txIndex, accountIndex, tx);
-			onNextTx();
+			await onNextTx();
 		} catch (err) {
 			error = err.message;
 		}
@@ -233,7 +235,7 @@
 	@import "../styles/mixins";
 	main {
 		height: calc(100vh - 36px);
-		min-height: 600px;
+		max-height: 600px;
     overflow-y: scroll;
 
 		@include flex-center-column;
@@ -241,7 +243,6 @@
 	}
 	.header {
 		text-align: center;
-		min-height: 133px;
 
 		& > h1 {
 			margin: 0;
@@ -253,6 +254,7 @@
 		& > h2 {
 			color: var(--danger-color);
 			width: calc(100vw - 16px);
+			margin: 0;
 			@include fluid-font(320px, 720px, 14px, 20px);
 			@include text-shorten;
 		}
@@ -287,7 +289,7 @@
 	}
 	section {
 		background-color: var(--background-color);
-		height: 100%;
+		height: 100vh;
 
 		@include flex-center-top-column;
 	}
