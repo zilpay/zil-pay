@@ -269,7 +269,6 @@
     "modals": {
       "details": {
         "title": "Details",
-        "amount": "Amount",
         "recipient": "Recipient",
         "method": "Method",
         "from": "From",

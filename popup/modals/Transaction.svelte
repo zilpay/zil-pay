@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 
   import { trim } from 'popup/filters/trim';
@@ -27,10 +26,6 @@
 	$: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, amount.add(tx.fee)).round(7);
 
-  onMount(() => {
-    console.log(tx);
-  });
-
   function hanldeOnCopy(content: string) {
     clipboardCopy(content);
     tip = $_('home.clipboard.copied');
@@ -57,15 +52,7 @@
       ZIL {tx.fee}
     </p>
   </div>
-  <ul>
-    <li>
-      <span>
-        {$_('history.modals.details.amount')}
-      </span>
-      <span>
-        {formatNumber(amount, tx.token.symbol)}
-      </span>
-    </li>
+  <ul class:loading={!tx.confirmed}>
     <li>
       <span>
         {$_('history.modals.details.from')}
@@ -169,7 +156,7 @@
   h1 {
     line-height: 0;
     margin: 0;
-    @include fluid-font(320px, 1024px, 22px, 35px);
+    @include fluid-font(320px, 1024px, 25px, 35px);
   }
   div.header {
     width: fit-content;
@@ -177,7 +164,7 @@
 
     & > p {
       min-width: 70px;
-      font-size: 18px;
+      font-size: 16px;
 
       &:last-child {
         text-align: right;
@@ -210,10 +197,14 @@
 
     @include border-radius(8px);
 
+    &.loading {
+      @include loading-gradient(var(--background-color), var(--card-color));
+    }
     & > li {
       padding: 5px;
       border-bottom: solid 1px var(--border-color);
       font-family: Regular;
+      color: var(--text-color);
 
       @include fluid-font(320px, 1024px, 16px, 20px);
       @include flex-between-row;
