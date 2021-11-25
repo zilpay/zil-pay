@@ -272,7 +272,6 @@
         "amount": "Amount",
         "recipient": "Recipient",
         "method": "Method",
-        "fee": "Fee",
         "from": "From",
         "hash": "Hash",
         "nonce": "Nonce",

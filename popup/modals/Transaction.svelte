@@ -22,6 +22,10 @@
 
   $: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
   $: hash = `0x${tx.hash}`;
+  $: operate = Number(tx.amount) > 0 ? '-' : '';
+
+	$: rate = $rateStore[$currencyStore];
+  $: converted = convertRate(rate, amount.add(tx.fee)).round(7);
 
   onMount(() => {
     console.log(tx);
@@ -42,6 +46,17 @@
 </script>
 
 <div class="tx">
+  <h1>
+    {operate} {formatNumber(amount, tx.token.symbol)}
+  </h1>
+  <div class="header">
+    <p>
+      {formatNumber(converted, $currencyStore)}
+    </p>
+    <p>
+      ZIL {tx.fee}
+    </p>
+  </div>
   <ul>
     <li>
       <span>
@@ -81,14 +96,6 @@
       </span>
       <span>
         {tx.teg}
-      </span>
-    </li>
-    <li>
-      <span>
-        {$_('history.modals.details.fee')}
-      </span>
-      <span>
-        {tx.fee} ZIL
       </span>
     </li>
     <li>
@@ -158,6 +165,24 @@
   div.tx {
     height: 600px;
     @include flex-center-top-column;
+  }
+  h1 {
+    line-height: 0;
+    margin: 0;
+    @include fluid-font(320px, 1024px, 22px, 35px);
+  }
+  div.header {
+    width: fit-content;
+    @include flex-between-row;
+
+    & > p {
+      min-width: 70px;
+      font-size: 18px;
+
+      &:last-child {
+        text-align: right;
+			}
+    }
   }
   div.btns {
     width: 100%;
