@@ -114,7 +114,8 @@ export class Transaction {
       signature: this.signature,
       toAddr: this.toAddr,
       version: this.version,
-      hash: this.hash
+      hash: this.hash,
+      from: this.from
     };
   }
 

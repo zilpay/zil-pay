@@ -23,7 +23,6 @@ export interface TransactionParams extends TxParams {
   senderAddress?: string;
   TranID?: string;
   ID?: string;
-  from?: string;
   receipt?: TransitionReceipt;
   Info?: string;
 }
@@ -75,7 +74,7 @@ export class Transaction {
    * @deprecated
    */
   public get TranID() {
-    console.warn('This property is deprecated and will remove.');
+    console.warn('TranID is deprecated and will be removed.');
     return this.ID;
   }
 
@@ -111,12 +110,12 @@ export class Transaction {
     this.code = params.code || '';
     this.signature = params.signature;
     this.ContractAddress = params.ContractAddress;
-    this.ID = params.TranID || params.ID;
+    this.ID = params.hash;
     this.from = params.from || params.senderAddress;
     this.Info = params.Info;
     this.pubKey = params.pubKey;
 
-    this.gasPrice = new BN(params.gasPrice || Gas.gasPrice ** 3);
+    this.gasPrice = new BN(params.gasPrice);
     this.gasLimit = Long.fromNumber(Number(params.gasLimit || Gas.gasLimit));
 
     this.priority = params.priority;

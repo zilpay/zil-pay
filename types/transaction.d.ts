@@ -21,6 +21,7 @@ export interface TxParams {
   signature?: string;
   toAddr: string;
   version?: number;
+  from?: string;
   hash?: string;
 }
 

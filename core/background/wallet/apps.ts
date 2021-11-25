@@ -101,11 +101,11 @@ export class ZilPayApps {
           base16: this.#core.account.selectedAccount.base16,
           bech32: this.#core.account.selectedAccount.bech32
         };
-        new TabsMessage({
+        await new TabsMessage({
           type: MTypeTab.RESPONSE_TO_DAPP,
           payload: {
-            account,
-            uuid: app.uuid
+            uuid: app.uuid,
+            resolve: account
           }
         }).send();
       } else {
