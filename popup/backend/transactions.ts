@@ -19,3 +19,13 @@ export async function checkProcessedTx() {
   updateState(state);
   return state;
 }
+
+export async function clearAllTxns() {
+  const data = await Message
+    .signal(MTypePopup.CLEAR_ALL_TXNS)
+    .send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+

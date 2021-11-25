@@ -96,7 +96,7 @@ export class ZilPayTransaction {
       await this.#core.transactions.clearHistory();
 
       sendResponse({
-        resolve: this.#core.transactions.transactions
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

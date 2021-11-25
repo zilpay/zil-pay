@@ -43,6 +43,7 @@ export const MTypePopup = {
   REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
   SEND_TO_SIGN_TX: `@/${app}/popup-send-to-sign-tx`,
   GET_REQUIRED_PARAMS: `@/${app}/get-required-params`,
+  CLEAR_ALL_TXNS: `@/${app}/clear-all-txns`,
 
   GET_ZRC2_TOKEN_INFO: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
-  import { checkProcessedTx } from 'popup/backend/transactions';
+  import { checkProcessedTx, clearAllTxns } from 'popup/backend/transactions';
 
   import transactionsStore from 'popup/store/transactions';
 
@@ -26,6 +26,10 @@
     }
     loading = false;
   };
+
+  const hanldeOnClear = async () => {
+    await clearAllTxns();
+  };
 </script>
 
 <Modal
@@ -41,9 +45,14 @@
     on:refresh={hanldeOnUpdate}
   />
 	<main>
-    <h2>
-      {$_('history.title')}
-    </h2>
+    <div class="header">
+      <h2>
+        {$_('history.title')}
+      </h2>
+      <h3 on:click={hanldeOnClear}>
+        {$_('history.clear')}
+      </h3>
+    </div>
     {#if history.length === 0 && queue.length === 0}
       <p>
         {$_('history.no_txns')}
@@ -94,6 +103,18 @@
       width: 100%;
     }
 	}
+  div.header {
+    width: 100%;
+    @include flex-between-row;
+
+    & > h3 {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--primary-color);
+      }
+    }
+  }
   div.list {
     overflow-y: scroll;
   }
@@ -110,10 +131,12 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
+  h2,
+  h3 {
+    margin-block-end: 0;
+  }
   h2 {
     text-align: left;
-    width: 100%;
-    margin-block-end: 0;
     @include fluid-font(320px, 720px, 20px, 30px);
   }
   p {

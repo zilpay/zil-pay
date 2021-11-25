@@ -266,6 +266,7 @@
     "no_txns": "You have no transactions yet.",
     "queue": "Queue",
     "history": "History",
+    "clear": "Clear All",
     "modals": {
       "details": {
         "title": "Details",

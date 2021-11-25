@@ -20,6 +20,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.GET_REQUIRED_PARAMS:
         core.transaction.getRequiredParams(msg.payload.index, sendResponse);
         return true;
+      case MTypePopup.CLEAR_ALL_TXNS:
+        core.transaction.clearHistory(sendResponse);
+        return true;
       case MTypePopup.FROM_BECH32:
         core.settings.fromBech32(msg.payload.bech32, sendResponse);
         return true;
