@@ -232,7 +232,7 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-		height: calc(100vh - 39px);
+		height: calc(100vh - 36px);
 		min-height: 600px;
     overflow-y: scroll;
 

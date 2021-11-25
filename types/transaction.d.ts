@@ -121,4 +121,6 @@ export interface StoredTx {
   from: string;
   hash: string;
   timestamp: number;
+  data: string;
+  code: string;
 }

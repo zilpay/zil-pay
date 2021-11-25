@@ -240,10 +240,18 @@ export class ZilPayTransaction {
         fee: newTx.fee,
         nonce: newTx.nonce,
         from: account.bech32,
-        hash: newTx.hash
+        hash: newTx.hash,
+        data: newTx.data,
+        code: newTx.code
       });
       await this.#core.transactions.rmConfirm(txIndex);
-
+      await new TabsMessage({
+        type: MTypeTab.TX_RESULT,
+        payload: {
+          uuid: params.uuid,
+          resolve: newTx.self
+        }
+      }).send();
       sendResponse({
         resolve: this.#core.state
       });
@@ -253,6 +261,13 @@ export class ZilPayTransaction {
       sendResponse({
         reject: message
       });
+      await new TabsMessage({
+        type: MTypeTab.TX_RESULT,
+        payload: {
+          uuid: params.uuid,
+          reject: message
+        }
+      }).send();
     }
   }
 
@@ -286,7 +301,7 @@ export class ZilPayTransaction {
         signature = schnorrControl.getSignature(bytes);
       }
 
-      new TabsMessage({
+      await new TabsMessage({
         type: MTypeTab.SING_MESSAGE_RES,
         payload: {
           uuid: this.#core.transactions.message.uuid,
@@ -330,7 +345,7 @@ export class ZilPayTransaction {
 
   public async rejectMessage(sendResponse: StreamResponse) {
     try {
-      new TabsMessage({
+      await new TabsMessage({
         type: MTypeTab.SING_MESSAGE_RES,
         payload: {
           uuid: this.#core.transactions.message.uuid,
