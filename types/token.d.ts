@@ -13,6 +13,7 @@ export interface ZRC2Token {
   symbol: string;
   base16: string;
   bech32: string;
+  rate: number;
 }
 
 
