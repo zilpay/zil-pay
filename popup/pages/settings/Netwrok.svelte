@@ -110,21 +110,33 @@
         </button>
       </form>
     </Jumbotron>
-    <Jumbotron
-      title={$_('netwrok.ssn.title')}
-      description={$_('netwrok.ssn.description')}
-    >
-      <select on:input={handleOnSelectSSN}>
-        {#each $ssnStore.list as ssn, index}
-          <option
-            value={index}
-            selected={index === $ssnStore.selected}
+    {#if $netStore.selected === keys[0]}
+      <Jumbotron
+        title={$_('netwrok.ssn.title')}
+        description={$_('netwrok.ssn.description')}
+      >
+        <div class="ssn-list">
+          <select on:input={handleOnSelectSSN}>
+            {#each $ssnStore.list as ssn, index}
+              <option
+                value={index}
+                selected={index === $ssnStore.selected}
+              >
+                {ssn.name} ({Number(ssn.time).toFixed()} ms)
+              </option>
+            {/each}
+          </select>
+          <button
+            disabled={loading}
+            class="primary"
+            class:loading={loading}
+            on:click={hanldeUpdateSSN}
           >
-            {ssn.name} ({Number(ssn.time).toFixed()} ms)
-          </option>
-        {/each}
-      </select>
-    </Jumbotron>
+            {$_('netwrok.btns.update')}
+          </button>
+        </div>
+      </Jumbotron>
+    {/if}
   </div>
   <button
     class="warning"
@@ -144,8 +156,11 @@
 		@include flex-center-top-column;
   }
   button {
-    min-width: 290px;
+    width: 290px;
     margin: 10px;
+  }
+  div.ssn-list {
+		@include flex-center-top-column;
   }
   label {
     width: 100%;
