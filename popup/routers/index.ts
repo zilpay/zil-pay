@@ -15,7 +15,6 @@ import Home from '../pages/Home.svelte';
 import History from '../pages/History.svelte';
 import Confirm from '../pages/Confirm.svelte';
 import SignMessage from '../pages/SignMessage.svelte';
-import Loading from '../pages/Loading.svelte';
 import Create from '../pages/Create.svelte';
 import Restore from '../pages/Restore.svelte';
 import SetupAccount from '../pages/SetupAccount.svelte';
@@ -177,7 +176,6 @@ export default {
   '/start': LetStarted,
   '/restore': Restore,
   '/create': Create,
-  '/loading': Loading,
   '/verify': PhraseVerify,
   '/setup-account': SetupAccount
 };

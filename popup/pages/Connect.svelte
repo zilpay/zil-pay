@@ -7,8 +7,6 @@
 	import appStore from 'popup/store/apps';
 	import { userResponseConnection } from 'popup/backend/popup';
 
-	import Loader from '../components/Loader.svelte';
-
 	let app = $appStore.confirmApp;
 
 	onMount(() => {

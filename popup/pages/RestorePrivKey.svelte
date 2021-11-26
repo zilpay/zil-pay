@@ -14,7 +14,6 @@
 	import { importPrivateKey } from 'popup/backend/wallet';
 
   import NavClose from '../components/NavClose.svelte';
-	import Loader from '../components/Loader.svelte';
 
   let error = '';
   let key = '';

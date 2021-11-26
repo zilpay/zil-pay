@@ -12,7 +12,6 @@
   } from 'popup/config/account';
 
 	import NavClose from '../components/NavClose.svelte';
-	import Loader from '../components/Loader.svelte';
 
   let error = '';
   let passError = '';

@@ -17,7 +17,6 @@
   import { loadLedgerAccount } from 'popup/backend/ledger';
 
   import BackBar from '../../components/BackBar.svelte';
-	import Loader from '../../components/Loader.svelte';
 
   export let params = {
     id: 0

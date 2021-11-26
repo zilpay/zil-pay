@@ -13,7 +13,6 @@
     DEFAULT_NAME
   } from 'popup/config/account';
 
-	import Loader from '../components/Loader.svelte';
   import BackBar from '../components/BackBar.svelte';
 
 	let loading = false;
