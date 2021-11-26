@@ -313,6 +313,7 @@
     }
   },
   "confirm": {
+    "edit": "Edit",
     "params": {
       "amount": "Total",
       "fee": "Max transaction cost",

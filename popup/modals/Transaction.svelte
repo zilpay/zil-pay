@@ -9,7 +9,7 @@
   import { viewTransaction } from 'lib/block-explorer/view';
   import { openTab } from 'popup/mixins/link';
   import { clipboardCopy } from 'lib/utils/clipboard';
-  import { repeatTx } from 'popup/mixins/tx-build';
+  import { repeatTx, cancelTx } from 'popup/mixins/tx-build';
 
   import rateStore from 'popup/store/rate';
 	import currencyStore from 'popup/store/currency';
@@ -42,6 +42,10 @@
   };
   const hanldeOnRepeat = async () => {
     await repeatTx(tx);
+    push('/confirm/');
+  };
+  const hanldeOnCancel = async () => {
+    await cancelTx(tx);
     push('/confirm/');
   };
 </script>
@@ -161,7 +165,10 @@
         {$_('history.modals.details.btns.repeat')}
       </button>
     {:else}
-      <button class="warning">
+      <button
+        class="warning"
+        on:click={hanldeOnCancel}
+      >
         {$_('history.modals.details.btns.cancel')}
       </button>
     {/if}

@@ -11,5 +11,6 @@ export enum TransactionTypes {
   Deploy = 'Deployed',
   Unexpected = 'Unexpected',
   Transfer = 'Transfer',
-  Triggered = 'Triggered'
+  Triggered = 'Triggered',
+  Cancel = 'Cancel'
 }

@@ -13,7 +13,9 @@ import type Big from 'big.js';
 import { get } from 'svelte/store';
 import { toDecimals } from 'popup/filters/units';
 
+import walletStore from 'popup/store/wallet';
 import gasStore from 'popup/store/gas';
+
 import { Contracts } from 'config/contracts';
 import { sendToSignTx } from 'app/backend/sign';
 import { Runtime } from 'lib/runtime';
@@ -29,6 +31,25 @@ export async function repeatTx(tx: StoredTx) {
     gasLimit: tx.gasLimit,
     icon: tx.icon,
     title: tx.title
+  };
+  return sendToSignTx(params);
+}
+
+export async function cancelTx(tx: StoredTx) {
+  const { gasLimit } = get(gasStore);
+  const wallet = get(walletStore);
+  const acount = wallet.identities[wallet.selectedAddress];
+  const params: MinParams = {
+    gasLimit,
+    toAddr: acount.base16,
+    amount: '0',
+    data: '',
+    code: '',
+    gasPrice: Number(tx.gasPrice) * 2,
+    icon: tx.icon,
+    title: tx.title,
+    cancel: true,
+    nonce: tx.nonce
   };
   return sendToSignTx(params);
 }

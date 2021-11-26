@@ -65,6 +65,7 @@ export interface MinParams {
   uuid?: string;
   title?: string;
   icon?: string;
+  cancel?: boolean;
 }
 
 export interface MessageParams {
@@ -118,6 +119,7 @@ export interface StoredTx {
   type: TransactionTypes;
   fee: number;
   gasLimit: number;
+  gasPrice?: number;
   icon: string;
   title: string;
   nonce: number;

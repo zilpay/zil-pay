@@ -3,7 +3,6 @@
 	import { fly } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import flyTransition from 'popup/transitions/fly';
-	import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
 
 	import walletStore from 'popup/store/wallet';

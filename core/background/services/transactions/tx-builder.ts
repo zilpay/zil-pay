@@ -54,6 +54,7 @@ export class Transaction {
   public hash?: string;
   public direction?: string;
   public timestamp?: number;
+  public cancel?: boolean;
 
   public get transactionType(): TransactionTypes {
     if (this.code) {
@@ -67,9 +68,13 @@ export class Transaction {
     return TransactionTypes.Payment;
   }
 
-  public get tag() {
+  public get tag(): string {
     if (this.data && this.code) {
       return TransactionTypes.Deploy;
+    }
+
+    if (this.cancel) {
+      return TransactionTypes.Cancel;
     }
 
     if (this.data) {

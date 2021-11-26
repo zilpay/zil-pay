@@ -51,12 +51,14 @@
 	$: txIndex = $transactionsStore.forConfirm.length - 1;
 
 	const onUpdateParams = async () => {
-		loading = true;
 		error = '';
+		loading = true;
+		console.log(tx);
+		
 		try {
 			const params = await getTxRequiredParams(accountIndex);
 			tx.version = params.version;
-			tx.nonce = params.nonce;
+			tx.nonce = tx.cancel ? tx.nonce : params.nonce;
 			startGasPrice = params.minGasPrice;
 		} catch (err) {
 			error = err.message;
@@ -210,9 +212,11 @@
 				gasPrice={startGasPrice}
 				on:select={handleOnChangeGasMultiplier}
 			/>
-			<h3 on:click={() => editModal = !editModal}>
-				(Edit)
-			</h3>
+			{#if !tx.cancel}
+				<h3 on:click={() => editModal = !editModal}>
+					({$_('confirm.edit')})
+				</h3>
+			{/if}
 			<Params tx={tx} />
 		</div>
 		<div class="btns">

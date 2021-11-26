@@ -51,7 +51,7 @@ export class ZilPayTransaction {
       const payload = new Transaction(
         params.amount,
         params.gasLimit,
-        this.#core.gas.gasPrice,
+        params.cancel ? params.gasPrice : this.#core.gas.gasPrice,
         this.#core.account.selectedAccount,
         params.toAddr,
         this.#core.netwrok.selected,
@@ -61,10 +61,12 @@ export class ZilPayTransaction {
         params.priority
       );
 
+      payload.cancel = params.cancel;
+
       if (payload.tag === TransactionTypes.Transfer) {
         token = await this.#getToken(payload.toAddr);
       }
-
+      
       await this.#core.transactions.addConfirm({
         token,
         ...params,
@@ -206,6 +208,8 @@ export class ZilPayTransaction {
         params.data
       );
 
+      newTx.cancel = params.cancel;
+
       if (!params.version) {
         const version = await this.#core.zilliqa.getNetworkId();
         newTx.setVersion(version, this.#core.netwrok);
@@ -244,6 +248,7 @@ export class ZilPayTransaction {
         data: newTx.data,
         code: newTx.code,
         gasLimit: params.gasLimit,
+        gasPrice: params.gasPrice,
         title: params.title,
         icon: params.icon
       });

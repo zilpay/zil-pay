@@ -46,7 +46,6 @@ export class NonceController {
       .transactions
       .filter((t) => !t.confirmed)
       .map((t) => t.nonce);
-
     assert(list.length <= Common.NONCE_DIFFICULTY, ErrorMessages.HightNonce);
 
     const maxNonce = Math.max.apply(Math, list);
