@@ -39,8 +39,9 @@
   };
   const getConverted = (token) => {
     const balance = getBalance(token);
+    const zils = balance.mul(token.rate || 1);
     const rate = $rateStore[$currencyStore];
-    return convertRate(rate, balance).round(7);
+    return convertRate(rate, zils).round(7);
   };
 
 	const onSelectToken = async (token) => {

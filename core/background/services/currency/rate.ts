@@ -64,6 +64,8 @@ export class RateController {
       usd: 0
     };
 
+    await this.updateRate();
+
     await BrowserStorage.set(
       buildObject(Fields.RATE_CURRENCIES, this.rate)
     );

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
+	import Big from 'big.js';
   import { link, push } from 'svelte-spa-router';
 	import { TokenType } from 'popup/config/token-type';
   import { uuidv4 } from 'lib/crypto/uuid';
@@ -33,7 +34,7 @@
 	$: zrc2Tokens = account.zrc2;
 	$: rate = $rateStore[$currencyStore];
   $: balance = fromDecimals(zrc2Tokens[ZIL.base16], ZIL.decimals);
-  $: converted = convertRate(rate, balance);
+  $: converted = convertRate(rate, balance);	
 
   const onRefresh = async () => {
 		loading = true;
@@ -104,6 +105,7 @@
 					address={token.bech32}
 					symbol={token.symbol}
 					decimal={token.decimals}
+					tokenRate={token.rate || 1}
 					balance={zrc2Tokens[token.base16] || '0'}
 					loading={loading}
 					on:select={() => push(`/send/${TokenType.ZRC2}/${index}`)}

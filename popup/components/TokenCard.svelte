@@ -18,11 +18,13 @@
   export let symbol: string;
   export let decimal: number;
   export let loading = false;
+  export let tokenRate = 1;
 
   $: img = viewIcon(address, $themeStore);
   $: balance = fromDecimals(balance, decimal).round(7);
+  $: zils = balance.mul(tokenRate);
 	$: rate = $rateStore[$currencyStore];
-  $: converted = convertRate(rate, balance).round(7);
+  $: converted = convertRate(rate, zils).round(7);
 
   const onClick = () => {
     dispatch('select');

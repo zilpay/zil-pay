@@ -57,10 +57,10 @@
 
   $: token = $zrcStore[selectedToken];
   $: tokenIcon = viewIcon(token.bech32, $themeStore);
-
   $: balance = fromDecimals(account.zrc2[token.base16], token.decimals).round(7);
+  $: zils = balance.mul(token.rate || 1);
 	$: rate = $rateStore[$currencyStore];
-  $: converted = convertRate(rate, balance).round(7);
+  $: converted = convertRate(rate, zils).round(7);
 	$: disabled = !amount || !recipient;
 
   onMount(() => {

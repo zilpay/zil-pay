@@ -30,7 +30,8 @@ enum InitFields {
 }
 
 enum ZRC2Fields {
-  Balances = 'balances'
+  Balances = 'balances',
+  Pools = 'pools'
 }
 
 const [mainnet, testnet, custom] = Object.keys(NETWORK);
@@ -41,7 +42,7 @@ export const ZIL = {
   decimals: 12,
   name: 'Zilliqa',
   symbol: 'ZIL',
-  rate: 0
+  rate: 1
 };
 export const ZLP = {
   base16: Contracts.ZIlPay,
@@ -101,7 +102,7 @@ export class ZRC2Controller {
       symbol: token.symbol,
       base16: token.base16,
       bech32: token.bech32,
-      rate: 0
+      rate: 0 /// TODO add rate.
     };
     this.#isUnique(newToken);
     this.#identities.push(newToken);
@@ -167,13 +168,12 @@ export class ZRC2Controller {
       );
     });
     const dexContract = tohexString(Contracts.ZIL_SWAP);
-    const fieldname = 'pools';
     const tokensIdentities = this.identities.filter((t) => t.base16 !== Contracts.ZERO_ADDRESS);
     const tokensRates = tokensIdentities.map((token) => {
       const tokenAddress = token.base16.toLowerCase();
       return this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [dexContract, fieldname, [tokenAddress]]
+        [dexContract, ZRC2Fields.Pools, [tokenAddress]]
       );
     });
     const identities = [...balanceIdentities, ...tokensRates];
@@ -193,7 +193,7 @@ export class ZRC2Controller {
       return balance;
     });
 
-    await this.#updateRate(pools, fieldname);
+    await this.#updateRate(pools);
 
     return Object.fromEntries(entries);
   }
@@ -253,12 +253,12 @@ export class ZRC2Controller {
     };
   }
 
-  async #updateRate(pools: object[], fieldname: string) {
+  async #updateRate(pools: object[]) {
     for (let index = 0; index < pools.length; index++) {
       const res = pools[index];
 
       try {
-        const pool = res['result'][fieldname];
+        const pool = res['result'][ZRC2Fields.Pools];
         const [base16] = Object.keys(pool);
         const foundIndex = this.identities.findIndex(
           (t) => t.base16.toLowerCase() === base16
