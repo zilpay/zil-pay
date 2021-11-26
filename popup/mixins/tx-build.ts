@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZRC2Token } from 'types/token';
-import type { MinParams } from 'types/transaction';
+import type { MinParams, StoredTx } from 'types/transaction';
 import type Big from 'big.js';
 
 import { get } from 'svelte/store';
@@ -17,6 +17,21 @@ import gasStore from 'popup/store/gas';
 import { Contracts } from 'config/contracts';
 import { sendToSignTx } from 'app/backend/sign';
 import { Runtime } from 'lib/runtime';
+
+export async function repeatTx(tx: StoredTx) {
+  const { gasPrice } = get(gasStore);
+  const params: MinParams = {
+    gasPrice,
+    toAddr: tx.toAddr,
+    amount: tx.amount,
+    data: tx.data || '',
+    code: tx.code || '',
+    gasLimit: tx.gasLimit,
+    icon: tx.icon,
+    title: tx.title
+  };
+  return sendToSignTx(params);
+}
 
 export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
   const { gasLimit, gasPrice } = get(gasStore);

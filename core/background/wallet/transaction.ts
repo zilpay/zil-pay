@@ -51,7 +51,7 @@ export class ZilPayTransaction {
       const payload = new Transaction(
         params.amount,
         params.gasLimit,
-        params.gasPrice,
+        this.#core.gas.gasPrice,
         this.#core.account.selectedAccount,
         params.toAddr,
         this.#core.netwrok.selected,
@@ -74,7 +74,7 @@ export class ZilPayTransaction {
         fee: payload.fee,
         recipient: payload.recipient,
         gasLimit: Number(params.gasLimit),
-        gasPrice: Number(params.gasPrice)
+        gasPrice: payload.gasPrice
       });
 
       if (params.uuid) {
@@ -242,7 +242,10 @@ export class ZilPayTransaction {
         from: account.bech32,
         hash: newTx.hash,
         data: newTx.data,
-        code: newTx.code
+        code: newTx.code,
+        gasLimit: params.gasLimit,
+        title: params.title,
+        icon: params.icon
       });
       await this.#core.transactions.rmConfirm(txIndex);
       await new TabsMessage({
@@ -264,13 +267,6 @@ export class ZilPayTransaction {
       sendResponse({
         reject: message
       });
-      await new TabsMessage({
-        type: MTypeTab.TX_RESULT,
-        payload: {
-          uuid: params.uuid,
-          reject: message
-        }
-      }).send();
     }
   }
 

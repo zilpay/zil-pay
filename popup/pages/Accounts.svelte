@@ -5,7 +5,7 @@
   import { trim } from 'popup/filters/trim';
   import { scale } from 'svelte/transition';
 
-	import { selectAccount, balanceUpdate } from 'popup/backend/wallet';
+	import { selectAccount } from 'popup/backend/wallet';
 
 	import NavClose from '../components/NavClose.svelte';
 	import AccountCard from '../components/AccountCard.svelte';
@@ -14,7 +14,6 @@
 
 	const onSelectAccount = async ({ detail }) => {
 		await selectAccount(detail);
-		balanceUpdate();
 		push('/');
 	};
 </script>

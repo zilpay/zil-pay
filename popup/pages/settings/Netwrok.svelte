@@ -7,7 +7,6 @@
     updateSSN,
     selectSSN
   } from 'popup/backend/netwrok';
-	import { balanceUpdate } from 'popup/backend/wallet';
 
   import ssnStore from 'popup/store/ssn';
   import netStore from 'popup/store/netwrok';
@@ -30,7 +29,6 @@
     const index = e.detail;
     const net = keys[index];
     await selectNetwrok(net);
-    balanceUpdate();
   };
   const hanldeOnChangeConfig = async (e) => {
     e.preventDefault();

@@ -35,10 +35,6 @@
   $: balance = fromDecimals(zrc2Tokens[ZIL.base16], ZIL.decimals);
   $: converted = convertRate(rate, balance);
 
-	onMount(() => {
-		jazziconCreate(uuid, account.base16);
-  });
-
   const onRefresh = async () => {
 		loading = true;
 		try {
@@ -51,6 +47,11 @@
 	const onToggleLeftBar = () => {
 		leftBar = !leftBar;
 	};
+
+	onMount(async() => {
+		jazziconCreate(uuid, account.base16);
+		await onRefresh();
+  });
 </script>
 
 <LeftNavBar

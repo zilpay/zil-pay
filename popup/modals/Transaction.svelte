@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
+	import { push } from 'svelte-spa-router';
 
   import { trim } from 'popup/filters/trim';
   import { fromDecimals } from 'popup/filters/units';
@@ -8,6 +9,7 @@
   import { viewTransaction } from 'lib/block-explorer/view';
   import { openTab } from 'popup/mixins/link';
   import { clipboardCopy } from 'lib/utils/clipboard';
+  import { repeatTx } from 'popup/mixins/tx-build';
 
   import rateStore from 'popup/store/rate';
 	import currencyStore from 'popup/store/currency';
@@ -38,9 +40,20 @@
     const url = viewTransaction(hash, $netStore.selected);
     openTab(url);
   };
+  const hanldeOnRepeat = async () => {
+    await repeatTx(tx);
+    push('/confirm/');
+  };
 </script>
 
 <div class="tx">
+  {#if tx.icon}
+    <img
+      src={tx.icon}
+      alt={tx.title}
+      width="30"
+    />
+  {/if}
   <h1>
     {operate} {formatNumber(amount, tx.token.symbol)}
   </h1>
@@ -53,6 +66,11 @@
     </p>
   </div>
   <ul class:loading={!tx.confirmed}>
+    <li>
+      <span>
+        {tx.title}
+      </span>
+    </li>
     <li>
       <span>
         {$_('history.modals.details.from')}
@@ -136,7 +154,10 @@
       {$_('history.modals.details.btns.view')}
     </button>
     {#if tx.confirmed}
-      <button class="warning">
+      <button
+        class="warning"
+        on:click={hanldeOnRepeat}
+      >
         {$_('history.modals.details.btns.repeat')}
       </button>
     {:else}
@@ -183,6 +204,9 @@
   span.pointer {
     cursor: pointer;
     font-family: Demi;
+  }
+  img {
+    margin: 10px;
   }
   ul {
     list-style: none;

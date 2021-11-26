@@ -117,6 +117,9 @@ export interface StoredTx {
   amount: string;
   type: TransactionTypes;
   fee: number;
+  gasLimit: number;
+  icon: string;
+  title: string;
   nonce: number;
   toAddr: string;
   from: string;
