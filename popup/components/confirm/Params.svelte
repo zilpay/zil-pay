@@ -35,6 +35,7 @@
       <img
         src={img}
         width="15"
+        alt="app"
       />
       {formatNumber(amount)} {tx.token.symbol} <span>
         + {tx.fee} ZIL

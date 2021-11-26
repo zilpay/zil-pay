@@ -157,14 +157,25 @@
   },
   "netwrok": {
     "title": "Netwrok",
-    "nodes": "Zilliqa nodes",
+    "selected": {
+      "title": "Selected netwrok",
+      "description": "You can change the network to testnet or private."
+    },
+    "node": {
+      "title": "Change network config",
+      "description": "You can change the node url and msg number, for use yourself private node."
+    },
+    "ssn": {
+      "title": "Zilliqa nodes",
+      "description": "You can change the node url and msg number, for use yourself private node."
+    },
     "config": {
       "node": "JSON-RPC API URL",
       "msg": "Blockchain MSG"
     },
     "btns": {
       "update": "Update",
-      "reset": "reset"
+      "reset": "Reset"
     }
   },
   "connections": {
