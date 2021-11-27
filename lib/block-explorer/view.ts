@@ -23,7 +23,7 @@ export function viewAddress(address: string, netwrok: string) {
   return `${url}/${type}/${address}?network=${netwrok}`;
 }
 
-export function viewIcon(addr: string, theme: Themes) {
+export function viewIcon(addr: string, theme: Themes | string) {
   addr = (addr === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz') ? 'ZIL' : addr;
 
   const color = theme === Themes.Dark ? 'dark' : 'light';

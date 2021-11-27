@@ -27,9 +27,7 @@
   $: converted = convertRate(rate, zils).round(7);
 
   const onClick = () => {
-    console.log(tokenRate, zils);
-    
-    // dispatch('select');
+    dispatch('select');
   };
 </script>
 

@@ -196,6 +196,7 @@
 		min-width: 300px;
 		color: var(--primary-color);
 		margin-block-start: 5px;
+		margin-block-end: 5px;
 
 		&:hover {
 			color: var(--background-color);

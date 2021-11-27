@@ -11,14 +11,15 @@ import type { MinParams, StoredTx } from 'types/transaction';
 import type Big from 'big.js';
 
 import { get } from 'svelte/store';
-import { toDecimals } from 'popup/filters/units';
 
 import walletStore from 'popup/store/wallet';
 import gasStore from 'popup/store/gas';
+import themeStore from 'popup/store/theme';
 
 import { Contracts } from 'config/contracts';
 import { sendToSignTx } from 'app/backend/sign';
 import { Runtime } from 'lib/runtime';
+import { viewIcon } from 'lib/block-explorer/view';
 
 export async function repeatTx(tx: StoredTx) {
   const { gasPrice } = get(gasStore);
@@ -68,6 +69,8 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
   };
   /// IF ZRC2
   if (token.base16 !== Contracts.ZERO_ADDRESS) {
+    const theme = get(themeStore);
+    params.icon = viewIcon(token.bech32, theme);
     params.data = JSON.stringify({
       _tag: 'Transfer',
       params: [
@@ -83,6 +86,7 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
         }
       ]
     });
+    params.gasLimit = 1500;
     params.toAddr = token.base16;
   }
   /// IF ZRC2

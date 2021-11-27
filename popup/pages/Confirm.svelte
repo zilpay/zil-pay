@@ -53,8 +53,7 @@
 	const onUpdateParams = async () => {
 		error = '';
 		loading = true;
-		console.log(tx);
-		
+
 		try {
 			const params = await getTxRequiredParams(accountIndex);
 			tx.version = params.version;

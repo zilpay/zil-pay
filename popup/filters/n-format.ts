@@ -20,7 +20,18 @@ export function formatNumber(balance: number | string, currency?: string) {
     opt.style = 'currency';
     opt.currency = currency;
   }
-  return new Intl
-    .NumberFormat(locale, opt)
-    .format(Number(balance));
+
+  try {
+    return new Intl
+      .NumberFormat(locale, opt)
+      .format(Number(balance));
+  } catch {
+    opt.style = undefined;
+    opt.currency = undefined;
+
+    const n = new Intl
+      .NumberFormat(locale, opt)
+      .format(Number(balance));
+    return `${currency} ${n}`;
+  }
 }
