@@ -224,6 +224,7 @@ export class Wallet {
         if (msg.type !== MTypeTab.RESPONSE_TO_DAPP) return;
         if (msg.payload.uuid !== uuid) return;
 
+        this.#isConnect = Boolean(msg.payload.resolve);
         this.#defaultAccount = msg.payload.resolve || null;
 
         obs();
