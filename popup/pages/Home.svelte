@@ -152,13 +152,16 @@
 		@include fluid-font(320px, 900px, 28px, 60px);
 	}
 	a.acc {
-		border: solid 2px var(--primary-color);
+		border: solid 2px var(--muted-color);
 
 		@include border-radius(100%);
 
 		& > div {
 			height: 36px;
 			width: 36px;
+		}
+		&:hover {
+			border: solid 2px var(--primary-color);
 		}
 	}
 	img {
