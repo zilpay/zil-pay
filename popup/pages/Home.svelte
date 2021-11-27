@@ -2,13 +2,13 @@
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 	import Big from 'big.js';
-  import { link, push } from 'svelte-spa-router';
+	import { link, push } from 'svelte-spa-router';
 	import { TokenType } from 'popup/config/token-type';
-  import { uuidv4 } from 'lib/crypto/uuid';
+	import { uuidv4 } from 'lib/crypto/uuid';
 
 	import { fromDecimals } from 'popup/filters/units';
-  import { convertRate } from 'popup/filters/convert-rate';
-  import { formatNumber } from 'popup/filters/n-format';
+	import { convertRate } from 'popup/filters/convert-rate';
+	import { formatNumber } from 'popup/filters/n-format';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
 	import { balanceUpdate } from 'popup/backend/wallet';
 
@@ -23,28 +23,35 @@
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
-  import Burger from '../components/Burger.svelte';
+	import Burger from '../components/Burger.svelte';
 
 	let loading = false;
 	let leftBar = false;
-  let uuid = uuidv4();
+	let uuid = uuidv4();
 
 	$: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: zrc2Tokens = account.zrc2;
 	$: rate = $rateStore[$currencyStore];
-  $: balance = fromDecimals(zrc2Tokens[ZIL.base16], ZIL.decimals);
-  $: converted = convertRate(rate, balance);	
+	$: balance = $zrcStore.reduce((previousValue, currentValue, index) => {
+		const qa = account.zrc2[currentValue.base16] || '0';
+		const balance = fromDecimals(qa, currentValue.decimals);
+		const tokenRate = Big(currentValue.rate || 1);
+		const zils = tokenRate.mul(balance);
 
-  const onRefresh = async () => {
+		return previousValue.add(zils);
+	}, Big(0));
+	$: converted = convertRate(rate, balance);
+
+	const onRefresh = async () => {
 		loading = true;
 		try {
 			await balanceUpdate();
-		} catch {
-			///
+		} catch (err) {
+			alert(err.message);
 		}
 		loading = false;
-  };
+	};
 	const onToggleLeftBar = () => {
 		leftBar = !leftBar;
 	};
@@ -52,7 +59,7 @@
 	onMount(async() => {
 		jazziconCreate(uuid, account.base16);
 		await onRefresh();
-  });
+	});
 </script>
 
 <LeftNavBar
