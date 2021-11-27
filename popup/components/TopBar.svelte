@@ -2,18 +2,29 @@
   import { link, location } from 'svelte-spa-router';
   import { trim } from 'popup/filters/trim';
   import { createEventDispatcher } from 'svelte';
-  import { linksExpand } from 'popup/mixins/link';
+  import { linksExpand, openTab } from 'popup/mixins/link';
+  import { viewAddress } from 'lib/block-explorer/view';
 
   import Refresh from './icons/Refresh.svelte';
   import SvgLoader from './SvgLoader.svelte';
+
+	import walletStore from 'popup/store/wallet';
+  import netStore from 'popup/store/netwrok';
 
   const dispatch = createEventDispatcher();
 
   export let refresh = false;
   export let expand = true;
+  export let view = false;
+
+  $: account = $walletStore.identities[$walletStore.selectedAddress];
 
   const onRefresh = () => {
     dispatch('refresh');
+  };
+  const viewOnViewBlock = () => {
+    const url = viewAddress(account.bech32, $netStore.selected);
+    openTab(url);
   };
 </script>
 
@@ -43,6 +54,17 @@
         on:click={onRefresh}
       >
         <Refresh className="icon" />
+      </span>
+    {/if}
+    {#if view}
+      <span
+        class="view"
+        on:click={viewOnViewBlock}
+      >
+        <SvgLoader
+          src="/vectors/view.svg"
+          className="icon-view"
+        />
       </span>
     {/if}
   </div>
@@ -79,17 +101,30 @@
   span {
     cursor: pointer;
 
+    &.view {
+      margin-right: 10px;
+    }
+    .refresh {
+      margin: 10px;
+    }
+
     :global(svg.icon > path) {
       fill: var(--muted-color);
     }
 
     &:hover {
+      :global(svg.icon-view > circle) {
+        stroke: var(--primary-color);
+      }
+      :global(svg.icon-view > line) {
+        stroke: var(--primary-color);
+      }
+      :global(svg.icon-view > path) {
+        stroke: var(--primary-color);
+      }
       :global(svg.icon > path) {
         fill: var(--primary-color);
       }
     }
-  }
-  span.refresh {
-    margin: 11px;
   }
 </style>
