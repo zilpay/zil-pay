@@ -16,7 +16,7 @@
   title={$_('tokens_list.modals.add.title')}
   on:close={() => tokenAddModal = !tokenAddModal}
 >
-	<AddTokenModal />
+	<AddTokenModal on:close={() => tokenAddModal = !tokenAddModal}/>
 </Modal>
 <main in:fade>
 	<NavClose title={$_('tokens_list.title')}/>

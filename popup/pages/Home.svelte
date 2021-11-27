@@ -172,10 +172,16 @@
 	}
 	div.wrapper {
 		margin-top: 15px;
+
 		min-width: 290px;
+		max-width: 447px;
+		width: calc(100vw - 20px);
+
 		flex-wrap: wrap;
+
     display: flex;
     justify-content: space-between;
+
 		overflow-y: scroll;
 	}
 	section {
