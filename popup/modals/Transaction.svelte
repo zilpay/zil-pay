@@ -217,7 +217,6 @@
   }
   ul {
     list-style: none;
-    overflow-y: scroll;
     min-width: 300px;
     max-width: 490px;
     width: calc(100vw - 20px);

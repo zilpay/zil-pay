@@ -18,7 +18,7 @@
   export let symbol: string;
   export let decimal: number;
   export let loading = false;
-  export let tokenRate = 1;
+  export let tokenRate = 0;
 
   $: img = viewIcon(address, $themeStore);
   $: balance = fromDecimals(balance, decimal).round(7);
@@ -27,7 +27,9 @@
   $: converted = convertRate(rate, zils).round(7);
 
   const onClick = () => {
-    dispatch('select');
+    console.log(tokenRate, zils);
+    
+    // dispatch('select');
   };
 </script>
 

@@ -30,4 +30,5 @@ export interface ZRC2Info {
   symbol: string;
   decimals: number;
   base16: string;
+  rate: number;
 }

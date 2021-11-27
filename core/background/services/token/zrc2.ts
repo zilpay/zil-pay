@@ -102,7 +102,7 @@ export class ZRC2Controller {
       symbol: token.symbol,
       base16: token.base16,
       bech32: token.bech32,
-      rate: 0 /// TODO add rate.
+      rate: token.rate || 0
     };
     this.#isUnique(newToken);
     this.#identities.push(newToken);
@@ -121,8 +121,10 @@ export class ZRC2Controller {
 
   public async getToken(bech32: string): Promise<ZRC2Info> {
     let balance = '0';
+    let rate = 0;
     const address = fromBech32Address(bech32);
     const addr = tohexString(address);
+    const tokenAddressBase16 = address.toLowerCase();
     const userAddress = Boolean(this.#account.selectedAccount) ?
       String(this.#account.selectedAccount.base16).toLowerCase() :
       String(Contracts.ZERO_ADDRESS).toLowerCase();
@@ -131,6 +133,14 @@ export class ZRC2Controller {
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
         [addr, ZRC2Fields.Balances, [userAddress]]
+      ),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [
+          tohexString(Contracts.ZIL_SWAP),
+          ZRC2Fields.Pools,
+          [tokenAddressBase16]
+        ]
       )
     ];
     const replies = await this.#zilliqa.sendJson(...identities);
@@ -140,10 +150,20 @@ export class ZRC2Controller {
     if (replies[1].result) {
       balance = replies[1].result[ZRC2Fields.Balances][userAddress];
     }
+    if (replies[2].result) {
+      const pool = replies[2].result[ZRC2Fields.Pools];
+      const [zilReserve, tokenReserve] = pool[tokenAddressBase16].arguments;
+      rate = this.#calcRate(
+        zilReserve,
+        tokenReserve,
+        zrc.decimals
+      );
+    }
 
     return {
       balance,
       bech32,
+      rate,
       name: zrc.name,
       symbol: zrc.symbol,
       decimals: zrc.decimals,
@@ -253,6 +273,14 @@ export class ZRC2Controller {
     };
   }
 
+  #calcRate(zilReserve: string, tokenReserve: string, decimals: number) {
+    const _zilReserve = Number(zilReserve) * Math.pow(10, -1 * ZIL.decimals);
+    const _tokenReserve = Number(tokenReserve) * Math.pow(10, -1 * decimals);
+    const exchangeRate = (_zilReserve / _tokenReserve).toFixed(10);
+
+    return Number(exchangeRate);
+  }
+
   async #updateRate(pools: object[]) {
     for (let index = 0; index < pools.length; index++) {
       const res = pools[index];
@@ -265,11 +293,12 @@ export class ZRC2Controller {
         );
         const foundToken = this.identities[foundIndex];
         const [zilReserve, tokenReserve] = pool[base16].arguments;
-        const _zilReserve = zilReserve * Math.pow(10, -1 * ZIL.decimals);
-        const _tokenReserve = tokenReserve * Math.pow(10, -1 * foundToken.decimals);
-        const exchangeRate = (_zilReserve / _tokenReserve).toFixed(10);
 
-        this.identities[foundIndex].rate = Number(exchangeRate);
+        this.identities[foundIndex].rate = this.#calcRate(
+          zilReserve,
+          tokenReserve,
+          foundToken.decimals
+        );
       } catch {
         continue;
       }

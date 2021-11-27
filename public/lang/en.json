@@ -31,7 +31,24 @@
     }
   },
   "tokens_list": {
-    "title": "Tokens"
+    "title": "Tokens",
+    "modals": {
+      "add": {
+        "title": "Custom ZRC2",
+        "placeholder": "Enter contract address.",
+        "balance": "Balance",
+        "address": "Contract",
+        "decimals": "Decimals",
+        "name": "Name",
+        "symbol": "Symbol",
+        "rate": "Price",
+        "btns": {
+          "add": "Add ZRC2 token",
+          "fetch": "Fetch"
+        }
+      }
+    },
+    "placeholder": "Name or symbol"
   },
   "ledger": {
     "title": "Ledger connect",

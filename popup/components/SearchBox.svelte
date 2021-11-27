@@ -22,7 +22,7 @@
   };
 </script>
 
-<label class="search-box">
+<div class="search-box">
   <div>
     <SvgLoader src="/vectors/search.svg" />
   </div>
@@ -32,12 +32,15 @@
     type="search"
     on:input={onInput}
   >
-</label>
+  {#if $$slots.default}
+    <slot />
+	{/if}
+</div>
 
 <style lang="scss">
   @import "../styles/mixins";
 
-  label.search-box {
+  div.search-box {
     background: var(--card-color);
     border: solid 1px var(--card-color);
 
@@ -47,6 +50,8 @@
     @include flex-center-vert;
 
     & > input {
+      margin: 0;
+      padding: 0;
       padding-left: 0;
       border-color: var(--card-color);
     }
