@@ -39,6 +39,9 @@
     accountsModal = false;
 	};
 	const hanldeOnChangeName = async () => {
+		if (name === account.name) {
+			return;
+		}
 		await tick();
 		await changeAccountName(index, name);
 	};

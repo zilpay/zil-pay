@@ -38,7 +38,7 @@ export const routerGuard = (e: { location: string; }) => {
     push('/sign-message');
   }
 
-  if (txns.forConfirm.length !== 0 && guard.isEnable) {
+  if (txns.forConfirm.length !== 0 && guard.isEnable && e.location !== '/netwrok') {
     push(confirmTx);
   }
   if (confirmTx === e.location && txns.forConfirm.length === 0) {
