@@ -33,6 +33,7 @@ export const MTypePopup = {
   IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
   RM_ACCOUNT: `@/${app}/remove-selected-account`,
   SELECT_ACCOUNT: `@/${app}/select-account`,
+  SET_ACCOUNT_NAME: `@/${app}/set-account-name`,
 
   UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
   UPDATE_TXNS: `@/${app}/check-processed-txns`,

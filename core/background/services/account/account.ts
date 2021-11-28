@@ -349,14 +349,12 @@ export class AccountController {
     return this.selectedAccount;
   }
 
-  public async changeAccountName(name: string) {
-    this.#wallet.identities[this.#wallet.selectedAddress].name = name;
+  public async changeAccountName(index: number, name: string) {
+    this.#wallet.identities[index].name = name;
 
     await BrowserStorage.set(
       buildObject(Fields.WALLET, this.#wallet)
     );
-
-    return this.selectedAccount;
   }
 
   private async _add(account: Account) {

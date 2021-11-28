@@ -165,7 +165,19 @@ export class ZilPayWallet {
     }
   }
 
+  public async setAccountName(index: number, name: string, sendResponse: StreamResponse) {
+    try {
+      await this.#core.account.changeAccountName(index, name);
 
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {

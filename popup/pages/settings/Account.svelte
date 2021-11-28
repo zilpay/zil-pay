@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import { getQrCOde } from 'popup/backend/wallet';
+
+	import {
+    MAX_NAME_LEN,
+    MIN_NAME_LEN
+  } from 'popup/config/account';
+
+	import { getQrCOde, changeAccountName } from 'popup/backend/wallet';
   import { trim } from 'popup/filters/trim';
   import { clipboardCopy } from 'lib/utils/clipboard';
 
@@ -12,10 +18,12 @@
 	import Arrow from '../../components/icons/Arrow.svelte';
   import Modal from '../../components/Modal.svelte';
   import AccountsModal from '../../modals/Accounts.svelte';
+	import SvgLoader from '../../components/SvgLoader.svelte';
 
 	let accountsModal = false;
 	let base58 = '';
 	let index = $walletStore.selectedAddress;
+	let name = $walletStore.identities[index].name;
 
 	$: account = $walletStore.identities[index];
 
@@ -29,6 +37,10 @@
 		base58 = await getQrCOde(index);
     await tick();
     accountsModal = false;
+	};
+	const hanldeOnChangeName = async () => {
+		await tick();
+		await changeAccountName(index, name);
 	};
 </script>
 
@@ -47,14 +59,6 @@
 </Modal>
 <main>
 	<NavClose title={$_('account.title')}/>
-	<div>
-		{#if base58}
-			<img
-				src={base58}
-				alt="qrcode"
-			/>
-		{/if}
-	</div>
 	<div
 		class="card"
 		on:click={() => accountsModal = !accountsModal}
@@ -71,6 +75,29 @@
 			<Arrow />
 		</span>
 	</div>
+	<div>
+		{#if base58}
+			<img
+				src={base58}
+				alt="qrcode"
+			/>
+		{/if}
+	</div>
+	<label>
+		<input
+			bind:value={name}
+			type="text"
+			maxlength={MAX_NAME_LEN}
+			minlength={MIN_NAME_LEN}
+			placeholder={$_('setup_acc.name_placeholder')}
+			on:blur={hanldeOnChangeName}
+		/>
+		<div>
+			<SvgLoader
+				src="/vectors/edit.svg"
+			/>
+		</div>
+	</label>
 	<button on:click={() => clipboardCopy(account[$format])}>
 		{$_('home.clipboard.copy')}
 	</button>
@@ -86,6 +113,27 @@
 	img {
 		max-width: 500px;
 		width: calc(100vw - 50px);
+	}
+	label {
+		background-color: var(--card-color);
+		min-width: 270px;
+		border: solid 1px transparent;
+
+		margin-block-start: 15px;
+		margin-block-end: 10px;
+
+		@include border-radius(8px);
+		@include flex-between-row;
+
+		& > div {
+			margin-right: 10px;
+		}
+		& > input {
+			border: none;
+		}
+		&:focus-within {
+      border: solid 1px var(--text-color);
+    }
 	}
 	div.card {
 		cursor: pointer;

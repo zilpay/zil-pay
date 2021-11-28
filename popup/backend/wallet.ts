@@ -122,6 +122,19 @@ export async function exportPrivateKey(password: string) {
   return warpMessage(data);
 }
 
+export async function changeAccountName(index: number, name: string) {
+  const data = await new Message({
+    type: MTypePopup.SET_ACCOUNT_NAME,
+    payload: {
+      index,
+      name
+    }
+  }).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}
+
 export async function removeAccount() {
   const data = await Message.signal(
     MTypePopup.RM_ACCOUNT
