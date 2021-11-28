@@ -98,10 +98,6 @@
     max-width: 500px;
     width: calc(100vw - 15px);
 		@include flex-center-top-column;
-
-    & > b {
-      width: 100%;
-    }
 	}
   div.header {
     width: 100%;

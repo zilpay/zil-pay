@@ -91,12 +91,12 @@
     margin: 0;
     overflow-y: scroll;
     list-style: none;
-		padding-block-end: 10px;
+		padding-block-end: 70px;
 		padding-block-start: 10px;
 
 		max-width: 390px;
 		width: 100%;
-    min-height: 600px;
+    min-height: 450px;
 
     padding-left: 5px;
     padding-right: 5px;
