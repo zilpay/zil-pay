@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-  import { fade, blur } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import Big from 'big.js';
 	import { link, push } from 'svelte-spa-router';
@@ -95,10 +95,7 @@
 				<div id={uuid}/>
 			</a>
 		</div>
-		<h1
-			class="amount"
-			in:blur
-		>
+		<h1 class="amount">
 			{formatNumber(converted, $currencyStore)}
 		</h1>
 		<div

@@ -97,6 +97,7 @@ export class AccountController {
       this.wallet.selectedAddress -= 1;
     }
 
+    await this.#trigger();
     await BrowserStorage.set(
       buildObject(Fields.WALLET, this.#wallet)
     );
@@ -332,15 +333,7 @@ export class AccountController {
 
     this.#wallet.selectedAddress = index;
 
-    new TabsMessage({
-      type: MTypeTab.ADDRESS_CHANGED,
-      payload: {
-        account: {
-          base16: this.selectedAccount.base16,
-          bech32: this.selectedAccount.bech32
-        }
-      }
-    }).send();
+    await this.#trigger();
 
     await BrowserStorage.set(
       buildObject(Fields.WALLET, this.#wallet)
@@ -358,7 +351,7 @@ export class AccountController {
   }
 
   private async _add(account: Account) {
-    await this._checkAccount(account);
+    await this.#checkAccount(account);
 
     this.#wallet
       .identities
@@ -366,6 +359,7 @@ export class AccountController {
     this.#wallet
       .selectedAddress = this.wallet.identities.length - 1;
 
+    await this.#trigger();
     await BrowserStorage.set(
       buildObject(Fields.WALLET, this.#wallet)
     );
@@ -373,7 +367,7 @@ export class AccountController {
     return this.wallet;
   }
 
-  private async _checkAccount(account: Account) {
+  async #checkAccount(account: Account) {
     await this.sync();
 
     const isUnique = this.wallet.identities.some(
@@ -389,5 +383,17 @@ export class AccountController {
 
     assert(!isUnique, 'Account must be unique');
     assert(!isIndex, 'Incorect index and account type');
+  }
+
+  async #trigger() {
+    await new TabsMessage({
+      type: MTypeTab.ADDRESS_CHANGED,
+      payload: {
+        account: {
+          base16: this.selectedAccount.base16,
+          bech32: this.selectedAccount.bech32
+        }
+      }
+    }).send();
   }
 }
