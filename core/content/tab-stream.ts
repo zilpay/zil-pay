@@ -14,9 +14,12 @@ import { warpMessage } from 'lib/utils/warp-message';
 import { httpProvider } from './provider';
 import { RPCMethod } from 'config/methods';
 import { ErrorMessages } from 'config/errors';
+import { PhishingDetect } from './phishing-detect';
 
 export class ContentTabStream {
   readonly #stream: TabStream;
+
+  #phishing = new PhishingDetect();
 
   public get stream() {
     return this.#stream;
@@ -67,11 +70,18 @@ export class ContentTabStream {
       ).send();
       const wallet = warpMessage(data);
 
+      this.#phishing.phishing = wallet.phishing;
+      this.#phishing.http = wallet.http;
+
       if (wallet) {
         new ContentMessage({
           type: MTypeTab.GET_WALLET_DATA,
           payload: wallet,
         }).send(this.#stream, recipient);
+      }
+
+      if (!this.#phishing.checked) {
+        await this.#phishing.check();
       }
     } catch (err) {
       console.error(err);

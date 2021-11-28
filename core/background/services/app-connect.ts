@@ -16,6 +16,7 @@ import { NotificationsControl } from './notifications';
 export class AppConnectController {
   #identities: AppConnect[] = [];
   #confirm?: AppConnect;
+  #phishingDetection = 1;
 
   public get connections() {
     return this.#identities;
@@ -23,6 +24,10 @@ export class AppConnectController {
 
   public get confirmApp() {
     return this.#confirm;
+  }
+
+  public get phishing() {
+    return Boolean(this.#phishingDetection);
   }
 
   #isUnique(connect: AppConnect) {
@@ -79,17 +84,29 @@ export class AppConnectController {
     );
   }
 
+  public async setPhishing(value: boolean) {
+    this.#phishingDetection = value ? 1 : 0;
+    await BrowserStorage.set(
+      buildObject(Fields.PHISHING, String(this.#phishingDetection))
+    );
+  }
+
   public async reset() {
     this.#identities = [];
+    this.#confirm = undefined;
+    this.#phishingDetection = 1;
 
     await BrowserStorage.set(
-      buildObject(Fields.CONNECT_LIST, this.connections)
+      buildObject(Fields.CONNECT_LIST, this.connections),
+      buildObject(Fields.CONNECT_DAPP, this.confirmApp),
+      buildObject(Fields.PHISHING, String(this.#phishingDetection))
     );
   }
 
   public async sync() {
     const jsonData = await BrowserStorage.get(Fields.CONNECT_LIST);
     const confirm = await BrowserStorage.get(Fields.CONNECT_DAPP);
+    const phishing = Number(await BrowserStorage.get(Fields.PHISHING));
 
     try {
       if (confirm) {
@@ -99,12 +116,8 @@ export class AppConnectController {
           NotificationsControl.counter(1);
         }
       }
-    } catch {
-      ///
-    }
-
-    try {
       this.#identities = JSON.parse(String(jsonData));
+      this.#phishingDetection = isNaN(phishing) ? 1 : phishing;
     } catch {
       await this.reset();
     }

@@ -112,6 +112,17 @@ export async function changePromtEnabled(enabled = true) {
   return state;
 }
 
+export async function setPhishingDetection(enabled = true) {
+  const data = await new Message({
+    type: MTypePopup.SET_PHISHING_DETECTION,
+    payload: {
+      enabled
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
 
 export async function fromBech32(bech32: string) {
   const data = await new Message({

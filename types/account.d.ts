@@ -75,6 +75,7 @@ export interface GuardType {
 export interface WalletState {
   popup: boolean;
   wallet: Wallet;
+  phishing: boolean;
   netwrok: {
     config: typeof NETWORK;
     selected: string;

@@ -5,7 +5,10 @@
 
   import { AccountTypes } from 'config/account-type';
 
+	import { setPhishingDetection } from 'popup/backend/settings';
+
 	import walletStore from 'popup/store/wallet';
+	import phishingStore from 'app/store/phishing';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import Toggle from '../../components/Toggle.svelte';
@@ -14,12 +17,17 @@
   import RevealPhraseModal from '../../modals/RevealPhrase.svelte';
   import ExportKeyModal from '../../modals/ExportKey.svelte';
 
-	let phishing = false;
 	let phraseModal = false;
 	let keyModal = false;
 
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: keybtndisbaled = AccountTypes.Ledger === account.type;
+
+	const hanldeOnTogglePhishingDetection = async () => {
+		const enabled = $phishingStore;
+
+		await setPhishingDetection(!enabled);
+	};
 </script>
 
 <Modal
@@ -68,8 +76,8 @@
 			description={$_('security.phishing.warn')}
 		>
 			<Toggle
-				checked={phishing}
-				on:toggle={() => phishing = !phishing}
+				checked={$phishingStore}
+				on:toggle={hanldeOnTogglePhishingDetection}
 			/>
 		</Jumbotron>
 	</div>

@@ -114,18 +114,4 @@ export class ZilPayPopup {
       });
     }
   }
-
-  public changeAccountName(name: string, sendResponse: StreamResponse) {
-    try {
-      const account = this.#core.account.changeAccountName(name);
-
-      sendResponse({
-        resolve: account
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
 }

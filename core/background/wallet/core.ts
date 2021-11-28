@@ -55,6 +55,7 @@ export class ZIlPayCore {
     return {
       popup: this.prompt.enabled,
       wallet: this.account.wallet,
+      phishing: this.apps.phishing,
       netwrok: {
         config: this.netwrok.config,
         selected: this.netwrok.selected

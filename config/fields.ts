@@ -32,5 +32,6 @@ export enum Fields {
   SELECTED_CURRENCY = 'selected-currency',
   LOCALE = 'selected-local',
   FORMAT = 'address-format',
-  POPUP_ENABLED = 'popup-enabled'
+  POPUP_ENABLED = 'popup-enabled',
+  PHISHING = 'phishing-detection'
 }

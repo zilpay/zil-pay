@@ -61,6 +61,7 @@ export const MTypePopup = {
   USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
   RM_APP: `@/${app}/remove-dapp`,
   CLEAR_APPS: `@/${app}/clear-all-apps`,
+  SET_PHISHING_DETECTION: `@/${app}/set-phishing-detection`,
 
   ADD_CONTACT: `@/${app}/add-a-contact`,
   RM_CONTACT: `@/${app}/remove-a-contact`,

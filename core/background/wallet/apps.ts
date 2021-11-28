@@ -39,8 +39,23 @@ export class ZilPayApps {
           http: this.#core.netwrok.provider,
           nativeHttp: this.#core.netwrok.nativeHttp,
           isConnect: has,
-          isEnable: this.#core.guard.isEnable
+          isEnable: this.#core.guard.isEnable,
+          phishing: this.#core.apps.phishing
         }
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async setPhishing(value: boolean, sendResponse: StreamResponse) {
+    try {
+      await this.#core.apps.setPhishing(value);
+
+      sendResponse({
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
