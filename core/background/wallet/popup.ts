@@ -53,10 +53,7 @@ export class ZilPayPopup {
     await this.#core.guard.logout();
     this.updateStatus();
     sendResponse({
-      resolve: {
-        isReady: this.#core.guard.isReady,
-        isEnable: this.#core.guard.isEnable
-      }
+      resolve: this.#core.state
     });
   }
 

@@ -43,3 +43,12 @@ export async function clearConnection() {
   updateState(state);
   return state;
 }
+
+export async function logoutWallet() {
+  const data = await Message.signal(
+    MTypePopup.LOG_OUT
+  ).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

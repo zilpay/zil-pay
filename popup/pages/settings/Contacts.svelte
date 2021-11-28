@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { push } from 'svelte-spa-router';
-	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
 
-	import { jazziconCreate } from 'popup/mixins/jazzicon';
+	import { fade } from 'svelte/transition';
   import { trim } from 'popup/filters/trim';
   import { removeContact } from 'popup/backend/contacts';
   import { clipboardCopy } from 'lib/utils/clipboard';
@@ -55,7 +52,7 @@
 		on:close={() => addContact = false}
 	/>
 </Modal>
-<main>
+<main in:fade>
 	<NavClose title={$_('contacts.title')}/>
 	<div>
 		<SearchBox

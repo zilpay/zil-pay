@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { link, location } from 'svelte-spa-router';
+  import { link, location, push } from 'svelte-spa-router';
   import { trim } from 'popup/filters/trim';
   import { createEventDispatcher } from 'svelte';
+  import { logoutWallet } from 'popup/backend/popup';
+
   import { linksExpand, openTab } from 'popup/mixins/link';
   import { viewAddress } from 'lib/block-explorer/view';
 
@@ -16,6 +18,7 @@
   export let refresh = false;
   export let expand = true;
   export let view = false;
+  export let lock = false;
 
   $: account = $walletStore.identities[$walletStore.selectedAddress];
 
@@ -25,6 +28,10 @@
   const viewOnViewBlock = () => {
     const url = viewAddress(account.bech32, $netStore.selected);
     openTab(url);
+  };
+  const handleOnLock = async () => {
+    await logoutWallet();
+    push('/lock');
   };
 </script>
 
@@ -67,6 +74,17 @@
         />
       </span>
     {/if}
+    {#if lock}
+      <span
+        class="lock"
+        on:click={handleOnLock}
+      >
+        <SvgLoader
+          src="/vectors/lock.svg"
+          className="icon-lock"
+        />
+      </span>
+    {/if}
   </div>
 </nav>
 
@@ -101,7 +119,7 @@
   span {
     cursor: pointer;
 
-    &.view {
+    &.lock {
       margin-right: 10px;
     }
     .refresh {
@@ -121,6 +139,9 @@
       }
       :global(svg.icon-view > path) {
         stroke: var(--primary-color);
+      }
+      :global(svg.icon-lock > path) {
+        fill: var(--primary-color);
       }
       :global(svg.icon > path) {
         fill: var(--primary-color);

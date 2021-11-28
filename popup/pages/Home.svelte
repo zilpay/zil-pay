@@ -70,6 +70,7 @@
 	<TopBar
 		refresh
 		view
+		lock
 		on:refresh={onRefresh}
 	/>
 	<img
