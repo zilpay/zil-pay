@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import { tick, onMount } from 'svelte';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
@@ -39,7 +40,8 @@
 
   export let params = {
     type: TokenType.ZRC2,
-    index: 0
+    index: 0,
+    bech32: ''
   };
 
   let contactsModal = false;
@@ -52,7 +54,7 @@
   let selectedToken = params.index;
   let percentageList = [0, 25, 50, 100];
   let amount;
-  let recipient = '';
+  let recipient = params.bech32;
   let recipientError = '';
 
 	$: account = $walletStore.identities[selectedAccount];
@@ -175,7 +177,7 @@
 </Modal>
 <main>
 	<NavClose title={$_('send.title')}/>
-  <div>
+  <div in:fade>
     <div>
       <SelectCard
         title={$_('send.cards.transfer')}
@@ -201,7 +203,10 @@
         />
       </SelectCard>
     </div>
-    <form on:submit={handleSubmit}>
+    <form
+      in:fade
+      on:submit={handleSubmit}
+    >
       <div class="input">
         <p>
           {$_('send.input_to.title')}

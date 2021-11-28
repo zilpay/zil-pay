@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-
 	import { fade } from 'svelte/transition';
+	import { push } from 'svelte-spa-router';
+
   import { trim } from 'popup/filters/trim';
   import { removeContact } from 'popup/backend/contacts';
   import { clipboardCopy } from 'lib/utils/clipboard';
+	import { TokenType } from 'popup/config/token-type';
 
 	import contactsStore from 'popup/store/contacts';
 
@@ -41,6 +43,9 @@
 				break;
 		}
 	};
+	const hanldeOnSelect = (address: String) => {
+		push(`/send/${TokenType.ZRC2}/0/${address}`);
+	};
 </script>
 
 <Modal
@@ -68,7 +73,10 @@
 	{/if}
 	<ul>
 		{#each contacts as contact, index}
-			<li class:border={index !== contacts.length - 1}>
+			<li
+				class:border={index !== contacts.length - 1}
+				on:click={() => hanldeOnSelect(contact.address)}
+			>
 				<div class="text">
 					<b>
 						{contact.name}

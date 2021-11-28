@@ -82,7 +82,7 @@ export default {
       routerGuard
     ]
   }),
-  '/send/:type/:index': wrap({
+  '/send/:type/:index/:bech32?': wrap({
     component: Send,
     conditions: [
       routerGuard
