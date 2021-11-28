@@ -87,6 +87,7 @@
 
 	main {
 		height: 100vh;
+		max-width: 320px;
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 

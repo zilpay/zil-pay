@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+  import { fade, blur } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 
 	import {
@@ -64,6 +65,7 @@
 	<NavClose title={$_('account.title')}/>
 	<div
 		class="card"
+		in:fade
 		on:click={() => accountsModal = !accountsModal}
 	>
 		<div>
@@ -78,15 +80,16 @@
 			<Arrow />
 		</span>
 	</div>
-	<div>
+	<div in:blur>
 		{#if base58}
 			<img
 				src={base58}
+				width="300"
 				alt="qrcode"
 			/>
 		{/if}
 	</div>
-	<label>
+	<label in:fade>
 		<input
 			bind:value={name}
 			type="text"
@@ -120,6 +123,7 @@
 	label {
 		background-color: var(--card-color);
 		min-width: 270px;
+		max-width: 300px;
 		border: solid 1px transparent;
 
 		margin-block-start: 15px;
@@ -171,6 +175,7 @@
 		}
 	}
 	button {
-		width: 290px;
+		min-width: 270px;
+		max-width: 300px;
 	}
 </style>
