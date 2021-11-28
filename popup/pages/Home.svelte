@@ -187,10 +187,12 @@
 	}
 	div.wrapper {
 		margin-top: 15px;
+		padding-left: 10px;
+		padding-right: 10px;
 
 		min-width: 290px;
 		max-width: 447px;
-		width: calc(100vw - 20px);
+		width: fit-content;
 
 		flex-wrap: wrap;
 

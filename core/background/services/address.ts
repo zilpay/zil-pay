@@ -32,8 +32,10 @@ export class AddressController {
   public async sync() {
     const content = await BrowserStorage.get(Fields.FORMAT);
 
-    if (!content) {
+    if (!Boolean(content)) {
       await this.reset();
+
+      return;
     }
 
     this.#format = content as Formats;
@@ -43,7 +45,7 @@ export class AddressController {
     this.#format = Formats.Bech32;
 
     await BrowserStorage.set(
-      buildObject(Fields.FORMAT, this.format)
+      buildObject(Fields.FORMAT, Formats.Bech32)
     );
   }
 }

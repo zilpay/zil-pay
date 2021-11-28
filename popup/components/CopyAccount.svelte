@@ -18,6 +18,7 @@
       tip = $_('home.clipboard.copy');
     }, 500);
   };
+  console.log(account);
 </script>
 
 <Tooltip
