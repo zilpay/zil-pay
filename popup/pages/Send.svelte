@@ -17,6 +17,7 @@
   import { fromPercent } from 'popup/filters/from-percent';
   import { gasToFee } from 'popup/filters/gas-to-fee';
   import { buildTx } from 'popup/mixins/tx-build';
+  import { getZNS } from 'popup/backend/zns';
 
   import zrcStore from 'app/store/zrc';
 	import walletStore from 'popup/store/wallet';
@@ -45,6 +46,7 @@
   let accountsModal = false;
   let tokensModal = false;
   let loading = false;
+  let loadingZNS = false;
   let uuid = uuidv4();
   let selectedAccount = $walletStore.selectedAddress;
   let selectedToken = params.index;
@@ -112,6 +114,27 @@
     }
     loading = false;
   };
+
+  async function onInput(e) {
+    recipientError = '';
+    const { value } = e.target;
+    const regExpDomain = /.*\w.zil/gm;
+
+    if (regExpDomain.test(value)) {
+      loadingZNS = true;
+      try {
+        const resolver = await getZNS(value);
+        if (resolver.address) {
+          recipient = resolver.address.bech32;
+        } else {
+          recipient = resolver.owner.bech32;
+        }
+      } catch (err) {        
+        ///
+      }
+      loadingZNS = false;
+    }
+  }
 </script>
 
 <Modal
@@ -192,8 +215,10 @@
           </div>
           <input
             bind:value={recipient}
+            class:loading={loadingZNS}
+            disabled={loadingZNS}
             placeholder={$_('send.input_to.placeholder')}
-            on:input={() => recipientError = ''}
+            on:input={onInput}
           >
         </label>
       </div>
