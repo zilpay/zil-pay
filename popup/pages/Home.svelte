@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+  import { fade, blur } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import Big from 'big.js';
 	import { link, push } from 'svelte-spa-router';
@@ -78,7 +79,10 @@
 		alt="logo"
 	>
 	<main>
-		<div class="bar-wrapper">
+		<div
+			class="bar-wrapper"
+			in:fade
+		>
 			<div on:click={onToggleLeftBar}>
 				<Burger />
 			</div>
@@ -91,10 +95,16 @@
 				<div id={uuid}/>
 			</a>
 		</div>
-		<h1 class="amount">
+		<h1
+			class="amount"
+			in:blur
+		>
 			{formatNumber(converted, $currencyStore)}
 		</h1>
-		<div class="btns">
+		<div
+			in:fade
+			class="btns"
+		>
 			<button
 				class="action"
 				on:click={() => push(`/send/${TokenType.ZRC2}/0`)}

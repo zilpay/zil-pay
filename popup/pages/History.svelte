@@ -42,6 +42,7 @@
 <section>
 	<TopBar
     refresh
+    lock
     on:refresh={hanldeOnUpdate}
   />
 	<main>

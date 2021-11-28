@@ -51,7 +51,10 @@
 </script>
 
 <section>
-	<TopBar refresh/>
+	<TopBar
+		refresh
+		lock
+	/>
 	<main>
 		<ul>
 			{#each items as item, i}

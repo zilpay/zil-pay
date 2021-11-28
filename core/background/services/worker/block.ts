@@ -21,7 +21,7 @@ export class BlockController {
   readonly #zilliqa: ZilliqaControl;
   readonly #queue: TransactionsQueue;
   readonly #name = `block/${Runtime.runtime.id}/zilpay`;
-  readonly #delay = 0.5;
+  readonly #delay = 1;
   #currentBlock = 0;
 
   public get blocknumber() {

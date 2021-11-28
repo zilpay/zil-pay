@@ -83,7 +83,7 @@
         </span>
         <div>
           <span>
-            {state.rate}
+            {ZIL.symbol} {state.rate}
           </span>
           <p>
             {formatNumber(converted, $currencyStore)}
@@ -196,9 +196,14 @@
       }
       & > span:last-child {
 				font-family: Demi;
+        text-align: right;
 			}
-      & > div > p {
-        margin: 0;
+      & > div {
+        text-align: right;
+
+        & > p {
+          margin: 0;
+        }
       }
     }
   }
