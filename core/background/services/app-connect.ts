@@ -116,9 +116,14 @@ export class AppConnectController {
           NotificationsControl.counter(1);
         }
       }
+    } catch (err) {
+      ///
+    }
+
+    try {
       this.#identities = JSON.parse(String(jsonData));
       this.#phishingDetection = isNaN(phishing) ? 1 : phishing;
-    } catch {
+    } catch (err) {
       await this.reset();
     }
   }
