@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { fade } from 'svelte/transition';
 	import { push } from 'svelte-spa-router';
 
   import { trim } from 'popup/filters/trim';
@@ -57,7 +56,7 @@
 		on:close={() => addContact = false}
 	/>
 </Modal>
-<main in:fade>
+<main>
 	<NavClose title={$_('contacts.title')}/>
 	<div>
 		<SearchBox
