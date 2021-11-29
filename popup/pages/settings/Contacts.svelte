@@ -73,11 +73,11 @@
 	{/if}
 	<ul>
 		{#each contacts as contact, index}
-			<li
-				class:border={index !== contacts.length - 1}
-				on:click={() => hanldeOnSelect(contact.address)}
-			>
-				<div class="text">
+			<li class:border={index !== contacts.length - 1}>
+				<div
+					class="text"
+					on:click={() => hanldeOnSelect(contact.address)}
+				>
 					<b>
 						{contact.name}
 					</b>
