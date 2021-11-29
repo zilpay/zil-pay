@@ -147,19 +147,17 @@ export class TransactionsController {
       if (!txnsJson) {
         throw new Error();
       }
-      const txns = JSON.parse(String(txnsJson));
-
-      this.#txns = txns;
-    } catch {
-      ////
+      this.#txns = JSON.parse(String(txnsJson));
+    } catch (err) {
+      this.#txns = [];
     }
 
     try {
       if (confirmJson) {
         this.#confirm = JSON.parse(String(confirmJson));
       }
-    } catch {
-      ////
+    } catch (err) {
+      this.#confirm = [];
     }
 
     NotificationsControl.counter(this.#confirm.length);

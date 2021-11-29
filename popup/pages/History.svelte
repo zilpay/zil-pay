@@ -131,12 +131,15 @@
   h3 {
     margin-block-end: 0;
   }
+  h3 {
+    font-size: 12pt;
+  }
   h2 {
     text-align: left;
-    @include fluid-font(320px, 720px, 20px, 30px);
+    font-size: 20pt;
   }
   p {
     text-indent: 15px;
-    @include fluid-font(320px, 720px, 15px, 20px);
+    font-size: 11pt;
   }
 </style>
