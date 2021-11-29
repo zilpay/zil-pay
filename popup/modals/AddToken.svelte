@@ -150,12 +150,17 @@
       {$_('tokens_list.modals.add.btns.add')}
     </button>
   {:else}
-    <form on:submit={handleSubmit}>
+    <form
+      autocomplete="off"
+      on:submit={handleSubmit}
+    >
       <label>
         <input
           bind:this={inputEl}
           bind:value={address}
           type="text"
+          autocomplete="off"
+          autocorrect="off"
           class:loading={loading}
           disabled={loading}
           placeholder={$_('tokens_list.modals.add.placeholder')}

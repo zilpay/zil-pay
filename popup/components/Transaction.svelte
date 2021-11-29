@@ -69,6 +69,8 @@
         text-align: right;
       }
       & > h3 {
+        font-size: 9pt;
+        font-size: 8pt;
         margin-block-end: 0;
       }
       & > p {

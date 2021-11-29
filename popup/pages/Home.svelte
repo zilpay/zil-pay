@@ -126,8 +126,8 @@
 			on:click={() => push('/tokens-list')}
 		>
 			<GearIcon
-				width="25px"
-				height="25px"
+				width="24px"
+				height="24px"
 			/>
 			{$_('home.token_list')}
 		</button>

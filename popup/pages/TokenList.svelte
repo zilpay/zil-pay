@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
 	import { fly } from 'svelte/transition';
-	import flyTransition from 'popup/transitions/fly';
 
   import { viewIcon } from 'lib/block-explorer/view';
 	import { removeZRC2Token } from 'popup/backend/tokens';

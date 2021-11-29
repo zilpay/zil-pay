@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
+  import { fly } from 'svelte/transition';
+	import flyTransition from 'popup/transitions/fly';
   import { checkProcessedTx, clearAllTxns } from 'popup/backend/transactions';
 
   import transactionsStore from 'popup/store/transactions';
@@ -65,8 +67,15 @@
           {$_('history.queue')} ({queue.length})
         </b>
         <ul>
-          {#each queue as tx}
-            <li on:click={() => showTx = tx}>
+          {#each queue as tx, index}
+            <li
+              in:fly={{
+                delay: 50 * index,
+                duration: 400,
+                y: -20
+              }}
+              on:click={() => showTx = tx}
+            >
               <Transaction
                 tx={tx}
                 loading={loading}
@@ -80,8 +89,15 @@
           {$_('history.history')} ({history.length})
         </b>
         <ul>
-          {#each history as tx}
-            <li on:click={() => showTx = tx}>
+          {#each history as tx, index}
+            <li
+              in:fly={{
+                delay: 50 * index,
+                duration: 400,
+                y: -20
+              }}
+              on:click={() => showTx = tx}
+            >
               <Transaction tx={tx}/>
             </li>
           {/each}
