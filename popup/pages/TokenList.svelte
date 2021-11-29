@@ -16,16 +16,20 @@
   import Modal from '../components/Modal.svelte';
 	import Toggle from '../components/Toggle.svelte';
 
-	$: tokens = $zrcStore.slice(2);
-
+	let search = '';
 	let tokenAddModal = false;
+
+	$: tokens = $zrcStore.slice(2).filter((t) => {
+		const t0 = t.name.includes(search.toLowerCase());
+		const t1 = t.symbol.includes(search.toLowerCase());
+
+		return t0 || t1;
+	});
 
 	async function hanldeOnHide(token) {
 		const foundIndex = $zrcStore.findIndex(
 			(t) => t.base16 === token.base16
 		);
-		console.log(foundIndex);
-		
 		await removeZRC2Token(foundIndex);
 	}
 </script>
@@ -42,6 +46,7 @@
 	<SearchBox
 		placeholder={$_('tokens_list.placeholder')}
 		focus
+		on:input={(e) => search = e.detail}
 	>
 		<span
 			class="add"

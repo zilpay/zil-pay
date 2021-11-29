@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
   import { fromBech32 } from 'popup/backend/settings';
@@ -18,6 +18,7 @@
 
   const dispatch = createEventDispatcher();
 
+	let inputEl;
   let loading = false;
   let address = '';
   let error = '';
@@ -32,6 +33,7 @@
   $: rate = $rateStore[$currencyStore];
 
   async function hanldeOnInput() {
+    error = '';
     try {
       await fromBech32(address);
       disabled = false;
@@ -67,9 +69,18 @@
     }
     loading = false;
   };
+
+  onMount(() => {
+    if (inputEl && inputEl.focus) {
+      inputEl.focus();
+    }
+  });
 </script>
 
 <div class="wrapper">
+  <h2 class="error">
+    {error}
+  </h2>
   {#if state}
     <img
       src={img}
@@ -142,6 +153,7 @@
     <form on:submit={handleSubmit}>
       <label>
         <input
+          bind:this={inputEl}
           bind:value={address}
           type="text"
           class:loading={loading}
@@ -166,6 +178,10 @@
     padding: 30px;
     height: 600px;
     @include flex-center-top-column;
+  }
+  h2.error {
+    color: var(--danger-color);
+    font-size: 16px;
   }
   ul {
     min-width: 300px;
