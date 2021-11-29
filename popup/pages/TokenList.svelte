@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { fade, fly } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import flyTransition from 'popup/transitions/fly';
 
   import { viewIcon } from 'lib/block-explorer/view';
@@ -62,7 +62,6 @@
 					duration: 400,
 					y: -20
 				}}
-				out:fade
 			>
 				<img
 					src={viewIcon(token.bech32, $themeStore)}
@@ -120,6 +119,10 @@
 			& > div {
 				width: 100%;
 				padding-left: 10px;
+
+				& > * {
+					@include text-shorten;
+				}
 			}
 		}
 	}

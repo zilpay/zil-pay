@@ -69,7 +69,7 @@
 	{#each identities as token, index}
 		<li
       in:fly={{
-        delay: 100 * i,
+        delay: 100 * index,
         duration: 400,
         y: -20
       }}

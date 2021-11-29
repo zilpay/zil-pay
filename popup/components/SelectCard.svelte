@@ -28,7 +28,7 @@
     <span>
       <slot />
     </span>
-    <div>
+    <div class="header">
       <h3>
         {header}
       </h3>
@@ -55,6 +55,12 @@
 <style lang="scss">
   @import "../styles/mixins";
 
+  div.header {
+    width: 90%;
+    & > p {
+      @include text-shorten;
+    }
+  }
   div.card {
     margin: 5px;
 
@@ -72,8 +78,6 @@
         margin-right: 10px;
       }
       & > div {
-        width: 100%;
-
         &.right {
           text-align: right;
         }
