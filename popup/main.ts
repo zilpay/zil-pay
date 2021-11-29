@@ -24,7 +24,7 @@ getState()
 			return null;
 		}
 
-		if (events.hasListeners()) {
+		if (events && events.hasListeners && events.hasListeners()) {
 			events.removeListener();
 		}
 
