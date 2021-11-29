@@ -3,7 +3,7 @@
 	import { _ } from 'popup/i18n';
 	import walletStore from 'popup/store/wallet';
   import { trim } from 'popup/filters/trim';
-  import { scale } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
 
 	import { selectAccount } from 'popup/backend/wallet';
 
@@ -18,7 +18,7 @@
 	};
 </script>
 
-<main in:scale>
+<main in:fade>
 	<NavClose title={$_('accounts.title')}/>
 	<AccountsModal
 		list={$walletStore.identities}

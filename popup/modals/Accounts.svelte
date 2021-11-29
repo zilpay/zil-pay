@@ -42,9 +42,16 @@
 		{$_('accounts.no_accounts')} {search}
 	</p>
 {/if}
-<ul in:fly={flyTransition.in} >
+<ul>
 	{#each identities as account, index}
-		<li on:click={() => onSelectAccount(account)}>
+		<li
+			in:fly={{
+				delay: 100 * index,
+				duration: 400,
+				y: -20
+			}}
+			on:click={() => onSelectAccount(account)}
+		>
 			<AccountCard
 				account={account}
 				selected={account.base16 === selectedAccount.base16}
@@ -59,7 +66,6 @@
 		padding: 0;
     margin: 0;
     overflow-y: scroll;
-    list-style: none;
 		padding-block-end: 70px;
 
 		max-width: 390px;

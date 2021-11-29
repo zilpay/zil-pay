@@ -38,7 +38,6 @@
   ul {
 		padding: 0px;
     margin: 0;
-    list-style: none;
     background-color: var(--card-color);
 
     @include flex-between-row;

@@ -41,8 +41,15 @@
 		<p>
 			{$_('send.options.con')}
 		</p>
-		{#each contacts as contact}
-			<li on:click={() => onSelect(contact.address)}>
+		{#each contacts as contact, i}
+			<li
+				in:fly={{
+					delay: 100 * i,
+					duration: 400,
+					y: -20
+				}}
+				on:click={() => onSelect(contact.address)}
+			>
 				<div class="text">
 					<b>
 						{contact.name}
@@ -58,8 +65,15 @@
 		<p>
 			{$_('send.options.acc')}
 		</p>
-		{#each accounts as account}
-			<li on:click={() => onSelect(account[$format])}>
+		{#each accounts as account, i}
+			<li
+				in:fly={{
+					delay: 100 * i,
+					duration: 400,
+					y: -20
+				}}
+				on:click={() => onSelect(account[$format])}
+			>
 				<div class="text">
 					<b>
 						{account.name}
@@ -79,7 +93,6 @@
 		padding: 0;
     margin: 0;
     overflow-y: scroll;
-    list-style: none;
 		padding-block-end: 70px;
 
 		max-width: 390px;

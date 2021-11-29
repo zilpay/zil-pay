@@ -181,13 +181,13 @@
 		padding-right: 10px;
 
 		min-width: 290px;
-		max-width: 476px;
+		max-width: 464px;
 		width: fit-content;
 
 		flex-wrap: wrap;
 
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 
 		overflow-y: scroll;
 	}

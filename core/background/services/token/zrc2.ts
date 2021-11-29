@@ -84,11 +84,12 @@ export class ZRC2Controller {
   }
 
   public async remove(index: number) {
-    assert(index > 2, ErrorMessages.OutOfIndex);
+    assert(index >= 2, ErrorMessages.OutOfIndex);
 
     await this.#account.removeToken(this.#identities[index]);
 
     delete this.#identities[index];
+    this.#identities = this.#identities.filter(Boolean);
 
     await BrowserStorage.set(
       buildObject(this.field, this.identities)

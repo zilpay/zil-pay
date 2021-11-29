@@ -216,7 +216,6 @@
     margin: 10px;
   }
   ul {
-    list-style: none;
     min-width: 300px;
     max-width: 490px;
     width: calc(100vw - 20px);

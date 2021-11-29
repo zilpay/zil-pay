@@ -109,7 +109,6 @@
 		padding: 0;
     margin: 0;
 
-    list-style: none;
     overflow-y: scroll;
 
 		margin-block-start: 16px;

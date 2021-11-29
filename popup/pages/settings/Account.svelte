@@ -165,6 +165,7 @@
 			margin-block-end: 0.2em;
 		}
 		& > div > p {
+			font-size: 11px;
 			margin-block-start: 0em;
 			margin-block-end: 0.4em;
 		}

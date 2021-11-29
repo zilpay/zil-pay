@@ -85,7 +85,6 @@
 	@import "../../styles/mixins";
 	ul {
 		margin: 0;
-    list-style: none;
     padding: 5px;
 
     width: calc(100vw - 15px);

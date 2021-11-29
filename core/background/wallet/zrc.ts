@@ -50,7 +50,7 @@ export class ZilPayZRC {
       await this.#core.zrc2.remove(index);
 
       sendResponse({
-        resolve: this.#core.zrc2.identities
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

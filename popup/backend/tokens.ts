@@ -32,3 +32,15 @@ export async function addZRC2Token(token: ZRC2Info) {
   updateState(state);
   return state;
 }
+
+export async function removeZRC2Token(index: number) {
+  const data = await new Message({
+    type: MTypePopup.RM_TOKEN,
+    payload: {
+      index
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}

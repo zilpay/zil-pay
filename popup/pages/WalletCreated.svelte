@@ -58,6 +58,9 @@
 
 		@include flex-center-top-column;
   }
+  ul {
+    list-style: unset;
+  }
   div.tips {
     padding: 30px;
     border-radius: 16px;

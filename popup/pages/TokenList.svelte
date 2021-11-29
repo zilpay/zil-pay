@@ -1,14 +1,33 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
+	import flyTransition from 'popup/transitions/fly';
+
+  import { viewIcon } from 'lib/block-explorer/view';
+	import { removeZRC2Token } from 'popup/backend/tokens';
+
+	import zrcStore from 'app/store/zrc';
+  import themeStore from 'popup/store/theme';
 
   import NavClose from '../components/NavClose.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
 	import SvgLoader from '../components/SvgLoader.svelte';
 	import AddTokenModal from '../modals/AddToken.svelte';
   import Modal from '../components/Modal.svelte';
+	import Toggle from '../components/Toggle.svelte';
+
+	$: tokens = $zrcStore.slice(2);
 
 	let tokenAddModal = false;
+
+	async function hanldeOnHide(token) {
+		const foundIndex = $zrcStore.findIndex(
+			(t) => t.base16 === token.base16
+		);
+		console.log(foundIndex);
+		
+		await removeZRC2Token(foundIndex);
+	}
 </script>
 
 <Modal
@@ -18,7 +37,7 @@
 >
 	<AddTokenModal on:close={() => tokenAddModal = !tokenAddModal}/>
 </Modal>
-<main in:fade>
+<main>
 	<NavClose title={$_('tokens_list.title')}/>
 	<SearchBox
 		placeholder={$_('tokens_list.placeholder')}
@@ -31,7 +50,37 @@
 			<SvgLoader src="/vectors/add.svg"/>
 		</span>
 	</SearchBox>
-	<div></div>
+	<ul>
+		{#each tokens as token, i}
+			<li in:fly={{
+					delay: 100 * i,
+					duration: 400,
+					y: -20
+				}}
+				out:fade
+			>
+				<img
+					src={viewIcon(token.bech32, $themeStore)}
+					alt={token.symbol}
+					width="36"
+				/>
+				<div>
+					<h3>
+						{token.symbol}
+					</h3>
+					<b>
+						{token.name}
+					</b>
+				</div>
+				<span>
+					<Toggle
+						checked
+						on:toggle={() => hanldeOnHide(token)}
+					/>
+				</span>
+			</li>
+		{/each}
+	</ul>
 </main>
 
 <style lang="scss">
@@ -41,6 +90,33 @@
 		height: 100vh;
 
 		@include flex-center-top-column;
+	}
+	ul {
+		margin: 0;
+		padding: 0;
+		margin-block-start: 25px;
+    overflow-y: scroll;
+
+		& > li {
+			min-width: 270px;
+
+			margin: 8px;
+			padding: 5px;
+
+			padding-left: 16px;
+			padding-right: 16px;
+
+			background-color: var(--card-color);
+			border: solid 1px var(--card-color);
+
+			@include border-radius(8px);
+			@include flex-between-row;
+
+			& > div {
+				width: 100%;
+				padding-left: 10px;
+			}
+		}
 	}
 	span.add {
 		cursor: pointer;

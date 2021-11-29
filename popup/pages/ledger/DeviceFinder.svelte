@@ -146,7 +146,6 @@
     padding: 0;
     margin: 0;
     margin-block-start: 0;
-    list-style: none;
     overflow-y: scroll;
 		height: 100%;
 

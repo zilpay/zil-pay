@@ -84,7 +84,6 @@
 		padding: 0;
     margin: 0;
     overflow-y: scroll;
-    list-style: none;
 
 		height: calc(100vh - 86px);
 		max-width: 500px;
