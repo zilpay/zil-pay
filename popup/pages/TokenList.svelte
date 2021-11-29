@@ -122,6 +122,9 @@
 				& > * {
 					@include text-shorten;
 				}
+				& > h3 {
+					margin-block-end: 0.3em;
+				}
 			}
 		}
 	}
