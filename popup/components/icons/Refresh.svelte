@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let width = '26';
-  export let height = '26';
+  export let width = '28';
+  export let height = '25';
   export let className = '';
 </script>
 

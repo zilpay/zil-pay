@@ -122,9 +122,6 @@
     &.lock {
       margin-right: 10px;
     }
-    .refresh {
-      margin: 10px;
-    }
 
     :global(svg.icon > path) {
       fill: var(--muted-color);

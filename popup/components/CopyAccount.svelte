@@ -28,9 +28,9 @@
     <h1>
       {account.name}
     </h1>
-    <span>
+    <b>
       {trim(account[$format])}
-    </span>
+    </b>
   </div>
 </Tooltip>
 
@@ -48,10 +48,6 @@
       margin-block-start: 0;
       margin-block-end: 0.2em;
       font-size: clamp(0.8rem, 2vw, 1rem);
-    }
-
-    & > span {
-      color: var(--text-color);
     }
 
     &:hover {

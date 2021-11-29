@@ -12,7 +12,7 @@
 </script>
 
 <input
-  class="tgl tgl-ios"
+  class="tgl-ios"
   id={id}
   type="checkbox"
   checked={checked}
@@ -26,22 +26,8 @@
 <style lang="scss">
   @import "../styles/mixins";
 
-  .tgl {
+  input {
     display: none;
-
-    // add default box-sizing for this scope
-    &,
-    &:after,
-    &:before,
-    & *,
-    & *:after,
-    & *:before,
-    & + .tgl-btn {
-      box-sizing: border-box;
-      &::selection {
-        background: none;
-      }
-    }
 
     + .tgl-btn {
       outline: 0;
@@ -51,6 +37,13 @@
       position: relative;
       cursor: pointer;
       user-select: none;
+
+      background: var(--background-color);
+      border-radius: 2em;
+      padding: 2px;
+      transition: all .4s ease;
+      border: 1px solid var(--border-color);
+
       &:after,
       &:before {
         position: relative;
