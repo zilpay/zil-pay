@@ -64,7 +64,9 @@ export class PromptService {
     }
 
     try {
-      Runtime.windows.create(createData, (tab: object) => this.#id = tab['id']);
+      Runtime.windows.create(createData, (tab) => {
+        this.#id = tab.id;
+      });
     } catch (err) {
       console.error(err);
     }

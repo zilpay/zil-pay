@@ -3,6 +3,7 @@
 	import { _ } from 'popup/i18n';
 	import { onMount } from 'svelte';
 	import { push } from 'svelte-spa-router';
+	import { closePopup } from 'popup/mixins/popup';
 
 	import appStore from 'popup/store/apps';
 	import { userResponseConnection } from 'popup/backend/popup';
@@ -21,12 +22,12 @@
 		} catch {
 			///
 		}
-		window.close();
+		await closePopup();
 		push('/');
 	};
 	const hanldeOnReject = async () => {
 		await userResponseConnection(false);
-		window.close();
+		await closePopup();
 		push('/');
 	};
 </script>

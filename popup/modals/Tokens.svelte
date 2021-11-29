@@ -123,6 +123,5 @@
 	}
   img {
     width: 30px;
-    margin: 15px;
   }
 </style>

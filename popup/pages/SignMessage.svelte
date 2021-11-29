@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
+	import { closePopup } from 'popup/mixins/popup';
 
   import { uuidv4 } from 'lib/crypto/uuid';
   import { trim } from 'popup/filters/trim';
@@ -38,13 +39,13 @@
 	};
   const handleOnReject = async () => {
     await rejectSignMessage();
-    window.close();
+    await closePopup();
   };
   const handleOnSign = async () => {
     loading = true;
     try {
       await signMessageApprove(accountIndex);
-      window.close();
+      await closePopup();
     } catch (err) {
       error = err.message;
     }

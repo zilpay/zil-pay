@@ -7,6 +7,7 @@
 	import { QA } from 'popup/config/gas';
 
   import { uuidv4 } from 'lib/crypto/uuid';
+	import { closePopup } from 'popup/mixins/popup';
   import { trim } from 'popup/filters/trim';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
 	import { fromDecimals } from 'popup/filters/units';
@@ -68,7 +69,7 @@
 		const isExtends = Boolean(tx.uuid);
 		if (list.length === 0) {
 			if (isExtends) {
-				window.close();
+				await closePopup();
 			}
 
 			push('/history');
