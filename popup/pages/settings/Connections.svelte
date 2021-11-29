@@ -53,6 +53,7 @@
 					<img
 						src={item.icon}
 						alt="icon"
+						width="30"
 						on:click={() => hanldeOnSelect(item)}
 					/>
 					<div on:click={() => hanldeOnSelect(item)}>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-  import { fade } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import Big from 'big.js';
 	import { link, push } from 'svelte-spa-router';
@@ -79,10 +78,7 @@
 		alt="logo"
 	>
 	<main>
-		<div
-			class="bar-wrapper"
-			in:fade
-		>
+		<div class="bar-wrapper">
 			<div on:click={onToggleLeftBar}>
 				<Burger />
 			</div>
@@ -98,10 +94,7 @@
 		<h1 class="amount">
 			{formatNumber(converted, $currencyStore)}
 		</h1>
-		<div
-			in:fade
-			class="btns"
-		>
+		<div class="btns">
 			<button
 				class="action"
 				on:click={() => push(`/send/${TokenType.ZRC2}/0`)}
@@ -207,7 +200,7 @@
 		line-height: 30px;
 	}
 	button.add {
-		min-width: 300px;
+		min-width: 290px;
 		color: var(--primary-color);
 		margin-block-start: 5px;
 		margin-block-end: 5px;
@@ -218,7 +211,7 @@
 	}
 	div.bar-wrapper {
 		max-width: 500px;
-    width: calc(100vw - 15px);
+    width: calc(100vw - 25px);
 		@include flex-between-row;
 	}
 	:global(button.add > svg > path) {

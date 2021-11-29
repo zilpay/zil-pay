@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
+  import { blur } from 'svelte/transition';
 
   import SvgLoader from './SvgLoader.svelte';
 
@@ -22,7 +23,10 @@
   };
 </script>
 
-<div class="search-box">
+<div
+  in:blur
+  class="search-box"
+>
   <div>
     <SvgLoader src="/vectors/search.svg" />
   </div>
