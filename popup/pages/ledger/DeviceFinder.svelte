@@ -5,6 +5,7 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
+  import { isChrome } from 'popup/mixins/detect';
 
   import BackBar from '../../components/BackBar.svelte';
   import RefreshIcon from '../../components/icons/Refresh.svelte';
@@ -16,6 +17,13 @@
 
   const getHidTransport = async () => {
     loading = true;
+    console.log(isChrome());
+
+    if (!isChrome()) {
+      push(`/ledger-connect/-33`);
+      return null;
+    }
+    
     try {
       devices = await window.navigator.hid.requestDevice({
         filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]

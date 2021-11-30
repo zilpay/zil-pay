@@ -14,9 +14,12 @@
   import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
 	import walletStore from 'popup/store/wallet';
 	import { balanceUpdate } from 'popup/backend/wallet';
-  import { loadLedgerAccount } from 'popup/backend/ledger';
+  import { loadLedgerAccount, addU2FLedgerAccount } from 'popup/backend/ledger';
+  import { LedgerU2F } from 'popup/mixins/ledger-u2f';
 
   import BackBar from '../../components/BackBar.svelte';
+
+  const ledger = new LedgerU2F();
 
   export let params = {
     id: 0
@@ -38,8 +41,16 @@
   let device;
 
   $: disabled = loading || name.length < MIN_NAME_LEN;
+  $: isU2f = Number(params.id) === -33;
 
   onMount(async () => {
+    // Loading firefox u2f
+    if (isU2f) {
+      await ledger.init();
+
+      return;
+    }
+
     const devices = await window.navigator.hid.getDevices({
       filters: [{
         productId: Number(params.id),
@@ -60,7 +71,12 @@
     loading = true;
 
     try {
-      await loadLedgerAccount(index, Number(params.id), name);
+      if (isU2f) {
+        const { pubAddr, publicKey } = await ledger.getAddresses(index);
+        await addU2FLedgerAccount(index, name, pubAddr, publicKey);
+      } else {
+        await loadLedgerAccount(index, Number(params.id), name);
+      }
 
       push('/');
     } catch (err) {

@@ -8,7 +8,7 @@
  */
 import type { TabStream } from 'lib/streem/tab-stream';
 import type { Params } from 'types/zilliqa';
-import type { Subject } from './subject';
+import type { Subject } from 'lib/streem/subject';
 
 import { uuidv4 } from 'lib/crypto/uuid';
 import { MTypeTab, MTypeTabContent } from 'lib/streem/stream-keys';

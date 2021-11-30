@@ -9,7 +9,7 @@
 
 import { MTypeTab, MTypeTabContent } from "lib/streem/stream-keys";
 import { TabStream } from "lib/streem/tab-stream";
-import { Subject } from './subject';
+import { Subject } from 'lib/streem/subject';
 import { ContentMessage } from 'lib/streem/secure-message';
 
 export class Handler {

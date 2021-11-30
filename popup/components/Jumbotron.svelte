@@ -4,9 +4,9 @@
 </script>
 
 <div class="card">
-  <h3>
+  <h2>
     {title}
-  </h3>
+  </h2>
   <p>
     {description}
   </p>
@@ -24,9 +24,13 @@
     padding: 16px;
 		margin-block-end: 16px;
 
-		& > h3 {
+		& > h2 {
 			margin: 0;
+      font-size: 13pt;
 		}
+    & > p {
+      font-size: 10pt;
+    }
 
 		@media screen and (min-width: 400px) {
 			@include border-radius(8px);

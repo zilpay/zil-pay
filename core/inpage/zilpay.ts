@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { TabStream } from 'lib/streem/tab-stream';
-import type { Subject } from './subject';
+import type { Subject } from 'lib/streem/subject';
 
 import { ZilliqaUtils } from './crypto/zilliqa-utils';
 import { HTTPProvider } from './provider';

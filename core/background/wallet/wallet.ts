@@ -20,6 +20,8 @@ interface LedgerParams {
   index: number;
   name: string;
   productId: number;
+  pubAddr: string,
+  publicKey: string;
 }
 
 export class ZilPayWallet {
@@ -112,6 +114,28 @@ export class ZilPayWallet {
     try {
       await this.#core.ledger.init(payload.productId);
       const { pubAddr, publicKey } = await this.#core.ledger.interface.getPublicAddress(payload.index);
+      await this.#core.account.addLedgerAccount(
+        publicKey,
+        pubAddr,
+        payload.index,
+        payload.name,
+        payload.productId
+      );
+      await this.#core.transactions.sync();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async loadU2FLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
+    try {
+      const { pubAddr, publicKey} = payload;
       await this.#core.account.addLedgerAccount(
         publicKey,
         pubAddr,

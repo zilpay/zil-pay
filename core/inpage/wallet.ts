@@ -10,7 +10,7 @@
 import type { TabStream } from "lib/streem/tab-stream";
 import type { MessageParams } from "types/transaction";
 import type { InpageWallet } from "types/account";
-import type { Subject } from "./subject";
+import type { Subject } from 'lib/streem/subject';
 import type { TxBlock } from 'types/block';
 
 import assert from 'assert';

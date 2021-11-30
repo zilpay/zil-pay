@@ -23,6 +23,8 @@
 <style lang="scss">
   @import "../styles/mixins";
   nav {
+    margin-block-start: 1em;
+
     max-width: 900px;
     width: 100%;
     z-index: 2;
