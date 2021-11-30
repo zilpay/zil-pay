@@ -112,16 +112,8 @@ export class ZilPayWallet {
 
   public async loadLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
     try {
-      let pubAddr = payload.pubAddr;
-      let publicKey = payload.publicKey;
-
-      if (!payload.pubAddr || !payload.publicKey) {
-        await this.#core.ledger.init(payload.productId);
-        const keys = await this.#core.ledger.interface.getPublicAddress(payload.index);
-
-        pubAddr = keys.pubAddr;
-        publicKey = keys.publicKey;
-      }
+      await this.#core.ledger.init(payload.productId);
+      const { publicKey, pubAddr } = await this.#core.ledger.interface.getPublicAddress(payload.index);
 
       await this.#core.account.addLedgerAccount(
         publicKey,
@@ -136,7 +128,6 @@ export class ZilPayWallet {
         resolve: this.#core.state
       });
     } catch (err) {
-      console.log(err);
       sendResponse({
         reject: err.message
       });

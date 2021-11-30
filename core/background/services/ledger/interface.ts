@@ -7,10 +7,10 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { Transaction } from 'core/background/services/transactions/tx-builder';
+import type { MessagePayload } from 'types/transaction';
 import type Transport from '@ledgerhq/hw-transport';
 import { Buffer } from 'buffer';
 import assert from 'assert';
-import sha256 from 'crypto-js/sha256';
 
 const CLA = 0xE0;
 const INS = {
@@ -88,12 +88,12 @@ export class LedgerInterface {
     return { pubAddr, publicKey };
   }
 
-  public async signHash(index: number, hash: string) {
+  public async signHash(index: number, message: MessagePayload) {
     const P1 = 0x00;
     const P2 = 0x00;
     let indexBytes = Buffer.alloc(4);
     indexBytes.writeInt32LE(index);
-    const hashBytes = Buffer.from(hash, 'hex');
+    const hashBytes = Buffer.from(message.hash, 'hex');
     let hashLen = hashBytes.length;
 
     assert(hashLen > 0, `Hash length ${hashLen} is invalid`);

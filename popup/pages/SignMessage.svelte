@@ -1,13 +1,9 @@
 <script lang="ts">
-  import { LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
-
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import { closePopup } from 'popup/mixins/popup';
 
-  import { isChrome } from 'popup/mixins/detect';
-  import { LedgerU2F } from 'popup/mixins/ledger-u2f';
   import { uuidv4 } from 'lib/crypto/uuid';
   import { trim } from 'popup/filters/trim';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
@@ -21,9 +17,6 @@
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
 	import Toggle from '../components/Toggle.svelte';
-
-  const isU2F = !isChrome();
-  const ledgerU2F = new LedgerU2F();
 
 	let loading = false;
   let error = '';
@@ -51,13 +44,7 @@
   const handleOnSign = async () => {
     loading = true;
     try {
-      if (account.productId === LEDGER_PRODUCT_ID_U2F) {
-        await ledgerU2F.init();
-        const sig = await ledgerU2F.signMessage(accountIndex, message.content);
-        await signMessageApprove(accountIndex, sig);
-      } else {
-        await signMessageApprove(accountIndex);
-      }
+      await signMessageApprove(accountIndex);
       await closePopup();
     } catch (err) {
       error = err.message;

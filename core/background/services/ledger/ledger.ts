@@ -7,15 +7,18 @@
  * Copyright (c) 2021 ZilPay
  */
 import type Transport from '@ledgerhq/hw-transport';
+
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import assert from 'assert';
+
 import { ErrorMessages } from 'config/errors';
 import { LedgerInterface } from './interface';
-import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
+import { LedgerU2F } from './ledger-u2f';
+import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
 
 export class LedgerWebHID {
   #transport?: Transport;
-  #interface?: LedgerInterface;
+  #interface?: LedgerInterface | LedgerU2F;
 
   public get interface() {
     return this.#interface;
@@ -50,9 +53,16 @@ export class LedgerWebHID {
   }
 
   public async init(productId: number) {
-    await this.getHidTransport(productId);
+    if (productId === LEDGER_PRODUCT_ID_U2F) {
+      if (!(this.#interface instanceof LedgerU2F)) {
+        this.#interface = new LedgerU2F();
+      }
 
-    this.#interface = new LedgerInterface(this.#transport);
+      await this.#interface.init();
+    } else {
+      await this.getHidTransport(productId);
+      this.#interface = new LedgerInterface(this.#transport);
+    }
 
     return this.#interface;
   }

@@ -6,7 +6,6 @@
   import { AccountTypes } from 'config/account-type';
 	import flyTransition from 'popup/transitions/fly';
   import {
-    MIN_PASSWORD_LEN,
     MAX_NAME_LEN,
     MIN_NAME_LEN,
     DEFAULT_LEDGER_NAME
@@ -17,11 +16,8 @@
 
 	import { balanceUpdate } from 'popup/backend/wallet';
   import { loadLedgerAccount } from 'popup/backend/ledger';
-  import { LedgerU2F } from 'popup/mixins/ledger-u2f';
 
   import BackBar from '../../components/BackBar.svelte';
-
-  const ledgerU2F = new LedgerU2F();
 
   export let params = {
     id: 0
@@ -46,13 +42,9 @@
   $: isU2f = Number(params.id) === LEDGER_PRODUCT_ID_U2F;
 
   onMount(async () => {
-    // Loading firefox u2f
-    if (isU2f) {
-      await ledgerU2F.init();
-
+    if (!window.navigator.hid) {
       return;
     }
-
     const devices = await window.navigator.hid.getDevices({
       filters: [{
         productId: Number(params.id),
@@ -73,12 +65,7 @@
     loading = true;
 
     try {
-      if (isU2f) {
-        const { pubAddr, publicKey } = await ledgerU2F.getAddresses(index);
-        await loadLedgerAccount(index, Number(params.id), name, pubAddr, publicKey);
-      } else {
-        await loadLedgerAccount(index, Number(params.id), name);
-      }
+      await loadLedgerAccount(index, Number(params.id), name);
 
       push('/');
     } catch (err) {

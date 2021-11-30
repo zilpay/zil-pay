@@ -6,7 +6,8 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { MinParams } from 'types/transaction';
+import type { MessagePayload } from 'types/transaction';
+import type { Transaction } from 'core/background/services/transactions/tx-builder';
 
 import { uuidv4 } from 'lib/crypto/uuid';
 import { Subject } from 'lib/streem/subject';
@@ -61,16 +62,23 @@ export class LedgerU2F {
     });
   }
 
-  public getAddresses(index = 0) {
-    return this.#message(INS[2], index);
+  public async getPublicAddress(index = 0) {
+    const keys = await this.#message(INS[2], index);
+    return {
+      pubAddr: String(keys['pubAddr']),
+      publicKey: String(keys['publicKey'])
+    };
   }
 
-  public sendTransaction(index: number, params: MinParams) {
-    return this.#message(INS[4], index, params);
+  public async signTxn(index: number, tx: Transaction): Promise<string> {
+    console.log(tx);
+    const sig = await this.#message(INS[4], index, tx.self);
+    return String(sig);
   }
 
-  public signMessage(index: number, message: string) {
-    return this.#message(INS[3], index, message);
+  public async signHash(index: number, message: MessagePayload): Promise<string> {
+    const sig = await this.#message(INS[3], index, message.content);
+    return String(sig);
   }
 
   async #message(method: string, ...args: any[]) {
@@ -100,7 +108,7 @@ export class LedgerU2F {
           return resolve(res.resolve);
         }
 
-        return reject(res.reject);
+        return reject(new Error(res.reject));
       });
     });
   }
