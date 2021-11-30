@@ -46,7 +46,7 @@
 	{#each identities as account, index}
 		<li
 			in:fly={{
-				delay: 100 * index,
+				delay: 50 * index,
 				duration: 400,
 				y: -20
 			}}

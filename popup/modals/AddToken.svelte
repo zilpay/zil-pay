@@ -49,8 +49,7 @@
     try {
       state = await getZRC2State(address);
       amount = fromDecimals(state.balance, state.decimals).round(7);
-      const zils = amount.mul(state.rate);
-      converted = convertRate(state.rate, zils).round(7);
+      converted = convertRate(rate, state.rate).round(5);
       img = viewIcon(state.bech32, $themeStore);
     } catch (err) {
       console.error(err);
@@ -94,7 +93,7 @@
         </span>
         <div>
           <span>
-            {ZIL.symbol} {state.rate}
+            {ZIL.symbol} {Math.round(Number(state.rate))}
           </span>
           <p>
             {formatNumber(converted, $currencyStore)}
@@ -233,8 +232,6 @@
   label,
   button {
     margin: 10px;
-    min-width: 290px;
-    max-width: 400px;
-    width: 100%;
+    width: 290px;
   }
 </style>
