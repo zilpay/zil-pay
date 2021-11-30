@@ -79,8 +79,8 @@
 <style lang="scss">
 	@import "../styles/mixins";
   h1 {
-    color: var(--text-color);
     margin-block-start: 0;
+    font-size: 29pt;
   }
   main {
 		background-color: var(--background-color);
