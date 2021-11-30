@@ -11,8 +11,10 @@
     MIN_NAME_LEN,
     DEFAULT_LEDGER_NAME
   } from 'popup/config/account';
-  import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
+  import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
+
 	import walletStore from 'popup/store/wallet';
+
 	import { balanceUpdate } from 'popup/backend/wallet';
   import { loadLedgerAccount } from 'popup/backend/ledger';
   import { LedgerU2F } from 'popup/mixins/ledger-u2f';
@@ -41,7 +43,7 @@
   let device;
 
   $: disabled = loading || name.length < MIN_NAME_LEN;
-  $: isU2f = Number(params.id) === -33;
+  $: isU2f = Number(params.id) === LEDGER_PRODUCT_ID_U2F;
 
   onMount(async () => {
     // Loading firefox u2f

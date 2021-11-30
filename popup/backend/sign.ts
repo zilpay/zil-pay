@@ -19,11 +19,12 @@ export async function rejectSignMessage() {
   warpMessage(data);
 }
 
-export async function signMessageApprove(index: number) {
+export async function signMessageApprove(index: number, sig?: string) {
   const data = await new Message({
     type: MTypePopup.SIGN_MESSAGE_APPROVE,
     payload: {
-      index
+      index,
+      sig
     }
   }).send();
   warpMessage(data);

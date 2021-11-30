@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
+  import { LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
 
 	import { push } from 'svelte-spa-router';
   import { fly } from 'svelte/transition';
@@ -19,7 +19,7 @@
     loading = true;
 
     if (!isChrome()) {
-      push(`/ledger-connect/-33`);
+      push(`/ledger-connect/${LEDGER_PRODUCT_ID_U2F}`);
       return null;
     }
     
