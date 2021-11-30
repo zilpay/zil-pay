@@ -1,0 +1,6 @@
+:global(div.m-warp) {
+  // background-color: var(--modal-color);
+  height: 600px;
+  @include border-radius(8px);
+  @include flex-center-top-column;
+}

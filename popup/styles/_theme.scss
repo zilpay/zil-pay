@@ -1,0 +1,39 @@
+@import "./fonts";
+@import "./variables";
+@import "./mixins";
+
+:global(:root) {
+  --background-color: #{inspect(map-get($light , "Background"))};
+  --border-color:  #{inspect(map-get($light , "Border"))};
+  --notification-color:  #{inspect(map-get($light , "Notification"))};
+  --card-color:  #{inspect(map-get($light , "Card"))};
+  --button-color:  #{inspect(map-get($light , "Button"))};
+  --text-color:  #{inspect(map-get($light , "Text"))};
+  --modal-color:  #{inspect(map-get($light , "Modal"))};
+
+  --secondary-color:  #{inspect(map-get($light , "Secondary"))};
+  --primary-color: #{inspect(map-get($light , "Primary"))};
+  --success-color:  #{inspect(map-get($light , "Success"))};
+  --danger-color: #{inspect(map-get($light , "Danger"))};
+  --warning-color: #{inspect(map-get($light , "Warning"))};
+  --muted-color: #{inspect(map-get($light , "Muted"))};
+  --hover-color: #{inspect(map-get($light , "Hover"))};
+}
+
+:global(body[theme="dark"]) {
+  --background-color:  #{inspect(map-get($dark , "Background"))};
+  --border-color:  #{inspect(map-get($dark , "Border"))};
+  --notification-color:  #{inspect(map-get($dark , "Notification"))};
+  --card-color:  #{inspect(map-get($dark , "Card"))};
+  --button-color:  #{inspect(map-get($dark , "Button"))};
+  --text-color:  #{inspect(map-get($dark , "Text"))};
+  --modal-color:  #{inspect(map-get($dark , "Modal"))};
+  
+  --primary-color:  #{inspect(map-get($dark , "Primary"))};
+  --secondary-color:  #{inspect(map-get($dark , "Secondary"))};
+  --success-color:  #{inspect(map-get($dark , "Success"))};
+  --danger-color: #{inspect(map-get($dark , "Danger"))};
+  --warning-color: #{inspect(map-get($dark , "Warning"))};
+  --muted-color: #{inspect(map-get($dark , "Muted"))};
+  --hover-color: #{inspect(map-get($dark , "Hover"))};
+}

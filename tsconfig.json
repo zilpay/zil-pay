@@ -1,0 +1,28 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": [
+    "popup/**/*",
+    "core/**/*",
+    "lib/**/*",
+    "types/**/*"
+  ],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "paths": {
+      "app/*": ["popup/*"],
+      "background/*": ["core/background/*"],
+      "content/*": ["core/content/*"],
+      "inpage/*": ["core/inpage/*"],
+      "config/*": ["config/*"],
+      "lib/*": ["lib/*"],
+      "types/*": ["types/*"],
+    },
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "isolatedModules": false
+  },
+  "types": [
+    "chrome"
+  ]
+}

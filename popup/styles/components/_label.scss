@@ -1,0 +1,15 @@
+@import "../mixins";
+
+:global(label) {
+  color: var(--text-color);
+  font-family: Regular;
+}
+
+:global(label) {
+  color: var(--text-color);
+  font-family: Regular;
+}
+
+:global(label.error) {
+  color: var(--danger-color);
+}

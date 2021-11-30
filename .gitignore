@@ -1,6 +1,11 @@
+/node_modules/
+/public/build/
+
 .DS_Store
-node_modules
-/dist
+
+dist
+.vscode
+public/build
 
 # local env files
 .env.local
@@ -20,3 +25,7 @@ yarn-error.log*
 *.sln
 *.sw*
 *.zip
+
+inpage.html
+content.html
+background.html

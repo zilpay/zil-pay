@@ -1,0 +1,72 @@
+@font-face {
+	font-family: Bold;
+	src: url('/fonts/AvenirNextLTPro-Bold.otf') format("opentype");
+	
+}
+
+@font-face {
+	font-family: Demi;
+	src: url('/fonts/AvenirNextLTPro-Demi.otf') format("opentype");
+}
+
+@font-face {
+	font-family: Medium;
+	src: url('/fonts/AvenirNextLTPro-MediumCn.otf') format("opentype");
+}
+
+@font-face {
+	font-family: Regular;
+	src: url('/fonts/AvenirNextLTPro-Regular.otf') format("opentype");
+}
+
+$font-family-Bold:    AvenirNextLTPro-Bold    !default;
+$font-family-Medium:  AvenirNextLTPro-Medium  !default;
+$font-family-Regular: AvenirNextLTPro-Regular !default;
+$font-family-Light:   AvenirNextLTPro-Demi    !default;
+
+
+:global(address, caption, cite, code, dfn, em, strong, th, var) {
+  font-style: normal;
+  font-weight: normal;
+}
+
+:global(b) {
+  font-weight: bold;
+  font-size: 9pt;
+}
+
+:global(ol, ul) {
+  list-style: none;
+}
+:global(caption, th) {
+  text-align: left;
+}
+
+:global(h1, h2, h3, h4, h5, h6) {
+  font-size: 100%;
+  font-weight: normal;
+}
+
+:global(q:before, q:after) {
+  content: '';
+}
+
+:global(abbr, acronym) {
+  border: 0;
+  font-variant: normal;
+}
+
+:global(sup) {
+  vertical-align: text-top;
+}
+
+:global(sub) {
+  vertical-align: text-bottom;
+}
+
+:global(input, textarea, select) {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  *font-size: 100%;
+}
