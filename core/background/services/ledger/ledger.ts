@@ -56,9 +56,8 @@ export class LedgerWebHID {
     if (productId === LEDGER_PRODUCT_ID_U2F) {
       if (!(this.#interface instanceof LedgerU2F)) {
         this.#interface = new LedgerU2F();
+        await this.#interface.init();
       }
-
-      await this.#interface.init();
     } else {
       await this.getHidTransport(productId);
       this.#interface = new LedgerInterface(this.#transport);

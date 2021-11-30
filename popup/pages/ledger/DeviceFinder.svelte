@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
+  import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
 
 	import { push } from 'svelte-spa-router';
   import { fly } from 'svelte/transition';
@@ -22,7 +22,7 @@
       push(`/ledger-connect/${LEDGER_PRODUCT_ID_U2F}`);
       return null;
     }
-    
+
     try {
       devices = await window.navigator.hid.requestDevice({
         filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
@@ -34,6 +34,8 @@
         accepted = true;
       }
     } catch (err) {
+      console.error(err);
+      
       error = err.message;
     } finally {
       loading = false;

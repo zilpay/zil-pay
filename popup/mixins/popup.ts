@@ -15,6 +15,8 @@ export async function closePopup() {
     ////
   }
 
-  const { id } = await Runtime.windows.getCurrent();
-  Runtime.windows.remove(id, console.error);
+  if (Runtime.windows.getCurrent) {
+    const { id } = await Runtime.windows.getCurrent();
+    Runtime.windows.remove(id, console.error);
+  }
 }
