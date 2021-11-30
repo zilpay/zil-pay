@@ -25,6 +25,14 @@ export class HTTPProvider {
   #subject: Subject;
 
   public RPCMethod = RPCMethod;
+  public middleware = {
+    request: {
+      use() {}
+    },
+    response: {
+      use() {}
+    }
+  };
 
   constructor(stream: TabStream, subject: Subject) {
     this.#stream = stream;
