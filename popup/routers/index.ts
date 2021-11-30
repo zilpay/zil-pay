@@ -29,6 +29,9 @@ import TokenList from '../pages/TokenList.svelte';
 import LedgerConnect from '../pages/ledger/LedgerConnect.svelte';
 import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 
+import Swap from '../pages/Swap.svelte';
+import Collect from '../pages/Collect.svelte';
+
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
 import About from '../pages/settings/About.svelte';
@@ -48,6 +51,18 @@ export default {
   }),
   '/history': wrap({
     component: History,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/swap': wrap({
+    component: Swap,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/collect': wrap({
+    component: Collect,
     conditions: [
       routerGuard
     ]

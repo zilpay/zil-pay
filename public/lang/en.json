@@ -363,5 +363,8 @@
   "about": {
     "title": "About ZilPay",
     "version": "version"
+  },
+  "swap": {
+    "title": "Comming Soon!"
   }
 }
