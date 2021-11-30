@@ -20,8 +20,8 @@ interface LedgerParams {
   index: number;
   name: string;
   productId: number;
-  pubAddr: string,
-  publicKey: string;
+  pubAddr?: string,
+  publicKey?: string;
 }
 
 export class ZilPayWallet {
@@ -112,8 +112,17 @@ export class ZilPayWallet {
 
   public async loadLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
     try {
-      await this.#core.ledger.init(payload.productId);
-      const { pubAddr, publicKey } = await this.#core.ledger.interface.getPublicAddress(payload.index);
+      let pubAddr = payload.pubAddr;
+      let publicKey = payload.publicKey;
+
+      if (!payload.pubAddr || !payload.publicKey) {
+        await this.#core.ledger.init(payload.productId);
+        const keys = await this.#core.ledger.interface.getPublicAddress(payload.index);
+
+        pubAddr = keys.pubAddr;
+        publicKey = keys.publicKey;
+      }
+
       await this.#core.account.addLedgerAccount(
         publicKey,
         pubAddr,
@@ -127,28 +136,7 @@ export class ZilPayWallet {
         resolve: this.#core.state
       });
     } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
-  public async loadU2FLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
-    try {
-      const { pubAddr, publicKey} = payload;
-      await this.#core.account.addLedgerAccount(
-        publicKey,
-        pubAddr,
-        payload.index,
-        payload.name,
-        payload.productId
-      );
-      await this.#core.transactions.sync();
-
-      sendResponse({
-        resolve: this.#core.state
-      });
-    } catch (err) {
+      console.log(err);
       sendResponse({
         reject: err.message
       });

@@ -17,7 +17,6 @@
 
   const getHidTransport = async () => {
     loading = true;
-    console.log(isChrome());
 
     if (!isChrome()) {
       push(`/ledger-connect/-33`);

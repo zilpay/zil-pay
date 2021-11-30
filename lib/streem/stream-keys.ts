@@ -67,7 +67,6 @@ export const MTypePopup = {
   RM_CONTACT: `@/${app}/remove-a-contact`,
 
   LEDGER_LOAD_ACCOUNT: `@/${app}/ledger-load-account`,
-  LEDGER_LOAD_U2F_ACCOUNT: `@/${app}/ledger-load-ut2-account`,
 
   CHANGE_CURRENCY: `@/${app}/change-currency`,
   RESET_CURRENCY: `@/${app}/reset-currency`,
