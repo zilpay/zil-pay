@@ -98,6 +98,7 @@ export interface TransactionForConfirm extends MinParams {
     symbol: string;
     bech32: string;
   };
+  tokenAmount: string;
   teg: string;
   fee: number;
   recipient: string;

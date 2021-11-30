@@ -71,6 +71,7 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
   if (token.base16 !== Contracts.ZERO_ADDRESS) {
     const theme = get(themeStore);
     params.icon = viewIcon(token.bech32, theme);
+    params.amount = '0';
     params.data = JSON.stringify({
       _tag: 'Transfer',
       params: [
@@ -89,6 +90,7 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
     params.gasLimit = 1500;
     params.toAddr = token.base16;
   }
+
   /// IF ZRC2
   return sendToSignTx(params);
 }

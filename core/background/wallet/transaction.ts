@@ -66,13 +66,14 @@ export class ZilPayTransaction {
       if (payload.tag === TransactionTypes.Transfer) {
         token = await this.#getToken(payload.toAddr);
       }
-      
+
       await this.#core.transactions.addConfirm({
         token,
         ...params,
         toAddr: payload.toAddr,
         teg: payload.tag,
-        amount: payload.tokenAmount,
+        tokenAmount: payload.tokenAmount,
+        amount: payload.amount,
         fee: payload.fee,
         recipient: payload.recipient,
         gasLimit: Number(params.gasLimit),

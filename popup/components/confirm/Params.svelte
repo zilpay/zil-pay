@@ -14,6 +14,7 @@
 
 	export let tx = {
     amount: 0,
+    tokenAmount: 0,
     fee: 0,
     recipient: '',
     teg: '',
@@ -22,7 +23,7 @@
     gasPrice: 0
   };
 
-	$: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
+	$: amount = fromDecimals(tx.tokenAmount, tx.token.decimals).round(7);
   $: img = viewIcon(tx.token.bech32, $themeStore);
 </script>
 
