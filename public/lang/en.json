@@ -162,13 +162,13 @@
     "btn": "Start using!",
     "tips": {
       "title": "Tips on storing it safely",
-      "list": [
-        "Save a backup in multiple places",
-        "Never share the phrase with anyone",
-        "Be careful of phising! ZilPay will never spontaneously ask for your secret phrase",
-        "If you need to back up your secret phrase again, you can find it in Security",
-        "If you ever have a question or see something fishy, contact us."
-      ],
+      "list": {
+        "0": "Save a backup in multiple places",
+        "1": "Never share the phrase with anyone",
+        "2": "Be careful of phising! ZilPay will never spontaneously ask for your secret phrase",
+        "3": "If you need to back up your secret phrase again, you can find it in Security",
+        "4": "If you ever have a question or see something fishy, contact us."
+      },
       "warn": "ZilPay team cannot recover your secret phrase!"
     }
   },
@@ -215,7 +215,8 @@
     }
   },
   "account": {
-    "title": "Account"
+    "title": "Account",
+    "reset": "Reset nonce"
   },
   "security": {
     "title": "Security",

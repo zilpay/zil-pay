@@ -1,19 +1,20 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
-  import { fade, blur } from 'svelte/transition';
-	import { _ } from 'popup/i18n';
-
 	import {
     MAX_NAME_LEN,
     MIN_NAME_LEN
   } from 'popup/config/account';
 
-	import { getQrCOde, changeAccountName } from 'popup/backend/wallet';
+	import { onMount, tick } from 'svelte';
+  import { fade, blur } from 'svelte/transition';
+	import { _ } from 'popup/i18n';
+	import { getCurrentNonce, resetNonce } from 'popup/backend/transactions';
+	import { getQrCOde, changeAccountName, selectAccount } from 'popup/backend/wallet';
+
   import { trim } from 'popup/filters/trim';
-  import { clipboardCopy } from 'lib/utils/clipboard';
 
 	import walletStore from 'popup/store/wallet';
 	import format from 'popup/store/format';
+	import transactionsStore from 'popup/store/transactions';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import Arrow from '../../components/icons/Arrow.svelte';
@@ -25,19 +26,33 @@
 	let base58 = '';
 	let index = $walletStore.selectedAddress;
 	let name = $walletStore.identities[index].name;
+	let nonce = 0;
+	let loading = true;
 
 	$: account = $walletStore.identities[index];
 
+	async function updateState() {
+		loading = true;
+		base58 = '';
+		try {
+			base58 = await getQrCOde(index);
+			nonce = await getCurrentNonce();
+		} catch {
+			///
+		}
+		loading = false;
+	}
+
 	onMount(async() => {
-		base58 = await getQrCOde(index);
+		await updateState();
 	});
 
 	const onSelectAccount = async ({ detail }) => {
     index = detail;
-		base58 = '';
-		base58 = await getQrCOde(index);
-    await tick();
     accountsModal = false;
+    await tick();
+		await selectAccount(detail);
+		await updateState();
 	};
 	const hanldeOnChangeName = async () => {
 		if (name === account.name) {
@@ -45,6 +60,15 @@
 		}
 		await tick();
 		await changeAccountName(index, name);
+	};
+	const handleOnResetNonce = async () => {
+		loading = true;
+		try {
+			nonce = await resetNonce();
+		} catch {
+			///
+		}
+		loading = false;
 	};
 </script>
 
@@ -104,8 +128,12 @@
 			/>
 		</div>
 	</label>
-	<button on:click={() => clipboardCopy(account[$format])}>
-		{$_('home.clipboard.copy')}
+	<button
+		class:loading={loading}
+		disabled={loading}
+		on:click={handleOnResetNonce}
+	>
+		{$_('account.reset')} #{nonce}
 	</button>
 </main>
 

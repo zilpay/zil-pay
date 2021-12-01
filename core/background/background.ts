@@ -23,6 +23,12 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.GET_REQUIRED_PARAMS:
         core.transaction.getRequiredParams(msg.payload.index, sendResponse);
         return true;
+      case MTypePopup.GET_CURRENT_NONCE:
+        core.transaction.getCurrentNonce(sendResponse);
+        return true;
+      case MTypePopup.RESET_NONCE:
+        core.transaction.resetNonce(sendResponse);
+        return true;
       case MTypePopup.CLEAR_ALL_TXNS:
         core.transaction.clearHistory(sendResponse);
         return true;

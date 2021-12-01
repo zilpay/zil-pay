@@ -21,11 +21,21 @@
       {$_('wallet_created.tips.title')}
     </h2>
     <ul>
-      {#each $_('wallet_created.tips.list') as item, i}
-        <li>
-          {item}
-        </li>
-      {/each}
+      <li>
+        {$_('wallet_created.tips.list.0')}
+      </li>
+      <li>
+        {$_('wallet_created.tips.list.1')}
+      </li>
+      <li>
+        {$_('wallet_created.tips.list.2')}
+      </li>
+      <li>
+        {$_('wallet_created.tips.list.3')}
+      </li>
+      <li>
+        {$_('wallet_created.tips.list.4')}
+      </li>
     </ul>
     <h3>
       {$_('wallet_created.tips.warn')}

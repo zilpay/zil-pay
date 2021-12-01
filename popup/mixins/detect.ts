@@ -7,6 +7,6 @@
  * Copyright (c) 2021 ZilPay
  */
 
-export function isChrome() {
-  return window.navigator.vendor === 'Google Inc.';
+export function isHid() {
+  return Boolean(window.navigator.hid);
 }

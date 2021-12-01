@@ -29,3 +29,16 @@ export async function clearAllTxns() {
   return state;
 }
 
+export async function getCurrentNonce() {
+  const data = await Message
+  .signal(MTypePopup.GET_CURRENT_NONCE)
+  .send();
+  return warpMessage(data);
+}
+
+export async function resetNonce() {
+  const data = await Message
+    .signal(MTypePopup.RESET_NONCE)
+    .send();
+  return warpMessage(data);
+}

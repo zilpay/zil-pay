@@ -17,6 +17,7 @@ import pkg from './package.json';
 
 const production = !process.env.ROLLUP_WATCH;
 
+
 const popup = {
 	input: 'popup/main.ts',
 	output: {

@@ -5,7 +5,7 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
-  import { isChrome } from 'popup/mixins/detect';
+  import { isHid } from 'popup/mixins/detect';
 
   import BackBar from '../../components/BackBar.svelte';
   import RefreshIcon from '../../components/icons/Refresh.svelte';
@@ -18,7 +18,7 @@
   const getHidTransport = async () => {
     loading = true;
 
-    if (!isChrome()) {
+    if (!isHid()) {
       push(`/ledger-connect/${LEDGER_PRODUCT_ID_U2F}`);
       return null;
     }

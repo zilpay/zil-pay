@@ -31,13 +31,42 @@ import { tohexString } from 'lib/utils/address';
 import { toLi } from 'lib/filters/gas-to-fee';
 import { TypeOf } from 'lib/type/type-checker';
 
-
 export class ZilPayTransaction {
 
   readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
     this.#core = core;
+  }
+
+  public async getCurrentNonce(sendResponse: StreamResponse) {
+    try {
+      const account = this.#core.account.selectedAccount;
+      const nonce = await this.#core.nonceCounter.nextNonce(account);
+
+      sendResponse({
+        resolve: nonce
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async resetNonce(sendResponse: StreamResponse) {
+    try {
+      const account = this.#core.account.selectedAccount;
+      const nonce = await this.#core.nonceCounter.resetNonce(account);
+
+      sendResponse({
+        resolve: nonce
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
   }
 
   public async addConfirm(params: MinParams, sendResponse: StreamResponse) {
