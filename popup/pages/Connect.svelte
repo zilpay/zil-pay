@@ -43,11 +43,11 @@
 		/>
 		<div>
 			<h2>
-				{$_('connect.question')[0]}
+				{$_('connect.question.0')}
 				<mark>
 					{app.domain}
 				</mark>
-				{$_('connect.question')[1]}
+				{$_('connect.question.1')}
 			</h2>
 			<p>
 				{$_('connect.warn')}

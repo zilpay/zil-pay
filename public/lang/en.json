@@ -62,10 +62,10 @@
     "accept": "Accept USB"
   },
   "connect": {
-    "question": [
-      "Would you like to connect to",
-      "application?"
-    ],
+    "question": {
+      "0": "Would you like to connect to",
+      "1": "application?"
+    },
     "btns": {
       "conf": "Connect",
       "reject": "Reject"

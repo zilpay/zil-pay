@@ -49,9 +49,11 @@ export class PromptService {
       type: this.#type,
       url: Common.PROMT_PAGE,
       width: this.#width,
-      height: this.#height + 40,
+      height: this.#height,
       top: Math.max(notificationTop, 0),
-      left: Math.max(notificationLeft, 0)
+      left: Math.max(notificationLeft, 0),
+      focused: true,
+      allowScriptsToClose: true
     };
     const lastPopups = await this.#getPopup();
 
