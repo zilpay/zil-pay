@@ -181,7 +181,7 @@
 		padding-right: 10px;
 
 		min-width: 290px;
-		max-width: 464px;
+		max-width: 320px;
 		width: fit-content;
 
 		flex-wrap: wrap;

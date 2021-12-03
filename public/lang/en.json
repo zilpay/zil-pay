@@ -150,7 +150,8 @@
     "title": "Account setup",
     "name_placeholder": "Name of account (3-25 characters)",
     "name_description": "A wallet name is using to help you distinguish different account from one another.",
-    "pass_description": "A password required for encrypt and protect your keys."
+    "pass_description": "A password required for encrypt and protect your keys.",
+    "accept": "Accept PrivacyPolicy"
   },
   "import_priv_key": {
     "title": "Import PrivateKey",

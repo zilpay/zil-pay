@@ -14,6 +14,7 @@
   } from 'popup/config/account';
 
   import BackBar from '../components/BackBar.svelte';
+  import Toggle from '../components/Toggle.svelte';
 
 	let loading = false;
   let name = `${DEFAULT_NAME} 0`;
@@ -21,6 +22,7 @@
   let passError = '';
   let password: string;
   let confirmPassword: string;
+  let accepted = false;
 
   $: disabled = loading || !password || confirmPassword !== password || name.length < MIN_NAME_LEN;
 
@@ -106,10 +108,22 @@
 				{$_('setup_acc.pass_description')}
       </p>
 		</label>
+    <div class="policy">
+      <a
+        href="https://zilpay.io/policy"
+        target="_blank"
+      >
+        {$_('setup_acc.accept')}
+      </a>
+      <Toggle
+        checked={accepted}
+        on:toggle={() => accepted = !accepted}
+      />
+    </div>
     <button
 			class="primary"
       class:loading={loading}
-			disabled={disabled}
+			disabled={disabled || !accepted}
 		>
       {$_('restore.btn')}
 		</button>
@@ -123,6 +137,25 @@
 		height: 100vh;
 
 		@include flex-center-top-column;
+  }
+  h1 {
+    font-size: 35pt;
+  }
+  div.policy {
+    width: 100%;
+    max-width: 290px;
+
+    @include flex-between-row;
+
+    & > a {
+      font-family: Demi;
+      font-size: 13pt;
+      color: var(--text-color);
+
+      &:hover {
+        color: var(--primary-color);
+      }
+    }
   }
   form {
     width: 100%;
