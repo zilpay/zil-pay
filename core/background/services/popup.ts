@@ -52,8 +52,7 @@ export class PromptService {
       height: this.#height,
       top: Math.max(notificationTop, 0),
       left: Math.max(notificationLeft, 0),
-      focused: true,
-      allowScriptsToClose: true
+      focused: true
     };
     const lastPopups = await this.#getPopup();
 
