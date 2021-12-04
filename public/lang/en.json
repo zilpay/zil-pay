@@ -96,10 +96,11 @@
     }
   },
   "lock": {
-      "title": "Welcome back!",
-      "placeholder": "Password",
-      "btn": "Unlock",
-      "error": "Wrong password!"
+    "title": "Welcome back!",
+    "placeholder": "Password",
+    "btn": "Unlock",
+    "error": "Wrong password!",
+    "restore": "Restore"
   },
   "loading": {
     "title": "Loading!"

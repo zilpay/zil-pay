@@ -21,7 +21,7 @@ export function jazziconCreate(id: string, address: string) {
     return null;
   }
 
-  const el = Jazzicon(36, jsNumberForAddress(address));
+  const el = Jazzicon(30, jsNumberForAddress(address));
 
   if (ctx.children.length > 0) {
     ctx.children[0].remove();

@@ -158,8 +158,8 @@
 		@include border-radius(100%);
 
 		& > div {
-			height: 36px;
-			width: 36px;
+			height: 30px;
+			width: 30px;
 		}
 		&:hover {
 			border: solid 2px var(--primary-color);

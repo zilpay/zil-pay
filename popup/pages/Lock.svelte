@@ -5,6 +5,7 @@
 	import { _ } from 'popup/i18n';
 	import { unlockWallet } from "popup/backend";
 	import flyTransition from 'popup/transitions/fly';
+	import { linksExpand } from 'popup/mixins/link';
 
 	let inputEl;
 	let password: string | null;
@@ -77,6 +78,9 @@
 		>
 			{$_('lock.btn')}
 		</button>
+		<span on:click={() => linksExpand('/start')}>
+			{$_('lock.restore')}
+		</span>
 	</form>
 </main>
 
@@ -87,19 +91,23 @@
 		color: var(--text-color);
 		@include fluid-font(320px, 1024px, 22px, 55px);
 	}
-
+	span {
+		cursor: pointer;
+		margin-block-start: 16px;
+		color: var(--primary-color);
+		font-size: 12pt;
+		font-family: Regular;
+	}
 	img {
 		max-width: 500px;
     width: calc(100vw - 90px);
 	}
-
 	main {
 		background-color: var(--background-color);
 		height: 100vh;
 
 		@include flex-center-column;
 	}
-
 	label {
 		width: inherit;
 
@@ -108,11 +116,9 @@
 			animation: shake .4s linear;
 		}
 	}
-
 	button {
 		margin-top: 12px;
 	}
-
 	form {
 		width: 290px;
 		@include flex-center-column;
