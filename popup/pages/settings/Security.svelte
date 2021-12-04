@@ -59,18 +59,19 @@
 				{$_('security.phrase.btn')}
 			</span>
 		</Jumbotron>
-		<Jumbotron
-			title={$_('security.key.title')}
-			description={$_('security.key.warn')}
-		>
-			<span
-				class="warning"
-				disabled={keybtndisbaled}
-				on:click={() => keyModal = !keyModal}
+		{#if !keybtndisbaled}
+			<Jumbotron
+				title={$_('security.key.title')}
+				description={$_('security.key.warn')}
 			>
-				{$_('security.key.btn')}
-			</span>
-		</Jumbotron>
+				<span
+					class="warning"
+					on:click={() => keyModal = !keyModal}
+				>
+					{$_('security.key.btn')}
+				</span>
+			</Jumbotron>
+		{/if}
 		<Jumbotron
 			title={$_('security.phishing.title')}
 			description={$_('security.phishing.warn')}
@@ -93,9 +94,16 @@
 
 		@include flex-center-top-column;
 	}
-	span.warning {
-		cursor: pointer;
-		font-size: 16px;
-		color: var(--warning-color);
+	span {
+		font-family: Demi;
+		&.warning {
+			cursor: pointer;
+			font-size: 16px;
+			color: var(--primary-color);
+
+			&:hover {
+				color: var(--warning-color);
+			}
+		}
 	}
 </style>
