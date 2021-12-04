@@ -32,3 +32,20 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes -global-back-in-left {
+  0% {
+    transform: translateX(-2000px);
+    opacity: 0.7;
+  }
+
+  80% {
+    transform: translateX(0px);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

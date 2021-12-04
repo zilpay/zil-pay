@@ -134,6 +134,11 @@
   justify-content: left;
 }
 
+@mixin flex-right-horiz {
+  display: flex;
+  justify-content: right;
+}
+
 
 @mixin border-radius($radius) {
   border-radius: $radius;

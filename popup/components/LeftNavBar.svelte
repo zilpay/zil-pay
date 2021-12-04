@@ -2,14 +2,24 @@
   import { createEventDispatcher } from 'svelte';
   import { link } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
+	import { Formats } from 'config/formats';
   import { AccountTypes } from 'config/account-type';
+
   import { linksExpand } from 'popup/mixins/link';
 
-	import walletStore from 'popup/store/wallet';
 	import { removeAccount } from 'popup/backend/wallet';
+  import {
+		changeAddressFormat,
+		changePromtEnabled
+	} from 'popup/backend/settings';
+
+	import walletStore from 'popup/store/wallet';
+	import promtStore from 'app/store/promt';
+	import addressFormatStore from 'popup/store/format';
 
   import Close from './Close.svelte';
 	import TextElement from './TextElement.svelte';
+  import Toggle from '../components/Toggle.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -25,6 +35,13 @@
     await removeAccount();
     onClose();
   };
+  const handleToggleAddressFormat = async () => {
+		if ($addressFormatStore === Formats.Base16) {
+			await changeAddressFormat(Formats.Bech32);
+		} else {
+			await changeAddressFormat(Formats.Base16);
+		}
+	};
 </script>
 
 <nav class:show={show}>
@@ -64,9 +81,29 @@
         description={$_('home.nav.optinos.remove.description')}
       />
     </span>
+    <hr />
   {/if}
+  <div class="toggles">
+    <b>
+      {$_('advanced.popup.title')}
+    </b>
+    <Toggle
+      checked={$promtStore}
+      on:toggle={() => changePromtEnabled(!$promtStore)}
+    />
+  </div>
+  <div class="toggles">
+    <b>
+      {$_('advanced.base16.title')}
+    </b>
+    <Toggle
+      checked={$addressFormatStore === Formats.Base16}
+      on:toggle={handleToggleAddressFormat}
+    />
+  </div>
 </nav>
 <div
+  class="close"
   class:show={show}
   on:click={onClose}
 />
@@ -76,7 +113,18 @@
   :global(span.close:hover > svg > line) {
     stroke: var(--primary-color) !important;
 	}
-  div {
+  div.toggles {
+    padding-left: 15px;
+    padding-right: 15px;
+
+    @include flex-right-horiz;
+    align-items: center;
+
+    & > b {
+      margin: 8px;
+    }
+  }
+  div.close {
     position: fixed;
     left: 0;
     top: 0;
@@ -96,6 +144,7 @@
   }
   h1 {
     margin-block-end: 0;
+    font-size: 15pt;
     @include flex-between-row;
 
     & > span {
@@ -125,29 +174,10 @@
     &.show {
       @include flex-left-column;
     }
-    animation: backInLeft 0.4s;
+    animation: back-in-left 0.4s;
     animation-timing-function: cubic-bezier(.3,.17,.23,.96);
   }
   span {
     cursor: pointer;
-  }
-  span.remove {
-    margin-block-start: 30px;
-  }
-  @keyframes backInLeft {
-    0% {
-      transform: translateX(-2000px);
-      opacity: 0.7;
-    }
-
-    80% {
-      transform: translateX(0px);
-      opacity: 0.7;
-    }
-
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
   }
 </style>

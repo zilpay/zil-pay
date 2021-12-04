@@ -48,7 +48,6 @@
 	};
 	const handleOnChangePromt = async () => {
 		await changePromtEnabled(!$promtStore);
-		popup = $promtStore;
 	};
 	const hanldeOnReset = async () => {
 		await resetGas();
