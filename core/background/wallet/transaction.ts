@@ -41,7 +41,6 @@ export class ZilPayTransaction {
 
   public async getCurrentNonce(sendResponse: StreamResponse) {
     try {
-      this.#core.guard.checkSession();
       const account = this.#core.account.selectedAccount;
       const nonce = await this.#core.nonceCounter.nextNonce(account);
 
@@ -182,7 +181,6 @@ export class ZilPayTransaction {
 
   public async getRequiredParams(accIndex: number, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.checkSession();
       const account = this.#core.account.getAccount(accIndex);
       const identities = [
         this.#core.zilliqa.provider.buildBody(
@@ -226,7 +224,6 @@ export class ZilPayTransaction {
     };
 
     try {
-      this.#core.guard.checkSession();
       await this.#core.account.select(accIndex);
       await this.#core.transactions.sync();
 
@@ -330,7 +327,6 @@ export class ZilPayTransaction {
 
   public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.checkSession();
       const account = this.#core.account.wallet.identities[index];
       const message = this.#core.transactions.message;
       let signature: string;

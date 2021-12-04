@@ -95,7 +95,6 @@ export class ZilPayWallet {
 
   public async importPrivateKey(payload: PrivateKeyName, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.checkSession();
       await this.#core.account.addAccountFromPrivateKey(
         payload.privKey,
         payload.name
