@@ -86,31 +86,33 @@
     <hr />
   {/if}
   <div class="toggles">
-    <b>
-      {$_('advanced.popup.title')}
-    </b>
-    <Toggle
-      checked={$promtStore}
-      on:toggle={() => changePromtEnabled(!$promtStore)}
-    />
-  </div>
-  <div class="toggles">
-    <b>
-      {$_('advanced.base16.title')}
-    </b>
-    <Toggle
-      checked={$addressFormatStore === Formats.Base16}
-      on:toggle={handleToggleAddressFormat}
-    />
-  </div>
-  <div class="toggles">
-    <b>
-      {$_('security.phishing.title')}
-    </b>
-    <Toggle
-      checked={$phishingStore}
-      on:toggle={() => setPhishingDetection(!$phishingStore)}
-    />
+    <div>
+      <b>
+        {$_('advanced.popup.title')}
+      </b>
+      <Toggle
+        checked={$promtStore}
+        on:toggle={() => changePromtEnabled(!$promtStore)}
+      />
+    </div>
+    <div>
+      <b>
+        {$_('advanced.base16.title')}
+      </b>
+      <Toggle
+        checked={$addressFormatStore === Formats.Base16}
+        on:toggle={handleToggleAddressFormat}
+      />
+    </div>
+    <div>
+      <b>
+        {$_('security.phishing.title')}
+      </b>
+      <Toggle
+        checked={$phishingStore}
+        on:toggle={() => setPhishingDetection(!$phishingStore)}
+      />
+    </div>
   </div>
 </nav>
 <div
@@ -125,14 +127,22 @@
     stroke: var(--primary-color) !important;
 	}
   div.toggles {
-    padding-left: 15px;
-    padding-right: 15px;
+    width: 100%;
 
-    @include flex-right-horiz;
-    align-items: center;
+    @include flex-column;
+    align-items: flex-end;
 
-    & > b {
-      margin: 8px;
+    & > div {
+      padding-left: 15px;
+      padding-right: 15px;
+      margin-block-end: 5px;
+
+      @include flex-right-horiz;
+      align-items: center;
+
+      & > b {
+        margin: 8px;
+      }
     }
   }
   div.close {
