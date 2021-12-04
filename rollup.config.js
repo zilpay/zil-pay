@@ -10,6 +10,7 @@ import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import { visualizer } from 'rollup-plugin-visualizer';
+import define from 'rollup-plugin-define';
 
 import ignore from 'rollup-plugin-ignore';
 
@@ -55,7 +56,12 @@ const popup = {
 			sourceMap: !production,
 			inlineSources: !production
 		}),
-		production && terser()
+		production && terser({
+			format: {
+				comments: false
+			},
+			compress: true
+		})
 	],
 	watch: {
 		clearScreen: false
@@ -147,7 +153,12 @@ const background = {
 				}
 			]
 		}),
-		production && terser()
+		production && terser({
+			format: {
+				comments: false
+			},
+			compress: true
+		})
 	]
 };
 const content = {
@@ -173,7 +184,12 @@ const content = {
 		production && visualizer({
 			filename: 'content.html'
 		}),
-		production && terser()
+		production && terser({
+			format: {
+				comments: false
+			},
+			compress: true
+		})
 	]
 };
 const inpage = {
@@ -201,7 +217,17 @@ const inpage = {
 		production && visualizer({
 			filename: 'inpage.html'
 		}),
-		production && terser()
+		production && terser({
+			format: {
+				comments: false
+			},
+			compress: true
+		}),
+		define({
+      replacements: {
+				WebAssembly: 'null'
+      }
+    })
 	]
 };
 
