@@ -198,7 +198,12 @@ export class ZRC2Controller {
       );
     });
     const identities = [...balanceIdentities, ...tokensRates];
-    const replies = await this.#zilliqa.sendJson(...identities);
+    let replies = await this.#zilliqa.sendJson(...identities);
+
+    if (!Array.isArray(replies)) {
+      replies = [replies];
+    }
+
     const pools = replies.slice(balanceIdentities.length);
     const balances = replies.slice(0, balanceIdentities.length);
     const entries = balances.map((res: RPCResponse, index: number) => {
