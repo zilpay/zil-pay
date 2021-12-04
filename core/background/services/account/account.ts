@@ -152,7 +152,7 @@ export class AccountController {
     switch (account.type) {
       case AccountTypes.Seed:
         const seed = this.#guard.getSeed();
-        const keyPair = await this.fromSeed(seed, index);
+        const keyPair = await this.fromSeed(seed, account.index);
         return keyPair;
       case AccountTypes.PrivateKey:
         const encryptedPriveLey = this.selectedAccount.privKey;
