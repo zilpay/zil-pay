@@ -68,14 +68,7 @@
         </b>
         <ul>
           {#each queue as tx, index}
-            <li
-              in:fly={{
-                delay: 50 * index,
-                duration: 400,
-                y: -20
-              }}
-              on:click={() => showTx = tx}
-            >
+            <li on:click={() => showTx = tx}>
               <Transaction
                 tx={tx}
                 loading={loading}
@@ -92,7 +85,7 @@
           {#each history as tx, index}
             <li
               in:fly={{
-                delay: 50 * index,
+                delay: 100 * index,
                 duration: 400,
                 y: -20
               }}
