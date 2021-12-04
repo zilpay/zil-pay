@@ -7,7 +7,6 @@
  * Copyright (c) 2021 ZilPay
  */
 import { ZIlPayCore } from './core';
-import { ZilPayElliptic} from './elliptic';
 import { ZilPayNetwrok } from './netwrok';
 import { ZilPayPopup } from './popup';
 import { ZilPaySynchronizer } from './synchronizer';
@@ -21,7 +20,6 @@ import { ZilPaySettings } from './settings';
 
 export class ZIlPayBackground {
   readonly #core = new ZIlPayCore();
-  public readonly elliptic = new ZilPayElliptic(this.#core);
   public readonly netwrok = new ZilPayNetwrok(this.#core);
   public readonly popup = new ZilPayPopup(this.#core);
   public readonly synchronizer = new ZilPaySynchronizer(this.#core);

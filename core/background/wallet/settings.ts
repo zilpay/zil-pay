@@ -22,6 +22,7 @@ export class ZilPaySettings {
 
   public async changeGasMultiplier(multiplier: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.gas.setMultiplier(multiplier);
 
       sendResponse({
@@ -36,6 +37,7 @@ export class ZilPaySettings {
 
   public async resetGas(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.gas.reset();
 
       sendResponse({
@@ -50,6 +52,7 @@ export class ZilPaySettings {
 
   public async changeLocale(locale: Locales, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.locale.setLocale(locale);
 
       sendResponse({
@@ -64,6 +67,7 @@ export class ZilPaySettings {
 
   public async resetLocale(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.locale.reset();
 
       sendResponse({
@@ -78,6 +82,7 @@ export class ZilPaySettings {
 
   public async changeTheme(theme: Themes, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.theme.setTheme(theme);
 
       sendResponse({
@@ -92,6 +97,7 @@ export class ZilPaySettings {
 
   public async resetTheme(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.theme.reset();
 
       sendResponse({
@@ -106,6 +112,7 @@ export class ZilPaySettings {
 
   public async changeCurrency(currecny: string, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.currencies.update(currecny);
 
       sendResponse({
@@ -120,6 +127,7 @@ export class ZilPaySettings {
 
   public async resetCurrency(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.currencies.reset();
 
       sendResponse({
@@ -134,6 +142,7 @@ export class ZilPaySettings {
 
   public async setLockTime(h: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.guard.setLockTime(h);
 
       sendResponse({
@@ -148,6 +157,7 @@ export class ZilPaySettings {
 
   public async setAddressFormat(format: Formats, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.addressFormat.setFormat(format);
 
       sendResponse({
@@ -176,6 +186,7 @@ export class ZilPaySettings {
 
   public async setPromtEnabled(value: boolean, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.prompt.setEnabled(value);
 
       sendResponse({

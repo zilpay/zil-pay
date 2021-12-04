@@ -110,7 +110,7 @@ export class AuthGuard {
   }
 
   public getWallet(): GuardVault {
-    this.#checkSession();
+    this.checkSession();
 
     const hash = this.#hash.get(this);
     const decryptSeed = Aes.decrypt(this.#encryptSeed, hash);
@@ -124,7 +124,7 @@ export class AuthGuard {
   }
 
   public getSeed(): string {
-    this.#checkSession();
+    this.checkSession();
 
     const hash = this.#hash.get(this);
 
@@ -150,7 +150,7 @@ export class AuthGuard {
    * @return String.
    */
   public async updateImported(decryptImported: object[]) {
-    this.#checkSession();
+    this.checkSession();
 
     const hash = this.#hash.get(this);
     const encryptImported = Aes.encrypt(JSON.stringify(decryptImported), hash);
@@ -174,7 +174,7 @@ export class AuthGuard {
     return Aes.decrypt(content, hash);
   }
 
-  #checkSession() {
+  public checkSession() {
     assert(this.#isReady, ErrorMessages.WalletNotReady);
     assert(this.#isEnable, ErrorMessages.WalletNotEnabled);
   }

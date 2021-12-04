@@ -41,6 +41,7 @@ export class ZilPayTransaction {
 
   public async getCurrentNonce(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const account = this.#core.account.selectedAccount;
       const nonce = await this.#core.nonceCounter.nextNonce(account);
 
@@ -56,6 +57,7 @@ export class ZilPayTransaction {
 
   public async resetNonce(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const account = this.#core.account.selectedAccount;
       const nonce = await this.#core.nonceCounter.resetNonce(account);
 
@@ -125,6 +127,7 @@ export class ZilPayTransaction {
 
   public async clearHistory(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.transactions.clearHistory();
 
       sendResponse({
@@ -139,6 +142,7 @@ export class ZilPayTransaction {
 
   public async rejectAll(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.transactions.clearConfirm();
 
       sendResponse({
@@ -153,6 +157,7 @@ export class ZilPayTransaction {
 
   public async rmConfirm(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const tx = this.#core.transactions.forConfirm[index];
 
       await new TabsMessage({
@@ -177,6 +182,7 @@ export class ZilPayTransaction {
 
   public async getRequiredParams(accIndex: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const account = this.#core.account.getAccount(accIndex);
       const identities = [
         this.#core.zilliqa.provider.buildBody(
@@ -220,6 +226,7 @@ export class ZilPayTransaction {
     };
 
     try {
+      this.#core.guard.checkSession();
       await this.#core.account.select(accIndex);
       await this.#core.transactions.sync();
 
@@ -269,7 +276,8 @@ export class ZilPayTransaction {
         recipient: newTx.recipient,
         status: StatusCodes.Pending,
         teg: newTx.tag,
-        amount: newTx.tokenAmount,
+        tokenAmount: newTx.tokenAmount,
+        amount: newTx.amount,
         type: newTx.transactionType,
         fee: newTx.fee,
         nonce: newTx.nonce,
@@ -307,6 +315,7 @@ export class ZilPayTransaction {
 
   public async checkProcessedHistory(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.transactionsQueue.checkProcessedTx();
 
       sendResponse({
@@ -321,6 +330,7 @@ export class ZilPayTransaction {
 
   public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const account = this.#core.account.wallet.identities[index];
       const message = this.#core.transactions.message;
       let signature: string;
@@ -379,6 +389,7 @@ export class ZilPayTransaction {
 
   public async rejectMessage(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await new TabsMessage({
         type: MTypeTab.SING_MESSAGE_RES,
         payload: {

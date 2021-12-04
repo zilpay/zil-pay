@@ -31,6 +31,7 @@ export class ZilPayNetwrok {
 
   public async reset(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.netwrok.reset();
       await this.#core.ssn.select(0);
       await this.#core.transactions.sync();
@@ -50,6 +51,7 @@ export class ZilPayNetwrok {
 
   public async select(net: string, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.netwrok.changeNetwork(net);
       await this.#core.transactions.sync();
       await this.#core.zrc2.sync();
@@ -68,6 +70,7 @@ export class ZilPayNetwrok {
 
   public async updateSSN(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.ssn.update();
 
       sendResponse({
@@ -82,6 +85,7 @@ export class ZilPayNetwrok {
 
   public async selectFromSSN(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.ssn.select(index);
 
       sendResponse({
@@ -96,6 +100,7 @@ export class ZilPayNetwrok {
 
   public async changeConfig(config: typeof NETWORK, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const [,, custom] = NETWORK_KEYS;
       const newConfig = {
         ...this.#core.netwrok.config,

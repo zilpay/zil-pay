@@ -59,6 +59,7 @@ export class ZilPayWallet {
 
   public async exportAccountQRCode(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const account = this.#core.account.wallet.identities[index];
       const base58 = await qrcode.toDataURL(
         `zilliqa://${account.bech32}`,
@@ -94,6 +95,7 @@ export class ZilPayWallet {
 
   public async importPrivateKey(payload: PrivateKeyName, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.account.addAccountFromPrivateKey(
         payload.privKey,
         payload.name
@@ -112,6 +114,7 @@ export class ZilPayWallet {
 
   public async loadLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.ledger.init(payload.productId);
       const { publicKey, pubAddr } = await this.#core.ledger.interface.getPublicAddress(payload.index);
 
@@ -136,6 +139,7 @@ export class ZilPayWallet {
 
   public async removeAccount(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const index = this.#core.account.wallet.selectedAddress;
       await this.#core.account.remove(index);
       await this.#core.transactions.sync();
@@ -170,6 +174,7 @@ export class ZilPayWallet {
 
   public async setAccountName(index: number, name: string, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.account.changeAccountName(index, name);
 
       sendResponse({
@@ -184,6 +189,7 @@ export class ZilPayWallet {
 
   public async selectAccount(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.account.select(index);
       await this.#core.transactions.sync();
 
@@ -199,6 +205,7 @@ export class ZilPayWallet {
 
   public async balanceUpdate(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.account.balanceUpdate();
 
       sendResponse({

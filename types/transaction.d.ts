@@ -127,6 +127,7 @@ export interface StoredTx {
   toAddr: string;
   from: string;
   hash: string;
+  tokenAmount: string;
   timestamp: number;
   data: string;
   code: string;

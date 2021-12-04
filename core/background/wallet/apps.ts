@@ -52,6 +52,7 @@ export class ZilPayApps {
 
   public async setPhishing(value: boolean, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.apps.setPhishing(value);
 
       sendResponse({
@@ -66,6 +67,7 @@ export class ZilPayApps {
 
   public async userResponse(confiremd: boolean, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const app = this.#core.apps.confirmApp;
       const uuid = String(app.uuid);
 
@@ -141,6 +143,7 @@ export class ZilPayApps {
 
   public async removeApp(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.apps.rm(index);
 
       sendResponse({
@@ -155,6 +158,7 @@ export class ZilPayApps {
 
   public async clearApps(sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.apps.reset();
 
       sendResponse({
