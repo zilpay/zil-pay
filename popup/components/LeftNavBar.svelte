@@ -10,12 +10,14 @@
 	import { removeAccount } from 'popup/backend/wallet';
   import {
 		changeAddressFormat,
-		changePromtEnabled
+		changePromtEnabled,
+    setPhishingDetection
 	} from 'popup/backend/settings';
 
 	import walletStore from 'popup/store/wallet';
 	import promtStore from 'app/store/promt';
 	import addressFormatStore from 'popup/store/format';
+	import phishingStore from 'app/store/phishing';
 
   import Close from './Close.svelte';
 	import TextElement from './TextElement.svelte';
@@ -99,6 +101,15 @@
     <Toggle
       checked={$addressFormatStore === Formats.Base16}
       on:toggle={handleToggleAddressFormat}
+    />
+  </div>
+  <div class="toggles">
+    <b>
+      {$_('security.phishing.title')}
+    </b>
+    <Toggle
+      checked={$phishingStore}
+      on:toggle={() => setPhishingDetection(!$phishingStore)}
     />
   </div>
 </nav>
