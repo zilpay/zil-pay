@@ -1,11 +1,14 @@
 <script lang="ts">
+  import { NETWORK_KEYS } from 'config/network';
+
   import { link, location, push } from 'svelte-spa-router';
-  import { trim } from 'popup/filters/trim';
   import { createEventDispatcher } from 'svelte';
+
   import { logoutWallet } from 'popup/backend/popup';
 
   import { linksExpand, openTab } from 'popup/mixins/link';
   import { viewAddress } from 'lib/block-explorer/view';
+  import { trim } from 'popup/filters/trim';
 
   import Refresh from './icons/Refresh.svelte';
   import SvgLoader from './SvgLoader.svelte';
@@ -21,9 +24,12 @@
   export let lock = false;
 
   $: account = $walletStore.identities[$walletStore.selectedAddress];
+  $: isMainnet = $netStore.selected === NETWORK_KEYS[0];
 
   const onRefresh = () => {
     dispatch('refresh');
+    console.log($netStore);
+    
   };
   const viewOnViewBlock = () => {
     const url = viewAddress(account.bech32, $netStore.selected);
@@ -38,6 +44,7 @@
 <nav>
   <a
     class="netwrok"
+    class:mainnet={isMainnet}
     href="/netwrok"
     use:link
   >
@@ -110,7 +117,11 @@
     margin: 11px;
 
     border-radius: 100%;
-    background-color: var(--primary-color);
+    background-color: var(--warning-color);
+
+    &.mainnet {
+      background-color: var(--primary-color);
+    }
   }
   .icons-warp {
     text-align: end;
