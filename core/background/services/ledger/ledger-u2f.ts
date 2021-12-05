@@ -71,7 +71,6 @@ export class LedgerU2F {
   }
 
   public async signTxn(index: number, tx: Transaction): Promise<string> {
-    console.log(tx);
     const sig = await this.#message(INS[4], index, tx.self);
     return String(sig);
   }

@@ -210,7 +210,7 @@ export class ZRC2Controller {
       const { base16 } = this.identities[index];
       let balance = [base16, '0'];
       if (res.result && base16 === Contracts.ZERO_ADDRESS) {
-        balance = [base16, res.result.balance];
+        balance = res.error ? [base16, '0'] : [base16, res.result.balance];
       } else if (res.result) {
         const bal = res.result[ZRC2Fields.Balances][addr];
         balance = [base16, bal];

@@ -241,6 +241,15 @@ export class ZilliqaControl {
       return data as RPCResponse[];
     }
 
+    if (data.error && data.error.code === -5) {
+      // Account is not created
+      data.result = {
+        balance: '0',
+        nonce: 0
+      };
+      data.error = undefined;
+    }
+
     if (data.error) {
       throw new Error(data.error.message);
     }
