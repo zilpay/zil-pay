@@ -96,7 +96,7 @@
           type="number"
         />
       </label>
-      <button class="primary">
+      <button class="primary gas-btn">
         {$_('confirm.parmas_modal.btn')}
       </button>
     </form>
@@ -128,6 +128,10 @@
   input,
   button {
     width: 290px;
+
+    &.gas-btn {
+      margin-block-start: 10px;
+    }
   }
   div.wrapper {
 		height: 600px;
@@ -166,6 +170,7 @@
       cursor: pointer;
       padding: 10px;
 
+      font-family: Demi;
       color: var(--text-color);
       font-size: 16pt;
       text-align: center;
@@ -182,9 +187,5 @@
     width: 100%;
 
     @include flex-center-top-column;
-
-    & > button {
-      margin-block-start: 10px;
-    }
   }
 </style>
