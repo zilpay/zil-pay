@@ -32,15 +32,15 @@
     + .tgl-btn {
       outline: 0;
       display: block;
-      width: 4em;
-      height: 2em;
+      width: 36pt;
+      height: 20pt;
       position: relative;
       cursor: pointer;
       user-select: none;
 
       background: var(--background-color);
       border-radius: 2em;
-      padding: 2px;
+      padding: 2pt;
       transition: all .4s ease;
       border: 1px solid var(--border-color);
 
@@ -70,7 +70,7 @@
     + .tgl-btn {
       background: var(--background-color);
       border-radius: 2em;
-      padding: 2px;
+      padding: 2pt;
       transition: all .4s ease;
       border: 1px solid var(--border-color);
       &:after {

@@ -189,11 +189,12 @@
 		}
 
 		& > div > h3 {
+			font-size: 10pt;
 			margin-block-start: 0.4em;
 			margin-block-end: 0.2em;
 		}
 		& > div > p {
-			font-size: 11px;
+			font-size: 9pt;
 			margin-block-start: 0em;
 			margin-block-end: 0.4em;
 		}

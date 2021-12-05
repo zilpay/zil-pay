@@ -156,7 +156,7 @@
     max-width: 470px;
     font-size: 9pt;
     line-height: 0.9em;
-    min-height: 353px;
+    height: 353px;
   }
   ul.tabs {
     margin: 0;

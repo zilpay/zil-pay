@@ -15,8 +15,10 @@ export async function closePopup() {
     ////
   }
 
-  if (Runtime.windows.getCurrent) {
+  try {
     const { id } = await Runtime.windows.getCurrent();
     Runtime.windows.remove(id, console.error);
+  } catch {
+    ////
   }
 }
