@@ -2,6 +2,8 @@
   import { createEventDispatcher, onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 
+  import Toggle from '../components/Toggle.svelte';
+
   const dispatch = createEventDispatcher();
 
   export let tx = {
@@ -12,10 +14,11 @@
   };
   let selected = 0;
   let tabs = [
-    'Gas',
-    'Data'
+    $_('confirm.parmas_modal.tabs.gas'),
+    $_('confirm.parmas_modal.tabs.data')
   ];
   let data = '';
+  let readOnly = true;
 
   function handleSubmitGas(e) {
 		e.preventDefault();
@@ -100,7 +103,19 @@
   {/if}
   {#if selected === 1}
     <form on:submit={handleSubmitData}>
-      <textarea bind:value={data}/>
+      <div class="toggle">
+        <b>
+          {$_('confirm.parmas_modal.togle')}
+        </b>
+        <Toggle
+          checked={!readOnly}
+          on:toggle={() => readOnly = !readOnly}
+        />
+      </div>
+      <textarea
+        bind:value={data}
+        readonly={readOnly}
+      />
       <button class="primary">
         {$_('confirm.parmas_modal.btn')}
       </button>
@@ -117,9 +132,24 @@
   div.wrapper {
 		height: 600px;
   }
+  div.toggle {
+    max-width: 470px;
+    width: 100%;
+    margin-block-start: 17px;
+    margin-block-end: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+
+    @include flex-right-horiz;
+    align-items: center;
+
+    & > b {
+      margin-right: 8px;
+      align-items: center;
+    }
+  }
   textarea {
     max-width: 470px;
-    margin: 22px;
     font-size: 9pt;
     line-height: 0.9em;
     min-height: 353px;

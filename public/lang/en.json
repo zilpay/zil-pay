@@ -360,7 +360,12 @@
       "title": "Params",
       "limit": "GasLimit",
       "price": "GasPrice",
-      "btn": "Update"
+      "btn": "Update",
+      "tabs": {
+        "gas": "GAS",
+        "data": "DATA"
+      },
+      "togle": "Edit"
     }
   },
   "about": {
