@@ -7,23 +7,4 @@
  * Copyright (c) 2021 ZilPay
  */
 
-import { TypeOf } from "lib/type/type-checker";
-
-type RuntimeType = typeof globalThis.chrome;
-
-const hasWindow = TypeOf.isUndefined(globalThis.window);
-const hasBrowser = TypeOf.isUndefined(globalThis.browser);
-
-function runtime() {
-  if (hasBrowser) {
-    return globalThis.browser;
-  }
-
-  if (hasWindow) {
-    return globalThis.window;
-  }
-
-  return globalThis.chrome;
-}
-
-export const Runtime: RuntimeType = runtime();
+export const Runtime = globalThis.chrome;
