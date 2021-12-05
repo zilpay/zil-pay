@@ -28,57 +28,56 @@ export class BlockController {
     return this.#currentBlock;
   }
 
+  public get name() {
+    return this.#name;
+  }
+
   constructor(zilliqa: ZilliqaControl, queue: TransactionsQueue) {
     this.#zilliqa = zilliqa;
     this.#queue = queue;
 
-    this.unsubscribe();
-    Runtime.alarms.create(this.#name, {
+    chrome.alarms.clear(this.name);
+    Runtime.alarms.create(`${this.name}/0`, {
       delayInMinutes: this.#delay,
       periodInMinutes: this.#delay
     });
+
+    setTimeout(() => {
+      Runtime.alarms.create(`${this.name}/1`, {
+        delayInMinutes: this.#delay,
+        periodInMinutes: this.#delay
+      });
+    }, 30000);
   }
 
-  public async subscribe(cb?: (blocknumber: number) => void) {
+  public async trackBlockNumber() {
+    const lastBalockNumber = this.#currentBlock;
+    const result = await this.#zilliqa.getLatestTxBlock();
+    const blockNumber = Number(result.header.BlockNum);
+
+    if (lastBalockNumber === blockNumber) {
+      return;
+    }
+
+    await this.#setBlock(blockNumber);
+
+    try {
+      const { TxnHashes } = await this.#zilliqa.getRecentTransactions();
+      const block: TxBlock = {
+        TxBlock: result,
+        TxHashes: [TxnHashes]
+      };
+      new TabsMessage({
+        type: MTypeTab.NEW_BLOCK,
+        payload: {
+          block
+        }
+      }).send();
+    } catch (err) {
+      console.error('BlockController.subscribe', err);
+    }
+
     await this.#queue.checkProcessedTx();
-
-    Runtime.alarms.onAlarm.addListener(async() => {
-      const lastBalockNumber = this.#currentBlock;
-      const result = await this.#zilliqa.getLatestTxBlock();
-      const blockNumber = Number(result.header.BlockNum);
-
-      if (lastBalockNumber === blockNumber) {
-        return null;
-      }
-
-      await this.#setBlock(blockNumber);
-
-      if (cb) {
-        cb(blockNumber);
-      }
-
-      try {
-        const { TxnHashes } = await this.#zilliqa.getRecentTransactions();
-        const block: TxBlock = {
-          TxBlock: result,
-          TxHashes: [TxnHashes]
-        };
-        new TabsMessage({
-          type: MTypeTab.NEW_BLOCK,
-          payload: {
-            block
-          }
-        }).send();
-      } catch (err) {
-        // console.error('BlockController.subscribe', err);
-      }
-
-      await this.#queue.checkProcessedTx();
-    });
-  }
-
-  public unsubscribe() {
-    Runtime.alarms.clearAll();
   }
 
   public async sync() {

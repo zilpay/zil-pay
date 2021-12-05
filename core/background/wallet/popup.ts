@@ -9,9 +9,9 @@
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
 import { MnemonicController } from 'core/background/services/account/mnemonic';
-import { toBech32Address } from 'lib/utils/bech32';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { MTypeTab } from 'lib/streem/stream-keys';
+import { Runtime } from 'lib/runtime';
 
 interface InitPayload {
   seed: string;
@@ -30,11 +30,9 @@ export class ZilPayPopup {
     const { base16, bech32 } = this.#core.account.selectedAccount;
 
     if (this.#core.guard.isEnable && this.#core.guard.isReady) {
-      this.#core.blockchain.subscribe();
-      this.#core.rate.subscribe();
+      this.#subscribe();
     } else {
-      this.#core.blockchain.unsubscribe();
-      this.#core.rate.unsubscribe();
+      this.#unsubscribe();
     }
 
     new TabsMessage({
@@ -110,5 +108,21 @@ export class ZilPayPopup {
         reject: err.message
       });
     }
+  }
+
+  #subscribe() {
+    Runtime.alarms.onAlarm.addListener(async(event) => {
+      if (event.name.includes(this.#core.blockchain.name)) {
+        await this.#core.blockchain.trackBlockNumber();
+      }
+
+      if (event.name === this.#core.rate.name) {
+        await this.#core.rate.updateRate();
+      }
+    });
+  }
+
+  #unsubscribe() {
+    Runtime.alarms.clearAll();
   }
 }

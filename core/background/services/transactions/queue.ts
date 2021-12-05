@@ -30,7 +30,7 @@ export class TransactionsQueue {
     this.#netwrok = netwrok;
   }
 
-  public async checkProcessedTx() {
+  public async checkProcessedTx(): Promise<void> {
     const list =  this.#transactions.transactions;
     const now = new Date().getTime();
     const dilaySeconds = 15000;
