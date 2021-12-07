@@ -32,7 +32,7 @@
 
 	import NavClose from '../components/NavClose.svelte';
   import SelectCard from '../components/SelectCard.svelte';
-  import SvgLoader from '../components/SvgLoader.svelte';
+  import ContactIcon from '../components/icons/Contact.svelte';
   import Modal from '../components/Modal.svelte';
   import AccountsModal from '../modals/Accounts.svelte';
   import TokensModal from '../modals/Tokens.svelte';
@@ -213,10 +213,7 @@
         </p>
         <label class:error={recipientError}>
           <div on:click={() => contactsModal = !contactsModal}>
-            <SvgLoader
-              src="/vectors/contact.svg"
-              className="cont-icon"
-            />
+            <ContactIcon className="cont-icon" />
           </div>
           <input
             bind:value={recipient}

@@ -11,7 +11,9 @@
   import { trim } from 'popup/filters/trim';
 
   import Refresh from './icons/Refresh.svelte';
-  import SvgLoader from './SvgLoader.svelte';
+  import ExpandIcon from './icons/Expand.svelte';
+  import ViewIcon from './icons/View.svelte';
+  import LockIcon from './icons/Lock.svelte';
 
 	import walletStore from 'popup/store/wallet';
   import netStore from 'popup/store/netwrok';
@@ -56,10 +58,7 @@
         class="expand"
         on:click={() => linksExpand($location)}
       >
-        <SvgLoader
-          src="/vectors/expand.svg"
-          className="icon"
-        />
+        <ExpandIcon className="icon" />
       </span>
     {/if}
     {#if refresh}
@@ -75,10 +74,7 @@
         class="view"
         on:click={viewOnViewBlock}
       >
-        <SvgLoader
-          src="/vectors/view.svg"
-          className="icon-view"
-        />
+        <ViewIcon className="icon-view" />
       </span>
     {/if}
     {#if lock}
@@ -86,10 +82,7 @@
         class="lock"
         on:click={handleOnLock}
       >
-        <SvgLoader
-          src="/vectors/lock.svg"
-          className="icon-lock"
-        />
+        <LockIcon className="icon-lock" />
       </span>
     {/if}
   </div>

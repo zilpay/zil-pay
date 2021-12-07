@@ -20,7 +20,7 @@
 	import Arrow from '../../components/icons/Arrow.svelte';
   import Modal from '../../components/Modal.svelte';
   import AccountsModal from '../../modals/Accounts.svelte';
-	import SvgLoader from '../../components/SvgLoader.svelte';
+	import EditIcon from '../../components/icons/Edit.svelte';
 
 	let accountsModal = false;
 	let base58 = '';
@@ -123,9 +123,7 @@
 			on:blur={hanldeOnChangeName}
 		/>
 		<div>
-			<SvgLoader
-				src="/vectors/edit.svg"
-			/>
+			<EditIcon />
 		</div>
 	</label>
 	<button

@@ -10,7 +10,7 @@
 
 	import NavClose from '../../components/NavClose.svelte';
 	import SearchBox from '../../components/SearchBox.svelte';
-	import SvgLoader from '../../components/SvgLoader.svelte';
+	import TrashIcon from '../../components/icons/Trash.svelte';
 
 	let search = '';
 
@@ -68,10 +68,7 @@
 						class="icon"
 						on:click={() => hanldeOnRemove(item)}
 					>
-						<SvgLoader
-							src="/vectors/trash.svg"
-							className="trash-icon"
-						/>
+						<TrashIcon className="trash-icon" />
 					</div>
 				</li>
 			{/each}

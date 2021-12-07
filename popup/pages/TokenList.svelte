@@ -10,7 +10,7 @@
 
   import NavClose from '../components/NavClose.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
-	import SvgLoader from '../components/SvgLoader.svelte';
+	import AddIcon from '../components/icons/Add.svelte';
 	import AddTokenModal from '../modals/AddToken.svelte';
   import Modal from '../components/Modal.svelte';
 	import Toggle from '../components/Toggle.svelte';
@@ -51,7 +51,7 @@
 			class="add"
 			on:click={() => tokenAddModal = !tokenAddModal}
 		>
-			<SvgLoader src="/vectors/add.svg"/>
+			<AddIcon />
 		</span>
 	</SearchBox>
 	<ul>
