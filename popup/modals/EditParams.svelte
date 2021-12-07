@@ -14,7 +14,7 @@
   };
   let selected = 0;
   let tabs = [
-    $_('confirm.parmas_modal.tabs.gas'),
+    $_('confirm.parmas_modal.tabs.params'),
     $_('confirm.parmas_modal.tabs.data')
   ];
   let data = '';

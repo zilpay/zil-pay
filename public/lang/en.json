@@ -362,7 +362,7 @@
       "price": "GasPrice",
       "btn": "Update",
       "tabs": {
-        "gas": "GAS",
+        "params": "PARAMS",
         "data": "DATA"
       },
       "togle": "Edit"

@@ -2,7 +2,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { blur } from 'svelte/transition';
 
-  import SvgLoader from './SvgLoader.svelte';
+  import SearchIcon from './icons/Search.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -28,7 +28,7 @@
   class="search-box"
 >
   <div>
-    <SvgLoader src="/vectors/search.svg" />
+    <SearchIcon />
   </div>
   <input
     bind:this={inputEl}
@@ -48,8 +48,8 @@
     background: var(--card-color);
     border: solid 1px var(--card-color);
 
-    max-width: 280px;
-    width: calc(100vw - 30px);
+    width: 280px;
+    // width: calc(100vw - 30px);
     @include border-radius(8px);
     @include flex-center-vert;
 

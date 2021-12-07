@@ -252,6 +252,8 @@
 			margin: 0;
 			line-height: 30px;
 
+			max-width: 300px;
+
 			@include fluid-font(320px, 720px, 20px, 30px);
 			@include text-shorten;
 		}
