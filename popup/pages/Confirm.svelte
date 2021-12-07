@@ -220,6 +220,9 @@
 			<Params tx={tx} />
 		</div>
 		<div class="btns">
+			<button on:click={handleOnReject}>
+				{$_('confirm.btns.reject')}
+			</button>
 			<button
 				class="primary"
 				class:loading={loading}
@@ -227,9 +230,6 @@
 				on:click={handleOnConfirm}
 			>
 				{$_('confirm.btns.confirm')}
-			</button>
-			<button on:click={handleOnReject}>
-				{$_('confirm.btns.reject')}
 			</button>
 		</div>
 	</main>
