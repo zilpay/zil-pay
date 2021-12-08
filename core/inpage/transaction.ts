@@ -51,8 +51,7 @@ export class Transaction {
 
   public get payload() {
     const address = CryptoUtils.fromBech32Address(this.toAddr);
-
-    return {
+    const asStr = JSON.stringify({
       amount: String(this.amount),
       gasPrice: String(this.gasPrice),
       gasLimit: String(this.gasLimit),
@@ -65,7 +64,9 @@ export class Transaction {
       ContractAddress: this.ContractAddress,
       Info: this.Info,
       signature: this.signature
-    };
+    });
+
+    return JSON.parse(asStr);
   }
 
   public get txParams() {
