@@ -14,8 +14,8 @@
 
   @include border-radius(8px);
   @include fluid-font(320px, 720px, 15px, 20px);
+}
 
-  & > option {
-    color: var(--text-color);
-  }
+:global(select > option) {
+  color: var(--text-color);
 }
