@@ -41,7 +41,7 @@ export enum ErrorMessages {
   IncorrectParams = 'Incorrect argument',
   SSnAllowNet = 'SSn list allow on mainnet only.',
   CannotExportLedger = 'Cannot export privateKey from ledger.',
-  HightNonce = 'nonce too hight',
+  HightNonce = 'nonce too High',
 
   Disabled = 'ZilPay is disabled.',
   Connect = 'User is\'t connections.',

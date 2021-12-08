@@ -53,7 +53,11 @@ export class Contract {
 
     this.address = CryptoUtils.normaliseAddress(result.ContractAddress);
 
-    return [new Transaction(result), this];
+    tx.ContractAddress = this.address;
+    tx.Info = result.Info;
+    tx.ID = result.hash;
+
+    return [tx, this];
   }
 
   public async call(tag: string, args: object[], params: TransactionParams, priority = false) {

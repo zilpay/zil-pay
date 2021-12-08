@@ -263,8 +263,8 @@ export class ZilPayTransaction {
         newTx.sign(keyPair.privKey);
       }
 
-      const hash = await this.#core.zilliqa.send(newTx);
-      newTx.setHash(hash);
+      const result = await this.#core.zilliqa.send(newTx);
+      newTx.setHash(result.hash);
       await this.#core.transactions.addHistory({
         token,
         confirmed: false,
@@ -294,6 +294,8 @@ export class ZilPayTransaction {
           uuid: params.uuid,
           resolve: {
             ...newTx.self,
+            ContractAddress: result.ContractAddress,
+            Info: result.Info,
             from: account.base16
           }
         }

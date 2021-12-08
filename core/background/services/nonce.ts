@@ -49,7 +49,8 @@ export class NonceController {
     assert(list.length <= Common.NONCE_DIFFICULTY, ErrorMessages.HightNonce);
 
     const maxNonce = Math.max.apply(Math, list);
-    const currentNonce = fetchedNonce < maxNonce ? maxNonce :fetchedNonce;
+    let currentNonce = fetchedNonce >= maxNonce ? fetchedNonce : maxNonce;
+
     return currentNonce + 1;
   }
 

@@ -133,7 +133,7 @@ export class ZilliqaControl {
     assert(!isScam, ErrorMessages.Scam);
   }
 
-  public async send(tx: Transaction): Promise<string> {
+  public async send(tx: Transaction) {
     await this.detectSacmAddress(tx.toAddr);
 
     const body = this.provider.buildBody(
@@ -146,11 +146,7 @@ export class ZilliqaControl {
 
     assert(!error, error);
 
-    if (result && result.TranID) {
-      return result.TranID;
-    }
-
-    throw new Error(ErrorMessages.RequestFailed);
+    return result;
   }
 
   public async getTransactionStatus(hash: string) {

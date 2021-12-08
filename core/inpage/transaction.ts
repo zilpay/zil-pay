@@ -34,11 +34,11 @@ export class Transaction {
   public amount: BN;
   public code: string;
   public data: DataParams | null;
-  public signature: string;
-  public ContractAddress: string;
-  public ID: string;
+  public signature?: string;
+  public ContractAddress?: string;
+  public ID?: string;
   public from: string;
-  public Info: string;
+  public Info?: string;
   public pubKey: string;
   public gasPrice: BN;
   public gasLimit: Long;
@@ -62,6 +62,8 @@ export class Transaction {
       priority: this.priority,
       toAddr: CryptoUtils.toHex(address),
       version: this.version,
+      ContractAddress: this.ContractAddress,
+      Info: this.Info,
       signature: this.signature
     };
   }
@@ -109,7 +111,6 @@ export class Transaction {
     this.amount = new BN(params.amount || 0);
     this.code = params.code || '';
     this.signature = params.signature;
-    this.ContractAddress = params.ContractAddress;
     this.ID = params.hash;
     this.from = params.from || params.senderAddress;
     this.Info = params.Info;
@@ -131,6 +132,12 @@ export class Transaction {
 
     try {
       this.from = CryptoUtils.toBech32Address(this.from);
+    } catch {
+      ///
+    }
+
+    try {
+      this.ContractAddress = CryptoUtils.toChecksumAddress(params.ContractAddress);
     } catch {
       ///
     }
