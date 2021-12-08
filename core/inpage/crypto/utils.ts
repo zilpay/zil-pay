@@ -19,7 +19,7 @@ export const CryptoUtils = {
   isValidChecksumAddress(address: string) {
     return (
       Validator.isAddress(tohexString(address)) &&
-      toChecksumAddress(address) === address
+      toChecksumAddress(address)
     );
   },
   fromBech32Address(address: string) {

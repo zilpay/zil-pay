@@ -42,7 +42,7 @@ export class Contract {
     assert(Boolean(this.init), `this.init ${ErrorMessages.RequiredParam}`);
 
     const { wallet } = this.transaction;
-    const tx = this.transaction.new({
+    let tx = this.transaction.new({
       priority,
       toAddr: Contracts.ZERO_ADDRESS,
       code: this.code,
@@ -51,11 +51,9 @@ export class Contract {
     });
     const result = await wallet.sign(tx);
 
-    this.address = CryptoUtils.normaliseAddress(result.ContractAddress);
+    tx = new Transaction(result);
 
-    tx.ContractAddress = this.address;
-    tx.Info = result.Info;
-    tx.ID = result.hash;
+    this.address = tx.ContractAddress;
 
     return [tx, this];
   }

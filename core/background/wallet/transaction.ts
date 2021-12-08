@@ -264,7 +264,7 @@ export class ZilPayTransaction {
       }
 
       const result = await this.#core.zilliqa.send(newTx);
-      newTx.setHash(result.hash);
+      newTx.setHash(result.TranID);
       await this.#core.transactions.addHistory({
         token,
         confirmed: false,
