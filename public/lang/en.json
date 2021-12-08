@@ -175,9 +175,9 @@
     }
   },
   "netwrok": {
-    "title": "Netwrok",
+    "title": "Network",
     "selected": {
-      "title": "Selected netwrok",
+      "title": "Selected network",
       "description": "You can change the network to testnet or private."
     },
     "node": {

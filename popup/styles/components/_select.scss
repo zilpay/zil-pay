@@ -6,7 +6,7 @@
   border: 1px solid var(--border-color);
   padding: 0.25em 0.5em;
   cursor: pointer;
-  background: transparent;
+  background: var(--card-color);
   font-family: Demi;
 
   padding-block-start: 5px;
@@ -14,4 +14,8 @@
 
   @include border-radius(8px);
   @include fluid-font(320px, 720px, 15px, 20px);
+
+  & > option {
+    color: var(--text-color);
+  }
 }

@@ -8,6 +8,7 @@
   width={width}
   height={height}
   viewBox="0 0 24 24"
+  fill="none"
   class={className}
 >
   <circle cx="12" cy="12" r="7" stroke="var(--muted-color)" stroke-width="2"/>
