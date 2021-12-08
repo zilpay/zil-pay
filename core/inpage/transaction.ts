@@ -148,14 +148,14 @@ export class Transaction {
     }
 
     if (this.data && Array.isArray(this.data)) {
-      this.data.params = this.data.params.map((arg, index) => {
+      this.data.params = this.data.map((arg, index) => {
         try {
           if (arg && arg.type === 'ByStr20' && arg.value && Validator.isBech32(arg.value)) {
             arg.value = CryptoUtils.fromBech32Address(String(arg.value));
           }
 
           if (arg && arg.type === 'List (ByStr20)' && Array.isArray(arg.value)) {
-            arg.value = arg.value.map((address) => {
+            arg.value = arg.value.map((address: string) => {
               if (!Validator.isBech32(address)) {
                 return address;
               }
@@ -170,7 +170,7 @@ export class Transaction {
         }
 
         return arg;
-      })
+      });
     }
   }
 }
