@@ -7,36 +7,40 @@
  * Copyright (c) 2021 ZilPay
  */
 import BN from 'bn.js';
+import Big from 'big.js';
 import Long from 'long';
 import { Validator } from './validator';
 
+Big.PE = 99;
+
 export const Units = {
-  Li: BigInt('1'),
-  Qa: BigInt('1000000'),
-  Zil: BigInt('1000000000000')
+  Li: Big('1'),
+  Qa: Big('1000000'),
+  Zil: Big('1000000000000')
 };
 
 export function fromQa(
-  qa: bigint | string | number,
-  unit: bigint
+  qa: Big | string | number,
+  unit: Big
 ) {
-  const value = BigInt(qa);
-  const res = value / unit;
+  const value = Big(qa);
+  const res = value.div(unit);
 
   return String(res);
 }
 
 export function toQa(
-  qa: bigint | number | string,
-  unit: bigint
+  qa: Big | number | string,
+  unit: Big
 ) {
-  const value = BigInt(qa);
-  const res = value * unit;
-  return String(res);
+  const value = Big(qa);
+  const res = value.mul(unit);
+  return String(res.round());
 }
 
 export const ZilliqaUtils = {
   BN,
+  Big,
   Long,
   validation: Validator,
   units: {
