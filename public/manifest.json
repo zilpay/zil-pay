@@ -26,7 +26,6 @@
   },
   "permissions": [
     "storage",
-    "webRequest",
     "notifications",
     "activeTab",
     "alarms",

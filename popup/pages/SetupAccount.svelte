@@ -110,7 +110,7 @@
 		</label>
     <div class="policy">
       <a
-        href="https://zilpay.io/policy"
+        href="https://zilpay.io/extension-policy"
         target="_blank"
       >
         {$_('setup_acc.accept')}
