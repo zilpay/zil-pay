@@ -35,7 +35,7 @@ export class NotificationsControl {
    */
   create() {
     try {
-      const data = {
+      const data: chrome.notifications.NotificationOptions<true> = {
         type: 'basic',
         title: this.#title,
         iconUrl: Runtime.extension.getURL('/icons/icon128.png'),
