@@ -16,9 +16,11 @@
   import Jumbotron from '../../components/Jumbotron.svelte';
   import RevealPhraseModal from '../../modals/RevealPhrase.svelte';
   import ExportKeyModal from '../../modals/ExportKey.svelte';
+	import ConnectModal from '../../modals/Connect.svelte';
 
 	let phraseModal = false;
 	let keyModal = false;
+	let connectModal = false;
 
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: keybtndisbaled = AccountTypes.Ledger === account.type;
@@ -36,6 +38,13 @@
   on:close={() => phraseModal = !phraseModal}
 >
 	<RevealPhraseModal />
+</Modal>
+<Modal
+  show={connectModal}
+  title={$_('security.connect.title')}
+  on:close={() => connectModal = !connectModal}
+>
+	<ConnectModal />
 </Modal>
 <Modal
   show={keyModal}
@@ -72,6 +81,17 @@
 				</span>
 			</Jumbotron>
 		{/if}
+		<Jumbotron
+			title={$_('security.connect.title')}
+			description={$_('security.connect.warn')}
+		>
+			<span
+				class="warning"
+				on:click={() => connectModal = !connectModal}
+			>
+				{$_('security.connect.btn')}
+			</span>
+		</Jumbotron>
 		<Jumbotron
 			title={$_('security.phishing.title')}
 			description={$_('security.phishing.warn')}

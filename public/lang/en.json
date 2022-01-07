@@ -240,6 +240,12 @@
     "phishing": {
       "title": "Use Phishing Detection",
       "warn": "Display a warning for phishing domains targeting Zilliqa users"
+    },
+    "connect": {
+      "title": "Mobile-Connect",
+      "warn": "Sync your ZIlPay mobile and extension through ZilPay connect.",
+      "warn_message": "Never show or share this qrcode with anybody.",
+      "btn": "Connect"
     }
   },
   "settings": {

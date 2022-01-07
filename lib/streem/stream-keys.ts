@@ -28,6 +28,7 @@ export const MTypePopup = {
   EXPORT_SEED: `@/${app}/popup-export-seed-words`,
   EXPORT_PRIVATE_KEY: `@/${app}/popup-export-private-key`,
   EXPORT_QR_CODE: `@/${app}/export-qr-code-by-index`,
+  EXPORT_QR_CODE_WALLET: `@/${app}/export-qr-code-wallet`,
 
   IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
   IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,

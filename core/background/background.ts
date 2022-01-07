@@ -156,6 +156,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.EXPORT_PRIVATE_KEY:
         core.wallet.exportPrivateKey(msg.payload.password, sendResponse);
         return true;
+      case MTypePopup.EXPORT_QR_CODE_WALLET:
+        core.wallet.exportQrcodeWallet(msg.payload.password, sendResponse);
+        return true;
       case MTypePopup.IMPORT_PRIVATE_KEY:
         core.wallet.importPrivateKey(msg.payload, sendResponse);
         return true;

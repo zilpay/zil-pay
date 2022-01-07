@@ -122,6 +122,16 @@ export async function exportPrivateKey(password: string) {
   return warpMessage(data);
 }
 
+export async function exportWalletQrcode(password: string) {
+  const data = await new Message({
+    type: MTypePopup.EXPORT_QR_CODE_WALLET,
+    payload: {
+      password
+    }
+  }).send();
+  return warpMessage(data);
+}
+
 export async function changeAccountName(index: number, name: string) {
   const data = await new Message({
     type: MTypePopup.SET_ACCOUNT_NAME,

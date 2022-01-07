@@ -8,8 +8,12 @@
  */
 import type { ZIlPayCore } from './core';
 import type { StreamResponse } from 'types/stream';
+import type { Wallet } from 'types/account';
 
+import { Aes } from 'lib/crypto/aes';
 import qrcode from 'qrcode/lib/browser';
+import { uuidv4 } from 'lib/crypto/uuid';
+import { AccountTypes } from 'config/account-type';
 
 interface PrivateKeyName {
   name: string;
@@ -85,6 +89,56 @@ export class ZilPayWallet {
 
       sendResponse({
         resolve: seed
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async exportQrcodeWallet(password: string, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.setPassword(password);
+      const seed = this.#core.guard.getSeed();
+      const wallet: Wallet = JSON.parse(JSON.stringify(this.#core.account.wallet));
+      const keys = wallet.identities.filter(
+        (acc) => acc.type === AccountTypes.PrivateKey
+      ).map((acc) => {
+        const privateKey = this.#core.guard.decryptPrivateKey(acc.privKey);
+
+        return {
+          privateKey,
+          index: acc.index
+        };
+      });
+      const data = {
+        seed,
+        keys
+      };
+      const encrypted = Aes.getEncrypted(data, password);
+      const base58 = await qrcode.toDataURL(
+        `${uuidv4()}/${encrypted.iv}`,
+        {
+          width: 200,
+          height: 200,
+        }
+      );
+
+      wallet.identities = wallet.identities.filter(
+        (acc) => acc.type !== AccountTypes.Ledger
+      ).map((acc) => ({
+        ...acc,
+        privKey: undefined
+      }));
+
+      sendResponse({
+        resolve: {
+          base58,
+          wallet,
+          cipher: encrypted.cipher,
+          zrc2: this.#core.zrc2.identities
+        }
       });
     } catch (err) {
       sendResponse({
