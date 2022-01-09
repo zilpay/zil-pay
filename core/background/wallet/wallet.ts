@@ -116,9 +116,10 @@ export class ZilPayWallet {
         seed,
         keys
       };
+      const uuid = uuidv4();
       const encrypted = Aes.getEncrypted(data, password);
       const base58 = await qrcode.toDataURL(
-        `${uuidv4()}/${encrypted.iv}`,
+        `${uuid}/${encrypted.iv}`,
         {
           width: 200,
           height: 200,
@@ -135,12 +136,12 @@ export class ZilPayWallet {
       sendResponse({
         resolve: {
           base58,
+          uuid,
           data: {
             wallet,
             cipher: encrypted.cipher,
             zrc2: this.#core.zrc2.identities
-          },
-          uuid: uuidv4()
+          }
         }
       });
     } catch (err) {
