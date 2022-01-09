@@ -135,9 +135,12 @@ export class ZilPayWallet {
       sendResponse({
         resolve: {
           base58,
-          wallet,
-          cipher: encrypted.cipher,
-          zrc2: this.#core.zrc2.identities
+          data: {
+            wallet,
+            cipher: encrypted.cipher,
+            zrc2: this.#core.zrc2.identities
+          },
+          uuid: uuidv4()
         }
       });
     } catch (err) {

@@ -44,7 +44,7 @@
   title={$_('security.connect.title')}
   on:close={() => connectModal = !connectModal}
 >
-	<ConnectModal />
+	<ConnectModal on:close={() => connectModal = false}/>
 </Modal>
 <Modal
   show={keyModal}

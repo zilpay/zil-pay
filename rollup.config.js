@@ -51,6 +51,7 @@ const popup = {
 			browser: true,
 			dedupe: ['svelte']
 		}),
+		json(),
 		commonjs(),
 		typescript({
 			sourceMap: !production,

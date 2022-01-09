@@ -1,10 +1,16 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import {  } from "module";
+	import { w3cwebsocket } from "websocket";
+
+  import { ZilPayConnect } from "config/connect";
 
   import { getZNS } from 'popup/backend/zns';
   import { exportWalletQrcode } from 'popup/backend/wallet';
+
+  const dispatch = createEventDispatcher();
+
+  let client;
 
   let passwordElement = null;
   let loading = false;
@@ -20,13 +26,36 @@
     }
   });
 
+  onDestroy(() => {
+    if (client && client.close) {
+      client.close();
+    }
+  });
+
   const handleSubmit = async (e) => {
 		e.preventDefault();
 
     loading = true;
 		try {
       data = await exportWalletQrcode(password);
-      console.log(data);
+      client = new w3cwebsocket(ZilPayConnect.Host, ZilPayConnect.Protocol);
+      client.onerror = function() {
+        client.close();
+      };
+
+      client.onopen = function() {
+        if (client.readyState === client.OPEN) {
+          client.send(JSON.stringify({
+            data: data.data,
+            uuid: data.uuid,
+            type: 'Share'
+          }));
+        }
+        client.onclose = function() {
+          dispatch('close');
+          console.log('echo-protocol Client Closed');
+        };
+      };
 		} catch (err) {
       error = err.message;
 		}
@@ -101,11 +130,5 @@
       text-shadow: 2px 1px 4px var(--danger-color);
       font-size: 16px;
     }
-  }
-  textarea {
-    font-size: 16px;
-    width: 100%;
-    height: min-content;
-    line-height: 1em;
   }
 </style>
