@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 
-export enum ZilPayConnect {
-  Host = 'ws://localhost:8080/',
-  Protocol = 'zilpay-connect'
+export const ZilPayConnect = {
+  Host: 'ws://localhost:8080/',
+  Protocol: 'zilpay-connect'
 }
