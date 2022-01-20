@@ -40,13 +40,10 @@
       data = await exportWalletQrcode(password);
       client = new w3cwebsocket(ZilPayConnect.Host, ZilPayConnect.Protocol);
       client.onerror = function(err) {
-        console.error(err);
         client.close();
       };
 
       client.onopen = function() {
-        console.log(client.readyState);
-        
         if (client.readyState === client.OPEN) {
           client.send(JSON.stringify({
             data: data.data,
