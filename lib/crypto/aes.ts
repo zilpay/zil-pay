@@ -37,8 +37,9 @@ export class Aes  {
   }
 
   public static getEncrypted<T>(data: object | Array<T>, key: string) {
+    const hash = Aes.hash(key);
     const content = JSON.stringify(data);
-    const keyAsHex = ENCHex.parse(key);
+    const keyAsHex = ENCHex.parse(hash);
     const iv = lib.WordArray.random(128 / 8);
     const encryptData = aes.encrypt(
       content,

@@ -80,7 +80,7 @@ export class ZilPayApps {
           type: MTypeTab.RESPONSE_TO_DAPP,
           payload: {
             uuid,
-            resolve: account
+            account
           }
         }).send();
         try {
@@ -121,8 +121,8 @@ export class ZilPayApps {
         await new TabsMessage({
           type: MTypeTab.RESPONSE_TO_DAPP,
           payload: {
-            uuid: app.uuid,
-            resolve: account
+            account,
+            uuid: app.uuid
           }
         }).send();
       } else {

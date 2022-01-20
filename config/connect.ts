@@ -8,6 +8,6 @@
  */
 
 export const ZilPayConnect = {
-  Host: 'ws://5.181.252.166:8080/',
+  Host: 'wss://temp-ws-1134479287.us-west-2.elb.amazonaws.com',
   Protocol: 'zilpay-connect'
 }

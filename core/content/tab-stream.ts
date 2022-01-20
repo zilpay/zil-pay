@@ -119,15 +119,27 @@ export class ContentTabStream {
         params
       );
     } catch (err) {
-      result.error = err.message || err;
+      result.error = {
+        message: (err as Error).message
+      };
     }
 
-    new ContentMessage({
-      type: MTypeTab.CONTENT_PROXY_RESULT,
-      payload: {
-        ...result,
-        uuid
-      },
-    }).send(this.#stream, recipient);
+    if (result.error) {
+      new ContentMessage({
+        type: MTypeTab.CONTENT_PROXY_RESULT,
+        payload: {
+          reject: result['message'],
+          uuid
+        },
+      }).send(this.#stream, recipient);
+    } else {
+      new ContentMessage({
+        type: MTypeTab.CONTENT_PROXY_RESULT,
+        payload: {
+          resolve: result,
+          uuid
+        }
+      }).send(this.#stream, recipient);
+    }
   }
 }

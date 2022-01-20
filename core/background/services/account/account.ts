@@ -373,16 +373,8 @@ export class AccountController {
     const isUnique = this.wallet.identities.some(
       (acc) => (acc.base16 === account.base16)
     );
-    const isIndex = this.wallet.identities.some((acc) => {
-      const t0 = acc.index === account.index;
-      const t1 = acc.type === account.type;
-      const t2 = Boolean(acc.productId) && acc.productId === account.productId;
-
-      return t0 && t1 && t2;
-    });
 
     assert(!isUnique, 'Account must be unique');
-    assert(!isIndex, 'Incorect index and account type');
   }
 
   async #trigger() {
