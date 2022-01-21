@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { DataParams, TransitionReceipt, TxParams } from 'types/transaction';
+import type { DataParams, TransactionParams, TransitionReceipt } from 'types/transaction';
 import type { HTTPProvider } from './provider';
 import type { Wallet } from './wallet';
 
@@ -18,17 +18,8 @@ import { Gas } from 'config/gas';
 import { TypeOf } from 'lib/type/type-checker';
 import { ErrorMessages } from 'config/errors';
 
-export interface TransactionParams extends TxParams {
-  ContractAddress?: string;
-  senderAddress?: string;
-  TranID?: string;
-  ID?: string;
-  receipt?: TransitionReceipt;
-  Info?: string;
-}
-
 export class Transaction {
-  public version: number;
+  public version?: number;
   public toAddr: string;
   public nonce: number;
   public amount: BN;
@@ -37,13 +28,13 @@ export class Transaction {
   public signature?: string;
   public ContractAddress?: string;
   public ID?: string;
-  public from: string;
+  public from?: string;
   public Info?: string;
   public pubKey: string;
   public gasPrice: BN;
   public gasLimit: Long;
   public priority: boolean;
-  public receipt: TransitionReceipt;
+  public receipt?: TransitionReceipt;
 
   public epoch?: string;
   public cumulativeGas?: string;
@@ -106,8 +97,11 @@ export class Transaction {
   }
 
   constructor(params: TransactionParams, priority = false) {
+    assert(Boolean(params.toAddr), `toAddr ${ErrorMessages.RequiredParam}`);
+
     this.version = params.version;
-    this.toAddr = params.toAddr;
+    this.toAddr = String(params.toAddr);
+
     this.nonce = Number(params.nonce || 0);
     this.amount = new BN(params.amount || 0);
     this.code = params.code || '';
@@ -120,11 +114,8 @@ export class Transaction {
     this.gasPrice = new BN(params.gasPrice);
     this.gasLimit = Long.fromNumber(Number(params.gasLimit || Gas.gasLimit));
 
-    this.priority = params.priority;
-    this.priority = priority;
+    this.priority = params.priority ? params.priority : priority;
     this.receipt = params.receipt;
-
-    assert(Boolean(this.toAddr), `toAddr ${ErrorMessages.RequiredParam}`);
 
     if (Validator.isAddress(this.toAddr)) {
       this.toAddr = CryptoUtils.toChecksumAddress(this.toAddr);
@@ -132,13 +123,17 @@ export class Transaction {
     }
 
     try {
-      this.from = CryptoUtils.toBech32Address(this.from);
+      this.from = CryptoUtils.toBech32Address(
+        String(this.from)
+      );
     } catch {
       ///
     }
 
     try {
-      this.ContractAddress = CryptoUtils.toChecksumAddress(params.ContractAddress);
+      this.ContractAddress = CryptoUtils.toChecksumAddress(
+        String(params.ContractAddress)
+      );
     } catch {
       ///
     }
@@ -174,7 +169,7 @@ export class Transaction {
             })
           }
         } catch (err) {
-          throw new Error(`${err.message} in param ${index}, type: ${arg.type}, value: ${arg.value}`);
+          throw new Error(`${(err as Error).message} in param ${index}, type: ${arg.type}, value: ${arg.value}`);
         }
 
         return arg;

@@ -14,6 +14,12 @@ export type Balance = {
   balance: string;
 };
 
+export interface SignedMessage {
+  message: string;
+  publicKey: string;
+  signature: string;
+}
+
 export interface RPCBody {
   id: number;
   jsonrpc: string;

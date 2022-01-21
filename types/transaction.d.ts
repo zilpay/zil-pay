@@ -68,6 +68,15 @@ export interface MinParams {
   cancel?: boolean;
 }
 
+export interface TransactionParams extends TxParams {
+  ContractAddress?: string;
+  senderAddress?: string;
+  TranID?: string;
+  ID?: string;
+  receipt?: TransitionReceipt;
+  Info?: string;
+}
+
 export interface MessageParams {
   content: string;
   uuid: string;

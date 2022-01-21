@@ -6,11 +6,14 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { TransactionParams, TxParams } from 'types/transaction';
+
 import { CryptoUtils } from './crypto';
 import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { Contracts } from 'config/contracts';
-import { TransactionFactory, Transaction, TransactionParams } from './transaction';
+import { TransactionFactory, Transaction } from './transaction';
+import { TypeOf } from 'lib/type/type-checker';
 
 export class Contract {
   public transaction: TransactionFactory;
@@ -18,8 +21,8 @@ export class Contract {
   public code?: string;
   public init?: object[];
 
-  get #contractAddress() {
-    return CryptoUtils.toHex(this.address);
+  get contractAddress() {
+    return CryptoUtils.toHex(String(this.address));
   }
 
   constructor(
@@ -51,7 +54,7 @@ export class Contract {
     });
     const result = await wallet.sign(tx);
 
-    tx = new Transaction(result);
+    tx = new Transaction(result as TxParams);
 
     this.address = tx.ContractAddress;
 
@@ -70,12 +73,12 @@ export class Contract {
     const tx = this.transaction.new({
       data,
       priority,
-      toAddr: this.#contractAddress,
+      toAddr: this.contractAddress,
       ...params
     });
     const result = await wallet.sign(tx);
 
-    return new Transaction(result);
+    return new Transaction(result as TxParams);
   }
 
   public async getState() {
@@ -84,7 +87,7 @@ export class Contract {
     const { RPCMethod } = this.transaction.provider;
     const { result, error } = await this.transaction.provider.send(
       RPCMethod.GetSmartContractState,
-      this.#contractAddress
+      this.contractAddress
     );
 
     if (error) {
@@ -102,7 +105,7 @@ export class Contract {
     const { RPCMethod } = this.transaction.provider;
     const { result, error } = await this.transaction.provider.send(
       RPCMethod.GetSmartContractSubState,
-      this.#contractAddress,
+      this.contractAddress,
       variableName,
       indices
     );
@@ -120,7 +123,7 @@ export class Contract {
     const { RPCMethod } = this.transaction.provider;
     const { result, error } = await this.transaction.provider.send(
       RPCMethod.GetSmartContractInit,
-      this.#contractAddress
+      this.contractAddress
     );
 
     if (error) {
@@ -138,17 +141,18 @@ export class Contract {
     const { RPCMethod } = this.transaction.provider;
     const { result, error } = await this.transaction.provider.send(
       RPCMethod.GetSmartContractCode,
-      this.#contractAddress
+      this.contractAddress
     );
-    const code = String(result['code']);
+
+    if (TypeOf.isObject(result)) {
+      this.code = String(result['code']);
+    }
 
     if (error) {
       throw new Error(String(error));
     }
 
-    this.code = code;
-
-    return code;
+    return this.code;
   }
 }
 
@@ -164,6 +168,6 @@ export class ContractControl {
   }
 
   public new(code: string, init: object[]) {
-    return new Contract(this.transactions, null, code, init);
+    return new Contract(this.transactions, undefined, code, init);
   }
 }

@@ -9,8 +9,10 @@
 
 import type { HTTPProvider } from "./provider";
 import type { Wallet } from './wallet';
+import type { TransactionParams, TxParams } from "types/transaction";
+
 import assert from 'assert';
-import { Transaction, TransactionParams } from './transaction';
+import { Transaction } from './transaction';
 import { CryptoUtils } from "./crypto";
 import { RPCMethod } from 'config/methods';
 import { ErrorMessages } from "config/errors";
@@ -36,7 +38,7 @@ export class Blockchain {
     const transaction = new Transaction(params, priority);
     const result = await this.#wallet.sign(transaction);
 
-    return new Transaction(result);
+    return new Transaction(result as TxParams);
   }
 
   /**

@@ -60,14 +60,14 @@ export class HTTPProvider {
         if (!msg.payload || !msg.payload.uuid) return;
         if (msg.payload.uuid !== uuid) return;
 
-        if (msg.payload && msg.payload.error) {
+        if (msg.payload && msg.payload.reject) {
           sub();
-          return reject(new Error(msg.payload.error.message || msg.payload.error));
+          return reject(new Error(msg.payload.reject));
         }
 
         delete msg.payload.uuid;
         sub();
-        return resolve(msg.payload);
+        return resolve(msg.payload.resolve);
       });
     })
   }
