@@ -50,5 +50,6 @@ export enum ErrorMessages {
   WebHidNotSupported = 'WEBHID is not supported.',
   NoFoundDeviced = 'No one device connected',
 
-  CannotBeZero = 'A param cannot be zero.'
+  CannotBeZero = 'A param cannot be zero.',
+  TimeOut = 'request failed by timeout!'
 }
