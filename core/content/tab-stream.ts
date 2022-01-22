@@ -6,6 +6,8 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { ProxyContentType } from 'types/stream';
+
 import { Message, ReqBody } from 'lib/streem/message';
 import { MTypeTab, MTypeTabContent } from 'lib/streem/stream-keys';
 import { TabStream } from 'lib/streem/tab-stream';
@@ -88,7 +90,7 @@ export class ContentTabStream {
     }
   }
 
-  async #proxy(payload: any) {
+  async #proxy(payload: ProxyContentType) {
     const { params, method, uuid } = payload;
     const recipient = MTypeTabContent.INJECTED;
     let result = {
@@ -125,21 +127,21 @@ export class ContentTabStream {
     }
 
     if (result.error) {
-      new ContentMessage({
+      return new ContentMessage({
         type: MTypeTab.CONTENT_PROXY_RESULT,
         payload: {
           reject: result['message'],
           uuid
         },
       }).send(this.#stream, recipient);
-    } else {
-      new ContentMessage({
-        type: MTypeTab.CONTENT_PROXY_RESULT,
-        payload: {
-          resolve: result,
-          uuid
-        }
-      }).send(this.#stream, recipient);
     }
+
+    return new ContentMessage({
+      type: MTypeTab.CONTENT_PROXY_RESULT,
+      payload: {
+        resolve: result,
+        uuid
+      }
+    }).send(this.#stream, recipient);
   }
 }
