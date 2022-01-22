@@ -25,6 +25,7 @@
   });
 
   const handleOnInput = async (e) => {
+    error = '';
     const content = e.target.value;
     const regExpDomain = /.*\w.zil/gm;
 
