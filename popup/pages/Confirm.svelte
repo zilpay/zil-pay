@@ -248,6 +248,8 @@
 	.header {
 		text-align: center;
 
+		@include flex-center-column;
+
 		& > h1 {
 			margin: 0;
 			line-height: 30px;
