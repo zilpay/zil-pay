@@ -117,14 +117,16 @@ export class Contract {
     return result;
   }
 
-  public async getInit(): Promise<object[]> {
+  public async getInit(): Promise<object[] | undefined> {
     assert(Boolean(this.address), `this.address ${ErrorMessages.RequiredParam}`);
 
     const { RPCMethod } = this.transaction.provider;
-    const { result, error } = await this.transaction.provider.send(
+    const response = await this.transaction.provider.send(
       RPCMethod.GetSmartContractInit,
       this.contractAddress
     );
+
+    if (!response) return undefined;
 
     if (error) {
       throw new Error(String(error));
