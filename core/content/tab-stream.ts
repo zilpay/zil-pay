@@ -108,9 +108,9 @@ export class ContentTabStream {
       const wallet = warpMessage(data);
 
       if (!wallet || !wallet.isEnable) {
-        throw ErrorMessages.Disabled;
+        throw new Error(ErrorMessages.Disabled);
       } else if (!wallet.isConnect) {
-        throw ErrorMessages.Connect;
+        throw new Error(ErrorMessages.Connect);
       }
 
       const http = method === RPCMethod.GetTransactionStatus ?
@@ -130,7 +130,7 @@ export class ContentTabStream {
       return new ContentMessage({
         type: MTypeTab.CONTENT_PROXY_RESULT,
         payload: {
-          reject: result['message'],
+          reject: result.error.message,
           uuid
         },
       }).send(this.#stream, recipient);
