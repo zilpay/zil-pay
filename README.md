@@ -66,7 +66,7 @@ $ npm run build
 
 * [webpack](https://github.com/webpack/webpack)
 * [babel](https://github.com/babel/babel)
-* [vuejs](https://github.com/vuejs)
+* [svelte](https://github.com/sveltejs/svelte)
 
 ## Authors
 
