@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 	import { fly } from 'svelte/transition';
 
   import { viewIcon } from 'lib/block-explorer/view';
-	import { removeZRC2Token } from 'popup/backend/tokens';
+	import { removeZRC2Token, getTokens } from 'popup/backend/tokens';
 
 	import zrcStore from 'app/store/zrc';
   import themeStore from 'popup/store/theme';
@@ -17,13 +18,14 @@
 
 	let search = '';
 	let tokenAddModal = false;
+	let tokens = [];
 
-	$: tokens = $zrcStore.slice(2).filter((t) => {
-		const t0 = t.name.includes(search.toLowerCase());
-		const t1 = t.symbol.includes(search.toLowerCase());
+	// $: tokens = $zrcStore.slice(2).filter((t) => {
+	// 	const t0 = t.name.includes(search.toLowerCase());
+	// 	const t1 = t.symbol.includes(search.toLowerCase());
 
-		return t0 || t1;
-	});
+	// 	return t0 || t1;
+	// });
 
 	async function hanldeOnHide(token) {
 		const foundIndex = $zrcStore.findIndex(
@@ -31,6 +33,10 @@
 		);
 		await removeZRC2Token(foundIndex);
 	}
+
+	onMount(async() => {
+		tokens = await getTokens();
+	});
 </script>
 
 <Modal
