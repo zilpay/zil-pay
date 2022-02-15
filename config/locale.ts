@@ -8,5 +8,6 @@
  */
 export enum Locales {
   Auto = 'auto',
-  EN = 'en'
+  EN = 'en',
+  EU = 'eu'
 }

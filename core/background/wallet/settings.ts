@@ -114,6 +114,22 @@ export class ZilPaySettings {
     try {
       this.#core.guard.checkSession();
       await this.#core.currencies.update(currecny);
+      await this.#core.rate.updateRate();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async updateRate(sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.rate.updateRate();
 
       sendResponse({
         resolve: this.#core.state

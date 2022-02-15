@@ -25,6 +25,13 @@ export async function changeCurrency(currency: string) {
   return state;
 }
 
+export async function updateRate() {
+  const data = await Message.signal(MTypePopup.UPDATE_RATE).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
 export async function resetCurrency() {
   const data = await Message
     .signal(MTypePopup.RESET_CURRENCY)

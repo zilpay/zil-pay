@@ -11,6 +11,7 @@
 	import { formatNumber } from 'popup/filters/n-format';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
 	import { balanceUpdate } from 'popup/backend/wallet';
+	import { updateRate } from 'popup/backend/settings';
 
 	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
@@ -43,12 +44,19 @@
 	}, Big(0));
 	$: converted = convertRate(rate, balance);
 
-	const onRefresh = async () => {
+	const onRefresh = async (rate = false) => {
 		loading = true;
 		try {
 			await balanceUpdate();
 		} catch (err) {
 			alert(err.message);
+		}
+		if (rate) {
+			try {
+				await updateRate();
+			} catch (err) {
+				// alert(err.message);
+			}
 		}
 		loading = false;
 	};
@@ -71,7 +79,7 @@
 		refresh
 		view
 		lock
-		on:refresh={onRefresh}
+		on:refresh={() => onRefresh(true)}
 	/>
 	<img
 		src="/imgs/logo.webp"

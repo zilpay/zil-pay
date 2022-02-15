@@ -13,7 +13,7 @@ import { Fields } from 'config/fields';
 import { ErrorMessages } from 'config/errors';
 
 export class CurrenciesController {
-  #selected = 'usd';
+  #selected = DEFAULT_CURRENCIES[0];
 
   public get selected() {
     return this.#selected;

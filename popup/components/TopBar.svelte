@@ -30,8 +30,6 @@
 
   const onRefresh = () => {
     dispatch('refresh');
-    console.log($netStore);
-    
   };
   const viewOnViewBlock = () => {
     const url = viewAddress(account.bech32, $netStore.selected);

@@ -39,9 +39,7 @@ export interface RPCResponse {
 };
 
 export interface RateCurrencies {
-  btc: number;
-  eth: number;
-  usd: number;
+  [currency: string]: number;
 }
 
 declare global {

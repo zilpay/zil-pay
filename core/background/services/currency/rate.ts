@@ -50,11 +50,11 @@ export class RateController {
   }
 
   public async reset() {
-    this.#rate = {
-      btc: 0,
-      eth: 0,
-      usd: 0
-    };
+    this.#rate = {};
+
+    for (const symbol of DEFAULT_CURRENCIES) {
+      this.#rate[symbol] = 0;
+    }
 
     await this.updateRate();
 
@@ -77,6 +77,8 @@ export class RateController {
 
   async #setRate(newRate: RateCurrencies) {
     this.#rate = newRate;
+
+    console.log(newRate);
 
     await BrowserStorage.set(
       buildObject(Fields.RATE_CURRENCIES, this.rate)
