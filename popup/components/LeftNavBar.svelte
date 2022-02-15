@@ -2,21 +2,18 @@
   import { createEventDispatcher } from 'svelte';
   import { link } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
-	import { Formats } from 'config/formats';
   import { AccountTypes } from 'config/account-type';
 
   import { linksExpand } from 'popup/mixins/link';
 
 	import { removeAccount } from 'popup/backend/wallet';
   import {
-		changeAddressFormat,
 		changePromtEnabled,
     setPhishingDetection
 	} from 'popup/backend/settings';
 
 	import walletStore from 'popup/store/wallet';
 	import promtStore from 'app/store/promt';
-	import addressFormatStore from 'popup/store/format';
 	import phishingStore from 'app/store/phishing';
 
   import Close from './Close.svelte';
@@ -37,13 +34,6 @@
     await removeAccount();
     onClose();
   };
-  const handleToggleAddressFormat = async () => {
-		if ($addressFormatStore === Formats.Base16) {
-			await changeAddressFormat(Formats.Bech32);
-		} else {
-			await changeAddressFormat(Formats.Base16);
-		}
-	};
 </script>
 
 <nav class:show={show}>
@@ -93,15 +83,6 @@
       <Toggle
         checked={$promtStore}
         on:toggle={() => changePromtEnabled(!$promtStore)}
-      />
-    </div>
-    <div>
-      <b>
-        {$_('advanced.base16.title')}
-      </b>
-      <Toggle
-        checked={$addressFormatStore === Formats.Base16}
-        on:toggle={handleToggleAddressFormat}
       />
     </div>
     <div>
