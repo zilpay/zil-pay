@@ -12,6 +12,7 @@
 		changeLocale,
 		resetLocale
 	} from 'popup/backend/settings';
+	import { setupI18n } from 'popup/i18n';
 
 	import currencyStore from 'popup/store/currency';
 	import themeStore from 'popup/store/theme';
@@ -34,6 +35,19 @@
 	const hanldeChangeLocale = async (e) => {
 		const locale = e.target.value;
 		await changeLocale(locale);
+		try {
+			if (locale === Locales.Auto) {
+				await setupI18n();
+			} else {
+				await setupI18n({
+					withLocale: locale
+				});
+			}
+		} catch {
+			await setupI18n({
+				withLocale: Locales.EN
+			});
+		}
 	};
 	const hanldeOnReset = async () => {
 		await resetCurrency();
