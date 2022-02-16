@@ -22,6 +22,10 @@
 	import Toggle from '../components/Toggle.svelte';
 	import SkeletToken from '../components/skelet/SkeletToken.svelte';
 
+	let limit = 100;
+	let offset = 0;
+	let count = $zrcStore.length + 3;
+
 	let search = '';
 	let loading = true;
 	let tokenAddModal = false;
@@ -39,6 +43,32 @@
 
 		return t0 || t1;
 	});
+
+	async function listUpdate() {
+		// 3 is magic number.
+		if (count <= zrc2List.length + 3) {
+			return;
+		}
+		loading = true;
+		let list = [];
+		try {
+			const res = await getTokens(limit, offset);
+			count = res.count;
+			list = res.list.filter(
+				(t) => !$zrcStore.some((s) => s.symbol === t.symbol)
+			);
+			list = list.map((t) => ({
+				...t,
+				selected: false,
+				loading: false
+			}));
+			
+			zrc2List = [...zrc2List, ...list];
+		} catch (err) {
+			console.error(err);
+		}
+		loading = false;
+	}
 
 	async function handleOnToggle(token, index) {
 		zrc2List[index].loading = true;
@@ -69,25 +99,19 @@
 		zrc2List[index].loading = false;
 	}
 
-	onMount(async() => {
-		loading = true;
-		let list = [];
-		try {
-			list = await getTokens();
-			list = list.filter(
-				(t) => !$zrcStore.some((s) => s.symbol === t.symbol)
-			);
-			list = list.map((t) => ({
-				...t,
-				selected: false,
-				loading: false
-			}));
-			
-			zrc2List = [...zrc2List, ...list];
-		} catch (err) {
-			console.error(err);
+	function hanldeScroll(event) {
+		const scrollHeight = event.target.scrollHeight;
+		const scrollTop = event.target.scrollTop;
+		const scroll = Math.ceil(window.innerHeight + scrollTop) - 100;
+
+		if (scroll >= scrollHeight && !loading) {
+			offset += limit;
+			listUpdate();
 		}
-		loading = false;
+	}
+
+	onMount(async() => {
+		await listUpdate();
 	});
 </script>
 
@@ -112,16 +136,9 @@
 			<AddIcon />
 		</span>
 	</SearchBox>
-	<ul>
+	<ul on:scroll={hanldeScroll}>
 		{#each tokens as token, i}
-			<li
-				in:fly={{
-					delay: 100 * i,
-					duration: 400,
-					y: -20
-				}}
-				class:loading={token.loading}
-			>
+			<li class:loading={token.loading}>
 				<img
 					src={viewIcon(token.bech32, $themeStore)}
 					alt={token.symbol}

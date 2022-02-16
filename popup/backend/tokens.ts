@@ -49,7 +49,5 @@ export async function getTokens(limit = 40, offset = 0, type = 1) {
   const params = `?limit=${limit}&offset=${offset}&type=${type}`;
   const url = `https://api.zilpay.io/api/v1/tokens${params}`
   const res = await fetch(url);
-  const list = await res.json();
-
-  return list;
+  return await res.json();
 }
