@@ -5,9 +5,12 @@
   const dispatch = createEventDispatcher();
   const id = uuidv4();
   export let checked = false;
+  export let disabled = false;
 
   const handleOnChange = (e) => {
-    dispatch('toggle', !checked);
+    if (!disabled) {
+      dispatch('toggle', !checked);
+    }
   };
 </script>
 
@@ -16,6 +19,7 @@
   id={id}
   type="checkbox"
   checked={checked}
+  disabled={disabled}
   on:input={handleOnChange}
 />
 <label
@@ -25,7 +29,6 @@
 
 <style lang="scss">
   @import "../styles/mixins";
-
   input {
     display: none;
 
@@ -54,6 +57,7 @@
       }
 
       &:after {
+        
         left: 0;
       }
 
@@ -64,6 +68,11 @@
 
     &:checked + .tgl-btn:after {
       left: 50%;
+    }
+    &:disabled {
+      + .tgl-btn {
+        opacity: 0.3;
+      }
     }
   }
   .tgl-ios {

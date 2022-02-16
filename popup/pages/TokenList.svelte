@@ -4,7 +4,12 @@
 	import { fly } from 'svelte/transition';
 
   import { viewIcon } from 'lib/block-explorer/view';
-	import { removeZRC2Token, getTokens } from 'popup/backend/tokens';
+	import {
+		removeZRC2Token,
+		getTokens,
+		getZRC2State,
+		addZRC2Token
+	} from 'popup/backend/tokens';
 
 	import zrcStore from 'app/store/zrc';
   import themeStore from 'popup/store/theme';
@@ -15,27 +20,74 @@
 	import AddTokenModal from '../modals/AddToken.svelte';
   import Modal from '../components/Modal.svelte';
 	import Toggle from '../components/Toggle.svelte';
+	import SkeletToken from '../components/skelet/SkeletToken.svelte';
 
 	let search = '';
+	let loading = true;
 	let tokenAddModal = false;
-	let tokens = [];
+	let zrc2List = $zrcStore.slice(2).map(
+		(t) => ({
+			...t,
+			selected: true,
+			loading: false
+		})
+	);
 
-	// $: tokens = $zrcStore.slice(2).filter((t) => {
-	// 	const t0 = t.name.includes(search.toLowerCase());
-	// 	const t1 = t.symbol.includes(search.toLowerCase());
+	$: tokens = zrc2List.filter((t) => {
+		const t0 = t.name.includes(search.toLowerCase());
+		const t1 = t.symbol.includes(search.toLowerCase());
 
-	// 	return t0 || t1;
-	// });
+		return t0 || t1;
+	});
 
-	async function hanldeOnHide(token) {
-		const foundIndex = $zrcStore.findIndex(
-			(t) => t.base16 === token.base16
-		);
-		await removeZRC2Token(foundIndex);
+	async function handleOnToggle(token, index) {
+		zrc2List[index].loading = true;
+		if (token.selected) {
+			const foundIndex = $zrcStore.findIndex(
+				(t) => t.base16 === token.base16
+			);
+			await removeZRC2Token(foundIndex);
+			zrc2List[index] = {
+				...token,
+				selected: false
+			};
+		} else {
+			try {
+				const state = await getZRC2State(token.bech32);
+				await addZRC2Token(state);
+				zrc2List[index] = {
+					...token,
+					selected: true
+				};
+			} catch {
+				zrc2List[index] = {
+					...token,
+					selected: true
+				};
+			}
+		}
+		zrc2List[index].loading = false;
 	}
 
 	onMount(async() => {
-		tokens = await getTokens();
+		loading = true;
+		let list = [];
+		try {
+			list = await getTokens();
+			list = list.filter(
+				(t) => !$zrcStore.some((s) => s.symbol === t.symbol)
+			);
+			list = list.map((t) => ({
+				...t,
+				selected: false,
+				loading: false
+			}));
+			
+			zrc2List = [...zrc2List, ...list];
+		} catch (err) {
+			console.error(err);
+		}
+		loading = false;
 	});
 </script>
 
@@ -62,11 +114,13 @@
 	</SearchBox>
 	<ul>
 		{#each tokens as token, i}
-			<li in:fly={{
+			<li
+				in:fly={{
 					delay: 100 * i,
 					duration: 400,
 					y: -20
 				}}
+				class:loading={token.loading}
 			>
 				<img
 					src={viewIcon(token.bech32, $themeStore)}
@@ -83,12 +137,18 @@
 				</div>
 				<span>
 					<Toggle
-						checked
-						on:toggle={() => hanldeOnHide(token)}
+						checked={token.selected}
+						disabled={token.loading}
+						on:toggle={() => handleOnToggle(token, i)}
 					/>
 				</span>
 			</li>
 		{/each}
+		{#if loading}
+			<li class="loading">
+				<SkeletToken />
+			</li>
+		{/if}
 	</ul>
 </main>
 
@@ -120,6 +180,10 @@
 
 			@include border-radius(8px);
 			@include flex-between-row;
+
+			&.loading {
+				@include loading-gradient(var(--background-color), var(--card-color));
+			}
 
 			& > div {
 				width: 100%;

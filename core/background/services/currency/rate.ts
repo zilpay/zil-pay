@@ -78,8 +78,6 @@ export class RateController {
   async #setRate(newRate: RateCurrencies) {
     this.#rate = newRate;
 
-    console.log(newRate);
-
     await BrowserStorage.set(
       buildObject(Fields.RATE_CURRENCIES, this.rate)
     );
