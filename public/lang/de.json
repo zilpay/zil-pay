@@ -1,0 +1,384 @@
+{
+  "home": {
+    "btns": {
+      "send": "Senden",
+      "receive": "Empfangen"
+    },
+    "clipboard": {
+      "copy": "Kopieren",
+      "copied": "Kopiert"
+    },
+    "token_list": "Verwalten",
+    "nav": {
+      "optinos": {
+        "add": {
+          "title": "Konto hinzufuegen",
+          "description": "Generiere naechstes Konto aus geheimer Wortfolge."
+        },
+        "import": {
+          "title": "Konto importieren",
+          "description": "Konto wiederherstellen aus privatem Schluessel."
+        },
+        "connect": {
+          "title": "Ledger verbinden.",
+          "description": "Harware Konto generieren aus Ledger Geraet."
+        },
+        "remove": {
+          "title": "Konto entfernen.",
+          "description": "Ausgewaehltes Konto entfernen/verbergen."
+        }
+      }
+    }
+  },
+  "tokens_list": {
+    "title": "Tokens",
+    "modals": {
+      "add": {
+        "title": "Spezifischer ZRC2",
+        "placeholder": "Smart Contract Adresse des Tokens eingeben.",
+        "balance": "Kontostand",
+        "address": "Smart Contract Adresse",
+        "decimals": "Nachkomastellen",
+        "name": "Name",
+        "symbol": "Symbol",
+        "rate": "Preis",
+        "btns": {
+          "add": "ZRC2 Token hinzufuegen",
+          "fetch": "Abrufen"
+        }
+      }
+    },
+    "placeholder": "Name oder Symbol"
+  },
+  "ledger": {
+    "title": "Ledger verbinden",
+    "placeholder": "Index der Ledger Adresse auswaehlen.",
+    "info": "Ledger unterscheidet Adressen mit Hilfe eines Index. Um Konto wiederherzustellen beliebigen Index von 0 bis 255 waehlen",
+    "btn": "Verbinden"
+  },
+  "ledger_finder": {
+    "title": "Geraete anschauen",
+    "list_title": "Ledger Geraete:",
+    "accept": "USB akzeptieren"
+  },
+  "connect": {
+    "question": {
+      "0": "Wollen Sie verbinden mit",
+      "1": "Anwendung?"
+    },
+    "btns": {
+      "conf": "Verbinden",
+      "reject": "Abbrechen"
+    },
+    "warn": "Nach der Bestaetigung wird diese Anwendung Daten von der Blockchain abfrage und Ihre Konti sehen koennen."
+  },
+  "tokens": {
+    "no_tokens_serach": "Keine Tokens mit Namen oder Symbol:"
+  },
+  "send": {
+    "title": "Uebergabe von Tokens",
+    "send_btn": "Weiterfahren",
+    "cards": {
+      "transfer": "Konto des Senders",
+      "token": "Token zum Senden"
+    },
+    "input_to": {
+      "title": "Empfaenger",
+      "placeholder": "Adresse (zil1) oder .zil Domaenenname"
+    },
+    "input_value": {
+      "title": "Anzahl Tokens",
+      "placeholder": "0"
+    },
+    "options": {
+      "acc": "Konti",
+      "con": "Smart Contracts"
+    }
+  },
+  "lock": {
+    "title": "Willkommen zurueck!",
+    "placeholder": "Kennwort",
+    "btn": "Entsperren",
+    "error": "Falsches Kennwort!",
+    "restore": "Wiederherstellen"
+  },
+  "loading": {
+    "title": "Am Laden!"
+  },
+  "start": {
+    "title": "Lass uns anfangen",
+    "subt_title": "Zilliqa Wallet neu kreieren oder wiederherstellen.",
+    "btn_restore": "Wiederherstellen",
+    "btn_create": "Kreieren"
+  },
+  "accounts": {
+    "title": "Konti",
+    "no_accounts": "Keine Konti mit Namen:",
+    "placeholder": "Suchen"
+  },
+  "create": {
+    "title": "Geheime Wortfolge",
+    "sub_title": "Merken Sie sich die Woerter in ther korrekten Reihenfolge!",
+    "btns": {
+      "refresh": "Zufaellige Wortfolge",
+      "continue": "Weiter",
+      "print": "Drucken"
+    },
+    "print": [
+      "Bitte",
+      "Geheime Wortfolge <strong>NICHT VERGESSEN</strong> aufzuschreiben und sicher aufzubewahren. Die ",
+      "<strong>Geheime Wortfolge</strong> wird benoetigt um die Wallet wiederherzustellen.",
+      "Geheime Wortfolge",
+      "<b>Nicht verlieren!</b> Sie kann bei Verlust nicht wieder aufgefunden oder wiederhergestellt wwrden.",
+      "<b>Geheim behalten!</b> Ihr Vermoegen kann gestohlen werden, falls diese Datei auf einer Phishing-Seite verwendet wird.",
+      "<b>Machen Sie eine Sicherungskopie!</b> Sichern Sie sie wie die Millionen von Euro, die sie eines Tages wert sein kann."
+    ]
+  },
+  "verify": {
+    "title": "Wortfolge nachweisen",
+    "placeholder": "Waehlen Sie die Woerter hier in der korreketen Reihenfolge um erstellen Sie so die geheime Wortfolge.",
+    "btn": "Weiterfahren"
+  },
+  "restore": {
+    "title": "Wiederherstellen.",
+    "btn": "Weiterfahren",
+    "placeholder": "Eingabe der geheimen Wortfolge, Woerter mit Zwischenraum (Leerschlag) getrennt.",
+    "pass_placeholder": "Kennwort",
+    "conf_placeholder": "Kennwort bestaetigen",
+    "pass_len_error": "Fehler mit Kennwort: die maximale Laenge ist 6"
+  },
+  "setup_acc": {
+    "title": "Konti einrichten",
+    "name_placeholder": "Kontonamen (3-25 Buchstaben)",
+    "name_description": "Ein Kontonamen dient dazu, die einzelnen Konti besser voneinander unterscheiden zu koennen.",
+    "pass_description": "Ein Kennwort wird benoetigt, um Ihre Schluessel zu kodieren und schuetzen.",
+    "accept": "Datenschutzerklaerung akzeptieren"
+  },
+  "import_priv_key": {
+    "title": "Privaten Schluessel importieren",
+    "placeholder": "Privaten Schluessel eingeben (32 bytes)."
+  },
+  "wallet_created": {
+    "title": "Wallet wurder kreiert!",
+    "subt_title": "Ihr Konto wurde kreiert - Behalten Sie Ihre geheime Wortfolge geheim, es ist Ihre Verantwortung!",
+    "btn": "Anfangen zu benutzen!",
+    "tips": {
+      "title": "Tipps zur sicheren Aufbewahrung",
+      "list": {
+        "0": "Sichern und speichern Sie die Daten an verschiedenen Orten",
+        "1": "Teilen Sie die Wortfolge mit niemandem",
+        "2": "Vorsicht vor phishing! ZilPay wird Sie niemals spontan nach Ihrer geheimen Wortfolge fragen",
+        "3": "Falls Sie Ihre geheime Wortfolge erneut sichern muessen, finden Sie sie unter Sicherheit",
+        "4": "Sollten Sie jemals eine Frage haben oder etwas Verdaechtiges feststellen, kontaktieren Sie uns."
+      },
+      "warn": "ZilPay kann Ihre geheime Wortfolge bei Verlust nicht wiederherstellen!"
+    }
+  },
+  "netwrok": {
+    "title": "Netzwerk",
+    "selected": {
+      "title": "Netzwerk auswaehlen",
+      "description": "Sie koennen auf das Test- oder ein privates Netzwerk wechseln."
+    },
+    "node": {
+      "title": "Netzwerkkonfiguration aendern",
+      "description": "Sie koennen die URL des Netzwerkknotens und die Nachrichtennummer aendern, um Ihr privates Netzwerk zu benutzen."
+    },
+    "ssn": {
+      "title": "Zilliqa Netzwerkknoten",
+      "description": "Sie koennen die URL des Netzwerkknotens und die Nachrichtennummer aendern, um Ihr privates Netzwerk zu benutzen."
+    },
+    "config": {
+      "node": "JSON-RPC API URL",
+      "msg": "Blockchain MSG"
+    },
+    "btns": {
+      "update": "Aktualisieren",
+      "reset": "Zuruecksetzen"
+    }
+  },
+  "connections": {
+    "title": "Verbindungen",
+    "no_apps": "Sie haben noch keine verbundenen Apps!",
+    "btn_reset": "Alle unterbrechen und loeschen"
+  },
+  "contacts": {
+    "title": "Kontakte",
+    "add_btn": "Neuen hinzufuegen",
+    "new_contact": "Ein neuer Kontakt",
+    "items": {
+      "rm": "Entfernen",
+      "copy": "Kopieren"
+    },
+    "no_content": "Noch keine Kontatke!",
+    "form": {
+      "add": "Zu Kontakten hinzufuegen",
+      "name_placeholder": "Kontaktnamen einfuegen"
+    }
+  },
+  "account": {
+    "title": "Konto",
+    "reset": "Nonce zuruecksetzen"
+  },
+  "security": {
+    "title": "Sicherheit",
+    "p_modal": {
+      "title": "Geheime Wortfolge",
+      "warn": "Teilen Sie diese Wortfolge MIT NIEMANDEM! Diese Wortfolge kann benutzt werden um von all Ihren Konti zu stehlen."
+    },
+    "phrase": {
+      "title": "Geheime Wortfolge anzeigen",
+      "description": "Falls Sie jemals ihren Browser und/oder Computer wecheseln, werden Sie diese geheime Wortfolge benoetigen, um auf Ihre Konti zuzugreifen. Sichern Sie sie an einem geheimen und sicheren Ort.",
+      "label": "Kennwort eingeben um fortzufahren",
+      "btn": "Anzeigen"
+    },
+    "key": {
+      "title": "Private Schluessel anzeigen",
+      "warn": "Warnung: Legen Sie diese Schluessel niemals offen. Jedermann, der im Besitze dieser Schluessel ist, kann saemtliches Vermoegen von Ihrem Konto stehlen.",
+      "btn": "Exportieren"
+    },
+    "phishing": {
+      "title": "Phishing Erkennung benutzen",
+      "warn": "Warnung fuer Netzwerkdomaenen, die Zilliqa Benuzer als Ziel haben, anzeigen"
+    },
+    "connect": {
+      "title": "Mobile Verbingung",
+      "warn": "Synchronisieren Sie Ihr mobiles ZilPay und die Browsererweiterung mittels Zilpay connect.",
+      "warn_message": "Teilen Sie diesen QR Code mit niemandem.",
+      "btn": "Verbinden"
+    }
+  },
+  "settings": {
+    "account": {
+      "title": "Konto",
+      "description": "Kontoinformation, Nonce-Zaehler."
+    },
+    "general": {
+      "title": "Allgemein",
+      "description": "Waehrungsumrechnung, Sprache, Thema."
+    },
+    "contacts": {
+      "title": "Kontakte",
+      "description": "Hinzufuegen, bearbeiten, entfernen und verwalten Ihrer Kontakte."
+    },
+    "advanced": {
+      "title": "Fortgeschritten",
+      "description": "Gas kontrollieren, Adressenformat, Pop-up-Fenster Einstellungen."
+    },
+    "networks": {
+      "title": "Netzwerke",
+      "description": "Eigene RPC Netzwerke hinzufuegen und bearbeiten."
+    },
+    "connections": {
+      "title": "Verbindungen",
+      "description": "Liste von Dapps, vewalten Sie Ihre Verbindungen (hinzufuegen, entfernen)."
+    },
+    "security": {
+      "title": "Sicherheit und Privatsphaere",
+      "description": "Einstellungen der Prvatsphaere, und geheime Wortfolge fuer die Wallet."
+    },
+    "about": {
+      "title": "Ueber uns",
+      "description": "Version, Support-Center, Kontakt."
+    }
+  },
+  "general": {
+    "title": "Allgemein",
+    "currency": {
+      "title": "Waehrungsumrechnung",
+      "description": "Sie koennen zu einer anderen Waehrung wechseln, um Ihr Vermoegen darin anzuzeigen."
+    },
+    "theme": {
+      "title": "Thema.",
+      "description": "ZIlPay kann zwischen heller und dunkler Darstellungsart wechseln"
+    },
+    "lang": {
+      "title": "Sprachen des Interfaces.",
+      "description": "ZIlPay unterstuetzt ein Multi-Sprachen Interface."
+    },
+    "reset": "Einstellungen zuruecksetzen"
+  },
+  "history": {
+    "title": "Transaktionen",
+    "no_txns": "Sie haben noch keine Transaktionen.",
+    "queue": "Warteschlange",
+    "history": "Historie",
+    "clear": "Alle loeschen",
+    "modals": {
+      "details": {
+        "title": "Details",
+        "recipient": "Empfaenger",
+        "method": "Methode",
+        "from": "Von",
+        "hash": "Hash",
+        "nonce": "Nonce",
+        "time": "Sendungszeitpunkt",
+        "info": "Information",
+        "btns": {
+          "view": "Ansehen",
+          "cancel": "Abbrechen",
+          "repeat": "Wiederholen"
+        }
+      }
+    }
+  },
+  "advanced": {
+    "title": "Fortgeschritten",
+    "gas": {
+      "title": "Gaskontrolle.",
+      "description": "Waeheln Sie die Standardgasparameter, welche alle Ihre Transaktionen verwenden werden."
+    },
+    "base16": {
+      "title": "Adressen im Base16 Format.",
+      "description": "Sie koennen das Format der Adressen zu Base16 wechseln. Seien Sie vorsichtig, und senden Sie KEINE anderen Waehrungen auf diese Adresse!"
+    },
+    "popup": {
+      "title": "Popup",
+      "description": "Sie koennen die Anzeige eines Fenstes, welches eine Transaktion bestaetigt, unterdruecken."
+    },
+    "time": {
+      "title": "Selbst-Abmeldung Zeit (Stunden)"
+    },
+    "reset_btn": "Zuruecksetzen"
+  },
+  "sig_message": {
+    "title": "Signatur beantragen",
+    "hash": "sha256 anzeigen",
+    "btns": {
+      "confirm": "Signieren",
+      "reject": "Ablehnen"
+    }
+  },
+  "confirm": {
+    "edit": "Bearbeiten",
+    "params": {
+      "amount": "Total",
+      "fee": "Maximale Transaktionskosten",
+      "teg": "Methode",
+      "nonce": "Nonce",
+      "to": "Empfaenger"
+    },
+    "btns": {
+      "confirm": "Bestaetigen",
+      "reject": "Ablehnen"
+    },
+    "parmas_modal": {
+      "title": "Parameter",
+      "limit": "GasLimit",
+      "price": "GasPrice",
+      "btn": "aktualisieren",
+      "tabs": {
+        "params": "PARAMS",
+        "data": "DATA"
+      },
+      "togle": "Bearbeiten"
+    }
+  },
+  "about": {
+    "title": "Ueber ZilPay",
+    "version": "Version"
+  },
+  "swap": {
+    "title": "Demnaechst verfuegbar!"
+  }
+}
