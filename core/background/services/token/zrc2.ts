@@ -7,10 +7,13 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZRC2Token, InitItem, ZRC2Info } from 'types/token';
-import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
+import type { RPCResponse } from 'types/zilliqa';
+
 import assert from 'assert';
+
+import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
 import { Contracts } from 'config/contracts';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
@@ -19,7 +22,6 @@ import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
 import { fromBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
-import type { RPCResponse } from 'types/zilliqa';
 
 enum InitFields {
   ContractOwner = 'contract_owner',
