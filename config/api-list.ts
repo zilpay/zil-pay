@@ -16,3 +16,5 @@ export enum ViewBlockMethods {
   Address = 'address',
   Block = 'block'
 }
+
+export const MAIN_API = 'https://api.zilpay.io/api/v1';

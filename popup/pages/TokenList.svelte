@@ -38,8 +38,8 @@
 	);
 
 	$: tokens = zrc2List.filter((t) => {
-		const t0 = t.name.includes(search.toLowerCase());
-		const t1 = t.symbol.includes(search.toLowerCase());
+		const t0 = t.name.toLowerCase().includes(search.toLowerCase());
+		const t1 = t.symbol.toLowerCase().includes(search.toLowerCase());
 
 		return t0 || t1;
 	});
@@ -143,6 +143,7 @@
 					src={viewIcon(token.bech32, $themeStore)}
 					alt={token.symbol}
 					width="36"
+					loading="lazy"
 				/>
 				<div>
 					<h3>

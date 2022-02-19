@@ -380,5 +380,10 @@
   },
   "swap": {
     "title": "Varsti tulekul!"
+  },
+  "collections": {
+    "errors": {
+      "load": "Broken NFT url."
+    }
   }
 }

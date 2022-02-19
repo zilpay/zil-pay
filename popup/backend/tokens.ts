@@ -11,6 +11,7 @@ import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
+import { MAIN_API } from 'config/api-list';
 
 export async function getZRC2State(address: string) {
   const data = await new Message({
@@ -47,7 +48,14 @@ export async function removeZRC2Token(index: number) {
 
 export async function getTokens(limit = 40, offset = 0, type = 1) {
   const params = `?limit=${limit}&offset=${offset}&type=${type}`;
-  const url = `https://api.zilpay.io/api/v1/tokens${params}`
+  const url = `${MAIN_API}/tokens${params}`;
+  const res = await fetch(url);
+  return await res.json();
+}
+
+export async function getNFTs(address: string) {
+  // const url = `${MAIN_API}/nfts/${address}`;
+  const url = `http://127.0.0.1:3000/api/v1/nfts/${address}`;
   const res = await fetch(url);
   return await res.json();
 }

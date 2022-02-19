@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { viewIcon } from 'lib/block-explorer/view';
-
 	import Arrow from './icons/Arrow.svelte';
 
   export let title = '';

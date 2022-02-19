@@ -53,6 +53,7 @@
       alt={symbol}
       width="28"
       height="28"
+      loading="lazy"
     />
   </div>
 </div>
