@@ -1,0 +1,384 @@
+{
+  "home": {
+    "btns": {
+      "send": "Invia",
+      "receive": "Ricevi"
+    },
+    "clipboard": {
+      "copy": "Copia",
+      "copied": "Copiato"
+    },
+    "token_list": "Gestici",
+    "nav": {
+      "optinos": {
+        "add": {
+          "title": "Aggiungere un account",
+          "description": "Genera il prossimo account dalla frase segreta."
+        },
+        "import": {
+          "title": "Importazione di un account",
+          "description": "Recupera il tuo account da la PrivateKey."
+        },
+        "connect": {
+          "title": "Collegare il ledger.",
+          "description": "Generare un account hardware dal ledger."
+        },
+        "remove": {
+          "title": "Eliminare un account.",
+          "description": "Elimina/Nascondi l'account selezionato."
+        }
+      }
+    }
+  },
+  "tokens_list": {
+    "title": "Tokens",
+    "modals": {
+      "add": {
+        "title": "ZRC2 personalizzato",
+        "placeholder": "Inserire l'indirizzo del contratto.",
+        "balance": "Saldo",
+        "address": "Contract",
+        "decimals": "Decimali",
+        "name": "Nome",
+        "symbol": "Simbolo",
+        "rate": "Prezzo",
+        "btns": {
+          "add": "Aggiungi ZRC2 token",
+          "fetch": "Fetch"
+        }
+      }
+    },
+    "placeholder": "Nome o simbolo"
+  },
+  "ledger": {
+    "title": "Collegamento Ledger",
+    "placeholder": "Seleziona un indice dell'indirizzo ledger.",
+    "info": "Ledger distingue gli indirizzi utilizzando un indice. Per recuperare un account, seleziona un indice qualsiasi da 0 a 255.",
+    "btn": "Collegare"
+  },
+  "ledger_finder": {
+    "title": "Guardare i dispositivi",
+    "list_title": "Dispositivi Ledger:",
+    "accept": "Accettare USB"
+  },
+  "connect": {
+    "question": {
+      "0": "Vuoi connetterti a",
+      "1": "applicazione?"
+    },
+    "btns": {
+      "conf": "Collegare",
+      "reject": "Annulla"
+    },
+    "warn": "Dopo la conferma, questa applicazione sarà in grado di richiedere dati dalla blockchain e vedere i tuoi accounts."
+  },
+  "tokens": {
+    "no_tokens_serach": "Nessun token con nome o simbolo:"
+  },
+  "send": {
+    "title": "Trasferimento Token",
+    "send_btn": "Continua",
+    "cards": {
+      "transfer": "Account del mittente",
+      "token": "Token da inviare"
+    },
+    "input_to": {
+      "title": "Destinatario",
+      "placeholder": "Inserisci l'indirizzo (zil1) o il nome di dominio .zil"
+    },
+    "input_value": {
+      "title": "Somma Token",
+      "placeholder": "0"
+    },
+    "options": {
+      "acc": "Accounts",
+      "con": "Contatti"
+    }
+  },
+  "lock": {
+    "title": "Bentornato!",
+    "placeholder": "Password",
+    "btn": "Sblocca",
+    "error": "Password sbagliata!",
+    "restore": "Recupera"
+  },
+  "loading": {
+    "title": "Caricamento!"
+  },
+  "start": {
+    "title": "Iniziamo",
+    "subt_title": "Crea o recupera il tuo wallet Zilliqa.",
+    "btn_restore": "Recupera",
+    "btn_create": "Crea"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "no_accounts": "Nessun accounts con nome:",
+    "placeholder": "Cerca"
+  },
+  "create": {
+    "title": "Frase segreta",
+    "sub_title": "Ricorda le parole in ordine!",
+    "btns": {
+      "refresh": "Parole casuali",
+      "continue": "Continua",
+      "print": "Stampa"
+    },
+    "print": [
+      "Per favore",
+      "<strong>NON DIMENTICARE</strong> per salvare il tuo seed phrase mnemonico. Avrai bisogno del tuo",
+      "<strong>Seed Phrase Mnemonico/strong> per recuperare il tuo wallet.",
+      "Il tuo seed mnemonico",
+      "<b>Non perderlo!</b> Non può essere recuperato se lo perdi.",
+      "<b>Non condividerlo!</b> I tuoi fondi saranno rubati se usi questo file su un sito di phishing",
+      "<b>Fai un backup!</b> Proteggilo come i milioni di dollari che un giorno potrebbe valere."
+    ]
+  },
+  "verify": {
+    "title": "Verificazione parole",
+    "placeholder": "Scegli le parole qui in ordine e ricrea la tua frase segreta.",
+    "btn": "Continua"
+  },
+  "restore": {
+    "title": "Recupera.",
+    "btn": "Continua",
+    "placeholder": "Inserisci la frase segreta, con uno spazio tra le parole.",
+    "pass_placeholder": "Password",
+    "conf_placeholder": "Conferma Password",
+    "pass_len_error": "Errore password, la lunghezza massima è 6"
+  },
+  "setup_acc": {
+    "title": "Setup Account",
+    "name_placeholder": "Nome dell'account (3-25 caratteri)",
+    "name_description": "Il nome del wallet per aiutarti a distinguere i diversi account l'uno dall'altro.",
+    "pass_description": "Una password richiesta per cifrare e proteggere le tue chiavi.",
+    "accept": "Accetta PrivacyPolicy"
+  },
+  "import_priv_key": {
+    "title": "Importazione PrivateKey",
+    "placeholder": "Input PrivateKey (32 bytes)."
+  },
+  "wallet_created": {
+    "title": "Il wallet è generato!",
+    "subt_title": "Il tuo account è stato creato - Tieni al sicuro la tua fase segreta, è una tua responsabilità!",
+    "btn": "Inizia ad usare!",
+    "tips": {
+      "title": "Suggerimenti su come conservarlo in modo sicuro",
+      "list": {
+        "0": "Salva un backup in posti diversi",
+        "1": "Non condividere mai la frase",
+        "2": "Fai attenzione al Phising! ZilPay non ti chiederà mai spontaneamente la tua frase segreta",
+        "3": "il backup della tua frase segreta, puoi trovarla in Sicurezza",
+        "4": "Se hai una domanda o vedi qualcosa di strano, contattaci."
+      },
+      "warn": "Il team di ZilPay non può recuperare la tua frase segreta!"
+    }
+  },
+  "netwrok": {
+    "title": "Network",
+    "selected": {
+      "title": "Rete selezionata",
+      "description": "Puoi cambiare la rete in testnet o privata."
+    },
+    "node": {
+      "title": "Impostazioni della rete",
+      "description": "Per usare un Node privato, puoi cambiare l'URL e il numero di msg."
+    },
+    "ssn": {
+      "title": "Zilliqa Nodes",
+      "description": "Per usare un Node privato, puoi cambiare l'URL e il numero di msg."
+    },
+    "config": {
+      "node": "JSON-RPC API URL",
+      "msg": "Blockchain MSG"
+    },
+    "btns": {
+      "update": "Aggiornamento",
+      "reset": "Reset"
+    }
+  },
+  "connections": {
+    "title": "Connessioni",
+    "no_apps": "Non hai ancora nessuna app!",
+    "btn_reset": "Cancella tutto"
+  },
+  "contacts": {
+    "title": "Contatti",
+    "add_btn": "Aggiungi uno nuovo",
+    "new_contact": "Un nuovo contatto",
+    "items": {
+      "rm": "Rimuovi",
+      "copy": "Copia"
+    },
+    "no_content": "Nessun contatto ancora!",
+    "form": {
+      "add": "Aggiungi ai contatti",
+      "name_placeholder": "Inserisci il nome del contatto"
+    }
+  },
+  "account": {
+    "title": "Account",
+    "reset": "Cancella Nonce"
+  },
+  "security": {
+    "title": "Sicurezza",
+    "p_modal": {
+      "title": "Frase segreta per il recupero",
+      "warn": "NON condividere questa frase con nessuno! Queste parole possono essere utilizzate per rubare tutti i tuoi account."
+    },
+    "phrase": {
+      "title": "Rivela la frase segreta di recupero",
+      "description": "Se mai dovessi cambiare browser o cambiare computer, avrai bisogno di questa frase segreta di recupero per accedere ai tuoi account. Salvali in un posto sicuro e segreto.",
+      "label": "Inserisci la password per continuare",
+      "btn": "Rivela"
+    },
+    "key": {
+      "title": "Mostra Private Keys",
+      "warn": "Attenzione: Non rivelare mai questa chiave. Chiunque abbia le tue chiavi private può rubare qualsiasi risorsa contenuta nel tuo account.",
+      "btn": "Export"
+    },
+    "phishing": {
+      "title": "Utilizza Phishing Detection",
+      "warn": "Visualizza un avviso per i domini di Phishing che prendono di mira gli utenti Zilliqa"
+    },
+    "connect": {
+      "title": "Mobile-Connect",
+      "warn": "Sincronizza il tuo cellulare ZIlPay e la tua estensione attraverso ZilPay connect.",
+      "warn_message": "Non mostrare o condividere mai questo qrcode.",
+      "btn": "Collegare"
+    }
+  },
+  "settings": {
+    "account": {
+      "title": "Account",
+      "description": "Informazioni sul account, contatore nonce."
+    },
+    "general": {
+      "title": "Generale",
+      "description": "Conversione di valuta, lingua, tema."
+    },
+    "contacts": {
+      "title": "Contatti",
+      "description": "Aggiungi, modifica, rimuovi e gestisci i tuoi contatti."
+    },
+    "advanced": {
+      "title": "Avanzato",
+      "description": "Impostazioni di gas, formato dell'indirizzo, impostazioni del popup."
+    },
+    "networks": {
+      "title": "Reti",
+      "description": "Aggiungi e modifica reti RPC personalizzate."
+    },
+    "connections": {
+      "title": "Connessioni",
+      "description": "Lista Dapps, gestisci le tue connessioni, aggiungi, rimuovi."
+    },
+    "security": {
+      "title": "Sicurezza & Privacy",
+      "description": "Impostazioni Privacy e frase segreta di recupero del wallet."
+    },
+    "about": {
+      "title": "Informazioni",
+      "description": "Versione, supporto e informazioni di contatto."
+    }
+  },
+  "general": {
+    "title": "Generale",
+    "currency": {
+      "title": "Conversione di valuta",
+      "description": "Puoi passare ad un'altra valuta per tracciare il tuo saldo."
+    },
+    "theme": {
+      "title": "Tema dell'interfaccia.",
+      "description": "ZIlPay può cambiare i colori tra la modalità chiara e quella scura"
+    },
+    "lang": {
+      "title": "Lingua dell'interfaccia.",
+      "description": "ZIlPay supporta un'interfaccia multilingue."
+    },
+    "reset": "Cancella impostazioni"
+  },
+  "history": {
+    "title": "Transazioni",
+    "no_txns": "Non hai ancora nessuna transazione.",
+    "queue": "Coda",
+    "history": "Storia",
+    "clear": "Cancella tutto",
+    "modals": {
+      "details": {
+        "title": "Details",
+        "recipient": "Destinatario",
+        "method": "Metodo",
+        "from": "Da",
+        "hash": "Hash",
+        "nonce": "Nonce",
+        "time": "Tempo di invio",
+        "info": "Info",
+        "btns": {
+          "view": "Visualizza",
+          "cancel": "Cancella",
+          "repeat": "Ripetere"
+        }
+      }
+    }
+  },
+  "advanced": {
+    "title": "Avanzato",
+    "gas": {
+      "title": "Impostazione gas.",
+      "description": "Scegli il tuo prezzo del gas predefinito, tutte le tue transazioni useranno questi parametri del gas."
+    },
+    "base16": {
+      "title": "Base16 address format.",
+      "description": "Puoi cambiare il formato dell'indirizzo in base16, fai attenzione e non inviare altre valute a questo indirizzo!"
+    },
+    "popup": {
+      "title": "Popup",
+      "description": "Puoi disattivare l'apparizione della finestra di conferma della transazione."
+    },
+    "time": {
+      "title": "Tempo di logout automatico (ore)"
+    },
+    "reset_btn": "Reset"
+  },
+  "sig_message": {
+    "title": "Signature Request",
+    "hash": "Show sha256",
+    "btns": {
+      "confirm": "Sign",
+      "reject": "Annulla"
+    }
+  },
+  "confirm": {
+    "edit": "Modifica",
+    "params": {
+      "amount": "Totale",
+      "fee": "Costo massimo della transazione",
+      "teg": "Metodo",
+      "nonce": "Nonce",
+      "to": "Destinatario"
+    },
+    "btns": {
+      "confirm": "Conferma",
+      "reject": "Annulla"
+    },
+    "parmas_modal": {
+      "title": "Parametri",
+      "limit": "Limite del gas",
+      "price": "Prezzo del gas",
+      "btn": "Aggiornare",
+      "tabs": {
+        "params": "PARAMS",
+        "data": "DATA"
+      },
+      "togle": "Modifica"
+    }
+  },
+  "about": {
+    "title": "Informatzioni ZilPay",
+    "version": "versione"
+  },
+  "swap": {
+    "title": "Prossimamente!"
+  }
+}
