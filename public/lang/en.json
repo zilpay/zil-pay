@@ -10,7 +10,7 @@
     },
     "token_list": "Manage",
     "nav": {
-      "optinos": {
+      "options": {
         "add": {
           "title": "Add account",
           "description": "Generate next account from secret phrase."
@@ -30,7 +30,7 @@
       }
     }
   },
-  "tokens_list": {
+  "token_list": {
     "title": "Tokens",
     "modals": {
       "add": {
@@ -73,7 +73,7 @@
     "warn": "After confirmation, this application will be able to request data from the blockchain and see your accounts."
   },
   "tokens": {
-    "no_tokens_serach": "No tokens with name or symbol:"
+    "no_tokens_search": "No tokens with name or symbol:"
   },
   "send": {
     "title": "Token transfer",
@@ -294,7 +294,7 @@
     },
     "lang": {
       "title": "Interface language.",
-      "description": "ZIlPay support multi languages interface."
+      "description": "ZilPay support multi languages interface."
     },
     "reset": "Reset settings"
   },
@@ -362,7 +362,7 @@
       "confirm": "Confirm",
       "reject": "Reject"
     },
-    "parmas_modal": {
+    "params_modal": {
       "title": "Params",
       "limit": "GasLimit",
       "price": "GasPrice",
@@ -371,7 +371,7 @@
         "params": "PARAMS",
         "data": "DATA"
       },
-      "togle": "Edit"
+      "toggle": "Edit"
     }
   },
   "about": {
