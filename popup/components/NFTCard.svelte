@@ -4,20 +4,22 @@
 
   export let url;
   export let id;
-
-  let loading = true;
+  export let load;
+  
+  let loadingSide = true;
   let error = false;
   let thisImage;
 
   $: tokenId = `#${id}`;
+  $: loading = load || loadingSide;
 
   onMount(() => {
     thisImage.onload = () => {
-      loading = false;
+      loadingSide = false;
     };
     thisImage.onerror = () => {
       error = true;
-      loading = false;
+      loadingSide = false;
     };
   }) 
 </script>

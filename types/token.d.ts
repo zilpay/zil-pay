@@ -42,7 +42,7 @@ export interface NFTMetadata {
 export interface NFTToken {
   id: string;
   url: string;
-  meta?: object;
+  meta?: NFTMetadata;
 }
 
 export interface ZRCNFT {

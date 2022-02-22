@@ -2,32 +2,46 @@
 	import { _ } from 'popup/i18n';
 	import { onMount } from 'svelte';
 
-	import { getNFTs } from 'popup/backend/tokens';
+	import { updateNFTList, getNFTList } from 'popup/backend/tokens';
   import { viewIcon } from 'lib/block-explorer/view';
 
 	import walletStore from 'popup/store/wallet';
   import themeStore from 'popup/store/theme';
+	import nftListStore from 'popup/store/nft-list';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TopBar from '../components/TopBar.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
 	import NFTCard from '../components/NFTCard.svelte';
 
-	let list = [];
 	let search = '';
+	let loading = false;
 
   $: account = $walletStore.identities[$walletStore.selectedAddress];
-	$: tokens = list.filter((t) => {
+	$: tokens = $nftListStore.filter((t) => {
 		const t0 = t.name.toLowerCase().includes(search.toLowerCase());
 		const t1 = t.symbol.toLowerCase().includes(search.toLowerCase());
 
 		return t0 || t1;
 	});
 
+	async function update() {
+		loading = true;
+		try {
+			await updateNFTList();
+		} catch (err) {
+			alert(err.message);
+		}
+		console.log($nftListStore);
+		loading = false;
+	}
+
 	onMount(async() => {
-		// list = await getNFTs(account.base16);
-		list = await getNFTs('0xdB407a76E832A88f19CbDbb7775de0F7b7c64951');
-		console.log(list);
+		const list = await getNFTList();
+
+		if (list.length === 0) {
+			await update();
+		}
 	});
 </script>
 
@@ -36,6 +50,7 @@
     refresh
     view
     lock
+		on:refresh={() => update()}
 	/>
 	<main>
 		<SearchBox
@@ -59,8 +74,9 @@
 					<div class="wrapper">
 						{#each item.balances as token}
 							<NFTCard
-								url={token.url}
-								id={token.tokenId}
+								url={Boolean(token.meta) ? token.meta.image : token.url}
+								load={loading}
+								id={token.id}
 							/>
 						{/each}
 					</div>

@@ -11,6 +11,8 @@ import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
+import nftListStore from 'popup/store/nft-list';
+
 import { MAIN_API } from 'config/api-list';
 
 export async function getZRC2State(address: string) {
@@ -53,9 +55,16 @@ export async function getTokens(limit = 40, offset = 0, type = 1) {
   return await res.json();
 }
 
-export async function getNFTs(address: string) {
-  // const url = `${MAIN_API}/nfts/${address}`;
-  const url = `http://127.0.0.1:3000/api/v1/nfts/${address}`;
-  const res = await fetch(url);
-  return await res.json();
+export async function updateNFTList() {
+  const data = await Message.signal(MTypePopup.UPDATE_NFT_LIST).send();
+  const state = warpMessage(data);
+  nftListStore.set(state);
+  return state;
+}
+
+export async function getNFTList() {
+  const data = await Message.signal(MTypePopup.GET_NFT_LIST).send();
+  const state = warpMessage(data);
+  nftListStore.set(state);
+  return state;
 }
