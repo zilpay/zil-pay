@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { NFTToken, ZRCNFT } from 'types/token';
+import type { NFTToken, NFTMetadata, ZRCNFT, NFTFromServer } from 'types/token';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
 import type { ZilliqaControl } from 'core/background/services/blockchain';
@@ -16,6 +16,9 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { TypeOf } from 'lib/type/type-checker';
 import { ErrorMessages } from 'config/errors';
+import { NETWORK_KEYS } from 'config/network';
+
+const [mainnet] = NETWORK_KEYS;
 
 export class NFTController {
   readonly #netwrok: NetworkControl;
@@ -29,7 +32,13 @@ export class NFTController {
   }
 
   public get field() {
-    return `${Fields.COLLECTION}/${this.#netwrok.selected}`;
+    const { base16 } = this.#account.selectedAccount;
+    const { selected } = this.#netwrok;
+
+    assert(Boolean(base16), ErrorMessages.WalletNotEnabled);
+    assert(Boolean(selected), ErrorMessages.IncorrectNetwrok);
+
+    return `${Fields.COLLECTION}/${selected}/${base16}`;
   }
 
   constructor(
@@ -42,9 +51,51 @@ export class NFTController {
     this.#account = account;
   }
 
-  public add(token: ZRCNFT) {}
+  public async add(newToken: ZRCNFT) {
+    this.#isUnique(newToken);
+    this.#identities.push(newToken);
 
-  public remove(index: number) {}
+    await BrowserStorage.set(
+      buildObject(this.field, this.identities)
+    );
+  }
+
+  public async updateTokens() {
+    assert(this.#netwrok.selected === mainnet, ErrorMessages.IncorrectNetwrok);
+
+    const { base16 } = this.#account.selectedAccount;
+    // const url = `${MAIN_API}/nfts/${base16}`;
+    const url = `http://127.0.0.1:3000/api/v1/nfts/${base16}`;
+    const res = await fetch(url);
+    const list: NFTFromServer[] = await res.json();
+    this.#identities = await Promise.all(list.map(async(t) => {
+      let balances: NFTToken[] = [];
+      if (t.baseUri) {
+        balances = await Promise.all(t.balances.map(async(s) => ({
+          id: s.tokenId,
+          url: s.url,
+          meta: await this.#getMeta(s.url)
+        })));
+      } else {
+        balances = t.balances.map((s) => ({
+          id: s.tokenId,
+          url: s.url
+        }));
+      }
+
+      return {
+        balances,
+        base16: t.base16,
+        bech32: t.bech32,
+        name: t.name,
+        symbol: t.symbol
+      };
+    }));
+
+    await BrowserStorage.set(
+      buildObject(this.field, this.identities)
+    );
+  }
 
   public async sync() {
     const jsonList = await BrowserStorage.get(this.field);
@@ -67,6 +118,22 @@ export class NFTController {
     await BrowserStorage.set(
       buildObject(this.field, this.identities)
     );
+  }
+
+  async #getMeta(url: string): Promise<NFTMetadata | undefined> {
+    const res = await fetch(url);
+
+    try {
+      const meta = await res.json();
+
+      return {
+        name: meta.name,
+        attribute: meta.attribute,
+        image: meta.image
+      };
+    } catch {
+      return undefined;
+    }
   }
 
   #isUnique(token: ZRCNFT) {

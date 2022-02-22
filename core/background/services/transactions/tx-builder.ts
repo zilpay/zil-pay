@@ -13,6 +13,7 @@ import type { GasController } from 'core/background/services/gas';
 
 import { ZilliqaMessage } from '@zilliqa-js/proto';
 import { Buffer } from 'buffer';
+import assert from 'assert';
 import BN from 'bn.js';
 import Long from 'long';
 
@@ -30,6 +31,8 @@ import { fromLI } from 'lib/filters/gas-to-fee';
 import { SchnorrControl } from 'lib/crypto/elliptic';
 import { TransactionTypes } from './types';
 import { toBech32Address } from 'lib/utils/bech32';
+import { TypeOf } from 'lib/type/type-checker';
+import { ErrorMessages } from 'config/errors';
 
 export interface ContractItemType {
   vname: string;
@@ -156,6 +159,9 @@ export class Transaction {
     signature?: string
   ) {
     isAddress(toAddr);
+
+    assert(TypeOf.isInt(version), `version ${ErrorMessages.ShouldBeNumber}`);
+    assert(TypeOf.isInt(nonce), `nonce ${ErrorMessages.ShouldBeNumber}`);
 
     this.from = account.bech32;
     this.amount = amount;

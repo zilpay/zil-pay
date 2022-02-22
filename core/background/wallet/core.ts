@@ -12,7 +12,7 @@ import { AuthGuard } from 'core/background/services/guard';
 import { PromptService } from 'core/background/services/popup';
 import { ZilliqaControl } from 'core/background/services/blockchain/zilliqa';
 import { UnstoppableDomains } from 'core/background/services/domain-resolve';
-import { ZRC2Controller } from 'core/background/services/token';
+import { ZRC2Controller, NFTController } from 'core/background/services/token';
 import { AccountController } from 'core/background/services/account/account';
 import { BlockController } from 'core/background/services/worker';
 import { RateController, CurrenciesController } from 'core/background/services/currency';
@@ -46,6 +46,7 @@ export class ZIlPayCore {
   public readonly account = new AccountController(this.guard);
   public transactions = new TransactionsController(this.netwrok, this.account);
   public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
+  public nft = new NFTController(this.netwrok, this.zilliqa, this.account);
   public ssn = new SSnController(this.zilliqa, this.netwrok);
   public nonceCounter = new NonceController(this.zilliqa, this.transactions);
   public transactionsQueue = new TransactionsQueue(this.zilliqa, this.netwrok, this.transactions);

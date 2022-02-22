@@ -15,6 +15,14 @@ export const TypeOf = Object.freeze({
       && !isNaN(Number(argument));
   },
 
+  isInt(argument: Arg) {
+    try {
+      return Boolean(BigInt(String(argument)));
+    } catch {
+      return false;
+    }
+  },
+
   isError(argument: Arg) {
     return Object.prototype.toString.call(argument) === '[object Error]';
   },

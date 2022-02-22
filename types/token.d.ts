@@ -33,6 +33,12 @@ export interface ZRC2Info {
   rate: number;
 }
 
+export interface NFTMetadata {
+  name: string;
+  image: string;
+  attribute: string[];
+}
+
 export interface NFTToken {
   id: string;
   url: string;
@@ -45,4 +51,16 @@ export interface ZRCNFT {
   name: string;
   symbol: string;
   balances: NFTToken[];
+}
+
+export interface NFTFromServer {
+  base16: string;
+  baseUri: string | null;
+  bech32: string;
+  name: string;
+  symbol: string;
+  balances: {
+    tokenId: string;
+    url: string;
+  }[];
 }

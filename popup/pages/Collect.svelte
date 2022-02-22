@@ -106,7 +106,6 @@
 				flex-wrap: wrap;
 
 				@include flex-between-row;
-				justify-content: end;
 			}
 		}
 	}

@@ -32,6 +32,7 @@ export class ZilPaySynchronizer {
     await this.#core.addressFormat.sync();
     await this.#core.currencies.sync();
     await this.#core.prompt.sync();
+    await this.#core.nft.sync();
     console.log('end-sync');
   }
 }

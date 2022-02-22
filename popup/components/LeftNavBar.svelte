@@ -46,20 +46,20 @@
   <hr />
   <a href="/add-account" use:link>
     <TextElement
-      title={$_('home.nav.optinos.add.title')}
-      description={$_('home.nav.optinos.add.description')}
+      title={$_('home.nav.options.add.title')}
+      description={$_('home.nav.options.add.description')}
     />
   </a>
   <a href="/import-privkey" use:link>
     <TextElement
-      title={$_('home.nav.optinos.import.title')}
-      description={$_('home.nav.optinos.import.description')}
+      title={$_('home.nav.options.import.title')}
+      description={$_('home.nav.options.import.description')}
     />
   </a>
   <span on:click={() => linksExpand('/ledger-device-finder')}>
     <TextElement
-      title={$_('home.nav.optinos.connect.title')}
-      description={$_('home.nav.optinos.connect.description')}
+      title={$_('home.nav.options.connect.title')}
+      description={$_('home.nav.options.connect.description')}
     />
   </span>
   <hr />
@@ -69,8 +69,8 @@
       on:click={onRemoveAccount}
     >
       <TextElement
-        title={$_('home.nav.optinos.remove.title')}
-        description={$_('home.nav.optinos.remove.description')}
+        title={$_('home.nav.options.remove.title')}
+        description={$_('home.nav.options.remove.description')}
       />
     </span>
     <hr />

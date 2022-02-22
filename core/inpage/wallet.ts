@@ -316,7 +316,8 @@ export class Wallet {
       uuid,
       title: window.document.title,
       domain: window.location.origin,
-      icon: getFavicon()
+      icon: getFavicon(),
+      nonce: undefined
     };
 
     // Send transaction to content.js > background.js.
