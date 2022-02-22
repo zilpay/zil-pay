@@ -25,7 +25,7 @@ export class ZIlPayBackground {
   public readonly synchronizer = new ZilPaySynchronizer(this.#core);
   public readonly ud = new ZilPayUnstoppableDomains(this.#core);
   public readonly wallet = new ZilPayWallet(this.#core);
-  public readonly zrc2 = new ZilPayZRC(this.#core);
+  public readonly zrc = new ZilPayZRC(this.#core);
   public readonly apps = new ZilPayApps(this.#core);
   public readonly contacts = new ZilPayContacts(this.#core);
   public readonly transaction = new ZilPayTransaction(this.#core);

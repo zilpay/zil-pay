@@ -129,10 +129,16 @@ export function startBackground(core: ZIlPayBackground) {
         core.netwrok.selectFromSSN(msg.payload, sendResponse);
         return true;
       case MTypePopup.GET_ZRC2_STATE:
-        core.zrc2.getZRC2Info(msg.payload.address, sendResponse);
+        core.zrc.getZRC2Info(msg.payload.address, sendResponse);
         return true;
       case MTypePopup.RM_TOKEN:
-        core.zrc2.removeToken(msg.payload.index, sendResponse);
+        core.zrc.removeToken(msg.payload.index, sendResponse);
+        return true;
+      case MTypePopup.UPDATE_NFT_LIST:
+        core.zrc.updateNFTList(sendResponse);
+        return true;
+      case MTypePopup.GET_NFT_LIST:
+        core.zrc.getNFTList(sendResponse);
         return true;
       case MTypePopup.RM_ACCOUNT:
         core.wallet.removeAccount(sendResponse);
@@ -145,7 +151,7 @@ export function startBackground(core: ZIlPayBackground) {
         );
         return true;
       case MTypePopup.ADD_ZRC2_TOKEN:
-        core.zrc2.addZRC2(msg.payload, sendResponse);
+        core.zrc.addZRC2(msg.payload, sendResponse);
         return true;
       case MTypePopup.GET_WALLET_STATE:
         core.popup.initPopup(sendResponse);

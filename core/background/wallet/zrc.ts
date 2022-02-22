@@ -58,4 +58,24 @@ export class ZilPayZRC {
       });
     }
   }
+
+  public async updateNFTList(sendResponse: StreamResponse) {
+    try {
+      await this.#core.nft.updateTokens();
+
+      sendResponse({
+        resolve: this.#core.nft.identities
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public getNFTList(sendResponse: StreamResponse) {
+    sendResponse({
+      resolve: this.#core.nft.identities
+    });
+  }
 }
