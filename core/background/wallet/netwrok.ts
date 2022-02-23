@@ -36,6 +36,7 @@ export class ZilPayNetwrok {
       await this.#core.ssn.select(0);
       await this.#core.transactions.sync();
       await this.#core.zrc2.sync();
+      await this.#core.nft.sync();
 
       this.reactNetwork();
 
@@ -55,6 +56,7 @@ export class ZilPayNetwrok {
       await this.#core.netwrok.changeNetwork(net);
       await this.#core.transactions.sync();
       await this.#core.zrc2.sync();
+      await this.#core.nft.sync();
 
       this.reactNetwork();
 
@@ -109,6 +111,7 @@ export class ZilPayNetwrok {
       await this.#core.netwrok.changeConfig(newConfig);
       await this.#core.transactions.sync();
       await this.#core.zrc2.sync();
+      await this.#core.nft.sync();
 
       sendResponse({
         resolve: this.#core.state

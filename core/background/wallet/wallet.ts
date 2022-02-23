@@ -158,6 +158,7 @@ export class ZilPayWallet {
         payload.name
       );
       await this.#core.transactions.sync();
+      await this.#core.nft.sync();
 
       sendResponse({
         resolve: this.#core.state
@@ -183,6 +184,7 @@ export class ZilPayWallet {
         payload.productId
       );
       await this.#core.transactions.sync();
+      await this.#core.nft.sync();
 
       sendResponse({
         resolve: this.#core.state
@@ -200,6 +202,7 @@ export class ZilPayWallet {
       const index = this.#core.account.wallet.selectedAddress;
       await this.#core.account.remove(index);
       await this.#core.transactions.sync();
+      await this.#core.nft.sync();
 
       sendResponse({
         resolve: this.#core.state
@@ -218,6 +221,7 @@ export class ZilPayWallet {
       const seed = this.#core.guard.getSeed();
       await this.#core.account.addAccountFromSeed(seed, name);
       await this.#core.transactions.sync();
+      await this.#core.nft.sync();
 
       sendResponse({
         resolve: this.#core.state
@@ -249,6 +253,7 @@ export class ZilPayWallet {
       this.#core.guard.checkSession();
       await this.#core.account.select(index);
       await this.#core.transactions.sync();
+      await this.#core.nft.sync();
 
       sendResponse({
         resolve: this.#core.state
