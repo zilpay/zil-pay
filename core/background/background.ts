@@ -137,8 +137,14 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.UPDATE_NFT_LIST:
         core.zrc.updateNFTList(sendResponse);
         return true;
+      case MTypePopup.FETCH_NFT:
+        core.zrc.fetchNFT(msg.payload, sendResponse);
+        return true;
       case MTypePopup.GET_NFT_LIST:
         core.zrc.getNFTList(sendResponse);
+        return true;
+      case MTypePopup.ADD_NFT:
+        core.zrc.addNFT(msg.payload, sendResponse);
         return true;
       case MTypePopup.RM_ACCOUNT:
         core.wallet.removeAccount(sendResponse);

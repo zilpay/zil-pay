@@ -30,7 +30,7 @@
       }
     }
   },
-  "token_list": {
+  "tokens_list": {
     "title": "Tokens",
     "modals": {
       "add": {
@@ -384,6 +384,12 @@
   "collections": {
     "errors": {
       "load": "Broken NFT url."
+    },
+    "modals": {
+      "add": {
+        "title": "Custom NFT"
+      },
+      "add_btn": "Add NFT"
     }
   }
 }

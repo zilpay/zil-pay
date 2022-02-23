@@ -2,7 +2,7 @@
 	import { _ } from 'popup/i18n';
 	import { onMount } from 'svelte';
 
-	import { updateNFTList, getNFTList } from 'popup/backend/tokens';
+	import { updateNFTList, getNFTList, fetchNFTToken } from 'popup/backend/tokens';
   import { viewIcon } from 'lib/block-explorer/view';
 
 	import walletStore from 'popup/store/wallet';
@@ -13,8 +13,12 @@
 	import TopBar from '../components/TopBar.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
 	import NFTCard from '../components/NFTCard.svelte';
+	import AddIcon from '../components/icons/Add.svelte';
+	import AddNFTModal from '../modals/AddNFT.svelte';
+  import Modal from '../components/Modal.svelte';
 
 	let search = '';
+	let tokenAddModal = false;
 	let loading = false;
 
   $: account = $walletStore.identities[$walletStore.selectedAddress];
@@ -30,7 +34,7 @@
 		try {
 			await updateNFTList();
 		} catch (err) {
-			alert(err.message);
+			// alert(err.message);
 		}
 		console.log($nftListStore);
 		loading = false;
@@ -45,6 +49,13 @@
 	});
 </script>
 
+<Modal
+  show={tokenAddModal}
+  title={$_('collections.modals.add.title')}
+  on:close={() => tokenAddModal = !tokenAddModal}
+>
+	<AddNFTModal on:close={() => tokenAddModal = !tokenAddModal}/>
+</Modal>
 <section>
 	<TopBar
     refresh
@@ -57,7 +68,14 @@
 			placeholder={$_('tokens_list.placeholder')}
 			focus
 			on:input={(e) => search = e.detail}
-		/>
+		>
+			<span
+				class="add"
+				on:click={() => tokenAddModal = !tokenAddModal}
+			>
+				<AddIcon />
+			</span>
+		</SearchBox>
 		<ul>
 			{#each tokens as item}
 				<li>

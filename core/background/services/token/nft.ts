@@ -9,6 +9,7 @@
 import type { NFTToken, NFTMetadata, ZRCNFT, NFTFromServer } from 'types/token';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
+import type { RPCResponse } from 'types/zilliqa';
 
 import assert from 'assert';
 import { BrowserStorage, buildObject } from 'lib/storage';
@@ -20,6 +21,7 @@ import { NETWORK_KEYS } from 'config/network';
 import { toChecksumAddress, tohexString } from 'lib/utils/address';
 import { initParser } from 'lib/utils/parse-init';
 import { toBech32Address } from 'lib/utils/bech32';
+import { chunk } from 'lib/utils/chunk';
 
 const [mainnet] = NETWORK_KEYS;
 
@@ -63,6 +65,13 @@ export class NFTController {
 
   public async add(newToken: ZRCNFT) {
     this.#isUnique(newToken);
+
+    assert(Boolean(newToken.balances), ErrorMessages.IncorrectParams);
+    assert(Boolean(newToken.base16), ErrorMessages.IncorrectParams);
+    assert(Boolean(newToken.bech32), ErrorMessages.IncorrectParams);
+    assert(Boolean(newToken.name), ErrorMessages.IncorrectParams);
+    assert(Boolean(newToken.symbol), ErrorMessages.IncorrectParams);
+
     this.#identities.push(newToken);
 
     await BrowserStorage.set(
@@ -70,51 +79,57 @@ export class NFTController {
     );
   }
 
-  public async fetchNFT(addr: string): Promise<ZRCNFT> {
+  public async fetchBatch(addresses: string[]): Promise<ZRCNFT[]> {
     const { TokenOwners, TokenUris, BaseUri } = NFTController.Fields;
-    const base16 = tohexString(addr);
     const account = this.#account.selectedAccount;
-    const identities = [
-      this.#zilliqa.provider.buildBody(
-        Methods.GetSmartContractInit,
-        [base16]
-      ),
-      this.#zilliqa.provider.buildBody(
-        Methods.GetSmartContractSubState,
-        [base16, TokenOwners, []]
-      ),
-      this.#zilliqa.provider.buildBody(
-        Methods.GetSmartContractSubState,
-        [base16, TokenUris, []]
-      ),
-      this.#zilliqa.provider.buildBody(
-        Methods.GetSmartContractSubState,
-        [base16, BaseUri, []]
-      )
-    ];
-    const [
-      init,
-      tokenOwners,
-      tokenUrls,
-      baseUri
-    ] = await this.#zilliqa.sendJson(...identities);
-    const constructor = initParser(init.result);
-    const baseURL = baseUri.result && baseUri.result[BaseUri];
-    const balances = await this.#parseTokenOwners(
-      tokenOwners.result && tokenOwners.result[TokenOwners],
-      tokenUrls.result && tokenUrls.result[TokenUris],
-      account.base16,
-      baseURL
-    );
+    const identities = addresses.map((addr) => {
+      const base16 = tohexString(addr);
+      return [
+        this.#zilliqa.provider.buildBody(
+          Methods.GetSmartContractInit,
+          [base16]
+        ),
+        this.#zilliqa.provider.buildBody(
+          Methods.GetSmartContractSubState,
+          [base16, TokenOwners, []]
+        ),
+        this.#zilliqa.provider.buildBody(
+          Methods.GetSmartContractSubState,
+          [base16, TokenUris, []]
+        ),
+        this.#zilliqa.provider.buildBody(
+          Methods.GetSmartContractSubState,
+          [base16, BaseUri, []]
+        )
+      ];
+    }).flat();
+    const responses: RPCResponse[] = await this.#zilliqa.sendJson(...identities);
+    const list = chunk(responses, 4).map(async([init, tokenOwners, tokenUrls, baseUri]) => {
+      const constructor = initParser(init.result);
+      const baseURL = baseUri.result && baseUri.result[BaseUri];
+      const balances = await this.#parseTokenOwners(
+        tokenOwners.result && tokenOwners.result[TokenOwners],
+        tokenUrls.result && tokenUrls.result[TokenUris],
+        account.base16,
+        baseURL
+      );
+      return {
+        balances,
+        base16: toChecksumAddress(constructor.address),
+        bech32: toBech32Address(constructor.address),
+        baseUri: baseURL,
+        name: constructor.name,
+        symbol: constructor.symbol
+      };
+    });
+    const results = await Promise.all(list);
 
-    return {
-      balances,
-      base16: toChecksumAddress(constructor.address),
-      bech32: toBech32Address(constructor.address),
-      baseUri: baseURL,
-      name: constructor.name,
-      symbol: constructor.symbol
-    };
+    return results;
+  }
+
+  public async update() {
+    const addresses = this.identities.map(({ base16 }) => base16);
+    this.#identities = await this.fetchBatch(addresses);
   }
 
   public async updateTokens() {
@@ -169,8 +184,6 @@ export class NFTController {
     } catch {
       await this.reset();
     }
-
-    console.log(await this.fetchNFT('0x8ab2af0cccee7195a7c16030fbdfde6501d91903'));
   }
 
   public async reset() {

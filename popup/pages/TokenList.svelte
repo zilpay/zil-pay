@@ -216,17 +216,4 @@
 			}
 		}
 	}
-	span.add {
-		cursor: pointer;
-		width: 68px;
-		margin: 4px;
-		&:hover {
-			:global(svg > rect) {
-				fill: var(--background-color);
-			}
-			:global(svg > line) {
-				stroke: var(--success-color);
-			}
-		}
-	}
 </style>

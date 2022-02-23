@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { ZRC2Info } from "types/token";
+import type { ZRC2Info, ZRCNFT } from "types/token";
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
@@ -64,6 +64,25 @@ export async function updateNFTList() {
 
 export async function getNFTList() {
   const data = await Message.signal(MTypePopup.GET_NFT_LIST).send();
+  const state = warpMessage(data);
+  nftListStore.set(state);
+  return state;
+}
+
+export async function fetchNFTToken(addr: string) {
+  const data = await new Message({
+    type: MTypePopup.FETCH_NFT,
+    payload: [addr]
+  }).send();
+  const [state] = warpMessage(data);
+  return state;
+}
+
+export async function addNFTToken(payload: ZRCNFT) {
+  const data = await new Message({
+  type: MTypePopup.ADD_NFT,
+    payload: payload
+  }).send();
   const state = warpMessage(data);
   nftListStore.set(state);
   return state;
