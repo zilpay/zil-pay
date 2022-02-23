@@ -35,6 +35,7 @@ export class ZilPayZRC {
 
   public async addZRC2(token: ZRC2Info, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.zrc2.add(token);
 
       sendResponse({
@@ -49,6 +50,7 @@ export class ZilPayZRC {
 
   public async removeToken(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.zrc2.remove(index);
 
       sendResponse({
@@ -99,6 +101,7 @@ export class ZilPayZRC {
 
   public async addNFT(payload: ZRCNFT, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.nft.add(payload);
 
       sendResponse({
@@ -113,6 +116,7 @@ export class ZilPayZRC {
 
   public async removeNFT(index: number, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.nft.remove(index);
 
       sendResponse({

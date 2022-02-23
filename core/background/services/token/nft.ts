@@ -230,7 +230,7 @@ export class NFTController {
     for (const key in owners) {
       const owner = owners[key];
       let url = uris[key];
-      let meta;
+      let meta: NFTMetadata;
 
       if (owner !== acc) {
         continue;
@@ -243,6 +243,7 @@ export class NFTController {
 
       list.push({
         url,
+        meta,
         id: key
       });
     }
