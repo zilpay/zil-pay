@@ -87,3 +87,14 @@ export async function addNFTToken(payload: ZRCNFT) {
   nftListStore.set(state);
   return state;
 }
+
+export async function removeNFTToken(index: number) {
+  const data = await new Message({
+  type: MTypePopup.REMOVE_NFT,
+    payload: index
+  }).send();
+  const state = warpMessage(data);
+  nftListStore.set(state);
+  return state;
+}
+

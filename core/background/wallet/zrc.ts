@@ -110,4 +110,18 @@ export class ZilPayZRC {
       });
     }
   }
+
+  public async removeNFT(index: number, sendResponse: StreamResponse) {
+    try {
+      await this.#core.nft.remove(index);
+
+      sendResponse({
+        resolve: this.#core.nft.identities
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 }

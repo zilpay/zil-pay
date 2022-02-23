@@ -385,6 +385,11 @@
     "errors": {
       "load": "Broken NFT url."
     },
+    "no_tokens": "You have no any NFT tokens!",
+    "empty": {
+      "0": "You have no",
+      "1": "tokens!"
+    },
     "modals": {
       "add": {
         "title": "Custom NFT"

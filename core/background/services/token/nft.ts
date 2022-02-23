@@ -132,6 +132,15 @@ export class NFTController {
     this.#identities = await this.fetchBatch(addresses);
   }
 
+  public async remove(index: number) {
+    delete this.#identities[index];
+    this.#identities = this.#identities.filter(Boolean);
+
+    await BrowserStorage.set(
+      buildObject(this.field, this.identities)
+    );
+  }
+
   public async updateTokens() {
     assert(this.#netwrok.selected === mainnet, ErrorMessages.IncorrectNetwrok);
 
@@ -202,7 +211,7 @@ export class NFTController {
       return {
         name: meta.name,
         attributes: meta.attributes,
-        image: meta.image
+        image: meta.image || meta.resource || (meta.resources && meta.resources[0].uri)
       };
     } catch {
       return undefined;

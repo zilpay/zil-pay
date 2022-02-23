@@ -146,6 +146,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.ADD_NFT:
         core.zrc.addNFT(msg.payload, sendResponse);
         return true;
+      case MTypePopup.REMOVE_NFT:
+        core.zrc.removeNFT(msg.payload, sendResponse);
+        return true;
       case MTypePopup.RM_ACCOUNT:
         core.wallet.removeAccount(sendResponse);
         return true;

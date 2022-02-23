@@ -57,6 +57,7 @@ export const MTypePopup = {
   GET_NFT_LIST: `@/${app}/get-nft-list`,
   FETCH_NFT: `@/${app}/fetch-nft`,
   ADD_NFT: `@/${app}/add-nft`,
+  REMOVE_NFT: `@/${app}/remove-nft`,
 
   SELECT_SSN: `@/${app}/select-from-ssn-list`,
   RESET_NETWROK: `@/${app}/reset-netwrok-settings`,
