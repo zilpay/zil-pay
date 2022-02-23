@@ -17,9 +17,7 @@ export const printMnemonic = (phrase: string, t: string[]) => {
           ${t[2]}
           </p>
           <h3 style="letter-spacing: 0.02rem;"> ${t[3]}</h3>
-          <div class="phrase">
-            ${phrase}
-          </div>
+          <div class="phrase">${phrase}</div>
           <p>
             ${t[4]}
           </p>

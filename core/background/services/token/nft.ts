@@ -9,18 +9,28 @@
 import type { NFTToken, NFTMetadata, ZRCNFT, NFTFromServer } from 'types/token';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
-import type { ZilliqaControl } from 'core/background/services/blockchain';
 
 import assert from 'assert';
 import { BrowserStorage, buildObject } from 'lib/storage';
+import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
 import { Fields } from 'config/fields';
 import { TypeOf } from 'lib/type/type-checker';
 import { ErrorMessages } from 'config/errors';
 import { NETWORK_KEYS } from 'config/network';
+import { toChecksumAddress, tohexString } from 'lib/utils/address';
+import { initParser } from 'lib/utils/parse-init';
+import { toBech32Address } from 'lib/utils/bech32';
 
 const [mainnet] = NETWORK_KEYS;
 
 export class NFTController {
+
+  public static Fields = {
+    TokenOwners: 'token_owners',
+    TokenUris: 'token_uris',
+    BaseUri: 'base_uri'
+  };
+
   readonly #netwrok: NetworkControl;
   readonly #zilliqa: ZilliqaControl;
   readonly #account: AccountController;
@@ -60,6 +70,53 @@ export class NFTController {
     );
   }
 
+  public async fetchNFT(addr: string): Promise<ZRCNFT> {
+    const { TokenOwners, TokenUris, BaseUri } = NFTController.Fields;
+    const base16 = tohexString(addr);
+    const account = this.#account.selectedAccount;
+    const identities = [
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractInit,
+        [base16]
+      ),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [base16, TokenOwners, []]
+      ),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [base16, TokenUris, []]
+      ),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [base16, BaseUri, []]
+      )
+    ];
+    const [
+      init,
+      tokenOwners,
+      tokenUrls,
+      baseUri
+    ] = await this.#zilliqa.sendJson(...identities);
+    const constructor = initParser(init.result);
+    const baseURL = baseUri.result && baseUri.result[BaseUri];
+    const balances = await this.#parseTokenOwners(
+      tokenOwners.result && tokenOwners.result[TokenOwners],
+      tokenUrls.result && tokenUrls.result[TokenUris],
+      account.base16,
+      baseURL
+    );
+
+    return {
+      balances,
+      base16: toChecksumAddress(constructor.address),
+      bech32: toBech32Address(constructor.address),
+      baseUri: baseURL,
+      name: constructor.name,
+      symbol: constructor.symbol
+    };
+  }
+
   public async updateTokens() {
     assert(this.#netwrok.selected === mainnet, ErrorMessages.IncorrectNetwrok);
 
@@ -74,7 +131,7 @@ export class NFTController {
         balances = await Promise.all(t.balances.map(async(s) => ({
           id: s.tokenId,
           url: s.url,
-          meta: await this.#getMeta(s.url)
+          meta: await this.#getMeta(`${t.baseUri}/${s.tokenId}`)
         })));
       } else {
         balances = t.balances.map((s) => ({
@@ -88,7 +145,8 @@ export class NFTController {
         base16: t.base16,
         bech32: t.bech32,
         name: t.name,
-        symbol: t.symbol
+        symbol: t.symbol,
+        baseUri: t.baseUri
       };
     }));
 
@@ -111,6 +169,8 @@ export class NFTController {
     } catch {
       await this.reset();
     }
+
+    console.log(await this.fetchNFT('0x8ab2af0cccee7195a7c16030fbdfde6501d91903'));
   }
 
   public async reset() {
@@ -128,12 +188,44 @@ export class NFTController {
 
       return {
         name: meta.name,
-        attribute: meta.attribute,
+        attributes: meta.attributes,
         image: meta.image
       };
     } catch {
       return undefined;
     }
+  }
+
+  async #parseTokenOwners(owners: object, uris: object, acc: string, baseUri?: string) {
+    const list: NFTToken[] = [];
+
+    acc = String(acc).toLowerCase();
+
+    if (baseUri && String(baseUri).endsWith('/')) {
+      baseUri = baseUri.substring(0, baseUri.length - 1);
+    }
+
+    for (const key in owners) {
+      const owner = owners[key];
+      let url = uris[key];
+      let meta;
+
+      if (owner !== acc) {
+        continue;
+      }
+
+      if (baseUri) {
+        url = `${baseUri}/${key}`;
+        meta = await this.#getMeta(url);
+      }
+
+      list.push({
+        url,
+        id: key
+      });
+    }
+
+    return list;
   }
 
   #isUnique(token: ZRCNFT) {

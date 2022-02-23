@@ -14,7 +14,7 @@ import type { Balance, RPCResponse, RPCBody } from 'types/zilliqa';
 
 import assert from 'assert';
 import { NETWORK, NETWORK_KEYS } from 'config/network';
-import { toChecksumAddress, tohexString } from 'lib/utils/address';
+import { tohexString } from 'lib/utils/address';
 import { Methods } from './methods';
 import { JsonRPCCodes } from './codes';
 import { Contracts } from 'config/contracts';

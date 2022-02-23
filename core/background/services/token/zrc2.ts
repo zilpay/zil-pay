@@ -22,14 +22,7 @@ import { NETWORK } from 'config/network';
 import { ErrorMessages } from 'config/errors';
 import { fromBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
-
-enum InitFields {
-  ContractOwner = 'contract_owner',
-  Name = 'name',
-  Symbol = 'symbol',
-  Decimals = 'decimals',
-  Address = '_this_address'
-}
+import { initParser, InitFields } from 'lib/utils/parse-init';
 
 enum ZRC2Fields {
   Balances = 'balances',
@@ -260,11 +253,7 @@ export class ZRC2Controller {
   }
 
   #toZRC2(init: InitItem[]) {
-    const contractOwner = init.find((el) => el.vname === InitFields.ContractOwner)?.value;
-    const name = init.find((el) => el.vname === InitFields.Name)?.value || '';
-    const symbol = init.find((el) => el.vname === InitFields.Symbol)?.value;
-    const address = init.find((el) => el.vname === InitFields.Address)?.value;
-    const decimals = init.find((el) => el.vname === InitFields.Decimals)?.value;
+    const { contractOwner, name, symbol, address, decimals } = initParser(init);
 
     assert(Boolean(contractOwner), `${InitFields.ContractOwner} ${ErrorMessages.RequiredParam}`);
     assert(Boolean(name), `${InitFields.Name} ${ErrorMessages.RequiredParam}`);

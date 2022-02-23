@@ -33,10 +33,16 @@ export interface ZRC2Info {
   rate: number;
 }
 
+export interface Attribute {
+  display_type: string;
+  trait_type: string;
+  value: number;
+}
+
 export interface NFTMetadata {
   name: string;
   image: string;
-  attribute: string[];
+  attributes: Attribute[];
 }
 
 export interface NFTToken {
@@ -50,6 +56,7 @@ export interface ZRCNFT {
   bech32: string;
   name: string;
   symbol: string;
+  baseUri?: string;
   balances: NFTToken[];
 }
 

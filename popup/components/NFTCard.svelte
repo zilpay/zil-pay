@@ -21,11 +21,11 @@
       error = true;
       loadingSide = false;
     };
-  }) 
+  });
 </script>
 
 <div class:loading={loading}>
-  {#if url && !error}
+  {#if !error}
     <img
       bind:this={thisImage}
       src={url}
