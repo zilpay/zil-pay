@@ -72,6 +72,11 @@
 
 <style lang="scss">
 	@import "../styles/mixins";
+  p {
+		text-align: left;
+    width: 280px;
+	}
+
   ul {
 		margin: 0;
 		padding: 0;

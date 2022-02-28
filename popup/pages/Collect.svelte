@@ -110,14 +110,9 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-		@include flex-center-top-column;
-	}
-	p {
-		text-align: left;
-    width: 280px;
-	}
-	main, ul {
 		padding-block-start: 30px;
+
+		@include flex-center-top-column;
 	}
   section {
 		background-color: var(--background-color);
