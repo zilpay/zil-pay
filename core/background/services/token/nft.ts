@@ -22,6 +22,7 @@ import { toChecksumAddress, tohexString } from 'lib/utils/address';
 import { initParser } from 'lib/utils/parse-init';
 import { toBech32Address } from 'lib/utils/bech32';
 import { chunk } from 'lib/utils/chunk';
+import { IPFS_PROVIDER } from 'config/api-list';
 
 const [mainnet] = NETWORK_KEYS;
 
@@ -204,9 +205,15 @@ export class NFTController {
 
   async #getMeta(url: string): Promise<NFTMetadata | undefined> {
     const res = await fetch(url);
+    const ifpsProto = 'ipfs://';
 
     try {
       const meta = await res.json();
+      let url = meta.image || meta.resource || (meta.resources && meta.resources[0].uri);
+
+      if (url && url.includes(ifpsProto)) {
+        url = url.replace('ipfs://', IPFS_PROVIDER);
+      }
 
       return {
         name: meta.name,
