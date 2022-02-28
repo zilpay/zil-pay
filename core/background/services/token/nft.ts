@@ -45,6 +45,8 @@ export class NFTController {
   }
 
   public get field() {
+    assert(Boolean(this.#account.selectedAccount), ErrorMessages.Base16NotValid);
+
     const { base16 } = this.#account.selectedAccount;
     const { selected } = this.#netwrok;
 
@@ -181,9 +183,8 @@ export class NFTController {
   }
 
   public async sync() {
-    const jsonList = await BrowserStorage.get(this.field);
-
     try {
+      const jsonList = await BrowserStorage.get(this.field);
       const list = JSON.parse(String(jsonList));
 
       if (!list || !TypeOf.isArray(list)) {
@@ -198,9 +199,13 @@ export class NFTController {
 
   public async reset() {
     this.#identities = [];
-    await BrowserStorage.set(
-      buildObject(this.field, this.identities)
-    );
+    try {
+      await BrowserStorage.set(
+        buildObject(this.field, this.identities)
+      );
+    } catch {
+      ////
+    }
   }
 
   async #getMeta(url: string): Promise<NFTMetadata | undefined> {
