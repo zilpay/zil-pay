@@ -25,7 +25,6 @@
 		loading = true;
     try {
       state = await fetchNFTToken(address);
-      console.log(state);
     } catch (err) {
       console.error(err);
       error = err.message;

@@ -48,9 +48,9 @@
 		loading = false;
 	}
 
-	async function handleOnRemove(index: number) {
+	async function handleOnRemove({ detail }) {
 		try {
-			await removeNFTToken(index);
+			await removeNFTToken(detail);
 		} catch (err) {
 			alert(err.message);
 		}
@@ -100,6 +100,7 @@
 			tokens={tokens}
 			loading={loading}
 			toggle
+			on:remove={handleOnRemove}
 			on:select={handleSelect}
 		/>
 	</main>

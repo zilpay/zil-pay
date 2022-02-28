@@ -14,7 +14,9 @@
   export let loading = false;
   export let toggle = false;
 
-  const handleOnRemove = () => {};
+  const handleOnRemove = (index) => {
+    dispatch('remove', index);
+  };
   const handleOnSelect = (index, tokenIndex) => {
     dispatch('select', {
       index,

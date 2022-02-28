@@ -209,16 +209,16 @@ export class NFTController {
 
     try {
       const meta = await res.json();
-      let url = meta.image || meta.resource || (meta.resources && meta.resources[0].uri);
+      let image = meta.image || meta.resource || (meta.resources && meta.resources[0].uri);
 
-      if (url && url.includes(ifpsProto)) {
-        url = url.replace('ipfs://', IPFS_PROVIDER);
+      if (image && image.includes(ifpsProto)) {
+        image = image.replace('ipfs://', IPFS_PROVIDER);
       }
 
       return {
+        image,
         name: meta.name,
-        attributes: meta.attributes,
-        image: meta.image || meta.resource || (meta.resources && meta.resources[0].uri)
+        attributes: meta.attributes
       };
     } catch {
       return undefined;
