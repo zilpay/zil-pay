@@ -383,7 +383,18 @@
   },
   "collections": {
     "errors": {
-      "load": "Broken NFT url."
+      "load": "Nft url hautsia."
+    },
+    "no_tokens": "Ez duzu deus ere erranen!",
+    "empty": {
+      "0": "Ez daukazu",
+      "1": "tokens!"
+    },
+    "modals": {
+      "add": {
+        "title": "NFT pertsonalizatua"
+      },
+      "add_btn": "NFT gehitu"
     }
   }
 }

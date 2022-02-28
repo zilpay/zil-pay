@@ -380,5 +380,21 @@
   },
   "swap": {
     "title": "Prossimamente!"
+  },
+  "collections": {
+    "errors": {
+      "load": "Url NFT rotto."
+    },
+    "no_tokens": "Non hai alcun token NFT!",
+    "empty": {
+      "0": "Non hai",
+      "1": "tokens!"
+    },
+    "modals": {
+      "add": {
+        "title": "NFT personalizzato"
+      },
+      "add_btn": "Aggiungi NFT"
+    }
   }
 }

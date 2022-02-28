@@ -43,7 +43,7 @@
 		}
 	};
 	const hanldeOnSelect = (address: String) => {
-		push(`/send/${TokenType.ZRC2}/0/${address}`);
+		push(`/send/${TokenType.ZRC2}/0/0/${address}`);
 	};
 </script>
 

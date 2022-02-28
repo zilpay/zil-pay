@@ -380,5 +380,21 @@
   },
   "swap": {
     "title": "Demnaechst verfuegbar!"
+  },
+  "collections": {
+    "errors": {
+      "load": "Gebrochene NFT URL."
+    },
+    "no_tokens": "Sie haben keine NFT-Token!",
+    "empty": {
+      "0": "Sie haben keine",
+      "1": "tokens!"
+    },
+    "modals": {
+      "add": {
+        "title": "Kundenspezifische NFT"
+      },
+      "add_btn": "Hinzufügen NFT"
+    }
   }
 }
