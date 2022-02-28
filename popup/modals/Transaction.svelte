@@ -21,7 +21,7 @@
 
   let tip = $_('home.clipboard.copy');
 
-  $: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
+  $: amount = fromDecimals(tx.tokenAmount, tx.token.decimals).round(7);
   $: hash = `0x${tx.hash}`;
   $: operate = Number(tx.amount) > 0 ? '-' : '';
 
