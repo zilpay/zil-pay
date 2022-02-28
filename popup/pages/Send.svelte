@@ -111,8 +111,8 @@
       if (!disabled) {
         push('/confirm/' + selectedAccount);
       }
-    } catch {
-      ///
+    } catch (err) {
+      alert(err);
     }
     loading = false;
   };

@@ -264,7 +264,9 @@ export class ZilPayTransaction {
       }
 
       const result = await this.#core.zilliqa.send(newTx);
+
       newTx.setHash(result.TranID);
+
       await this.#core.transactions.addHistory({
         token,
         confirmed: false,
@@ -288,18 +290,22 @@ export class ZilPayTransaction {
         icon: params.icon
       });
       await this.#core.transactions.rmConfirm(txIndex);
-      await new TabsMessage({
-        type: MTypeTab.TX_RESULT,
-        payload: {
-          uuid: params.uuid,
-          resolve: {
-            ...newTx.self,
-            ContractAddress: result.ContractAddress,
-            Info: result.Info,
-            from: account.base16
+
+      if (params.uuid) {
+        await new TabsMessage({
+          type: MTypeTab.TX_RESULT,
+          payload: {
+            uuid: params.uuid,
+            resolve: {
+              ...newTx.self,
+              ContractAddress: result.ContractAddress,
+              Info: result.Info,
+              from: account.base16
+            }
           }
-        }
-      }).send();
+        }).send();
+      }
+
       sendResponse({
         resolve: this.#core.state
       });

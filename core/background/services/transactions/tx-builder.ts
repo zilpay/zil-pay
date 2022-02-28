@@ -160,8 +160,12 @@ export class Transaction {
   ) {
     isAddress(toAddr);
 
-    assert(TypeOf.isInt(version), `version ${ErrorMessages.ShouldBeNumber}`);
-    assert(TypeOf.isInt(nonce), `nonce ${ErrorMessages.ShouldBeNumber}`);
+    if (version) {
+      assert(TypeOf.isInt(version), `version ${ErrorMessages.ShouldBeNumber}`);
+    }
+    if (nonce) {
+      assert(TypeOf.isInt(nonce), `nonce ${ErrorMessages.ShouldBeNumber}`);
+    }
 
     this.from = account.bech32;
     this.amount = amount;

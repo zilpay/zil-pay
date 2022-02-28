@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { trim } from 'popup/filters/trim';
   import { fromDecimals } from 'popup/filters/units';
   import { convertRate } from 'popup/filters/convert-rate';
   import { formatNumber } from 'popup/filters/n-format';
@@ -10,9 +9,10 @@
   export let tx;
   export let loading = false;
 
-  $: amount = fromDecimals(tx.amount, tx.token.decimals).round(7);
+  $: amount = fromDecimals(tx.tokenAmount, tx.token.decimals).round(7);
   $: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, amount).round(7);
+  $: date = new Date(tx.timestamp).toLocaleDateString();
 </script>
 
 <div
@@ -26,7 +26,7 @@
       {tx.teg}
     </h3>
     <p>
-      {trim(tx.recipient, 10)}
+      {date}
     </p>
   </div>
   <div>
