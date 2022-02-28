@@ -181,13 +181,15 @@
 
   onMount(() => {
 		jazziconCreate(uuid, account.base16);
-    updateCollection();
+    if (Number(params.type) === TokenType.ZRC1) {
+      updateCollection();
+    }
   });
 </script>
 
 <Modal
   show={nftsModal}
-  title={$_('send.input_to.title')}
+  title={$_('send.cards.token')}
   on:close={() => nftsModal = !nftsModal}
 >
   <div class="m-warp">
@@ -199,7 +201,7 @@
 </Modal>
 <Modal
   show={tokensModal}
-  title={$_('send.input_to.title')}
+  title={$_('send.cards.token')}
   on:close={() => tokensModal = !tokensModal}
 >
   <div class="m-warp">

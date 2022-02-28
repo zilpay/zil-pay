@@ -10,7 +10,7 @@
     },
     "token_list": "Verwalten",
     "nav": {
-      "optinos": {
+      "options": {
         "add": {
           "title": "Konto hinzufuegen",
           "description": "Generiere naechstes Konto aus geheimer Wortfolge."

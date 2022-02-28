@@ -10,7 +10,7 @@
     },
     "token_list": "Gestici",
     "nav": {
-      "optinos": {
+      "options": {
         "add": {
           "title": "Aggiungere un account",
           "description": "Genera il prossimo account dalla frase segreta."

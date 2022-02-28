@@ -19,6 +19,10 @@
 		{
 			name: 'Terms and use',
 			url: 'https://zilpay.io/terms'
+		},
+		{
+			name: 'Ask me in Telegram',
+			url: 'https://t.me/zilpaychat'
 		}
 	];
 </script>
