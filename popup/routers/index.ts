@@ -97,7 +97,7 @@ export default {
       routerGuard
     ]
   }),
-  '/send/:type/:index/:bech32?': wrap({
+  '/send/:type/:index/:nft?/:bech32?': wrap({
     component: Send,
     conditions: [
       routerGuard

@@ -84,6 +84,8 @@
 	onMount(async() => {
 		jazziconCreate(uuid, account.base16);
 		await onUpdateParams();
+		console.log(tx);
+		
   });
 
 	const onGasChanged = () => {

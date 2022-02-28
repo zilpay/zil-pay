@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import { _ } from 'popup/i18n';
+
+  const dispatch = createEventDispatcher();
 
   export let url;
   export let id;
@@ -13,6 +15,10 @@
   $: tokenId = `#${id}`;
   $: loading = load || loadingSide;
 
+  const onClick = () => {
+    dispatch('select');
+  };
+
   onMount(() => {
     thisImage.onload = () => {
       loadingSide = false;
@@ -24,7 +30,10 @@
   });
 </script>
 
-<div class:loading={loading}>
+<div
+  class:loading={loading}
+  on:click={onClick}
+>
   {#if !error}
     <img
       bind:this={thisImage}

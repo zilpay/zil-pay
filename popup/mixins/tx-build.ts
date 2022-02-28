@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { ZRC2Token } from 'types/token';
+import type { ZRCNFT, ZRC2Token } from 'types/token';
 import type { MinParams, StoredTx } from 'types/transaction';
 import type Big from 'big.js';
 
@@ -55,6 +55,38 @@ export async function cancelTx(tx: StoredTx) {
   return sendToSignTx(params);
 }
 
+export async function buildNFTTx(toAddr: string, tokenId: string, token: ZRCNFT) {
+  const theme = get(themeStore);
+  const { gasLimit, gasPrice } = get(gasStore);
+  const params: MinParams = {
+    toAddr: token.base16,
+    amount: String(0),
+    data: '',
+    code: '',
+    gasLimit,
+    gasPrice,
+    icon: viewIcon(token.bech32, theme),
+    title: 'NFT Transfer'
+  };
+  params.data = JSON.stringify({
+    _tag: 'Transfer',
+    params: [
+      {
+        vname: 'to',
+        type: 'ByStr20',
+        value: String(toAddr).toLowerCase()
+      },
+      {
+        vname: 'token_id',
+        type: 'Uint256',
+        value: String(tokenId)
+      }
+    ]
+  });
+  params.gasLimit = 1500;
+  return sendToSignTx(params);
+}
+
 export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
   const { gasLimit, gasPrice } = get(gasStore);
   const params: MinParams = {
@@ -90,7 +122,5 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
     params.gasLimit = 1500;
     params.toAddr = token.base16;
   }
-
-  /// IF ZRC2
   return sendToSignTx(params);
 }

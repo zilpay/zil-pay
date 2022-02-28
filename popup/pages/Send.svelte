@@ -17,7 +17,7 @@
   import { convertRate } from 'popup/filters/convert-rate';
   import { fromPercent } from 'popup/filters/from-percent';
   import { gasToFee } from 'popup/filters/gas-to-fee';
-  import { buildTx } from 'popup/mixins/tx-build';
+  import { buildTx, buildNFTTx } from 'popup/mixins/tx-build';
   import { getZNS } from 'popup/backend/zns';
 
   import zrcStore from 'app/store/zrc';
@@ -26,9 +26,11 @@
   import themeStore from 'popup/store/theme';
   import gasStore from 'popup/store/gas';
 	import currencyStore from 'popup/store/currency';
+	import nftListStore from 'popup/store/nft-list';
 	import format from 'popup/store/format';
 
 	import { balanceUpdate } from 'popup/backend/wallet';
+  import { getNFTList } from 'popup/backend/tokens';
 
 	import NavClose from '../components/NavClose.svelte';
   import SelectCard from '../components/SelectCard.svelte';
@@ -37,25 +39,31 @@
   import AccountsModal from '../modals/Accounts.svelte';
   import TokensModal from '../modals/Tokens.svelte';
   import AccountSelectorModal from '../modals/AccountSelector.svelte';
+  import NFTListModal from '../modals/NFTList.svelte';
 
   export let params = {
     type: TokenType.ZRC2,
     index: 0,
-    bech32: ''
+    bech32: '',
+    nft: 0
   };
 
   let contactsModal = false;
   let accountsModal = false;
   let tokensModal = false;
+  let nftsModal = false;
   let loading = false;
   let loadingZNS = false;
   let uuid = uuidv4();
   let selectedAccount = $walletStore.selectedAddress;
-  let selectedToken = params.index;
-  let percentageList = [0, 25, 50, 100];
+  let selectedToken = Number(params.index);
+  let percentageList = [10, 25, 50, 100];
   let amount;
   let recipient = params.bech32;
   let recipientError = '';
+
+  let collection = null;
+  let nftIndex = Number(params.nft);
 
 	$: account = $walletStore.identities[selectedAccount];
 
@@ -67,9 +75,37 @@
   $: converted = convertRate(rate, zils).round(7);
 	$: disabled = !amount || !recipient;
 
-  onMount(() => {
-		jazziconCreate(uuid, account.base16);
-  });
+  const updateCollection = async () => {
+    let nft = $nftListStore[selectedToken];
+
+    if (!nft) {
+      await getNFTList();
+      nft = $nftListStore[selectedToken];
+    }
+    
+    try {
+      collection = {
+        base16: nft.base16,
+        icon: viewIcon(nft.bech32, $themeStore),
+        token: nft.balances[nftIndex],
+        symbol: nft.symbol,
+        name: nft.name
+      };
+      amount = '0';
+    } catch (err) {
+      console.error(err);
+      push('/');
+    }
+  };
+  const handleSelectNFT = ({ detail }) => {
+    const { index, tokenIndex } = detail;
+
+    selectedToken = Number(index);
+    nftIndex = Number(tokenIndex);
+
+    updateCollection();
+    nftsModal = false;
+  };
   const handleOnPercentage = (percent: number) => {
     const { gasLimit, gasPrice } = $gasStore;
     const { _fee } = gasToFee(gasLimit, gasPrice);
@@ -105,9 +141,15 @@
     }
 
     try {
-      const qa = toDecimals(amount, token.decimals);
-      
-      await buildTx(toAddr, qa, token);
+      if (Number(params.type) === TokenType.ZRC1) {
+        const nft = $nftListStore[selectedToken];
+        await buildNFTTx(toAddr, collection.token.id, nft);
+      } else {
+        const qa = toDecimals(amount, token.decimals);
+
+        await buildTx(toAddr, qa, token);
+      }
+
       if (!disabled) {
         push('/confirm/' + selectedAccount);
       }
@@ -137,8 +179,25 @@
       loadingZNS = false;
     }
   }
+
+  onMount(() => {
+		jazziconCreate(uuid, account.base16);
+    updateCollection();
+  });
 </script>
 
+<Modal
+  show={nftsModal}
+  title={$_('send.input_to.title')}
+  on:close={() => nftsModal = !nftsModal}
+>
+  <div class="m-warp">
+    <NFTListModal
+      tokens={$nftListStore}
+      on:select={handleSelectNFT}
+    />
+  </div>
+</Modal>
 <Modal
   show={tokensModal}
   title={$_('send.input_to.title')}
@@ -188,20 +247,38 @@
         <div id={uuid}/>
       </SelectCard>
       <hr />
-      <SelectCard
-        title={$_('send.cards.token')}
-        header={token.symbol}
-        text={token.name}
-        rightHeader={formatNumber(balance)}
-        rightText={formatNumber(converted, $currencyStore)}
-        on:click={() => tokensModal = !tokensModal}
-      >
-        <img
-          src={tokenIcon}
-          alt={token.symbol}
-          width="36"
-        />
-      </SelectCard>
+      {#if Number(params.type) === TokenType.ZRC2}
+        <SelectCard
+          title={$_('send.cards.token')}
+          header={token.symbol}
+          text={token.name}
+          rightHeader={formatNumber(balance)}
+          rightText={formatNumber(converted, $currencyStore)}
+          on:click={() => tokensModal = !tokensModal}
+        >
+          <img
+            src={tokenIcon}
+            alt={token.symbol}
+            width="36"
+          />
+        </SelectCard>
+      {/if}
+      {#if Number(params.type) === TokenType.ZRC1 && collection}
+        <SelectCard
+          title={$_('send.cards.token')}
+          header={collection.symbol}
+          text={collection.name}
+          rightHeader={`#${collection.token.id}`}
+          rightText={' '}
+          on:click={() => nftsModal = !nftsModal}
+        >
+          <img
+            src={collection.token.url}
+            alt={token.symbol}
+            width="36"
+          />
+        </SelectCard>
+      {/if}
     </div>
     <form
       in:fade
@@ -224,30 +301,32 @@
           >
         </label>
       </div>
-      <div class="input">
-        <p>
-          {$_('send.input_value.title')}
-        </p>
-        <label>
-          <div>
-            <img
-              src={tokenIcon}
-              alt={token.symbol}
-              width="19"
-            />
+      {#if Number(params.type) === TokenType.ZRC2}
+        <div class="input">
+          <p>
+            {$_('send.input_value.title')}
+          </p>
+          <label>
+            <div>
+              <img
+                src={tokenIcon}
+                alt={token.symbol}
+                width="19"
+              />
+            </div>
+            <input
+              bind:value={amount}
+              type="text"
+              placeholder={$_('send.input_value.placeholder')}
+            >
+          </label>
+          <div class="percentage">
+            {#each percentageList as percentage}
+              <span on:click={() => handleOnPercentage(percentage)}>{percentage}%</span>
+            {/each}
           </div>
-          <input
-            bind:value={amount}
-            type="text"
-            placeholder={$_('send.input_value.placeholder')}
-          >
-        </label>
-        <div class="percentage">
-          {#each percentageList as percentage}
-            <span on:click={() => handleOnPercentage(percentage)}>{percentage}%</span>
-          {/each}
         </div>
-      </div>
+      {/if}
       <hr />
       <button
         class="primary"
