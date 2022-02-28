@@ -85,8 +85,7 @@
     
     try {
       collection = {
-        base16: nft.base16,
-        icon: viewIcon(nft.bech32, $themeStore),
+        url: Boolean(nft.meta) ? nft.meta.image : nft.url,
         token: nft.balances[nftIndex],
         symbol: nft.symbol,
         name: nft.name
@@ -273,7 +272,7 @@
           on:click={() => nftsModal = !nftsModal}
         >
           <img
-            src={collection.token.url}
+            src={Boolean(collection.token.meta) ? collection.token.meta.image : collection.token.url}
             alt={token.symbol}
             width="36"
           />
