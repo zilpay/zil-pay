@@ -21,7 +21,7 @@ export class LocalesController {
     this.#selected = newSelected;
 
     await BrowserStorage.set(
-      buildObject(Fields.THEME, String(this.selected))
+      buildObject(Fields.LOCALE, String(this.selected))
     );
   }
 
