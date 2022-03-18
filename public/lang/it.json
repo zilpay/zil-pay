@@ -362,7 +362,7 @@
       "confirm": "Conferma",
       "reject": "Annulla"
     },
-    "parmas_modal": {
+    "params_modal": {
       "title": "Parametri",
       "limit": "Limite del gas",
       "price": "Prezzo del gas",

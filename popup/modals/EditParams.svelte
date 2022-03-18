@@ -14,8 +14,8 @@
   };
   let selected = 0;
   let tabs = [
-    $_('confirm.parmas_modal.tabs.params'),
-    $_('confirm.parmas_modal.tabs.data')
+    $_('confirm.params_modal.tabs.params'),
+    $_('confirm.params_modal.tabs.data')
   ];
   let data = '';
   let readOnly = true;
@@ -70,7 +70,7 @@
     <form on:submit={handleSubmitGas}>
       <label>
         <p>
-          {$_('confirm.parmas_modal.price')}
+          {$_('confirm.params_modal.price')}
         </p>
         <input
           bind:value={tx.gasPrice}
@@ -79,7 +79,7 @@
       </label>
       <label>
         <p>
-          {$_('confirm.parmas_modal.limit')}
+          {$_('confirm.params_modal.limit')}
         </p>
         <input
           bind:value={tx.gasLimit}
@@ -97,7 +97,7 @@
         />
       </label>
       <button class="primary gas-btn">
-        {$_('confirm.parmas_modal.btn')}
+        {$_('confirm.params_modal.btn')}
       </button>
     </form>
   {/if}
@@ -105,7 +105,7 @@
     <form on:submit={handleSubmitData}>
       <div class="toggle">
         <b>
-          {$_('confirm.parmas_modal.togle')}
+          {$_('confirm.params_modal.togle')}
         </b>
         <Toggle
           checked={!readOnly}
@@ -117,7 +117,7 @@
         readonly={readOnly}
       />
       <button class="primary">
-        {$_('confirm.parmas_modal.btn')}
+        {$_('confirm.params_modal.btn')}
       </button>
     </form>
   {/if}

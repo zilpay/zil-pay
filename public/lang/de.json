@@ -362,7 +362,7 @@
       "confirm": "Bestaetigen",
       "reject": "Ablehnen"
     },
-    "parmas_modal": {
+    "params_modal": {
       "title": "Parameter",
       "limit": "GasLimit",
       "price": "GasPrice",

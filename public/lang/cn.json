@@ -362,7 +362,7 @@
       "confirm": "确认",
       "reject": "拒绝"
     },
-    "parmas_modal": {
+    "params_modal": {
       "title": "参数",
       "limit": "GasLimit",
       "price": "GasPrice",

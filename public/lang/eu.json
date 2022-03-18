@@ -362,7 +362,7 @@
       "confirm": "Kinnita",
       "reject": "Keeldu"
     },
-    "parmas_modal": {
+    "params_modal": {
       "title": "Parameetrid",
       "limit": "Kütuselimiit",
       "price": "Kütusehind",

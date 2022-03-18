@@ -160,7 +160,7 @@
 </Modal>
 <Modal
   show={editModal}
-  title={$_('confirm.parmas_modal.title')}
+  title={$_('confirm.params_modal.title')}
   on:close={() => editModal = !editModal}
 >
 	<EditParamsModal
