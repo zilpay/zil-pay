@@ -105,7 +105,7 @@
     <form on:submit={handleSubmitData}>
       <div class="toggle">
         <b>
-          {$_('confirm.params_modal.togle')}
+          {$_('confirm.params_modal.toggle')}
         </b>
         <Toggle
           checked={!readOnly}
