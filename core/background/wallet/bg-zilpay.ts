@@ -17,6 +17,7 @@ import { ZilPayApps } from './apps';
 import { ZilPayContacts } from './contacts';
 import { ZilPayTransaction } from './transaction';
 import { ZilPaySettings } from './settings';
+import { Runtime } from 'lib/runtime';
 
 export class ZIlPayBackground {
   readonly #core = new ZIlPayCore();
@@ -32,10 +33,15 @@ export class ZIlPayBackground {
   public readonly settings = new ZilPaySettings(this.#core);
 
   public async sync() {
+    Runtime.runtime.onInstalled.addListener(async(event) => {
+      await this.synchronizer.sync();
+      this.#core.prompt.openTab();
+    });
+
     await this.synchronizer.sync();
 
-    if (!this.#core.guard.isReady && !this.#core.guard.isEnable) {
-      this.#core.prompt.openTab();
+    if (this.#core.guard.isReady) {
+      Runtime.runtime.onInstalled.removeListener(() => null);
     }
   }
 }
