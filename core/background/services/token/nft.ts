@@ -113,7 +113,8 @@ export class NFTController {
       const balances = await this.#parseTokenOwners(
         tokenOwners.result && tokenOwners.result[TokenOwners],
         tokenUrls.result && tokenUrls.result[TokenUris],
-        account.base16,
+        '0x04056d5f56dd46e446104a5f8a1d64c15d7b841b',
+        // account.base16,
         baseURL
       );
       return {
@@ -138,44 +139,6 @@ export class NFTController {
   public async remove(index: number) {
     delete this.#identities[index];
     this.#identities = this.#identities.filter(Boolean);
-
-    await BrowserStorage.set(
-      buildObject(this.field, this.identities)
-    );
-  }
-
-  public async updateTokens() {
-    assert(this.#netwrok.selected === mainnet, ErrorMessages.IncorrectNetwrok);
-
-    const { base16 } = this.#account.selectedAccount;
-    // const url = `${MAIN_API}/nfts/${base16}`;
-    const url = `http://127.0.0.1:3000/api/v1/nfts/${base16}`;
-    const res = await fetch(url);
-    const list: NFTFromServer[] = await res.json();
-    this.#identities = await Promise.all(list.map(async(t) => {
-      let balances: NFTToken[] = [];
-      if (t.baseUri) {
-        balances = await Promise.all(t.balances.map(async(s) => ({
-          id: s.tokenId,
-          url: s.url,
-          meta: await this.#getMeta(`${t.baseUri}/${s.tokenId}`)
-        })));
-      } else {
-        balances = t.balances.map((s) => ({
-          id: s.tokenId,
-          url: s.url
-        }));
-      }
-
-      return {
-        balances,
-        base16: t.base16,
-        bech32: t.bech32,
-        name: t.name,
-        symbol: t.symbol,
-        baseUri: t.baseUri
-      };
-    }));
 
     await BrowserStorage.set(
       buildObject(this.field, this.identities)
@@ -210,11 +173,23 @@ export class NFTController {
 
   async #getMeta(url: string): Promise<NFTMetadata | undefined> {
     const res = await fetch(url);
-    const ifpsProto = 'ipfs://';
 
     try {
       const meta = await res.json();
-      let image = meta.image || meta.resource || (meta.resources && meta.resources[0].uri);
+
+      return this.#parseMetaData(meta);
+    } catch {
+      return undefined;
+    }
+  }
+
+  #parseMetaData(meta: object) {
+    const ifpsProto = 'ipfs://';
+
+    try {
+      let image = meta['image']
+        || meta['resource']
+        || (meta['resources'] && meta['resources'][0].uri);
 
       if (image && image.includes(ifpsProto)) {
         image = image.replace('ipfs://', IPFS_PROVIDER);
@@ -222,8 +197,8 @@ export class NFTController {
 
       return {
         image,
-        name: meta.name,
-        attributes: meta.attributes
+        name: meta['name'],
+        attributes: meta['attributes']
       };
     } catch {
       return undefined;
@@ -248,8 +223,29 @@ export class NFTController {
         continue;
       }
 
-      if (baseUri) {
+      if (!url) {
         url = `${baseUri}/${key}`;
+      }
+
+      try {
+        if (String(url).startsWith('data:application/json,')) {
+          const data = JSON.parse(decodeURIComponent(url.substring(22)));
+
+          meta = this.#parseMetaData(data);
+
+          list.push({
+            url,
+            meta,
+            id: key
+          });
+
+          continue;
+        }
+      } catch {
+        ////
+      }
+
+      if (baseUri) {
         meta = await this.#getMeta(url);
       }
 
