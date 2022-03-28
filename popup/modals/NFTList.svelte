@@ -13,6 +13,7 @@
 	export let tokens = [];
   export let loading = false;
   export let toggle = false;
+  export let bottom = false;
 
   const handleOnRemove = (index) => {
     dispatch('remove', index);
@@ -25,7 +26,7 @@
   };
 </script>
 
-<ul>
+<ul class:bottom={bottom}>
   {#if tokens.length === 0}
     <p>
       {$_('collections.no_tokens')}
@@ -84,7 +85,10 @@
 		
 		margin-block-start: 15px;
 
-		height: calc(100vh - 182px);
+
+    &.bottom {
+      height: calc(100vh - 182px);
+    }
 
 		@include flex-center-top-column;
 

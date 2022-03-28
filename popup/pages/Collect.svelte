@@ -100,6 +100,7 @@
 			tokens={tokens}
 			loading={loading}
 			toggle
+			bottom
 			on:remove={handleOnRemove}
 			on:select={handleSelect}
 		/>

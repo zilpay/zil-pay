@@ -113,8 +113,7 @@ export class NFTController {
       const balances = await this.#parseTokenOwners(
         tokenOwners.result && tokenOwners.result[TokenOwners],
         tokenUrls.result && tokenUrls.result[TokenUris],
-        '0x04056d5f56dd46e446104a5f8a1d64c15d7b841b',
-        // account.base16,
+        account.base16,
         baseURL
       );
       return {

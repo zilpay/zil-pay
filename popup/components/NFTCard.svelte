@@ -71,6 +71,7 @@
     & > img,
     & > h3 {
       min-width: 110px;
+      max-width: 257px;
       min-height: 110px;
     }
 
