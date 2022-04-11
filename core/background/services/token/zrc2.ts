@@ -248,7 +248,7 @@ export class ZRC2Controller {
       const element = this.#identities[index];
       assert(element.base16 !== token.base16, ErrorMessages.MustBeUnique);
       assert(element.bech32 !== token.bech32, ErrorMessages.MustBeUnique);
-      assert(element.name !== token.name, ErrorMessages.MustBeUnique);
+      assert(element.symbol !== token.symbol, ErrorMessages.MustBeUnique);
     }
   }
 
