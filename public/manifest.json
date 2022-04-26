@@ -1,7 +1,7 @@
 {
   "name": "ZilPay",
   "author": "Rinat",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "16": "icons/icon16.png",
     "19": "icons/icon19.png",
@@ -24,15 +24,17 @@
       }
     }
   },
-  "permissions": [
-    "storage",
-    "notifications",
-    "activeTab",
-    "alarms",
+  "host_permissions": [
     "https://api.zilpay.io/",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
     "http://127.0.0.1/*"
+  ],
+  "permissions": [
+    "storage",
+    "notifications",
+    "activeTab",
+    "alarms"
   ],
   "content_scripts": [
     {
@@ -47,10 +49,12 @@
     }
   ],
   "web_accessible_resources": [
-    "inpage.js",
-    "phishing.html"
+    {
+      "resources": ["inpage.js", "phishing.html"],
+      "matches": ["*://*/*"]
+    }
   ],
-  "browser_action": {
+  "action": {
     "default_icon": {
       "19": "icons/icon19.png",
       "38": "icons/icon38.png"
@@ -59,8 +63,6 @@
     "default_popup": "index.html"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "service_worker": "background.js"
   }
 }
