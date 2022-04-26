@@ -12,7 +12,7 @@ import { RPCMethod } from 'config/methods';
 import { httpProvider } from './provider';
 
 export class PhishingDetect {
-  #host = window.location.host;
+  #host = String(window.location.host).replace('www.', '');
   #field = 'domains';
   #url = Runtime.runtime.getURL('phishing.html');
   #checked = false;
