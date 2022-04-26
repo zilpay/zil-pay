@@ -75,7 +75,7 @@ export class ContentTabStream {
       ).send();
       const wallet = warpMessage(data);
 
-      this.#phishing.phishing = wallet.phishing;
+      this.#phishing.phishing = Boolean(wallet.phishing);
       this.#phishing.http = wallet.http;
 
       if (wallet) {

@@ -14,7 +14,7 @@ export function startBackground(core: ZIlPayBackground) {
   Runtime.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (sender.id !== Runtime.runtime.id) {
       sendResponse();
-      return null
+      return null;
     }
     switch (msg.type) {
       case MTypePopup.SET_PHISHING_DETECTION:
@@ -215,7 +215,6 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.REJECT_ALL_CONFIRM_TXNS:
         core.transaction.rejectAll(sendResponse);
         return true;
-  
       case MTypePopup.SET_PASSWORD:
         core.popup.unlock(msg.payload.password, sendResponse);
         return true;
@@ -226,6 +225,7 @@ export function startBackground(core: ZIlPayBackground) {
         core.popup.initSeedWallet(msg.payload, sendResponse);
         return true;
       default:
+        console.log('default', sendResponse);
         sendResponse();
         return false;
     }

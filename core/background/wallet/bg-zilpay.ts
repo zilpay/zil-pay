@@ -35,7 +35,9 @@ export class ZIlPayBackground {
   public async sync() {
     Runtime.runtime.onInstalled.addListener(async(event) => {
       await this.synchronizer.sync();
-      this.#core.prompt.openTab();
+      if (event.reason !== 'update') {
+        this.#core.prompt.openTab();
+      }
     });
 
     await this.synchronizer.sync();
