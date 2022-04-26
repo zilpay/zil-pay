@@ -13,6 +13,7 @@
 
 	import zrcStore from 'app/store/zrc';
   import themeStore from 'popup/store/theme';
+  import netStore from 'popup/store/netwrok';
 
   import NavClose from '../components/NavClose.svelte';
 	import SearchBox from '../components/SearchBox.svelte';
@@ -21,6 +22,8 @@
   import Modal from '../components/Modal.svelte';
 	import Toggle from '../components/Toggle.svelte';
 	import SkeletToken from '../components/skelet/SkeletToken.svelte';
+
+	import { NETWORK_KEYS } from 'config/network';
 
 	let limit = 100;
 	let offset = 0;
@@ -43,6 +46,7 @@
 
 		return t0 || t1;
 	});
+
 
 	async function listUpdate() {
 		// 3 is magic number.
@@ -100,6 +104,10 @@
 	}
 
 	function hanldeScroll(event) {
+		if ($netStore.selected !== NETWORK_KEYS[0]) {
+			return;
+		}
+
 		const scrollHeight = event.target.scrollHeight;
 		const scrollTop = event.target.scrollTop;
 		const scroll = Math.ceil(window.innerHeight + scrollTop) - 100;
@@ -111,7 +119,11 @@
 	}
 
 	onMount(async() => {
-		await listUpdate();
+		if ($netStore.selected === NETWORK_KEYS[0]) {
+			await listUpdate();
+		}
+
+		loading = false;
 	});
 </script>
 
