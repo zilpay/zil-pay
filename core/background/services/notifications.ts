@@ -15,7 +15,7 @@ export class NotificationsControl {
    * @param number - counter.
    */
   static counter(number: number) {
-    Runtime.browserAction.setBadgeText({
+    Runtime.action.setBadgeText({
       text: `${number === 0 ? '' : number}`
     });
   }
@@ -38,7 +38,7 @@ export class NotificationsControl {
       const data: chrome.notifications.NotificationOptions<true> = {
         type: 'basic',
         title: this.#title,
-        iconUrl: Runtime.extension.getURL('/icons/icon128.png'),
+        iconUrl: Runtime.runtime.getURL('/icons/icon128.png'),
         message: this.#message
       };
       Runtime.notifications.create(this.#url, data);
