@@ -13,8 +13,8 @@ import { Runtime } from 'lib/runtime';
 export function startBackground(core: ZIlPayBackground) {
   Runtime.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (sender.id !== Runtime.runtime.id) {
-      sendResponse();
-      return null;
+      sendResponse(null);
+      return true;
     }
     switch (msg.type) {
       case MTypePopup.SET_PHISHING_DETECTION:
@@ -225,9 +225,8 @@ export function startBackground(core: ZIlPayBackground) {
         core.popup.initSeedWallet(msg.payload, sendResponse);
         return true;
       default:
-        console.log('default', sendResponse);
-        sendResponse();
-        return false;
+        sendResponse(null);
+        return true;
     }
   });
 }
