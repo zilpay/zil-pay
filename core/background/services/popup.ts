@@ -35,7 +35,7 @@ export class PromptService {
     }
     const createData: object = {
       type: this.#type,
-      url: Common.PROMT_PAGE,
+      url: `${Common.PROMT_PAGE}?type=popup`,
       width: this.#width,
       height: this.#height,
       focused: true

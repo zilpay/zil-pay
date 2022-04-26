@@ -8,6 +8,7 @@
  */
 import { Runtime } from 'lib/runtime';
 
+
 export async function closePopup() {
   try {
     window.close();

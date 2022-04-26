@@ -8,6 +8,8 @@
 	import appStore from 'popup/store/apps';
 	import { userResponseConnection } from 'popup/backend/popup';
 
+	const url = new URL(window.location.href);
+
 	let app = $appStore.confirmApp;
 
 	onMount(() => {
@@ -22,12 +24,18 @@
 		} catch {
 			///
 		}
-		await closePopup();
+		if (url.searchParams.has('type')) {
+			await closePopup();
+		}
+
 		push('/');
 	};
 	const hanldeOnReject = async () => {
 		await userResponseConnection(false);
-		await closePopup();
+
+		if (url.searchParams.has('type')) {
+			await closePopup();
+		}
 		push('/');
 	};
 </script>

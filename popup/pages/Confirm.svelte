@@ -36,6 +36,8 @@
     index: 0
   };
 
+	const url = new URL(window.location.href);
+
 	let uuid = uuidv4();
 	let accountsModal = false;
 	let editModal = false;
@@ -69,7 +71,14 @@
 		const isExtends = Boolean(tx.uuid);
 		if (list.length === 0) {
 			if (isExtends) {
-				await closePopup();
+				
+				if (url.searchParams.has('type')) {
+					await closePopup();
+				}
+
+				push('/');
+				
+				return;
 			}
 
 			push('/history');
@@ -83,9 +92,7 @@
 
 	onMount(async() => {
 		jazziconCreate(uuid, account.base16);
-		await onUpdateParams();
-		console.log(tx);
-		
+		await onUpdateParams();		
   });
 
 	const onGasChanged = () => {

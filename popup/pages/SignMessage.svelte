@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
+	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import { closePopup } from 'popup/mixins/popup';
 
@@ -39,13 +40,21 @@
 	};
   const handleOnReject = async () => {
     await rejectSignMessage();
-    await closePopup();
+
+    if (url.searchParams.has('type')) {
+			await closePopup();
+		}
+    push('/');
   };
   const handleOnSign = async () => {
     loading = true;
     try {
       await signMessageApprove(accountIndex);
-      await closePopup();
+      
+      if (url.searchParams.has('type')) {
+        await closePopup();
+      }
+      push('/');
     } catch (err) {
       error = err.message;
     }
