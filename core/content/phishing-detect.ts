@@ -14,7 +14,7 @@ import { httpProvider } from './provider';
 export class PhishingDetect {
   #host = window.location.host;
   #field = 'domains';
-  #url = Runtime.extension.getURL('phishing.html');
+  #url = Runtime.runtime.getURL('phishing.html');
   #checked = false;
 
   public get checked() {
