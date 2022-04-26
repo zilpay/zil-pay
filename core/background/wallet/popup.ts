@@ -20,9 +20,19 @@ interface InitPayload {
 
 export class ZilPayPopup {
   readonly #core: ZIlPayCore;
-
+  
   constructor(core: ZIlPayCore) {
     this.#core = core;
+
+    Runtime.alarms.onAlarm.addListener(async(event) => {
+      if (event.name.includes(this.#core.blockchain.name)) {
+        await this.#core.blockchain.trackBlockNumber();
+      }
+
+      if (event.name === this.#core.rate.name) {
+        await this.#core.rate.updateRate();
+      }
+    });
   }
 
   public updateStatus() {
@@ -111,15 +121,8 @@ export class ZilPayPopup {
   }
 
   #subscribe() {
-    Runtime.alarms.onAlarm.addListener(async(event) => {
-      if (event.name.includes(this.#core.blockchain.name)) {
-        await this.#core.blockchain.trackBlockNumber();
-      }
-
-      if (event.name === this.#core.rate.name) {
-        await this.#core.rate.updateRate();
-      }
-    });
+    this.#core.rate.subscribe();
+    this.#core.blockchain.subscribe();
   }
 
   #unsubscribe() {

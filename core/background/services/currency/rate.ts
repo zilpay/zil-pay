@@ -15,7 +15,7 @@ import { Fields } from 'config/fields';
 
 export class RateController {
   readonly #name = `rate/${Runtime.runtime.id}/zilpay`;
-  readonly #delay = 15; // approximately 15 minuts.
+  readonly #delay = 2;
 
   #rate: RateCurrencies;
 
@@ -27,7 +27,9 @@ export class RateController {
     return this.#name;
   }
 
-  constructor() {
+  constructor() {}
+
+  public subscribe() {
     Runtime.alarms.create(this.#name, {
       delayInMinutes: this.#delay,
       periodInMinutes: this.#delay

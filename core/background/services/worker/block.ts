@@ -21,7 +21,7 @@ export class BlockController {
   readonly #zilliqa: ZilliqaControl;
   readonly #queue: TransactionsQueue;
   readonly #name = `block/${Runtime.runtime.id}/zilpay`;
-  readonly #delay = 1;
+  readonly #delay = 0.2;
   #currentBlock = 0;
 
   public get blocknumber() {
@@ -35,19 +35,13 @@ export class BlockController {
   constructor(zilliqa: ZilliqaControl, queue: TransactionsQueue) {
     this.#zilliqa = zilliqa;
     this.#queue = queue;
+  }
 
-    chrome.alarms.clear(this.name);
-    Runtime.alarms.create(`${this.name}/0`, {
+  public subscribe() {
+    Runtime.alarms.create(this.name, {
       delayInMinutes: this.#delay,
       periodInMinutes: this.#delay
     });
-
-    setTimeout(() => {
-      Runtime.alarms.create(`${this.name}/1`, {
-        delayInMinutes: this.#delay,
-        periodInMinutes: this.#delay
-      });
-    }, 30000);
   }
 
   public async trackBlockNumber() {
