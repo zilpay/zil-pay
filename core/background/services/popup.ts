@@ -33,43 +33,29 @@ export class PromptService {
     if (!this.enabled) {
       return;
     }
-    const {
-      screenX,
-      screenY,
-      outerWidth,
-      outerHeight
-    } = window;
-    const notificationTop = Math.round(
-      screenY + (outerHeight / 2) - (this.#height / 2)
-    );
-    const notificationLeft = Math.round(
-      screenX + (outerWidth / 2) - (this.#width / 2)
-    );
     const createData: object = {
       type: this.#type,
       url: Common.PROMT_PAGE,
       width: this.#width,
       height: this.#height,
-      top: Math.max(notificationTop, 0),
-      left: Math.max(notificationLeft, 0),
       focused: true
     };
-    const lastPopups = await this.#getPopup();
-
-    if (lastPopups && lastPopups.length > 0) {
-      for (let index = 0; index < lastPopups.length; index++) {
-        const popup = lastPopups[index];
-
-        Runtime.windows.remove(popup.id, console.error);
-      }
-    }
-
     try {
+      const lastPopups = await this.#getPopup();
+
+      if (lastPopups && lastPopups.length > 0) {
+        for (let index = 0; index < lastPopups.length; index++) {
+          const popup = lastPopups[index];
+  
+          Runtime.windows.remove(popup.id, console.error);
+        }
+      }
+  
       Runtime.windows.create(createData, (tab) => {
         this.#id = tab.id;
       });
     } catch (err) {
-      console.error(err);
+      console.warn(err);
     }
   }
 
