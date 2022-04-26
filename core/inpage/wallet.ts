@@ -245,6 +245,35 @@ export class Wallet {
     });
   }
 
+  public async disconnect() {
+    const type = MTypeTab.DISCONNECT_APP;
+    const recipient = MTypeTabContent.CONTENT;
+    const domain = window.document.domain;
+    const uuid = uuidv4();
+    const payload = {
+      uuid,
+      domain
+    };
+
+    new ContentMessage({
+      type,
+      payload
+    }).send(this.#stream, recipient);
+
+    return new Promise((resolve) => {
+      const obs = this.#subject.on((msg) => {
+        if (msg.type !== MTypeTab.RESPONSE_TO_DAPP) return;
+        if (msg.payload.uuid !== uuid) return;
+
+        this.#isConnect = false;
+        this.#defaultAccount = null;
+
+        obs();
+        return resolve(null);
+      });
+    });
+  }
+
   #subscribe() {
     this.#subject.on((msg) => {
       switch (msg.type) {

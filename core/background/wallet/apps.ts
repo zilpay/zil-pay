@@ -109,6 +109,28 @@ export class ZilPayApps {
     }
   }
 
+  public async disconnectApp(app: AppConnect, sendResponse: StreamResponse) {
+    try {
+      const foundIndex = this.#core.apps.connections.findIndex((c) => c.domain === app.domain);
+
+      if (foundIndex >= 0) {
+        this.#core.apps.rm(foundIndex);
+      }
+
+      await new TabsMessage({
+        type: MTypeTab.RESPONSE_TO_DAPP,
+        payload: {
+          uuid: app.uuid,
+          account: null
+        }
+      }).send();
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async addConfirm(app: AppConnect, sendResponse: StreamResponse) {
     try {
       const has = this.#core.apps.isConnected(app.domain);

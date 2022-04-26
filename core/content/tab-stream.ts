@@ -48,6 +48,9 @@ export class ContentTabStream {
       case MTypeTab.CONNECT_APP:
         await new Message(msg).send();
         break;
+      case MTypeTab.DISCONNECT_APP:
+        await new Message(msg).send();
+        break;
       case MTypeTab.CALL_TO_SIGN_TX:
         await new Message(msg).send();
         break;
