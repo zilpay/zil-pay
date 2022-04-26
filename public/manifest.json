@@ -29,7 +29,7 @@
     "notifications",
     "activeTab",
     "alarms",
-    "https://api.coingecko.com/api/v3/simple/price",
+    "https://api.zilpay.io/",
     "https://api.zilliqa.com/",
     "https://dev-api.zilliqa.com/",
     "http://127.0.0.1/*"

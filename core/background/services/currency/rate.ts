@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { RateCurrencies } from 'types/zilliqa';
-import { APIs } from 'config/api-list';
+import { MAIN_API } from 'config/api-list';
 import { DEFAULT_CURRENCIES } from 'config/currencies';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Runtime } from 'lib/runtime';
@@ -36,14 +36,15 @@ export class RateController {
 
   public async updateRate() {
     try {
-      const currencies = DEFAULT_CURRENCIES.join();
-      const url = `${APIs.COIN_GECKO}?ids=zilliqa&vs_currencies=${currencies}`;
+      const url = `${MAIN_API}/rates`;
   
       const response = await fetch(url);
       const data = await response.json();
-      const rate = data.zilliqa as RateCurrencies;
-  
-      await this.#setRate(rate); 
+      const rate = data as RateCurrencies;
+
+      delete rate['id'];
+
+      await this.#setRate(rate);
     } catch (err) {
       console.error('updateRate', err);
     }
