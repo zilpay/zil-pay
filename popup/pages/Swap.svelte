@@ -1,12 +1,74 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
+	import { flip } from "svelte/animate";
+	import { onMount } from 'svelte';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TopBar from '../components/TopBar.svelte';
 	import Smartinput from '../components/SmartInput.svelte';
 	import SwapIcon from '../components/icons/Swap.svelte';
+  import TokensModal from '../modals/Tokens.svelte';
+  import Modal from '../components/Modal.svelte';
+
+  import { viewIcon } from 'lib/block-explorer/view';
+
+	import zrcStore from 'popup/store/zrc';
+	import currencyStore from 'popup/store/currency';
+	import rateStore from 'popup/store/rate';
+  import themeStore from 'popup/store/theme';
+	import walletStore from 'popup/store/wallet';
+
+  let modals = [
+		'Swap From token',
+		'Swap To token'
+	];
+	let modalIndex = -1;
+	let tokens = [
+		{
+			value: '0',
+			balance: '300',
+			meta: $zrcStore[0]
+		},
+		{
+			value: '0',
+			balance: '500',
+			meta: $zrcStore[1]
+		}
+	];
+
+
+	$: account = $walletStore.identities[$walletStore.selectedAddress];
+
+
+	function hanldeOnSwapTokens() {
+		tokens = tokens.reverse();
+	}
+
+	function hanldeOnInput(value: string, index: number) {
+		tokens[index].value = value;
+	}
+
+	function hanldeOnSelect(index: number) {
+		modalIndex = index;
+	}
+
+	onMount(() => {
+		// console.log(account);
+	});
 </script>
 
+<Modal
+  show={Boolean(modals[modalIndex])}
+  title={String(modals[modalIndex])}
+  on:close={() => modalIndex = -1}
+>
+  <div class="m-warp">
+    <TokensModal
+      list={$zrcStore}
+      account={account}
+    />
+  </div>
+</Modal>
 <section>
 	<TopBar
     refresh
@@ -27,15 +89,23 @@
 				</a>
 			</div>
 			<Smartinput
-				img="https://meta.viewblock.io/zilliqa.ZIL/logo?t=light"
-				symbol="ZIL"
+				img={viewIcon(tokens[0].meta.bech32, $themeStore)}
+				symbol={tokens[0].meta.symbol}
+				max={tokens[0].balance}
+				value={tokens[0].value}
+				on:select={() => hanldeOnSelect(0)}
+				on:input={(event) => hanldeOnInput(event.detail, 0)}
 			/>
-			<span>
+			<span on:click={hanldeOnSwapTokens}>
 				<SwapIcon className="swap-icon"/>
 			</span>
 			<Smartinput
-				img="https://meta.viewblock.io/zilliqa.zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4/logo?t=light"
-				symbol="ZLP"
+				img={viewIcon(tokens[1].meta.bech32, $themeStore)}
+				symbol={tokens[1].meta.symbol}
+				max={tokens[1].balance}
+				value={tokens[1].value}
+				on:select={() => hanldeOnSelect(1)}
+				on:input={(event) => hanldeOnInput(event.detail, 1)}
 			/>
 			<div class="info">
 				<p>
@@ -59,6 +129,10 @@
 	}
 	form {
 		@include flex-center-column;
+
+		min-width: 290px;
+    max-width: 500px;
+    width: 100%;
 
 		& > div.header {
 			width: 100%;
