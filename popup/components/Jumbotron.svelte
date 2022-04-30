@@ -26,10 +26,10 @@
 
 		& > h2 {
 			margin: 0;
-      font-size: 13pt;
+      font-size: 11pt;
 		}
     & > p {
-      font-size: 10pt;
+      font-size: 9pt;
     }
 
 		@media screen and (min-width: 400px) {

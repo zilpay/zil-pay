@@ -105,12 +105,12 @@
 			}
 		}
 		& > div.column {
-			padding: 8px;
+			padding: 5px;
 
 			& > input {
 				width: 100%;
 				height: auto;
-				font-size: 18px;
+				font-size: 14px;
 				padding: 0;
 				border-color: var(--card-color);
 

@@ -81,6 +81,7 @@
 	}
 
 	onMount(() => {
+		hanldeOnRefresh();
 	});
 </script>
 
@@ -138,10 +139,15 @@
 					1 ZIL = 123, 32.534543 ZLP <span>($100)</span>
 				</p>
 			</div>
-			<button>
+			<button disabled={loading}>
 				Exchange
 			</button>
 		</form>
+		<div class="info">
+			<h3>
+				Swap {tokens[0].value} {tokens[0].meta.symbol} for {tokens[1].value} {tokens[1].meta.symbol}
+			</h3>
+		</div>
 	</main>
 	<BottomTabs />
 </section>
@@ -149,9 +155,18 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-		padding-top: 10vh;
+		padding-top: 5vh;
     height: calc(100vh - 86px);
-		@include flex-column;
+		@include flex-center-column;
+
+		& > div.info {
+			margin-block-start: 16px;
+			border-radius: 16px;
+			background: var(--card-color);
+			padding: 8px;
+			width: 100%;
+			height: 100px;
+		}
 	}
 	form {
 		@include flex-center-column;
