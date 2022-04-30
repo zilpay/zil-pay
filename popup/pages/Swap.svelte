@@ -10,6 +10,7 @@
   import Modal from '../components/Modal.svelte';
 
   import { viewIcon } from 'lib/block-explorer/view';
+  import { fromDecimals } from 'popup/filters/units';
 
 	import zrcStore from 'popup/store/zrc';
 	import currencyStore from 'popup/store/currency';
@@ -25,19 +26,21 @@
 	let tokens = [
 		{
 			value: '0',
-			balance: '300',
+			balance: '0',
 			meta: $zrcStore[0]
 		},
 		{
 			value: '0',
-			balance: '500',
+			balance: '0',
 			meta: $zrcStore[1]
 		}
 	];
 
 
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
-	$: listedTokens = $zrcStore.filter((t) => tokens[modalIndex] && (t.base16 !== tokens[modalIndex].meta.base16));
+	$: listedTokens = $zrcStore.filter(
+		(t) => t.base16 !== tokens[0].meta.base16 && t.base16 !== tokens[1].meta.base16
+	);
 
 
 	function hanldeOnSwapTokens() {
@@ -55,8 +58,10 @@
 	function onSelectToken({ detail }) {
 		const token = listedTokens[detail];
 
-		// TODO: add balance tracker.
 		tokens[modalIndex].meta = token;
+		tokens[modalIndex].balance = fromDecimals(account.zrc2[token.base16], token.decimals);
+		tokens[0].value = '0';
+		tokens[1].value = '0';
 
 		modalIndex = -1;
 	}
