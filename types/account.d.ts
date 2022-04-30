@@ -80,6 +80,10 @@ export interface WalletState {
     config: typeof NETWORK;
     selected: string;
   };
+  dex: {
+    liquidityFee: number;
+    protocolFee: number;
+  };
   format: string;
   lockTime: number;
   locale: string | Locales;

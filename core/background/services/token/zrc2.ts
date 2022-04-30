@@ -14,6 +14,8 @@ import type { RPCResponse } from 'types/zilliqa';
 import assert from 'assert';
 
 import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
+import { ZRC2Fields } from 'core/background/services/dex';
+
 import { Contracts } from 'config/contracts';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
@@ -24,10 +26,6 @@ import { fromBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
 import { initParser, InitFields } from 'lib/utils/parse-init';
 
-enum ZRC2Fields {
-  Balances = 'balances',
-  Pools = 'pools'
-}
 
 const [mainnet, testnet, custom] = Object.keys(NETWORK);
 
