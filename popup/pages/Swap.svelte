@@ -20,6 +20,7 @@
 
 	import { updateDexData } from 'popup/backend/settings';
 	import { balanceUpdate } from 'popup/backend/wallet';
+  import { formatNumber } from 'popup/filters/n-format';
 
   let modals = [
 		'Swap From token',
@@ -145,8 +146,9 @@
 		</form>
 		<div class="info">
 			<h3>
-				Swap {tokens[0].value} {tokens[0].meta.symbol} for {tokens[1].value} {tokens[1].meta.symbol}
+				Swap {formatNumber(tokens[0].value, tokens[0].meta.symbol)} for {formatNumber(tokens[1].value, tokens[1].meta.symbol)}
 			</h3>
+			
 		</div>
 	</main>
 	<BottomTabs />
