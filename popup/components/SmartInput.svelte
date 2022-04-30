@@ -95,12 +95,13 @@
 			@include flex-between-row;
 
 			& > img {
-				height: 30px;
-				width: 30px;
+				height: 25px;
+				width: 25px;
 			}
 			& > h3 {
-				padding-left: 3px;
-				padding-right: 3px;
+				font-size: 10px;
+				padding-left: 2px;
+				padding-right: 2px;
 			}
 		}
 		& > div.column {

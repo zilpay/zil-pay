@@ -37,6 +37,7 @@
 
 
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
+	$: listedTokens = $zrcStore.filter((t) => tokens[modalIndex] && (t.base16 !== tokens[modalIndex].meta.base16));
 
 
 	function hanldeOnSwapTokens() {
@@ -51,8 +52,17 @@
 		modalIndex = index;
 	}
 
+	function onSelectToken({ detail }) {
+		const token = listedTokens[detail];
+
+		// TODO: add balance tracker.
+		tokens[modalIndex].meta = token;
+
+		modalIndex = -1;
+	}
+
 	onMount(() => {
-		// console.log(account);
+		// console.log(listedTokens);
 	});
 </script>
 
@@ -63,8 +73,9 @@
 >
   <div class="m-warp">
     <TokensModal
-      list={$zrcStore}
+      list={listedTokens}
       account={account}
+			on:selected={onSelectToken}
     />
   </div>
 </Modal>
