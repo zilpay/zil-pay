@@ -26,12 +26,10 @@
 	let tokens = [
 		{
 			value: '0',
-			balance: '0',
 			meta: $zrcStore[0]
 		},
 		{
 			value: '0',
-			balance: '0',
 			meta: $zrcStore[1]
 		}
 	];
@@ -39,7 +37,8 @@
 
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: listedTokens = $zrcStore.filter(
-		(t) => t.base16 !== tokens[0].meta.base16 && t.base16 !== tokens[1].meta.base16
+		(t) => (t.pool || t.base16 === $zrcStore[0].base16)
+			&& (t.base16 !== tokens[0].meta.base16 && t.base16 !== tokens[1].meta.base16)
 	);
 
 
@@ -67,7 +66,6 @@
 	}
 
 	onMount(() => {
-		// console.log(listedTokens);
 	});
 </script>
 
@@ -107,7 +105,7 @@
 				<Smartinput
 					img={viewIcon(tokens[index].meta.bech32, $themeStore)}
 					symbol={tokens[index].meta.symbol}
-					max={tokens[index].balance}
+					max={fromDecimals(account.zrc2[tokens[index].meta.base16], tokens[index].meta.decimals)}
 					value={tokens[index].value}
 					on:select={() => hanldeOnSelect(index)}
 					on:input={(event) => hanldeOnInput(event.detail, index)}

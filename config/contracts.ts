@@ -8,7 +8,7 @@
  */
 
 export enum Contracts {
-  ZIL_SWAP = '0x459cb2d3baf7e61cfbd5fe362f289ae92b2babb0',
+  SWAP = '0x359d0def766c0e27acc1af30cf8c6ae02a06de81',
   SSN = '0xa7c67d49c82c7dc1b73d231640b2e4d0661d37c1',
   SCAM = '0xe66593414Ba537e965b5e0eB723a58b4d1fACc89',
   Phishing= 'c51a6786ec357e0984d9f2a9ff0a39506ecf0787',

@@ -37,7 +37,8 @@ export const ZIL = {
   decimals: 12,
   name: 'Zilliqa',
   symbol: 'ZIL',
-  rate: 1
+  rate: 1,
+  pool: []
 };
 export const ZLP = {
   base16: Contracts.ZIlPay,
@@ -98,7 +99,8 @@ export class ZRC2Controller {
       symbol: token.symbol,
       base16: token.base16,
       bech32: token.bech32,
-      rate: token.rate || 0
+      rate: token.rate || 0,
+      pool: token.pool
     };
     this.#isUnique(newToken);
     this.#identities.push(newToken);
@@ -116,6 +118,7 @@ export class ZRC2Controller {
   }
 
   public async getToken(bech32: string): Promise<ZRC2Info> {
+    let pool: string[];
     let balance = '0';
     let rate = 0;
     const address = fromBech32Address(bech32);
@@ -133,7 +136,7 @@ export class ZRC2Controller {
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
         [
-          tohexString(Contracts.ZIL_SWAP),
+          tohexString(Contracts.SWAP),
           ZRC2Fields.Pools,
           [tokenAddressBase16]
         ]
@@ -147,8 +150,8 @@ export class ZRC2Controller {
       balance = replies[1].result[ZRC2Fields.Balances][userAddress];
     }
     if (replies[2].result) {
-      const pool = replies[2].result[ZRC2Fields.Pools];
-      const [zilReserve, tokenReserve] = pool[tokenAddressBase16].arguments;
+      pool = replies[2].result[ZRC2Fields.Pools][tokenAddressBase16].arguments;
+      const [zilReserve, tokenReserve] = pool;
       rate = this.#calcRate(
         zilReserve,
         tokenReserve,
@@ -160,6 +163,7 @@ export class ZRC2Controller {
       balance,
       bech32,
       rate,
+      pool,
       name: zrc.name,
       symbol: zrc.symbol,
       decimals: zrc.decimals,
@@ -183,13 +187,12 @@ export class ZRC2Controller {
         [tohexString(token.base16), ZRC2Fields.Balances, [addr]]
       );
     });
-    const dexContract = tohexString(Contracts.ZIL_SWAP);
     const tokensIdentities = this.identities.filter((t) => t.base16 !== Contracts.ZERO_ADDRESS);
     const tokensRates = tokensIdentities.map((token) => {
       const tokenAddress = token.base16.toLowerCase();
       return this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [dexContract, ZRC2Fields.Pools, [tokenAddress]]
+        [tohexString(Contracts.SWAP), ZRC2Fields.Pools, [tokenAddress]]
       );
     });
     const identities = [...balanceIdentities, ...tokensRates];
@@ -291,6 +294,7 @@ export class ZRC2Controller {
         const foundToken = this.identities[foundIndex];
         const [zilReserve, tokenReserve] = pool[base16].arguments;
 
+        this.identities[foundIndex].pool = pool[base16].arguments;
         this.identities[foundIndex].rate = this.#calcRate(
           zilReserve,
           tokenReserve,

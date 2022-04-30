@@ -14,6 +14,7 @@ export interface ZRC2Token {
   base16: string;
   bech32: string;
   rate: number;
+  pool?: string[];
 }
 
 
@@ -31,6 +32,7 @@ export interface ZRC2Info {
   decimals: number;
   base16: string;
   rate: number;
+  pool?: string[];
 }
 
 export interface Attribute {
