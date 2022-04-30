@@ -127,6 +127,7 @@
 					cursor: pointer;
 					margin: 0;
 					margin: 5px;
+					font-size: 12px;
 
 					&:hover {
 						color: var(--text-color);

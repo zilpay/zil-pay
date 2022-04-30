@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
-	import { flip } from "svelte/animate";
 	import { onMount } from 'svelte';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
@@ -88,25 +87,21 @@
 					Add Pool
 				</a>
 			</div>
-			<Smartinput
-				img={viewIcon(tokens[0].meta.bech32, $themeStore)}
-				symbol={tokens[0].meta.symbol}
-				max={tokens[0].balance}
-				value={tokens[0].value}
-				on:select={() => hanldeOnSelect(0)}
-				on:input={(event) => hanldeOnInput(event.detail, 0)}
-			/>
-			<span on:click={hanldeOnSwapTokens}>
-				<SwapIcon className="swap-icon"/>
-			</span>
-			<Smartinput
-				img={viewIcon(tokens[1].meta.bech32, $themeStore)}
-				symbol={tokens[1].meta.symbol}
-				max={tokens[1].balance}
-				value={tokens[1].value}
-				on:select={() => hanldeOnSelect(1)}
-				on:input={(event) => hanldeOnInput(event.detail, 1)}
-			/>
+			{#each tokens as el, index}
+				<Smartinput
+					img={viewIcon(tokens[index].meta.bech32, $themeStore)}
+					symbol={tokens[index].meta.symbol}
+					max={tokens[index].balance}
+					value={tokens[index].value}
+					on:select={() => hanldeOnSelect(index)}
+					on:input={(event) => hanldeOnInput(event.detail, index)}
+				/>
+				{#if index === 0}
+					<span on:click={hanldeOnSwapTokens}>
+						<SwapIcon className="swap-icon"/>
+					</span>
+				{/if}
+			{/each}
 			<div class="info">
 				<p>
 					1 ZIL = 123, 32.534543 ZLP <span>($100)</span>
