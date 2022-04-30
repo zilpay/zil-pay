@@ -20,6 +20,21 @@ export class ZilPaySettings {
     this.#core = core;
   }
 
+  public async updateDexData(sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.dex.updateState();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async changeGasMultiplier(multiplier: number, sendResponse: StreamResponse) {
     try {
       this.#core.guard.checkSession();

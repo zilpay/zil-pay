@@ -97,7 +97,9 @@ export const MTypePopup = {
   REJECT_SIGN_MESSAGE: `@/${app}/reject-sign-message`,
   SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`,
 
-  FROM_BECH32: `@/${app}/convert-from-bech32`
+  FROM_BECH32: `@/${app}/convert-from-bech32`,
+
+  UPDATE_DEX_DATA: `@/${app}/update-dex-data`
 };
 
 export const MTypeTab = {
