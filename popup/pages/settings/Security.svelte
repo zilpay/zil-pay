@@ -96,10 +96,12 @@
 			title={$_('security.phishing.title')}
 			description={$_('security.phishing.warn')}
 		>
-			<Toggle
-				checked={$phishingStore}
-				on:toggle={hanldeOnTogglePhishingDetection}
-			/>
+			<div class="right">
+				<Toggle
+					checked={$phishingStore}
+					on:toggle={hanldeOnTogglePhishingDetection}
+				/>
+			</div>
 		</Jumbotron>
 	</div>
 </main>

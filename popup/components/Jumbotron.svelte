@@ -31,6 +31,11 @@
     & > p {
       font-size: 9pt;
     }
+    & > :global(.right) {
+      position: relative;
+      right: 0;
+      left: 85%;
+    }
 
 		@media screen and (min-width: 400px) {
 			@include border-radius(8px);
