@@ -25,7 +25,7 @@ export async function changeCurrency(currency: string) {
   return state;
 }
 
-export async function updateDexData(currency: string) {
+export async function updateDexData() {
   const data = await Message.signal(MTypePopup.UPDATE_DEX_DATA).send();
   const state = warpMessage(data);
   updateState(state);

@@ -18,10 +18,14 @@
   import themeStore from 'popup/store/theme';
 	import walletStore from 'popup/store/wallet';
 
+	import { updateDexData } from 'popup/backend/settings';
+	import { balanceUpdate } from 'popup/backend/wallet';
+
   let modals = [
 		'Swap From token',
 		'Swap To token'
 	];
+	let loading = false;
 	let modalIndex = -1;
 	let tokens = [
 		{
@@ -65,6 +69,17 @@
 		modalIndex = -1;
 	}
 
+	async function hanldeOnRefresh() {
+		loading = true;
+		try {
+			await updateDexData();
+			await balanceUpdate();
+		} catch {
+			/////
+		}
+		loading = false;
+	}
+
 	onMount(() => {
 	});
 </script>
@@ -87,6 +102,7 @@
     refresh
     view
     lock
+		on:refresh={hanldeOnRefresh}
 	/>
 	<main>
 		<form>
@@ -107,6 +123,7 @@
 					symbol={tokens[index].meta.symbol}
 					max={fromDecimals(account.zrc2[tokens[index].meta.base16], tokens[index].meta.decimals)}
 					value={tokens[index].value}
+					loading={loading}
 					on:select={() => hanldeOnSelect(index)}
 					on:input={(event) => hanldeOnInput(event.detail, index)}
 				/>
