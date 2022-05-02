@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { beforeUpdate } from 'svelte';
 
 	import dexStore from 'popup/store/dex';
 
@@ -11,16 +11,19 @@
 
   $: virtualParams = dex.getVirtualParams(pair);
 
-  // onMount(() => {
-  //   console.log(dex.getVirtualRate(pair).toString());
-  // });
+  function hanldeSwpa() {
+    // virtualParams = dex.getVirtualParams(pair);
+  }
 </script>
 
 <div class="info">
   <ul>
     <li>
       <b>Rate</b>
-      <p class="pointer">
+      <p
+        class="pointer"
+        on:click={hanldeSwpa}
+      >
         1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>($100)</span>
       </p>
     </li>

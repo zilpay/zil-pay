@@ -7,7 +7,7 @@
 	Big.PE = 99;
   const dispatch = createEventDispatcher();
 
-	export let percents = [5, 10, 30, 50, 70, 100];
+	export let percents = [0, 10, 30, 50, 70, 100];
 	export let disabled = false;
   export let loading = false;
 	export let placeholder = '';

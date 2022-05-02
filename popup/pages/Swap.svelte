@@ -51,6 +51,7 @@
 		(t) => (t.pool || t.base16 === $zrcStore[0].base16)
 			&& (t.base16 !== tokens[0].meta.base16 && t.base16 !== tokens[1].meta.base16)
 	);
+	$: disabled = loading || Number(tokens[0].value) <= 0;
 
 
 	function hanldeOnSwapTokens() {
@@ -163,7 +164,7 @@
 			<SwapInfo
 				pair={tokens}
 			/>
-			<button disabled={loading}>
+			<button disabled={disabled}>
 				Review Order
 			</button>
 		</form>
