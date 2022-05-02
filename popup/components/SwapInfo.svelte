@@ -3,17 +3,23 @@
 
 	import dexStore from 'popup/store/dex';
   import currencyStore from 'popup/store/currency';
+	import rateStore from 'popup/store/rate';
 
   import { setDexSettings } from 'popup/backend/settings';
 
 	import { ZIlPayDex } from 'popup/mixins/dex';
 	import { formatNumber } from 'popup/filters/n-format';
+	import { convertRate } from 'popup/filters/convert-rate';
 
 	const dex = new ZIlPayDex();
 
   export let pair;
 
+  let fee = 3;
+
+	$: rate = $rateStore[$currencyStore];
   $: virtualParams = dex.getVirtualParams(pair);
+  $: feeConverted = convertRate(rate, fee);
 
   function hanldeSwpa() {
     // virtualParams = dex.getVirtualParams(pair);
@@ -52,7 +58,13 @@
     <li>
       <b>Transaction Fee</b>
       <p>
-        3 <span>ZIL</span>
+        3ZIL <span>({formatNumber(feeConverted, $currencyStore)})</span>
+      </p>
+    </li>
+    <li>
+      <b>After slippage</b>
+      <p>
+        312321 {pair[1].meta.symbol}
       </p>
     </li>
     <li>
