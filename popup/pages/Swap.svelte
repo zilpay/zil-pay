@@ -41,6 +41,7 @@
 		},
 		{
 			value: '0',
+			converted: 0,
 			meta: $zrcStore[1]
 		}
 	];
@@ -56,8 +57,9 @@
 
 	function hanldeOnSwapTokens() {
 		tokens = tokens.reverse();
-		const limitAmount = dex.getRealAmount(tokens);
-		tokens[1].value = String(limitAmount);
+		const { amount, converted } = dex.getRealAmount(tokens);
+		tokens[1].value = String(amount);
+		tokens[1].converted = converted;
 	}
 
 	function hanldeOnInput(value: string, index: number) {
@@ -67,8 +69,9 @@
 			tokens[index].value = String(Big(0));
 		}
 
-		const limitAmount = dex.getRealAmount(tokens);
-		tokens[index + 1].value = String(limitAmount);
+		const { amount, converted } = dex.getRealAmount(tokens);
+		tokens[1].value = String(amount);
+		tokens[1].converted = converted;
 	}
 
 	function hanldeOnSelect(index: number) {
@@ -159,6 +162,7 @@
 				loading={loading}
 				percents={[]}
 				disabled={true}
+				converted={tokens[1].converted}
 				on:select={() => hanldeOnSelect(1)}
 			/>
 			<SwapInfo

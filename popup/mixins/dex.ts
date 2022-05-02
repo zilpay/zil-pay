@@ -17,11 +17,11 @@ import currencyStore from 'popup/store/currency';
 import rateStore from 'popup/store/rate';
 
 import { Contracts } from 'config/contracts';
-import { convertRate } from 'app/filters/convert-rate';
 
 export interface TokenValue {
   value: string;
   meta: ZRC2Token;
+  converted?: number;
 }
 
 export class ZIlPayDex {
@@ -34,34 +34,54 @@ export class ZIlPayDex {
   public get tokens() {
     return get(zrcStore);
   }
+  
+  public get localRate() {
+    return get(rateStore)[get(currencyStore)];
+  }
 
   public getRealAmount(pair: TokenValue[]) {
+    let data = {
+      amount: Big(0),
+      converted: 0
+    };
     const [exactToken, limitToken] = pair;
     const bigAmount = Big(exactToken.value).mul(this.toDecimails(exactToken.meta.decimals)).round();
     const _amount = BigInt(String(bigAmount));
+    const localRate = Number(this.localRate) || 0;
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const pool = limitToken.meta.pool.map(BigInt);
       const _limitAmount = this.#zilToTokens(_amount, pool);
       const bigLimitAmount = Big(String(_limitAmount));
 
-      return bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+      data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+      data.converted = localRate * Number(exactToken.value);
+
+      return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const pool = exactToken.meta.pool.map(BigInt);
       const _limitAmount = this.#tokensToZil(_amount, pool);
       const bigLimitAmount = Big(String(_limitAmount));
 
-      return bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+      data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+      data.converted = localRate * Number(data.amount);
+
+      return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      const [ZIL] = this.tokens;
       const inputPool = exactToken.meta.pool.map(BigInt);
       const outputPool = limitToken.meta.pool.map(BigInt);
-      const _limitAmount = this.#tokensToTokens(_amount, inputPool, outputPool);
+      const [zils, _limitAmount] = this.#tokensToTokens(_amount, inputPool, outputPool);
       const bigLimitAmount = Big(String(_limitAmount));
 
-      return bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+      const zilAmount = Big(String(zils)).div(this.toDecimails(ZIL.decimals));
+      data.converted = localRate * Number(zilAmount);
+      data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+
+      return data;
     }
 
-    throw new Error('Incorrect Pair');
+    return data;
   }
 
   public getVirtualParams(pair: TokenValue[]) {
@@ -78,7 +98,7 @@ export class ZIlPayDex {
     const [exactToken, limitToken] = pair;
     const expectAmount = Big(exactToken.value);
     const limitAmount = Big(limitToken.value);
-    const localRate = get(rateStore)[get(currencyStore)];
+    const localRate = Number(this.localRate) || 0;
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(limitToken.meta.pool[0]).div(this.toDecimails(exactToken.meta.decimals));
@@ -167,7 +187,10 @@ export class ZIlPayDex {
     const zils = this.state.protocolFee === 0 ?
       zilIntermediateAmount : zilIntermediateAmount - (zilIntermediateAmount / BigInt(this.state.protocolFee));
 
-    return this.#outputFor(zils, BigInt(outputZilReserve), BigInt(outputTokenReserve));
+    return [
+      zils,
+      this.#outputFor(zils, BigInt(outputZilReserve), BigInt(outputTokenReserve))
+    ]
   }
 
   #outputFor(exactAmount: bigint, inputReserve: bigint, outputReserve: bigint, fee: bigint = BigInt(this.state.liquidityFee)) {

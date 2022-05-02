@@ -4,6 +4,11 @@
 
 	import Arrow from './icons/Arrow.svelte';
 
+  import currencyStore from 'popup/store/currency';
+
+	import { formatNumber } from 'popup/filters/n-format';
+
+
 	Big.PE = 99;
   const dispatch = createEventDispatcher();
 
@@ -12,6 +17,7 @@
   export let loading = false;
 	export let placeholder = '';
 	export let max = '0';
+	export let converted;
   export let img;
   export let symbol;
 	export let value;
@@ -58,6 +64,9 @@
 			on:input={onInput}
 		/>
     <div>
+			{#if converted}
+				<b>{formatNumber(converted, $currencyStore)}</b>
+			{/if}
       {#each percents as percent}
         <p on:click={() => onPercentInput(percent)}>{percent}%</p>
       {/each}
@@ -128,7 +137,13 @@
 			& > div {
 				display: flex;
 				justify-content: flex-end;
+				align-items: center;
 				min-height: 27px;
+
+				& > b {
+					width: 100%;
+					text-indent: 5px;
+				}
 
 				& > p {
 					cursor: pointer;
