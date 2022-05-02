@@ -20,6 +20,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.UPDATE_DEX_DATA:
         core.settings.updateDexData(sendResponse);
         return true;
+      case MTypePopup.UPDATE_DEX_SETTINGS:
+        core.settings.updateDexSettings(msg.payload.blocks, msg.payload.slippage, sendResponse);
+        return true;
       case MTypePopup.SET_PHISHING_DETECTION:
         core.apps.setPhishing(msg.payload.enabled, sendResponse);
         return true;

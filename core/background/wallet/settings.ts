@@ -35,6 +35,21 @@ export class ZilPaySettings {
     }
   }
 
+  public async updateDexSettings(blocks: number, slippage: number,  sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.dex.setSettings(blocks, slippage);
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async changeGasMultiplier(multiplier: number, sendResponse: StreamResponse) {
     try {
       this.#core.guard.checkSession();

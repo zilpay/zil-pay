@@ -21,6 +21,7 @@ import { Contracts } from 'config/contracts';
 import { Fields } from 'config/fields';
 import { ErrorMessages } from 'config/errors';
 import { SLIPPAGE, BLOCKS } from 'config/dex';
+import { TypeOf } from 'lib/type/type-checker';
 
 export enum ZRC2Fields {
   Balances = 'balances',
@@ -50,6 +51,11 @@ export class DexController {
   }
 
   public async setSettings(blocks: number, slippage: number) {
+    assert(TypeOf.isNumber(blocks), ErrorMessages.IncorrectParams);
+    assert(TypeOf.isNumber(slippage), ErrorMessages.IncorrectParams);
+    assert(slippage > 0, ErrorMessages.IncorrectParams);
+    assert(blocks > 0, ErrorMessages.IncorrectParams);
+
     this.#state.blocks = blocks;
     this.#state.slippage = slippage;
 
