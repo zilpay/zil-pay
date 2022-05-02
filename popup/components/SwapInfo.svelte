@@ -4,6 +4,8 @@
 	import dexStore from 'popup/store/dex';
   import currencyStore from 'popup/store/currency';
 
+  import { setDexSettings } from 'popup/backend/settings';
+
 	import { ZIlPayDex } from 'popup/mixins/dex';
 	import { formatNumber } from 'popup/filters/n-format';
 
@@ -15,6 +17,18 @@
 
   function hanldeSwpa() {
     // virtualParams = dex.getVirtualParams(pair);
+  }
+
+  const hanldeChangeSlippage = (event) => {
+    const newSlippage = Number(event.target.value);
+
+    setDexSettings($dexStore.blocks, newSlippage);
+  }
+
+  const hanldeChangeBlock = (event) => {
+    const newBlocks = Number(event.target.value);
+
+    setDexSettings(newBlocks, $dexStore.slippage);
   }
 </script>
 
@@ -49,6 +63,7 @@
           min="1"
           max="50"
           bind:value={$dexStore.slippage}
+          on:input={hanldeChangeSlippage}
         />
         <b>
           %
@@ -62,6 +77,7 @@
           type="number"
           min="1"
           bind:value={$dexStore.blocks}
+          on:input={hanldeChangeBlock}
         />
         <b>
           TX-Blocks
