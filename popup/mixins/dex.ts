@@ -13,8 +13,11 @@ import Big from 'big.js';
 
 import dexStore from 'popup/store/dex';
 import zrcStore from 'popup/store/zrc';
+import currencyStore from 'popup/store/currency';
+import rateStore from 'popup/store/rate';
 
 import { Contracts } from 'config/contracts';
+import { convertRate } from 'app/filters/convert-rate';
 
 export interface TokenValue {
   value: string;
@@ -64,7 +67,8 @@ export class ZIlPayDex {
   public getVirtualParams(pair: TokenValue[]) {
     const data = {
       rate: Big(0),
-      impact: 0
+      impact: 0,
+      converted: 0
     };
 
     if (!pair || pair.length < 1) {
@@ -73,7 +77,8 @@ export class ZIlPayDex {
 
     const [exactToken, limitToken] = pair;
     const expectAmount = Big(exactToken.value);
-    const limitAmount = Big(limitToken.value)
+    const limitAmount = Big(limitToken.value);
+    const localRate = get(rateStore)[get(currencyStore)];
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(limitToken.meta.pool[0]).div(this.toDecimails(exactToken.meta.decimals));
@@ -82,6 +87,7 @@ export class ZIlPayDex {
 
       data.rate = tokenReserve.div(zilReserve);
       data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
+      data.converted = localRate;
 
       return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
@@ -91,6 +97,7 @@ export class ZIlPayDex {
 
       data.rate = zilReserve.div(tokenReserve);
       data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
+      data.converted = localRate * Number(data.rate);
 
       return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
@@ -105,6 +112,7 @@ export class ZIlPayDex {
       const outpuRate = outputTokens.div(outpuZils);
       const rate = inputRate.div(outpuRate);
 
+      data.converted = localRate * Number(inputRate);
       data.rate = outpuRate.div(inputRate);
       data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
 

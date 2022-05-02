@@ -2,8 +2,10 @@
 	import { beforeUpdate } from 'svelte';
 
 	import dexStore from 'popup/store/dex';
+  import currencyStore from 'popup/store/currency';
 
 	import { ZIlPayDex } from 'popup/mixins/dex';
+	import { formatNumber } from 'popup/filters/n-format';
 
 	const dex = new ZIlPayDex();
 
@@ -24,7 +26,7 @@
         class="pointer"
         on:click={hanldeSwpa}
       >
-        1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>($100)</span>
+        1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>({formatNumber(virtualParams.converted, $currencyStore)})</span>
       </p>
     </li>
     <li>
