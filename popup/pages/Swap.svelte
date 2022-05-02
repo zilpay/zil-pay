@@ -119,22 +119,27 @@
 					Add Pool
 				</a>
 			</div>
-			{#each tokens as el, index}
-				<Smartinput
-					img={viewIcon(tokens[index].meta.bech32, $themeStore)}
-					symbol={tokens[index].meta.symbol}
-					max={fromDecimals(account.zrc2[tokens[index].meta.base16], tokens[index].meta.decimals)}
-					value={tokens[index].value}
-					loading={loading}
-					on:select={() => hanldeOnSelect(index)}
-					on:input={(event) => hanldeOnInput(event.detail, index)}
-				/>
-				{#if index === 0}
-					<span on:click={hanldeOnSwapTokens}>
-						<SwapIcon className="swap-icon"/>
-					</span>
-				{/if}
-			{/each}
+			<Smartinput
+				img={viewIcon(tokens[0].meta.bech32, $themeStore)}
+				symbol={tokens[0].meta.symbol}
+				max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals)}
+				value={tokens[0].value}
+				loading={loading}
+				on:select={() => hanldeOnSelect(0)}
+				on:input={(event) => hanldeOnInput(event.detail, 0)}
+			/>
+			<span on:click={hanldeOnSwapTokens}>
+				<SwapIcon className="swap-icon"/>
+			</span>
+			<Smartinput
+				img={viewIcon(tokens[1].meta.bech32, $themeStore)}
+				symbol={tokens[1].meta.symbol}
+				value={tokens[1].value}
+				loading={loading}
+				percents={[]}
+				disabled={true}
+				on:select={() => hanldeOnSelect(1)}
+			/>
 			<div class="info">
 				<p>
 					1 ZIL = 123, 32.534543 ZLP <span>($100)</span>
@@ -148,7 +153,6 @@
 			<h3>
 				Swap {formatNumber(tokens[0].value, tokens[0].meta.symbol)} for {formatNumber(tokens[1].value, tokens[1].meta.symbol)}
 			</h3>
-			
 		</div>
 	</main>
 	<BottomTabs />

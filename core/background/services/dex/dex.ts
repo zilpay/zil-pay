@@ -10,6 +10,8 @@ import type { ZilliqaControl } from 'core/background/services/blockchain';
 
 import assert from 'assert';
 
+import type { DexState } from 'types/dex';
+
 import { Methods } from 'core/background/services/blockchain';
 import { tohexString } from 'lib/utils/address';
 
@@ -18,6 +20,7 @@ import { BrowserStorage, buildObject } from 'lib/storage';
 import { Contracts } from 'config/contracts';
 import { Fields } from 'config/fields';
 import { ErrorMessages } from 'config/errors';
+import { SLIPPAGE, BLOCKS } from 'config/dex';
 
 export enum ZRC2Fields {
   Balances = 'balances',
@@ -26,16 +29,33 @@ export enum ZRC2Fields {
   ProtocolFee = 'protocol_fee'
 }
 
+const INIT_STATE: DexState = {
+  liquidityFee: 0,
+  protocolFee: 0,
+  slippage: SLIPPAGE,
+  blocks: BLOCKS
+};
+
 export class DexController {
   readonly #zilliqa: ZilliqaControl;
 
-  public state = {
-    liquidityFee: 0,
-    protocolFee: 0
-  };
+  #state: DexState = INIT_STATE;
+
+  public get state() {
+    return this.state;
+  }
 
   constructor(zilliqa: ZilliqaControl) {
     this.#zilliqa = zilliqa;
+  }
+
+  public async setSettings(blocks: number, slippage: number) {
+    this.#state.blocks = blocks;
+    this.#state.slippage = slippage;
+
+    await BrowserStorage.set(
+      buildObject(Fields.DEX, this.state)
+    );
   }
 
   public async updateState() {
@@ -53,8 +73,8 @@ export class DexController {
     
     assert(Array.isArray(replies), `${ErrorMessages.MustBe} array`);
 
-    this.state.liquidityFee = Number(replies[0].result[ZRC2Fields.LiquidityFee]);
-    this.state.protocolFee = Number(replies[1].result[ZRC2Fields.ProtocolFee]);
+    this.#state.liquidityFee = Number(replies[0].result[ZRC2Fields.LiquidityFee]);
+    this.#state.protocolFee = Number(replies[1].result[ZRC2Fields.ProtocolFee]);
 
     await BrowserStorage.set(
       buildObject(Fields.DEX, this.state)
@@ -71,7 +91,7 @@ export class DexController {
         throw new Error();
       }
 
-      this.state = JSON.parse(String(data));
+      this.#state = JSON.parse(String(data));
     } catch {
       await this.reset();
     }
@@ -79,10 +99,7 @@ export class DexController {
 
   public async reset() {
     await BrowserStorage.set(
-      buildObject(Fields.DEX, {
-        liquidityFee: 0,
-        protocolFee: 0
-      })
+      buildObject(Fields.DEX, INIT_STATE)
     );
   }
 }

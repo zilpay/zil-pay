@@ -7,7 +7,8 @@
 	Big.PE = 99;
   const dispatch = createEventDispatcher();
 
-	export let percents = [10, 30, 50, 70, 100];
+	export let percents = [5, 10, 30, 50, 70, 100];
+	export let disabled = false;
   export let loading = false;
 	export let placeholder = '';
 	export let max = '0';
@@ -53,7 +54,7 @@
     <input
 			bind:value={value}
 			placeholder={placeholder}
-			disabled={loading}
+			disabled={loading || disabled}
 			on:input={onInput}
 		/>
     <div>
@@ -68,12 +69,14 @@
   @import "../styles/mixins";
 
 	label {
+		display: flex;
+		align-items: center;
+
 		background-color: var(--card-color);
 		border: solid 1px var(--card-color);
 		width: 100%;
 		
 		@include border-radius(8px);
-		@include flex-between-row;
 
 		&.loading {
 			border: solid 1px transparent;
@@ -106,6 +109,7 @@
 		}
 		& > div.column {
 			padding: 5px;
+			width: 100%;
 
 			& > input {
 				width: 100%;
@@ -123,6 +127,7 @@
 			& > div {
 				display: flex;
 				justify-content: flex-end;
+				min-height: 27px;
 
 				& > p {
 					cursor: pointer;

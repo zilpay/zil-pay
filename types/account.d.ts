@@ -16,6 +16,7 @@ import type { MinParams, StoredTx } from 'types/transaction';
 import type { AccountTypes } from 'config/account-type';
 import type { Themes } from 'config/theme';
 import type { Locales } from 'config/locale';
+import type { DexState } from './dex';
 
 export interface ZRC1Token {
   id: string;
@@ -80,10 +81,7 @@ export interface WalletState {
     config: typeof NETWORK;
     selected: string;
   };
-  dex: {
-    liquidityFee: number;
-    protocolFee: number;
-  };
+  dex: DexState;
   format: string;
   lockTime: number;
   locale: string | Locales;
