@@ -160,7 +160,9 @@
 				disabled={true}
 				on:select={() => hanldeOnSelect(1)}
 			/>
-			<SwapInfo />
+			<SwapInfo
+				pair={tokens}
+			/>
 			<button disabled={loading}>
 				Review Order
 			</button>

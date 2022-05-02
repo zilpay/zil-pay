@@ -61,21 +61,50 @@ export class ZIlPayDex {
     throw new Error('Incorrect Pair');
   }
 
-  /**
-   * return virtual price from pool values.
-   * @param amount - dicimaled value of tokens.
-   * @param zilReserve - dicimaled of zilReserve form pool.
-   * @param tokensReserve - dicimaled of tokensReserve from pool.
-   * @returns - amount * rate.
-   * 
-   * @example - getVirtualAmount(0.5, 1000.500, 5000.500) -> 0.10003999600039996
-   */
-  public getVirtualAmount(amount: number, zilReserve: number, tokensReserve: number) {
-    return amount * this.getVirtualRate(zilReserve, tokensReserve);
-  }
+  // /**
+  //  * return virtual price from pool values.
+  //  * @param amount - dicimaled value of tokens.
+  //  * @param zilReserve - dicimaled of zilReserve form pool.
+  //  * @param tokensReserve - dicimaled of tokensReserve from pool.
+  //  * @returns - amount * rate.
+  //  * 
+  //  * @example - getVirtualAmount(0.5, 1000.500, 5000.500) -> 0.10003999600039996
+  //  */
+  // public getVirtualAmount(amount: number, zilReserve: number, tokensReserve: number) {
+  //   return amount * this.getVirtualRate(zilReserve, tokensReserve);
+  // }
 
-  public getVirtualRate(zilReserve: number, tokensReserve: number) {
-    return zilReserve / tokensReserve;
+  public getVirtualRate(pair: TokenValue[]) {
+    if (!pair || pair.length < 1) {
+      return Big(0);
+    }
+
+    const [exactToken, limitToken] = pair;
+
+    if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
+      const zilReserve = Big(limitToken.meta.pool[0]).div(this.toDecimails(exactToken.meta.decimals));
+      const tokenReserve = Big(limitToken.meta.pool[1]).div(this.toDecimails(limitToken.meta.decimals));
+
+      return tokenReserve.div(zilReserve);
+    } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      const zilReserve = Big(exactToken.meta.pool[0]).div(this.toDecimails(limitToken.meta.decimals));
+      const tokenReserve = Big(exactToken.meta.pool[1]).div(this.toDecimails(exactToken.meta.decimals));
+
+      return zilReserve.div(tokenReserve);
+    } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      const [ZIL] = this.tokens;
+
+      const inputZils = Big(exactToken.meta.pool[0]).div(this.toDecimails(ZIL.decimals));
+      const inputTokens = Big(exactToken.meta.pool[1]).div(this.toDecimails(exactToken.meta.decimals));
+      const outpuZils = Big(limitToken.meta.pool[0]).div(this.toDecimails(ZIL.decimals));
+      const outputTokens = Big(limitToken.meta.pool[1]).div(this.toDecimails(limitToken.meta.decimals));
+
+      const inputRate = inputTokens.div(inputZils);
+      const outpuRate = outputTokens.div(outpuZils);
+      return outpuRate.div(inputRate);
+    }
+
+    return Big(0);
   }
 
   public toDecimails(decimals: number) {

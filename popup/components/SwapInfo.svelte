@@ -1,7 +1,19 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	import dexStore from 'popup/store/dex';
 
+	import { ZIlPayDex } from 'popup/mixins/dex';
 
+	const dex = new ZIlPayDex();
+
+  export let pair;
+
+  $: rate = dex.getVirtualRate(pair).round(9);
+
+  // onMount(() => {
+  //   console.log(dex.getVirtualRate(pair).toString());
+  // });
 </script>
 
 <div class="info">
@@ -9,7 +21,7 @@
     <li>
       <b>Rate</b>
       <p class="pointer">
-        1 ZIL = 123, 32.534543 ZLP <span>($100)</span>
+        1 {pair[0].meta.symbol} = {rate} {pair[1].meta.symbol} <span>($100)</span>
       </p>
     </li>
     <li>
