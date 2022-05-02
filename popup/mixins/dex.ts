@@ -61,36 +61,38 @@ export class ZIlPayDex {
     throw new Error('Incorrect Pair');
   }
 
-  // /**
-  //  * return virtual price from pool values.
-  //  * @param amount - dicimaled value of tokens.
-  //  * @param zilReserve - dicimaled of zilReserve form pool.
-  //  * @param tokensReserve - dicimaled of tokensReserve from pool.
-  //  * @returns - amount * rate.
-  //  * 
-  //  * @example - getVirtualAmount(0.5, 1000.500, 5000.500) -> 0.10003999600039996
-  //  */
-  // public getVirtualAmount(amount: number, zilReserve: number, tokensReserve: number) {
-  //   return amount * this.getVirtualRate(zilReserve, tokensReserve);
-  // }
+  public getVirtualParams(pair: TokenValue[]) {
+    const data = {
+      rate: Big(0),
+      impact: 0
+    };
 
-  public getVirtualRate(pair: TokenValue[]) {
     if (!pair || pair.length < 1) {
-      return Big(0);
+      return data
     }
 
     const [exactToken, limitToken] = pair;
+    const expectAmount = Big(exactToken.value);
+    const limitAmount = Big(limitToken.value)
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(limitToken.meta.pool[0]).div(this.toDecimails(exactToken.meta.decimals));
       const tokenReserve = Big(limitToken.meta.pool[1]).div(this.toDecimails(limitToken.meta.decimals));
+      const rate = zilReserve.div(tokenReserve);
 
-      return tokenReserve.div(zilReserve);
+      data.rate = tokenReserve.div(zilReserve);
+      data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
+
+      return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(exactToken.meta.pool[0]).div(this.toDecimails(limitToken.meta.decimals));
       const tokenReserve = Big(exactToken.meta.pool[1]).div(this.toDecimails(exactToken.meta.decimals));
+      const rate = tokenReserve.div(zilReserve);
 
-      return zilReserve.div(tokenReserve);
+      data.rate = zilReserve.div(tokenReserve);
+      data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
+
+      return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const [ZIL] = this.tokens;
 
@@ -101,10 +103,29 @@ export class ZIlPayDex {
 
       const inputRate = inputTokens.div(inputZils);
       const outpuRate = outputTokens.div(outpuZils);
-      return outpuRate.div(inputRate);
+      const rate = inputRate.div(outpuRate);
+
+      data.rate = outpuRate.div(inputRate);
+      data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
+
+      return data;
     }
 
-    return Big(0);
+    return data;
+  }
+
+  public calcPriceImpact(priceInput: Big, priceOutput: Big, currentPrice: Big) {
+    try {
+      const nextPrice = priceInput.div(priceOutput);
+      const priceDiff = nextPrice.sub(currentPrice);
+      const value = priceDiff.div(currentPrice);
+      const _100 = Big(100);
+      const imact = value.mul(_100).round(3).toNumber();
+  
+      return Math.abs(imact);
+    } catch {
+      return 0;
+    }
   }
 
   public toDecimails(decimals: number) {

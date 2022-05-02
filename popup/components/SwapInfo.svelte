@@ -9,7 +9,7 @@
 
   export let pair;
 
-  $: rate = dex.getVirtualRate(pair).round(9);
+  $: virtualParams = dex.getVirtualParams(pair);
 
   // onMount(() => {
   //   console.log(dex.getVirtualRate(pair).toString());
@@ -21,13 +21,13 @@
     <li>
       <b>Rate</b>
       <p class="pointer">
-        1 {pair[0].meta.symbol} = {rate} {pair[1].meta.symbol} <span>($100)</span>
+        1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>($100)</span>
       </p>
     </li>
     <li>
       <b>Price Impact</b>
       <p>
-        0.003 <span>%</span>
+        {virtualParams.impact} <span>%</span>
       </p>
     </li>
     <li>
