@@ -110,7 +110,7 @@
 		<form>
 			<div class="header">
 				<h3>
-					Swap From:
+					You Pay
 				</h3>
 				<a
 					href="https://zilpay.io/pool"
@@ -128,9 +128,14 @@
 				on:select={() => hanldeOnSelect(0)}
 				on:input={(event) => hanldeOnInput(event.detail, 0)}
 			/>
-			<span on:click={hanldeOnSwapTokens}>
-				<SwapIcon className="swap-icon"/>
-			</span>
+			<div class="seporate">
+				<h3>
+					You Receive
+				</h3>
+				<span on:click={hanldeOnSwapTokens}>
+					<SwapIcon className="swap-icon"/>
+				</span>
+			</div>
 			<Smartinput
 				img={viewIcon(tokens[1].meta.bech32, $themeStore)}
 				symbol={tokens[1].meta.symbol}
@@ -146,7 +151,7 @@
 				</p>
 			</div>
 			<button disabled={loading}>
-				Exchange
+				Review Order
 			</button>
 		</form>
 		<div class="info">
@@ -200,12 +205,23 @@
 				}
 			}
 		}
-		& > span {
-			cursor: pointer;
+		& > div.seporate {
+			width: 100%;
+			padding-left: 8px;
+			padding-right: 8px;
 
-			&:hover {
-				& > :global(.swap-icon > path) {
-					fill: var(--text-color);
+			@include flex-between-row;
+
+			& > h3 {
+				margin: 0;
+			}
+			& > span {
+				cursor: pointer;
+
+				&:hover {
+					& > :global(.swap-icon > path) {
+						fill: var(--text-color);
+					}
 				}
 			}
 		}
