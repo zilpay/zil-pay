@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
+	import Big from 'big.js';
 	import { onMount } from 'svelte';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
@@ -22,6 +23,10 @@
 	import { updateDexData } from 'popup/backend/settings';
 	import { balanceUpdate } from 'popup/backend/wallet';
   import { formatNumber } from 'popup/filters/n-format';
+
+	import { ZIlPayDex } from 'popup/mixins/dex';
+
+	const dex = new ZIlPayDex();
 
   let modals = [
 		'Swap From token',
@@ -50,10 +55,19 @@
 
 	function hanldeOnSwapTokens() {
 		tokens = tokens.reverse();
+		const limitAmount = dex.getRealAmount(tokens);
+		tokens[1].value = String(limitAmount);
 	}
 
 	function hanldeOnInput(value: string, index: number) {
-		tokens[index].value = value;
+		try {
+			tokens[index].value = String(Big(value));
+		} catch {
+			tokens[index].value = String(Big(0));
+		}
+
+		const limitAmount = dex.getRealAmount(tokens);
+		tokens[index + 1].value = String(limitAmount);
 	}
 
 	function hanldeOnSelect(index: number) {

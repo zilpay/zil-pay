@@ -16,6 +16,11 @@ import zrcStore from 'popup/store/zrc';
 
 import { Contracts } from 'config/contracts';
 
+export interface TokenValue {
+  value: string;
+  meta: ZRC2Token;
+}
+
 export class ZIlPayDex {
   public static FEE_DEMON = BigInt(10000);
 
@@ -27,6 +32,35 @@ export class ZIlPayDex {
     return get(zrcStore);
   }
 
+  public getRealAmount(pair: TokenValue[]) {
+    const [exactToken, limitToken] = pair;
+    const bigAmount = Big(exactToken.value).mul(this.toDecimails(exactToken.meta.decimals)).round();
+    const _amount = BigInt(String(bigAmount));
+
+    if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
+      const pool = limitToken.meta.pool.map(BigInt);
+      const _limitAmount = this.#zilToTokens(_amount, pool);
+      const bigLimitAmount = Big(String(_limitAmount));
+
+      return bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+    } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      const pool = exactToken.meta.pool.map(BigInt);
+      const _limitAmount = this.#tokensToZil(_amount, pool);
+      const bigLimitAmount = Big(String(_limitAmount));
+
+      return bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+    } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      const inputPool = exactToken.meta.pool.map(BigInt);
+      const outputPool = limitToken.meta.pool.map(BigInt);
+      const _limitAmount = this.#tokensToTokens(_amount, inputPool, outputPool);
+      const bigLimitAmount = Big(String(_limitAmount));
+
+      return bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+    }
+
+    throw new Error('Incorrect Pair');
+  }
+
   /**
    * return virtual price from pool values.
    * @param amount - dicimaled value of tokens.
@@ -34,10 +68,14 @@ export class ZIlPayDex {
    * @param tokensReserve - dicimaled of tokensReserve from pool.
    * @returns - amount * rate.
    * 
-   * @example - calcVirtualAmount(0.5, 1000.500, 5000.500) -> 0.10003999600039996
+   * @example - getVirtualAmount(0.5, 1000.500, 5000.500) -> 0.10003999600039996
    */
-  public calcVirtualAmount(amount: number, zilReserve: number, tokensReserve: number) {
-    return amount * (zilReserve / tokensReserve);
+  public getVirtualAmount(amount: number, zilReserve: number, tokensReserve: number) {
+    return amount * this.getVirtualRate(zilReserve, tokensReserve);
+  }
+
+  public getVirtualRate(zilReserve: number, tokensReserve: number) {
+    return zilReserve / tokensReserve;
   }
 
   public toDecimails(decimals: number) {
