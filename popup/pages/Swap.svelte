@@ -8,6 +8,7 @@
 	import SwapIcon from '../components/icons/Swap.svelte';
   import TokensModal from '../modals/Tokens.svelte';
   import Modal from '../components/Modal.svelte';
+	import SwapInfo from '../components/SwapInfo.svelte';
 
   import { viewIcon } from 'lib/block-explorer/view';
   import { fromDecimals } from 'popup/filters/units';
@@ -145,20 +146,19 @@
 				disabled={true}
 				on:select={() => hanldeOnSelect(1)}
 			/>
-			<div class="info">
-				<p>
-					1 ZIL = 123, 32.534543 ZLP <span>($100)</span>
-				</p>
-			</div>
+			<SwapInfo />
 			<button disabled={loading}>
 				Review Order
 			</button>
 		</form>
-		<div class="info">
-			<h3>
-				Swap {formatNumber(tokens[0].value, tokens[0].meta.symbol)} for {formatNumber(tokens[1].value, tokens[1].meta.symbol)}
-			</h3>
-		</div>
+		<a
+			href="https://zilpay.io/"
+			target="_blank"
+		>
+			<p>
+				Terms of Service
+			</p>
+		</a>
 	</main>
 	<BottomTabs />
 </section>
@@ -169,15 +169,6 @@
 		padding-top: 5vh;
     height: calc(100vh - 86px);
 		@include flex-center-column;
-
-		& > div.info {
-			margin-block-start: 16px;
-			border-radius: 16px;
-			background: var(--card-color);
-			padding: 8px;
-			width: 100%;
-			height: 100px;
-		}
 	}
 	form {
 		@include flex-center-column;
@@ -225,27 +216,11 @@
 				}
 			}
 		}
-		& > div.info {
-			width: 100%;
-			text-indent: 8px;
-			margin-block-end: 5px;
-			margin-block-start: 5px;
-
-			& > p {
-				color: var(--text-color);
-				cursor: pointer;
-				margin: 0;
-				font-size: 0.7rem;
-
-				& > span {
-					color: var(--muted-color);
-				}
-			}
-		}
 		& > button {
 			width: 100%;
 		}
-		& > :global(label) {
+		& > :global(label),
+		& > button {
 			margin-block-end: 5px;
 			margin-block-start: 5px;
 		}

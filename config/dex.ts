@@ -6,5 +6,5 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-export const SLIPPAGE = 0.3;
+export const SLIPPAGE = 1;
 export const BLOCKS = 2;

@@ -43,7 +43,7 @@ export class DexController {
   #state: DexState = INIT_STATE;
 
   public get state() {
-    return this.state;
+    return this.#state;
   }
 
   constructor(zilliqa: ZilliqaControl) {
@@ -97,7 +97,12 @@ export class DexController {
         throw new Error();
       }
 
-      this.#state = JSON.parse(String(data));
+      const parsed = JSON.parse(String(data));
+
+      this.#state = {
+        ...INIT_STATE,
+        ...parsed
+      };
     } catch {
       await this.reset();
     }
