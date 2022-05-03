@@ -351,13 +351,13 @@ export class ZIlPayDex {
     const { gasPrice } = this.gas;
     return sendToSignTx({
       amount,
+      gasLimit,
       toAddr: Contracts.SWAP,
       data: JSON.stringify({
         params,
         _tag: tag
       }),
       code: '',
-      gasLimit: GasLimits.SwapExactZILForTokens,
       gasPrice,
       icon: Runtime.extension.getURL('/icons/icon128.png'),
       title: 'Swap'
