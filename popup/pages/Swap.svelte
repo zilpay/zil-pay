@@ -152,7 +152,7 @@
 	});
 
 	onDestroy(() => {
-		storageObserver.unsubscribe()
+		storageObserver.unsubscribe();
 	});
 </script>
 

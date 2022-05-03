@@ -40,7 +40,7 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
         Runtime
           .storage
           .onChanged
-          .removeListener(() => null);
+          .removeListener(cb);
       }
     }
   },
