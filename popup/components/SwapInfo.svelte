@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Big from 'big.js';
 	import { beforeUpdate } from 'svelte';
 
 	import dexStore from 'popup/store/dex';
@@ -12,6 +13,9 @@
 	import { formatNumber } from 'popup/filters/n-format';
 	import { convertRate } from 'popup/filters/convert-rate';
 
+
+  Big.PE = 99;
+
 	const dex = new ZIlPayDex();
 
   export let gasLimit = 0;
@@ -21,6 +25,7 @@
   $: gasFee = ($gasStore.gasPrice * gasLimit * $gasStore.multiplier) / 10**6;
   $: virtualParams = dex.getVirtualParams(pair);
   $: feeConverted = convertRate(rate, gasFee);
+  $: afterSlippage = dex.calcBigSlippage(pair[1].value, $dexStore.slippage);
 
   function hanldeSwpa() {
   }
@@ -62,9 +67,9 @@
       </p>
     </li>
     <li>
-      <b>After slippage</b>
+      <b>Received after slippage</b>
       <p>
-        312321 {pair[1].meta.symbol}
+        {afterSlippage} {pair[1].meta.symbol}
       </p>
     </li>
     <li>
@@ -72,7 +77,7 @@
       <div>
         <input
           type="number"
-          min="1"
+          min="0"
           max="50"
           bind:value={$dexStore.slippage}
           on:input={hanldeChangeSlippage}

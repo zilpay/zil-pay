@@ -7,7 +7,7 @@
  * Copyright (c) 2022 ZilPay
  */
 import type { ZRC2Token } from 'types/token';
-import type { MinParams, ParamItem } from 'types/transaction';
+import type { ParamItem } from 'types/transaction';
 
 import { get } from 'svelte/store';
 import Big from 'big.js';
@@ -206,6 +206,18 @@ export class ZIlPayDex {
     const _slippage = ZIlPayDex.FEE_DEMON - BigInt(this.state.slippage * 100);
 
     return amount * _slippage / ZIlPayDex.FEE_DEMON;
+  }
+
+  public calcBigSlippage(value: string, slippage: number) {
+    if (slippage <= 0 || !value || value === '0') {
+      return value;
+    }
+
+    const amount = Big(value);
+    const demon = Big(String(ZIlPayDex.FEE_DEMON));
+    const slip = demon.sub(slippage * 100);
+
+    return amount.mul(slip).div(demon).toString();
   }
 
   public getRealAmount(pair: TokenValue[]) {

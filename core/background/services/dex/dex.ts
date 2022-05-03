@@ -53,7 +53,7 @@ export class DexController {
   public async setSettings(blocks: number, slippage: number) {
     assert(TypeOf.isNumber(blocks), ErrorMessages.IncorrectParams);
     assert(TypeOf.isNumber(slippage), ErrorMessages.IncorrectParams);
-    assert(slippage > 0, ErrorMessages.IncorrectParams);
+    assert(slippage >= 0, ErrorMessages.IncorrectParams);
     assert(blocks > 0, ErrorMessages.IncorrectParams);
 
     this.#state.blocks = blocks;
