@@ -17,8 +17,6 @@
   export let gasLimit = 0;
   export let pair;
 
-  let fee = 3;
-
 	$: rate = $rateStore[$currencyStore];
   $: gasFee = ($gasStore.gasPrice * gasLimit * $gasStore.multiplier) / 10**6;
   $: virtualParams = dex.getVirtualParams(pair);

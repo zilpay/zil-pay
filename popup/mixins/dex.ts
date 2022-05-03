@@ -7,6 +7,7 @@
  * Copyright (c) 2022 ZilPay
  */
 import type { ZRC2Token } from 'types/token';
+import type { MinParams } from 'types/transaction';
 
 import { get } from 'svelte/store';
 import Big from 'big.js';
@@ -15,8 +16,12 @@ import dexStore from 'popup/store/dex';
 import zrcStore from 'popup/store/zrc';
 import currencyStore from 'popup/store/currency';
 import rateStore from 'popup/store/rate';
+import walletStore from 'popup/store/wallet';
+import gasStore from 'popup/store/gas';
 
 import { Contracts } from 'config/contracts';
+import { Runtime } from 'lib/runtime';
+import { sendToSignTx } from 'app/backend/sign';
 
 
 Big.PE = 99;
@@ -28,11 +33,22 @@ export interface TokenValue {
   converted?: number;
 }
 
+enum GasLimits {
+  SwapExactZILForTokens = 1575,
+  SwapExactTokensForZIL = 2090,
+  SwapExactTokensForTokens = 3092,
+  Default = 5000
+}
+
 export class ZIlPayDex {
   public static FEE_DEMON = BigInt(10000);
 
   public get state() {
     return get(dexStore);
+  }
+
+  public get gas() {
+    return get(gasStore);
   }
 
   public get tokens() {
@@ -43,11 +59,69 @@ export class ZIlPayDex {
     return get(rateStore)[get(currencyStore)];
   }
 
+  public get account() {
+    const { identities, selectedAddress } = get(walletStore);
+    return identities[selectedAddress];
+  }
+
+
+  public async swapExactZILForTokens(exact: Big, limit: Big, token: string) {
+    const { slippage, blocks } = this.state;
+    const deadlineBlock = '';
+
+    const { gasPrice } = this.gas;
+    const params: MinParams = {
+      toAddr: Contracts.SWAP,
+      amount: String(limit),
+      data: JSON.stringify({
+        _tag: 'SwapExactZILForTokens',
+        params: [
+          {
+            vname: 'token_address',
+            type: 'ByStr20',
+            value: token
+          },
+          {
+            vname: 'token_amount',
+            type: 'Uint128',
+            value: String(limit)
+          },
+          {
+            vname: 'min_zil_amount',
+            type: 'Uint128',
+            value: String(limit)
+          },
+          {
+            vname: 'deadline_block',
+            type: 'BNum',
+            value: deadlineBlock
+          },
+          {
+            vname: 'recipient_address',
+            type: 'ByStr20',
+            value: this.account.base16
+          }
+        ]
+      }),
+      code: '',
+      gasLimit: GasLimits.SwapExactZILForTokens,
+      gasPrice,
+      icon: Runtime.extension.getURL('/icons/icon128.png'),
+      title: 'Swap'
+    };
+    return sendToSignTx(params);
+  }
+
+  public async swapExactTokensForZIL() {}
+
+  public async swapExactTokensForTokens() {}
+
+
   public getRealAmount(pair: TokenValue[]) {
     let data = {
       amount: Big(0),
       converted: 0,
-      gas: 5000
+      gas: GasLimits.Default
     };
     const [exactToken, limitToken] = pair;
     const bigAmount = Big(exactToken.value).mul(this.toDecimails(exactToken.meta.decimals)).round();
@@ -61,7 +135,7 @@ export class ZIlPayDex {
 
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
       data.converted = localRate * Number(exactToken.value);
-      data.gas = 1575;
+      data.gas = GasLimits.SwapExactZILForTokens;
 
       return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
@@ -71,7 +145,7 @@ export class ZIlPayDex {
 
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
       data.converted = localRate * Number(data.amount);
-      data.gas = 2090;
+      data.gas = GasLimits.SwapExactTokensForZIL;
 
       return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
@@ -84,7 +158,7 @@ export class ZIlPayDex {
       const zilAmount = Big(String(zils)).div(this.toDecimails(ZIL.decimals));
       data.converted = localRate * Number(zilAmount);
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
-      data.gas = 3092;
+      data.gas = GasLimits.SwapExactTokensForTokens;
 
       return data;
     }
