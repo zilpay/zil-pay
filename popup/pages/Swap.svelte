@@ -2,7 +2,7 @@
 	import { _ } from 'popup/i18n';
 	import Big from 'big.js';
 	import { push } from 'svelte-spa-router';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TopBar from '../components/TopBar.svelte';
@@ -26,6 +26,7 @@
   import { formatNumber } from 'popup/filters/n-format';
 
 	import { ZIlPayDex } from 'popup/mixins/dex';
+	import { BrowserStorage } from 'lib/storage/browser-storage';
 
 	const dex = new ZIlPayDex();
 
@@ -94,11 +95,22 @@
 		modalIndex = -1;
 	}
 
+	function updatePool() {
+		const [inputToken, outputToken] = tokens;
+		const foundInput = $zrcStore.find((t) => t.base16 === inputToken.meta.base16);
+		const foundOutput = $zrcStore.find((t) => t.base16 === outputToken.meta.base16);
+
+		tokens[0].meta = foundInput;
+		tokens[1].meta = foundOutput;
+	}
+
 	async function hanldeOnRefresh() {
 		loading = true;
 		try {
 			await updateDexData();
 			await balanceUpdate();
+			updatePool();
+			hanldeOnInput(tokens[0].value, 0);
 		} catch {
 			/////
 		}
@@ -122,8 +134,25 @@
 		buttonLoading = false;
 	}
 
+	const storageObserver = BrowserStorage.subscribe(async(event) => {
+		if (event['blocknumber']) {
+			await balanceUpdate();
+
+			updatePool();
+
+			if (tokens[0]) {
+				hanldeOnInput(tokens[0].value, 0);
+			}
+		}
+	});
+
 	onMount(() => {
 		hanldeOnRefresh();
+		updatePool();
+	});
+
+	onDestroy(() => {
+		storageObserver.unsubscribe()
 	});
 </script>
 
