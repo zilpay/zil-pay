@@ -92,6 +92,8 @@
 		tokens[0].value = '0';
 		tokens[1].value = '0';
 
+		hanldeOnInput(tokens[0].value, 0);
+
 		modalIndex = -1;
 	}
 
