@@ -18,6 +18,10 @@ import rateStore from 'popup/store/rate';
 
 import { Contracts } from 'config/contracts';
 
+
+Big.PE = 99;
+
+
 export interface TokenValue {
   value: string;
   meta: ZRC2Token;
@@ -34,7 +38,7 @@ export class ZIlPayDex {
   public get tokens() {
     return get(zrcStore);
   }
-  
+
   public get localRate() {
     return get(rateStore)[get(currencyStore)];
   }
@@ -42,7 +46,8 @@ export class ZIlPayDex {
   public getRealAmount(pair: TokenValue[]) {
     let data = {
       amount: Big(0),
-      converted: 0
+      converted: 0,
+      gas: 5000
     };
     const [exactToken, limitToken] = pair;
     const bigAmount = Big(exactToken.value).mul(this.toDecimails(exactToken.meta.decimals)).round();
@@ -56,6 +61,7 @@ export class ZIlPayDex {
 
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
       data.converted = localRate * Number(exactToken.value);
+      data.gas = 1575;
 
       return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
@@ -65,6 +71,7 @@ export class ZIlPayDex {
 
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
       data.converted = localRate * Number(data.amount);
+      data.gas = 2090;
 
       return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
@@ -77,6 +84,7 @@ export class ZIlPayDex {
       const zilAmount = Big(String(zils)).div(this.toDecimails(ZIL.decimals));
       data.converted = localRate * Number(zilAmount);
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
+      data.gas = 3092;
 
       return data;
     }

@@ -34,6 +34,7 @@
 	];
 	let loading = false;
 	let modalIndex = -1;
+	let gasLimit = 0;
 	let tokens = [
 		{
 			value: '0',
@@ -57,9 +58,10 @@
 
 	function hanldeOnSwapTokens() {
 		tokens = tokens.reverse();
-		const { amount, converted } = dex.getRealAmount(tokens);
+		const { amount, converted, gas } = dex.getRealAmount(tokens);
 		tokens[1].value = String(amount);
 		tokens[1].converted = converted;
+		gasLimit = gas;
 	}
 
 	function hanldeOnInput(value: string, index: number) {
@@ -69,9 +71,10 @@
 			tokens[index].value = String(Big(0));
 		}
 
-		const { amount, converted } = dex.getRealAmount(tokens);
+		const { amount, converted, gas } = dex.getRealAmount(tokens);
 		tokens[1].value = String(amount);
 		tokens[1].converted = converted;
+		gasLimit = gas;
 	}
 
 	function hanldeOnSelect(index: number) {
@@ -167,6 +170,7 @@
 			/>
 			<SwapInfo
 				pair={tokens}
+				gasLimit={gasLimit}
 			/>
 			<button disabled={disabled}>
 				Review Order

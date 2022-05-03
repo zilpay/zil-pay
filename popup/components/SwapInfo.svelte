@@ -3,6 +3,7 @@
 
 	import dexStore from 'popup/store/dex';
   import currencyStore from 'popup/store/currency';
+	import gasStore from 'popup/store/gas';
 	import rateStore from 'popup/store/rate';
 
   import { setDexSettings } from 'popup/backend/settings';
@@ -13,16 +14,17 @@
 
 	const dex = new ZIlPayDex();
 
+  export let gasLimit = 0;
   export let pair;
 
   let fee = 3;
 
 	$: rate = $rateStore[$currencyStore];
+  $: gasFee = ($gasStore.gasPrice * gasLimit * $gasStore.multiplier) / 10**6;
   $: virtualParams = dex.getVirtualParams(pair);
-  $: feeConverted = convertRate(rate, fee);
+  $: feeConverted = convertRate(rate, gasFee);
 
   function hanldeSwpa() {
-    // virtualParams = dex.getVirtualParams(pair);
   }
 
   const hanldeChangeSlippage = (event) => {
@@ -58,7 +60,7 @@
     <li>
       <b>Transaction Fee</b>
       <p>
-        3ZIL <span>({formatNumber(feeConverted, $currencyStore)})</span>
+        {formatNumber(gasFee)}ZIL <span>({formatNumber(feeConverted, $currencyStore)})</span>
       </p>
     </li>
     <li>

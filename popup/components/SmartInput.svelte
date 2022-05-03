@@ -15,9 +15,9 @@
 	export let percents = [0, 10, 30, 50, 70, 100];
 	export let disabled = false;
   export let loading = false;
+	export let converted = null;
 	export let placeholder = '';
 	export let max = '0';
-	export let converted;
   export let img;
   export let symbol;
 	export let value;
