@@ -23,6 +23,13 @@ export async function selectNetwrok(net: string) {
   return state;
 }
 
+export async function getLatestBlockNumber() {
+  const data = await Message.signal(MTypePopup.GET_LATEST_BLOCK).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
 export async function changeConfig(config: object) {
   const data = await new Message({
     type: MTypePopup.SET_NET_CONFIG,

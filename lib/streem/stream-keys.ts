@@ -100,7 +100,9 @@ export const MTypePopup = {
   FROM_BECH32: `@/${app}/convert-from-bech32`,
 
   UPDATE_DEX_DATA: `@/${app}/update-dex-data`,
-  UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`
+  UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`,
+
+  GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
 };
 
 export const MTypeTab = {

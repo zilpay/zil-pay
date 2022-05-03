@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
 	import Big from 'big.js';
+	import { push } from 'svelte-spa-router';
 	import { onMount } from 'svelte';
 
 	import BottomTabs from '../components/BottomTabs.svelte';
@@ -33,6 +34,7 @@
 		'Swap To token'
 	];
 	let loading = false;
+	let buttonLoading = false;
 	let modalIndex = -1;
 	let gasLimit = 0;
 	let tokens = [
@@ -103,6 +105,23 @@
 		loading = false;
 	}
 
+	async function handleSubmit(e) {
+		e.preventDefault();
+		buttonLoading = true;
+
+		try {
+			await dex.swap(tokens);
+
+			buttonLoading = false;
+
+			push('/confirm');
+		} catch {
+			/// TODO: track errors.
+		}
+
+		buttonLoading = false;
+	}
+
 	onMount(() => {
 		hanldeOnRefresh();
 	});
@@ -129,7 +148,7 @@
 		on:refresh={hanldeOnRefresh}
 	/>
 	<main>
-		<form>
+		<form on:submit={handleSubmit}>
 			<div class="header">
 				<h3>
 					You Pay
@@ -172,7 +191,10 @@
 				pair={tokens}
 				gasLimit={gasLimit}
 			/>
-			<button disabled={disabled}>
+			<button
+				class:loading={buttonLoading}
+				disabled={disabled}
+			>
 				Review Order
 			</button>
 		</form>

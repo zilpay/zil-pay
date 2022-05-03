@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return true;
     }
     switch (msg.type) {
+      case MTypePopup.GET_LATEST_BLOCK:
+        core.netwrok.getLatestBlockNumber(sendResponse);
+        return true;
       case MTypePopup.UPDATE_DEX_DATA:
         core.settings.updateDexData(sendResponse);
         return true;

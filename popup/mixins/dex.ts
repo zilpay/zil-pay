@@ -7,7 +7,7 @@
  * Copyright (c) 2022 ZilPay
  */
 import type { ZRC2Token } from 'types/token';
-import type { MinParams } from 'types/transaction';
+import type { MinParams, ParamItem } from 'types/transaction';
 
 import { get } from 'svelte/store';
 import Big from 'big.js';
@@ -22,6 +22,7 @@ import gasStore from 'popup/store/gas';
 import { Contracts } from 'config/contracts';
 import { Runtime } from 'lib/runtime';
 import { sendToSignTx } from 'app/backend/sign';
+import { getLatestBlockNumber } from 'app/backend/netwrok';
 
 
 Big.PE = 99;
@@ -64,58 +65,148 @@ export class ZIlPayDex {
     return identities[selectedAddress];
   }
 
+  public async swap(pair: TokenValue[]) {
+    const [exactToken, limitToken] = pair;
+    const limit = this.#valueToBigInt(limitToken.value, limitToken.meta);
+    const exact = this.#valueToBigInt(exactToken.value, exactToken.meta);
+    const { blocknumber } = await getLatestBlockNumber();
+    const deadlineBlock = blocknumber + this.state.blocks;
+    const limitAfterSlippage = this.afterSlippage(limit);
 
-  public async swapExactZILForTokens(exact: Big, limit: Big, token: string) {
-    const { slippage, blocks } = this.state;
-    const deadlineBlock = '';
+    if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
+      return this.swapExactZILForTokens(
+        exact,
+        limitAfterSlippage,
+        limitToken.meta.base16,
+        deadlineBlock
+      );
+    } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      return this.swapExactTokensForZIL(
+        exact,
+        limitAfterSlippage,
+        exactToken.meta.base16,
+        deadlineBlock
+      );
+    } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      return this.swapExactTokensForTokens(
+        exact,
+        limitAfterSlippage,
+        deadlineBlock,
+        exactToken.meta.base16,
+        limitToken.meta.base16
+      );
+    }
 
-    const { gasPrice } = this.gas;
-    const params: MinParams = {
-      toAddr: Contracts.SWAP,
-      amount: String(limit),
-      data: JSON.stringify({
-        _tag: 'SwapExactZILForTokens',
-        params: [
-          {
-            vname: 'token_address',
-            type: 'ByStr20',
-            value: token
-          },
-          {
-            vname: 'token_amount',
-            type: 'Uint128',
-            value: String(limit)
-          },
-          {
-            vname: 'min_zil_amount',
-            type: 'Uint128',
-            value: String(limit)
-          },
-          {
-            vname: 'deadline_block',
-            type: 'BNum',
-            value: deadlineBlock
-          },
-          {
-            vname: 'recipient_address',
-            type: 'ByStr20',
-            value: this.account.base16
-          }
-        ]
-      }),
-      code: '',
-      gasLimit: GasLimits.SwapExactZILForTokens,
-      gasPrice,
-      icon: Runtime.extension.getURL('/icons/icon128.png'),
-      title: 'Swap'
-    };
-    return sendToSignTx(params);
+    throw new Error('incorrect Pair');
   }
 
-  public async swapExactTokensForZIL() {}
 
-  public async swapExactTokensForTokens() {}
+  public async swapExactZILForTokens(exact: bigint, limit: bigint, token: string, deadlineBlock: number) {
+    const tag = 'SwapExactZILForTokens';
+    const params = [
+      {
+        vname: 'token_address',
+        type: 'ByStr20',
+        value: token
+      },
+      {
+        vname: 'min_token_amount',
+        type: 'Uint128',
+        value: String(limit)
+      },
+      {
+        vname: 'deadline_block',
+        type: 'BNum',
+        value: String(deadlineBlock)
+      },
+      {
+        vname: 'recipient_address',
+        type: 'ByStr20',
+        value: this.account.base16
+      }
+    ];
+    return this.#sendParams(params, tag, GasLimits.SwapExactZILForTokens, String(exact));
+  }
 
+  public async swapExactTokensForZIL(exact: bigint, limit: bigint, token: string, deadlineBlock: number) {
+    const tag = 'SwapExactTokensForZIL';
+    const params = [
+      {
+        vname: 'token_address',
+        type: 'ByStr20',
+        value: token
+      },
+      {
+        vname: 'token_amount',
+        type: 'Uint128',
+        value: String(exact)
+      },
+      {
+        vname: 'min_zil_amount',
+        type: 'Uint128',
+        value: String(limit)
+      },
+      {
+        vname: 'deadline_block',
+        type: 'BNum',
+        value: String(deadlineBlock)
+      },
+      {
+        vname: 'recipient_address',
+        type: 'ByStr20',
+        value: this.account.base16
+      }
+    ];
+    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForZIL, String(0));
+  }
+
+  public async swapExactTokensForTokens(exact: bigint, limit: bigint, deadlineBlock: number, inputToken: string, outputToken: string) {
+    const tag = 'SwapExactTokensForTokens';
+    const params = [
+      {
+        vname: 'token0_address',
+        type: 'ByStr20',
+        value: inputToken
+      },
+      {
+        vname: 'token1_address',
+        type: 'ByStr20',
+        value: outputToken
+      },
+      {
+        vname: 'token0_amount',
+        type: 'Uint128',
+        value: String(exact)
+      },
+      {
+        vname: 'min_token1_amount',
+        type: 'Uint128',
+        value: String(limit)
+      },
+      {
+        vname: 'deadline_block',
+        type: 'BNum',
+        value: String(deadlineBlock)
+      },
+      {
+        vname: 'recipient_address',
+        type: 'ByStr20',
+        value: this.account.base16
+      }
+    ];
+    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForTokens, String(0));
+  }
+
+
+  public afterSlippage(amount: bigint) {
+    if (this.state.slippage <= 0) {
+      return amount;
+    }
+
+    const _slippage = ZIlPayDex.FEE_DEMON - BigInt(this.state.slippage * 100);
+
+    return amount * _slippage / ZIlPayDex.FEE_DEMON;
+  }
 
   public getRealAmount(pair: TokenValue[]) {
     let data = {
@@ -243,6 +334,29 @@ export class ZIlPayDex {
     return Big(10).pow(decimals);
   }
 
+
+  #sendParams(params: ParamItem[], tag: string, gasLimit: GasLimits, amount: string) {
+    const { gasPrice } = this.gas;
+    return sendToSignTx({
+      amount,
+      toAddr: Contracts.SWAP,
+      data: JSON.stringify({
+        params,
+        _tag: tag
+      }),
+      code: '',
+      gasLimit: GasLimits.SwapExactZILForTokens,
+      gasPrice,
+      icon: Runtime.extension.getURL('/icons/icon128.png'),
+      title: 'Swap'
+    });
+  }
+
+  #valueToBigInt(amount: string, token: ZRC2Token) {
+    return BigInt(
+      Big(amount).mul(this.toDecimails(token.decimals)).round().toString()
+    );
+  }
 
   #zilToTokens(amount: bigint, inputPool: bigint[]) {
     const [zilReserve, tokenReserve] = inputPool;
