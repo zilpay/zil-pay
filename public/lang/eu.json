@@ -379,7 +379,26 @@
     "version": "versioon"
   },
   "swap": {
-    "title": "Vaheta vorm"
+    "modals": {
+      "from": "Vaheta märgilt",
+      "to": "Vaheta märgiga"
+    },
+    "form": {
+      "pool": "Lisama-Pool",
+      "from": "Maksad",
+      "to": "Sa saad",
+      "button": "Vaadake tellimus üle",
+      "link": "Kasutustingimused"
+    },
+    "info": {
+      "rate": "Hinda",
+      "price_impact": "Hinna mõju",
+      "fee": "Ülekandetasu",
+      "after_slippage": "Saabus pärast libisemist",
+      "slippage": "Libisemise tolerants",
+      "blocks": "Blokeerib ajalõpu",
+      "tx_blocks": "TX-Plokid"
+    }
   },
   "collections": {
     "errors": {

@@ -379,7 +379,26 @@
     "version": "version"
   },
   "swap": {
-    "title": "Swap form"
+    "modals": {
+      "from": "Swap From token",
+      "to": "Swap To token"
+    },
+    "form": {
+      "pool": "Add Pool",
+      "from": "You Pay",
+      "to": "You Receive",
+      "button": "Review Order",
+      "link": "Terms of Service"
+    },
+    "info": {
+      "rate": "Rate",
+      "price_impact": "Price Impact",
+      "fee": "Transaction Fee",
+      "after_slippage": "Received after slippage",
+      "slippage": "Slippage Tolerance",
+      "blocks": "Blocks timeout",
+      "tx_blocks": "TX-Blocks"
+    }
   },
   "collections": {
     "errors": {

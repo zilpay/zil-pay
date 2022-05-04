@@ -31,8 +31,8 @@
 	const dex = new ZIlPayDex();
 
   let modals = [
-		'Swap From token',
-		'Swap To token'
+		$_('swap.modals.from'),
+		$_('swap.modals.to')
 	];
 	let loading = false;
 	let buttonLoading = false;
@@ -182,13 +182,13 @@
 		<form on:submit={handleSubmit}>
 			<div class="header">
 				<h3>
-					You Pay
+					{$_('swap.form.from')}
 				</h3>
 				<a
 					href="https://zilpay.io/pool"
 					target="_blank"
 				>
-					Add Pool
+					{$_('swap.form.pool')}
 				</a>
 			</div>
 			<Smartinput
@@ -202,7 +202,7 @@
 			/>
 			<div class="seporate">
 				<h3>
-					You Receive
+					{$_('swap.form.to')}
 				</h3>
 				<span on:click={hanldeOnSwapTokens}>
 					<SwapIcon className="swap-icon"/>
@@ -226,7 +226,7 @@
 				class:loading={buttonLoading}
 				disabled={disabled}
 			>
-				Review Order
+				{$_('swap.form.button')}
 			</button>
 		</form>
 		<a
@@ -234,7 +234,7 @@
 			target="_blank"
 		>
 			<p>
-				Terms of Service
+				{$_('swap.form.link')}
 			</p>
 		</a>
 	</main>

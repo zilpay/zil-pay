@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { _ } from 'popup/i18n';
   import Big from 'big.js';
 	import { beforeUpdate } from 'svelte';
 
@@ -46,7 +47,9 @@
 <div class="info">
   <ul>
     <li>
-      <b>Rate</b>
+      <b>
+        {$_('swap.info.rate')}
+      </b>
       <p
         class="pointer"
         on:click={hanldeSwpa}
@@ -55,25 +58,33 @@
       </p>
     </li>
     <li>
-      <b>Price Impact</b>
+      <b>
+        {$_('swap.info.price_impact')}
+      </b>
       <p>
         {virtualParams.impact} <span>%</span>
       </p>
     </li>
     <li>
-      <b>Transaction Fee</b>
+      <b>
+        {$_('swap.info.fee')}
+      </b>
       <p>
         {formatNumber(gasFee)}ZIL <span>({formatNumber(feeConverted, $currencyStore)})</span>
       </p>
     </li>
     <li>
-      <b>Received after slippage</b>
+      <b>
+        {$_('swap.info.after_slippage')}
+      </b>
       <p>
         {afterSlippage} {pair[1].meta.symbol}
       </p>
     </li>
     <li>
-      <b>Slippage Tolerance</b>
+      <b>
+        {$_('swap.info.slippage')}
+      </b>
       <div>
         <input
           type="number"
@@ -88,7 +99,9 @@
       </div>
     </li>
     <li>
-      <b>Blocks timeout</b>
+      <b>
+        {$_('swap.info.blocks')}
+      </b>
       <div>
         <input
           type="number"
@@ -97,7 +110,7 @@
           on:input={hanldeChangeBlock}
         />
         <b>
-          TX-Blocks
+          {$_('swap.info.tx_blocks')}
         </b>
       </div>
     </li>

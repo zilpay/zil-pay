@@ -379,7 +379,26 @@
     "version": "版本"
   },
   "swap": {
-    "title": "交换表格"
+    "modals": {
+      "from": "从令牌交换",
+      "to": "换成代币"
+    },
+    "form": {
+      "pool": "添加 Pool",
+      "from": "你付钱",
+      "to": "你收到",
+      "button": "查看订单",
+      "link": "服务条款"
+    },
+    "info": {
+      "rate": "速度",
+      "price_impact": "价格影响",
+      "fee": "手续费",
+      "after_slippage": "滑点后收到",
+      "slippage": "滑点公差",
+      "blocks": "块超时",
+      "tx_blocks": "TX-块"
+    }
   },
   "collections": {
     "errors": {
