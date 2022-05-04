@@ -123,6 +123,7 @@ export class ZRC2Controller {
     let pool: string[];
     let balance = '0';
     let rate = 0;
+    let allowances = {};
     const address = fromBech32Address(bech32);
     const addr = tohexString(address);
     const tokenAddressBase16 = address.toLowerCase();
@@ -142,6 +143,13 @@ export class ZRC2Controller {
           ZRC2Fields.Pools,
           [tokenAddressBase16]
         ]
+      ),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [addr, ZRC2Fields.Allowances, [
+          userAddress,
+          Contracts.SWAP
+        ]]
       )
     ];
     const replies = await this.#zilliqa.sendJson(...identities);
@@ -161,16 +169,20 @@ export class ZRC2Controller {
       );
     }
 
+    if (replies[3].result) {
+      allowances = replies[3].result[ZRC2Fields.Allowances][userAddress];
+    }
+
     return {
       balance,
       bech32,
       rate,
       pool,
+      allowances,
       name: zrc.name,
       symbol: zrc.symbol,
       decimals: zrc.decimals,
-      base16: address,
-      allowances: {}
+      base16: address
     };
   }
 
