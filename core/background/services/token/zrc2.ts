@@ -36,7 +36,6 @@ export const ZIL = {
   name: 'Zilliqa',
   symbol: 'ZIL',
   rate: 1,
-  allowances: {},
   pool: []
 };
 export const ZLP = {
@@ -46,7 +45,6 @@ export const ZLP = {
   name: 'ZilPay wallet',
   symbol: 'ZLP',
   rate: 0,
-  allowances: {},
   pool: []
 };
 const INIT = {
@@ -123,7 +121,6 @@ export class ZRC2Controller {
     let pool: string[];
     let balance = '0';
     let rate = 0;
-    let allowances = {};
     const address = fromBech32Address(bech32);
     const addr = tohexString(address);
     const tokenAddressBase16 = address.toLowerCase();
@@ -143,13 +140,6 @@ export class ZRC2Controller {
           ZRC2Fields.Pools,
           [tokenAddressBase16]
         ]
-      ),
-      this.#zilliqa.provider.buildBody(
-        Methods.GetSmartContractSubState,
-        [addr, ZRC2Fields.Allowances, [
-          userAddress,
-          Contracts.SWAP
-        ]]
       )
     ];
     const replies = await this.#zilliqa.sendJson(...identities);
@@ -169,16 +159,11 @@ export class ZRC2Controller {
       );
     }
 
-    if (replies[3].result) {
-      allowances = replies[3].result[ZRC2Fields.Allowances][userAddress];
-    }
-
     return {
       balance,
       bech32,
       rate,
       pool,
-      allowances,
       name: zrc.name,
       symbol: zrc.symbol,
       decimals: zrc.decimals,
@@ -207,14 +192,7 @@ export class ZRC2Controller {
       Methods.GetSmartContractSubState,
       [tohexString(Contracts.SWAP), ZRC2Fields.Pools, [token.base16.toLowerCase()]]
     ));
-    const allowances = onlyZRC2.map((token) => this.#zilliqa.provider.buildBody(
-      Methods.GetSmartContractSubState,
-      [tohexString(token.base16), ZRC2Fields.Allowances, [
-        base16Owner,
-        Contracts.SWAP
-      ]]
-    ));
-    const identities = [...balanceIdentities, ...poolIdentities, ...allowances];
+    const identities = [...balanceIdentities, ...poolIdentities];
     let replies = await this.#zilliqa.sendJson(...identities);
 
     if (!Array.isArray(replies)) {
@@ -243,7 +221,6 @@ export class ZRC2Controller {
       }
 
       const pool = replies[index + poolIdentities.length];
-      const allowance = replies[index + poolIdentities.length + balanceIdentities.length - 1];
 
       if (pool.result && pool.result[ZRC2Fields.Pools] && pool.result[ZRC2Fields.Pools]) {
         const poolPair = pool.result[ZRC2Fields.Pools][base16]['arguments'];
@@ -254,15 +231,6 @@ export class ZRC2Controller {
           tokenReserve,
           token.decimals
         );
-      }
-
-      if (allowance.result && allowance.result[ZRC2Fields.Allowances]) {
-        const allowanceAmount = allowance.result[ZRC2Fields.Allowances][base16Owner];
-
-        this.identities[index].allowances = {
-          ...this.identities[index].allowances,
-          ...allowanceAmount
-        };
       }
     }
 
