@@ -25,6 +25,7 @@ import { TypeOf } from 'lib/type/type-checker';
 
 export enum ZRC2Fields {
   Balances = 'balances',
+  Allowances = 'allowances',
   Pools = 'pools',
   LiquidityFee = 'liquidity_fee',
   ProtocolFee = 'protocol_fee'

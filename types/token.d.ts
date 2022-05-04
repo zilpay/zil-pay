@@ -15,6 +15,9 @@ export interface ZRC2Token {
   bech32: string;
   rate: number;
   pool?: string[];
+  allowances?: {
+    [token: string]: string;
+  };
 }
 
 
@@ -33,6 +36,9 @@ export interface ZRC2Info {
   base16: string;
   rate: number;
   pool?: string[];
+  allowances: {
+    [token: string]: string;
+  };
 }
 
 export interface Attribute {
