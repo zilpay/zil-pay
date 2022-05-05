@@ -396,7 +396,6 @@ export class ZIlPayDex {
 
   #sendParams(params: ParamItem[], tag: string, gasLimit: GasLimits, amount: string, approve?: ParamsForTokenApprove) {
     const { gasPrice } = this.gas;
-    console.log(approve);
     return sendToSignTx({
       approve,
       amount,

@@ -109,38 +109,12 @@ export class ZilliqaControl {
     return Number(result);
   }
 
-  public async detectSacmAddress(address: string) {
-    const field = 'balances';
-    let isScam = false;
-
-    address = tohexString(address);
-
-    try {
-      const result = await this.getSmartContractSubState(
-        Contracts.SCAM,
-        field,
-        [address]
-      );
-
-      if (result && result[field] && result[field][address]) {
-        isScam = Number(result[field][address]) > 0;
-      }
-
-    } catch {
-      //
-    }
-
-    assert(!isScam, ErrorMessages.Scam);
-  }
-
-  public async send(tx: Transaction) {
-    await this.detectSacmAddress(tx.toAddr);
-
-    const body = this.provider.buildBody(
+  public async send(txns: Transaction[]) {
+    const bodies = txns.map((tx) => this.provider.buildBody(
       Methods.CreateTransaction,
       [tx.self]
-    );
-    const request = this.provider.json(body);
+    ));
+    const request = this.provider.json(...bodies);
     const responce = await fetch(this.#network.provider, request);
     const { error, result } = await responce.json();
 

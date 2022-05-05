@@ -12,8 +12,10 @@ import type {
   MessageParams,
   MessagePayload,
   MinParams,
+  ParamsForTokenApprove,
   TransactionForConfirm
 } from 'types/transaction';
+import type { Account } from 'types/account';
 
 import { Transaction } from 'background/services/transactions/tx-builder';
 import { StatusCodes, TransactionTypes } from 'background/services/transactions';
@@ -227,9 +229,20 @@ export class ZilPayTransaction {
       await this.#core.account.select(accIndex);
       await this.#core.transactions.sync();
 
+      const transactions: Transaction[] = [];
       const account = this.#core.account.selectedAccount;
-      const nonce = isNaN(params.nonce) ?
+      let nonce = isNaN(params.nonce) ?
         await this.#core.nonceCounter.nextNonce(account) : params.nonce;
+
+      if (params.approve) {
+        transactions.push(this.#increaseAllowance(
+          params,
+          account,
+          nonce
+        ));
+        nonce += 1;
+      }
+
       const newTx = new Transaction(
         params.amount,
         params.gasLimit,
@@ -242,13 +255,20 @@ export class ZilPayTransaction {
         params.data
       );
 
+      transactions.push(newTx);
+
       newTx.cancel = params.cancel;
 
       if (!params.version) {
         const version = await this.#core.zilliqa.getNetworkId();
-        newTx.setVersion(version, this.#core.netwrok);
+
+        for (const tx of transactions) {
+          tx.setVersion(version, this.#core.netwrok);
+        }
       } else {
-        newTx.setVersion(params.version, this.#core.netwrok);
+        for (const tx of transactions) {
+          tx.setVersion(params.version, this.#core.netwrok);
+        }
       }
 
       if (newTx.tag === TransactionTypes.Transfer) {
@@ -257,49 +277,62 @@ export class ZilPayTransaction {
 
       if (account.type === AccountTypes.Ledger) {
         const transport = await this.#core.ledger.init(account.productId);
-        newTx.signature = await transport.signTxn(account.index, newTx);
+
+        for (const tx of transactions) {
+          tx.signature = await transport.signTxn(account.index, tx);
+        }
       } else {
         const keyPair = await this.#core.account.getKeyPair(accIndex);
-        newTx.sign(keyPair.privKey);
+
+        for (const tx of transactions) {
+          tx.sign(keyPair.privKey);
+        }
       }
 
-      const result = await this.#core.zilliqa.send(newTx);
+      let results = await this.#core.zilliqa.send(transactions);
 
-      newTx.setHash(result.TranID);
+      if (Array.isArray(results)) {
+        results = [results];
+      }
 
-      await this.#core.transactions.addHistory({
-        token,
-        confirmed: false,
-        timestamp: new Date().getTime(),
-        toAddr: newTx.toAddr,
-        recipient: newTx.recipient,
-        status: StatusCodes.Pending,
-        teg: newTx.tag,
-        tokenAmount: newTx.tokenAmount,
-        amount: newTx.amount,
-        type: newTx.transactionType,
-        fee: newTx.fee,
-        nonce: newTx.nonce,
-        from: account.bech32,
-        hash: newTx.hash,
-        data: newTx.data,
-        code: newTx.code,
-        gasLimit: params.gasLimit,
-        gasPrice: params.gasPrice,
-        title: params.title,
-        icon: params.icon
-      });
+      for (const result of results) {
+        newTx.setHash(result.TranID);
+
+        await this.#core.transactions.addHistory({
+          token,
+          confirmed: false,
+          timestamp: new Date().getTime(),
+          toAddr: newTx.toAddr,
+          recipient: newTx.recipient,
+          status: StatusCodes.Pending,
+          teg: newTx.tag,
+          tokenAmount: newTx.tokenAmount,
+          amount: newTx.amount,
+          type: newTx.transactionType,
+          fee: newTx.fee,
+          nonce: newTx.nonce,
+          from: account.bech32,
+          hash: newTx.hash,
+          data: newTx.data,
+          code: newTx.code,
+          gasLimit: params.gasLimit,
+          gasPrice: params.gasPrice,
+          title: params.title,
+          icon: params.icon
+        });
+      }
+
       await this.#core.transactions.rmConfirm(txIndex);
 
-      if (params.uuid) {
+      if (params.uuid && results[0]) {
         await new TabsMessage({
           type: MTypeTab.TX_RESULT,
           payload: {
             uuid: params.uuid,
             resolve: {
               ...newTx.self,
-              ContractAddress: result.ContractAddress,
-              Info: result.Info,
+              ContractAddress: results[0].ContractAddress,
+              Info: results[0].Info,
               from: account.base16
             }
           }
@@ -440,5 +473,34 @@ export class ZilPayTransaction {
         bech32: ZIL.bech32
       };
     }
+  }
+
+  #increaseAllowance(params: TransactionForConfirm, account: Account, nonce: number) {
+    const data = JSON.stringify({
+      _tag: 'IncreaseAllowance',
+      params: [
+        {
+          vname: 'spender',
+          type: 'ByStr20',
+          value: String(params.approve.spender).toLowerCase()
+        },
+        {
+          vname: 'amount',
+          type: 'Uint128',
+          value: String(params.approve.amount)
+        }
+      ]
+    });
+    return new Transaction(
+      '0',
+      params.gasLimit,
+      params.gasPrice,
+      account,
+      params.approve.token,
+      this.#core.netwrok.selected,
+      nonce,
+      '',
+      data
+    );
   }
 }
