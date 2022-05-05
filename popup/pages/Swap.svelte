@@ -38,15 +38,18 @@
 	let buttonLoading = false;
 	let modalIndex = -1;
 	let gasLimit = 0;
+	let approved = true;
 	let tokens = [
 		{
 			value: '0',
-			meta: $zrcStore[0]
+			meta: $zrcStore[0],
+			approved: Big(-1)
 		},
 		{
 			value: '0',
 			converted: 0,
-			meta: $zrcStore[1]
+			meta: $zrcStore[1],
+			approved: Big(0)
 		}
 	];
 
@@ -59,12 +62,14 @@
 	$: disabled = loading || Number(tokens[0].value) <= 0;
 
 
-	function hanldeOnSwapTokens() {
+	async function hanldeOnSwapTokens() {
 		tokens = tokens.reverse();
 		const { amount, converted, gas } = dex.getRealAmount(tokens);
 		tokens[1].value = String(amount);
 		tokens[1].converted = converted;
 		gasLimit = gas;
+
+		tokens[0].approved = await dex.isAllowed(tokens);
 	}
 
 	function hanldeOnInput(value: string, index: number) {
@@ -84,7 +89,7 @@
 		modalIndex = index;
 	}
 
-	function onSelectToken({ detail }) {
+	async function onSelectToken({ detail }) {
 		const token = listedTokens[detail];
 
 		tokens[modalIndex].meta = token;
@@ -95,6 +100,8 @@
 		hanldeOnInput(tokens[0].value, 0);
 
 		modalIndex = -1;
+
+		tokens[0].approved = await dex.isAllowed(tokens);
 	}
 
 	function updatePool() {

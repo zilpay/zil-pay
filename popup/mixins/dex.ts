@@ -33,12 +33,14 @@ export interface TokenValue {
   value: string;
   meta: ZRC2Token;
   converted?: number;
+  approved: Big;
 }
 
 enum GasLimits {
   SwapExactZILForTokens = 1575,
   SwapExactTokensForZIL = 2090,
   SwapExactTokensForTokens = 3092,
+  IncreaseAllowance = 500,
   Default = 5000
 }
 
@@ -201,6 +203,17 @@ export class ZIlPayDex {
     return this.#sendParams(params, tag, GasLimits.SwapExactTokensForTokens, String(0));
   }
 
+  public async isAllowed(pair: TokenValue[]) {
+    const [exactToken] = pair;
+
+    if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
+      return Big(-1);
+    }
+
+    const allowances = Big(await getAllowancesForSwap(exactToken.meta.base16));
+    return allowances.div(this.toDecimails(exactToken.meta.decimals));
+  }
+
 
   public afterSlippage(amount: bigint) {
     if (this.state.slippage <= 0) {
@@ -231,7 +244,8 @@ export class ZIlPayDex {
       gas: GasLimits.Default
     };
     const [exactToken, limitToken] = pair;
-    const bigAmount = Big(exactToken.value).mul(this.toDecimails(exactToken.meta.decimals)).round();
+    const exactAmount = Big(exactToken.value);
+    const bigAmount = exactAmount.mul(this.toDecimails(exactToken.meta.decimals)).round();
     const _amount = BigInt(String(bigAmount));
     const localRate = Number(this.localRate) || 0;
 
@@ -254,6 +268,10 @@ export class ZIlPayDex {
       data.converted = localRate * Number(data.amount);
       data.gas = GasLimits.SwapExactTokensForZIL;
 
+      if (exactToken.approved.lt(exactAmount)) {
+        data.gas += GasLimits.IncreaseAllowance;
+      }
+
       return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const [ZIL] = this.tokens;
@@ -261,11 +279,15 @@ export class ZIlPayDex {
       const outputPool = limitToken.meta.pool.map(BigInt);
       const [zils, _limitAmount] = this.#tokensToTokens(_amount, inputPool, outputPool);
       const bigLimitAmount = Big(String(_limitAmount));
-
       const zilAmount = Big(String(zils)).div(this.toDecimails(ZIL.decimals));
+
       data.converted = localRate * Number(zilAmount);
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
       data.gas = GasLimits.SwapExactTokensForTokens;
+
+      if (exactToken.approved.lt(exactAmount)) {
+        data.gas += GasLimits.IncreaseAllowance;
+      }
 
       return data;
     }
