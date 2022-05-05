@@ -84,9 +84,6 @@ export class ZIlPayDex {
         deadlineBlock
       );
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
-      const allowances = await getAllowancesForSwap(exactToken.meta.base16);
-
-      console.log(allowances);
       return this.swapExactTokensForZIL(
         exact,
         limitAfterSlippage,
