@@ -52,6 +52,12 @@ export interface Transition {
   msg: unknown
 }
 
+export interface ParamsForTokenApprove {
+  spender: string;
+  amount: string;
+  token: string;
+}
+
 export interface MinParams {
   amount: string;
   code: string;
@@ -66,6 +72,7 @@ export interface MinParams {
   title?: string;
   icon?: string;
   cancel?: boolean;
+  approve?: ParamsForTokenApprove;
 }
 
 export interface TransactionParams extends TxParams {
