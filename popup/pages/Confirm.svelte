@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import { push } from 'svelte-spa-router';
+	import { push, pop } from 'svelte-spa-router';
 	import { fade } from "svelte/transition";
 
 	import { QA } from 'popup/config/gas';
@@ -67,16 +67,16 @@
 		}
 		loading = false;
 	};
-	const onNextTx = async () => {
+	const onNextTx = () => {
 		const isExtends = Boolean(tx.uuid);
 		if (list.length === 0) {
 			if (isExtends) {
 				
 				if (url.searchParams.has('type')) {
-					await closePopup();
+					return closePopup();
 				}
 
-				push('/');
+				pop();
 				
 				return;
 			}
@@ -86,7 +86,7 @@
 			tx = $transactionsStore.forConfirm[txIndex];
 			startGasPrice = Number(tx.gasPrice);
 
-			await onUpdateParams();
+			return onUpdateParams();
 		}
 	};
 

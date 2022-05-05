@@ -146,6 +146,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.RM_TOKEN:
         core.zrc.removeToken(msg.payload.index, sendResponse);
         return true;
+      case MTypePopup.GET_ZRC2_ALLOWANCES_FOR_SWAP:
+        core.zrc.getZRC2AllowancesForSwap(msg.payload, sendResponse);
+        return true;
       case MTypePopup.UPDATE_NFT_LIST:
         core.zrc.updateNFTList(sendResponse);
         return true;

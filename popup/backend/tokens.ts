@@ -36,6 +36,14 @@ export async function addZRC2Token(token: ZRC2Info) {
   return state;
 }
 
+export async function getAllowancesForSwap(token: string) {
+  const data = await new Message({
+    type: MTypePopup.GET_ZRC2_ALLOWANCES_FOR_SWAP,
+    payload: token
+  }).send();
+  return warpMessage(data);
+}
+
 export async function removeZRC2Token(index: number) {
   const data = await new Message({
     type: MTypePopup.RM_TOKEN,

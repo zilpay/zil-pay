@@ -23,6 +23,7 @@ import { Contracts } from 'config/contracts';
 import { Runtime } from 'lib/runtime';
 import { sendToSignTx } from 'app/backend/sign';
 import { getLatestBlockNumber } from 'app/backend/netwrok';
+import { getAllowancesForSwap } from 'app/backend/tokens';
 
 
 Big.PE = 99;
@@ -81,6 +82,9 @@ export class ZIlPayDex {
         deadlineBlock
       );
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
+      const allowances = await getAllowancesForSwap(exactToken.meta.base16);
+
+      console.log(allowances);
       return this.swapExactTokensForZIL(
         exact,
         limitAfterSlippage,

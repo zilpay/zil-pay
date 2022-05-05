@@ -78,6 +78,25 @@ export class ZRC2Controller {
     this.#account.initZRC(this);
   }
 
+  public async getAllowances(contract: string, token: string, owner: string) {
+    owner = String(owner).toLowerCase();
+    contract = String(contract).toLowerCase();
+
+    const identities = [
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [tohexString(token), ZRC2Fields.Allowances, [owner, contract]]
+      )
+    ];
+    const res = await this.#zilliqa.sendJson(...identities);
+
+    if (res && res.result && res.result[ZRC2Fields.Allowances]) {
+      return res.result[ZRC2Fields.Allowances][owner][contract];
+    }
+
+    return '0';
+  }
+
   public async remove(index: number) {
     assert(index >= 2, ErrorMessages.OutOfIndex);
 
@@ -99,8 +118,7 @@ export class ZRC2Controller {
       base16: token.base16,
       bech32: token.bech32,
       rate: token.rate || 0,
-      pool: token.pool,
-      allowances: token.allowances
+      pool: token.pool
     };
     this.#isUnique(newToken);
     this.#identities.push(newToken);

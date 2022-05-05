@@ -52,6 +52,7 @@ export const MTypePopup = {
   GET_ZRC2_STATE: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
   RM_TOKEN: `@/${app}/remove-token`,
+  GET_ZRC2_ALLOWANCES_FOR_SWAP: `@/${app}/get-zrc2-allowances-for-swap`,
 
   UPDATE_NFT_LIST: `@/${app}/update-nft-list`,
   GET_NFT_LIST: `@/${app}/get-nft-list`,
