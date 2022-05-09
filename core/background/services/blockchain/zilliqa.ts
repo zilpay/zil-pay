@@ -109,12 +109,12 @@ export class ZilliqaControl {
     return Number(result);
   }
 
-  public async send(txns: Transaction[]) {
-    const bodies = txns.map((tx) => this.provider.buildBody(
+  public async send(tx: Transaction) {
+    const body = this.provider.buildBody(
       Methods.CreateTransaction,
       [tx.self]
-    ));
-    const request = this.provider.json(...bodies);
+    );
+    const request = this.provider.json(body);
     const responce = await fetch(this.#network.provider, request);
     const { error, result } = await responce.json();
 
