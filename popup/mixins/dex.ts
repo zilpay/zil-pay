@@ -7,7 +7,7 @@
  * Copyright (c) 2022 ZilPay
  */
 import type { ZRC2Token } from 'types/token';
-import type { ParamItem, ParamsForTokenApprove } from 'types/transaction';
+import type { ParamItem } from 'types/transaction';
 
 import { get } from 'svelte/store';
 import Big from 'big.js';
@@ -77,31 +77,47 @@ export class ZIlPayDex {
     const limitAfterSlippage = this.afterSlippage(limit);
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
-      return this.swapExactZILForTokens(
+      this.swapExactZILForTokens(
         exact,
         limitAfterSlippage,
         limitToken.meta.base16,
         deadlineBlock
       );
+
+      return;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const approved = exactToken.approved.gte(Big(exactToken.value));
-      return this.swapExactTokensForZIL(
+
+      this.swapExactTokensForZIL(
         exact,
         limitAfterSlippage,
         exactToken.meta.base16,
-        deadlineBlock,
-        !approved
+        deadlineBlock
       );
+
+      if (approved) {
+        const balance = this.account.zrc2[exactToken.meta.base16];
+        await this.increaseAllowance(Contracts.SWAP, balance, exactToken.meta.base16);
+      }
+
+      return;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const approved = exactToken.approved.gte(Big(exactToken.value));
-      return this.swapExactTokensForTokens(
+
+      this.swapExactTokensForTokens(
         exact,
         limitAfterSlippage,
         deadlineBlock,
         exactToken.meta.base16,
-        limitToken.meta.base16,
-        !approved
+        limitToken.meta.base16
       );
+
+      if (approved) {
+        const balance = this.account.zrc2[exactToken.meta.base16];
+        await this.increaseAllowance(Contracts.SWAP, balance, exactToken.meta.base16);
+      }
+
+      return;
     }
 
     throw new Error('incorrect Pair');
@@ -132,11 +148,10 @@ export class ZIlPayDex {
         value: this.account.base16
       }
     ];
-    return this.#sendParams(params, tag, GasLimits.SwapExactZILForTokens, String(exact));
+    return this.#sendParams(params, tag, GasLimits.SwapExactZILForTokens, String(exact), Contracts.SWAP);
   }
 
-  public async swapExactTokensForZIL(exact: bigint, limit: bigint, token: string, deadlineBlock: number, needApprove = false) {
-    let approve: ParamsForTokenApprove;
+  public async swapExactTokensForZIL(exact: bigint, limit: bigint, token: string, deadlineBlock: number) {
     const tag = 'SwapExactTokensForZIL';
     const params = [
       {
@@ -166,19 +181,10 @@ export class ZIlPayDex {
       }
     ];
 
-    if (needApprove) {
-      approve = {
-        token,
-        spender: Contracts.SWAP,
-        amount: this.account.zrc2[token]
-      };
-    }
-
-    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForZIL, String(0), approve);
+    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForZIL, String(0), Contracts.SWAP);
   }
 
-  public async swapExactTokensForTokens(exact: bigint, limit: bigint, deadlineBlock: number, inputToken: string, outputToken: string, needApprove = false) {
-    let approve: ParamsForTokenApprove;
+  public async swapExactTokensForTokens(exact: bigint, limit: bigint, deadlineBlock: number, inputToken: string, outputToken: string) {
     const tag = 'SwapExactTokensForTokens';
     const params = [
       {
@@ -213,15 +219,25 @@ export class ZIlPayDex {
       }
     ];
 
-    if (needApprove) {
-      approve = {
-        token: inputToken,
-        spender: Contracts.SWAP,
-        amount: this.account.zrc2[inputToken]
-      };
-    }
+    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForTokens, String(0), Contracts.SWAP);
+  }
 
-    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForTokens, String(0), approve);
+  public async increaseAllowance(spender: string, amount: string, token: string) {
+    const tag = 'IncreaseAllowance';
+    const params = [
+      {
+        vname: 'spender',
+        type: 'ByStr20',
+        value: spender.toLowerCase()
+      },
+      {
+        vname: 'amount',
+        type: 'Uint128',
+        value: amount
+      }
+    ];
+
+    return this.#sendParams(params, tag, GasLimits.IncreaseAllowance, String(0), token);
   }
 
   public async isAllowed(pair: TokenValue[]) {
@@ -394,13 +410,12 @@ export class ZIlPayDex {
   }
 
 
-  #sendParams(params: ParamItem[], tag: string, gasLimit: GasLimits, amount: string, approve?: ParamsForTokenApprove) {
+  #sendParams(params: ParamItem[], tag: string, gasLimit: GasLimits, amount: string, toAddr: string) {
     const { gasPrice } = this.gas;
     return sendToSignTx({
-      approve,
       amount,
       gasLimit,
-      toAddr: Contracts.SWAP,
+      toAddr,
       data: JSON.stringify({
         params,
         _tag: tag
