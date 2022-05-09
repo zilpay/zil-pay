@@ -77,7 +77,7 @@ export class ZIlPayDex {
     const limitAfterSlippage = this.afterSlippage(limit);
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
-      this.swapExactZILForTokens(
+      await this.swapExactZILForTokens(
         exact,
         limitAfterSlippage,
         limitToken.meta.base16,
@@ -88,7 +88,7 @@ export class ZIlPayDex {
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const approved = exactToken.approved.gte(Big(exactToken.value));
 
-      this.swapExactTokensForZIL(
+      await this.swapExactTokensForZIL(
         exact,
         limitAfterSlippage,
         exactToken.meta.base16,
@@ -104,7 +104,7 @@ export class ZIlPayDex {
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const approved = exactToken.approved.gte(Big(exactToken.value));
 
-      this.swapExactTokensForTokens(
+      await this.swapExactTokensForTokens(
         exact,
         limitAfterSlippage,
         deadlineBlock,
