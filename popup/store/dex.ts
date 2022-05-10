@@ -15,5 +15,6 @@ export default writable<DexState>({
   liquidityFee: 0,
   protocolFee: 0,
   slippage: SLIPPAGE,
-  blocks: BLOCKS
+  blocks: BLOCKS,
+  contract: {}
 });

@@ -11,7 +11,6 @@ import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
 
 import { fromBech32Address } from 'lib/utils/bech32';
-import { Contracts } from 'config/contracts';
 
 export class ZilPayZRC {
   readonly #core: ZIlPayCore;
@@ -25,7 +24,7 @@ export class ZilPayZRC {
       this.#core.guard.checkSession();
       const account = this.#core.account.selectedAccount;
       const allowances = await this.#core.zrc2.getAllowances(
-        Contracts.SWAP,
+        this.#core.dex.contract,
         token,
         account.base16
       );

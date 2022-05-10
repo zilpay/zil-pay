@@ -44,7 +44,7 @@ export class ZIlPayCore {
   public addressFormat = new AddressController();
   public zilliqa = new ZilliqaControl(this.netwrok);
   public gas = new GasController(this.zilliqa);
-  public dex = new DexController(this.zilliqa);
+  public dex = new DexController(this.zilliqa, this.netwrok);
   public readonly account = new AccountController(this.guard);
   public transactions = new TransactionsController(this.netwrok, this.account);
   public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);

@@ -14,7 +14,7 @@ import type { RPCResponse } from 'types/zilliqa';
 import assert from 'assert';
 
 import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
-import { ZRC2Fields } from 'core/background/services/dex';
+import { DexController, ZRC2Fields } from 'core/background/services/dex';
 
 import { Contracts } from 'config/contracts';
 import { BrowserStorage, buildObject } from 'lib/storage';
@@ -61,6 +61,7 @@ export class ZRC2Controller {
   readonly #netwrok: NetworkControl;
   readonly #zilliqa: ZilliqaControl;
   readonly #account: AccountController;
+  readonly #dex: DexController;
   #identities: ZRC2Token[] = [];
 
   public get identities() {
@@ -74,11 +75,13 @@ export class ZRC2Controller {
   constructor(
     netwrok: NetworkControl,
     zilliqa: ZilliqaControl,
-    account: AccountController
+    account: AccountController,
+    dex: DexController
   ) {
     this.#netwrok = netwrok;
     this.#zilliqa = zilliqa;
     this.#account = account;
+    this.#dex = dex;
     this.#account.initZRC(this);
   }
 
@@ -158,7 +161,7 @@ export class ZRC2Controller {
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
         [
-          tohexString(Contracts.SWAP),
+          tohexString(this.#dex.contract),
           ZRC2Fields.Pools,
           [tokenAddressBase16]
         ]
@@ -212,7 +215,7 @@ export class ZRC2Controller {
     });
     const poolIdentities = onlyZRC2.map((token) => this.#zilliqa.provider.buildBody(
       Methods.GetSmartContractSubState,
-      [tohexString(Contracts.SWAP), ZRC2Fields.Pools, [token.base16.toLowerCase()]]
+      [tohexString(this.#dex.contract), ZRC2Fields.Pools, [token.base16.toLowerCase()]]
     ));
     const identities = [...balanceIdentities, ...poolIdentities];
     let replies = await this.#zilliqa.sendJson(...identities);

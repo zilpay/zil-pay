@@ -7,21 +7,22 @@
  * Copyright (c) 2022 ZilPay
  */
 import type { ZilliqaControl } from 'core/background/services/blockchain';
+import type { NetworkControl } from 'core/background/services/network';
+import type { DexState } from 'types/dex';
 
 import assert from 'assert';
-
-import type { DexState } from 'types/dex';
 
 import { Methods } from 'core/background/services/blockchain';
 import { tohexString } from 'lib/utils/address';
 
 import { BrowserStorage, buildObject } from 'lib/storage';
 
-import { Contracts } from 'config/contracts';
 import { Fields } from 'config/fields';
 import { ErrorMessages } from 'config/errors';
 import { SLIPPAGE, BLOCKS } from 'config/dex';
 import { TypeOf } from 'lib/type/type-checker';
+import { NETWORK_KEYS } from 'config/network';
+
 
 export enum ZRC2Fields {
   Balances = 'balances',
@@ -31,15 +32,23 @@ export enum ZRC2Fields {
   ProtocolFee = 'protocol_fee'
 }
 
+
+const [mainnet, testnet, custom] = NETWORK_KEYS;
 const INIT_STATE: DexState = {
   liquidityFee: 0,
   protocolFee: 0,
   slippage: SLIPPAGE,
-  blocks: BLOCKS
+  blocks: BLOCKS,
+  contract: {
+    [mainnet]: '',
+    [testnet]: '0x359d0def766c0e27acc1af30cf8c6ae02a06de81',
+    [custom]: ''
+  }
 };
 
 export class DexController {
   readonly #zilliqa: ZilliqaControl;
+  readonly #network: NetworkControl;
 
   #state: DexState = INIT_STATE;
 
@@ -47,8 +56,13 @@ export class DexController {
     return this.#state;
   }
 
-  constructor(zilliqa: ZilliqaControl) {
+  public get contract() {
+    return this.state.contract[this.#network.selected];
+  }
+
+  constructor(zilliqa: ZilliqaControl, network: NetworkControl) {
     this.#zilliqa = zilliqa;
+    this.#network = network;
   }
 
   public async setSettings(blocks: number, slippage: number) {
@@ -69,11 +83,11 @@ export class DexController {
     const batch = [
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [tohexString(Contracts.SWAP), ZRC2Fields.LiquidityFee, []]
+        [tohexString(this.contract), ZRC2Fields.LiquidityFee, []]
       ),
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [tohexString(Contracts.SWAP), ZRC2Fields.ProtocolFee, []]
+        [tohexString(this.contract), ZRC2Fields.ProtocolFee, []]
       )
     ];
     let replies = await this.#zilliqa.sendJson(...batch);

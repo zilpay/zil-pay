@@ -24,6 +24,7 @@ import { Runtime } from 'lib/runtime';
 import { sendToSignTx } from 'app/backend/sign';
 import { getLatestBlockNumber } from 'app/backend/netwrok';
 import { getAllowancesForSwap } from 'app/backend/tokens';
+import netwrok from 'app/store/netwrok';
 
 
 Big.PE = 99;
@@ -51,6 +52,10 @@ export class ZIlPayDex {
     return get(dexStore);
   }
 
+  public get netwrok() {
+    return get(netwrok).selected;
+  }
+
   public get gas() {
     return get(gasStore);
   }
@@ -67,6 +72,11 @@ export class ZIlPayDex {
     const { identities, selectedAddress } = get(walletStore);
     return identities[selectedAddress];
   }
+
+  public get contract() {
+    return this.state.contract[this.netwrok];
+  }
+
 
   public async swap(pair: TokenValue[]) {
     const [exactToken, limitToken] = pair;
@@ -97,7 +107,7 @@ export class ZIlPayDex {
 
       if (approved) {
         const balance = this.account.zrc2[exactToken.meta.base16];
-        await this.increaseAllowance(Contracts.SWAP, balance, exactToken.meta.base16);
+        await this.increaseAllowance(this.contract, balance, exactToken.meta.base16);
       }
 
       return;
@@ -114,7 +124,7 @@ export class ZIlPayDex {
 
       if (approved) {
         const balance = this.account.zrc2[exactToken.meta.base16];
-        await this.increaseAllowance(Contracts.SWAP, balance, exactToken.meta.base16);
+        await this.increaseAllowance(this.contract, balance, exactToken.meta.base16);
       }
 
       return;
@@ -148,7 +158,7 @@ export class ZIlPayDex {
         value: this.account.base16
       }
     ];
-    return this.#sendParams(params, tag, GasLimits.SwapExactZILForTokens, String(exact), Contracts.SWAP);
+    return this.#sendParams(params, tag, GasLimits.SwapExactZILForTokens, String(exact), this.contract);
   }
 
   public async swapExactTokensForZIL(exact: bigint, limit: bigint, token: string, deadlineBlock: number) {
@@ -181,7 +191,7 @@ export class ZIlPayDex {
       }
     ];
 
-    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForZIL, String(0), Contracts.SWAP);
+    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForZIL, String(0), this.contract);
   }
 
   public async swapExactTokensForTokens(exact: bigint, limit: bigint, deadlineBlock: number, inputToken: string, outputToken: string) {
@@ -219,7 +229,7 @@ export class ZIlPayDex {
       }
     ];
 
-    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForTokens, String(0), Contracts.SWAP);
+    return this.#sendParams(params, tag, GasLimits.SwapExactTokensForTokens, String(0), this.contract);
   }
 
   public async increaseAllowance(spender: string, amount: string, token: string) {
