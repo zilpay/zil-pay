@@ -48,7 +48,7 @@
 		{
 			value: '0',
 			converted: 0,
-			meta: $zrcStore[1],
+			meta: $zrcStore[1] || $zrcStore[0],
 			approved: Big(0)
 		}
 	];
@@ -186,56 +186,58 @@
 		on:refresh={hanldeOnRefresh}
 	/>
 	<main>
-		<form on:submit={handleSubmit}>
-			<div class="header">
-				<h3>
-					{$_('swap.form.from')}
-				</h3>
-				<a
-					href="https://zilpay.io/pool"
-					target="_blank"
+		{#if listedTokens.length >= 2}
+			<form on:submit={handleSubmit}>
+				<div class="header">
+					<h3>
+						{$_('swap.form.from')}
+					</h3>
+					<a
+						href="https://zilpay.io/pool"
+						target="_blank"
+					>
+						{$_('swap.form.pool')}
+					</a>
+				</div>
+				<Smartinput
+					img={viewIcon(tokens[0].meta.bech32, $themeStore)}
+					symbol={tokens[0].meta.symbol}
+					max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals)}
+					value={tokens[0].value}
+					loading={loading}
+					on:select={() => hanldeOnSelect(0)}
+					on:input={(event) => hanldeOnInput(event.detail, 0)}
+				/>
+				<div class="seporate">
+					<h3>
+						{$_('swap.form.to')}
+					</h3>
+					<span on:click={hanldeOnSwapTokens}>
+						<SwapIcon className="swap-icon"/>
+					</span>
+				</div>
+				<Smartinput
+					img={viewIcon(tokens[1].meta.bech32, $themeStore)}
+					symbol={tokens[1].meta.symbol}
+					value={tokens[1].value}
+					loading={loading}
+					percents={[]}
+					disabled={true}
+					converted={tokens[1].converted}
+					on:select={() => hanldeOnSelect(1)}
+				/>
+				<SwapInfo
+					pair={tokens}
+					gasLimit={gasLimit}
+				/>
+				<button
+					class:loading={buttonLoading}
+					disabled={disabled}
 				>
-					{$_('swap.form.pool')}
-				</a>
-			</div>
-			<Smartinput
-				img={viewIcon(tokens[0].meta.bech32, $themeStore)}
-				symbol={tokens[0].meta.symbol}
-				max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals)}
-				value={tokens[0].value}
-				loading={loading}
-				on:select={() => hanldeOnSelect(0)}
-				on:input={(event) => hanldeOnInput(event.detail, 0)}
-			/>
-			<div class="seporate">
-				<h3>
-					{$_('swap.form.to')}
-				</h3>
-				<span on:click={hanldeOnSwapTokens}>
-					<SwapIcon className="swap-icon"/>
-				</span>
-			</div>
-			<Smartinput
-				img={viewIcon(tokens[1].meta.bech32, $themeStore)}
-				symbol={tokens[1].meta.symbol}
-				value={tokens[1].value}
-				loading={loading}
-				percents={[]}
-				disabled={true}
-				converted={tokens[1].converted}
-				on:select={() => hanldeOnSelect(1)}
-			/>
-			<SwapInfo
-				pair={tokens}
-				gasLimit={gasLimit}
-			/>
-			<button
-				class:loading={buttonLoading}
-				disabled={disabled}
-			>
-				{$_('swap.form.button')}
-			</button>
-		</form>
+					{$_('swap.form.button')}
+				</button>
+			</form>
+		{/if}
 		<a
 			href="https://zilpay.io/"
 			target="_blank"

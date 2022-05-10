@@ -49,7 +49,7 @@
 		try {
 			await balanceUpdate();
 		} catch (err) {
-			alert(err.message);
+			// alert(err.message);
 		}
 		if (rate) {
 			try {

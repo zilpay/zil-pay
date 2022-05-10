@@ -49,7 +49,11 @@ export const ZLP = {
 };
 const INIT = {
   [mainnet]: [ZIL, ZLP],
-  [testnet]: [ZIL],
+  [testnet]: [ZIL, {
+    ...ZLP,
+    base16: '0xcb89b261280e0b7caa3c80952e55e4928d33df46',
+    bech32: 'zil1ewymycfgpc9he23usz2ju40yj2xn8h6xaczvve'
+  }],
   [custom]: [ZIL]
 };
 
