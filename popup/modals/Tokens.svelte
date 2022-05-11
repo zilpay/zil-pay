@@ -62,7 +62,7 @@
 />
 {#if identities.length === 0}
 	<p>
-		{$_('tokens.no_tokens_serach')} {search}
+		{$_('tokens.no_tokens_search')} {search}
 	</p>
 {/if}
 <ul>

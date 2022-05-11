@@ -7,10 +7,12 @@
   import currencyStore from 'popup/store/currency';
 
 	import { formatNumber } from 'popup/filters/n-format';
+	import { uuidv4 } from 'lib/crypto/uuid';
 
 
 	Big.PE = 99;
   const dispatch = createEventDispatcher();
+	const uuid = uuidv4();
 
 	export let percents = [0, 10, 30, 50, 70, 100];
 	export let disabled = false;
@@ -46,7 +48,10 @@
 	};
 </script>
 
-<label class:loading={loading}>
+<label
+	class:loading={loading}
+	for={uuid}
+>
   <span on:click={onClick}>
     <img
       src={img}
@@ -59,6 +64,7 @@
   <div class="column">
     <input
 			bind:value={value}
+			id={uuid}
 			placeholder={placeholder}
 			disabled={loading || disabled}
 			on:input={onInput}

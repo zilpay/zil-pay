@@ -47,7 +47,7 @@ export class ZIlPayCore {
   public dex = new DexController(this.zilliqa, this.netwrok);
   public readonly account = new AccountController(this.guard);
   public transactions = new TransactionsController(this.netwrok, this.account);
-  public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
+  public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account, this.dex);
   public nft = new NFTController(this.netwrok, this.zilliqa, this.account);
   public ssn = new SSnController(this.zilliqa, this.netwrok);
   public nonceCounter = new NonceController(this.zilliqa, this.transactions);
