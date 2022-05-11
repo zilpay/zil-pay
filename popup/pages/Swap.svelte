@@ -146,7 +146,6 @@
 	const storageObserver = BrowserStorage.subscribe(async(event) => {
 		if (event['blocknumber']) {
 			await balanceUpdate();
-
 			updatePool();
 
 			if (tokens[0]) {
@@ -186,7 +185,7 @@
 		on:refresh={hanldeOnRefresh}
 	/>
 	<main>
-		{#if tokens[0].meta && tokens[1].meta}
+		{#if tokens[0].meta && tokens[1].meta && tokens[1].meta.pool}
 			<form on:submit={handleSubmit}>
 				<div class="header">
 					<h3>
