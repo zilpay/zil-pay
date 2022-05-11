@@ -276,6 +276,10 @@ export class ZRC2Controller {
         return this.reset();
       }
 
+      if (list.length < this.#identities.length) {
+        return this.reset();
+      }
+
       this.#identities = list;
     } catch {
       await this.reset();
