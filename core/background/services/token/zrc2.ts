@@ -310,7 +310,6 @@ export class ZRC2Controller {
     assert(Boolean(name), `${InitFields.Name} ${ErrorMessages.RequiredParam}`);
     assert(Boolean(symbol), `${InitFields.Symbol} ${ErrorMessages.RequiredParam}`);
     assert(Boolean(address), `${InitFields.Address} ${ErrorMessages.RequiredParam}`);
-    assert(Boolean(decimals), `${InitFields.Decimals} ${ErrorMessages.RequiredParam}`);
 
     return {
       decimals: Number(decimals),

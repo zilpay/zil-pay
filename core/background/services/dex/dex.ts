@@ -116,7 +116,8 @@ export class DexController {
 
       this.#state = {
         ...INIT_STATE,
-        ...parsed
+        ...parsed,
+        contract: INIT_STATE.contract
       };
     } catch {
       await this.reset();
