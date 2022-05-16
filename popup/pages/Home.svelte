@@ -35,12 +35,16 @@
 	$: zrc2Tokens = account.zrc2;
 	$: rate = $rateStore[$currencyStore];
 	$: balance = $zrcStore.reduce((previousValue, currentValue, index) => {
-		const qa = account.zrc2[currentValue.base16] || '0';
-		const balance = fromDecimals(qa, currentValue.decimals);
-		const tokenRate = Big(currentValue.rate || 1);
-		const zils = tokenRate.mul(balance);
+		try {
+			const qa = account.zrc2[currentValue.base16] || '0';
+			const balance = fromDecimals(qa, currentValue.decimals);
+			const tokenRate = Big(currentValue.rate || 1);
+			const zils = tokenRate.mul(balance);
 
-		return previousValue.add(zils);
+			return previousValue.add(zils);
+		} catch {
+			return previousValue;
+		}
 	}, Big(0));
 	$: converted = convertRate(rate, balance);
 

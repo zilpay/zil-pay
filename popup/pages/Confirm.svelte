@@ -192,7 +192,7 @@
 			</SelectCard>
 			<hr/>
 		</div>
-		{#if tx}
+		{#if tx && tx.title && tx.icon}
 			<div
 				class="header"
 				in:fade
@@ -217,7 +217,7 @@
 		>
 			<GasControl
 				multiplier={gasMultiplier}
-				gasLimit={tx.gasLimit}
+				gasLimit={tx.gasLimit || 5000}
 				gasPrice={startGasPrice}
 				on:select={handleOnChangeGasMultiplier}
 			/>

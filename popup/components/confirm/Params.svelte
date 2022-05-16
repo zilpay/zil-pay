@@ -23,7 +23,7 @@
     gasPrice: 0
   };
 
-	$: amount = fromDecimals(tx.tokenAmount, tx.token.decimals).round(7);
+	$: amount = fromDecimals(String(tx.tokenAmount || 0), Number(tx.token.decimals || 0)).round(7);
   $: img = viewIcon(tx.token.bech32, $themeStore);
 </script>
 
