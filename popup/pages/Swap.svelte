@@ -20,6 +20,7 @@
 	import rateStore from 'popup/store/rate';
   import themeStore from 'popup/store/theme';
 	import walletStore from 'popup/store/wallet';
+  import netStore from 'popup/store/netwrok';
 
 	import { updateDexData } from 'popup/backend/settings';
 	import { balanceUpdate } from 'popup/backend/wallet';
@@ -185,7 +186,7 @@
 		on:refresh={hanldeOnRefresh}
 	/>
 	<main>
-		{#if tokens[0].meta && tokens[1].meta && tokens[1].meta.pool}
+		{#if tokens[0].meta && tokens[1].meta && tokens[1].meta.pool && $netStore.selected === 'testnet'}
 			<form on:submit={handleSubmit}>
 				<div class="header">
 					<h3>
