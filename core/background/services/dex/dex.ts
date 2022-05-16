@@ -40,8 +40,8 @@ const INIT_STATE: DexState = {
   slippage: SLIPPAGE,
   blocks: BLOCKS,
   contract: {
-    [mainnet]: '',
-    [testnet]: '0x359d0def766c0e27acc1af30cf8c6ae02a06de81',
+    [mainnet]: '0x459cb2d3baf7e61cfbd5fe362f289ae92b2babb0',
+    [testnet]: '0x45a266fa784a9f2955fee237589c2a48c0e08132',
     [custom]: ''
   }
 };
