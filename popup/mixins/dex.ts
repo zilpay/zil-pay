@@ -38,10 +38,10 @@ export interface TokenValue {
 }
 
 enum GasLimits {
-  SwapExactZILForTokens = 1575,
-  SwapExactTokensForZIL = 2090,
-  SwapExactTokensForTokens = 3092,
-  IncreaseAllowance = 500,
+  SwapExactZILForTokens = 2637,
+  SwapExactTokensForZIL = 3163,
+  SwapExactTokensForTokens = 4183,
+  IncreaseAllowance = 600,
   Default = 5000
 }
 
