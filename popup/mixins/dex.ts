@@ -281,7 +281,7 @@ export class ZIlPayDex {
     const demon = Big(String(ZIlPayDex.FEE_DEMON));
     const slip = demon.sub(slippage * 100);
 
-    return amount.mul(slip).div(demon).toString();
+    return amount.mul(slip).div(demon).round(9).toString();
   }
 
   public getRealAmount(pair: TokenValue[]) {
