@@ -41,7 +41,7 @@ const INIT_STATE: DexState = {
   blocks: BLOCKS,
   contract: {
     [mainnet]: '0x459cb2d3baf7e61cfbd5fe362f289ae92b2babb0',
-    [testnet]: '0x45a266fa784a9f2955fee237589c2a48c0e08132',
+    [testnet]: '0x5f35fbabfe7226147914eb296253a68538ac33ee',
     [custom]: ''
   }
 };
