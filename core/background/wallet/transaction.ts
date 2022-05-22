@@ -81,7 +81,7 @@ export class ZilPayTransaction {
       const payload = new Transaction(
         params.amount,
         params.gasLimit,
-        params.cancel ? params.gasPrice : this.#core.gas.gasPrice,
+        params.gasPrice || this.#core.gas.gasPrice,
         this.#core.account.selectedAccount,
         params.toAddr,
         this.#core.netwrok.selected,
