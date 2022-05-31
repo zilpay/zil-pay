@@ -295,7 +295,8 @@ export class ZIlPayDex {
       gas: GasLimits.Default
     };
     const [exactToken, limitToken] = pair;
-    let cashback = this.rewarded !== limitToken.meta.base16 && this.rewarded !== exactToken.meta.base16;
+    const cashback = this.rewarded !== String(limitToken.meta.base16).toLowerCase()
+      && this.rewarded !== String(exactToken.meta.base16).toLowerCase();
     const exactAmount = Big(exactToken.value);
     const bigAmount = exactAmount.mul(this.toDecimails(exactToken.meta.decimals)).round();
     const _amount = BigInt(String(bigAmount));
