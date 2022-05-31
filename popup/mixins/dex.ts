@@ -68,6 +68,10 @@ export class ZIlPayDex {
     return get(rateStore)[get(currencyStore)];
   }
 
+  public get rewarded() {
+    return this.state.rewarded;
+  }
+
   public get account() {
     const { identities, selectedAddress } = get(walletStore);
     return identities[selectedAddress];
@@ -105,7 +109,7 @@ export class ZIlPayDex {
         deadlineBlock
       );
 
-      if (approved) {
+      if (!approved) {
         const balance = this.account.zrc2[exactToken.meta.base16];
         await this.increaseAllowance(this.contract, balance, exactToken.meta.base16);
       }
@@ -122,7 +126,7 @@ export class ZIlPayDex {
         limitToken.meta.base16
       );
 
-      if (approved) {
+      if (!approved) {
         const balance = this.account.zrc2[exactToken.meta.base16];
         await this.increaseAllowance(this.contract, balance, exactToken.meta.base16);
       }
@@ -291,6 +295,7 @@ export class ZIlPayDex {
       gas: GasLimits.Default
     };
     const [exactToken, limitToken] = pair;
+    let cashback = this.rewarded !== limitToken.meta.base16 && this.rewarded !== exactToken.meta.base16;
     const exactAmount = Big(exactToken.value);
     const bigAmount = exactAmount.mul(this.toDecimails(exactToken.meta.decimals)).round();
     const _amount = BigInt(String(bigAmount));
@@ -298,7 +303,7 @@ export class ZIlPayDex {
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const pool = limitToken.meta.pool.map(BigInt);
-      const _limitAmount = this.#zilToTokens(_amount, pool);
+      const _limitAmount = this.#zilToTokens(_amount, pool, cashback);
       const bigLimitAmount = Big(String(_limitAmount));
 
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
@@ -308,7 +313,7 @@ export class ZIlPayDex {
       return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const pool = exactToken.meta.pool.map(BigInt);
-      const _limitAmount = this.#tokensToZil(_amount, pool);
+      const _limitAmount = this.#tokensToZil(_amount, pool, cashback);
       const bigLimitAmount = Big(String(_limitAmount));
 
       data.amount = bigLimitAmount.div(this.toDecimails(limitToken.meta.decimals));
@@ -324,7 +329,7 @@ export class ZIlPayDex {
       const [ZIL] = this.tokens;
       const inputPool = exactToken.meta.pool.map(BigInt);
       const outputPool = limitToken.meta.pool.map(BigInt);
-      const [zils, _limitAmount] = this.#tokensToTokens(_amount, inputPool, outputPool);
+      const [zils, _limitAmount] = this.#tokensToTokens(_amount, inputPool, outputPool, cashback);
       const bigLimitAmount = Big(String(_limitAmount));
       const zilAmount = Big(String(zils)).div(this.toDecimails(ZIL.decimals));
 
@@ -421,7 +426,7 @@ export class ZIlPayDex {
 
 
   #sendParams(params: ParamItem[], tag: string, gasLimit: GasLimits, amount: string, toAddr: string) {
-    const { gasPrice } = this.gas;
+    const gasPrice = this.gas.gasPrice + 100;
     return sendToSignTx({
       amount,
       gasLimit,
@@ -443,20 +448,22 @@ export class ZIlPayDex {
     );
   }
 
-  #zilToTokens(amount: bigint, inputPool: bigint[]) {
+  #zilToTokens(amount: bigint, inputPool: bigint[], cashback: boolean) {
     const [zilReserve, tokenReserve] = inputPool;
-    const amountAfterFee = this.state.protocolFee === 0 ? amount : amount - (amount / BigInt(this.state.protocolFee));
+    const amountAfterFee = (this.state.protocolFee === 0 || !cashback) ?
+      amount : amount - (amount / BigInt(this.state.protocolFee));
     return this.#outputFor(amountAfterFee, BigInt(zilReserve), BigInt(tokenReserve));
   }
 
-  #tokensToZil(amount: bigint, inputPool: bigint[]) {
+  #tokensToZil(amount: bigint, inputPool: bigint[], cashback: boolean) {
     const [zilReserve, tokenReserve] = inputPool;
     const zils = this.#outputFor(amount, BigInt(tokenReserve), BigInt(zilReserve));
 
-    return this.state.protocolFee === 0 ? zils : zils - (zils / BigInt(this.state.protocolFee));
+    return (this.state.protocolFee === 0 || !cashback) ?
+      zils : zils - (zils / BigInt(this.state.protocolFee));
   }
 
-  #tokensToTokens(amount: bigint, inputPool: bigint[], outputPool: bigint[]) {
+  #tokensToTokens(amount: bigint, inputPool: bigint[], outputPool: bigint[], cashback: boolean) {
     const [inputZilReserve, inputTokenReserve] = inputPool;
     const [outputZilReserve, outputTokenReserve] = outputPool;
     const zilIntermediateAmount = this.#outputFor(
@@ -465,7 +472,7 @@ export class ZIlPayDex {
       BigInt(inputZilReserve),
       ZIlPayDex.FEE_DEMON
     );
-    const zils = this.state.protocolFee === 0 ?
+    const zils = (this.state.protocolFee === 0 || !cashback) ?
       zilIntermediateAmount : zilIntermediateAmount - (zilIntermediateAmount / BigInt(this.state.protocolFee));
 
     return [

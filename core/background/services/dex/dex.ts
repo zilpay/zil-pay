@@ -22,6 +22,7 @@ import { ErrorMessages } from 'config/errors';
 import { SLIPPAGE, BLOCKS } from 'config/dex';
 import { TypeOf } from 'lib/type/type-checker';
 import { NETWORK_KEYS } from 'config/network';
+import { Contracts } from 'config/contracts';
 
 
 export enum ZRC2Fields {
@@ -29,7 +30,8 @@ export enum ZRC2Fields {
   Allowances = 'allowances',
   Pools = 'pools',
   LiquidityFee = 'liquidity_fee',
-  ProtocolFee = 'protocol_fee'
+  ProtocolFee = 'protocol_fee',
+  RewardsPool = 'rewards_pool'
 }
 
 
@@ -39,9 +41,10 @@ const INIT_STATE: DexState = {
   protocolFee: 0,
   slippage: SLIPPAGE,
   blocks: BLOCKS,
+  rewarded: Contracts.ZERO_ADDRESS,
   contract: {
     [mainnet]: '0x459cb2d3baf7e61cfbd5fe362f289ae92b2babb0',
-    [testnet]: '0x5f35fbabfe7226147914eb296253a68538ac33ee',
+    [testnet]: '0xb0c677b5ba660925a8f1d5d9687d0c2c379e16ee',
     [custom]: ''
   }
 };
@@ -80,14 +83,19 @@ export class DexController {
   }
 
   public async updateState() {
+    const contract = tohexString(this.contract);
     const batch = [
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [tohexString(this.contract), ZRC2Fields.LiquidityFee, []]
+        [contract, ZRC2Fields.LiquidityFee, []]
       ),
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [tohexString(this.contract), ZRC2Fields.ProtocolFee, []]
+        [contract, ZRC2Fields.ProtocolFee, []]
+      ),
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [contract, ZRC2Fields.RewardsPool, []]
       )
     ];
     let replies = await this.#zilliqa.sendJson(...batch);
@@ -96,6 +104,7 @@ export class DexController {
 
     this.#state.liquidityFee = Number(replies[0].result[ZRC2Fields.LiquidityFee]);
     this.#state.protocolFee = Number(replies[1].result[ZRC2Fields.ProtocolFee]);
+    this.#state.rewarded = replies[2].result[ZRC2Fields.RewardsPool];
 
     await BrowserStorage.set(
       buildObject(Fields.DEX, this.state)

@@ -277,6 +277,7 @@
 			}
 			& > a {
 				color: var(--muted-color);
+				font-family: Demi;
 
 				&:hover {
 					color: var(--text-color);

@@ -12,6 +12,7 @@ export interface DexState {
   protocolFee: number;
   slippage: number;
   blocks: number;
+  rewarded: string;
   contract: {
     [net: string]: string;
   }
