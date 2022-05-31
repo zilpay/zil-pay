@@ -76,12 +76,17 @@ export class ZilPayTransaction {
       symbol: ZIL.symbol,
       bech32: ZIL.bech32
     };
+    let gasPrice = this.#core.gas.gasPrice;
+
+    if (Number(params.gasPrice) >= this.#core.gas.gasPrice && Number(params.gasPrice) < 9999) {
+      gasPrice = Number(params.gasPrice);
+    }
 
     try {
       const payload = new Transaction(
         params.amount,
         params.gasLimit,
-        params.gasPrice || this.#core.gas.gasPrice,
+        gasPrice,
         this.#core.account.selectedAccount,
         params.toAddr,
         this.#core.netwrok.selected,
