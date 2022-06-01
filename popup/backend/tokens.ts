@@ -56,8 +56,8 @@ export async function removeZRC2Token(index: number) {
   return state;
 }
 
-export async function getTokens(limit = 40, offset = 0, type = 1) {
-  const params = `?limit=${limit}&offset=${offset}&type=${type}`;
+export async function getTokens(limit = 40, offset = 0) {
+  const params = `?limit=${limit}&offset=${offset}&type=1`;
   const url = `${MAIN_API}/tokens${params}`;
   const res = await fetch(url);
   return await res.json();

@@ -215,6 +215,7 @@
 
 				& > * {
 					@include text-shorten;
+					max-width: 120px;					
 				}
 				& > h3 {
 					margin-block-end: 0.3em;
