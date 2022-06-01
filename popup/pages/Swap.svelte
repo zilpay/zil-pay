@@ -186,7 +186,7 @@
 		on:refresh={hanldeOnRefresh}
 	/>
 	<main>
-		{#if tokens[0].meta && tokens[1].meta && tokens[1].meta.pool && $netStore.selected === 'testnet'}
+		{#if tokens[0].meta && tokens[1].meta && tokens[1].meta.pool}
 			<form on:submit={handleSubmit}>
 				<div class="header">
 					<h3>
