@@ -31,6 +31,8 @@
   </a>
   <a
     href={links.swap}
+    class="swap"
+    data-badge="new"
     use:link
   >
     <SwapIcon selected={$location === links.swap}/>
@@ -65,5 +67,19 @@
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
     }
+  }
+  a.swap:after {
+    content: attr(data-badge);
+    position: absolute;
+    font-size: 8pt;
+    background-color: var(--secondary-color);
+    color: var(--warning-color);
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 18px;
+    transform: translate(-16px, 0);
+
+    @include border-radius(50%);
   }
 </style>
