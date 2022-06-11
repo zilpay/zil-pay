@@ -278,14 +278,14 @@ export class ZIlPayDex {
 
   public calcBigSlippage(value: string, slippage: number) {
     if (slippage <= 0 || !value || value === '0') {
-      return value;
+      return Big(value).round(9).toString();
     }
 
     const amount = Big(value);
     const demon = Big(String(ZIlPayDex.FEE_DEMON));
     const slip = demon.sub(slippage * 100);
 
-    return amount.mul(slip).div(demon).round(9).toString();
+    return amount.mul(slip).div(demon).round(7).toString();
   }
 
   public getRealAmount(pair: TokenValue[]) {
@@ -356,13 +356,21 @@ export class ZIlPayDex {
     };
 
     if (!pair || pair.length < 1) {
-      return data
+      return data;
     }
 
     const [exactToken, limitToken] = pair;
     const expectAmount = Big(exactToken.value);
     const limitAmount = Big(limitToken.value);
     const localRate = Number(this.localRate) || 0;
+
+    if (expectAmount.gt(0) && limitAmount.gt(0)) {
+      data.rate = limitAmount.div(expectAmount);
+      data.impact = this.calcPriceImpact(expectAmount, limitAmount, data.rate);
+      data.converted = localRate * Number(data.rate);
+
+      return data;
+    }
 
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(limitToken.meta.pool[0]).div(this.toDecimails(exactToken.meta.decimals));
