@@ -364,14 +364,6 @@ export class ZIlPayDex {
     const limitAmount = Big(limitToken.value);
     const localRate = Number(this.localRate) || 0;
 
-    if (expectAmount.gt(0) && limitAmount.gt(0)) {
-      data.rate = limitAmount.div(expectAmount);
-      data.impact = this.calcPriceImpact(expectAmount, limitAmount, data.rate);
-      data.converted = localRate * Number(data.rate);
-
-      return data;
-    }
-
     if (exactToken.meta.base16 === Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(limitToken.meta.pool[0]).div(this.toDecimails(exactToken.meta.decimals));
       const tokenReserve = Big(limitToken.meta.pool[1]).div(this.toDecimails(limitToken.meta.decimals));
@@ -380,8 +372,6 @@ export class ZIlPayDex {
       data.rate = tokenReserve.div(zilReserve);
       data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
       data.converted = localRate;
-
-      return data;
     } else if (limitToken.meta.base16 === Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const zilReserve = Big(exactToken.meta.pool[0]).div(this.toDecimails(limitToken.meta.decimals));
       const tokenReserve = Big(exactToken.meta.pool[1]).div(this.toDecimails(exactToken.meta.decimals));
@@ -390,8 +380,6 @@ export class ZIlPayDex {
       data.rate = zilReserve.div(tokenReserve);
       data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
       data.converted = localRate * Number(data.rate);
-
-      return data;
     } else if (limitToken.meta.base16 !== Contracts.ZERO_ADDRESS && exactToken.meta.base16 !== Contracts.ZERO_ADDRESS) {
       const [ZIL] = this.tokens;
 
@@ -407,6 +395,11 @@ export class ZIlPayDex {
       data.converted = localRate * Number(inputRate);
       data.rate = outpuRate.div(inputRate);
       data.impact = this.calcPriceImpact(expectAmount, limitAmount, rate);
+    }
+
+    if (expectAmount.gt(0) && limitAmount.gt(0)) {
+      data.rate = limitAmount.div(expectAmount);
+      data.converted = localRate * Number(data.rate);
 
       return data;
     }

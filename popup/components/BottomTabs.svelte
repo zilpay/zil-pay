@@ -71,9 +71,9 @@
   a.swap:after {
     content: attr(data-badge);
     position: absolute;
-    font-size: 8pt;
-    background-color: var(--secondary-color);
-    color: var(--warning-color);
+    font-size: 7pt;
+    background-color: var(--danger-color);
+    color: var(--text-color);
     width: 20px;
     height: 20px;
     text-align: center;
