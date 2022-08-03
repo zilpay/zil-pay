@@ -10,8 +10,8 @@ import type { ZIlPayCore } from './core';
 import type { StreamResponse } from 'types/stream';
 import type { Wallet } from 'types/account';
 
-import { Aes } from 'lib/crypto/aes';
 import qrcode from 'qrcode/lib/browser';
+import { Aes } from 'lib/crypto/aes';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { AccountTypes } from 'config/account-type';
 
@@ -53,27 +53,6 @@ export class ZilPayWallet {
     try {
       sendResponse({
         resolve: this.#core.guard.encrypted
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
-  public async exportAccountQRCode(index: number, sendResponse: StreamResponse) {
-    try {
-      this.#core.guard.checkSession();
-      const account = this.#core.account.wallet.identities[index];
-      const base58 = await qrcode.toDataURL(
-        `zilliqa://${account.bech32}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
-      sendResponse({
-        resolve: base58
       });
     } catch (err) {
       sendResponse({
