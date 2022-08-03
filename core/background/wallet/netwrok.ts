@@ -50,6 +50,21 @@ export class ZilPayNetwrok {
     }
   }
 
+  public async getLatestBlockNumber(sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.blockchain.trackBlockNumber();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async select(net: string, sendResponse: StreamResponse) {
     try {
       this.#core.guard.checkSession();

@@ -29,6 +29,7 @@ export class ZilPaySynchronizer {
     await this.#core.apps.sync();
     await this.#core.contacts.sync();
     await this.#core.rate.sync();
+    await this.#core.dex.sync();
     await this.#core.addressFormat.sync();
     await this.#core.currencies.sync();
     await this.#core.prompt.sync();

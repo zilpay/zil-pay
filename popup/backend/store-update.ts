@@ -24,6 +24,7 @@ import timeLock from 'popup/store/lock-time';
 import addressFormatStore from 'popup/store/format';
 import promtStore from 'app/store/promt';
 import phishingStore from 'app/store/phishing';
+import dexStore from 'app/store/dex';
 
 export function updateState(state: WalletState) {
   document.body.setAttribute('theme', state.theme);
@@ -42,6 +43,7 @@ export function updateState(state: WalletState) {
   transactionsStore.set(state.transactions);
   zrcStore.set(state.zrc2);
   timeLock.set(state.lockTime);
+  dexStore.set(state.dex);
   addressFormatStore.set(state.format);
   promtStore.set(state.popup);
   phishingStore.set(state.phishing);

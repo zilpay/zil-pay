@@ -40,12 +40,17 @@
 		})
 	);
 
-	$: tokens = zrc2List.filter((t) => {
-		const t0 = t.name.toLowerCase().includes(search.toLowerCase());
-		const t1 = t.symbol.toLowerCase().includes(search.toLowerCase());
+	$: unique = new Set(zrc2List.map((t) => t.base16));
+	$: tokens = Array
+		.from(unique)
+		.map((base16) => zrc2List.find((t) => t.base16 === base16))
+		.filter(Boolean)
+		.filter((t) => {
+			const t0 = t.name.toLowerCase().includes(search.toLowerCase());
+			const t1 = t.symbol.toLowerCase().includes(search.toLowerCase());
 
-		return t0 || t1;
-	});
+			return t0 || t1;
+		});
 
 
 	async function listUpdate() {
@@ -66,7 +71,7 @@
 				selected: false,
 				loading: false
 			}));
-			
+
 			zrc2List = [...zrc2List, ...list];
 		} catch (err) {
 			console.error(err);
@@ -81,23 +86,12 @@
 				(t) => t.base16 === token.base16
 			);
 			await removeZRC2Token(foundIndex);
-			zrc2List[index] = {
-				...token,
-				selected: false
-			};
 		} else {
 			try {
 				const state = await getZRC2State(token.bech32);
 				await addZRC2Token(state);
-				zrc2List[index] = {
-					...token,
-					selected: true
-				};
-			} catch {
-				zrc2List[index] = {
-					...token,
-					selected: true
-				};
+			} catch (err) {
+				console.error(err);
 			}
 		}
 		zrc2List[index].loading = false;
@@ -221,6 +215,7 @@
 
 				& > * {
 					@include text-shorten;
+					max-width: 120px;					
 				}
 				& > h3 {
 					margin-block-end: 0.3em;

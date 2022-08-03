@@ -90,19 +90,23 @@
 			title={$_('advanced.base16.title')}
 			description={$_('advanced.base16.description')}
 		>
-			<Toggle
-				checked={base16}
-				on:toggle={handleToggleAddressFormat}
-			/>
+			<div class="right">
+				<Toggle
+					checked={base16}
+					on:toggle={handleToggleAddressFormat}
+				/>
+			</div>
 		</Jumbotron>
 		<Jumbotron
 			title={$_('advanced.popup.title')}
 			description={$_('advanced.popup.description')}
 		>
-			<Toggle
-				checked={$promtStore}
-				on:toggle={handleOnChangePromt}
-			/>
+			<div class="right">
+				<Toggle
+					checked={$promtStore}
+					on:toggle={handleOnChangePromt}
+				/>
+			</div>
 		</Jumbotron>
 	</div>
 	<button

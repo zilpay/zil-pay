@@ -379,7 +379,26 @@
     "version": "versione"
   },
   "swap": {
-    "title": "Prossimamente!"
+    "modals": {
+      "from": "Scambia dal token",
+      "to": "Scambia con token"
+    },
+    "form": {
+      "pool": "Aggiungi pool",
+      "from": "Tu paghi",
+      "to": "Ricevi",
+      "button": "Revisione dell'ordine",
+      "link": "Termini di servizio"
+    },
+    "info": {
+      "rate": "Valutare",
+      "price_impact": "Impatto sui prezzi",
+      "fee": "Costo della transazione",
+      "after_slippage": "Ricevuto dopo lo slittamento",
+      "slippage": "Tolleranza allo slittamento",
+      "blocks": "Blocca il timeout",
+      "tx_blocks": "TX-Blocchi"
+    }
   },
   "collections": {
     "errors": {

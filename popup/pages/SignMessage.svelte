@@ -19,6 +19,8 @@
 	import AccountsModal from '../modals/Accounts.svelte';
 	import Toggle from '../components/Toggle.svelte';
 
+	const url = new URL(window.location.href);
+
 	let loading = false;
   let error = '';
 	let accountsModal = false;
@@ -48,6 +50,8 @@
   };
   const handleOnSign = async () => {
     loading = true;
+    console.log(url);
+
     try {
       await signMessageApprove(accountIndex);
       

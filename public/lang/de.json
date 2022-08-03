@@ -379,7 +379,26 @@
     "version": "Version"
   },
   "swap": {
-    "title": "Demnaechst verfuegbar!"
+    "modals": {
+      "from": "Von Token tauschen",
+      "to": "Token tauschen"
+    },
+    "form": {
+      "pool": "Hinzufügen-Pool",
+      "from": "Sie bezahlen",
+      "to": "Du erhältst",
+      "button": "Bestellung überprüfen",
+      "link": "Nutzungsbedingungen"
+    },
+    "info": {
+      "rate": "Rate",
+      "price_impact": "Auswirkungen auf den Preis",
+      "fee": "Transaktionsgebühr",
+      "after_slippage": "Nach Schlupf erhalten",
+      "slippage": "Schlupftoleranz",
+      "blocks": "Sperrzeitüberschreitung",
+      "tx_blocks": "TX-Blöcke"
+    }
   },
   "collections": {
     "errors": {

@@ -27,6 +27,7 @@ import { TransactionsQueue } from 'core/background/services/transactions';
 import { LedgerWebHID } from 'core/background/services/ledger';
 import { LocalesController } from 'core/background/services/locale';
 import { AddressController } from 'core/background/services/address';
+import { DexController } from 'core/background/services/dex';
 
 export class ZIlPayCore {
   public netwrok = new NetworkControl();
@@ -43,9 +44,10 @@ export class ZIlPayCore {
   public addressFormat = new AddressController();
   public zilliqa = new ZilliqaControl(this.netwrok);
   public gas = new GasController(this.zilliqa);
+  public dex = new DexController(this.zilliqa, this.netwrok);
   public readonly account = new AccountController(this.guard);
   public transactions = new TransactionsController(this.netwrok, this.account);
-  public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account);
+  public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account, this.dex);
   public nft = new NFTController(this.netwrok, this.zilliqa, this.account);
   public ssn = new SSnController(this.zilliqa, this.netwrok);
   public nonceCounter = new NonceController(this.zilliqa, this.transactions);
@@ -74,6 +76,7 @@ export class ZIlPayCore {
         confirmApp: this.apps.confirmApp,
         connections: this.apps.connections
       },
+      dex: this.dex.state,
       currency: this.currencies.selected,
       contacts: this.contacts.contacts,
       gas: {

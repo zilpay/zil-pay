@@ -17,6 +17,15 @@ export function startBackground(core: ZIlPayBackground) {
       return true;
     }
     switch (msg.type) {
+      case MTypePopup.GET_LATEST_BLOCK:
+        core.netwrok.getLatestBlockNumber(sendResponse);
+        return true;
+      case MTypePopup.UPDATE_DEX_DATA:
+        core.settings.updateDexData(sendResponse);
+        return true;
+      case MTypePopup.UPDATE_DEX_SETTINGS:
+        core.settings.updateDexSettings(msg.payload.blocks, msg.payload.slippage, sendResponse);
+        return true;
       case MTypePopup.SET_PHISHING_DETECTION:
         core.apps.setPhishing(msg.payload.enabled, sendResponse);
         return true;
@@ -136,6 +145,9 @@ export function startBackground(core: ZIlPayBackground) {
         return true;
       case MTypePopup.RM_TOKEN:
         core.zrc.removeToken(msg.payload.index, sendResponse);
+        return true;
+      case MTypePopup.GET_ZRC2_ALLOWANCES_FOR_SWAP:
+        core.zrc.getZRC2AllowancesForSwap(msg.payload, sendResponse);
         return true;
       case MTypePopup.UPDATE_NFT_LIST:
         core.zrc.updateNFTList(sendResponse);

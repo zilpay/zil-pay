@@ -25,6 +25,26 @@ export async function changeCurrency(currency: string) {
   return state;
 }
 
+export async function updateDexData() {
+  const data = await Message.signal(MTypePopup.UPDATE_DEX_DATA).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
+export async function setDexSettings(blocks: number, slippage: number) {
+  const data = await new Message({
+    type: MTypePopup.UPDATE_DEX_SETTINGS,
+    payload: {
+      blocks,
+      slippage
+    }
+  }).send();
+  const state = warpMessage(data);
+  updateState(state);
+  return state;
+}
+
 export async function updateRate() {
   const data = await Message.signal(MTypePopup.UPDATE_RATE).send();
   const state = warpMessage(data);

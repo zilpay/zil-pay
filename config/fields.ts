@@ -34,5 +34,6 @@ export enum Fields {
   LOCALE = 'selected-local',
   FORMAT = 'address-format',
   POPUP_ENABLED = 'popup-enabled',
-  PHISHING = 'phishing-detection'
+  PHISHING = 'phishing-detection',
+  DEX = 'dex-proto'
 }

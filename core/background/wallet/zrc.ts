@@ -19,8 +19,29 @@ export class ZilPayZRC {
     this.#core = core;
   }
 
+  public async getZRC2AllowancesForSwap(token: string, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      const account = this.#core.account.selectedAccount;
+      const allowances = await this.#core.zrc2.getAllowances(
+        this.#core.dex.contract,
+        token,
+        account.base16
+      );
+
+      sendResponse({
+        resolve: allowances
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
   public async getZRC2Info(bech32: string, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       const token = await this.#core.zrc2.getToken(bech32);
 
       sendResponse({

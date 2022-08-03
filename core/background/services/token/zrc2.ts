@@ -14,6 +14,8 @@ import type { RPCResponse } from 'types/zilliqa';
 import assert from 'assert';
 
 import { Methods, ZilliqaControl } from 'core/background/services/blockchain';
+import { DexController, ZRC2Fields } from 'core/background/services/dex';
+
 import { Contracts } from 'config/contracts';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
@@ -24,10 +26,6 @@ import { fromBech32Address } from 'lib/utils/bech32';
 import { tohexString } from 'lib/utils/address';
 import { initParser, InitFields } from 'lib/utils/parse-init';
 
-enum ZRC2Fields {
-  Balances = 'balances',
-  Pools = 'pools'
-}
 
 const [mainnet, testnet, custom] = Object.keys(NETWORK);
 
@@ -37,7 +35,8 @@ export const ZIL = {
   decimals: 12,
   name: 'Zilliqa',
   symbol: 'ZIL',
-  rate: 1
+  rate: 1,
+  pool: []
 };
 export const ZLP = {
   base16: Contracts.ZIlPay,
@@ -45,11 +44,16 @@ export const ZLP = {
   decimals: 18,
   name: 'ZilPay wallet',
   symbol: 'ZLP',
-  rate: 0
+  rate: 0,
+  pool: []
 };
 const INIT = {
   [mainnet]: [ZIL, ZLP],
-  [testnet]: [ZIL],
+  [testnet]: [ZIL, {
+    ...ZLP,
+    base16: '0x55cb580c6bdf40e400f3714651bb7643bca24de4',
+    bech32: 'zil12h94srrtmaqwgq8nw9r9rwmkgw72yn0yc7x9ud'
+  }],
   [custom]: [ZIL]
 };
 
@@ -57,6 +61,7 @@ export class ZRC2Controller {
   readonly #netwrok: NetworkControl;
   readonly #zilliqa: ZilliqaControl;
   readonly #account: AccountController;
+  readonly #dex: DexController;
   #identities: ZRC2Token[] = [];
 
   public get identities() {
@@ -70,12 +75,33 @@ export class ZRC2Controller {
   constructor(
     netwrok: NetworkControl,
     zilliqa: ZilliqaControl,
-    account: AccountController
+    account: AccountController,
+    dex: DexController
   ) {
     this.#netwrok = netwrok;
     this.#zilliqa = zilliqa;
     this.#account = account;
+    this.#dex = dex;
     this.#account.initZRC(this);
+  }
+
+  public async getAllowances(contract: string, token: string, owner: string) {
+    owner = String(owner).toLowerCase();
+    contract = String(contract).toLowerCase();
+
+    const identities = [
+      this.#zilliqa.provider.buildBody(
+        Methods.GetSmartContractSubState,
+        [tohexString(token), ZRC2Fields.Allowances, [owner, contract]]
+      )
+    ];
+    const res = await this.#zilliqa.sendJson(...identities);
+
+    if (res && res.result && res.result[ZRC2Fields.Allowances]) {
+      return res.result[ZRC2Fields.Allowances][owner][contract];
+    }
+
+    return '0';
   }
 
   public async remove(index: number) {
@@ -98,7 +124,8 @@ export class ZRC2Controller {
       symbol: token.symbol,
       base16: token.base16,
       bech32: token.bech32,
-      rate: token.rate || 0
+      rate: token.rate || 0,
+      pool: token.pool
     };
     this.#isUnique(newToken);
     this.#identities.push(newToken);
@@ -116,6 +143,7 @@ export class ZRC2Controller {
   }
 
   public async getToken(bech32: string): Promise<ZRC2Info> {
+    let pool: string[];
     let balance = '0';
     let rate = 0;
     const address = fromBech32Address(bech32);
@@ -133,7 +161,7 @@ export class ZRC2Controller {
       this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
         [
-          tohexString(Contracts.ZIL_SWAP),
+          tohexString(this.#dex.contract),
           ZRC2Fields.Pools,
           [tokenAddressBase16]
         ]
@@ -147,8 +175,8 @@ export class ZRC2Controller {
       balance = replies[1].result[ZRC2Fields.Balances][userAddress];
     }
     if (replies[2].result) {
-      const pool = replies[2].result[ZRC2Fields.Pools];
-      const [zilReserve, tokenReserve] = pool[tokenAddressBase16].arguments;
+      pool = replies[2].result[ZRC2Fields.Pools][tokenAddressBase16].arguments;
+      const [zilReserve, tokenReserve] = pool;
       rate = this.#calcRate(
         zilReserve,
         tokenReserve,
@@ -160,6 +188,7 @@ export class ZRC2Controller {
       balance,
       bech32,
       rate,
+      pool,
       name: zrc.name,
       symbol: zrc.symbol,
       decimals: zrc.decimals,
@@ -168,53 +197,71 @@ export class ZRC2Controller {
   }
 
   public async getBalance(owner: string) {
-    const address = tohexString(owner);
-    const addr = String(owner).toLowerCase();
+    const hexOwner = tohexString(owner);
+    const base16Owner = String(owner).toLowerCase();
+    const onlyZRC2 = this.identities.slice(1); // without ZIL token
     const balanceIdentities = this.identities.map((token) => {
       if (token.base16 === Contracts.ZERO_ADDRESS) {
         return this.#zilliqa.provider.buildBody(
           Methods.getBalance,
-          [address]
+          [hexOwner]
         );
       }
 
       return this.#zilliqa.provider.buildBody(
         Methods.GetSmartContractSubState,
-        [tohexString(token.base16), ZRC2Fields.Balances, [addr]]
+        [tohexString(token.base16), ZRC2Fields.Balances, [base16Owner]]
       );
     });
-    const dexContract = tohexString(Contracts.ZIL_SWAP);
-    const tokensIdentities = this.identities.filter((t) => t.base16 !== Contracts.ZERO_ADDRESS);
-    const tokensRates = tokensIdentities.map((token) => {
-      const tokenAddress = token.base16.toLowerCase();
-      return this.#zilliqa.provider.buildBody(
-        Methods.GetSmartContractSubState,
-        [dexContract, ZRC2Fields.Pools, [tokenAddress]]
-      );
-    });
-    const identities = [...balanceIdentities, ...tokensRates];
+    const poolIdentities = onlyZRC2.map((token) => this.#zilliqa.provider.buildBody(
+      Methods.GetSmartContractSubState,
+      [tohexString(this.#dex.contract), ZRC2Fields.Pools, [token.base16.toLowerCase()]]
+    ));
+    const identities = [...balanceIdentities, ...poolIdentities];
     let replies = await this.#zilliqa.sendJson(...identities);
 
     if (!Array.isArray(replies)) {
       replies = [replies];
     }
 
-    const pools = replies.slice(balanceIdentities.length);
-    const balances = replies.slice(0, balanceIdentities.length);
-    const entries = balances.map((res: RPCResponse, index: number) => {
+    const entries = replies.slice(0, balanceIdentities.length).map((res: RPCResponse, index: number) => {
       const { base16 } = this.identities[index];
       let balance = [base16, '0'];
       if (res.result && base16 === Contracts.ZERO_ADDRESS) {
         balance = res.error ? [base16, '0'] : [base16, res.result.balance];
       } else if (res.result) {
-        const bal = res.result[ZRC2Fields.Balances][addr];
+        const bal = res.result[ZRC2Fields.Balances][base16Owner];
         balance = [base16, bal];
       }
 
       return balance;
     });
 
-    await this.#updateRate(pools);
+    for (let index = 0; index < this.identities.length; index++) {
+      const token = this.identities[index];
+      const base16 = token.base16.toLowerCase();
+      
+      if (token.base16 === Contracts.ZERO_ADDRESS) {
+        continue;
+      }
+
+      const pool = replies[index + poolIdentities.length];
+
+      if (pool.result && pool.result[ZRC2Fields.Pools] && pool.result[ZRC2Fields.Pools]) {
+        const poolPair = pool.result[ZRC2Fields.Pools][base16]['arguments'];
+        const [zilReserve, tokenReserve] = poolPair;
+        this.identities[index].pool = poolPair;
+        this.identities[index].rate = this.#calcRate(
+          zilReserve,
+          tokenReserve,
+          token.decimals
+        );
+      }
+    }
+
+    await BrowserStorage.set(
+      buildObject(this.field, this.identities)
+    );
 
     return Object.fromEntries(entries);
   }
@@ -226,6 +273,10 @@ export class ZRC2Controller {
       const list = JSON.parse(String(jsonList));
 
       if (!list || !TypeOf.isArray(list)) {
+        return this.reset();
+      }
+
+      if (list.length < this.#identities.length) {
         return this.reset();
       }
 
@@ -259,7 +310,6 @@ export class ZRC2Controller {
     assert(Boolean(name), `${InitFields.Name} ${ErrorMessages.RequiredParam}`);
     assert(Boolean(symbol), `${InitFields.Symbol} ${ErrorMessages.RequiredParam}`);
     assert(Boolean(address), `${InitFields.Address} ${ErrorMessages.RequiredParam}`);
-    assert(Boolean(decimals), `${InitFields.Decimals} ${ErrorMessages.RequiredParam}`);
 
     return {
       decimals: Number(decimals),
@@ -276,33 +326,5 @@ export class ZRC2Controller {
     const exchangeRate = (_zilReserve / _tokenReserve).toFixed(10);
 
     return Number(exchangeRate);
-  }
-
-  async #updateRate(pools: object[]) {
-    for (let index = 0; index < pools.length; index++) {
-      const res = pools[index];
-
-      try {
-        const pool = res['result'][ZRC2Fields.Pools];
-        const [base16] = Object.keys(pool);
-        const foundIndex = this.identities.findIndex(
-          (t) => t.base16.toLowerCase() === base16
-        );
-        const foundToken = this.identities[foundIndex];
-        const [zilReserve, tokenReserve] = pool[base16].arguments;
-
-        this.identities[foundIndex].rate = this.#calcRate(
-          zilReserve,
-          tokenReserve,
-          foundToken.decimals
-        );
-      } catch {
-        continue;
-      }
-    }
-
-    await BrowserStorage.set(
-      buildObject(this.field, this.identities)
-    );
   }
 }

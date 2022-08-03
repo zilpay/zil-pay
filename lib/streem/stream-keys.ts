@@ -52,6 +52,7 @@ export const MTypePopup = {
   GET_ZRC2_STATE: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
   RM_TOKEN: `@/${app}/remove-token`,
+  GET_ZRC2_ALLOWANCES_FOR_SWAP: `@/${app}/get-zrc2-allowances-for-swap`,
 
   UPDATE_NFT_LIST: `@/${app}/update-nft-list`,
   GET_NFT_LIST: `@/${app}/get-nft-list`,
@@ -97,7 +98,12 @@ export const MTypePopup = {
   REJECT_SIGN_MESSAGE: `@/${app}/reject-sign-message`,
   SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`,
 
-  FROM_BECH32: `@/${app}/convert-from-bech32`
+  FROM_BECH32: `@/${app}/convert-from-bech32`,
+
+  UPDATE_DEX_DATA: `@/${app}/update-dex-data`,
+  UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`,
+
+  GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
 };
 
 export const MTypeTab = {

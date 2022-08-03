@@ -3,7 +3,9 @@
 	import { _ } from 'popup/i18n';
   import { fly } from 'svelte/transition';
 	import flyTransition from 'popup/transitions/fly';
-  import { checkProcessedTx, clearAllTxns } from 'popup/backend/transactions';
+
+  import { clearAllTxns } from 'popup/backend/transactions';
+  import { getLatestBlockNumber } from 'app/backend/netwrok';
 
   import transactionsStore from 'popup/store/transactions';
 
@@ -22,7 +24,7 @@
   const hanldeOnUpdate = async () => {
     loading = true;
     try {
-      await checkProcessedTx();l
+      await getLatestBlockNumber();
     } catch {
       ////
     }
