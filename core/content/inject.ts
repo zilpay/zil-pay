@@ -14,7 +14,7 @@ export function inject(name: string) {
   // Create new script tag in the document head.
   const container = (document.head || document.documentElement);
   const scriptTag = document.createElement('script');
-  const src = Runtime.extension.getURL(`/${name}`);
+  const src = Runtime.runtime.getURL(`/${name}`);
 
   scriptTag.setAttribute('async', 'false');
   scriptTag.src = src;

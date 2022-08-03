@@ -137,7 +137,8 @@
 			buttonLoading = false;
 
 			push('/confirm');
-		} catch {
+		} catch (err) {
+			console.log(err);
 			/// TODO: track errors.
 		}
 
