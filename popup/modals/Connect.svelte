@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import qrcode from 'qrcode/lib/browser';
 	import { _ } from 'popup/i18n';
 	import { w3cwebsocket } from "websocket";
 
@@ -38,6 +39,15 @@
     loading = true;
 		try {
       data = await exportWalletQrcode(password);
+
+      data.base58 = await qrcode.toDataURL(
+        data.content,
+        {
+          width: 200,
+          height: 200,
+        }
+      );
+      
       client = new w3cwebsocket(ZilPayConnect.Host, ZilPayConnect.Protocol);
       client.onerror = function(err) {
         client.close();

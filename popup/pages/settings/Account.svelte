@@ -39,7 +39,7 @@
         `zilliqa://${account.bech32}`,
         {
           width: 200,
-          height: 200,
+          height: 200
         }
       );
 			nonce = await getCurrentNonce();
