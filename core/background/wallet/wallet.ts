@@ -11,7 +11,6 @@ import type { StreamResponse } from 'types/stream';
 import type { Wallet } from 'types/account';
 
 import { Aes } from 'lib/crypto/aes';
-import qrcode from 'qrcode/lib/browser';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { AccountTypes } from 'config/account-type';
 
@@ -61,27 +60,6 @@ export class ZilPayWallet {
     }
   }
 
-  public async exportAccountQRCode(index: number, sendResponse: StreamResponse) {
-    try {
-      this.#core.guard.checkSession();
-      const account = this.#core.account.wallet.identities[index];
-      const base58 = await qrcode.toDataURL(
-        `zilliqa://${account.bech32}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
-      sendResponse({
-        resolve: base58
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
   public async exportSeedPhrase(password: string, sendResponse: StreamResponse) {
     try {
       this.#core.guard.setPassword(password);
@@ -118,13 +96,7 @@ export class ZilPayWallet {
       };
       const uuid = uuidv4();
       const encrypted = Aes.getEncrypted(data, password);
-      const base58 = await qrcode.toDataURL(
-        `${uuid}/${encrypted.iv}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
+      const content = `${uuid}/${encrypted.iv}`;
 
       wallet.identities = wallet.identities.filter(
         (acc) => acc.type !== AccountTypes.Ledger
@@ -135,7 +107,7 @@ export class ZilPayWallet {
 
       sendResponse({
         resolve: {
-          base58,
+          content,
           uuid,
           data: {
             wallet,

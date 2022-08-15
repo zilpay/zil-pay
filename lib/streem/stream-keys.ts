@@ -17,48 +17,33 @@ export const MTypeTabContent = {
 
 export const MTypePopup = {
   GET_RANDOM_SEED: `@/${app}/generate-random-seed`,
-  CREATE_ACCOUNT_BY_SEED: `@/${app}/set-account-by-seed-words`,
-
   SET_PASSWORD: `@/${app}/popup-set-password`,
   LOG_OUT: `@/${app}/popup-logout`,
   SET_SEED_AND_PASSWORD: `@/${app}/popup-set-seed-words-and-password`,
 
   GET_WALLET_STATE: `@/${app}/get-wallet-state`,
 
-  EXPORT_SEED: `@/${app}/popup-export-seed-words`,
   EXPORT_PRIVATE_KEY: `@/${app}/popup-export-private-key`,
-  EXPORT_QR_CODE: `@/${app}/export-qr-code-by-index`,
   EXPORT_QR_CODE_WALLET: `@/${app}/export-qr-code-wallet`,
-
-  IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
-  IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
   RM_ACCOUNT: `@/${app}/remove-selected-account`,
   SELECT_ACCOUNT: `@/${app}/select-account`,
   SET_ACCOUNT_NAME: `@/${app}/set-account-name`,
 
   UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
-  UPDATE_TXNS: `@/${app}/check-processed-txns`,
-
   DOMAIN_RESOLVE: `@/${app}/popup-resolve-domain`,
 
   REJECT_CONFIRM_TX: `@/${app}/popup-reject-confirm-tx`,
   REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
-  SEND_TO_SIGN_TX: `@/${app}/popup-send-to-sign-tx`,
-  GET_REQUIRED_PARAMS: `@/${app}/get-required-params`,
   CLEAR_ALL_TXNS: `@/${app}/clear-all-txns`,
   GET_CURRENT_NONCE: `@/${app}/get-current-nonce`,
   RESET_NONCE: `@/${app}/reset-nonce`,
 
   GET_ZRC2_STATE: `@/${app}/get-zrc2-token-info`,
   ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
-  RM_TOKEN: `@/${app}/remove-token`,
   GET_ZRC2_ALLOWANCES_FOR_SWAP: `@/${app}/get-zrc2-allowances-for-swap`,
 
   UPDATE_NFT_LIST: `@/${app}/update-nft-list`,
   GET_NFT_LIST: `@/${app}/get-nft-list`,
-  FETCH_NFT: `@/${app}/fetch-nft`,
-  ADD_NFT: `@/${app}/add-nft`,
-  REMOVE_NFT: `@/${app}/remove-nft`,
 
   SELECT_SSN: `@/${app}/select-from-ssn-list`,
   RESET_NETWROK: `@/${app}/reset-netwrok-settings`,

@@ -62,16 +62,6 @@ type CallBack = { [key: string]: chrome.storage.StorageChange; };
   async set(...args: StorageKeyValue[]) {
     const list: Promise<void>[] = [];
 
-    for (let index = 0; index < args.length; index++) {
-      const arg = args[index];
-
-      list.push(new Promise<void>((resolve) => {
-        Runtime
-            .storage
-            .local.set(arg, () => resolve());
-      }));
-    }
-
     await Promise.all(list);
   },
 

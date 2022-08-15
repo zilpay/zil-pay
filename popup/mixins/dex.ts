@@ -439,7 +439,7 @@ export class ZIlPayDex {
       }),
       code: '',
       gasPrice,
-      icon: Runtime.extension.getURL('/icons/icon128.png'),
+      icon: Runtime.runtime.getURL('/icons/icon128.png'),
       title: 'Swap'
     });
   }

@@ -7,10 +7,12 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { WalletState } from 'types/account';
+
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
+
 
 export async function getState() {
   const data = await Message.signal(
@@ -90,16 +92,6 @@ export async function importPrivateKey(privKey: string, name: string) {
   const state = warpMessage(data) as WalletState;
   updateState(state);
   return state;
-}
-
-export async function getQrCOde(index: number) {
-  const data = await new Message({
-    type: MTypePopup.EXPORT_QR_CODE,
-    payload: {
-      index
-    }
-  }).send();
-  return warpMessage(data);
 }
 
 export async function exportSecrePhrase(password: string) {

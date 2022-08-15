@@ -96,7 +96,7 @@ export async function buildTx(toAddr: string, amount: Big, token: ZRC2Token) {
     code: '',
     gasLimit,
     gasPrice,
-    icon: Runtime.extension.getURL('/icons/icon128.png'),
+    icon: Runtime.runtime.getURL('/icons/icon128.png'),
     title: 'ZilPay'
   };
   /// IF ZRC2

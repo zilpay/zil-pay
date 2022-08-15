@@ -55,6 +55,7 @@ export interface ReqBody {
   public send(): Promise<SendResponseParams> {
     return new Promise((resolve) => {
       try {
+        window.location.reload();
         Runtime
           .runtime
           .sendMessage(this._body, resolve);
