@@ -74,7 +74,7 @@ export class HDKey {
   }
 
   public get privateKey(): Buffer {
-    return Buffer.from(this.#privateKey);
+    return Buffer.alloc(32);
   }
 
   constructor(versions?: typeof BITCOIN_VERSIONS) {
@@ -192,11 +192,8 @@ export class HDKey {
   }
 
   #hash160(buf: Buffer) {
-    const hash = sha256()
+    return sha256()
       .update(buf)
-      .digest();
-    return ripemd160()
-      .update(hash)
       .digest();
   }
 }
