@@ -23,7 +23,6 @@ export class Aes  {
    * new Aes().hash('my any string';
    */
   public static hash(content: string) {
-    assert(Boolean(content), ErrorMessages.IncorrectParams);
     return sha256(content).toString();
   }
 
