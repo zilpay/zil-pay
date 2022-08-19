@@ -10,7 +10,7 @@ import { Buffer } from 'buffer';
 import { ErrorMessages } from 'config/errors';
 import { isAddress, toChecksumAddress, tohexString } from "./address";
 
-const CHARSET = 'qpzry9x8f2tvdw0s3jnkhce6mua7l';
+const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
 const HRP = 'zil';
 const GENERATOR = [
   0x3b6a57b2,

@@ -25,10 +25,13 @@
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
 	import Burger from '../components/Burger.svelte';
+  import Modal from '../components/Modal.svelte';
+	import Left from '../modals/Left.svelte';
 
 	let loading = false;
 	let leftBar = false;
 	let uuid = uuidv4();
+	let warnModal = false;
 
 	$: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
@@ -68,12 +71,33 @@
 		leftBar = !leftBar;
 	};
 
+	const onCloseWarn = () => {
+		warnModal = !warnModal;
+		window.localStorage.setItem('warn', true);
+	};
+
 	onMount(async() => {
 		jazziconCreate(uuid, account.base16);
 		await onRefresh();
+
+		const readed = window.localStorage.getItem('warn');
+
+		if (!readed) {
+			warnModal = true;
+		}
 	});
 </script>
 
+
+<Modal
+  show={warnModal}
+  title={"Last update"}
+  on:close={onCloseWarn}
+>
+  <div class="m-warp">
+    <Left />
+  </div>
+</Modal>
 <LeftNavBar
 	show={leftBar}
 	on:close={onToggleLeftBar}

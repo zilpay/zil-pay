@@ -3,6 +3,8 @@
 
 <div>
   <span />
+  <span />
+  <span />
 </div>
 
 <style lang="scss">
