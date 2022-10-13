@@ -23,6 +23,7 @@ export class Aes  {
    * new Aes().hash('my any string';
    */
   public static hash(content: string) {
+    assert(Boolean(content), ErrorMessages.IncorrectParams);
     return sha256(content).toString();
   }
 
@@ -56,11 +57,15 @@ export class Aes  {
     assert(Boolean(data), ErrorMessages.IncorrectParams);
     assert(Boolean(key), ErrorMessages.IncorrectParams);
 
+    const decrypted = aes.decrypt(data, key);
+    const content = decrypted.toString(Utf8);
+
+    assert(Boolean(content), ErrorMessages.IncorrectPassword);
 
     try {
-      return JSON.parse(data);
+      return JSON.parse(content);
     } catch {
-      return data;
+      return content;
     }
   }
 }

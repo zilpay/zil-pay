@@ -122,6 +122,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.SELECT_ACCOUNT:
         core.wallet.selectAccount(msg.payload.index, sendResponse);
         return true;
+      case MTypePopup.EXPORT_QR_CODE:
+        core.wallet.exportAccountQRCode(msg.payload.index, sendResponse);
+        return true;
       case MTypePopup.SELECT_NETWORK:
         core.netwrok.select(msg.payload.net, sendResponse);
         return true;

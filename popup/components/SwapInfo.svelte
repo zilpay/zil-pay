@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
   import Big from 'big.js';
-	import { beforeUpdate } from 'svelte';
 
 	import dexStore from 'popup/store/dex';
   import currencyStore from 'popup/store/currency';
@@ -21,14 +20,15 @@
 
   export let gasLimit = 0;
   export let pair;
+  export let virtualParams;
 
 	$: rate = $rateStore[$currencyStore];
   $: gasFee = ($gasStore.gasPrice * gasLimit * $gasStore.multiplier) / 10**6;
-  $: virtualParams = dex.getVirtualParams(pair);
   $: feeConverted = convertRate(rate, gasFee);
   $: afterSlippage = dex.calcBigSlippage(pair[1].value, $dexStore.slippage);
 
   function hanldeSwpa() {
+    console.log(virtualParams.impact);
   }
 
   const hanldeChangeSlippage = (event) => {
@@ -57,7 +57,7 @@
         1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>({formatNumber(virtualParams.converted, $currencyStore)})</span>
       </p>
     </li>
-    <li>
+    <li class:big={virtualParams.impact > 10}>
       <b>
         {$_('swap.info.price_impact')}
       </b>
@@ -70,7 +70,7 @@
         {$_('swap.info.fee')}
       </b>
       <p>
-        {formatNumber(gasFee)}ZIL <span>({formatNumber(feeConverted, $currencyStore)})</span>
+        {formatNumber(gasFee)}ZIL <span>({formatNumber(String(feeConverted), $currencyStore)})</span>
       </p>
     </li>
     <li>
@@ -137,6 +137,15 @@
 
         @include flex-between-row;
 
+        &.big {
+          cursor: pointer;
+
+          & > p,
+          & > b,
+          & > p > span {
+            color: var(--danger-color);
+          }
+        }
         & > p,
         & > b {
           font-size: 8pt;

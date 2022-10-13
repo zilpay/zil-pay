@@ -105,7 +105,7 @@ export class MnemonicController {
   }
 
   #salt(password: string) {
-    return 'mnemosnic' + (password || '');
+    return 'mnemonic' + (password || '');
   }
 
   #normalize(str: string) {

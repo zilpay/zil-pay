@@ -5,11 +5,10 @@
   } from 'popup/config/account';
 
 	import { onMount, tick } from 'svelte';
-	import qrcode from 'qrcode/lib/browser';
   import { fade, blur } from 'svelte/transition';
 	import { _ } from 'popup/i18n';
 	import { getCurrentNonce, resetNonce } from 'popup/backend/transactions';
-	import { changeAccountName, selectAccount } from 'popup/backend/wallet';
+	import { getQrCOde, changeAccountName, selectAccount } from 'popup/backend/wallet';
 
   import { trim } from 'popup/filters/trim';
 
@@ -34,16 +33,11 @@
 
 	async function updateState() {
 		loading = true;
+		base58 = '';
 		try {
-			base58 = await qrcode.toDataURL(
-        `zilliqa://${account.bech32}`,
-        {
-          width: 200,
-          height: 200
-        }
-      );
+			base58 = await getQrCOde(index);
 			nonce = await getCurrentNonce();
-		} catch (err) {
+		} catch {
 			///
 		}
 		loading = false;

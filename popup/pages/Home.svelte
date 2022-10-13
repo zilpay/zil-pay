@@ -1,21 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import Big from 'big.js';
 	import { link, push } from 'svelte-spa-router';
 	import { TokenType } from 'popup/config/token-type';
 	import { uuidv4 } from 'lib/crypto/uuid';
 
-	import { fromDecimals } from 'popup/filters/units';
-	import { convertRate } from 'popup/filters/convert-rate';
-	import { formatNumber } from 'popup/filters/n-format';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
 	import { balanceUpdate } from 'popup/backend/wallet';
 	import { updateRate } from 'popup/backend/settings';
 
-	import rateStore from 'popup/store/rate';
 	import walletStore from 'popup/store/wallet';
-	import currencyStore from 'popup/store/currency';
 	import zrcStore from 'popup/store/zrc';
 
 	import TopBar from '../components/TopBar.svelte';
@@ -26,27 +20,13 @@
 	import CopyAccount from '../components/CopyAccount.svelte';
 	import Burger from '../components/Burger.svelte';
 
+
 	let loading = false;
 	let leftBar = false;
 	let uuid = uuidv4();
 
-	$: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: zrc2Tokens = account.zrc2;
-	$: rate = $rateStore[$currencyStore];
-	$: balance = $zrcStore.reduce((previousValue, currentValue, index) => {
-		try {
-			const qa = account.zrc2[currentValue.base16] || '0';
-			const balance = fromDecimals(qa, currentValue.decimals);
-			const tokenRate = Big(currentValue.rate || 1);
-			const zils = tokenRate.mul(balance);
-
-			return previousValue.add(zils);
-		} catch {
-			return previousValue;
-		}
-	}, Big(0));
-	$: converted = convertRate(rate, balance);
 
 	const onRefresh = async (rate = false) => {
 		loading = true;
@@ -73,6 +53,7 @@
 		await onRefresh();
 	});
 </script>
+
 
 <LeftNavBar
 	show={leftBar}
@@ -103,9 +84,6 @@
 				<div id={uuid}/>
 			</a>
 		</div>
-		<h1 class="amount">
-			{formatNumber(converted, $currencyStore)}
-		</h1>
 		<div class="btns">
 			<button
 				class="action"
@@ -155,15 +133,6 @@
 
 		@include flex-center-top-column;
 	}
-	h1 {
-		color: var(--text-color);
-		text-align: center;
-		font-family: Demi;
-		margin-block-end: 0;
-		margin-block-start: 0;
-
-		@include fluid-font(320px, 900px, 28px, 60px);
-	}
 	a.acc {
 		border: solid 2px var(--muted-color);
 
@@ -188,7 +157,7 @@
 		opacity: 0.5;
 	}
 	div.wrapper {
-		margin-top: 15px;
+		margin-top: 30px;
 		padding-left: 10px;
 		padding-right: 10px;
 

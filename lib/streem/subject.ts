@@ -31,6 +31,10 @@ export class Subject {
     this.#events.forEach(listener => listener.apply(this, args));
   }
 
-  public once(): void {
+  public once(listener: Listener): void {
+    const remove: (() => void) = this.on((...args: ReqBody[]) => {
+      remove();
+      listener.apply(this, args);
+    });
   }
 }

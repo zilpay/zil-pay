@@ -16,7 +16,6 @@ import { LedgerInterface } from './interface';
 import { LedgerU2F } from './ledger-u2f';
 import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
 
-
 export class LedgerWebHID {
   #transport?: Transport;
   #interface?: LedgerInterface | LedgerU2F;

@@ -137,8 +137,14 @@ export class SchnorrControl {
 
     // 4. Compute s = k - r * prv
     // 4a. Compute r * prv
+    let s = h.imul(privKey).umod(this._curve.n);
     // 4b. Compute s = k - r * prv mod n
+    s = k.isub(s).umod(this._curve.n);
 
-    return new Signature({ r, s: '' });
+    if (s.isZero()) {
+      return null;
+    }
+
+    return new Signature({ r, s });
   }
 }
