@@ -16,18 +16,15 @@
   import { fromDecimals } from 'popup/filters/units';
 
 	import zrcStore from 'popup/store/zrc';
-	import currencyStore from 'popup/store/currency';
-	import rateStore from 'popup/store/rate';
   import themeStore from 'popup/store/theme';
 	import walletStore from 'popup/store/wallet';
-  import netStore from 'popup/store/netwrok';
 
 	import { updateDexData } from 'popup/backend/settings';
 	import { balanceUpdate } from 'popup/backend/wallet';
-  import { formatNumber } from 'popup/filters/n-format';
 
 	import { ZIlPayDex } from 'popup/mixins/dex';
 	import { BrowserStorage } from 'lib/storage/browser-storage';
+
 
 	const dex = new ZIlPayDex();
 
@@ -39,7 +36,6 @@
 	let buttonLoading = false;
 	let modalIndex = -1;
 	let gasLimit = 0;
-	let approved = true;
 	let tokens = [
 		{
 			value: '0',
@@ -60,7 +56,8 @@
 		(t) => (t.pool || t.base16 === $zrcStore[0].base16)
 			&& (t.base16 !== tokens[0].meta.base16 && (tokens[1].meta && t.base16 !== tokens[1].meta.base16))
 	);
-	$: disabled = loading || Number(tokens[0].value) <= 0;
+	$: virtualParams = dex.getVirtualParams(tokens);
+	$: disabled = loading || Number(tokens[0].value) <= 0 || virtualParams.impact > 20;
 
 
 	async function hanldeOnSwapTokens() {
@@ -94,7 +91,6 @@
 		const token = listedTokens[detail];
 
 		tokens[modalIndex].meta = token;
-		tokens[modalIndex].balance = fromDecimals(account.zrc2[token.base16], token.decimals);
 		tokens[0].value = '0';
 		tokens[1].value = '0';
 
@@ -202,7 +198,7 @@
 				<Smartinput
 					img={viewIcon(tokens[0].meta.bech32, $themeStore)}
 					symbol={tokens[0].meta.symbol}
-					max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals)}
+					max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).toString()}
 					value={tokens[0].value}
 					loading={loading}
 					on:select={() => hanldeOnSelect(0)}
@@ -229,6 +225,7 @@
 				<SwapInfo
 					pair={tokens}
 					gasLimit={gasLimit}
+					virtualParams={virtualParams}
 				/>
 				<button
 					class:loading={buttonLoading}

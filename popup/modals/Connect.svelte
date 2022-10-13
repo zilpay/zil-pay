@@ -5,12 +5,11 @@
 
   import { ZilPayConnect } from "config/connect";
 
-  import { getZNS } from 'popup/backend/zns';
   import { exportWalletQrcode } from 'popup/backend/wallet';
 
   const dispatch = createEventDispatcher();
 
-  let client;
+  let client: w3cwebsocket;
 
   let passwordElement = null;
   let loading = false;
@@ -32,14 +31,14 @@
     }
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: Event) => {
 		e.preventDefault();
 
     loading = true;
 		try {
       data = await exportWalletQrcode(password);
       client = new w3cwebsocket(ZilPayConnect.Host, ZilPayConnect.Protocol);
-      client.onerror = function(err) {
+      client.onerror = function() {
         client.close();
       };
 
@@ -91,7 +90,7 @@
     </label>
     <button
       class="warning"
-      disabled={buttonDisabled}
+      disabled={Boolean(buttonDisabled)}
     >
       {$_('security.connect.btn')}
     </button>

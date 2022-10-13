@@ -20,9 +20,9 @@
 	export let converted = null;
 	export let placeholder = '';
 	export let max = '0';
-  export let img;
-  export let symbol;
-	export let value;
+  export let img: string;
+  export let symbol: string;
+	export let value: string;
 
 	const onClick = () => {
     dispatch('select');

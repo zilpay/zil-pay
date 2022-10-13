@@ -7,7 +7,10 @@
  * Copyright (c) 2021 ZilPay
  */
 
-export function formatNumber(balance: number | string, currency?: string) {
+import type Big from "big.js";
+
+
+export function formatNumber(balance: number | string | Big, currency?: string) {
   const locale = 'en';// navigator.language;
   let opt: Intl.NumberFormatOptions = {
     style: undefined,

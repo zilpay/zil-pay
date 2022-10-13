@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Account } from 'types/account';
+
   import { trim } from 'popup/filters/trim';
   import { fromDecimals } from 'popup/filters/units';
   import { convertRate } from 'popup/filters/convert-rate';
@@ -9,13 +11,14 @@
 	import currencyStore from 'popup/store/currency';
 	import format from 'popup/store/format';
 
-  export let account;
+
+  export let account: Account;
   export let selected = false;
 
   $: ZIL = $zrcStore[0];
   $: balance = fromDecimals(account.zrc2[ZIL.base16], ZIL.decimals).round(7);
 	$: rate = $rateStore[$currencyStore];
-  $: converted = convertRate(rate, balance).round(7);
+  $: converted = convertRate(rate, String(balance)).round(7);
 </script>
 
 <div class="wrapper">
@@ -38,10 +41,10 @@
 </div>
 <div class="values">
   <h2>
-    {formatNumber(balance, ZIL.symbol)}
+    {formatNumber(String(balance), ZIL.symbol)}
   </h2>
   <p>
-    {formatNumber(converted, $currencyStore)}
+    {formatNumber(String(converted), $currencyStore)}
   </p>
 </div>
 
