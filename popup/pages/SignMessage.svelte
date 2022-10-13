@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
-	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
 	import { closePopup } from 'popup/mixins/popup';
 
@@ -19,9 +18,8 @@
 	import AccountsModal from '../modals/Accounts.svelte';
 	import Toggle from '../components/Toggle.svelte';
 
-	const url = new URL(window.location.href);
 
-	let loading = false;
+  let loading = false;
   let error = '';
 	let accountsModal = false;
 	let accountIndex = $walletStore.selectedAddress;
@@ -42,23 +40,14 @@
 	};
   const handleOnReject = async () => {
     await rejectSignMessage();
-
-    if (url.searchParams.has('type')) {
-			await closePopup();
-		}
-    push('/');
+    await closePopup();
   };
   const handleOnSign = async () => {
     loading = true;
-    console.log(url);
 
     try {
       await signMessageApprove(accountIndex);
-      
-      if (url.searchParams.has('type')) {
-        await closePopup();
-      }
-      push('/');
+      await closePopup();
     } catch (err) {
       error = err.message;
     }
