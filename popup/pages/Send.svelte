@@ -3,13 +3,11 @@
   import { tick, onMount } from 'svelte';
 	import { push } from 'svelte-spa-router';
 	import { _ } from 'popup/i18n';
-	import flyTransition from 'popup/transitions/fly';
 	import { TokenType } from 'popup/config/token-type';
   import { uuidv4 } from 'lib/crypto/uuid';
   import { fromBech32 } from 'popup/backend/settings';
 
   import { trim } from 'popup/filters/trim';
-  import { sendToSignTx } from 'popup/backend/sign';
   import { fromDecimals, toDecimals } from 'popup/filters/units';
   import { viewIcon } from 'lib/block-explorer/view';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
@@ -29,7 +27,6 @@
 	import nftListStore from 'popup/store/nft-list';
 	import format from 'popup/store/format';
 
-	import { balanceUpdate } from 'popup/backend/wallet';
   import { getNFTList } from 'popup/backend/tokens';
 
 	import NavClose from '../components/NavClose.svelte';
@@ -70,7 +67,7 @@
   $: token = $zrcStore[selectedToken];
   $: tokenIcon = viewIcon(token.bech32, $themeStore);
   $: balance = fromDecimals(account.zrc2[token.base16], token.decimals).round(7);
-  $: zils = balance.mul(token.rate || 1);
+  $: zils = String(balance.mul(token.rate || 1));
 	$: rate = $rateStore[$currencyStore];
   $: converted = convertRate(rate, zils).round(7);
 	$: disabled = !amount || !recipient;

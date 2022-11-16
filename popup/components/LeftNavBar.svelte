@@ -56,6 +56,12 @@
       description={$_('home.nav.options.import.description')}
     />
   </a>
+  <a href="/import-track" use:link>
+    <TextElement
+      title={$_('home.nav.options.track.title')}
+      description={$_('home.nav.options.track.description')}
+    />
+  </a>
   <span on:click={() => linksExpand('/ledger-device-finder')}>
     <TextElement
       title={$_('home.nav.options.connect.title')}

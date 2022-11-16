@@ -25,6 +25,7 @@ import AddAccount from '../pages/AddAccount.svelte';
 import RestorePrivKey from '../pages/RestorePrivKey.svelte';
 import Send from '../pages/Send.svelte';
 import AppConnect from '../pages/Connect.svelte';
+import AddTrackPage from '../pages/AddTrack.svelte';
 import TokenList from '../pages/TokenList.svelte';
 import LedgerConnect from '../pages/ledger/LedgerConnect.svelte';
 import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
@@ -63,6 +64,12 @@ export default {
   }),
   '/collect': wrap({
     component: Collect,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/import-track': wrap({
+    component: AddTrackPage,
     conditions: [
       routerGuard
     ]

@@ -3,7 +3,6 @@
 	import { _ } from 'popup/i18n';
   import { AccountTypes } from 'config/account-type';
   import {
-    MIN_PASSWORD_LEN,
     MAX_NAME_LEN,
     MIN_NAME_LEN,
     DEFAULT_NAME
