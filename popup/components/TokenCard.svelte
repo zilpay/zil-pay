@@ -84,7 +84,7 @@
     }
     &.disabled {
       cursor: unset;
-      opacity: 0.9;
+      opacity: 0.6;
     }
     &.disabled:hover {
       border-color: var(--card-color);
