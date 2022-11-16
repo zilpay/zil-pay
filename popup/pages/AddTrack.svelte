@@ -49,6 +49,7 @@
         const resolver = await getZNS(value);
         if (resolver.address) {
           address = resolver.address.bech32;
+          name = value;
         } else {
           address = resolver.owner.bech32;
         }

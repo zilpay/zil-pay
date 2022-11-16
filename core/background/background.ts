@@ -195,6 +195,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.IMPORT_PRIVATE_KEY:
         core.wallet.importPrivateKey(msg.payload, sendResponse);
         return true;
+      case MTypePopup.IMPORT_TRACK_ACCOUNT:
+        core.wallet.importTrackAccount(msg.payload.bech32, msg.payload.name, sendResponse);
+        return true;
       case MTypePopup.IMPORT_KEYSTORE:
         /// TODO: make a keystore method in core.
         return true;

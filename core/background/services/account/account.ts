@@ -62,6 +62,13 @@ export class AccountController {
       .length;
   }
 
+  public get lastIndexTracker() {
+    return this.#wallet
+      .identities
+      .filter((acc) => acc.type === AccountTypes.Track)
+      .length;
+  }
+
   public get lastIndexSeed() {
     return this.#wallet
       .identities
@@ -302,6 +309,25 @@ export class AccountController {
       type,
       pubKey,
       privKey: encryptedPrivateKey,
+      zrc2,
+      nft: {}
+    };    
+    await this._add(account);
+    return account;
+  }
+
+  public async addAccountForTrack(bech32: string, name: string) {
+    const index = this.lastIndexTracker;
+    const base16 = fromBech32Address(bech32);
+    const type = AccountTypes.Track;
+    const zrc2 = await this.#zrc2.getBalance(base16);
+    const account: Account = {
+      name,
+      bech32,
+      index,
+      base16,
+      type,
+      pubKey: '',
       zrc2,
       nft: {}
     };    
