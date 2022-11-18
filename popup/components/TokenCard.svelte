@@ -9,7 +9,8 @@
 	import currencyStore from 'popup/store/currency';
 
   import themeStore from 'popup/store/theme';
-	import zrcStore from 'popup/store/zrc';
+  import Big from 'big.js';
+
 
   const dispatch = createEventDispatcher();
 
@@ -19,20 +20,24 @@
   export let decimal: number;
   export let loading = false;
   export let tokenRate = 0;
+  export let disabled = false;
 
   $: img = viewIcon(address, $themeStore);
-  $: balance = fromDecimals(balance, decimal).round(7);
-  $: zils = balance.mul(tokenRate);
+  $: balance = String(fromDecimals(balance, decimal).round(7));
+  $: zils = Big(balance).mul(tokenRate);
 	$: rate = $rateStore[$currencyStore];
-  $: converted = convertRate(rate, zils).round(7);
+  $: converted = convertRate(rate, String(zils)).round(7);
 
   const onClick = () => {
-    dispatch('select');
+    if (!disabled) {
+      dispatch('select');
+    }
   };
 </script>
 
 <div
   class="token-card"
+  class:disabled={disabled}
   class:loading={loading}
   on:click={onClick}
 >
@@ -76,6 +81,13 @@
 
     &.loading {
       @include loading-gradient(var(--background-color), var(--card-color));
+    }
+    &.disabled {
+      cursor: unset;
+      opacity: 0.6;
+    }
+    &.disabled:hover {
+      border-color: var(--card-color);
     }
     &:hover {
       border-color: var(--primary-color);

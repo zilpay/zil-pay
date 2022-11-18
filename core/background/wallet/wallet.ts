@@ -153,9 +153,30 @@ export class ZilPayWallet {
 
   public async importPrivateKey(payload: PrivateKeyName, sendResponse: StreamResponse) {
     try {
+      this.#core.guard.checkSession();
       await this.#core.account.addAccountFromPrivateKey(
         payload.privKey,
         payload.name
+      );
+      await this.#core.transactions.sync();
+      await this.#core.nft.sync();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async importTrackAccount(bech32: string, name: string, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.account.addAccountForTrack(
+        bech32,
+        name
       );
       await this.#core.transactions.sync();
       await this.#core.nft.sync();

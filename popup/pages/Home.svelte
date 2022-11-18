@@ -19,6 +19,7 @@
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
 	import Burger from '../components/Burger.svelte';
+    import { AccountTypes } from 'config/account-type';
 
 
 	let loading = false;
@@ -87,6 +88,7 @@
 		<div class="btns">
 			<button
 				class="action"
+				disabled={account.type === AccountTypes.Track}
 				on:click={() => push(`/send/${TokenType.ZRC2}/0`)}
 			>
 				{$_('home.btns.send')}
@@ -107,6 +109,7 @@
 					tokenRate={token.rate}
 					balance={zrc2Tokens[token.base16] || '0'}
 					loading={loading}
+					disabled={Boolean(account.type === AccountTypes.Track)}
 					on:select={() => push(`/send/${TokenType.ZRC2}/${index}`)}
 				/>
       {/each}

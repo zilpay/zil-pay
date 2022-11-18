@@ -1,4 +1,8 @@
 {
+  "account_track": {
+    "title": "Lisa Jälgija",
+    "description": "Aadress, mida ZilPay jälgib."
+  },
   "home": {
     "btns": {
       "send": "Saada",
@@ -18,6 +22,10 @@
         "import": {
           "title": "Import account",
           "description": "Taasta konto privaatvõtmest."
+        },
+        "track": {
+          "title": "Pista-kontua",
+          "description": "Gehitu bat ere ez-eragiketa kontua."
         },
         "connect": {
           "title": "Connect ledger.",

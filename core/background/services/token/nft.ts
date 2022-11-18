@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import type { NFTToken, NFTMetadata, ZRCNFT, NFTFromServer } from 'types/token';
+import type { NFTToken, NFTMetadata, ZRCNFT } from 'types/token';
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account/account';
 import type { RPCResponse } from 'types/zilliqa';

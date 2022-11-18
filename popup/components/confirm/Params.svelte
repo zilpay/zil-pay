@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { TransactionForConfirm } from 'types/transaction';
+
 	import { _ } from 'popup/i18n';
 	import { fade } from "svelte/transition";
 
@@ -8,20 +10,10 @@
   import { formatNumber } from 'popup/filters/n-format';
   import { viewAddress } from 'lib/block-explorer/view';
 
-	import zrcStore from 'popup/store/zrc';
   import themeStore from 'popup/store/theme';
   import netStore from 'popup/store/netwrok';
 
-	export let tx = {
-    amount: 0,
-    tokenAmount: 0,
-    fee: 0,
-    recipient: '',
-    teg: '',
-    token: $zrcStore[0],
-    gasLimit: 0,
-    gasPrice: 0
-  };
+	export let tx: TransactionForConfirm;
 
 	$: amount = fromDecimals(String(tx.tokenAmount || 0), Number(tx.token.decimals || 0)).round(7);
   $: img = viewIcon(tx.token.bech32, $themeStore);

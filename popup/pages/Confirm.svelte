@@ -10,14 +10,11 @@
 	import { closePopup } from 'popup/mixins/popup';
   import { trim } from 'popup/filters/trim';
 	import { jazziconCreate } from 'popup/mixins/jazzicon';
-	import { fromDecimals } from 'popup/filters/units';
-  import { convertRate } from 'popup/filters/convert-rate';
 	import {
 		rejectForSignTx,
 		sendTransactionToSign,
 		getTxRequiredParams
 	} from 'popup/backend/sign';
-  import { formatNumber } from 'popup/filters/n-format';
 
 	import format from 'popup/store/format';
 	import walletStore from 'popup/store/wallet';
@@ -31,6 +28,7 @@
 	import EditParamsModal from '../modals/EditParams.svelte';
 	import Params from '../components/confirm/Params.svelte';
 	import GasControl from '../components/GasControl.svelte';
+    import { AccountTypes } from 'config/account-type';
 
 	export let params = {
     index: 0
@@ -235,7 +233,7 @@
 			<button
 				class="primary"
 				class:loading={loading}
-				disabled={loading}
+				disabled={loading || account.type === AccountTypes.Track}
 				on:click={handleOnConfirm}
 			>
 				{$_('confirm.btns.confirm')}

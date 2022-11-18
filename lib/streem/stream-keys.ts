@@ -31,6 +31,7 @@ export const MTypePopup = {
   EXPORT_QR_CODE_WALLET: `@/${app}/export-qr-code-wallet`,
 
   IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
+  IMPORT_TRACK_ACCOUNT: `@/${app}/popup-import-track-account`,
   IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
   RM_ACCOUNT: `@/${app}/remove-selected-account`,
   SELECT_ACCOUNT: `@/${app}/select-account`,

@@ -92,6 +92,19 @@ export async function importPrivateKey(privKey: string, name: string) {
   return state;
 }
 
+export async function addAccountTracker(bech32: string, name: string) {
+  const data = await new Message({
+    type: MTypePopup.IMPORT_TRACK_ACCOUNT,
+    payload: {
+      name,
+      bech32
+    }
+  }).send();
+  const state = warpMessage(data) as WalletState;
+  updateState(state);
+  return state;
+}
+
 export async function getQrCOde(index: number) {
   const data = await new Message({
     type: MTypePopup.EXPORT_QR_CODE,

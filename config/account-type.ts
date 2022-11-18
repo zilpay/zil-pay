@@ -10,5 +10,6 @@
 export enum AccountTypes {
   Ledger,
   PrivateKey,
-  Seed
+  Seed,
+  Track
 }

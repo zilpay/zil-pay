@@ -1,4 +1,8 @@
 {
+  "account_track": {
+    "title": "Aggiungi Tracker",
+    "description": "Un indirizzo che sarà tracciato da ZilPay."
+  },
   "home": {
     "btns": {
       "send": "Invia",
@@ -18,6 +22,10 @@
         "import": {
           "title": "Importazione di un account",
           "description": "Recupera il tuo account da la PrivateKey."
+        },
+        "track": {
+          "title": "Traccia account",
+          "description": "Aggiungi account nessuno-operazione."
         },
         "connect": {
           "title": "Collegare il ledger.",

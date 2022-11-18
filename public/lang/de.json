@@ -1,4 +1,8 @@
 {
+  "account_track": {
+    "title": "Tracker hinzufügen",
+    "description": "Eine Adresse, die von ZilPay verfolgt wird."
+  },
   "home": {
     "btns": {
       "send": "Senden",
@@ -18,6 +22,10 @@
         "import": {
           "title": "Konto importieren",
           "description": "Konto wiederherstellen aus privatem Schluessel."
+        },
+        "track": {
+          "title": "Konto verfolgen",
+          "description": "Fügen Sie ein Konto ohne Vorgang hinzu."
         },
         "connect": {
           "title": "Ledger verbinden.",

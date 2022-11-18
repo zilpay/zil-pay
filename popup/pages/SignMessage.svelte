@@ -17,6 +17,7 @@
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
 	import Toggle from '../components/Toggle.svelte';
+    import { AccountTypes } from 'config/account-type';
 
 
   let loading = false;
@@ -104,18 +105,18 @@
   <hr />
   <div class="btns">
     <button
-      class="primary"
-      class:loading={loading}
-      disabled={loading}
-      on:click={handleOnSign}
-    >
-      {$_('sig_message.btns.confirm')}
-    </button>
-    <button
       on:click={handleOnReject}
       disabled={loading}
     >
       {$_('sig_message.btns.reject')}
+    </button>
+    <button
+      class="primary"
+      class:loading={loading}
+      disabled={loading || account.type === AccountTypes.Track}
+      on:click={handleOnSign}
+    >
+      {$_('sig_message.btns.confirm')}
     </button>
   </div>
 </main>

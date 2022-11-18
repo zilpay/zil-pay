@@ -12,7 +12,7 @@ Big.PE = 99;
 
 export const _li = Big(10 ** 6);
 
-export function gasToFee(gasLimit: string, gasPrice: string) {
+export function gasToFee(gasLimit: string | number, gasPrice: string | number) {
   if (isNaN(Number(gasLimit)) || isNaN(Number(gasPrice))) {
     return {
       _fee: Big(0),

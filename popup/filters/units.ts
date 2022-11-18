@@ -10,7 +10,7 @@ import Big from 'big.js';
 
 Big.PE = 99;
 
-export function fromDecimals(balance: string, decimals: number): Big {
+export function fromDecimals(balance: string | Big, decimals: number): Big {
   if (!balance || Number(balance) === 0) {
     return Big(0);
   }

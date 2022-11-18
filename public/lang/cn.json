@@ -1,4 +1,8 @@
 {
+  "account_track": {
+    "title": "添加跟踪器",
+    "description": "ZilPay将跟踪的地址。"
+  },
   "home": {
     "btns": {
       "send": "转账",
@@ -18,6 +22,10 @@
         "import": {
           "title": "导入账户",
           "description": "使用私钥导入账户。"
+        },
+        "track": {
+          "title": "跟踪帐户",
+          "description": "添加无操作帐户。"
         },
         "connect": {
           "title": "连接 Ledger",
