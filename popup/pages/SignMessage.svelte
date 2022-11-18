@@ -17,7 +17,7 @@
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
 	import Toggle from '../components/Toggle.svelte';
-    import { AccountTypes } from 'config/account-type';
+  import { AccountTypes } from 'config/account-type';
 
 
   let loading = false;
