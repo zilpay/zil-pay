@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { TransactionForConfirm } from 'types/transaction';
+
   import { createEventDispatcher, onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
 
@@ -6,12 +8,8 @@
 
   const dispatch = createEventDispatcher();
 
-  export let tx = {
-    gasLimit: 0,
-    gasPrice: 0,
-    nonce: 0,
-    data: ''
-  };
+  export let tx: TransactionForConfirm;
+
   let selected = 0;
   let tabs = [
     $_('confirm.params_modal.tabs.params'),

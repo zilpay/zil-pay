@@ -43,6 +43,7 @@ export enum ErrorMessages {
   CannotExportLedger = 'Cannot export privateKey from ledger.',
   HightNonce = 'nonce too High',
   IncorrectNetwrok = 'Incorrect selected netwrok.',
+  TrackedAccount = 'Tracked account cannot operate',
 
   Disabled = 'ZilPay is disabled.',
   Connect = 'User is\'t connections.',
