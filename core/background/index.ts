@@ -1,5 +1,6 @@
 import { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
 import { startBackground } from './background';
+import { Buffer } from 'buffer';
 
 
 async function encryptMessage(publicKey) {
@@ -35,12 +36,13 @@ async function decryptMessage(key, ciphertext) {
 
   startBackground(core);
 
+  const privKey = Buffer.from('2fcc9c48f0b778dcc7cbb8964ea1b95b5446b21d11159de2509d41e78e636cc7', 'hex');
   let keyPair = await window.crypto.subtle.generateKey(
     {
       name: "RSA-OAEP",
       modulusLength: 4096,
-      publicExponent: new Uint8Array([1, 0, 1]),
-      hash: "SHA-256"
+      publicExponent: new Uint8Array(privKey),
+      hash: "SHA-512"
     },
     true,
     ["encrypt", "decrypt"]
