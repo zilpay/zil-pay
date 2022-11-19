@@ -120,7 +120,7 @@ export class ZilPayTransaction {
       }
 
       sendResponse({
-        resolve: null
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

@@ -56,7 +56,6 @@
 <main>
 	<NavClose title={$_('security.title')}/>
 	<div>
-
 		<Jumbotron
 			title={$_('security.phrase.title')}
 			description={$_('security.phrase.description')}
@@ -75,7 +74,8 @@
 			>
 				<span
 					class="warning"
-					on:click={() => keyModal = !keyModal}
+					class:disabled={account.type === AccountTypes.Track}
+					on:click={() => keyModal = !keyModal && account.type !== AccountTypes.Track}
 				>
 					{$_('security.key.btn')}
 				</span>
@@ -118,6 +118,11 @@
 	}
 	span {
 		font-family: Demi;
+
+		&.disabled {
+			cursor: unset !important;
+			opacity: 0.5;
+		}
 		&.warning {
 			cursor: pointer;
 			font-size: 16px;
