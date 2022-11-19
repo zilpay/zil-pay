@@ -35,20 +35,4 @@ async function decryptMessage(key, ciphertext) {
   await core.sync();
 
   startBackground(core);
-
-  const privKey = Buffer.from('2fcc9c48f0b778dcc7cbb8964ea1b95b5446b21d11159de2509d41e78e636cc7', 'hex');
-  let keyPair = await window.crypto.subtle.generateKey(
-    {
-      name: "RSA-OAEP",
-      modulusLength: 4096,
-      publicExponent: new Uint8Array(privKey),
-      hash: "SHA-512"
-    },
-    true,
-    ["encrypt", "decrypt"]
-  );
-  const ciphertext = await encryptMessage(keyPair.publicKey);
-  console.log(ciphertext);
-  const decoded = await decryptMessage(keyPair.privateKey, ciphertext);
-  console.log(decoded);
 }());
