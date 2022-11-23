@@ -191,6 +191,7 @@
 					<a
 						href="https://zilpay.io/pool"
 						target="_blank"
+						rel="noreferrer"
 					>
 						{$_('swap.form.pool')}
 					</a>
@@ -208,7 +209,7 @@
 					<h3>
 						{$_('swap.form.to')}
 					</h3>
-					<span on:click={hanldeOnSwapTokens}>
+					<span on:mouseup={hanldeOnSwapTokens}>
 						<SwapIcon className="swap-icon"/>
 					</span>
 				</div>
@@ -238,6 +239,7 @@
 		<a
 			href="https://zilpay.io/"
 			target="_blank"
+			rel="noreferrer"
 		>
 			<p>
 				{$_('swap.form.link')}

@@ -85,7 +85,7 @@
       >
         <span
           class="pointer"
-          on:click={() => hanldeOnCopy(tx.from)}
+          on:mouseup={() => hanldeOnCopy(tx.from)}
         >
           {trim(tx.from)}
         </span>
@@ -117,7 +117,7 @@
       >
         <span
           class="pointer"
-          on:click={() => hanldeOnCopy(hash)}
+          on:mouseup={() => hanldeOnCopy(hash)}
         >
           {trim(hash, 10)}
         </span>
@@ -153,21 +153,21 @@
   <div class="btns">
     <button
       class="primary"
-      on:click={hanldeOnViewBlock}
+      on:mouseup={hanldeOnViewBlock}
     >
       {$_('history.modals.details.btns.view')}
     </button>
     {#if tx.confirmed}
       <button
         class="warning"
-        on:click={hanldeOnRepeat}
+        on:mouseup={hanldeOnRepeat}
       >
         {$_('history.modals.details.btns.repeat')}
       </button>
     {:else}
       <button
         class="warning"
-        on:click={hanldeOnCancel}
+        on:mouseup={hanldeOnCancel}
       >
         {$_('history.modals.details.btns.cancel')}
       </button>

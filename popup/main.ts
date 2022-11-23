@@ -13,28 +13,30 @@ import { Fields } from 'config/fields';
 
 let app = {};
 
+async function listener(event: object) {
+	for (const key in event) {
+		if (key.includes(Fields.TRANSACTIONS)) {
+			await getState();
+		}
+	}
+}
+
 getState()
 	.then(() => {
 		app = new App({
 			target: document.body
 		});
-		const events = Runtime.storage.local['onChanged'];
+		const events = Runtime.storage.local.onChanged;
 
 		if (!events) {
 			return null;
 		}
 
 		if (events && events.hasListeners && events.hasListeners()) {
-			events.removeListener();
+			events.removeListener(listener);
 		}
 
-		events.addListener(async(event: object) => {
-			for (const key in event) {
-				if (key.includes(Fields.TRANSACTIONS)) {
-					await getState();
-				}
-			}
-		});
+		events.addListener(listener);
 	})
 	.catch(console.error);
 

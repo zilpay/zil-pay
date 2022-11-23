@@ -39,7 +39,7 @@
 <nav class:show={show}>
   <h1>
     {account.name}
-    <span on:click={onClose}>
+    <span on:mouseup={onClose}>
       <Close />
     </span>
   </h1>
@@ -62,7 +62,7 @@
       description={$_('home.nav.options.track.description')}
     />
   </a>
-  <span on:click={() => linksExpand('/ledger-device-finder')}>
+  <span on:mouseup={() => linksExpand('/ledger-device-finder')}>
     <TextElement
       title={$_('home.nav.options.connect.title')}
       description={$_('home.nav.options.connect.description')}
@@ -72,7 +72,7 @@
   {#if canRemove}
     <span
       class="remove"
-      on:click={onRemoveAccount}
+      on:mouseup={onRemoveAccount}
     >
       <TextElement
         title={$_('home.nav.options.remove.title')}
@@ -105,7 +105,7 @@
 <div
   class="close"
   class:show={show}
-  on:click={onClose}
+  on:mouseup={onClose}
 />
 
 <style lang="scss">

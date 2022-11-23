@@ -9,7 +9,7 @@
 </script>
 
 <nav>
-  <div on:click={pop}>
+  <div on:mouseup={pop}>
     <BackButton />
   </div>
   <ul>

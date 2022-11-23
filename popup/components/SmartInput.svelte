@@ -52,7 +52,7 @@
 	class:loading={loading}
 	for={uuid}
 >
-  <span on:click={onClick}>
+  <span on:mouseup={onClick}>
     <img
       src={img}
       alt="input-token"
@@ -74,7 +74,7 @@
 				<b>{formatNumber(converted, $currencyStore)}</b>
 			{/if}
       {#each percents as percent}
-        <p on:click={() => onPercentInput(percent)}>{percent}%</p>
+        <p on:mouseup={() => onPercentInput(percent)}>{percent}%</p>
       {/each}
     </div>
   </div>

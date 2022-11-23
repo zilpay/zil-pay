@@ -24,7 +24,7 @@
   tip={tip}
   bottom
 >
-  <div on:click={handleOnCopy}>
+  <div on:mouseup={handleOnCopy}>
     <h1>
       {account.name}
     </h1>

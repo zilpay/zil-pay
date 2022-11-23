@@ -57,7 +57,7 @@
       {#each tabs as item, index}
         <li
           class:selected={selected === index}
-          on:click={() => selected = index}
+          on:mouseup={() => selected = index}
         >
           {item}
         </li>

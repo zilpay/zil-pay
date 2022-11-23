@@ -54,7 +54,7 @@
   {#if !accepted}
     <button
       class="primary"
-      on:click={getHidTransport}
+      on:mouseup={getHidTransport}
     >
       {$_('ledger_finder.accept')}
     </button>
@@ -63,7 +63,7 @@
       <b>
         {$_('ledger_finder.list_title')}
       </b>
-      <span on:click={getHidTransport}>
+      <span on:mouseup={getHidTransport}>
         <RefreshIcon className="refresh"/>
       </span>
     </div>
@@ -71,7 +71,7 @@
       {#each devices as device}
         <li
           in:fly={flyTransition.in}
-          on:click={() => push(`/ledger-connect/${device.productId}`)}
+          on:mouseup={() => push(`/ledger-connect/${device.productId}`)}
         >
           <div class="ledger-card">
             <img

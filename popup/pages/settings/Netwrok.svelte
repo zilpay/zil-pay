@@ -130,7 +130,7 @@
             disabled={loading}
             class="primary"
             class:loading={loading}
-            on:click={hanldeUpdateSSN}
+            on:mouseup={hanldeUpdateSSN}
           >
             {$_('netwrok.btns.update')}
           </button>
@@ -140,7 +140,7 @@
   </div>
   <button
     class="warning"
-    on:click={handleOnReset}
+    on:mouseup={handleOnReset}
   >
     {$_('netwrok.btns.reset')}
   </button>

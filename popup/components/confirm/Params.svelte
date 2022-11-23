@@ -67,6 +67,7 @@
       <a
         href={viewAddress(tx.recipient, $netStore.selected)}
         target="_blank"
+        rel="noreferrer"
       >
         {trim(tx.recipient)}
       </a>

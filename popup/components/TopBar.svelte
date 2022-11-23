@@ -54,7 +54,7 @@
     {#if expand}
       <span
         class="expand"
-        on:click={() => linksExpand($location)}
+        on:mouseup={() => linksExpand($location)}
       >
         <ExpandIcon className="icon" />
       </span>
@@ -62,7 +62,7 @@
     {#if refresh}
       <span
         class="refresh"
-        on:click={onRefresh}
+        on:mouseup={onRefresh}
       >
         <Refresh className="icon" />
       </span>
@@ -70,7 +70,7 @@
     {#if view}
       <span
         class="view"
-        on:click={viewOnViewBlock}
+        on:mouseup={viewOnViewBlock}
       >
         <ViewIcon className="icon-view" />
       </span>
@@ -78,7 +78,7 @@
     {#if lock}
       <span
         class="lock"
-        on:click={handleOnLock}
+        on:mouseup={handleOnLock}
       >
         <LockIcon className="icon-lock" />
       </span>

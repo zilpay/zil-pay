@@ -89,7 +89,7 @@
     <button
       disabled={loading}
       class:loading={loading}
-      on:click={addToken}
+      on:mouseup={addToken}
     >
       {$_('collections.modals.add_btn')}
     </button>

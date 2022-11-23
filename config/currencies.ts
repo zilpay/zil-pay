@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 export const DEFAULT_CURRENCIES = [
-  "usd","rub","sgd","eur","eth","btc","cad","mxn",
+  "btc","eth","rub","sgd","eur","cad","mxn", "usd",
   "krw","idr","try","sar","sek","ngn","pln","brl",
   "ars","nok","twd","irr","aed","cop","thb","zar",
   "dkk","myr","ils","hkd","egp","php","clp",

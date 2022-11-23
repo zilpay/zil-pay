@@ -73,7 +73,7 @@
 	>
 	<main>
 		<div class="bar-wrapper">
-			<div on:click={onToggleLeftBar}>
+			<div on:mouseup={onToggleLeftBar}>
 				<Burger />
 			</div>
 			<CopyAccount />
@@ -89,13 +89,13 @@
 			<button
 				class="action"
 				disabled={account.type === AccountTypes.Track}
-				on:click={() => push(`/send/${TokenType.ZRC2}/0`)}
+				on:mouseup={() => push(`/send/${TokenType.ZRC2}/0`)}
 			>
 				{$_('home.btns.send')}
 			</button>
 			<button
 				class="action"
-				on:click={() => push('/account')}
+				on:mouseup={() => push('/account')}
 			>
 				{$_('home.btns.receive')}
 			</button>
@@ -116,7 +116,7 @@
 		</div>
 		<button
 			class="add"
-			on:click={() => push('/tokens-list')}
+			on:mouseup={() => push('/tokens-list')}
 		>
 			<GearIcon
 				width="24px"

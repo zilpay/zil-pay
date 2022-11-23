@@ -17,7 +17,7 @@
 
 <div
   class="card"
-  on:click={onClick}
+  on:mouseup={onClick}
 >
   {#if title}
     <p>

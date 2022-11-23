@@ -14,7 +14,7 @@ import define from 'rollup-plugin-define';
 
 import ignore from 'rollup-plugin-ignore';
 
-import pkg from './package.json';
+import pkg from './package.json' assert { type: "json" };
 
 const production = !process.env.ROLLUP_WATCH;
 

@@ -73,7 +73,7 @@
         duration: 400,
         y: -20
       }}
-      on:click={() => onSelectToken(token)}
+      on:mouseup={() => onSelectToken(token)}
     >
       <SelectCard
         header={token.symbol}

@@ -39,7 +39,7 @@
   class="token-card"
   class:disabled={disabled}
   class:loading={loading}
-  on:click={onClick}
+  on:mouseup={onClick}
 >
   <div>
     <p class="symbol">

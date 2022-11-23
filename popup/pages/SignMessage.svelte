@@ -73,7 +73,7 @@
   <SelectCard
     header={account.name}
     text={trim(account[$format])}
-    on:click={() => accountsModal = !accountsModal}
+    on:mouseup={() => accountsModal = !accountsModal}
   >
     <div id={uuid}/>
   </SelectCard>
@@ -105,7 +105,7 @@
   <hr />
   <div class="btns">
     <button
-      on:click={handleOnReject}
+      on:mouseup={handleOnReject}
       disabled={loading}
     >
       {$_('sig_message.btns.reject')}
@@ -114,7 +114,7 @@
       class="primary"
       class:loading={loading}
       disabled={loading || account.type === AccountTypes.Track}
-      on:click={handleOnSign}
+      on:mouseup={handleOnSign}
     >
       {$_('sig_message.btns.confirm')}
     </button>

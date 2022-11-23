@@ -91,7 +91,7 @@
 		>
 			<span
 				class="add"
-				on:click={() => tokenAddModal = !tokenAddModal}
+				on:mouseup={() => tokenAddModal = !tokenAddModal}
 			>
 				<AddIcon />
 			</span>

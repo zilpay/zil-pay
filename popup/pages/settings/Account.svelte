@@ -90,7 +90,7 @@
 	<div
 		class="card"
 		in:fade
-		on:click={() => accountsModal = !accountsModal}
+		on:mouseup={() => accountsModal = !accountsModal}
 	>
 		<div>
 			<h3>
@@ -129,7 +129,7 @@
 	<button
 		class:loading={loading}
 		disabled={loading}
-		on:click={handleOnResetNonce}
+		on:mouseup={handleOnResetNonce}
 	>
 		{$_('account.reset')} #{nonce}
 	</button>

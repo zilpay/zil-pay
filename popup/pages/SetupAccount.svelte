@@ -112,6 +112,7 @@
       <a
         href="https://zilpay.io/extension-policy"
         target="_blank"
+        rel="noreferrer"
       >
         {$_('setup_acc.accept')}
       </a>

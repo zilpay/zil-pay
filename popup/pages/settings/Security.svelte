@@ -62,7 +62,7 @@
 		>
 			<span
 				class="warning"
-				on:click={() => phraseModal = !phraseModal}
+				on:mouseup={() => phraseModal = !phraseModal}
 			>
 				{$_('security.phrase.btn')}
 			</span>
@@ -75,7 +75,7 @@
 				<span
 					class="warning"
 					class:disabled={account.type === AccountTypes.Track}
-					on:click={() => keyModal = !keyModal && account.type !== AccountTypes.Track}
+					on:mouseup={() => keyModal = !keyModal && account.type !== AccountTypes.Track}
 				>
 					{$_('security.key.btn')}
 				</span>
@@ -87,7 +87,7 @@
 		>
 			<span
 				class="warning"
-				on:click={() => connectModal = !connectModal}
+				on:mouseup={() => connectModal = !connectModal}
 			>
 				{$_('security.connect.btn')}
 			</span>

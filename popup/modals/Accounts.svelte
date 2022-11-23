@@ -50,7 +50,7 @@
 				duration: 400,
 				y: -20
 			}}
-			on:click={() => onSelectAccount(account)}
+			on:mouseup={() => onSelectAccount(account)}
 		>
 			<AccountCard
 				account={account}

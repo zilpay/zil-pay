@@ -32,7 +32,7 @@
 
 <div
   class:loading={loading}
-  on:click={onClick}
+  on:mouseup={onClick}
 >
   {#if !error}
     <img

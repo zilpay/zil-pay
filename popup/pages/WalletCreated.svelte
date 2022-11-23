@@ -43,7 +43,7 @@
   </div>
   <button
     class="primary"
-    on:click={handleOnStart}
+    on:mouseup={handleOnStart}
   >
     {$_('wallet_created.btn')}
   </button>

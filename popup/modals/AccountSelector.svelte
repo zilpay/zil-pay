@@ -48,7 +48,7 @@
 					duration: 400,
 					y: -20
 				}}
-				on:click={() => onSelect(contact.address)}
+				on:mouseup={() => onSelect(contact.address)}
 			>
 				<div class="text">
 					<b>
@@ -72,7 +72,7 @@
 					duration: 400,
 					y: -20
 				}}
-				on:click={() => onSelect(account[$format])}
+				on:mouseup={() => onSelect(account[$format])}
 			>
 				<div class="text">
 					<b>

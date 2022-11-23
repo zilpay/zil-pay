@@ -240,7 +240,7 @@
         title={$_('send.cards.transfer')}
         header={account.name}
         text={trim(account[$format])}
-        on:click={() => accountsModal = !accountsModal}
+        on:mouseup={() => accountsModal = !accountsModal}
       >
         <div id={uuid}/>
       </SelectCard>
@@ -252,7 +252,7 @@
           text={token.name}
           rightHeader={formatNumber(balance)}
           rightText={formatNumber(converted, $currencyStore)}
-          on:click={() => tokensModal = !tokensModal}
+          on:mouseup={() => tokensModal = !tokensModal}
         >
           <img
             src={tokenIcon}
@@ -268,7 +268,7 @@
           text={collection.name}
           rightHeader={`#${collection.token.id}`}
           rightText={' '}
-          on:click={() => nftsModal = !nftsModal}
+          on:mouseup={() => nftsModal = !nftsModal}
         >
           <img
             src={Boolean(collection.token.meta) ? collection.token.meta.image : collection.token.url}
@@ -287,7 +287,7 @@
           {$_('send.input_to.title')}
         </p>
         <label class:error={recipientError}>
-          <div on:click={() => contactsModal = !contactsModal}>
+          <div on:mouseup={() => contactsModal = !contactsModal}>
             <ContactIcon className="cont-icon" />
           </div>
           <input
@@ -320,7 +320,7 @@
           </label>
           <div class="percentage">
             {#each percentageList as percentage}
-              <span on:click={() => handleOnPercentage(percentage)}>{percentage}%</span>
+              <span on:mouseup={() => handleOnPercentage(percentage)}>{percentage}%</span>
             {/each}
           </div>
         </div>

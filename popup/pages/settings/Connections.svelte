@@ -54,9 +54,9 @@
 						src={item.icon}
 						alt="icon"
 						width="30"
-						on:click={() => hanldeOnSelect(item)}
+						on:mouseup={() => hanldeOnSelect(item)}
 					/>
-					<div on:click={() => hanldeOnSelect(item)}>
+					<div on:mouseup={() => hanldeOnSelect(item)}>
 						<b>
 							{item.domain}
 						</b>
@@ -66,7 +66,7 @@
 					</div>
 					<div
 						class="icon"
-						on:click={() => hanldeOnRemove(item)}
+						on:mouseup={() => hanldeOnRemove(item)}
 					>
 						<TrashIcon className="trash-icon" />
 					</div>
@@ -75,7 +75,7 @@
 		</ul>
 		<div>
 			{#if $appStore.connections.length !== 0}
-				<button on:click={clearConnection}>
+				<button on:mouseup={clearConnection}>
 					{$_('connections.btn_reset')}
 				</button>
 			{/if}

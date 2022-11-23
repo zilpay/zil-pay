@@ -62,7 +62,7 @@
   </div>
   <div class="wrapper">
     {#each shuffled as word}
-      <div on:click={() => hanldeOnAdd(word)}>
+      <div on:mouseup={() => hanldeOnAdd(word)}>
         <PickButton text={word} />
       </div>
     {/each}
@@ -70,7 +70,7 @@
   <button
     class="primary"
     disabled={disabled}
-    on:click={() => push('/setup-account')}
+    on:mouseup={() => push('/setup-account')}
   >
     {$_('verify.btn')}
   </button>

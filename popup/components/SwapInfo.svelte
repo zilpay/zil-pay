@@ -52,7 +52,7 @@
       </b>
       <p
         class="pointer"
-        on:click={hanldeSwpa}
+        on:mouseup={hanldeSwpa}
       >
         1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>({formatNumber(virtualParams.converted, $currencyStore)})</span>
       </p>

@@ -28,7 +28,7 @@ export const printMnemonic = (phrase: string, t: string[]) => {
             ${t[6]}
           </p>
           <div class="footer">
-            <a href="https://zilpay.io/">ZilPay Wallet</a>
+            <a href="https://zilpay.io/" noreferrer>ZilPay Wallet</a>
           </div>
       </div>
   </div>

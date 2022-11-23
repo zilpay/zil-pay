@@ -107,7 +107,7 @@
 	</div>
 	<button
 		class="warning"
-		on:click={hanldeOnReset}
+		on:mouseup={hanldeOnReset}
 	>
 		{$_('general.reset')}
 	</button>

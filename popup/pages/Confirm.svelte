@@ -184,7 +184,7 @@
 			<SelectCard
 				header={account.name}
 				text={trim(account[$format])}
-				on:click={() => accountsModal = !accountsModal}
+				on:mouseup={() => accountsModal = !accountsModal}
 			>
 				<div id={uuid}/>
 			</SelectCard>
@@ -220,21 +220,21 @@
 				on:select={handleOnChangeGasMultiplier}
 			/>
 			{#if !tx.cancel}
-				<h3 on:click={() => editModal = !editModal}>
+				<h3 on:mouseup={() => editModal = !editModal}>
 					({$_('confirm.edit')})
 				</h3>
 			{/if}
 			<Params tx={tx} />
 		</div>
 		<div class="btns">
-			<button on:click={handleOnReject}>
+			<button on:mouseup={handleOnReject}>
 				{$_('confirm.btns.reject')}
 			</button>
 			<button
 				class="primary"
 				class:loading={loading}
 				disabled={loading || account.type === AccountTypes.Track}
-				on:click={handleOnConfirm}
+				on:mouseup={handleOnConfirm}
 			>
 				{$_('confirm.btns.confirm')}
 			</button>
