@@ -25,6 +25,7 @@ import addressFormatStore from 'popup/store/format';
 import promtStore from 'app/store/promt';
 import phishingStore from 'app/store/phishing';
 import dexStore from 'app/store/dex';
+import cipherStore from 'app/store/cipher';
 
 export function updateState(state: WalletState) {
   document.body.setAttribute('theme', state.theme);
@@ -47,4 +48,5 @@ export function updateState(state: WalletState) {
   addressFormatStore.set(state.format);
   promtStore.set(state.popup);
   phishingStore.set(state.phishing);
+  cipherStore.set(state.cipher);
 }

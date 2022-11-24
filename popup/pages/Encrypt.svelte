@@ -15,6 +15,7 @@
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
   import { AccountTypes } from 'config/account-type';
+  import cipherStore from 'app/store/cipher';
 
 
   const uuid = uuidv4();
@@ -25,14 +26,7 @@
 	let accountIndex = $walletStore.selectedAddress;
 
 	$: account = $walletStore.identities[accountIndex];
-
-  let message = {
-    content: 'string;;',
-    uuid: 'string;',
-    title: 'title',
-    icon: 'https://rollupjs.org/logo.svg',
-    hash: ''
-  };
+  $: message = $cipherStore.encryptParams;
 
 
 	onMount(() => {
@@ -79,7 +73,7 @@
   >
     <div id={uuid}/>
   </SelectCard>
-  <hr/>
+  <hr />
   <h1>
     {$_('encrypt.title')}
   </h1>
@@ -116,9 +110,10 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
+    padding-top: 16px;
 		background-color: var(--background-color);
 		height: 100vh;
-		@include flex-center-column;
+		@include flex-center-top-column;
 	}
   h1 {
     @include fluid-font(320px, 1024px, 22px, 55px);
@@ -130,7 +125,7 @@
     line-height: 1em;
     margin: 0;
     padding: 5px;
-    min-height: 100px;
+    min-height: 230px;
     font-weight: normal;
     overflow-y: scroll;
   }
