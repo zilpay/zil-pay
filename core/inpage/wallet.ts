@@ -23,6 +23,7 @@ import { getFavicon } from "./favicon";
 import { ContentMessage } from "lib/streem/secure-message";
 import { CryptoUtils } from "./crypto";
 import { ErrorMessages } from "config/errors";
+import type { InputCipherParams } from "types/cipher";
 
 export class Wallet {
   #stream: TabStream;
@@ -241,6 +242,78 @@ export class Wallet {
 
         obs();
         return resolve(this.#isConnect);
+      });
+    });
+  }
+
+  public async encrypt(content: string): Promise<object> {
+    const type = MTypeTab.ADD_ENCRYPTION;
+    const recipient = MTypeTabContent.CONTENT;
+    const uuid = uuidv4();
+    const title = window.document.title;
+    const domain = window.document.domain;
+    const icon = getFavicon();
+    const payload: InputCipherParams = {
+      title,
+      domain,
+      icon,
+      uuid,
+      content
+    };
+
+    new ContentMessage({
+      type,
+      payload
+    }).send(this.#stream, recipient);
+
+    return new Promise((resolve, reject) => {
+      const obs = this.#subject.on((msg) => {
+        if (msg.type !== MTypeTab.RES_ENCRYPTION) return;
+        if (msg.payload.uuid !== uuid) return;
+
+        if (msg.payload && msg.payload.reject) {
+          obs();
+          return reject(msg.payload.reject);
+        }
+
+        obs();
+        return resolve(msg.payload.resolve);
+      });
+    });
+  }
+
+  public async decrypt(content: string): Promise<object> {
+    const type = MTypeTab.ADD_DECRYPTION;
+    const recipient = MTypeTabContent.CONTENT;
+    const uuid = uuidv4();
+    const title = window.document.title;
+    const domain = window.document.domain;
+    const icon = getFavicon();
+    const payload: InputCipherParams = {
+      title,
+      domain,
+      icon,
+      uuid,
+      content
+    };
+
+    new ContentMessage({
+      type,
+      payload
+    }).send(this.#stream, recipient);
+
+    return new Promise((resolve, reject) => {
+      const obs = this.#subject.on((msg) => {
+        if (msg.type !== MTypeTab.RES_DECRYPTION) return;
+        if (msg.payload.uuid !== uuid) return;
+
+        if (msg.payload && msg.payload.reject) {
+          obs();
+          return reject(msg.payload.reject);
+        }
+
+        obs();
+        return resolve(msg.payload.resolve);
       });
     });
   }

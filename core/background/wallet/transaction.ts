@@ -41,8 +41,37 @@ export class ZilPayTransaction {
     this.#core = core;
   }
 
-  public async addEncryption(params: InputCipherParams, sendResponse: StreamResponse) {}
-  public async addDecryption(params: InputCipherParams, sendResponse: StreamResponse) {}
+  public async addEncryption(params: InputCipherParams, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.cipher.addEncryption(params);
+      await this.#core.prompt.open();
+
+      sendResponse({
+        resolve: null
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async addDecryption(params: InputCipherParams, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.cipher.addDecryption(params);
+      await this.#core.prompt.open();
+
+      sendResponse({
+        resolve: null
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 
   public async getCurrentNonce(sendResponse: StreamResponse) {
     try {
