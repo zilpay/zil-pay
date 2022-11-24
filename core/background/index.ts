@@ -9,3 +9,4 @@ import { startBackground } from './background';
 
   startBackground(core);
 }());
+import { CipherControl } from './services/cipher';
