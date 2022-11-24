@@ -1,4 +1,13 @@
-import type { InputCipherParams } from 'types/cipher';
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+import type { AccountController } from 'core/background/services/account';
+import type { CipherState, InputCipherParams } from 'types/cipher';
 
 import assert from 'assert';
 import { lib } from 'crypto-js';
@@ -16,6 +25,7 @@ import { NotificationsControl } from 'core/background/services/notifications';
 export class CipherControl {
   #encryptParams?: InputCipherParams;
   #decryptParams?: InputCipherParams;
+  readonly #account: AccountController;
 
   get encryptParams() {
     return this.#encryptParams;
@@ -23,6 +33,17 @@ export class CipherControl {
 
   get decryptParams() {
     return this.#decryptParams;
+  }
+
+  get state(): CipherState  {
+    return {
+      encryptParams: this.encryptParams,
+      decryptParams: this.decryptParams
+    };
+  }
+
+  constructor(account: AccountController) {
+    this.#account = account;
   }
 
   async addEncryption(params: InputCipherParams) {
@@ -92,8 +113,10 @@ export class CipherControl {
     this.#counter();
   }
 
-  encrypt(privateKey: string) {
-    const keyAsHex = Hex.parse(privateKey);
+  async encrypt() {
+    const index = this.#account.wallet.selectedAddress;
+    const { privKey } = await this.#account.getKeyPair(index);
+    const keyAsHex = Hex.parse(privKey);
     const bytes = Hex.parse(Aes.hash(this.encryptParams.domain));
     const counter = lib.WordArray.random(128 / 8);
     const iv = counter.concat(bytes);
@@ -106,13 +129,15 @@ export class CipherControl {
     return `${encryptData.ciphertext.toString(Base64)}:${counter.toString(Base64)}`;
   }
 
-  decrypt(privateKey: string) {
+  async decrypt() {
+    const index = this.#account.wallet.selectedAddress;
+    const { privKey } = await this.#account.getKeyPair(index);
     const [cipher, counter] = this.decryptParams.content.split(':');
     const bytes = Hex.parse(Aes.hash(this.encryptParams.domain));
     const iv = Base64.parse(counter).concat(bytes);
     const decrypted = aes.decrypt(
       cipher,
-      Hex.parse(privateKey),
+      Hex.parse(privKey),
       { iv }
     );
 

@@ -17,6 +17,7 @@ import type { AccountTypes } from 'config/account-type';
 import type { Themes } from 'config/theme';
 import type { Locales } from 'config/locale';
 import type { DexState } from './dex';
+import type { CipherState } from './cipher';
 
 export interface ZRC1Token {
   id: string;
@@ -96,6 +97,7 @@ export interface WalletState {
     gasPrice: number;
     multiplier: number;
   };
+  cipher: CipherState;
   transactions: {
     forConfirm: TransactionForConfirm[];
     transactions: StoredTx[];

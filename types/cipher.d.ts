@@ -5,3 +5,8 @@ export interface InputCipherParams {
   icon: string;
   domain: string;
 };
+
+export interface CipherState {
+  encryptParams?: InputCipherParams;
+  decryptParams?: InputCipherParams;
+}

@@ -79,10 +79,9 @@
       await getNFTList();
       nft = $nftListStore[selectedToken];
     }
-    
+
     try {
       collection = {
-        url: Boolean(nft.meta) ? nft.meta.image : nft.url,
         token: nft.balances[nftIndex],
         symbol: nft.symbol,
         name: nft.name

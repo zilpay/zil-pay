@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { InputCipherParams } from 'types/cipher';
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
 import type {
@@ -31,6 +32,7 @@ import { tohexString } from 'lib/utils/address';
 import { toLi } from 'lib/filters/gas-to-fee';
 import { TypeOf } from 'lib/type/type-checker';
 
+
 export class ZilPayTransaction {
 
   readonly #core: ZIlPayCore;
@@ -38,6 +40,9 @@ export class ZilPayTransaction {
   constructor(core: ZIlPayCore) {
     this.#core = core;
   }
+
+  public async addEncryption(params: InputCipherParams, sendResponse: StreamResponse) {}
+  public async addDecryption(params: InputCipherParams, sendResponse: StreamResponse) {}
 
   public async getCurrentNonce(sendResponse: StreamResponse) {
     try {
