@@ -11,14 +11,14 @@
 
 	import format from 'popup/store/format';
 	import walletStore from 'popup/store/wallet';
-  import transactionsStore from 'popup/store/transactions';
 
   import SelectCard from '../components/SelectCard.svelte';
   import Modal from '../components/Modal.svelte';
 	import AccountsModal from '../modals/Accounts.svelte';
-	import Toggle from '../components/Toggle.svelte';
   import { AccountTypes } from 'config/account-type';
 
+
+  const uuid = uuidv4();
 
   let loading = false;
   let error = '';
@@ -27,9 +27,15 @@
   let isHash = false;
 
 	$: account = $walletStore.identities[accountIndex];
-  $: message = $transactionsStore.message;
 
-  const uuid = uuidv4();
+  let message = {
+    content: 'string;;',
+    uuid: 'string;',
+    title: 'title',
+    icon: 'https://rollupjs.org/logo.svg',
+    hash: ''
+  };
+
 
 	onMount(() => {
 		jazziconCreate(uuid, account.base16);
@@ -79,7 +85,7 @@
   </SelectCard>
   <hr/>
   <h1>
-    {$_('sig_message.title')}
+    {$_('encrypt.title')}
   </h1>
   <img
     src={message.icon}
@@ -93,22 +99,12 @@
   <textarea readonly>
     {isHash ? message.hash : message.content}
   </textarea>
-  <div class="toggle">
-    <h3>
-      {$_('sig_message.hash')}
-    </h3>
-    <Toggle
-      checked={isHash}
-      on:toggle={() => isHash = !isHash}
-    />
-  </div>
-  <hr />
   <div class="btns">
     <button
       on:mouseup={handleOnReject}
       disabled={loading}
     >
-      {$_('sig_message.btns.reject')}
+      {$_('encrypt.btns.reject')}
     </button>
     <button
       class="primary"
@@ -116,7 +112,7 @@
       disabled={loading || account.type === AccountTypes.Track}
       on:mouseup={handleOnSign}
     >
-      {$_('sig_message.btns.confirm')}
+      {$_('encrypt.btns.confirm')}
     </button>
   </div>
 </main>
@@ -133,10 +129,6 @@
   }
   img {
     margin: 16px;
-  }
-  .toggle {
-    width: 290px;
-    @include flex-between-row;
   }
   textarea {
     line-height: 1em;

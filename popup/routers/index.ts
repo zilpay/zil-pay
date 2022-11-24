@@ -32,6 +32,7 @@ import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 
 import Swap from '../pages/Swap.svelte';
 import Collect from '../pages/Collect.svelte';
+import EncryptPage from '../pages/Encrypt.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -42,6 +43,7 @@ import Connections from '../pages/settings/Connections.svelte';
 import Contacts from '../pages/settings/Contacts.svelte';
 import Security from '../pages/settings/Security.svelte';
 import General from '../pages/settings/General.svelte';
+
 
 export default {
   '/': wrap({
@@ -64,6 +66,12 @@ export default {
   }),
   '/collect': wrap({
     component: Collect,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/encrypt': wrap({
+    component: EncryptPage,
     conditions: [
       routerGuard
     ]

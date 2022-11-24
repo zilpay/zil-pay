@@ -1,4 +1,11 @@
 {
+  "encrypt": {
+    "title": "加密请求",
+    "btns": {
+      "confirm": "加密",
+      "reject": "拒绝"
+    }
+  },
   "account_track": {
     "title": "添加跟踪器",
     "description": "ZilPay将跟踪的地址。"

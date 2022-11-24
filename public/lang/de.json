@@ -1,4 +1,11 @@
 {
+  "encrypt": {
+    "title": "Verschlüsselungsanforderung",
+    "btns": {
+      "confirm": "Verschlüsseln",
+      "reject": "Ablehnen"
+    }
+  },
   "account_track": {
     "title": "Tracker hinzufügen",
     "description": "Eine Adresse, die von ZilPay verfolgt wird."

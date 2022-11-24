@@ -240,7 +240,7 @@
         title={$_('send.cards.transfer')}
         header={account.name}
         text={trim(account[$format])}
-        on:mouseup={() => accountsModal = !accountsModal}
+        on:click={() => accountsModal = !accountsModal}
       >
         <div id={uuid}/>
       </SelectCard>
@@ -252,7 +252,7 @@
           text={token.name}
           rightHeader={formatNumber(balance)}
           rightText={formatNumber(converted, $currencyStore)}
-          on:mouseup={() => tokensModal = !tokensModal}
+          on:click={() => tokensModal = !tokensModal}
         >
           <img
             src={tokenIcon}
@@ -268,7 +268,7 @@
           text={collection.name}
           rightHeader={`#${collection.token.id}`}
           rightText={' '}
-          on:mouseup={() => nftsModal = !nftsModal}
+          on:click={() => nftsModal = !nftsModal}
         >
           <img
             src={Boolean(collection.token.meta) ? collection.token.meta.image : collection.token.url}

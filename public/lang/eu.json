@@ -1,4 +1,11 @@
 {
+  "encrypt": {
+    "title": "Krüpteerimise Taotlus",
+    "btns": {
+      "confirm": "Krüptima",
+      "reject": "Lükkama"
+    }
+  },
   "account_track": {
     "title": "Lisa Jälgija",
     "description": "Aadress, mida ZilPay jälgib."

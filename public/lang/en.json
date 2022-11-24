@@ -1,4 +1,11 @@
 {
+  "encrypt": {
+    "title": "Encryption Request",
+    "btns": {
+      "confirm": "Encrypt",
+      "reject": "Reject"
+    }
+  },
   "account_track": {
     "title": "Add Tracker",
     "description": "An address which will be tracked by ZIlPay."

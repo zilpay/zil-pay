@@ -53,6 +53,7 @@ const popup = {
 		}),
 		json(),
 		commonjs(),
+		nodePolyfills(),
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production

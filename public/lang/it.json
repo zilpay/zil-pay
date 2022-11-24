@@ -1,4 +1,11 @@
 {
+  "encrypt": {
+    "title": "Krüpteerimise Taotlus",
+    "btns": {
+      "confirm": "Krüptima",
+      "reject": "Lükkama"
+    }
+  },
   "account_track": {
     "title": "Aggiungi Tracker",
     "description": "Un indirizzo che sarà tracciato da ZilPay."

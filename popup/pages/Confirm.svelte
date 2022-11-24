@@ -184,7 +184,7 @@
 			<SelectCard
 				header={account.name}
 				text={trim(account[$format])}
-				on:mouseup={() => accountsModal = !accountsModal}
+				on:click={() => accountsModal = !accountsModal}
 			>
 				<div id={uuid}/>
 			</SelectCard>
