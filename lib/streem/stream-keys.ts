@@ -105,6 +105,9 @@ export const MTypePopup = {
   UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`,
 
   GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
+
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`
 };
 
 export const MTypeTab = {

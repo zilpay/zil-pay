@@ -43,10 +43,10 @@ export const routerGuard = (e: { location: string; }) => {
   } else if (confirmTx === e.location && txns.forConfirm.length === 0) {
     push('/');
     return guard.isEnable && guard.isReady;
-  } else if (cipher.decryptParams) {
+  } else if (cipher.decryptParams && guard.isEnable) {
     push('/decrypt');
     return guard.isEnable && guard.isReady;
-  } else if (cipher.encryptParams) {
+  } else if (cipher.encryptParams && guard.isEnable) {
     push('/encrypt');
     return guard.isEnable && guard.isReady;
   } else if (confirmTx === e.location && txns.forConfirm.length === 0) {

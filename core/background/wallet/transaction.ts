@@ -54,7 +54,65 @@ export class ZilPayTransaction {
       sendResponse({
         reject: err.message
       });
+      await new TabsMessage({
+        type: MTypeTab.RES_ENCRYPTION,
+        payload: {
+          uuid: params.uuid,
+          reject: err.message
+        }
+      }).send();
     }
+  }
+
+  public async encryptResponse(resolve: boolean, sendResponse: StreamResponse) {
+    const uuid = String(this.#core.cipher.encryptParams.uuid);
+
+    try {
+      this.#core.guard.checkSession();
+
+      if (resolve) {
+        const cipher = await this.#core.cipher.encrypt();
+        await new TabsMessage({
+          type: MTypeTab.RES_ENCRYPTION,
+          payload: {
+            uuid,
+            resolve: {
+              cipher,
+              account: {
+                base16: this.#core.account.selectedAccount.base16,
+                bech32: this.#core.account.selectedAccount.bech32,
+                pubKey: this.#core.account.selectedAccount.pubKey
+              }
+            }
+          }
+        }).send();
+      } else {
+        await new TabsMessage({
+          type: MTypeTab.RES_ENCRYPTION,
+          payload: {
+            uuid,
+            reject: ErrorMessages.Rejected
+          }
+        }).send();
+      }
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+      await new TabsMessage({
+        type: MTypeTab.RES_ENCRYPTION,
+        payload: {
+          uuid,
+          reject: err.message
+        }
+      }).send();
+    }
+
+    await this.#core.cipher.removeEncryption();
   }
 
   public async addDecryption(params: InputCipherParams, sendResponse: StreamResponse) {
@@ -70,6 +128,13 @@ export class ZilPayTransaction {
       sendResponse({
         reject: err.message
       });
+      await new TabsMessage({
+        type: MTypeTab.RES_ENCRYPTION,
+        payload: {
+          uuid: params.uuid,
+          reject: err.message
+        }
+      }).send();
     }
   }
 

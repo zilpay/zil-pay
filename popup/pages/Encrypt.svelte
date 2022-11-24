@@ -16,6 +16,7 @@
 	import AccountsModal from '../modals/Accounts.svelte';
   import { AccountTypes } from 'config/account-type';
   import cipherStore from 'app/store/cipher';
+  import { responseEncryption } from 'app/backend/cipher';
 
 
   const uuid = uuidv4();
@@ -38,12 +39,14 @@
     accountsModal = false;
 	};
   const handleOnReject = async () => {
+    await responseEncryption(false);
     await closePopup();
   };
-  const handleOnSign = async () => {
+  const handleOnEncrypt = async () => {
     loading = true;
 
     try {
+      await responseEncryption(true);
       await closePopup();
     } catch (err) {
       error = err.message;
@@ -100,7 +103,7 @@
       class="primary"
       class:loading={loading}
       disabled={loading || account.type === AccountTypes.Track}
-      on:mouseup={handleOnSign}
+      on:mouseup={handleOnEncrypt}
     >
       {$_('encrypt.btns.confirm')}
     </button>
@@ -110,7 +113,6 @@
 <style lang="scss">
 	@import "../styles/mixins";
 	main {
-    padding-top: 16px;
 		background-color: var(--background-color);
 		height: 100vh;
 		@include flex-center-top-column;
@@ -125,7 +127,7 @@
     line-height: 1em;
     margin: 0;
     padding: 5px;
-    min-height: 230px;
+    min-height: 200px;
     font-weight: normal;
     overflow-y: scroll;
   }

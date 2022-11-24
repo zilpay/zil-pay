@@ -219,6 +219,12 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypeTab.ADD_DECRYPTION:
         core.transaction.addDecryption(msg.payload, sendResponse);
         return true;
+      case MTypePopup.RES_ENCRYPTION:
+        core.transaction.encryptResponse(
+          msg.payload.value,
+          sendResponse
+        );
+        return true;
       case MTypePopup.SEND_TO_SIGN_TX:
         core.transaction.signSendTx(
           msg.payload.txIndex,

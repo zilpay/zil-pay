@@ -133,7 +133,7 @@ export class CipherControl {
     const index = this.#account.wallet.selectedAddress;
     const { privKey } = await this.#account.getKeyPair(index);
     const [cipher, counter] = this.decryptParams.content.split(':');
-    const bytes = Hex.parse(Aes.hash(this.encryptParams.domain));
+    const bytes = Hex.parse(Aes.hash(this.decryptParams.domain));
     const iv = Base64.parse(counter).concat(bytes);
     const decrypted = aes.decrypt(
       cipher,
@@ -155,8 +155,6 @@ export class CipherControl {
       counter++;
     }
 
-    if (counter > 0) {
-      NotificationsControl.counter(counter);
-    }
+    NotificationsControl.counter(counter);
   }
 }
