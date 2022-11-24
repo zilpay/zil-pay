@@ -6,6 +6,13 @@
       "reject": "Ablehnen"
     }
   },
+  "decrypt": {
+    "title": "Entschlüsselungsanforderung",
+    "btns": {
+      "confirm": "Entschlüsseln",
+      "reject": "Ablehnen"
+    }
+  },
   "account_track": {
     "title": "Tracker hinzufügen",
     "description": "Eine Adresse, die von ZilPay verfolgt wird."

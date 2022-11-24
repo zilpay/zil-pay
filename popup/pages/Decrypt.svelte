@@ -12,8 +12,6 @@
 	import walletStore from 'popup/store/wallet';
 
   import SelectCard from '../components/SelectCard.svelte';
-  import Modal from '../components/Modal.svelte';
-	import AccountsModal from '../modals/Accounts.svelte';
   import { AccountTypes } from 'config/account-type';
 
 
@@ -21,7 +19,6 @@
 
   let loading = false;
   let error = '';
-	let accountsModal = false;
 	let accountIndex = $walletStore.selectedAddress;
 
 	$: account = $walletStore.identities[accountIndex];
@@ -39,10 +36,6 @@
 		jazziconCreate(uuid, account.base16);
   });
 
-	const onSelectAccount = async ({ detail }) => {
-    accountIndex = detail;
-    accountsModal = false;
-	};
   const handleOnReject = async () => {
     await closePopup();
   };
@@ -58,30 +51,17 @@
   };
 </script>
 
-<Modal
-  show={accountsModal}
-  title={$_('send.cards.token')}
-  on:close={() => accountsModal = !accountsModal}
->
-  <div class="m-warp">
-    <AccountsModal
-      list={$walletStore.identities}
-      index={accountIndex}
-      on:selected={onSelectAccount}
-    />
-  </div>
-</Modal>
+
 <main in:scale>
   <SelectCard
     header={account.name}
     text={trim(account[$format])}
-    on:click={() => accountsModal = !accountsModal}
   >
     <div id={uuid}/>
   </SelectCard>
   <hr/>
   <h1>
-    {$_('encrypt.title')}
+    {$_('decrypt.title')}
   </h1>
   <img
     src={message.icon}
@@ -100,7 +80,7 @@
       on:mouseup={handleOnReject}
       disabled={loading}
     >
-      {$_('encrypt.btns.reject')}
+      {$_('decrypt.btns.reject')}
     </button>
     <button
       class="primary"
@@ -108,7 +88,7 @@
       disabled={loading || account.type === AccountTypes.Track}
       on:mouseup={handleOnSign}
     >
-      {$_('encrypt.btns.confirm')}
+      {$_('decrypt.btns.confirm')}
     </button>
   </div>
 </main>

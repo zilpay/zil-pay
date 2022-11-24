@@ -1,9 +1,16 @@
 {
   "encrypt": {
-    "title": "Krüpteerimise Taotlus",
+    "title": "Richiesta di crittografia",
     "btns": {
-      "confirm": "Krüptima",
-      "reject": "Lükkama"
+      "confirm": "Crittografare",
+      "reject": "Respingere"
+    }
+  },
+  "decrypt": {
+    "title": "Richiesta di decrittografia",
+    "btns": {
+      "confirm": "Decifrare",
+      "reject": "Respingere"
     }
   },
   "account_track": {

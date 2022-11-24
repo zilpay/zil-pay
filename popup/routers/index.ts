@@ -33,6 +33,7 @@ import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 import Swap from '../pages/Swap.svelte';
 import Collect from '../pages/Collect.svelte';
 import EncryptPage from '../pages/Encrypt.svelte';
+import DecryptPage from '../pages/Decrypt.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -72,6 +73,12 @@ export default {
   }),
   '/encrypt': wrap({
     component: EncryptPage,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/decrypt': wrap({
+    component: DecryptPage,
     conditions: [
       routerGuard
     ]

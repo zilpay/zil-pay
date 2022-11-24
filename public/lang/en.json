@@ -6,6 +6,13 @@
       "reject": "Reject"
     }
   },
+  "decrypt": {
+    "title": "Decryption Request",
+    "btns": {
+      "confirm": "Decrypt",
+      "reject": "Reject"
+    }
+  },
   "account_track": {
     "title": "Add Tracker",
     "description": "An address which will be tracked by ZIlPay."

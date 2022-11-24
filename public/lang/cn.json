@@ -6,6 +6,13 @@
       "reject": "拒绝"
     }
   },
+  "decrypt": {
+    "title": "解密请求",
+    "btns": {
+      "confirm": "解密",
+      "reject": "拒绝"
+    }
+  },
   "account_track": {
     "title": "添加跟踪器",
     "description": "ZilPay将跟踪的地址。"
