@@ -64,7 +64,6 @@ export class ZilPayTransaction {
     }
   }
   
-
   public async encryptResponse(resolve: boolean, index: number, sendResponse: StreamResponse) {
     try {
       const uuid = String(this.#core.cipher.encryptParams.uuid);

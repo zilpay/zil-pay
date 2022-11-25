@@ -105,10 +105,7 @@
 			</select>
 		</Jumbotron>
 	</div>
-	<button
-		class="warning"
-		on:mouseup={hanldeOnReset}
-	>
+	<button on:mouseup={hanldeOnReset}>
 		{$_('general.reset')}
 	</button>
 </main>

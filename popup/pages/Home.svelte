@@ -19,7 +19,7 @@
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
 	import Burger from '../components/Burger.svelte';
-    import { AccountTypes } from 'config/account-type';
+	import { AccountTypes } from 'config/account-type';
 
 
 	let loading = false;
@@ -185,9 +185,9 @@
 	}
 	button.add {
 		min-width: 290px;
-		color: var(--primary-color);
 		margin-block-start: 5px;
 		margin-block-end: 5px;
+		color: var(--text-color);
 
 		&:hover {
 			color: var(--background-color);
@@ -199,7 +199,7 @@
 		@include flex-between-row;
 	}
 	:global(button.add > svg > path) {
-		fill: var(--primary-color) !important;
+		fill: var(--text-color) !important;
 	}
 	:global(button.add:hover > svg > path) {
 		fill: var(--background-color) !important;

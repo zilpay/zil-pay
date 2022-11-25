@@ -138,10 +138,7 @@
       </Jumbotron>
     {/if}
   </div>
-  <button
-    class="warning"
-    on:mouseup={handleOnReset}
-  >
+  <button on:mouseup={handleOnReset}>
     {$_('netwrok.btns.reset')}
   </button>
 </main>

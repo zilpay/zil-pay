@@ -126,10 +126,9 @@
   input,
   button {
     width: 290px;
-
-    .gas-btn {
-      margin-block-start: 10px;
-    }
+  }
+  button.gas-btn {
+    margin-block-start: 10px;
   }
   div.wrapper {
 		height: 600px;

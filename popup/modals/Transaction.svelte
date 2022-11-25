@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { StoredTx } from 'types/transaction';
+
 	import { _ } from 'popup/i18n';
 	import { push } from 'svelte-spa-router';
 
@@ -17,7 +19,7 @@
 
   import Tooltip from '../components/Tooltip.svelte';
 
-  export let tx = {};
+  export let tx: StoredTx;
 
   let tip = $_('home.clipboard.copy');
 
@@ -151,15 +153,11 @@
     {/if}
   </ul>
   <div class="btns">
-    <button
-      class="primary"
-      on:mouseup={hanldeOnViewBlock}
-    >
+    <button on:mouseup={hanldeOnViewBlock}>
       {$_('history.modals.details.btns.view')}
     </button>
     {#if tx.confirmed}
       <button
-        class="warning"
         on:mouseup={hanldeOnRepeat}
       >
         {$_('history.modals.details.btns.repeat')}

@@ -10,7 +10,7 @@ import Big from 'big.js';
 
 Big.PE = 99;
 
-export function convertRate(rate = 0, balance: string | number) {
+export function convertRate(rate = 0, balance: string | number | Big) {
   if (Number(balance) === 0) {
     return Big(0);
   }

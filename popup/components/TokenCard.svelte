@@ -91,6 +91,7 @@
     }
     &:hover {
       border-color: var(--primary-color);
+      box-shadow: none;
     }
   }
   p.symbol {

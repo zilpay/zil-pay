@@ -145,6 +145,8 @@
 	img {
 		max-width: 500px;
 		width: calc(100vw - 50px);
+
+		@include border-radius(8px);
 	}
 	label {
 		background-color: var(--card-color);
