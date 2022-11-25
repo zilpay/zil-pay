@@ -8,6 +8,10 @@
   },
   "decrypt": {
     "title": "Decryption Request",
+    "sub_title": {
+      "0": "The",
+      "1": "Request Decrypt Content"
+    },
     "btns": {
       "confirm": "Decrypt",
       "reject": "Reject"

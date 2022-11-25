@@ -222,6 +222,14 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.RES_ENCRYPTION:
         core.transaction.encryptResponse(
           msg.payload.value,
+          msg.payload.index,
+          sendResponse
+        );
+        return true;
+      case MTypePopup.RES_DECRYPTION:
+        core.transaction.decryptResponse(
+          msg.payload.value,
+          msg.payload.index,
           sendResponse
         );
         return true;

@@ -11,11 +11,12 @@ import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
 
-export async function responseEncryption(value: boolean) {
+export async function responseEncryption(value: boolean, index = 0) {
   const data = await new Message({
     type: MTypePopup.RES_ENCRYPTION,
     payload: {
-      value
+      value,
+      index
     }
   }).send();
   const state = warpMessage(data);
@@ -23,11 +24,12 @@ export async function responseEncryption(value: boolean) {
   return state;
 }
 
-export async function responseDecryption(value: boolean) {
+export async function responseDecryption(value: boolean, index = 0) {
   const data = await new Message({
     type: MTypePopup.RES_DECRYPTION,
     payload: {
-      value
+      value,
+      index
     }
   }).send();
   const state = warpMessage(data);

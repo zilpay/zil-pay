@@ -8,6 +8,10 @@
   },
   "decrypt": {
     "title": "Richiesta di decrittografia",
+    "sub_title": {
+      "0": "Il",
+      "1": "Richiesta Decrittografare il contenuto"
+    },
     "btns": {
       "confirm": "Decifrare",
       "reject": "Respingere"

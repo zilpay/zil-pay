@@ -8,6 +8,10 @@
   },
   "decrypt": {
     "title": "Dekrüpteerimise Taotlus",
+    "sub_title": {
+      "0": "Et",
+      "1": "Taotlege Sisu Dekrüpteerimist"
+    },
     "btns": {
       "confirm": "Dekrüpteerida",
       "reject": "Lükkama"

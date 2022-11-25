@@ -113,8 +113,7 @@ export class CipherControl {
     this.#counter();
   }
 
-  async encrypt() {
-    const index = this.#account.wallet.selectedAddress;
+  async encrypt(index: number) {
     const { privKey } = await this.#account.getKeyPair(index);
     const keyAsHex = Hex.parse(privKey);
     const bytes = Hex.parse(Aes.hash(this.encryptParams.domain));
@@ -129,8 +128,7 @@ export class CipherControl {
     return `${encryptData.ciphertext.toString(Base64)}:${counter.toString(Base64)}`;
   }
 
-  async decrypt() {
-    const index = this.#account.wallet.selectedAddress;
+  async decrypt(index: number) {
     const { privKey } = await this.#account.getKeyPair(index);
     const [cipher, counter] = this.decryptParams.content.split(':');
     const bytes = Hex.parse(Aes.hash(this.decryptParams.domain));
@@ -140,8 +138,11 @@ export class CipherControl {
       Hex.parse(privKey),
       { iv }
     );
+    const content = decrypted.toString(Utf8);
 
-    return decrypted.toString(Utf8);
+    assert(Boolean(content), ErrorMessages.InvalidDecryption);
+
+    return content;
   }
 
   #counter() {

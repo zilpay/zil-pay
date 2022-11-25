@@ -39,14 +39,14 @@
     accountsModal = false;
 	};
   const handleOnReject = async () => {
-    await responseEncryption(false);
+    await responseEncryption(false, accountIndex);
     await closePopup();
   };
   const handleOnEncrypt = async () => {
     loading = true;
 
     try {
-      await responseEncryption(true);
+      await responseEncryption(true, accountIndex);
       await closePopup();
     } catch (err) {
       error = err.message;

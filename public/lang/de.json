@@ -8,6 +8,10 @@
   },
   "decrypt": {
     "title": "Entschlüsselungsanforderung",
+    "sub_title": {
+      "0": "Der",
+      "1": "Inhalt entschlüsseln anfordern"
+    },
     "btns": {
       "confirm": "Entschlüsseln",
       "reject": "Ablehnen"

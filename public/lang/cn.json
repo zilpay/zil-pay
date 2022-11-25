@@ -8,6 +8,10 @@
   },
   "decrypt": {
     "title": "解密请求",
+    "sub_title": {
+      "0": "该",
+      "1": "请求解密内容"
+    },
     "btns": {
       "confirm": "解密",
       "reject": "拒绝"

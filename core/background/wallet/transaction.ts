@@ -63,15 +63,16 @@ export class ZilPayTransaction {
       }).send();
     }
   }
+  
 
-  public async encryptResponse(resolve: boolean, sendResponse: StreamResponse) {
-    const uuid = String(this.#core.cipher.encryptParams.uuid);
-
+  public async encryptResponse(resolve: boolean, index: number, sendResponse: StreamResponse) {
     try {
+      const uuid = String(this.#core.cipher.encryptParams.uuid);
       this.#core.guard.checkSession();
 
       if (resolve) {
-        const cipher = await this.#core.cipher.encrypt();
+        const cipher = await this.#core.cipher.encrypt(index);
+        const account = this.#core.account.wallet.identities[index];
         await new TabsMessage({
           type: MTypeTab.RES_ENCRYPTION,
           payload: {
@@ -79,13 +80,14 @@ export class ZilPayTransaction {
             resolve: {
               cipher,
               account: {
-                base16: this.#core.account.selectedAccount.base16,
-                bech32: this.#core.account.selectedAccount.bech32,
-                pubKey: this.#core.account.selectedAccount.pubKey
+                base16: account.base16,
+                bech32: account.bech32,
+                pubKey: account.pubKey
               }
             }
           }
         }).send();
+        await this.#core.cipher.removeEncryption();
       } else {
         await new TabsMessage({
           type: MTypeTab.RES_ENCRYPTION,
@@ -94,6 +96,7 @@ export class ZilPayTransaction {
             reject: ErrorMessages.Rejected
           }
         }).send();
+        await this.#core.cipher.removeEncryption();
       }
 
       sendResponse({
@@ -103,16 +106,7 @@ export class ZilPayTransaction {
       sendResponse({
         reject: err.message
       });
-      await new TabsMessage({
-        type: MTypeTab.RES_ENCRYPTION,
-        payload: {
-          uuid,
-          reject: err.message
-        }
-      }).send();
     }
-
-    await this.#core.cipher.removeEncryption();
   }
 
   public async addDecryption(params: InputCipherParams, sendResponse: StreamResponse) {
@@ -135,6 +129,50 @@ export class ZilPayTransaction {
           reject: err.message
         }
       }).send();
+    }
+  }
+
+  public async decryptResponse(resolve: boolean, index: number, sendResponse: StreamResponse) {
+    try {
+      const uuid = String(this.#core.cipher.decryptParams.uuid);
+      this.#core.guard.checkSession();
+
+      if (resolve) {
+        const content = await this.#core.cipher.decrypt(index);
+        const account = this.#core.account.wallet.identities[index];
+        await new TabsMessage({
+          type: MTypeTab.RES_DECRYPTION,
+          payload: {
+            uuid,
+            resolve: {
+              content,
+              account: {
+                base16: account.base16,
+                bech32: account.bech32,
+                pubKey: account.pubKey
+              }
+            }
+          }
+        }).send();
+        await this.#core.cipher.removeDecryption();
+      } else {
+        await new TabsMessage({
+          type: MTypeTab.RES_DECRYPTION,
+          payload: {
+            uuid,
+            reject: ErrorMessages.Rejected
+          }
+        }).send();
+        await this.#core.cipher.removeDecryption();
+      }
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
     }
   }
 

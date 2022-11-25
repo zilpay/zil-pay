@@ -127,7 +127,7 @@
   button {
     width: 290px;
 
-    &.gas-btn {
+    .gas-btn {
       margin-block-start: 10px;
     }
   }
