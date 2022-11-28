@@ -72,10 +72,6 @@ $ npm run build
 
 * **Rinat Khasanshin** - *Initial work* - [hicaru](https://github.com/hicaru)
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/zilpay/zil-pay/blob/master/LICENSE) file for details.
-
 Thanks for yours donate.
 ------
 
