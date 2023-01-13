@@ -140,7 +140,7 @@
         stroke: var(--primary-color);
       }
       :global(svg.icon-lock > path) {
-        fill: var(--primary-color);
+        stroke: var(--primary-color);
       }
       :global(svg.icon > path) {
         fill: var(--primary-color);
