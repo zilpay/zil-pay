@@ -109,7 +109,7 @@
 />
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   :global(span.close:hover > svg > line) {
     stroke: var(--primary-color) !important;
 	}

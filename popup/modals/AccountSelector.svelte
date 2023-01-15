@@ -88,7 +88,7 @@
 </ul>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	ul {
 		padding: 0;
     margin: 0;

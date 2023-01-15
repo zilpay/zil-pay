@@ -50,7 +50,7 @@
 </nav>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   nav {
     max-width: 320px;
     height: 50px;

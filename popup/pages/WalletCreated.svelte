@@ -50,7 +50,7 @@
 </main>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   h1,
   h2 {
     color: var(--text-color);

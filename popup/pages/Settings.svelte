@@ -71,7 +71,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		@include flex-center-top-column;
 	}

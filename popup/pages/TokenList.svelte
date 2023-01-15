@@ -177,7 +177,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;
@@ -202,7 +202,7 @@
 			background-color: var(--card-color);
 			border: solid 1px var(--card-color);
 
-			@include border-radius(8px);
+			@include border-radius($default-border-radius);
 			@include flex-between-row;
 
 			&.loading {

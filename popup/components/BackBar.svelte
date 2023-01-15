@@ -21,7 +21,7 @@
 </nav>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   nav {
     margin-block-start: 1em;
 

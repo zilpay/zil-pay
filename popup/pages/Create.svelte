@@ -97,7 +97,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   h1, h3 {
     margin-block-start: 0;
     margin-block-end: 0.2em;

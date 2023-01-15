@@ -250,7 +250,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		padding-top: 5vh;
     height: calc(100vh - 86px);

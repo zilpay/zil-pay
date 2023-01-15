@@ -51,7 +51,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
   div.picker {
     cursor: pointer;

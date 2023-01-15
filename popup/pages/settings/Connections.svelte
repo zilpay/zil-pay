@@ -84,7 +84,7 @@
 </section>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 
 	main {
 		max-width: 520px;
@@ -120,7 +120,7 @@
 			margin: 5px;
 
 			@include flex-between-row;
-			@include border-radius(8px);
+			@include border-radius($default-border-radius);
 
 			& > img {
 				cursor: pointer;

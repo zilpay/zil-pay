@@ -87,7 +87,7 @@
 </nav>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   nav {
     max-width: 900px;
     height: 36px;

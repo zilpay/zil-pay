@@ -14,7 +14,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   .card {
 		background-color: var(--card-color);
 
@@ -38,7 +38,7 @@
     }
 
 		@media screen and (min-width: 400px) {
-			@include border-radius(8px);
+			@include border-radius($default-border-radius);
     }
 	}
 </style>

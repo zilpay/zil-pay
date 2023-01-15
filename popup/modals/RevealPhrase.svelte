@@ -67,7 +67,7 @@
 </form>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   form {
     padding: 30px;
     height: 600px;
@@ -89,7 +89,7 @@
     border: solid 1px var(--danger-color);
     margin-block-end: 16px;
 
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     & > strong {
       width: 280px;

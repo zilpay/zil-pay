@@ -6,7 +6,7 @@
 <span class="t"/>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 
   span {
     &.r {

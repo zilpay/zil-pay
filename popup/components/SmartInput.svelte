@@ -81,7 +81,7 @@
 </label>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
 	label {
 		display: flex;
@@ -92,7 +92,7 @@
 		border: solid 1px var(--card-color);
 		width: 100%;
 		
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 
 		&.loading {
 			border: solid 1px transparent;

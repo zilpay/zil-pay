@@ -12,7 +12,7 @@
   text-indent: 5px;
 
   @include fluid-font(320px, 1024px, 13px, 16px);
-  @include border-radius(8px);
+  @include border-radius($default-border-radius);
 
   width: inherit;
 

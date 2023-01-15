@@ -53,7 +53,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
   div.header {
     width: 90%;

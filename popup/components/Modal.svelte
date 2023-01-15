@@ -46,7 +46,7 @@
 
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   aside {
     position: fixed;
     width: 100%;
@@ -79,7 +79,7 @@
 
       @media screen and (min-width: 899px) {
         margin: 10% auto 50px;
-        @include border-radius(8px);
+        @include border-radius($default-border-radius);
       }
     }
   }

@@ -122,7 +122,7 @@
 </div>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   input,
   button {
     width: 290px;

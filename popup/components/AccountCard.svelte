@@ -49,7 +49,7 @@
 </div>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	h2 {
 		color: var(--text-color);
 		margin-block-end: 0;
@@ -77,13 +77,14 @@
     height: 20px;
     background: var(--background-color);
     border: solid 3px var(--background-color);
-    border-radius: 100%;
     margin-right: 10px;
 
     &.selected {
       border: solid 3px var(--background-color);
       background: var(--primary-color);
     }
+
+    @include border-radius(100%);
   }
   div.wrapper {
     @include flex-between-row;

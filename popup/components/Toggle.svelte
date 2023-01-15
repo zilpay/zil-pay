@@ -28,7 +28,7 @@
 />
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   input {
     display: none;
 

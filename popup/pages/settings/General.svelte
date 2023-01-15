@@ -111,7 +111,7 @@
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 
 	main {
 		height: 100vh;

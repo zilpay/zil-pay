@@ -47,7 +47,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   div.arrow {
     cursor: pointer;
     margin: 10px;
@@ -98,6 +98,6 @@
 
     align-items: flex-end;
     @include flex-column;
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
   }
 </style>

@@ -36,7 +36,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 
 	img {
 		max-width: 500px;

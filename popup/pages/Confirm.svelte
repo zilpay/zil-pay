@@ -243,7 +243,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		height: calc(100vh - 36px);
 		max-height: 600px;
@@ -288,7 +288,7 @@
 			rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 		background-color: var(--card-color);
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 
 		&.loading {
       @include loading-gradient(var(--background-color), var(--card-color));

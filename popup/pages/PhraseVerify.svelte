@@ -77,7 +77,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   h1 {
     margin-block-start: 0;
     font-size: 29pt;

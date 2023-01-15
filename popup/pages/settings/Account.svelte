@@ -136,7 +136,7 @@
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 	main {
 		height: 100vh;
 		background-color: var(--background-color);
@@ -146,7 +146,7 @@
 		max-width: 500px;
 		width: calc(100vw - 50px);
 
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 	}
 	label {
 		background-color: var(--card-color);
@@ -157,7 +157,7 @@
 		margin-block-start: 15px;
 		margin-block-end: 10px;
 
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 		@include flex-between-row;
 
 		& > div {
@@ -181,7 +181,7 @@
 		background-color: var(--card-color);
 		border: solid 1px var(--card-color);
 
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 		@include flex-between-row;
 
 		&:hover {

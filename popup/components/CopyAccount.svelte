@@ -35,14 +35,15 @@
 </Tooltip>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   div {
     text-align: center;
     cursor: pointer;
 
     padding: 8px;
     margin: 5px;
-    border-radius: 8px;
+
+    @include border-radius($default-border-radius);
 
     & > h1 {
       margin-block-start: 0;

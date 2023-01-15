@@ -109,7 +109,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		padding-block-start: 30px;
 

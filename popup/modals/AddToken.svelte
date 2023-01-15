@@ -177,7 +177,7 @@
 </div>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   div.wrapper {
     padding: 30px;
     height: 600px;
@@ -196,7 +196,7 @@
     background-color: var(--card-color);
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     & > li {
       padding: 5px;

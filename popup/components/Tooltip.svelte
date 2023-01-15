@@ -26,7 +26,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
   .tooltip-wrapper {
     position: relative;
