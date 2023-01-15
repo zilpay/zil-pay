@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import { fly } from 'svelte/transition';
 
   import { viewIcon } from 'lib/block-explorer/view';
 	import {
@@ -24,6 +23,7 @@
 	import SkeletToken from '../components/skelet/SkeletToken.svelte';
 
 	import { NETWORK_KEYS } from 'config/network';
+
 
 	let limit = 100;
 	let offset = 0;

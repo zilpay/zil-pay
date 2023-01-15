@@ -106,7 +106,6 @@
 			cursor: pointer;
 			margin: 5px;
 			background-color: var(--card-color);
-			border-radius: 8px;
 			border: solid 1px var(--card-color);
 
 			padding-left: 30px;
@@ -114,6 +113,7 @@
       padding-top: 10px;
 
 			@include flex-between-row;
+			@include border-radius($default-border-radius);
 
 			&:hover {
 				border: solid 1px var(--primary-color);

@@ -13,7 +13,6 @@
 	import zrcStore from 'popup/store/zrc';
 
 	import TopBar from '../components/TopBar.svelte';
-	import GearIcon from '../components/GearIcon.svelte';
 	import LeftNavBar from '../components/LeftNavBar.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
@@ -89,17 +88,21 @@
 		</div>
 		<div class="btns">
 			<button
-				class="action"
+				class="secondary"
 				disabled={account.type === AccountTypes.Track}
 				on:mouseup={() => push(`/send/${TokenType.ZRC2}/0`)}
 			>
 				{$_('home.btns.send')}
 			</button>
 			<button
-				class="action"
 				on:mouseup={() => push('/account')}
 			>
 				{$_('home.btns.receive')}
+			</button>
+			<button
+				on:mouseup={() => push('/account')}
+			>
+				Stake
 			</button>
 		</div>
 		<div class="manager">
@@ -175,7 +178,7 @@
     width: 100%;
     justify-content: end;
 
-		margin-block-start: 16px;
+		margin-block-start: 8px;
 
 		& > div {
 			cursor: pointer;
@@ -193,18 +196,13 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
-	button.action {
-		min-width: 120px;
-		line-height: 30px;
-	}
-	button.add {
-		min-width: 290px;
-		margin-block-start: 5px;
-		margin-block-end: 5px;
-		color: var(--text-color);
+	div.btns {
+		@include flex-center-horiz;
 
-		&:hover {
-			color: var(--background-color);
+		& > button {
+			min-width: 80px;
+			line-height: 30px;
+			margin: 5px;
 		}
 	}
 	div.bar-wrapper {

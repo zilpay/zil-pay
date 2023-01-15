@@ -4,7 +4,6 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
-	import { getRandomSeed } from "popup/backend/phrase";
   import { shuffle } from 'lib/utils/shuffle';
   import wordsStore from 'popup/store/words';
 

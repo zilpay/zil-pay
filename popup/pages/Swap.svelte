@@ -231,6 +231,7 @@
 				<button
 					class:loading={buttonLoading}
 					disabled={disabled}
+					class="secondary"
 				>
 					{$_('swap.form.button')}
 				</button>
@@ -310,14 +311,6 @@
 		& > button {
 			margin-block-end: 5px;
 			margin-block-start: 5px;
-
-			&:disabled {
-				&:hover {
-					border-color: var(--button-color);
-					background: var(--button-color);
-					color: var(--primary-color);
-				}
-			}
 		}
 	}
   section {
