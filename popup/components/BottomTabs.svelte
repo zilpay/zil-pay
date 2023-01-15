@@ -62,8 +62,8 @@
     @include flex-center-vert;
 
     @media screen and (min-width: 400px) {
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
+      border-top-left-radius: $default-border-radius;
+      border-top-right-radius: $default-border-radius;
     }
   }
 </style>

@@ -19,6 +19,8 @@
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
 	import Burger from '../components/Burger.svelte';
+	import Manage from '../components/icons/Manage.svelte';
+
 	import { AccountTypes } from 'config/account-type';
 
 
@@ -100,6 +102,15 @@
 				{$_('home.btns.receive')}
 			</button>
 		</div>
+		<div class="manager">
+			<div />
+			<div
+				class="add"
+				on:mouseup={() => push('/tokens-list')}
+			>
+				<Manage />
+			</div>
+		</div>
 		<div class="wrapper">
 			{#each $zrcStore as token, index}
         <TokenCard
@@ -114,16 +125,6 @@
 				/>
       {/each}
 		</div>
-		<button
-			class="add"
-			on:mouseup={() => push('/tokens-list')}
-		>
-			<GearIcon
-				width="24px"
-				height="24px"
-			/>
-			{$_('home.token_list')}
-		</button>
 	</main>
 	<BottomTabs />
 </section>
@@ -159,15 +160,28 @@
 		top: -47px;
 		opacity: 0.5;
 	}
+	div.manager,
 	div.wrapper {
-		margin-top: 30px;
 		padding-left: 10px;
 		padding-right: 10px;
 
 		min-width: 290px;
 		max-width: 320px;
-		width: fit-content;
 
+		width: fit-content;
+	}
+	div.manager {
+		display: flex;
+    width: 100%;
+    justify-content: end;
+
+		margin-block-start: 16px;
+
+		& > div {
+			cursor: pointer;
+		}
+	}
+	div.wrapper {
 		flex-wrap: wrap;
 
     display: flex;
@@ -201,7 +215,7 @@
 	:global(button.add > svg > path) {
 		fill: var(--text-color) !important;
 	}
-	:global(button.add:hover > svg > path) {
-		fill: var(--background-color) !important;
+	:global(div.add:hover > svg > path) {
+		stroke: var(--primary-color) !important;
 	}
 </style>
