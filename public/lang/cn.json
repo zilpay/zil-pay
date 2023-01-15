@@ -24,6 +24,7 @@
   "home": {
     "btns": {
       "send": "转账",
+      "stake": "利害关系",
       "receive": "收款"
     },
     "clipboard": {

@@ -100,9 +100,9 @@
 				{$_('home.btns.receive')}
 			</button>
 			<button
-				on:mouseup={() => push('/account')}
+				on:mouseup={() => push('/stake')}
 			>
-				Stake
+				{$_('home.btns.stake')}
 			</button>
 		</div>
 		<div class="manager">

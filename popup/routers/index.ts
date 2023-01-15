@@ -31,6 +31,7 @@ import LedgerConnect from '../pages/ledger/LedgerConnect.svelte';
 import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 
 import Swap from '../pages/Swap.svelte';
+import Stake from '../pages/Stake.svelte';
 import Collect from '../pages/Collect.svelte';
 import EncryptPage from '../pages/Encrypt.svelte';
 import DecryptPage from '../pages/Decrypt.svelte';
@@ -61,6 +62,12 @@ export default {
   }),
   '/swap': wrap({
     component: Swap,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/stake': wrap({
+    component: Stake,
     conditions: [
       routerGuard
     ]

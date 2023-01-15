@@ -24,6 +24,7 @@
   "home": {
     "btns": {
       "send": "Senden",
+      "stake": "Anteil",
       "receive": "Empfangen"
     },
     "clipboard": {

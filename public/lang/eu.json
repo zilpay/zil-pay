@@ -24,6 +24,7 @@
   "home": {
     "btns": {
       "send": "Saada",
+      "stake": "Anteil",
       "receive": "Võta vastu"
     },
     "clipboard": {
@@ -33,7 +34,7 @@
     "nav": {
       "options": {
         "add": {
-          "title": "Lisa kasutaja",
+          "title": "Kaalul",
           "description": "Loo järgmisest kontost salajane fraas."
         },
         "import": {

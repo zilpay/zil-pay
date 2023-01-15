@@ -24,8 +24,9 @@
   "home": {
     "btns": {
       "send": "Invia",
-      "receive": "Ricevi"
-    },
+      "receive": "Ricevi",
+      "stake": "Palo"
+  },
     "clipboard": {
       "copy": "Copia",
       "copied": "Copiato"

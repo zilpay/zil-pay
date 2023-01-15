@@ -1,4 +1,7 @@
 {
+  "stake": {
+    "title": "Stake"
+  },
   "encrypt": {
     "title": "Encryption Request",
     "btns": {
@@ -24,6 +27,7 @@
   "home": {
     "btns": {
       "send": "Send",
+      "stake": "Stake",
       "receive": "Receive"
     },
     "clipboard": {

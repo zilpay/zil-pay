@@ -238,7 +238,7 @@
 			</form>
 		{/if}
 		<a
-			href="https://zilpay.io/"
+			href="https://zilpay.io/terms"
 			target="_blank"
 			rel="noreferrer"
 		>
