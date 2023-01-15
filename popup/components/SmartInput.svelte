@@ -2,8 +2,6 @@
 	import Big from 'big.js';
   import { createEventDispatcher } from 'svelte';
 
-	import Arrow from './icons/Arrow.svelte';
-
   import currencyStore from 'popup/store/currency';
 
 	import { formatNumber } from 'popup/filters/n-format';
@@ -87,7 +85,6 @@
 		display: flex;
 		align-items: center;
 
-		box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
 		background-color: var(--card-color);
 		border: solid 1px var(--card-color);
 		width: 100%;

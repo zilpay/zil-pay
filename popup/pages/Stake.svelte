@@ -3,7 +3,6 @@
 
 	import NavClose from '../components/NavClose.svelte';
 	import Smartinput from '../components/SmartInput.svelte';
-  import Arrow from '../components/icons/Arrow.svelte';
 
   import { viewIcon } from 'lib/block-explorer/view';
   import { fromDecimals } from 'popup/filters/units';
@@ -23,7 +22,6 @@
       method: () => {
         modes[0].active = true;
         modes[1].active = false;
-        modes[2].active = false;
       }
     },
     {
@@ -32,16 +30,6 @@
       method: () => {
         modes[0].active = false;
         modes[1].active = true;
-        modes[2].active = false;
-      }
-    },
-    {
-      name: 'Convert',
-      active: false,
-      method: () => {
-        modes[0].active = false;
-        modes[1].active = false;
-        modes[2].active = true;
       }
     }
   ];
@@ -49,6 +37,7 @@
   $: ZIL = $zrcStore[0];
   $: stZIL = $zrcStore[1];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
+  $: mode = modes.find((m) => m.active);
 </script>
 
 <main>
@@ -64,19 +53,9 @@
         </div>
       {/each}
     </div>
-    <div class="imgs">
-      <img
-        src={viewIcon(ZIL.bech32, $themeStore)}
-        alt={ZIL.symbol}
-        height="30"
-      >
-      <Arrow />
-      <img
-        src={viewIcon(stZIL.bech32, $themeStore)}
-        alt={stZIL.symbol}
-        height="30"
-      >
-    </div>
+    <b>
+      {$_('swap.form.from')}
+    </b>
     <Smartinput
       img={viewIcon(ZIL.bech32, $themeStore)}
       symbol={ZIL.symbol}
@@ -85,14 +64,17 @@
       loading={false}
       on:input={(event) => console.log(event.detail, 0)}
     />
-    <div class="balance">
-      <b>
-        Balance
-      </b>
-      <b>
-        {formatNumber(fromDecimals(account.zrc2[ZIL.base16], ZIL.decimals).toString())}
-      </b>
-    </div>
+    <b>
+      {$_('swap.form.to')}
+    </b>
+    <Smartinput
+      img={viewIcon(stZIL.bech32, $themeStore)}
+      symbol={stZIL.symbol}
+      value={'0'}
+      loading={false}
+      percents={[]}
+      disabled
+    />
     <div class="info-wrp">
       <ul>
         <li>
@@ -101,14 +83,6 @@
           </b>
           <b>
             {formatNumber(min)} {ZIL.symbol}
-          </b>
-        </li>
-        <li>
-          <b>
-            You will receive
-          </b>
-          <b>
-            2.62423 stZIL
           </b>
         </li>
         <li>
@@ -130,7 +104,7 @@
       </ul>
     </div>
     <button class="secondary">
-      Skate
+      {mode.name}
     </button>
     <a
 			href="https://zilpay.io/terms"
@@ -159,6 +133,10 @@
 		height: 100vh;
 		background-color: var(--background-color);
 		@include flex-center-top-column;
+
+    & > div > b {
+      margin-left: 16px;
+    }
 	}
   div.switcher {
     cursor: pointer;
@@ -197,14 +175,11 @@
   a {
     text-align: center;
   }
-  div.imgs {
-    padding: 16px;
-
-    @include flex-center;
-  }
   div.info-wrp {
     margin-block-start: 8px;
     margin-block-end: 8px;
+
+    box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
 
     padding: 16px;
 
@@ -222,12 +197,5 @@
         @include flex-between-row;
       }
     }
-  }
-  div.balance {
-    padding-right: 16px;
-    padding-left: 16px;
-    padding-top: 5px;
-
-    @include flex-between-row;
   }
 </style>

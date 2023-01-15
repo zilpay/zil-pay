@@ -57,12 +57,12 @@
 :global(.btn.secondary) {
   border-color: var(--secondary-color);
   background: var(--secondary-color);
-  color: var(--background-color);
+  color: var(--text-color);
 
   &:hover, &:disabled {
     border-color: var(--button-color);
     background: var(--button-color);
-    color: var(--Text-color);
+    color: var(--text-color);
   }
 }
 :global(button.warning),
