@@ -57,7 +57,7 @@
 :global(.btn.secondary) {
   border-color: var(--secondary-color);
   background: var(--secondary-color);
-  color: var(--text-color);
+  color: var(--primary-color);
 
   &:hover, &:disabled {
     border-color: var(--button-color);

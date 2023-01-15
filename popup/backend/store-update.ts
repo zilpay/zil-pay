@@ -7,6 +7,10 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { WalletState } from 'types/account';
+
+import { themeDetect } from 'app/mixins/theme';
+import { Themes } from 'config/theme';
+
 import guardStore from 'popup/store/guard';
 import walletStore from 'popup/store/wallet';
 import netStore from 'popup/store/netwrok';
@@ -27,8 +31,15 @@ import phishingStore from 'app/store/phishing';
 import dexStore from 'app/store/dex';
 import cipherStore from 'app/store/cipher';
 
+
 export function updateState(state: WalletState) {
-  document.body.setAttribute('theme', state.theme);
+  let theme = state.theme;
+
+  if (state.theme === Themes.Auto) {
+    theme = themeDetect();
+  }
+
+  document.body.setAttribute('theme', theme);
   console.log(state);
   guardStore.set(state.guard);
   walletStore.set(state.wallet);

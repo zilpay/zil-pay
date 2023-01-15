@@ -7,6 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 export enum Themes {
+  Auto = 'Auto',
   Light = 'light',
   Dark = 'dark'
 }
