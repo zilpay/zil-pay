@@ -29,6 +29,7 @@ import { LocalesController } from 'core/background/services/locale';
 import { AddressController } from 'core/background/services/address';
 import { DexController } from 'core/background/services/dex';
 import { CipherControl } from 'core/background/services/cipher';
+import { StakeController } from 'background/services/stake';
 
 export class ZIlPayCore {
   public netwrok = new NetworkControl();
@@ -55,6 +56,11 @@ export class ZIlPayCore {
   public nonceCounter = new NonceController(this.zilliqa, this.transactions);
   public transactionsQueue = new TransactionsQueue(this.zilliqa, this.netwrok, this.transactions);
   public blockchain = new BlockController(this.zilliqa, this.transactionsQueue);
+  public stake = new StakeController(
+    this.zilliqa,
+    this.zrc2,
+    this.account
+  );
 
   public get state(): WalletState {
     return {
