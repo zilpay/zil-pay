@@ -1,4 +1,8 @@
 <script lang="ts">
+  import type { StakeResponse } from 'types/stake';
+
+	import { onMount, onDestroy } from 'svelte';
+
 	import { _ } from 'popup/i18n';
 
 	import NavClose from '../components/NavClose.svelte';
@@ -12,9 +16,32 @@
   import themeStore from 'popup/store/theme';
 	import walletStore from 'popup/store/wallet';
 
+  import { getStakeProps } from 'app/backend/stake';
+
 
   const min = 10;
+  const stZIL = $zrcStore.find((t) => t.symbol === 'stZIL');
 
+  let data: StakeResponse = {
+    fee: 0,
+    block: 0,
+    totalStaked: '1',
+    totalSupply: '1',
+    pendingOrders: [],
+    unbounded: []
+  };
+  let loading = true;
+  let tokens = [
+		{
+			value: '0',
+			meta: $zrcStore[0]
+		},
+		{
+			value: '0',
+			converted: 0,
+			meta: stZIL
+		}
+	];
   let modes = [
     {
       name: 'Skate',
@@ -22,6 +49,7 @@
       method: () => {
         modes[0].active = true;
         modes[1].active = false;
+        tokens = tokens.reverse();
       }
     },
     {
@@ -30,14 +58,28 @@
       method: () => {
         modes[0].active = false;
         modes[1].active = true;
+        tokens = tokens.reverse();
       }
     }
   ];
 
+
   $: ZIL = $zrcStore[0];
-  $: stZIL = $zrcStore[1];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
   $: mode = modes.find((m) => m.active);
+  $: rate = tokens[0].meta.base16 === $zrcStore[0].base16 ?
+    Number(data.totalSupply) / Number(data.totalStaked) : Number(data.totalStaked) / Number(data.totalSupply);
+
+  onMount(async() => {
+    try {
+      loading = true;
+      data = await getStakeProps();
+    } catch (err) {
+      console.error(err);
+    }
+
+    loading = false;
+	});
 </script>
 
 <main>
@@ -57,21 +99,21 @@
       {$_('swap.form.from')}
     </b>
     <Smartinput
-      img={viewIcon(ZIL.bech32, $themeStore)}
-      symbol={ZIL.symbol}
-      max={fromDecimals(account.zrc2[ZIL.base16], ZIL.decimals).toString()}
-      value={'0'}
-      loading={false}
+      img={viewIcon(tokens[0].meta.bech32, $themeStore)}
+      symbol={tokens[0].meta.symbol}
+      max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).toString()}
+      value={tokens[0].value}
+      loading={loading}
       on:input={(event) => console.log(event.detail, 0)}
     />
     <b>
       {$_('swap.form.to')}
     </b>
     <Smartinput
-      img={viewIcon(stZIL.bech32, $themeStore)}
-      symbol={stZIL.symbol}
-      value={'0'}
-      loading={false}
+      img={viewIcon(tokens[1].meta.bech32, $themeStore)}
+      symbol={tokens[1].meta.symbol}
+      value={tokens[1].value}
+      loading={loading}
       percents={[]}
       disabled
     />
@@ -90,7 +132,7 @@
             Exchange rate
           </b>
           <b>
-            1 ZIL = 0.5248458611 stZIL
+            1 {tokens[0].meta.symbol} = {formatNumber(rate)} {tokens[1].meta.symbol}
           </b>
         </li>
         <li>
@@ -98,12 +140,16 @@
             Reward fee
           </b>
           <b>
-            10%
+            {data.fee / 10}%
           </b>
         </li>
       </ul>
     </div>
-    <button class="secondary">
+    <button
+      class:loading={loading}
+      disabled={loading}
+      class="secondary"
+    >
       {mode.name}
     </button>
     <a

@@ -107,7 +107,9 @@ export const MTypePopup = {
   GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
 
   RES_ENCRYPTION: `@/${app}/response-encryption`,
-  RES_DECRYPTION: `@/${app}/response-decryption`
+  RES_DECRYPTION: `@/${app}/response-decryption`,
+
+  GET_STAKE_PROPS: `@/${app}/get-stake-props`
 };
 
 export const MTypeTab = {

@@ -6,9 +6,10 @@
  * -----
  * Copyright (c) 2023 ZilPay
  */
-import type { NetworkControl } from 'core/background/services/network';
 import type { ZRC2Controller } from 'core/background/services/token';
 import type { AccountController } from 'core/background/services/account';
+import type { RPCResponse } from 'types/zilliqa';
+import type { StakeResponse } from 'types/stake';
 
 import assert from 'assert';
 
@@ -49,7 +50,7 @@ export class StakeController {
   }
 
 
-  async request() {
+  async request(): Promise<StakeResponse> {
     const { base16 } = this.#account.selectedAccount;
 
     assert(Boolean(base16), ErrorMessages.InvalidBech32);
@@ -83,8 +84,65 @@ export class StakeController {
         [contract, STZILFields.WithdrawalUnbonded, [address]]
       )
     ];
-    let replies = await this.#zilliqa.sendJson(...batch);
+    const replies: RPCResponse[] = await this.#zilliqa.sendJson(...batch);
 
-    console.log(replies);
+    const block = Number(replies[0].result[STZILFields.LocalBnumReq]);
+    const fee = Number(replies[1].result[STZILFields.RewardsFee]);
+    const totalSupply = String(replies[2].result[STZILFields.TotalSupply]);
+    const totalStaked = String(replies[3].result[STZILFields.TotalStakeAmount]);
+
+    const pendingOrders = this.#getPendingOrders(
+      replies[4].result,
+      address
+    );
+    const unbounded = this.#getUnbounded(
+      replies[5].result,
+      address
+    );
+
+    return {
+      block,
+      fee,
+      totalSupply,
+      totalStaked,
+      pendingOrders,
+      unbounded
+    };
+  }
+
+  #getUnbounded(mbOrders: object | null, address: string) {
+    if (!mbOrders || !address || !mbOrders[STZILFields.WithdrawalUnbonded]) {
+      return [];
+    }
+
+    const order = mbOrders[STZILFields.WithdrawalUnbonded][address];
+
+    if (!order) {
+      return [];
+    }
+
+    return [{
+      st: String(order.arguments[0]),
+      zil: String(order.arguments[1])
+    }];
+  }
+
+  #getPendingOrders(mbOrders: object | null, address: string) {
+    if (!mbOrders || !address || !mbOrders[STZILFields.WithdrawalPendingOfDelegator]) {
+      return [];
+    }
+
+    const orders = mbOrders[STZILFields.WithdrawalPendingOfDelegator][address];
+    const blocks = Object.keys(orders);
+
+    if (blocks.length === 0) {
+      return[];
+    }
+
+    return blocks.map((block) => ({
+      block: String(block),
+      st: String(orders[block].arguments[0]),
+      zil: String(orders[block].arguments[1])
+    }));
   }
 }

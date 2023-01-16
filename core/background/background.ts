@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return true;
     }
     switch (msg.type) {
+      case MTypePopup.GET_STAKE_PROPS:
+        core.zrc.getStakeProps(sendResponse);
+        return true;
       case MTypePopup.GET_LATEST_BLOCK:
         core.netwrok.getLatestBlockNumber(sendResponse);
         return true;
