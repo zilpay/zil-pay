@@ -93,7 +93,7 @@
       required
     >
     <button
-			class="primary"
+			class="secondary"
       class:loading={loading}
 			disabled={disabled}
 		>

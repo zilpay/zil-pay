@@ -17,7 +17,6 @@
   onMount(() => {
     const list = JSON.stringify($wordsStore);
     shuffled = shuffle<string>(JSON.parse(list));
-    shuffled = JSON.parse(list);
 
     if ($wordsStore.length < 12) {
       return push('/create');

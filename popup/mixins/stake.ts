@@ -35,6 +35,7 @@ enum GasLimits {
 
 export class AvelyStake {
   static FEE_DEMON = 10;
+  static MIN = 10;
 
   get gas() {
     return get(gasStore);

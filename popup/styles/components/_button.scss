@@ -49,8 +49,8 @@
   color: var(--button-color);
 
   &:hover, &:disabled {
-    border-color: var(--modal-color);
-    background: var(--modal-color);
+    border-color: var(--success-color);
+    background: var(--success-color);
     color: var(--text-color);
   }
 }

@@ -19,15 +19,14 @@
 	import zrcStore from 'popup/store/zrc';
   import themeStore from 'popup/store/theme';
 	import walletStore from 'popup/store/wallet';
+  import blocknumber from 'app/store/blocknumber';
 
   import { getStakeProps } from 'app/backend/stake';
   import { AvelyStake } from 'app/mixins/stake';
-    import { BrowserStorage } from 'lib/storage';
-    import blocknumber from 'app/store/blocknumber';
+  import { BrowserStorage } from 'lib/storage';
 
 
   const stake = new AvelyStake();
-  const min = 10;
   const stZIL = stake.stZIL;
 
   let data: StakeResponse = {
@@ -88,7 +87,7 @@
   $: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
   $: mode = modes.find((m) => m.active);
-  $: disabled = Number(tokens[0].value) > 0
+  $: disabled = Number(tokens[0].value) >= AvelyStake.MIN
     && Number(tokens[1].value) > 0
     && !loading
     && fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).gte(tokens[0].value);
@@ -223,7 +222,7 @@
               Minimum staking amount:
             </b>
             <b>
-              {formatNumber(min)} {ZIL.symbol}
+              {AvelyStake.MIN} {ZIL.symbol}
             </b>
           </li>
           <li>
@@ -257,7 +256,7 @@
             </li>
           {/if}
           {#if data.unbounded.length > 0}
-            <li>
+            <li class="claim">
               <b>
                 {formatNumber(
                   fromDecimals(data.unbounded[0].st, stZIL.decimals),
@@ -377,6 +376,12 @@
           padding: 3px;
 
           @include flex-between-row;
+
+          &.claim > b {
+            background: -webkit-linear-gradient(24deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
 
           & > .btn {
             font-size: 9pt;
