@@ -2,6 +2,7 @@
   import type { StakeResponse } from 'types/stake';
 
 	import { onMount, onDestroy } from 'svelte';
+	import Big from 'big.js';
 
 	import { _ } from 'popup/i18n';
 
@@ -17,8 +18,10 @@
 	import walletStore from 'popup/store/wallet';
 
   import { getStakeProps } from 'app/backend/stake';
+  import { AvelyStake } from 'app/mixins/stake';
 
 
+  const stake = new AvelyStake();
   const min = 10;
   const stZIL = $zrcStore.find((t) => t.symbol === 'stZIL');
 
@@ -34,12 +37,14 @@
   let tokens = [
 		{
 			value: '0',
-			meta: $zrcStore[0]
+			meta: $zrcStore[0],
+      approved: Big(0)
 		},
 		{
 			value: '0',
 			converted: 0,
-			meta: stZIL
+			meta: stZIL,
+      approved: Big(0)
 		}
 	];
   let modes = [
@@ -50,6 +55,11 @@
         modes[0].active = true;
         modes[1].active = false;
         tokens = tokens.reverse();
+
+        const limit = stake.getVirtualParams(tokens, data);
+
+        tokens[1].value = String(limit.rate);
+        tokens[1].converted = limit.converted;
       }
     },
     {
@@ -59,6 +69,11 @@
         modes[0].active = false;
         modes[1].active = true;
         tokens = tokens.reverse();
+
+        const limit = stake.getVirtualParams(tokens, data);
+
+        tokens[1].value = String(limit.rate);
+        tokens[1].converted = limit.converted;
       }
     }
   ];
@@ -69,6 +84,19 @@
   $: mode = modes.find((m) => m.active);
   $: rate = tokens[0].meta.base16 === $zrcStore[0].base16 ?
     Number(data.totalSupply) / Number(data.totalStaked) : Number(data.totalStaked) / Number(data.totalSupply);
+
+  function hanldeOnInput(value: string, index: number) {
+    try {
+			tokens[index].value = String(Big(value));
+		} catch {
+			tokens[index].value = String(Big(0));
+		}
+
+    const limit = stake.getVirtualParams(tokens, data);
+
+    tokens[1].value = String(limit.rate);
+		tokens[1].converted = limit.converted;
+	}
 
   onMount(async() => {
     try {
@@ -104,7 +132,7 @@
       max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).toString()}
       value={tokens[0].value}
       loading={loading}
-      on:input={(event) => console.log(event.detail, 0)}
+      on:input={(event) => hanldeOnInput(event.detail, 0)}
     />
     <b>
       {$_('swap.form.to')}
@@ -114,6 +142,7 @@
       symbol={tokens[1].meta.symbol}
       value={tokens[1].value}
       loading={loading}
+      converted={tokens[1].converted}
       percents={[]}
       disabled
     />
