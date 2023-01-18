@@ -48,9 +48,9 @@
   background: var(--primary-color);
   color: var(--button-color);
 
-  &:hover, &:disabled {
-    border-color: var(--success-color);
-    background: var(--success-color);
+  &:hover:enabled {
+    border-color: var(--muted-color);
+    background: var(--muted-color);
     color: var(--text-color);
   }
 }
