@@ -9,6 +9,8 @@
 
 	import NavClose from '../components/NavClose.svelte';
 	import Smartinput from '../components/SmartInput.svelte';
+  import Modal from '../components/Modal.svelte';
+  import StakeOrders from '../modals/StakeOrders.svelte'
 
   import { viewIcon } from 'lib/block-explorer/view';
   import { fromDecimals } from 'popup/filters/units';
@@ -20,6 +22,8 @@
 
   import { getStakeProps } from 'app/backend/stake';
   import { AvelyStake } from 'app/mixins/stake';
+    import { BrowserStorage } from 'lib/storage';
+    import blocknumber from 'app/store/blocknumber';
 
 
   const stake = new AvelyStake();
@@ -34,6 +38,7 @@
     pendingOrders: [],
     unbounded: []
   };
+  let ordersModal = false;
   let loading = true;
   let tokens = [
 		{
@@ -86,7 +91,7 @@
   $: disabled = Number(tokens[0].value) > 0
     && Number(tokens[1].value) > 0
     && !loading
-    && fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).gt(tokens[0].value);
+    && fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).gte(tokens[0].value);
   $: rate = tokens[0].meta.base16 === $zrcStore[0].base16 ?
     Number(data.totalSupply) / Number(data.totalStaked) : Number(data.totalStaked) / Number(data.totalSupply);
 
@@ -131,19 +136,48 @@
     loading = false;
   }
 
+  function hanldeShowOrders() {
+    ordersModal = !ordersModal;
+  }
+
+  const storageObserver = BrowserStorage.subscribe(async(event) => {
+    const newBlockNumber = event['blocknumber'];
+		if (newBlockNumber) {
+      blocknumber.set(newBlockNumber.newValue);
+			data = await getStakeProps();
+		}
+	});
+
   onMount(async() => {
     try {
       loading = true;
       data = await getStakeProps();
-      console.log(data);
     } catch (err) {
       console.error(err);
     }
 
     loading = false;
 	});
+
+  onDestroy(() => {
+		storageObserver.unsubscribe();
+	});
 </script>
 
+<Modal
+  show={ordersModal}
+  title={'pending withdrawals'}
+  on:close={hanldeShowOrders}
+>
+  <div class="m-warp">
+    <StakeOrders
+      identities={data.pendingOrders}
+      stZIL={stZIL}
+      ZIL={ZIL}
+      delayBlock={data.block}
+    />
+  </div>
+</Modal>
 <main>
 	<NavClose title={$_('stake.title')}/>
   <form on:submit={submit}>
@@ -166,7 +200,7 @@
       max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).toString()}
       value={tokens[0].value}
       loading={loading}
-      percents={[0, 10, 30, 50, 70, 90]}
+      percents={[0, 10, 30, 50, 70, 100]}
       on:input={(event) => hanldeOnInput(event.detail, 0)}
     />
     <b>
@@ -182,62 +216,67 @@
       disabled
     />
     <div class="info-wrp">
-      <ul>
-        <li>
-          <b>
-            Minimum staking amount:
-          </b>
-          <b>
-            {formatNumber(min)} {ZIL.symbol}
-          </b>
-        </li>
-        <li>
-          <b>
-            Exchange rate
-          </b>
-          <b>
-            1 {tokens[0].meta.symbol} = {formatNumber(rate)} {tokens[1].meta.symbol}
-          </b>
-        </li>
-        <li>
-          <b>
-            Reward fee
-          </b>
-          <b>
-            {data.fee / AvelyStake.FEE_DEMON}%
-          </b>
-        </li>
-        {#if data.pendingOrders.length > 0}
-          <hr>
+      <div>
+        <ul>
           <li>
             <b>
-              {data.pendingOrders.length} pending withdrawals
+              Minimum staking amount:
             </b>
-            <div class="btn primary">
-              Show
-            </div>
+            <b>
+              {formatNumber(min)} {ZIL.symbol}
+            </b>
           </li>
-        {/if}
-        {#if data.unbounded.length > 0}
           <li>
             <b>
-              {formatNumber(
-                fromDecimals(data.unbounded[0].st, stZIL.decimals),
-                stZIL.symbol
-              )} / {formatNumber(
-                fromDecimals(data.unbounded[0].zil, ZIL.decimals),
-                ZIL.symbol
-              )}
+              Exchange rate
             </b>
-            <div
-              class="btn primary"
-              on:mouseup={completeWithdrawal}
-            >
-              Claim
-            </div>
+            <b>
+              1 {tokens[0].meta.symbol} = {formatNumber(rate)} {tokens[1].meta.symbol}
+            </b>
           </li>
-        {/if}
-      </ul>
+          <li>
+            <b>
+              Reward fee
+            </b>
+            <b>
+              {data.fee / AvelyStake.FEE_DEMON}%
+            </b>
+          </li>
+          {#if data.pendingOrders.length > 0}
+            <hr>
+            <li>
+              <b>
+                {data.pendingOrders.length} Pending withdrawals
+              </b>
+              <div
+                class="btn primary"
+                on:mouseup={hanldeShowOrders}
+              >
+                Show
+              </div>
+            </li>
+          {/if}
+          {#if data.unbounded.length > 0}
+            <li>
+              <b>
+                {formatNumber(
+                  fromDecimals(data.unbounded[0].st, stZIL.decimals),
+                  stZIL.symbol
+                )} / {formatNumber(
+                  fromDecimals(data.unbounded[0].zil, ZIL.decimals),
+                  ZIL.symbol
+                )}
+              </b>
+              <div
+                class="btn primary"
+                on:mouseup={completeWithdrawal}
+              >
+                Claim
+              </div>
+            </li>
+          {/if}
+        </ul>
+      </div>
     </div>
     <button
       class:loading={loading}
@@ -316,30 +355,36 @@
     text-align: center;
   }
   div.info-wrp {
-    margin-block-start: 3px;
-    margin-block-end: 3px;
-    padding: 16px;
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+    padding: 1px;
 
-    box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
-    background-color: var(--card-color);
+    background: linear-gradient(95.25deg, rgb(51, 227, 206) 1.47%, rgb(135, 117, 231) 80.7%);
 
     @include border-radius($default-border-radius);
 
-    & > ul {
-      margin: 0;
-      padding: 0;
+    & > div {
+      background-color: var(--card-color);
+      padding: 16px;
 
-      & > li {
-        padding: 3px;
+      @include border-radius($default-border-radius);
 
-        @include flex-between-row;
+      & > ul {
+        margin: 0;
+        padding: 0;
 
-        & > .btn {
-          font-size: 9pt;
-          line-height: 14pt;
-          width: auto;
-          padding: 5px 22px 5px 22px;
-          min-width: 80px;
+        & > li {
+          padding: 3px;
+
+          @include flex-between-row;
+
+          & > .btn {
+            font-size: 9pt;
+            line-height: 14pt;
+            width: auto;
+            padding: 5px 22px 5px 22px;
+            min-width: 80px;
+          }
         }
       }
     }
