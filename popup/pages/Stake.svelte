@@ -103,7 +103,7 @@
 		tokens[1].converted = limit.converted;
 	}
 
-  async function submit(e) {
+  async function submit(e: Event) {
 		e.preventDefault();
 
     if (!disabled) {
@@ -120,10 +120,22 @@
     loading = false;
   }
 
+  async function completeWithdrawal() {
+    loading = true;
+    try {
+      await stake.completeWithdrawal();
+      push('/confirm');
+    } catch {
+      ///
+    }
+    loading = false;
+  }
+
   onMount(async() => {
     try {
       loading = true;
       data = await getStakeProps();
+      console.log(data);
     } catch (err) {
       console.error(err);
     }
@@ -195,6 +207,36 @@
             {data.fee / AvelyStake.FEE_DEMON}%
           </b>
         </li>
+        {#if data.pendingOrders.length > 0}
+          <hr>
+          <li>
+            <b>
+              {data.pendingOrders.length} pending withdrawals
+            </b>
+            <div class="btn primary">
+              Show
+            </div>
+          </li>
+        {/if}
+        {#if data.unbounded.length > 0}
+          <li>
+            <b>
+              {formatNumber(
+                fromDecimals(data.unbounded[0].st, stZIL.decimals),
+                stZIL.symbol
+              )} / {formatNumber(
+                fromDecimals(data.unbounded[0].zil, ZIL.decimals),
+                ZIL.symbol
+              )}
+            </b>
+            <div
+              class="btn primary"
+              on:mouseup={completeWithdrawal}
+            >
+              Claim
+            </div>
+          </li>
+        {/if}
       </ul>
     </div>
     <button
@@ -274,13 +316,11 @@
     text-align: center;
   }
   div.info-wrp {
-    margin-block-start: 8px;
-    margin-block-end: 8px;
-
-    box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
-
+    margin-block-start: 3px;
+    margin-block-end: 3px;
     padding: 16px;
 
+    box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
     background-color: var(--card-color);
 
     @include border-radius($default-border-radius);
@@ -293,6 +333,14 @@
         padding: 3px;
 
         @include flex-between-row;
+
+        & > .btn {
+          font-size: 9pt;
+          line-height: 14pt;
+          width: auto;
+          padding: 5px 22px 5px 22px;
+          min-width: 80px;
+        }
       }
     }
   }

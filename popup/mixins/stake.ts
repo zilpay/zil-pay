@@ -94,6 +94,14 @@ export class AvelyStake {
     }
   }
 
+  async completeWithdrawal() {
+    const contract = this.stZIL.base16;
+    const tag = 'CompleteWithdrawal';
+    const params = [];
+
+    return this.#sendParams(params, tag, GasLimits.DelegateStake, String(0), contract, tag);
+  }
+
   async delegateStake(zil: string) {
     const amount = toDecimals(zil, this.zil.decimals).toString();
     const contract = this.stZIL.base16;

@@ -46,11 +46,13 @@
 :global(.btn.primary) {
   border-color: var(--primary-color);
   background: var(--primary-color);
-  color: var(--background-color);
+  color: var(--button-color);
 
-  // &:hover:enabled {
-  //   background: linear-gradient(rgba(0, 0, 0, 0.137), rgba(0, 0, 0, 0.137));
-  // }
+  &:hover, &:disabled {
+    border-color: var(--modal-color);
+    background: var(--modal-color);
+    color: var(--text-color);
+  }
 }
 
 :global(button.secondary),
