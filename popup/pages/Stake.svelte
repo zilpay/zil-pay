@@ -2,6 +2,7 @@
   import type { StakeResponse } from 'types/stake';
 
 	import { onMount, onDestroy } from 'svelte';
+	import { push } from 'svelte-spa-router';
 	import Big from 'big.js';
 
 	import { _ } from 'popup/i18n';
@@ -23,7 +24,7 @@
 
   const stake = new AvelyStake();
   const min = 10;
-  const stZIL = $zrcStore.find((t) => t.symbol === 'stZIL');
+  const stZIL = stake.stZIL;
 
   let data: StakeResponse = {
     fee: 0,
@@ -82,6 +83,10 @@
   $: ZIL = $zrcStore[0];
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
   $: mode = modes.find((m) => m.active);
+  $: disabled = Number(tokens[0].value) > 0
+    && Number(tokens[1].value) > 0
+    && !loading
+    && fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).gt(tokens[0].value);
   $: rate = tokens[0].meta.base16 === $zrcStore[0].base16 ?
     Number(data.totalSupply) / Number(data.totalStaked) : Number(data.totalStaked) / Number(data.totalSupply);
 
@@ -98,6 +103,23 @@
 		tokens[1].converted = limit.converted;
 	}
 
+  async function submit(e) {
+		e.preventDefault();
+
+    if (!disabled) {
+      return;
+    }
+
+    loading = true;
+    try {
+      await stake.call(tokens);
+      push('/confirm');
+    } catch {
+      ///
+    }
+    loading = false;
+  }
+
   onMount(async() => {
     try {
       loading = true;
@@ -112,7 +134,7 @@
 
 <main>
 	<NavClose title={$_('stake.title')}/>
-  <div>
+  <form on:submit={submit}>
     <div class="switcher">
       {#each modes as mode}
         <div
@@ -132,6 +154,7 @@
       max={fromDecimals(account.zrc2[tokens[0].meta.base16], tokens[0].meta.decimals).toString()}
       value={tokens[0].value}
       loading={loading}
+      percents={[0, 10, 30, 50, 70, 90]}
       on:input={(event) => hanldeOnInput(event.detail, 0)}
     />
     <b>
@@ -169,14 +192,14 @@
             Reward fee
           </b>
           <b>
-            {data.fee / 10}%
+            {data.fee / AvelyStake.FEE_DEMON}%
           </b>
         </li>
       </ul>
     </div>
     <button
       class:loading={loading}
-      disabled={loading}
+      disabled={!disabled}
       class="secondary"
     >
       {mode.name}
@@ -199,7 +222,7 @@
         FAQ
       </p>
     </a>
-  </div>
+  </form>
 </main>
 
 <style lang="scss">
