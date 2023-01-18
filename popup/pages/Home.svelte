@@ -11,6 +11,7 @@
 
 	import walletStore from 'popup/store/wallet';
 	import zrcStore from 'popup/store/zrc';
+	import netwrok from 'app/store/netwrok';
 
 	import TopBar from '../components/TopBar.svelte';
 	import LeftNavBar from '../components/LeftNavBar.svelte';
@@ -21,8 +22,10 @@
 	import Manage from '../components/icons/Manage.svelte';
 
 	import { AccountTypes } from 'config/account-type';
+	import { NETWORK_KEYS } from 'config/network';
 
 
+	const [, testnet] = NETWORK_KEYS;
 	let loading = false;
 	let leftBar = false;
 	let uuid = uuidv4();
@@ -101,6 +104,7 @@
 			</button>
 			<button
 				on:mouseup={() => push('/stake')}
+				disabled={$netwrok.selected !== testnet}
 			>
 				{$_('home.btns.stake')}
 			</button>

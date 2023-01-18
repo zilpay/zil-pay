@@ -1,4 +1,22 @@
 {
+  "stake": {
+    "title": "Anteil",
+    "withdraw": "Zurückziehen",
+    "modals": {
+      "withdrawals": {
+        "title": "Ausstehende Auszahlungen",
+        "withdrawal": "Rücknahme"
+      }
+    },
+    "info": {
+      "min": "Mindesteinsatzbetrag",
+      "rate": "Wechselkurs",
+      "fee": "Prämiengebühr",
+      "show": "Karte",
+      "claim": "Anspruch",
+      "withdrawals": "Ausstehende Auszahlungen"
+    }
+  },
   "encrypt": {
     "title": "Verschlüsselungsanforderung",
     "btns": {

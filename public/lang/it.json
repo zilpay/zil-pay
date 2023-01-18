@@ -1,4 +1,22 @@
 {
+  "stake": {
+    "title": "Palo",
+    "withdraw": "Ritirare",
+    "modals": {
+      "withdrawals": {
+        "title": "Prelievi in sospeso",
+        "withdrawal": "Ritiro"
+      }
+    },
+    "info": {
+      "min": "Importo minimo di picchettamento",
+      "rate": "Tasso",
+      "fee": "Tassa di ricompensa",
+      "show": "Mostrare",
+      "claim": "Affermare",
+      "withdrawals": "Prelievi in sospeso"
+    }
+  },
   "encrypt": {
     "title": "Richiesta di crittografia",
     "btns": {

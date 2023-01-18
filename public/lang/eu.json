@@ -1,4 +1,22 @@
 {
+  "stake": {
+    "title": "Kaalul",
+    "withdraw": "Tühistama",
+    "modals": {
+      "withdrawals": {
+        "title": "Ootel Väljamaksed",
+        "withdrawal": "Tühistamine"
+      }
+    },
+    "info": {
+      "min": "Minimaalne panustamissumma",
+      "rate": "Vahetuskurss",
+      "fee": "Tasu tasu",
+      "show": "Näitama",
+      "claim": "Nõude",
+      "withdrawals": "Ootel Väljamaksed"
+    }
+  },
   "encrypt": {
     "title": "Krüpteerimise Taotlus",
     "btns": {

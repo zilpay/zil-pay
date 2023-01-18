@@ -1,4 +1,22 @@
 {
+  "stake": {
+    "title": "利害关系",
+    "withdraw": "退出",
+    "modals": {
+      "withdrawals": {
+        "title": "悬而未决的提款",
+        "withdrawal": "退出"
+      }
+    },
+    "info": {
+      "min": "最低投注金额",
+      "rate": "汇率",
+      "fee": "酬金",
+      "show": "展览",
+      "claim": "申索",
+      "withdrawals": "Pending Withdrawals"
+    }
+  },
   "encrypt": {
     "title": "加密请求",
     "btns": {

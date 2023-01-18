@@ -1,6 +1,21 @@
 {
   "stake": {
-    "title": "Stake"
+    "title": "Stake",
+    "withdraw": "Withdraw",
+    "modals": {
+      "withdrawals": {
+        "title": "Pending Withdrawals",
+        "withdrawal": "Withdrawal"
+      }
+    },
+    "info": {
+      "min": "Minimum staking amount",
+      "rate": "Exchange rate",
+      "fee": "Reward fee",
+      "show": "Show",
+      "claim": "Claim",
+      "withdrawals": "Pending Withdrawals"
+    }
   },
   "encrypt": {
     "title": "Encryption Request",

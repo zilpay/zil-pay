@@ -36,7 +36,7 @@
     >
       <div>
         <h2>
-          Withdrawal {index + 1}
+          {$_('stake.modals.withdrawals.withdrawal')} {index + 1}
         </h2>
         <div class="progress">
           <span style={`width: ${getPercent(Number(order.block))}%;`}/>

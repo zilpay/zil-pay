@@ -54,7 +54,7 @@
 	];
   let modes = [
     {
-      name: 'Skate',
+      name: $_('stake.title'),
       active: true,
       method: () => {
         modes[0].active = true;
@@ -68,7 +68,7 @@
       }
     },
     {
-      name: 'Withdraw',
+      name: $_('stake.withdraw'),
       active: false,
       method: () => {
         modes[0].active = false;
@@ -165,7 +165,7 @@
 
 <Modal
   show={ordersModal}
-  title={'pending withdrawals'}
+  title={$_('stake.modals.withdrawals.title')}
   on:close={hanldeShowOrders}
 >
   <div class="m-warp">
@@ -219,15 +219,15 @@
         <ul>
           <li>
             <b>
-              Minimum staking amount:
+              {$_('stake.info.min')}:
             </b>
             <b>
-              {AvelyStake.MIN} {ZIL.symbol}
+              {ZIL.symbol} {AvelyStake.MIN}
             </b>
           </li>
           <li>
             <b>
-              Exchange rate
+              {$_('stake.info.rate')}:
             </b>
             <b>
               1 {tokens[0].meta.symbol} = {formatNumber(rate)} {tokens[1].meta.symbol}
@@ -235,7 +235,7 @@
           </li>
           <li>
             <b>
-              Reward fee
+              {$_('stake.info.fee')}:
             </b>
             <b>
               {data.fee / AvelyStake.FEE_DEMON}%
@@ -245,13 +245,13 @@
             <hr>
             <li>
               <b>
-                {data.pendingOrders.length} Pending withdrawals
+                {data.pendingOrders.length} {$_('stake.info.withdrawals')}:
               </b>
               <div
                 class="btn primary"
                 on:mouseup={hanldeShowOrders}
               >
-                Show
+                {$_('stake.info.show')}
               </div>
             </li>
           {/if}
@@ -270,7 +270,7 @@
                 class="btn primary"
                 on:mouseup={completeWithdrawal}
               >
-                Claim
+                {$_('stake.info.claim')}
               </div>
             </li>
           {/if}
@@ -311,10 +311,6 @@
 		height: 100vh;
 		background-color: var(--background-color);
 		@include flex-center-top-column;
-
-    & > div > b {
-      margin-left: 16px;
-    }
 	}
   div.switcher {
     cursor: pointer;
