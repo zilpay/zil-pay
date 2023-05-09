@@ -88,7 +88,7 @@ export async function fetchNFTToken(addr: string) {
 
 export async function addNFTToken(payload: ZRCNFT) {
   const data = await new Message({
-  type: MTypePopup.ADD_NFT,
+    type: MTypePopup.ADD_NFT,
     payload: payload
   }).send();
   const state = warpMessage(data);
@@ -98,7 +98,7 @@ export async function addNFTToken(payload: ZRCNFT) {
 
 export async function removeNFTToken(index: number) {
   const data = await new Message({
-  type: MTypePopup.REMOVE_NFT,
+    type: MTypePopup.REMOVE_NFT,
     payload: index
   }).send();
   const state = warpMessage(data);
