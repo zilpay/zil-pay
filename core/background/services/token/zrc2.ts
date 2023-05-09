@@ -48,8 +48,8 @@ export const ZLP = {
   pool: []
 };
 export const stZIL = {
-  base16: '0xb8950d4d6baf479749d4152fc60fad86195eb0b2',
-  bech32: 'zil1hz2s6ntt4arewjw5z5huvradscv4av9jg2pejv',
+  base16: '0xE6F14aFC8739A4EaD0a542C07D3Ff978190e3b92',
+  bech32: 'zil1umc54ly88xjw4599gtq860le0qvsuwuj72s246',
   decimals: ZIL.decimals,
   name: 'StZIL',
   symbol: 'stZIL',
@@ -57,16 +57,16 @@ export const stZIL = {
   pool: []
 };
 const INIT = {
-  [mainnet]: [ZIL, ZLP],
+  [mainnet]: [ZIL, ZLP, stZIL],
   [testnet]: [ZIL, {
     ...ZLP,
     base16: '0x55cb580c6bdf40e400f3714651bb7643bca24de4',
     bech32: 'zil12h94srrtmaqwgq8nw9r9rwmkgw72yn0yc7x9ud'
   }, {
-    ...stZIL,
-    base16: '0xb8950d4d6baf479749d4152fc60fad86195eb0b2',
-    bech32: 'zil1hz2s6ntt4arewjw5z5huvradscv4av9jg2pejv',
-  }],
+      ...stZIL,
+      base16: '0x8942db467107434d3be0bbe0e3aa4346c89a1427',
+      bech32: 'zil139pdk3n3qap56wlqh0sw82jrgmyf59p8xqxqv2',
+    }],
   [custom]: [ZIL]
 };
 
@@ -253,7 +253,7 @@ export class ZRC2Controller {
     for (let index = 0; index < this.identities.length; index++) {
       const token = this.identities[index];
       const base16 = token.base16.toLowerCase();
-      
+
       if (token.base16 === Contracts.ZERO_ADDRESS) {
         continue;
       }
@@ -297,7 +297,7 @@ export class ZRC2Controller {
         acc.concat(
           acc.find((y) => tohexString(y.base16) === tohexString(x.base16)) ? [] : [x]
         )
-      , INIT[this.#netwrok.selected]);
+        , INIT[this.#netwrok.selected]);
     } catch {
       await this.reset();
     }

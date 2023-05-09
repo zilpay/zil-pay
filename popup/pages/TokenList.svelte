@@ -32,7 +32,7 @@
 	let search = '';
 	let loading = true;
 	let tokenAddModal = false;
-	let zrc2List = $zrcStore.slice(2).map(
+	let zrc2List = $zrcStore.slice(3).map(
 		(t) => ({
 			...t,
 			selected: true,
@@ -64,7 +64,7 @@
 			const res = await getTokens(limit, offset);
 			count = res.count;
 			list = res.list.filter(
-				(t) => !$zrcStore.some((s) => s.symbol === t.symbol)
+				(t) => !$zrcStore.some((s) => s.base16 === t.base16)
 			);
 			list = list.map((t) => ({
 				...t,

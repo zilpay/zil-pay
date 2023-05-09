@@ -104,7 +104,6 @@
 			</button>
 			<button
 				on:mouseup={() => push('/stake')}
-				disabled={$netwrok.selected !== testnet}
 			>
 				{$_('home.btns.stake')}
 			</button>
