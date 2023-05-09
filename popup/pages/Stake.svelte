@@ -57,6 +57,9 @@
       name: $_('stake.title'),
       active: true,
       method: () => {
+        if (modes[0].active) {
+          return;
+        }
         modes[0].active = true;
         modes[1].active = false;
         tokens = tokens.reverse();
@@ -71,6 +74,9 @@
       name: $_('stake.withdraw'),
       active: false,
       method: () => {
+        if (modes[1].active) {
+          return;
+        }
         modes[0].active = false;
         modes[1].active = true;
         tokens = tokens.reverse();

@@ -157,8 +157,8 @@
   async function onInput(e) {
     recipientError = '';
     const { value } = e.target;
-    const regExpDomain = /.*\w.zil/gm;
-
+    const regExpDomain = /.*\w\.(zil|crypto|wallet|dao|nft|blockchain)/gm;
+      
     if (regExpDomain.test(value)) {
       loadingZNS = true;
       try {
