@@ -48,7 +48,7 @@ export const ZLP = {
   pool: []
 };
 export const stZIL = {
-  base16: '0xE6F14aFC8739A4EaD0a542C07D3Ff978190e3b92',
+  base16: '0xe6f14afc8739a4ead0a542c07d3ff978190e3b92',
   bech32: 'zil1umc54ly88xjw4599gtq860le0qvsuwuj72s246',
   decimals: ZIL.decimals,
   name: 'StZIL',
