@@ -14,11 +14,11 @@ import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { LedgerInterface } from './interface';
 import { LedgerU2F } from './ledger-u2f';
-import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
+import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
 
 export class LedgerWebHID {
   #transport?: Transport;
-  #interface?: LedgerInterface;
+  #interface?: LedgerInterface | LedgerU2F;
 
   public get interface() {
     return this.#interface;
@@ -53,8 +53,15 @@ export class LedgerWebHID {
   }
 
   public async init(productId: number) {
-    await this.getHidTransport(productId);
-    this.#interface = new LedgerInterface(this.#transport);
+    const isHid = await TransportWebHID.isSupported();
+
+    if (isHid) {
+      await this.getHidTransport(productId);
+      this.#interface = new LedgerInterface(this.#transport);
+    } else {
+      this.#interface = new LedgerU2F();
+      await this.#interface.init();
+    }
 
     return this.#interface;
   }
