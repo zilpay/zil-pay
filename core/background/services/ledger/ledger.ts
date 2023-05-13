@@ -18,7 +18,7 @@ import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
 
 export class LedgerWebHID {
   #transport?: Transport;
-  #interface?: LedgerInterface | LedgerU2F;
+  #interface?: LedgerInterface;
 
   public get interface() {
     return this.#interface;
@@ -53,15 +53,8 @@ export class LedgerWebHID {
   }
 
   public async init(productId: number) {
-    if (productId === LEDGER_PRODUCT_ID_U2F) {
-      if (!(this.#interface instanceof LedgerU2F)) {
-        this.#interface = new LedgerU2F();
-        await this.#interface.init();
-      }
-    } else {
-      await this.getHidTransport(productId);
-      this.#interface = new LedgerInterface(this.#transport);
-    }
+    await this.getHidTransport(productId);
+    this.#interface = new LedgerInterface(this.#transport);
 
     return this.#interface;
   }
