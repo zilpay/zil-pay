@@ -11,17 +11,21 @@
 
 	import walletStore from 'popup/store/wallet';
 	import zrcStore from 'popup/store/zrc';
+	import netwrok from 'app/store/netwrok';
 
 	import TopBar from '../components/TopBar.svelte';
-	import GearIcon from '../components/GearIcon.svelte';
 	import LeftNavBar from '../components/LeftNavBar.svelte';
 	import BottomTabs from '../components/BottomTabs.svelte';
 	import TokenCard from '../components/TokenCard.svelte';
 	import CopyAccount from '../components/CopyAccount.svelte';
 	import Burger from '../components/Burger.svelte';
-    import { AccountTypes } from 'config/account-type';
+	import Manage from '../components/icons/Manage.svelte';
+
+	import { AccountTypes } from 'config/account-type';
+	import { NETWORK_KEYS } from 'config/network';
 
 
+	const [, testnet] = NETWORK_KEYS;
 	let loading = false;
 	let leftBar = false;
 	let uuid = uuidv4();
@@ -73,7 +77,7 @@
 	>
 	<main>
 		<div class="bar-wrapper">
-			<div on:click={onToggleLeftBar}>
+			<div on:mouseup={onToggleLeftBar}>
 				<Burger />
 			</div>
 			<CopyAccount />
@@ -87,18 +91,31 @@
 		</div>
 		<div class="btns">
 			<button
-				class="action"
+				class="secondary"
 				disabled={account.type === AccountTypes.Track}
-				on:click={() => push(`/send/${TokenType.ZRC2}/0`)}
+				on:mouseup={() => push(`/send/${TokenType.ZRC2}/0`)}
 			>
 				{$_('home.btns.send')}
 			</button>
 			<button
-				class="action"
-				on:click={() => push('/account')}
+				on:mouseup={() => push('/account')}
 			>
 				{$_('home.btns.receive')}
 			</button>
+			<button
+				on:mouseup={() => push('/stake')}
+			>
+				{$_('home.btns.stake')}
+			</button>
+		</div>
+		<div class="manager">
+			<div />
+			<div
+				class="add"
+				on:mouseup={() => push('/tokens-list')}
+			>
+				<Manage />
+			</div>
 		</div>
 		<div class="wrapper">
 			{#each $zrcStore as token, index}
@@ -114,22 +131,12 @@
 				/>
       {/each}
 		</div>
-		<button
-			class="add"
-			on:click={() => push('/tokens-list')}
-		>
-			<GearIcon
-				width="24px"
-				height="24px"
-			/>
-			{$_('home.token_list')}
-		</button>
 	</main>
 	<BottomTabs />
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		height: calc(100vh - 86px);
 		z-index: 3;
@@ -159,15 +166,28 @@
 		top: -47px;
 		opacity: 0.5;
 	}
+	div.manager,
 	div.wrapper {
-		margin-top: 30px;
 		padding-left: 10px;
 		padding-right: 10px;
 
 		min-width: 290px;
 		max-width: 320px;
-		width: fit-content;
 
+		width: fit-content;
+	}
+	div.manager {
+		display: flex;
+    width: 100%;
+    justify-content: end;
+
+		margin-block-start: 8px;
+
+		& > div {
+			cursor: pointer;
+		}
+	}
+	div.wrapper {
 		flex-wrap: wrap;
 
     display: flex;
@@ -179,18 +199,13 @@
 		background-color: var(--background-color);
 		@include flex-center-top-column;
 	}
-	button.action {
-		min-width: 120px;
-		line-height: 30px;
-	}
-	button.add {
-		min-width: 290px;
-		color: var(--primary-color);
-		margin-block-start: 5px;
-		margin-block-end: 5px;
+	div.btns {
+		@include flex-center-horiz;
 
-		&:hover {
-			color: var(--background-color);
+		& > button {
+			min-width: 80px;
+			line-height: 30px;
+			margin: 5px;
 		}
 	}
 	div.bar-wrapper {
@@ -199,9 +214,9 @@
 		@include flex-between-row;
 	}
 	:global(button.add > svg > path) {
-		fill: var(--primary-color) !important;
+		fill: var(--text-color) !important;
 	}
-	:global(button.add:hover > svg > path) {
-		fill: var(--background-color) !important;
+	:global(div.add:hover > svg > path) {
+		stroke: var(--primary-color) !important;
 	}
 </style>

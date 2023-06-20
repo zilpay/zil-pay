@@ -1,4 +1,40 @@
 {
+  "stake": {
+    "title": "Anteil",
+    "withdraw": "Zurückziehen",
+    "modals": {
+      "withdrawals": {
+        "title": "Ausstehende Auszahlungen",
+        "withdrawal": "Rücknahme"
+      }
+    },
+    "info": {
+      "min": "Mindesteinsatzbetrag",
+      "rate": "Wechselkurs",
+      "fee": "Prämiengebühr",
+      "show": "Karte",
+      "claim": "Anspruch",
+      "withdrawals": "Ausstehende Auszahlungen"
+    }
+  },
+  "encrypt": {
+    "title": "Verschlüsselungsanforderung",
+    "btns": {
+      "confirm": "Verschlüsseln",
+      "reject": "Ablehnen"
+    }
+  },
+  "decrypt": {
+    "title": "Entschlüsselungsanforderung",
+    "sub_title": {
+      "0": "Der",
+      "1": "Inhalt entschlüsseln anfordern"
+    },
+    "btns": {
+      "confirm": "Entschlüsseln",
+      "reject": "Ablehnen"
+    }
+  },
   "account_track": {
     "title": "Tracker hinzufügen",
     "description": "Eine Adresse, die von ZilPay verfolgt wird."
@@ -6,13 +42,13 @@
   "home": {
     "btns": {
       "send": "Senden",
+      "stake": "Anteil",
       "receive": "Empfangen"
     },
     "clipboard": {
       "copy": "Kopieren",
       "copied": "Kopiert"
     },
-    "token_list": "Verwalten",
     "nav": {
       "options": {
         "add": {

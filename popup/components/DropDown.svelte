@@ -18,26 +18,26 @@
 <div>
   <div
     class="arrow"
-    on:click={() => show = !show}
+    on:mouseup={() => show = !show}
   >
     <Arrow className="arrow-icon"/>
   </div>
   {#if show}
     <div
       class="close"
-      on:click={() => show = false}
+      on:mouseup={() => show = false}
     />
     <div class="menu">
       <span
         class="close-arrow-icon"
-        on:click={() => show = false}
+        on:mouseup={() => show = false}
       >
         <Arrow/>
       </span>
       {#each list as item, i}
         <div
           class="item"
-          on:click={() => hanldeOnSelect(i)}
+          on:mouseup={() => hanldeOnSelect(i)}
         >
           {item}
         </div>
@@ -47,7 +47,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   div.arrow {
     cursor: pointer;
     margin: 10px;
@@ -98,6 +98,6 @@
 
     align-items: flex-end;
     @include flex-column;
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
   }
 </style>

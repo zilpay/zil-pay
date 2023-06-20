@@ -58,7 +58,7 @@
 	<main>
 		<ul>
 			{#each items as item, i}
-				<li on:click={() => push(item.link)}>
+				<li on:mouseup={() => push(item.link)}>
 					<TextElement
 						title={item.title}
 						description={item.description}
@@ -71,7 +71,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		@include flex-center-top-column;
 	}

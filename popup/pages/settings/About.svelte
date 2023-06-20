@@ -38,6 +38,7 @@
 				<a
 					href={link.url}
 					target="_blank"
+					rel="noreferrer"
 				>
 					{link.name}
 				</a>
@@ -51,7 +52,7 @@
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 
 	main {
 		height: 100vh;

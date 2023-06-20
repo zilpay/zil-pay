@@ -91,7 +91,7 @@
 		>
 			<span
 				class="add"
-				on:click={() => tokenAddModal = !tokenAddModal}
+				on:mouseup={() => tokenAddModal = !tokenAddModal}
 			>
 				<AddIcon />
 			</span>
@@ -109,7 +109,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		padding-block-start: 30px;
 

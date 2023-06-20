@@ -48,6 +48,12 @@ export class ContentTabStream {
       case MTypeTab.CONNECT_APP:
         await new Message(msg).send();
         break;
+      case MTypeTab.ADD_ENCRYPTION:
+        await new Message(msg).send();
+        break;
+      case MTypeTab.ADD_DECRYPTION:
+        await new Message(msg).send();
+        break;
       case MTypeTab.DISCONNECT_APP:
         await new Message(msg).send();
         break;

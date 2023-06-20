@@ -1,4 +1,40 @@
 {
+  "stake": {
+    "title": "Stake",
+    "withdraw": "Withdraw",
+    "modals": {
+      "withdrawals": {
+        "title": "Pending Withdrawals",
+        "withdrawal": "Withdrawal"
+      }
+    },
+    "info": {
+      "min": "Minimum staking amount",
+      "rate": "Exchange rate",
+      "fee": "Reward fee",
+      "show": "Show",
+      "claim": "Claim",
+      "withdrawals": "Pending Withdrawals"
+    }
+  },
+  "encrypt": {
+    "title": "Encryption Request",
+    "btns": {
+      "confirm": "Encrypt",
+      "reject": "Reject"
+    }
+  },
+  "decrypt": {
+    "title": "Decryption Request",
+    "sub_title": {
+      "0": "The",
+      "1": "Request Decrypt Content"
+    },
+    "btns": {
+      "confirm": "Decrypt",
+      "reject": "Reject"
+    }
+  },
   "account_track": {
     "title": "Add Tracker",
     "description": "An address which will be tracked by ZIlPay."
@@ -6,13 +42,13 @@
   "home": {
     "btns": {
       "send": "Send",
+      "stake": "Stake",
       "receive": "Receive"
     },
     "clipboard": {
       "copy": "Copy",
       "copied": "Copied"
     },
-    "token_list": "Manage",
     "nav": {
       "options": {
         "add": {

@@ -64,11 +64,11 @@
 		<div class="btn-wrap">
 			<button
 				class="primary"
-				on:click={hanldeOnConfirm}
+				on:mouseup={hanldeOnConfirm}
 			>
 				{$_('connect.btns.conf')}
 			</button>
-			<button on:click={hanldeOnReject}>
+			<button on:mouseup={hanldeOnReject}>
 				{$_('connect.btns.reject')}
 			</button>
 		</div>
@@ -76,7 +76,7 @@
 {/if}
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;

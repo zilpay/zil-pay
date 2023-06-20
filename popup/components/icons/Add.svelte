@@ -14,7 +14,7 @@
   <rect
     width={width}
     height={height}
-    rx="3"
+    rx="16"
     fill="var(--secondary-color)"
   />
   <line x1="17.75" y1="11.75" x2="17.75" y2="24.25" stroke="var(--primary-color)" stroke-width="1.5" stroke-linecap="round"/>

@@ -96,7 +96,7 @@
 </form>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   form {
     padding: 30px;
     height: 600px;

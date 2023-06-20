@@ -44,7 +44,7 @@
 		} else {
 			await changeAddressFormat(Formats.Base16);
 		}
-		base16 = $addressFormatStore === Formats.base16;
+		base16 = $addressFormatStore === Formats.Base16;
 	};
 	const handleOnChangePromt = async () => {
 		await changePromtEnabled(!$promtStore);
@@ -109,16 +109,13 @@
 			</div>
 		</Jumbotron>
 	</div>
-	<button
-		class="warning"
-		on:click={hanldeOnReset}
-	>
+	<button on:mouseup={hanldeOnReset}>
 		{$_('advanced.reset_btn')}
 	</button>
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 
 	main {
 		height: 100vh;
@@ -134,7 +131,7 @@
 			border-color: var(--text-color);
 		}
 	}
-	button.warning {
+	button {
 		width: 290px;
 		margin-block-end: 16px;
 	}

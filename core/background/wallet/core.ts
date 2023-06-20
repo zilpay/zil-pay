@@ -28,6 +28,8 @@ import { LedgerWebHID } from 'core/background/services/ledger';
 import { LocalesController } from 'core/background/services/locale';
 import { AddressController } from 'core/background/services/address';
 import { DexController } from 'core/background/services/dex';
+import { CipherControl } from 'core/background/services/cipher';
+import { StakeController } from 'background/services/stake';
 
 export class ZIlPayCore {
   public netwrok = new NetworkControl();
@@ -46,6 +48,7 @@ export class ZIlPayCore {
   public gas = new GasController(this.zilliqa);
   public dex = new DexController(this.zilliqa, this.netwrok);
   public readonly account = new AccountController(this.guard);
+  public readonly cipher = new CipherControl(this.account);
   public transactions = new TransactionsController(this.netwrok, this.account);
   public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account, this.dex);
   public nft = new NFTController(this.netwrok, this.zilliqa, this.account);
@@ -53,6 +56,11 @@ export class ZIlPayCore {
   public nonceCounter = new NonceController(this.zilliqa, this.transactions);
   public transactionsQueue = new TransactionsQueue(this.zilliqa, this.netwrok, this.transactions);
   public blockchain = new BlockController(this.zilliqa, this.transactionsQueue);
+  public stake = new StakeController(
+    this.zilliqa,
+    this.zrc2,
+    this.account
+  );
 
   public get state(): WalletState {
     return {
@@ -84,6 +92,7 @@ export class ZIlPayCore {
         gasPrice: this.gas.gasPrice,
         multiplier: this.gas.multiplier
       },
+      cipher: this.cipher.state,
       transactions: {
         forConfirm: this.transactions.forConfirm,
         transactions: this.transactions.transactions,

@@ -112,6 +112,7 @@
       <a
         href="https://zilpay.io/extension-policy"
         target="_blank"
+        rel="noreferrer"
       >
         {$_('setup_acc.accept')}
       </a>
@@ -131,7 +132,7 @@
 </main>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   main {
 		background-color: var(--background-color);
 		height: 100vh;

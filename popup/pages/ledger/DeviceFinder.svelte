@@ -54,7 +54,7 @@
   {#if !accepted}
     <button
       class="primary"
-      on:click={getHidTransport}
+      on:mouseup={getHidTransport}
     >
       {$_('ledger_finder.accept')}
     </button>
@@ -63,7 +63,7 @@
       <b>
         {$_('ledger_finder.list_title')}
       </b>
-      <span on:click={getHidTransport}>
+      <span on:mouseup={getHidTransport}>
         <RefreshIcon className="refresh"/>
       </span>
     </div>
@@ -71,7 +71,7 @@
       {#each devices as device}
         <li
           in:fly={flyTransition.in}
-          on:click={() => push(`/ledger-connect/${device.productId}`)}
+          on:mouseup={() => push(`/ledger-connect/${device.productId}`)}
         >
           <div class="ledger-card">
             <img
@@ -95,7 +95,7 @@
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
   main {
 		background-color: var(--background-color);
 		height: 100vh;
@@ -113,7 +113,7 @@
     border: solid 1px var(--card-color);
 
     @include flex-between-row;
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     & > img {
       margin: 10px;

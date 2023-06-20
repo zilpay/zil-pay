@@ -67,6 +67,7 @@
       <a
         href={viewAddress(tx.recipient, $netStore.selected)}
         target="_blank"
+        rel="noreferrer"
       >
         {trim(tx.recipient)}
       </a>
@@ -75,7 +76,7 @@
 </ul>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 	ul {
 		margin: 0;
     padding: 5px;

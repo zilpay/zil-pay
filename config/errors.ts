@@ -48,6 +48,7 @@ export enum ErrorMessages {
   Disabled = 'ZilPay is disabled.',
   Connect = 'User is\'t connections.',
   Rejected = 'Rejected by user',
+  InvalidDecryption = 'Invalid decryption',
 
   WebHidNotSupported = 'WEBHID is not supported.',
   NoFoundDeviced = 'No one device connected',

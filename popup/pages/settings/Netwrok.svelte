@@ -130,7 +130,7 @@
             disabled={loading}
             class="primary"
             class:loading={loading}
-            on:click={hanldeUpdateSSN}
+            on:mouseup={hanldeUpdateSSN}
           >
             {$_('netwrok.btns.update')}
           </button>
@@ -138,16 +138,13 @@
       </Jumbotron>
     {/if}
   </div>
-  <button
-    class="warning"
-    on:click={handleOnReset}
-  >
+  <button on:mouseup={handleOnReset}>
     {$_('netwrok.btns.reset')}
   </button>
 </main>
 
 <style lang="scss">
-  @import "../../styles/mixins";
+  @import "../../styles";
   main {
 		background-color: var(--background-color);
     overflow-y: scroll;

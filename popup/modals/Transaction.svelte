@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { StoredTx } from 'types/transaction';
+
 	import { _ } from 'popup/i18n';
 	import { push } from 'svelte-spa-router';
 
@@ -17,7 +19,7 @@
 
   import Tooltip from '../components/Tooltip.svelte';
 
-  export let tx = {};
+  export let tx: StoredTx;
 
   let tip = $_('home.clipboard.copy');
 
@@ -85,7 +87,7 @@
       >
         <span
           class="pointer"
-          on:click={() => hanldeOnCopy(tx.from)}
+          on:mouseup={() => hanldeOnCopy(tx.from)}
         >
           {trim(tx.from)}
         </span>
@@ -117,7 +119,7 @@
       >
         <span
           class="pointer"
-          on:click={() => hanldeOnCopy(hash)}
+          on:mouseup={() => hanldeOnCopy(hash)}
         >
           {trim(hash, 10)}
         </span>
@@ -151,23 +153,19 @@
     {/if}
   </ul>
   <div class="btns">
-    <button
-      class="primary"
-      on:click={hanldeOnViewBlock}
-    >
+    <button on:mouseup={hanldeOnViewBlock}>
       {$_('history.modals.details.btns.view')}
     </button>
     {#if tx.confirmed}
       <button
-        class="warning"
-        on:click={hanldeOnRepeat}
+        on:mouseup={hanldeOnRepeat}
       >
         {$_('history.modals.details.btns.repeat')}
       </button>
     {:else}
       <button
         class="warning"
-        on:click={hanldeOnCancel}
+        on:mouseup={hanldeOnCancel}
       >
         {$_('history.modals.details.btns.cancel')}
       </button>
@@ -176,7 +174,7 @@
 </div>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   div.tx {
     height: 600px;
     @include flex-center-top-column;
@@ -224,7 +222,7 @@
     background-color: var(--card-color);
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     &.loading {
       @include loading-gradient(var(--background-color), var(--card-color));

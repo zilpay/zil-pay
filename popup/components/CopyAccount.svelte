@@ -24,7 +24,7 @@
   tip={tip}
   bottom
 >
-  <div on:click={handleOnCopy}>
+  <div on:mouseup={handleOnCopy}>
     <h1>
       {account.name}
     </h1>
@@ -35,14 +35,15 @@
 </Tooltip>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   div {
     text-align: center;
     cursor: pointer;
 
     padding: 8px;
     margin: 5px;
-    border-radius: 8px;
+
+    @include border-radius($default-border-radius);
 
     & > h1 {
       margin-block-start: 0;

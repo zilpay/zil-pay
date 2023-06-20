@@ -55,7 +55,7 @@ export class LedgerU2F {
       }
 
       const obs = this.#subject.on((res: U2FResponse) => {
-        if (TYPES.init !== res.type) return; 
+        if (TYPES.init !== res.type) return;
         obs();
         resolve(res.resolve);
       });

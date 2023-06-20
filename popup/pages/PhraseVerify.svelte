@@ -4,7 +4,6 @@
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
-	import { getRandomSeed } from "popup/backend/phrase";
   import { shuffle } from 'lib/utils/shuffle';
   import wordsStore from 'popup/store/words';
 
@@ -18,7 +17,6 @@
   onMount(() => {
     const list = JSON.stringify($wordsStore);
     shuffled = shuffle<string>(JSON.parse(list));
-    shuffled = JSON.parse(list);
 
     if ($wordsStore.length < 12) {
       return push('/create');
@@ -62,7 +60,7 @@
   </div>
   <div class="wrapper">
     {#each shuffled as word}
-      <div on:click={() => hanldeOnAdd(word)}>
+      <div on:mouseup={() => hanldeOnAdd(word)}>
         <PickButton text={word} />
       </div>
     {/each}
@@ -70,14 +68,14 @@
   <button
     class="primary"
     disabled={disabled}
-    on:click={() => push('/setup-account')}
+    on:mouseup={() => push('/setup-account')}
   >
     {$_('verify.btn')}
   </button>
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   h1 {
     margin-block-start: 0;
     font-size: 29pt;

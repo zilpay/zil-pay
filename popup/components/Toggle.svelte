@@ -28,7 +28,7 @@
 />
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   input {
     display: none;
 
@@ -45,7 +45,6 @@
       border-radius: 2em;
       padding: 2pt;
       transition: all .4s ease;
-      border: 1px solid var(--border-color);
 
       &:after,
       &:before {
@@ -77,7 +76,6 @@
   }
   .tgl-ios {
     + .tgl-btn {
-      background: var(--background-color);
       border-radius: 2em;
       padding: 2pt;
       transition: all .4s ease;
@@ -107,7 +105,7 @@
     }
 
     &:checked + .tgl-btn {
-      background: var(--success-color);
+      background: var(--primary-color);
       &:active {
         box-shadow: none;
         &:after {

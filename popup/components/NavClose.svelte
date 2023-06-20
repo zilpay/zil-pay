@@ -9,13 +9,13 @@
   <h1>
     {title}
   </h1>
-  <div on:click={pop}>
+  <div on:mouseup={pop}>
     <CloseIcon />
   </div>
 </nav>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   h1 {
     color: var(--text-color);
     @include fluid-font(320px, 720px, 30px, 55px);

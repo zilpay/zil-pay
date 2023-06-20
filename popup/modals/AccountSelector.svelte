@@ -48,7 +48,7 @@
 					duration: 400,
 					y: -20
 				}}
-				on:click={() => onSelect(contact.address)}
+				on:mouseup={() => onSelect(contact.address)}
 			>
 				<div class="text">
 					<b>
@@ -72,7 +72,7 @@
 					duration: 400,
 					y: -20
 				}}
-				on:click={() => onSelect(account[$format])}
+				on:mouseup={() => onSelect(account[$format])}
 			>
 				<div class="text">
 					<b>
@@ -88,7 +88,7 @@
 </ul>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	ul {
 		padding: 0;
     margin: 0;
@@ -106,7 +106,6 @@
 			cursor: pointer;
 			margin: 5px;
 			background-color: var(--card-color);
-			border-radius: 8px;
 			border: solid 1px var(--card-color);
 
 			padding-left: 30px;
@@ -114,6 +113,7 @@
       padding-top: 10px;
 
 			@include flex-between-row;
+			@include border-radius($default-border-radius);
 
 			&:hover {
 				border: solid 1px var(--primary-color);

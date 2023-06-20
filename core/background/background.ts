@@ -17,6 +17,9 @@ export function startBackground(core: ZIlPayBackground) {
       return true;
     }
     switch (msg.type) {
+      case MTypePopup.GET_STAKE_PROPS:
+        core.zrc.getStakeProps(sendResponse);
+        return true;
       case MTypePopup.GET_LATEST_BLOCK:
         core.netwrok.getLatestBlockNumber(sendResponse);
         return true;
@@ -212,6 +215,26 @@ export function startBackground(core: ZIlPayBackground) {
         return true;
       case MTypePopup.UPDATE_TXNS:
         core.transaction.checkProcessedHistory(sendResponse);
+        return true;
+      case MTypeTab.ADD_ENCRYPTION:
+        core.transaction.addEncryption(msg.payload, sendResponse);
+        return true;
+      case MTypeTab.ADD_DECRYPTION:
+        core.transaction.addDecryption(msg.payload, sendResponse);
+        return true;
+      case MTypePopup.RES_ENCRYPTION:
+        core.transaction.encryptResponse(
+          msg.payload.value,
+          msg.payload.index,
+          sendResponse
+        );
+        return true;
+      case MTypePopup.RES_DECRYPTION:
+        core.transaction.decryptResponse(
+          msg.payload.value,
+          msg.payload.index,
+          sendResponse
+        );
         return true;
       case MTypePopup.SEND_TO_SIGN_TX:
         core.transaction.signSendTx(

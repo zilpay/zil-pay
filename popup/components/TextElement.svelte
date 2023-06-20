@@ -19,7 +19,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
   div.card-btn {
     background-color: var(--card-color);
@@ -36,7 +36,7 @@
     width: inherit;
 
     @include flex-between-row;
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     & > div {
       width: 100%;

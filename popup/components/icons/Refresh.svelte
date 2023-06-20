@@ -15,7 +15,7 @@
 </svg>
 
 <style lang="scss">
-  @import "../../styles/mixins";
+  @import "../../styles";
 
   svg > path {
     fill: var(--primary-color);

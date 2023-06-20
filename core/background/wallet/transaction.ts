@@ -6,6 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { InputCipherParams } from 'types/cipher';
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
 import type {
@@ -31,12 +32,147 @@ import { tohexString } from 'lib/utils/address';
 import { toLi } from 'lib/filters/gas-to-fee';
 import { TypeOf } from 'lib/type/type-checker';
 
+
 export class ZilPayTransaction {
 
   readonly #core: ZIlPayCore;
 
   constructor(core: ZIlPayCore) {
     this.#core = core;
+  }
+
+  public async addEncryption(params: InputCipherParams, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.cipher.addEncryption(params);
+      await this.#core.prompt.open();
+
+      sendResponse({
+        resolve: null
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+      await new TabsMessage({
+        type: MTypeTab.RES_ENCRYPTION,
+        payload: {
+          uuid: params.uuid,
+          reject: err.message
+        }
+      }).send();
+    }
+  }
+  
+  public async encryptResponse(resolve: boolean, index: number, sendResponse: StreamResponse) {
+    try {
+      const uuid = String(this.#core.cipher.encryptParams.uuid);
+      this.#core.guard.checkSession();
+
+      if (resolve) {
+        const cipher = await this.#core.cipher.encrypt(index);
+        const account = this.#core.account.wallet.identities[index];
+        await new TabsMessage({
+          type: MTypeTab.RES_ENCRYPTION,
+          payload: {
+            uuid,
+            resolve: {
+              cipher,
+              account: {
+                base16: account.base16,
+                bech32: account.bech32,
+                pubKey: account.pubKey
+              }
+            }
+          }
+        }).send();
+        await this.#core.cipher.removeEncryption();
+      } else {
+        await new TabsMessage({
+          type: MTypeTab.RES_ENCRYPTION,
+          payload: {
+            uuid,
+            reject: ErrorMessages.Rejected
+          }
+        }).send();
+        await this.#core.cipher.removeEncryption();
+      }
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async addDecryption(params: InputCipherParams, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      await this.#core.cipher.addDecryption(params);
+      await this.#core.prompt.open();
+
+      sendResponse({
+        resolve: null
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+      await new TabsMessage({
+        type: MTypeTab.RES_ENCRYPTION,
+        payload: {
+          uuid: params.uuid,
+          reject: err.message
+        }
+      }).send();
+    }
+  }
+
+  public async decryptResponse(resolve: boolean, index: number, sendResponse: StreamResponse) {
+    try {
+      const uuid = String(this.#core.cipher.decryptParams.uuid);
+      this.#core.guard.checkSession();
+
+      if (resolve) {
+        const content = await this.#core.cipher.decrypt(index);
+        const account = this.#core.account.wallet.identities[index];
+        await new TabsMessage({
+          type: MTypeTab.RES_DECRYPTION,
+          payload: {
+            uuid,
+            resolve: {
+              content,
+              account: {
+                base16: account.base16,
+                bech32: account.bech32,
+                pubKey: account.pubKey
+              }
+            }
+          }
+        }).send();
+        await this.#core.cipher.removeDecryption();
+      } else {
+        await new TabsMessage({
+          type: MTypeTab.RES_DECRYPTION,
+          payload: {
+            uuid,
+            reject: ErrorMessages.Rejected
+          }
+        }).send();
+        await this.#core.cipher.removeDecryption();
+      }
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
   }
 
   public async getCurrentNonce(sendResponse: StreamResponse) {

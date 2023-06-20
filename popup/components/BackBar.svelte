@@ -9,7 +9,7 @@
 </script>
 
 <nav>
-  <div on:click={pop}>
+  <div on:mouseup={pop}>
     <BackButton />
   </div>
   <ul>
@@ -21,7 +21,7 @@
 </nav>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   nav {
     margin-block-start: 1em;
 

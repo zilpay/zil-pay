@@ -1,4 +1,40 @@
 {
+  "stake": {
+    "title": "Kaalul",
+    "withdraw": "Tühistama",
+    "modals": {
+      "withdrawals": {
+        "title": "Ootel Väljamaksed",
+        "withdrawal": "Tühistamine"
+      }
+    },
+    "info": {
+      "min": "Minimaalne panustamissumma",
+      "rate": "Vahetuskurss",
+      "fee": "Tasu tasu",
+      "show": "Näitama",
+      "claim": "Nõude",
+      "withdrawals": "Ootel Väljamaksed"
+    }
+  },
+  "encrypt": {
+    "title": "Krüpteerimise Taotlus",
+    "btns": {
+      "confirm": "Krüptima",
+      "reject": "Lükkama"
+    }
+  },
+  "decrypt": {
+    "title": "Dekrüpteerimise Taotlus",
+    "sub_title": {
+      "0": "Et",
+      "1": "Taotlege Sisu Dekrüpteerimist"
+    },
+    "btns": {
+      "confirm": "Dekrüpteerida",
+      "reject": "Lükkama"
+    }
+  },
   "account_track": {
     "title": "Lisa Jälgija",
     "description": "Aadress, mida ZilPay jälgib."
@@ -6,17 +42,17 @@
   "home": {
     "btns": {
       "send": "Saada",
+      "stake": "Anteil",
       "receive": "Võta vastu"
     },
     "clipboard": {
       "copy": "Kopeeri",
       "copied": "Kopeeritud"
     },
-    "token_list": "Halda",
     "nav": {
       "options": {
         "add": {
-          "title": "Lisa kasutaja",
+          "title": "Kaalul",
           "description": "Loo järgmisest kontost salajane fraas."
         },
         "import": {

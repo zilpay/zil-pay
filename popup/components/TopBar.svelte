@@ -54,7 +54,7 @@
     {#if expand}
       <span
         class="expand"
-        on:click={() => linksExpand($location)}
+        on:mouseup={() => linksExpand($location)}
       >
         <ExpandIcon className="icon" />
       </span>
@@ -62,7 +62,7 @@
     {#if refresh}
       <span
         class="refresh"
-        on:click={onRefresh}
+        on:mouseup={onRefresh}
       >
         <Refresh className="icon" />
       </span>
@@ -70,7 +70,7 @@
     {#if view}
       <span
         class="view"
-        on:click={viewOnViewBlock}
+        on:mouseup={viewOnViewBlock}
       >
         <ViewIcon className="icon-view" />
       </span>
@@ -78,7 +78,7 @@
     {#if lock}
       <span
         class="lock"
-        on:click={handleOnLock}
+        on:mouseup={handleOnLock}
       >
         <LockIcon className="icon-lock" />
       </span>
@@ -87,7 +87,7 @@
 </nav>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   nav {
     max-width: 900px;
     height: 36px;
@@ -98,7 +98,7 @@
     @include flex-between-row;
 
     @media screen and (min-width: 899px) {
-      @include border-bottom-radius(8px);
+      @include border-bottom-radius($default-border-radius);
     }
   }
   a.netwrok {
@@ -140,7 +140,7 @@
         stroke: var(--primary-color);
       }
       :global(svg.icon-lock > path) {
-        fill: var(--primary-color);
+        stroke: var(--primary-color);
       }
       :global(svg.icon > path) {
         fill: var(--primary-color);

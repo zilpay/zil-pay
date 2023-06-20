@@ -9,6 +9,7 @@
 import type { NetworkControl } from 'core/background/services/network';
 import type { AccountController } from 'core/background/services/account';
 import type { StoredTx, MessagePayload, TransactionForConfirm } from 'types/transaction';
+
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { NotificationsControl } from 'core/background/services/notifications';

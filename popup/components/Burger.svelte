@@ -8,7 +8,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   div {
     display: inline-block;
 		cursor: pointer;
@@ -20,7 +20,6 @@
 			margin-bottom: 5px;
 
 			height: 4px;
-			border-radius: 8px;
 
       width: 25px;
 
@@ -28,6 +27,8 @@
         margin-bottom: 0;
         width: 15px;
       }
+
+      @include border-radius($default-border-radius);
 		}
 
     &:hover {

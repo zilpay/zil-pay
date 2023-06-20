@@ -17,7 +17,7 @@
 
 <div
   class="card"
-  on:click={onClick}
+  on:mouseup={onClick}
 >
   {#if title}
     <p>
@@ -53,7 +53,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
   div.header {
     width: 90%;

@@ -1,4 +1,40 @@
 {
+  "stake": {
+    "title": "Palo",
+    "withdraw": "Ritirare",
+    "modals": {
+      "withdrawals": {
+        "title": "Prelievi in sospeso",
+        "withdrawal": "Ritiro"
+      }
+    },
+    "info": {
+      "min": "Importo minimo di picchettamento",
+      "rate": "Tasso",
+      "fee": "Tassa di ricompensa",
+      "show": "Mostrare",
+      "claim": "Affermare",
+      "withdrawals": "Prelievi in sospeso"
+    }
+  },
+  "encrypt": {
+    "title": "Richiesta di crittografia",
+    "btns": {
+      "confirm": "Crittografare",
+      "reject": "Respingere"
+    }
+  },
+  "decrypt": {
+    "title": "Richiesta di decrittografia",
+    "sub_title": {
+      "0": "Il",
+      "1": "Richiesta Decrittografare il contenuto"
+    },
+    "btns": {
+      "confirm": "Decifrare",
+      "reject": "Respingere"
+    }
+  },
   "account_track": {
     "title": "Aggiungi Tracker",
     "description": "Un indirizzo che sarà tracciato da ZilPay."
@@ -6,13 +42,13 @@
   "home": {
     "btns": {
       "send": "Invia",
-      "receive": "Ricevi"
-    },
+      "receive": "Ricevi",
+      "stake": "Palo"
+  },
     "clipboard": {
       "copy": "Copia",
       "copied": "Copiato"
     },
-    "token_list": "Gestici",
     "nav": {
       "options": {
         "add": {

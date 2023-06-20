@@ -191,6 +191,7 @@
 					<a
 						href="https://zilpay.io/pool"
 						target="_blank"
+						rel="noreferrer"
 					>
 						{$_('swap.form.pool')}
 					</a>
@@ -208,7 +209,7 @@
 					<h3>
 						{$_('swap.form.to')}
 					</h3>
-					<span on:click={hanldeOnSwapTokens}>
+					<span on:mouseup={hanldeOnSwapTokens}>
 						<SwapIcon className="swap-icon"/>
 					</span>
 				</div>
@@ -230,14 +231,16 @@
 				<button
 					class:loading={buttonLoading}
 					disabled={disabled}
+					class="secondary"
 				>
 					{$_('swap.form.button')}
 				</button>
 			</form>
 		{/if}
 		<a
-			href="https://zilpay.io/"
+			href="https://zilpay.io/terms"
 			target="_blank"
+			rel="noreferrer"
 		>
 			<p>
 				{$_('swap.form.link')}
@@ -248,7 +251,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		padding-top: 5vh;
     height: calc(100vh - 86px);
@@ -308,14 +311,6 @@
 		& > button {
 			margin-block-end: 5px;
 			margin-block-start: 5px;
-
-			&:disabled {
-				&:hover {
-					border-color: var(--button-color);
-					background: var(--button-color);
-					color: var(--primary-color);
-				}
-			}
 		}
 	}
   section {

@@ -79,10 +79,9 @@
       await getNFTList();
       nft = $nftListStore[selectedToken];
     }
-    
+
     try {
       collection = {
-        url: Boolean(nft.meta) ? nft.meta.image : nft.url,
         token: nft.balances[nftIndex],
         symbol: nft.symbol,
         name: nft.name
@@ -158,8 +157,8 @@
   async function onInput(e) {
     recipientError = '';
     const { value } = e.target;
-    const regExpDomain = /.*\w.zil/gm;
-
+    const regExpDomain = /.*\w\.(zil|crypto|wallet|dao|nft|blockchain)/gm;
+      
     if (regExpDomain.test(value)) {
       loadingZNS = true;
       try {
@@ -287,7 +286,7 @@
           {$_('send.input_to.title')}
         </p>
         <label class:error={recipientError}>
-          <div on:click={() => contactsModal = !contactsModal}>
+          <div on:mouseup={() => contactsModal = !contactsModal}>
             <ContactIcon className="cont-icon" />
           </div>
           <input
@@ -320,7 +319,7 @@
           </label>
           <div class="percentage">
             {#each percentageList as percentage}
-              <span on:click={() => handleOnPercentage(percentage)}>{percentage}%</span>
+              <span on:mouseup={() => handleOnPercentage(percentage)}>{percentage}%</span>
             {/each}
           </div>
         </div>
@@ -338,7 +337,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;
@@ -389,7 +388,7 @@
         border: solid 1px var(--card-color);
 
         @include flex-between-row;
-        @include border-radius(8px);
+        @include border-radius($default-border-radius);
 
         &.error {
           border-color: var(--danger-color);

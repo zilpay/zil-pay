@@ -73,7 +73,7 @@
         duration: 400,
         y: -20
       }}
-      on:click={() => onSelectToken(token)}
+      on:mouseup={() => onSelectToken(token)}
     >
       <SelectCard
         header={token.symbol}
@@ -92,7 +92,7 @@
 </ul>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	ul {
 		padding: 0;
     margin: 0;
@@ -114,7 +114,7 @@
 
       margin: 5px;
 
-			@include border-radius(8px);
+			@include border-radius($default-border-radius);
 
       &:hover {
         border-color: var(--primary-color);

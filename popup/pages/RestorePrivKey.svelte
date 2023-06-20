@@ -90,7 +90,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;

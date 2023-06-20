@@ -12,6 +12,7 @@ import { push } from 'svelte-spa-router';
 import appStore from 'popup/store/apps';
 import guardStore from 'popup/store/guard';
 import transactionsStore from 'popup/store/transactions';
+import cipherStore from 'popup/store/cipher';
 
 const confirmRouter = '/app-connect';
 const confirmTx = '/confirm';
@@ -20,6 +21,7 @@ export const routerGuard = (e: { location: string; }) => {
   const guard = get(guardStore);
   const apps = get(appStore);
   const txns = get(transactionsStore);
+  const cipher = get(cipherStore);
 
   if (!guard.isReady) {
     push('/start');
@@ -32,17 +34,24 @@ export const routerGuard = (e: { location: string; }) => {
   if (apps.confirmApp && e.location !== confirmRouter && guard.isEnable) {
     push(confirmRouter);
     return guard.isEnable && guard.isReady;
-  }
-
-  if (txns.message && guard.isEnable) {
+  } else if (txns.message && guard.isEnable) {
     push('/sign-message');
-  }
-
-  if (txns.forConfirm.length !== 0 && guard.isEnable && e.location !== '/netwrok') {
+    return guard.isEnable && guard.isReady;
+  } else if (txns.forConfirm.length !== 0 && guard.isEnable && e.location !== '/netwrok') {
     push(confirmTx);
-  }
-  if (confirmTx === e.location && txns.forConfirm.length === 0) {
+    return guard.isEnable && guard.isReady;
+  } else if (confirmTx === e.location && txns.forConfirm.length === 0) {
     push('/');
+    return guard.isEnable && guard.isReady;
+  } else if (cipher.decryptParams && guard.isEnable) {
+    push('/decrypt');
+    return guard.isEnable && guard.isReady;
+  } else if (cipher.encryptParams && guard.isEnable) {
+    push('/encrypt');
+    return guard.isEnable && guard.isReady;
+  } else if (confirmTx === e.location && txns.forConfirm.length === 0) {
+    push('/');
+    return guard.isEnable && guard.isReady;
   }
 
   return guard.isEnable && guard.isReady;

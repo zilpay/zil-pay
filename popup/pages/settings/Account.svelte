@@ -90,7 +90,7 @@
 	<div
 		class="card"
 		in:fade
-		on:click={() => accountsModal = !accountsModal}
+		on:mouseup={() => accountsModal = !accountsModal}
 	>
 		<div>
 			<h3>
@@ -129,14 +129,14 @@
 	<button
 		class:loading={loading}
 		disabled={loading}
-		on:click={handleOnResetNonce}
+		on:mouseup={handleOnResetNonce}
 	>
 		{$_('account.reset')} #{nonce}
 	</button>
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 	main {
 		height: 100vh;
 		background-color: var(--background-color);
@@ -145,6 +145,8 @@
 	img {
 		max-width: 500px;
 		width: calc(100vw - 50px);
+
+		@include border-radius($default-border-radius);
 	}
 	label {
 		background-color: var(--card-color);
@@ -155,7 +157,7 @@
 		margin-block-start: 15px;
 		margin-block-end: 10px;
 
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 		@include flex-between-row;
 
 		& > div {
@@ -179,7 +181,7 @@
 		background-color: var(--card-color);
 		border: solid 1px var(--card-color);
 
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 		@include flex-between-row;
 
 		&:hover {

@@ -57,7 +57,7 @@
       {#each tabs as item, index}
         <li
           class:selected={selected === index}
-          on:click={() => selected = index}
+          on:mouseup={() => selected = index}
         >
           {item}
         </li>
@@ -122,14 +122,13 @@
 </div>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   input,
   button {
     width: 290px;
-
-    &.gas-btn {
-      margin-block-start: 10px;
-    }
+  }
+  button.gas-btn {
+    margin-block-start: 10px;
   }
   div.wrapper {
 		height: 600px;

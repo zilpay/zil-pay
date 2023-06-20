@@ -75,7 +75,7 @@
 			<li class:border={index !== contacts.length - 1}>
 				<div
 					class="text"
-					on:click={() => hanldeOnSelect(contact.address)}
+					on:mouseup={() => hanldeOnSelect(contact.address)}
 				>
 					<b>
 						{contact.name}
@@ -93,14 +93,14 @@
 	</ul>
 	<button
 		class="primary"
-		on:click={() => addContact = !addContact}
+		on:mouseup={() => addContact = !addContact}
 	>
 		{$_('contacts.add_btn')}
 	</button>
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 	main {
 		height: 100vh;
 		background-color: var(--background-color);

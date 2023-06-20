@@ -105,16 +105,13 @@
 			</select>
 		</Jumbotron>
 	</div>
-	<button
-		class="warning"
-		on:click={hanldeOnReset}
-	>
+	<button on:mouseup={hanldeOnReset}>
 		{$_('general.reset')}
 	</button>
 </main>
 
 <style lang="scss">
-	@import "../../styles/mixins";
+	@import "../../styles";
 
 	main {
 		height: 100vh;

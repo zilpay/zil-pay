@@ -52,7 +52,7 @@
       </b>
       <p
         class="pointer"
-        on:click={hanldeSwpa}
+        on:mouseup={hanldeSwpa}
       >
         1 {pair[0].meta.symbol} = {virtualParams.rate.round(9)} {pair[1].meta.symbol} <span>({formatNumber(virtualParams.converted, $currencyStore)})</span>
       </p>
@@ -118,7 +118,7 @@
 </div>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 
   div.info {
     background: var(--card-color);
@@ -126,7 +126,7 @@
     padding: 8px;
     width: 100%;
 
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     & > ul {
       margin: 0;

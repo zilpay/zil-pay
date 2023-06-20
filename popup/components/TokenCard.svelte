@@ -39,7 +39,7 @@
   class="token-card"
   class:disabled={disabled}
   class:loading={loading}
-  on:click={onClick}
+  on:mouseup={onClick}
 >
   <div>
     <p class="symbol">
@@ -64,7 +64,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   div.token-card {
     cursor: pointer;
 
@@ -77,7 +77,7 @@
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 
     @include flex-between-row;
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     &.loading {
       @include loading-gradient(var(--background-color), var(--card-color));
@@ -91,6 +91,7 @@
     }
     &:hover {
       border-color: var(--primary-color);
+      box-shadow: none;
     }
   }
   p.symbol {

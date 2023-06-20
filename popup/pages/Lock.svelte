@@ -78,14 +78,14 @@
 		>
 			{$_('lock.btn')}
 		</button>
-		<span on:click={() => linksExpand('/start')}>
+		<span on:mouseup={() => linksExpand('/start')}>
 			{$_('lock.restore')}
 		</span>
 	</form>
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 
 	h1 {
 		color: var(--text-color);

@@ -47,13 +47,26 @@ export const ZLP = {
   rate: 0,
   pool: []
 };
+export const stZIL = {
+  base16: '0xe6f14afc8739a4ead0a542c07d3ff978190e3b92',
+  bech32: 'zil1umc54ly88xjw4599gtq860le0qvsuwuj72s246',
+  decimals: ZIL.decimals,
+  name: 'StZIL',
+  symbol: 'stZIL',
+  rate: 0,
+  pool: []
+};
 const INIT = {
-  [mainnet]: [ZIL, ZLP],
+  [mainnet]: [ZIL, ZLP, stZIL],
   [testnet]: [ZIL, {
     ...ZLP,
     base16: '0x55cb580c6bdf40e400f3714651bb7643bca24de4',
     bech32: 'zil12h94srrtmaqwgq8nw9r9rwmkgw72yn0yc7x9ud'
-  }],
+  }, {
+      ...stZIL,
+      base16: '0x8942db467107434d3be0bbe0e3aa4346c89a1427',
+      bech32: 'zil139pdk3n3qap56wlqh0sw82jrgmyf59p8xqxqv2',
+    }],
   [custom]: [ZIL]
 };
 
@@ -240,7 +253,7 @@ export class ZRC2Controller {
     for (let index = 0; index < this.identities.length; index++) {
       const token = this.identities[index];
       const base16 = token.base16.toLowerCase();
-      
+
       if (token.base16 === Contracts.ZERO_ADDRESS) {
         continue;
       }
@@ -280,7 +293,11 @@ export class ZRC2Controller {
         return this.reset();
       }
 
-      this.#identities = list;
+      this.#identities = list.reduce((acc: ZRC2Token[], x: ZRC2Token) =>
+        acc.concat(
+          acc.find((y) => tohexString(y.base16) === tohexString(x.base16)) ? [] : [x]
+        )
+        , INIT[this.#netwrok.selected]);
     } catch {
       await this.reset();
     }

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { _ } from 'popup/i18n';
-	import { fly } from 'svelte/transition';
 
   import { viewIcon } from 'lib/block-explorer/view';
 	import {
@@ -25,6 +24,7 @@
 
 	import { NETWORK_KEYS } from 'config/network';
 
+
 	let limit = 100;
 	let offset = 0;
 	let count = $zrcStore.length + 3;
@@ -32,7 +32,7 @@
 	let search = '';
 	let loading = true;
 	let tokenAddModal = false;
-	let zrc2List = $zrcStore.slice(2).map(
+	let zrc2List = $zrcStore.slice(3).map(
 		(t) => ({
 			...t,
 			selected: true,
@@ -64,7 +64,7 @@
 			const res = await getTokens(limit, offset);
 			count = res.count;
 			list = res.list.filter(
-				(t) => !$zrcStore.some((s) => s.symbol === t.symbol)
+				(t) => !$zrcStore.some((s) => s.base16 === t.base16)
 			);
 			list = list.map((t) => ({
 				...t,
@@ -137,7 +137,7 @@
 	>
 		<span
 			class="add"
-			on:click={() => tokenAddModal = !tokenAddModal}
+			on:mouseup={() => tokenAddModal = !tokenAddModal}
 		>
 			<AddIcon />
 		</span>
@@ -177,7 +177,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;
@@ -202,7 +202,7 @@
 			background-color: var(--card-color);
 			border: solid 1px var(--card-color);
 
-			@include border-radius(8px);
+			@include border-radius($default-border-radius);
 			@include flex-between-row;
 
 			&.loading {

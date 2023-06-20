@@ -76,20 +76,20 @@
   <div class="btns">
     <button
       class="secondary"
-      on:click={hanldeRandomWords}
+      on:mouseup={hanldeRandomWords}
     >
       {$_('create.btns.refresh')}
     </button>
     <button
       class="secondary"
-      on:click={handleOnPrint}
+      on:mouseup={handleOnPrint}
     >
       {$_('create.btns.print')}
     </button>
     <button
       class="primary"
       disabled={disabled}
-      on:click={hanldeOnContinue}
+      on:mouseup={hanldeOnContinue}
     >
       {$_('create.btns.continue')}
     </button>
@@ -97,7 +97,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   h1, h3 {
     margin-block-start: 0;
     margin-block-end: 0.2em;

@@ -2,8 +2,6 @@
 	import Big from 'big.js';
   import { createEventDispatcher } from 'svelte';
 
-	import Arrow from './icons/Arrow.svelte';
-
   import currencyStore from 'popup/store/currency';
 
 	import { formatNumber } from 'popup/filters/n-format';
@@ -52,7 +50,7 @@
 	class:loading={loading}
 	for={uuid}
 >
-  <span on:click={onClick}>
+  <span on:mouseup={onClick}>
     <img
       src={img}
       alt="input-token"
@@ -74,25 +72,24 @@
 				<b>{formatNumber(converted, $currencyStore)}</b>
 			{/if}
       {#each percents as percent}
-        <p on:click={() => onPercentInput(percent)}>{percent}%</p>
+        <p on:mouseup={() => onPercentInput(percent)}>{percent}%</p>
       {/each}
     </div>
   </div>
 </label>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
 
 	label {
 		display: flex;
 		align-items: center;
 
-		box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
 		background-color: var(--card-color);
 		border: solid 1px var(--card-color);
 		width: 100%;
 		
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 
 		&.loading {
 			border: solid 1px transparent;

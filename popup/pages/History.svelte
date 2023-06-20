@@ -54,7 +54,7 @@
       <h2>
         {$_('history.title')}
       </h2>
-      <h3 on:click={hanldeOnClear}>
+      <h3 on:mouseup={hanldeOnClear}>
         {$_('history.clear')}
       </h3>
     </div>
@@ -70,7 +70,7 @@
         </b>
         <ul>
           {#each queue as tx, index}
-            <li on:click={() => showTx = tx}>
+            <li on:mouseup={() => showTx = tx}>
               <Transaction
                 tx={tx}
                 loading={loading}
@@ -91,7 +91,7 @@
                 duration: 400,
                 y: -20
               }}
-              on:click={() => showTx = tx}
+              on:mouseup={() => showTx = tx}
             >
               <Transaction tx={tx}/>
             </li>
@@ -104,7 +104,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		height: calc(100vh - 86px);
     max-width: 500px;

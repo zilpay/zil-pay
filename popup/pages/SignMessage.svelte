@@ -105,7 +105,7 @@
   <hr />
   <div class="btns">
     <button
-      on:click={handleOnReject}
+      on:mouseup={handleOnReject}
       disabled={loading}
     >
       {$_('sig_message.btns.reject')}
@@ -114,7 +114,7 @@
       class="primary"
       class:loading={loading}
       disabled={loading || account.type === AccountTypes.Track}
-      on:click={handleOnSign}
+      on:mouseup={handleOnSign}
     >
       {$_('sig_message.btns.confirm')}
     </button>
@@ -122,7 +122,7 @@
 </main>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		background-color: var(--background-color);
 		height: 100vh;

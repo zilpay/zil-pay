@@ -149,4 +149,19 @@ export class ZilPayZRC {
       });
     }
   }
+
+  public async getStakeProps(sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+      const data = await this.#core.stake.request();
+
+      sendResponse({
+        resolve: data
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
 }

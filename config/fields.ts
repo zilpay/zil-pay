@@ -16,6 +16,8 @@ export enum Fields {
   SELECTED_NET = 'selectednet',
   BLOCK_NUMBER = 'blocknumber',
   TRANSACTIONS = 'transactions',
+  ENCRYPT_DATA = 'encryption-data',
+  DECRYPT_DATA = 'decryption-data',
   CONFIRM_TX = 'confirm',
   CONFIRM_MESSAGE = 'confirm-message',
   STATIC = 'static',

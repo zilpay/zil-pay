@@ -7,6 +7,7 @@
 
 	import localeStore from 'popup/store/locale';
 
+
 	let loaded = false;
 
 	onMount(async () => {

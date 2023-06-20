@@ -105,6 +105,11 @@ export const MTypePopup = {
   UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`,
 
   GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
+
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`,
+
+  GET_STAKE_PROPS: `@/${app}/get-stake-props`
 };
 
 export const MTypeTab = {
@@ -123,6 +128,11 @@ export const MTypeTab = {
   SING_MESSAGE_RES: `@/${app}/response-sign-message`,
 
   NEW_BLOCK: `@/${app}/new-block-created`,
+
+  ADD_ENCRYPTION: `@/${app}/request-add-encryption`,
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  ADD_DECRYPTION: `@/${app}/add-decryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`,
 
   CONNECT_APP: `@/${app}/request-to-connect-dapp`,
   RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`,

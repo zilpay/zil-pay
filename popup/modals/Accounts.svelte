@@ -50,7 +50,7 @@
 				duration: 400,
 				y: -20
 			}}
-			on:click={() => onSelectAccount(account)}
+			on:mouseup={() => onSelectAccount(account)}
 		>
 			<AccountCard
 				account={account}
@@ -61,7 +61,7 @@
 </ul>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	ul {
 		padding: 0;
     margin: 0;
@@ -76,13 +76,13 @@
 			cursor: pointer;
 			margin: 10px;
 			background-color: var(--card-color);
-			border-radius: 8px;
 			border: solid 1px var(--card-color);
 
 			padding-left: 10px;
 			padding-right: 10px;
 
 			@include flex-between-row;
+			@include border-radius($default-border-radius);
 
 			&:hover {
 				border: solid 1px var(--primary-color);

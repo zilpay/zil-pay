@@ -31,7 +31,10 @@ import LedgerConnect from '../pages/ledger/LedgerConnect.svelte';
 import DeviceFinder from '../pages/ledger/DeviceFinder.svelte';
 
 import Swap from '../pages/Swap.svelte';
+import Stake from '../pages/Stake.svelte';
 import Collect from '../pages/Collect.svelte';
+import EncryptPage from '../pages/Encrypt.svelte';
+import DecryptPage from '../pages/Decrypt.svelte';
 
 import Netwrok from '../pages/settings/Netwrok.svelte';
 import Settings from '../pages/Settings.svelte';
@@ -42,6 +45,7 @@ import Connections from '../pages/settings/Connections.svelte';
 import Contacts from '../pages/settings/Contacts.svelte';
 import Security from '../pages/settings/Security.svelte';
 import General from '../pages/settings/General.svelte';
+
 
 export default {
   '/': wrap({
@@ -62,8 +66,26 @@ export default {
       routerGuard
     ]
   }),
+  '/stake': wrap({
+    component: Stake,
+    conditions: [
+      routerGuard
+    ]
+  }),
   '/collect': wrap({
     component: Collect,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/encrypt': wrap({
+    component: EncryptPage,
+    conditions: [
+      routerGuard
+    ]
+  }),
+  '/decrypt': wrap({
+    component: DecryptPage,
     conditions: [
       routerGuard
     ]

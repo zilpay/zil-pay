@@ -23,7 +23,7 @@
   {#each list as item, index}
     <li
       class:selected={(index + 1) === multiplier}
-      on:click={() => handleOnSelect(index)}
+      on:mouseup={() => handleOnSelect(index)}
     >
       <Speed length={index + 1}/>
       <h3>
@@ -34,14 +34,14 @@
 </ul>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   ul {
 		padding: 0px;
     margin: 0;
     background-color: var(--card-color);
 
     @include flex-between-row;
-    @include border-radius(8px);
+    @include border-radius($default-border-radius);
 
     & > li {
       cursor: pointer;
@@ -52,7 +52,7 @@
       min-height: 40px;
       text-align: center;
 
-      @include border-radius(8px);
+      @include border-radius($default-border-radius);
       @include flex-center-column;
 
       &.selected {

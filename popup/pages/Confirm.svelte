@@ -220,21 +220,21 @@
 				on:select={handleOnChangeGasMultiplier}
 			/>
 			{#if !tx.cancel}
-				<h3 on:click={() => editModal = !editModal}>
+				<h3 on:mouseup={() => editModal = !editModal}>
 					({$_('confirm.edit')})
 				</h3>
 			{/if}
 			<Params tx={tx} />
 		</div>
 		<div class="btns">
-			<button on:click={handleOnReject}>
+			<button on:mouseup={handleOnReject}>
 				{$_('confirm.btns.reject')}
 			</button>
 			<button
 				class="primary"
 				class:loading={loading}
 				disabled={loading || account.type === AccountTypes.Track}
-				on:click={handleOnConfirm}
+				on:mouseup={handleOnConfirm}
 			>
 				{$_('confirm.btns.confirm')}
 			</button>
@@ -243,7 +243,7 @@
 </section>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
 	main {
 		height: calc(100vh - 36px);
 		max-height: 600px;
@@ -288,7 +288,7 @@
 			rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 		background-color: var(--card-color);
-		@include border-radius(8px);
+		@include border-radius($default-border-radius);
 
 		&.loading {
       @include loading-gradient(var(--background-color), var(--card-color));

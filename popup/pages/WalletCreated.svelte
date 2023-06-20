@@ -43,14 +43,14 @@
   </div>
   <button
     class="primary"
-    on:click={handleOnStart}
+    on:mouseup={handleOnStart}
   >
     {$_('wallet_created.btn')}
   </button>
 </main>
 
 <style lang="scss">
-  @import "../styles/mixins";
+  @import "../styles";
   h1,
   h2 {
     color: var(--text-color);

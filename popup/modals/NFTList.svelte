@@ -72,7 +72,7 @@
 </ul>
 
 <style lang="scss">
-	@import "../styles/mixins";
+	@import "../styles";
   p {
 		text-align: left;
     width: 280px;
