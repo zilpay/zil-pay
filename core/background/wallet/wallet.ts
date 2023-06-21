@@ -37,7 +37,7 @@ export class ZilPayWallet {
 
   public async exportPrivateKey(password: string, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.setPassword(password);
+      await this.#core.guard.unlock(password);
       const keyPair = await this.#core.account.getKeyPair();
       sendResponse({
         resolve: keyPair
@@ -52,7 +52,7 @@ export class ZilPayWallet {
   public async exportEncrypted(sendResponse: StreamResponse) {
     try {
       sendResponse({
-        resolve: this.#core.guard.encrypted
+        resolve: Buffer.from(this.#core.guard.encryptedMnemonic).toString('base64')
       });
     } catch (err) {
       sendResponse({
@@ -84,11 +84,11 @@ export class ZilPayWallet {
 
   public async exportSeedPhrase(password: string, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.setPassword(password);
-      const seed = this.#core.guard.getSeed();
+      await this.#core.guard.unlock(password);
+      const mnemonic = this.#core.guard.exportMnemonic(password);
 
       sendResponse({
-        resolve: seed
+        resolve: mnemonic
       });
     } catch (err) {
       sendResponse({
@@ -99,8 +99,8 @@ export class ZilPayWallet {
 
   public async exportQrcodeWallet(password: string, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.setPassword(password);
-      const seed = this.#core.guard.getSeed();
+      await this.#core.guard.unlock(password);
+      const mnemonic = this.#core.guard.exportMnemonic(password);
       const wallet: Wallet = JSON.parse(JSON.stringify(this.#core.account.wallet));
       const keys = wallet.identities.filter(
         (acc) => acc.type === AccountTypes.PrivateKey
@@ -113,8 +113,8 @@ export class ZilPayWallet {
         };
       });
       const data = {
-        seed,
-        keys
+        keys,
+        seed: mnemonic
       };
       const uuid = uuidv4();
       const encrypted = OldAes.getEncrypted(data, password);
@@ -239,7 +239,8 @@ export class ZilPayWallet {
 
   public async createAccountBySeed(name: string, sendResponse?: StreamResponse) {
     try {
-      const seed = this.#core.guard.getSeed();
+      const seed = this.#core.guard.seed;
+
       await this.#core.account.addAccountFromSeed(seed, name);
       await this.#core.transactions.sync();
       await this.#core.nft.sync();

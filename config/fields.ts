@@ -22,6 +22,7 @@ export enum Fields {
   CONFIRM_MESSAGE = 'confirm-message',
   STATIC = 'static',
   LOCK_TIME = 'time_before_lock',
+  GUARD_CONFIG = 'guard-configuration',
   CONNECT_DAPP = 'connect',
   CONNECT_LIST = 'connection-list',
   THEME = 'theme',

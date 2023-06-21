@@ -8,6 +8,7 @@
  */
 
 export enum ErrorMessages {
+  GuardNotSynced = 'Guard is not synced',
   WalletNotReady = 'Wallet is not sync.',
   IncorrectPassword = 'Incorect password',
   WalletNotEnabled = 'Wallet is not enabled.',
@@ -33,6 +34,7 @@ export enum ErrorMessages {
   MustBe = 'must be unique.',
   MustBeObject = 'Must be object.',
   MustBeString = 'Must be string.',
+  MustBeInt = 'Must be Int.',
   RequiredParam = 'is required.',
   OutOfIndex = 'Out of index.',
   IncorrectParams = 'Incorrect argument',
@@ -41,6 +43,7 @@ export enum ErrorMessages {
   HightNonce = 'nonce too High',
   IncorrectNetwrok = 'Incorrect selected netwrok.',
   TrackedAccount = 'Tracked account cannot operate',
+  IncorrectConfigParams = 'Incorrect Config params',
 
   Disabled = 'ZilPay is disabled.',
   Connect = 'User is\'t connections.',

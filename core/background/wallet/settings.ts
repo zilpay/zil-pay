@@ -35,7 +35,7 @@ export class ZilPaySettings {
     }
   }
 
-  public async updateDexSettings(blocks: number, slippage: number,  sendResponse: StreamResponse) {
+  public async updateDexSettings(blocks: number, slippage: number, sendResponse: StreamResponse) {
     try {
       this.#core.guard.checkSession();
       await this.#core.dex.setSettings(blocks, slippage);
@@ -189,7 +189,7 @@ export class ZilPaySettings {
   public async setLockTime(h: number, sendResponse: StreamResponse) {
     try {
       this.#core.guard.checkSession();
-      await this.#core.guard.setLockTime(h);
+      await this.#core.guard.setLogOutTimer(h);
 
       sendResponse({
         resolve: this.#core.state

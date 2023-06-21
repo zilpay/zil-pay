@@ -56,12 +56,9 @@ export interface KeyPair {
   base16: string;
 };
 
-export interface GuardVault {
-  decryptSeed: string,
-  decryptImported: {
-    index: number;
-    privateKey: string;
-  }[];
+export interface OldGuardVaultKeys {
+  index: number;
+  privateKey: string;
 }
 
 export interface Apps {

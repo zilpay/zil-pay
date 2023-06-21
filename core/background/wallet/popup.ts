@@ -8,6 +8,7 @@
  */
 import type { StreamResponse } from 'types/stream';
 import type { ZIlPayCore } from './core';
+
 import { MnemonicController } from 'core/background/services/account/mnemonic';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { MTypeTab } from 'lib/streem/stream-keys';
@@ -20,11 +21,11 @@ interface InitPayload {
 
 export class ZilPayPopup {
   readonly #core: ZIlPayCore;
-  
+
   constructor(core: ZIlPayCore) {
     this.#core = core;
 
-    Runtime.alarms.onAlarm.addListener(async(event) => {
+    Runtime.alarms.onAlarm.addListener(async (event) => {
       if (event.name.includes(this.#core.blockchain.name)) {
         await this.#core.blockchain.trackBlockNumber();
       }
@@ -75,7 +76,7 @@ export class ZilPayPopup {
     try {
       this.#core.account.mnemonic.mnemonicToEntropy(payload.seed);
       await this.#core.account.reset();
-      await this.#core.guard.setSeed(
+      await this.#core.guard.setupVault(
         payload.seed,
         payload.password
       );
@@ -92,7 +93,7 @@ export class ZilPayPopup {
 
   public async unlock(password: string, sendResponse: StreamResponse) {
     try {
-      this.#core.guard.setPassword(password);
+      this.#core.guard.unlock(password);
       await this.#core.account.migrate();
       this.updateStatus();
 

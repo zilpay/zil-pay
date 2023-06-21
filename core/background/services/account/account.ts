@@ -110,9 +110,8 @@ export class AccountController {
     );
   }
 
-  public async fromSeed(words: string, index = 0): Promise<KeyPair> {
+  public async fromSeed(seed: Uint8Array, index = 0): Promise<KeyPair> {
     const path = this.mnemonic.getKey(index);
-    const seed = await this.mnemonic.mnemonicToSeed(words);
     const hdKey = this.#hdKey.fromMasterSeed(Buffer.from(seed));
     const childKey = hdKey.derive(path);
 
@@ -158,7 +157,7 @@ export class AccountController {
     const account = this.wallet.identities[index];
     switch (account.type) {
       case AccountTypes.Seed:
-        const seed = this.#guard.getSeed();
+        const seed = this.#guard.seed;
         const keyPair = await this.fromSeed(seed, account.index);
         return keyPair;
       case AccountTypes.PrivateKey:
@@ -197,7 +196,7 @@ export class AccountController {
     const identities = oldWallet[AccountController.field0];
     const selectedAddress = oldWallet[AccountController.field1];
     const newIdentities: Account[] = [];
-    const vault = this.#guard.getWallet();
+    const keys = this.#guard.getPrivateKeysFromOldZIlPayStorage();
 
     for (let i = 0; i < identities.length; i++) {
       const { address, balance, isImport, index, hwType, name, pubKey } = identities[i];
@@ -218,15 +217,15 @@ export class AccountController {
         newAccount.type = AccountTypes.Ledger;
         newAccount.name = `Ledger ${index}`;
       } else if (isImport) {
-        const { privateKey } = vault.decryptImported.find(
+        const { privateKey } = keys.find(
           (el) => el.index === index
         );
-        newAccount.privKey = this.#guard.encryptPrivateKey(privateKey);
+        newAccount.privKey = this.#guard.encryptPrivateKey(Buffer.from(privateKey, 'hex'));
         newAccount.type = AccountTypes.PrivateKey;
         newAccount.name = `Imported ${index}`;
         newAccount.pubKey = getPubKeyFromPrivateKey(privateKey);
       } else {
-        const { pubKey } = await this.fromSeed(vault.decryptSeed, index);
+        const { pubKey } = await this.fromSeed(this.#guard.seed, index);
 
         newAccount.pubKey = pubKey;
       }
@@ -262,7 +261,7 @@ export class AccountController {
     );
   }
 
-  public async addAccountFromSeed(seed: string, name: string) {
+  public async addAccountFromSeed(seed: Uint8Array, name: string) {
     const index = this.lastIndexSeed;
     const { pubKey, base16 } = await this.fromSeed(seed, index);
     const bech32 = toBech32Address(base16);
@@ -299,7 +298,7 @@ export class AccountController {
     const { pubKey, base16 } = this.fromPrivateKey(privKey);
     const bech32 = toBech32Address(base16);
     const type = AccountTypes.PrivateKey;
-    const encryptedPrivateKey = this.#guard.encryptPrivateKey(privKey);
+    const encryptedPrivateKey = this.#guard.encryptPrivateKey(Buffer.from(privKey, 'hex'));
     const zrc2 = await this.#zrc2.getBalance(base16);
     const account: Account = {
       name,
