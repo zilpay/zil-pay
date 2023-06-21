@@ -96,6 +96,7 @@ export class ZilPayPopup {
   public async unlock(password: string, sendResponse: StreamResponse) {
     try {
       if (this.#core.guard.state.iteractions === 0) {
+        //  Migrate from old guard.
         const wallet = await this.#core.guard.getFromOldStorage(password);
 
         await this.#core.guard.setGuardConfig(ShaAlgorithms.Sha512, ITERACTIONS);
@@ -103,10 +104,10 @@ export class ZilPayPopup {
           wallet.mnemonic,
           password
         );
-        await this.#core.account.migrate(wallet.keys);
+        await this.#core.account.migrate(wallet.keys, wallet.mnemonic);
       }
 
-      this.#core.guard.unlock(password);
+      await this.#core.guard.unlock(password);
       this.updateStatus();
 
       return sendResponse({

@@ -246,13 +246,14 @@ export class AuthGuard {
     return Buffer.from(encrypted).toString('base64');
   }
 
-  decryptPrivateKey(content: string) {
+  decryptPrivateKey(content: string): string {
     const hash = this.#hash.get(this) as Uint8Array;
     const bytes = Cipher.decrypt(Buffer.from(content, 'base64'), hash);
+    const privateKey = Buffer.from(bytes).toString('hex');
 
-    isPrivateKey(bytes);
+    isPrivateKey(privateKey);
 
-    return bytes;
+    return privateKey;
   }
 
   checkSession() {

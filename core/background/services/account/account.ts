@@ -10,7 +10,9 @@ import type { ZRC2Controller } from 'core/background/services/token';
 import type { Account, KeyPair, OldGuardVaultKeys, Wallet } from 'types/account';
 import type { AuthGuard } from 'core/background/services/guard';
 import type { ZRC2Token } from 'types/token';
+
 import { Buffer } from 'buffer';
+import { utils } from 'aes-js';
 import assert from 'assert';
 import { HDKey } from './hd-key';
 import { MnemonicController } from './mnemonic';
@@ -183,7 +185,7 @@ export class AccountController {
     );
   }
 
-  public async migrate(keys: OldGuardVaultKeys[]) {
+  public async migrate(keys: OldGuardVaultKeys[], mnemonic: string) {
     const newWallet = await BrowserStorage.get(Fields.WALLET);
     if (newWallet) return;
     let oldWallet = await BrowserStorage.get(Fields.OLD_WALLET);
@@ -196,6 +198,8 @@ export class AccountController {
     const identities = oldWallet[AccountController.field0];
     const selectedAddress = oldWallet[AccountController.field1];
     const newIdentities: Account[] = [];
+    const mnemonicController = new MnemonicController();
+    const seed = await mnemonicController.mnemonicToSeed(mnemonic);
 
     for (let i = 0; i < identities.length; i++) {
       const { address, balance, isImport, index, hwType, name, pubKey } = identities[i];
@@ -219,12 +223,14 @@ export class AccountController {
         const { privateKey } = keys.find(
           (el) => el.index === index
         );
-        newAccount.privKey = this.#guard.encryptPrivateKey(Buffer.from(privateKey, 'hex'));
+        const keyBytes = utils.hex.toBytes(privateKey);
+
+        newAccount.privKey = this.#guard.encryptPrivateKey(keyBytes);
         newAccount.type = AccountTypes.PrivateKey;
         newAccount.name = `Imported ${index}`;
         newAccount.pubKey = getPubKeyFromPrivateKey(privateKey);
       } else {
-        const { pubKey } = await this.fromSeed(this.#guard.seed, index);
+        const { pubKey } = await this.fromSeed(seed, index);
 
         newAccount.pubKey = pubKey;
       }

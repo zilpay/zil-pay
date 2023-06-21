@@ -28,11 +28,8 @@ export const getAddressFromPublicKey = (publicKey: string) => {
  *
  * takes a hex-encoded string (private key) and returns its corresponding
  * hex-encoded 33-byte public key.
- *
- * @param {string} privateKey
- * @returns {string}
  */
- export const getPubKeyFromPrivateKey = (privateKey: string) => {
+export const getPubKeyFromPrivateKey = (privateKey: string) => {
   const normalizedPrviateKey = tohexString(privateKey);
   const keyPair = secp256k1.keyFromPrivate(normalizedPrviateKey, 'hex');
 
