@@ -85,7 +85,7 @@ export class ZilPayWallet {
   public async exportSeedPhrase(password: string, sendResponse: StreamResponse) {
     try {
       await this.#core.guard.unlock(password);
-      const mnemonic = this.#core.guard.exportMnemonic(password);
+      const mnemonic = await this.#core.guard.exportMnemonic(password);
 
       sendResponse({
         resolve: mnemonic

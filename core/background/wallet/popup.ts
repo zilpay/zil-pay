@@ -78,6 +78,7 @@ export class ZilPayPopup {
     try {
       this.#core.account.mnemonic.mnemonicToEntropy(payload.seed);
       await this.#core.account.reset();
+      await this.#core.guard.setGuardConfig(ShaAlgorithms.Sha512, ITERACTIONS);
       await this.#core.guard.setupVault(
         payload.seed,
         payload.password
