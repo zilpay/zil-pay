@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZRC2Controller } from 'core/background/services/token';
-import type { Account, KeyPair, Wallet } from 'types/account';
+import type { Account, KeyPair, OldGuardVaultKeys, Wallet } from 'types/account';
 import type { AuthGuard } from 'core/background/services/guard';
 import type { ZRC2Token } from 'types/token';
 import { Buffer } from 'buffer';
@@ -183,7 +183,7 @@ export class AccountController {
     );
   }
 
-  public async migrate() {
+  public async migrate(keys: OldGuardVaultKeys[]) {
     const newWallet = await BrowserStorage.get(Fields.WALLET);
     if (newWallet) return;
     let oldWallet = await BrowserStorage.get(Fields.OLD_WALLET);
@@ -196,7 +196,6 @@ export class AccountController {
     const identities = oldWallet[AccountController.field0];
     const selectedAddress = oldWallet[AccountController.field1];
     const newIdentities: Account[] = [];
-    const keys = this.#guard.getPrivateKeysFromOldZIlPayStorage();
 
     for (let i = 0; i < identities.length; i++) {
       const { address, balance, isImport, index, hwType, name, pubKey } = identities[i];

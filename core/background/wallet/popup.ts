@@ -13,6 +13,8 @@ import { MnemonicController } from 'core/background/services/account/mnemonic';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { MTypeTab } from 'lib/streem/stream-keys';
 import { Runtime } from 'lib/runtime';
+import { ShaAlgorithms } from 'config/sha-algoritms';
+import { ITERACTIONS } from 'config/guard';
 
 interface InitPayload {
   seed: string;
@@ -93,8 +95,18 @@ export class ZilPayPopup {
 
   public async unlock(password: string, sendResponse: StreamResponse) {
     try {
+      if (this.#core.guard.state.iteractions === 0) {
+        const wallet = await this.#core.guard.getFromOldStorage(password);
+
+        await this.#core.guard.setGuardConfig(ShaAlgorithms.Sha512, ITERACTIONS);
+        await this.#core.guard.setupVault(
+          wallet.mnemonic,
+          password
+        );
+        await this.#core.account.migrate(wallet.keys);
+      }
+
       this.#core.guard.unlock(password);
-      await this.#core.account.migrate();
       this.updateStatus();
 
       return sendResponse({

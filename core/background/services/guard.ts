@@ -10,6 +10,7 @@ import type { OldGuardVaultKeys } from 'types/account';
 
 import { utils } from 'aes-js';
 import { sha256 } from 'lib/crypto/sha';
+import { Buffer } from 'buffer';
 
 import { Cipher } from 'lib/crypto/chiher';
 import { MnemonicController } from 'core/background/services/account';
@@ -120,17 +121,6 @@ export class AuthGuard {
     }
   }
 
-  getPrivateKeysFromOldZIlPayStorage(): OldGuardVaultKeys[] {
-    this.checkSession();
-
-    const hash = this.#hash.get(this);
-    const hashAsHex = Buffer.from(hash).toString('hex');
-    const keys = this.#encryptImported ?
-      JSON.parse(OldAes.decrypt(this.#encryptImported, hashAsHex)) : [];
-
-    return keys;
-  }
-
   async setGuardConfig(algorithm: string, iteractions: number) {
     assert(
       algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512,
@@ -174,6 +164,30 @@ export class AuthGuard {
       this.logout();
       throw new Error(ErrorMessages.IncorrectPassword);
     }
+  }
+
+  async getFromOldStorage(password: string) {
+    const data = await BrowserStorage.get(
+      Fields.VAULT,
+      Fields.VAULT_IMPORTED,
+    );
+    const hash = OldAes.hash(password);
+    const encryptedKeys = data[Fields.VAULT_IMPORTED];
+    const mnemonic = OldAes.decrypt(data[Fields.VAULT], hash);
+    let keys: OldGuardVaultKeys[] = [];
+
+    if (encryptedKeys) {
+      try {
+        keys = JSON.parse(OldAes.decrypt(encryptedKeys, hash));
+      } catch {
+        ///
+      }
+    }
+
+    return {
+      mnemonic,
+      keys
+    };
   }
 
   async unlock(password: string) {
