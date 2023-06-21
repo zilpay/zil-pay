@@ -18,24 +18,35 @@ import Base64 from 'crypto-js/enc-base64';
 import { ErrorMessages } from 'config/errors';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
-import { Aes } from 'lib/crypto/aes';
+import { OldAes } from 'lib/crypto/aes';
 import { NotificationsControl } from 'core/background/services/notifications';
 
+export enum AesMethod {
+  Aes128,
+  Aes256
+}
 
 export class CipherControl {
+  #method = AesMethod.Aes128;
+
   #encryptParams?: InputCipherParams;
   #decryptParams?: InputCipherParams;
+
   readonly #account: AccountController;
 
   get encryptParams() {
     return this.#encryptParams;
   }
 
+  get method() {
+    return this.#method;
+  }
+
   get decryptParams() {
     return this.#decryptParams;
   }
 
-  get state(): CipherState  {
+  get state(): CipherState {
     return {
       encryptParams: this.encryptParams,
       decryptParams: this.decryptParams
@@ -116,7 +127,7 @@ export class CipherControl {
   async encrypt(index: number) {
     const { privKey } = await this.#account.getKeyPair(index);
     const keyAsHex = Hex.parse(privKey);
-    const bytes = Hex.parse(Aes.hash(this.encryptParams.domain));
+    const bytes = Hex.parse(OldAes.hash(this.encryptParams.domain));
     const counter = lib.WordArray.random(128 / 8);
     const iv = counter.concat(bytes);
     const encryptData = aes.encrypt(
@@ -131,7 +142,7 @@ export class CipherControl {
   async decrypt(index: number) {
     const { privKey } = await this.#account.getKeyPair(index);
     const [cipher, counter] = this.decryptParams.content.split(':');
-    const bytes = Hex.parse(Aes.hash(this.decryptParams.domain));
+    const bytes = Hex.parse(OldAes.hash(this.decryptParams.domain));
     const iv = Base64.parse(counter).concat(bytes);
     const decrypted = aes.decrypt(
       cipher,

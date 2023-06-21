@@ -44,6 +44,7 @@
     "@ledgerhq/hw-transport-webhid": "^6.27.10",
     "@metamask/jazzicon": "^2.0.0",
     "@zilliqa-js/proto": "^3.3.4",
+    "aes-js": "^3.1.2",
     "big.js": "^6.2.1",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",

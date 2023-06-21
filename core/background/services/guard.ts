@@ -9,20 +9,16 @@
 import type { GuardVault } from 'types/account';
 
 import assert from 'assert';
-import { Aes } from 'lib/crypto/aes';
+import { Buffer } from 'buffer';
+import { OldAes } from 'lib/crypto/aes';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { Common } from 'config/common';
 import { ErrorMessages } from 'config/errors';
 import { isPrivateKey } from 'lib/utils/address';
+import { ShaAlgorithms } from 'config/sha-algoritms';
 
 export class AuthGuard {
-  // hash of the password.
-  #hash = new WeakMap();
-  // this property is responsible for control session.
-  #isEnable = false;
-  // this property is responsible for control wallet.
-  #isReady = false;
   // Imported storage in encrypted.
   #encryptImported?: string;
   // Seed phase storage in encrypted.
@@ -30,6 +26,16 @@ export class AuthGuard {
   // Current time + some hours.
   #endSession = new Date(-1);
   #time = Common.TIME_BEFORE_LOCK;
+
+  #hash = new WeakMap<AuthGuard, Uint8Array>();
+  #algorithm = ShaAlgorithms.sha256;
+  #iteractions = 0;
+
+  // this property is responsible for control session.
+  #isEnable = false;
+
+  // this property is responsible for control wallet.
+  #isReady = false;
 
   public get lockTime() {
     return Number(this.#time);
@@ -81,7 +87,7 @@ export class AuthGuard {
       buildObject(Fields.LOCK_TIME, String(this.lockTime))
     );
   }
-  
+
   public async logout() {
     this.#isEnable = false;
     this.#endSession = new Date(-1);
@@ -93,16 +99,16 @@ export class AuthGuard {
     assert(this.isReady, ErrorMessages.WalletNotReady);
 
     try {
-      const hash = Aes.hash(password);
-      Aes.decrypt(this.#encryptSeed, hash);
-  
+      const hash = OldAes.hash(password);
+      OldAes.decrypt(this.#encryptSeed, hash);
+
       if (this.#encryptImported) {
-        Aes.decrypt(this.#encryptImported, hash);
+        OldAes.decrypt(this.#encryptImported, hash);
       }
-  
+
       this.#isEnable = true;
       this.#updateSession();
-      this.#hash.set(this, hash);
+      this.#hash.set(this, Buffer.from(hash, 'hex'));
     } catch (err) {
       this.logout();
       throw new Error(ErrorMessages.IncorrectPassword);
@@ -112,10 +118,10 @@ export class AuthGuard {
   public getWallet(): GuardVault {
     this.checkSession();
 
-    const hash = this.#hash.get(this);
-    const decryptSeed = Aes.decrypt(this.#encryptSeed, hash);
+    const hash = Buffer.from(this.#hash.get(this)).toString('hex');
+    const decryptSeed = OldAes.decrypt(this.#encryptSeed, hash);
     const decryptImported = this.#encryptImported ?
-      JSON.parse(Aes.decrypt(this.#encryptImported, hash)) : [];
+      JSON.parse(OldAes.decrypt(this.#encryptImported, hash)) : [];
 
     return {
       decryptSeed,
@@ -126,18 +132,18 @@ export class AuthGuard {
   public getSeed(): string {
     this.checkSession();
 
-    const hash = this.#hash.get(this);
+    const hash = Buffer.from(this.#hash.get(this)).toString('hex');
 
-    return Aes.decrypt(this.#encryptSeed, hash);
+    return OldAes.decrypt(this.#encryptSeed, hash);
   }
 
   public async setSeed(seed: string, password: string) {
-    const hash = Aes.hash(password);
-    this.#encryptSeed = Aes.encrypt(seed, hash);
+    const hash = OldAes.hash(password);
+    this.#encryptSeed = OldAes.encrypt(seed, hash);
     this.#isReady = true;
     this.#isEnable = true;
     this.#updateSession();
-    this.#hash.set(this, hash);
+    this.#hash.set(this, Buffer.from(hash, 'hex'));
 
     await BrowserStorage.set(
       buildObject(Fields.VAULT, this.#encryptSeed)
@@ -152,8 +158,8 @@ export class AuthGuard {
   public async updateImported(decryptImported: object[]) {
     this.checkSession();
 
-    const hash = this.#hash.get(this);
-    const encryptImported = Aes.encrypt(JSON.stringify(decryptImported), hash);
+    const hash = Buffer.from(this.#hash.get(this)).toString('hex');
+    const encryptImported = OldAes.encrypt(JSON.stringify(decryptImported), hash);
 
     await BrowserStorage.set(
       buildObject(Fields.VAULT_IMPORTED, encryptImported)
@@ -164,14 +170,14 @@ export class AuthGuard {
 
   public encryptPrivateKey(privKey: string) {
     isPrivateKey(privKey);
-    const hash = this.#hash.get(this);
-    return Aes.encrypt(String(privKey), hash);
+    const hash = Buffer.from(this.#hash.get(this)).toString('hex');
+    return OldAes.encrypt(String(privKey), hash);
   }
 
   public decryptPrivateKey(content: string) {
-    const hash = this.#hash.get(this);
+    const hash = Buffer.from(this.#hash.get(this)).toString('hex');
 
-    return Aes.decrypt(content, hash);
+    return OldAes.decrypt(content, hash);
   }
 
   public checkSession() {

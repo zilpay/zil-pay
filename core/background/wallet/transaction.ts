@@ -22,7 +22,7 @@ import { ZIL } from 'background/services/token';
 import { MTypeTab } from 'lib/streem/stream-keys';
 import { TabsMessage } from 'lib/streem/tabs-message';
 import { ErrorMessages } from 'config/errors';
-import { Aes } from 'lib/crypto/aes';
+import { OldAes } from 'lib/crypto/aes';
 import { SchnorrControl } from 'lib/crypto/elliptic';
 import { Buffer } from 'buffer';
 import { AccountTypes } from 'config/account-type';
@@ -63,7 +63,7 @@ export class ZilPayTransaction {
       }).send();
     }
   }
-  
+
   public async encryptResponse(resolve: boolean, index: number, sendResponse: StreamResponse) {
     try {
       const uuid = String(this.#core.cipher.encryptParams.uuid);
@@ -517,7 +517,7 @@ export class ZilPayTransaction {
     try {
       const message: MessagePayload = {
         ...params,
-        hash: Aes.hash(params.content)
+        hash: OldAes.hash(params.content)
       };
       await this.#core.transactions.addMessage(message);
       await this.#core.prompt.open();

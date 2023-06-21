@@ -89,18 +89,18 @@ export class HDKey {
     if (path === 'm' || path === 'M' || path === "m'" || path === "M'") {
       return this;
     }
-  
+
     const entries = path.split('/');
     let hdkey = this;
 
     for (let i = 0; i < entries.length; i++) {
       const c = entries[i];
-      
+
       if (i === 0) {
         assert(/^[mM]{1}/.test(c), 'Path must start with "m" or "M"');
         continue;
       }
-  
+
       const hardened = (c.length > 1) && (c[c.length - 1] === "'");
       let childIndex = parseInt(c, 10); // & (HARDENED_OFFSET - 1)
 
@@ -109,7 +109,7 @@ export class HDKey {
       if (hardened) {
         childIndex += HARDENED_OFFSET;
       }
-  
+
       hdkey = hdkey.deriveChild(childIndex);
     }
 
@@ -121,16 +121,16 @@ export class HDKey {
     const indexBuffer = Buffer.allocUnsafe(4);
 
     indexBuffer.writeUInt32BE(index, 0);
-  
+
     let data: Buffer;
-  
+
     if (isHardened) { // Hardened child
       assert(this.privateKey, ErrorMessages.CouldNotDeriveHardened);
-  
+
       let pk = Buffer.from(this.privateKey);
       let zb = Buffer.alloc(1, 0);
       pk = Buffer.concat([zb, pk]);
-  
+
       // data = 0x00 || ser256(kpar) || ser32(index)
       data = Buffer.concat([pk, indexBuffer]);
     } else { // Normal child
@@ -156,7 +156,7 @@ export class HDKey {
         // In case parse256(IL) >= n or ki == 0, one should proceed with the next value for i
         return this.deriveChild(index + 1);
       }
-    // Public parent key -> public child key
+      // Public parent key -> public child key
     } else {
       // Ki = point(parse256(IL)) + Kpar
       //    = G*IL + Kpar
@@ -173,7 +173,7 @@ export class HDKey {
     hd.depth = this.depth + 1;
     hd.parentFingerprint = this.#fingerprint; // .readUInt32BE(0)
     hd.index = index;
-  
+
     return hd;
   }
 
@@ -182,12 +182,12 @@ export class HDKey {
       .update(seedBuffer)
       .digest()
     const IL = I.slice(0, 32);
-    const IR = I.slice(32);  
+    const IR = I.slice(32);
     const hdkey = new HDKey(versions);
 
     hdkey.setChainCode(IR);
     hdkey.privateKey = Uint8Array.from(IL);
-  
+
     return hdkey
   }
 

@@ -10,7 +10,7 @@ import type { ZIlPayCore } from './core';
 import type { StreamResponse } from 'types/stream';
 import type { Wallet } from 'types/account';
 
-import { Aes } from 'lib/crypto/aes';
+import { OldAes } from 'lib/crypto/aes';
 import qrcode from 'qrcode/lib/browser';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { AccountTypes } from 'config/account-type';
@@ -117,7 +117,7 @@ export class ZilPayWallet {
         keys
       };
       const uuid = uuidv4();
-      const encrypted = Aes.getEncrypted(data, password);
+      const encrypted = OldAes.getEncrypted(data, password);
       const base58 = await qrcode.toDataURL(
         `${uuid}/${encrypted.iv}`,
         {
@@ -235,7 +235,7 @@ export class ZilPayWallet {
     }
   }
 
-  public async importKeyStore(sendResponse?: StreamResponse) {}
+  public async importKeyStore(sendResponse?: StreamResponse) { }
 
   public async createAccountBySeed(name: string, sendResponse?: StreamResponse) {
     try {

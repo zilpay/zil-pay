@@ -16,7 +16,7 @@ import Base64 from 'crypto-js/enc-base64';
 import ENCHex from 'crypto-js/enc-hex';
 import { ErrorMessages } from 'config/errors';
 
-export class Aes  {
+export class OldAes {
   /**
    * Create sha256 hash string.
    * @example
@@ -37,7 +37,7 @@ export class Aes  {
   }
 
   public static getEncrypted<T>(data: object | Array<T>, key: string) {
-    const hash = Aes.hash(key);
+    const hash = OldAes.hash(key);
     const content = JSON.stringify(data);
     const keyAsHex = ENCHex.parse(hash);
     const iv = lib.WordArray.random(128 / 8);

@@ -113,7 +113,7 @@ export class AccountController {
   public async fromSeed(words: string, index = 0): Promise<KeyPair> {
     const path = this.mnemonic.getKey(index);
     const seed = await this.mnemonic.mnemonicToSeed(words);
-    const hdKey = this.#hdKey.fromMasterSeed(seed);
+    const hdKey = this.#hdKey.fromMasterSeed(Buffer.from(seed));
     const childKey = hdKey.derive(path);
 
     return childKey.keyPair;
@@ -284,7 +284,7 @@ export class AccountController {
 
   public async balanceUpdate() {
     const zrc2 = await this.#zrc2.getBalance(this.selectedAccount.base16);
-    
+
     this.#wallet.identities[this.#wallet.selectedAddress].zrc2 = zrc2;
 
     await BrowserStorage.set(
@@ -311,7 +311,7 @@ export class AccountController {
       privKey: encryptedPrivateKey,
       zrc2,
       nft: {}
-    };    
+    };
     await this._add(account);
     return account;
   }
@@ -330,7 +330,7 @@ export class AccountController {
       pubKey: '',
       zrc2,
       nft: {}
-    };    
+    };
     await this._add(account);
     return account;
   }
