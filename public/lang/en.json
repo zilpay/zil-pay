@@ -189,7 +189,11 @@
     "placeholder": "Input secret phrase, with a space between words.",
     "pass_placeholder": "Password",
     "conf_placeholder": "Confirm Password",
-    "pass_len_error": "Password error, max length is 6"
+    "pass_len_error": "Password error, max length is 6",
+    "guard": {
+      "iteractions": "PBKDF2 iterations",
+      "algorithms": "PBKDF2 ShaAlgorithms"
+    }
   },
   "setup_acc": {
     "title": "Account setup",
@@ -269,6 +273,12 @@
     "p_modal": {
       "title": "Secret Recovery Phrase",
       "warn": "DO NOT share this phrase with anyone! These words can be used to steal all your accounts."
+    },
+    "password": {
+      "title": "Change Password",
+      "description": "Change password and Algorithms for encryption!",
+      "new": "New Password",
+      "current": "Current Password"
     },
     "phrase": {
       "title": "Reveal Secret Recovery Phrase",

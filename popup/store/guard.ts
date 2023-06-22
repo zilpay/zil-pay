@@ -8,8 +8,11 @@
  */
 import type { GuardType } from 'types/account';
 import { writable } from 'svelte/store';
+import { ShaAlgorithms } from 'config/sha-algoritms';
 
 export default writable<GuardType>({
   isEnable: false,
-  isReady: false
+  isReady: false,
+  algorithm: ShaAlgorithms.sha256,
+  iteractions: 0
 });

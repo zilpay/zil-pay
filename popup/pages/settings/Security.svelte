@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { push } from 'svelte-spa-router';
-	import { getState } from "popup/backend";
 	import { _ } from 'popup/i18n';
 
   import { AccountTypes } from 'config/account-type';
@@ -9,6 +7,7 @@
 
 	import walletStore from 'popup/store/wallet';
 	import phishingStore from 'app/store/phishing';
+	import guardStore from 'app/store/guard';
 
 	import NavClose from '../../components/NavClose.svelte';
 	import Toggle from '../../components/Toggle.svelte';
@@ -17,11 +16,22 @@
   import RevealPhraseModal from '../../modals/RevealPhrase.svelte';
   import ExportKeyModal from '../../modals/ExportKey.svelte';
 	import ConnectModal from '../../modals/Connect.svelte';
+	import Guard from '../../components/Guard.svelte';
+
+	import { MIN_PASSWORD_LEN } from 'config/guard';
 
 	let phraseModal = false;
 	let keyModal = false;
 	let connectModal = false;
+	let passError = '';
+	let currentPassword = '';
+	let password = '';
+	let confirmPassword = '';
+	let loading = false;
+	let algorithm = $guardStore.algorithm;
+	let iteractions = $guardStore.iteractions;
 
+	$: disabled = loading || !password || confirmPassword !== password || Boolean(passError);
 	$: account = $walletStore.identities[$walletStore.selectedAddress];
 	$: keybtndisbaled = AccountTypes.Ledger === account.type;
 
@@ -30,6 +40,11 @@
 
 		await setPhishingDetection(!enabled);
 	};
+
+	const hanldeChangeGuard = (e: CustomEvent) => {
+    algorithm = e.detail.algorithm;
+    iteractions = e.detail.iteractions;
+  };
 </script>
 
 <Modal
@@ -103,6 +118,67 @@
 				/>
 			</div>
 		</Jumbotron>
+		<Jumbotron
+			title={$_('security.password.title')}
+			description={$_('security.password.description')}
+		>
+			<form on:submit={() => null}>
+				<b>
+					{passError}
+				</b>
+				<label class="current-pass">
+					<input
+						bind:value={currentPassword}
+						class:error="{Boolean(passError)}"
+						type="password"
+						class:loading={loading}
+						autocomplete="off"
+						disabled={loading}
+						placeholder={$_('security.password.current')}
+						required
+						on:input={() => passError = ''}
+					>
+				</label>
+				<label>
+					<input
+						bind:value={password}
+						class:error="{Boolean(passError)}"
+						type="password"
+						class:loading={loading}
+						autocomplete="off"
+						disabled={loading}
+						placeholder={$_('security.password.new')}
+						minlength={MIN_PASSWORD_LEN}
+						required
+						on:input={() => passError = ''}
+					>
+				</label>
+				<input
+					bind:value={confirmPassword}
+					class:error="{Boolean(passError)}"
+					type="password"
+					class:loading={loading}
+					autocomplete="off"
+					disabled={loading}
+					placeholder={$_('restore.conf_placeholder')}
+					minlength={MIN_PASSWORD_LEN}
+					required
+					on:input={() => passError = ''}
+				>
+				<Guard
+					algorithm={algorithm}
+					iteractions={iteractions}
+					on:input={hanldeChangeGuard}
+				/>
+				<button
+					class="outline"
+					class:loading={loading}
+					disabled={disabled}
+				>
+					{$_('restore.btn')}
+				</button>
+			</form>
+		</Jumbotron>
 	</div>
 </main>
 
@@ -115,6 +191,30 @@
     overflow-y: scroll;
 
 		@include flex-center-top-column;
+	}
+	form {
+		@include flex-center-top-column;
+
+		& > label, input, button {
+			width: 100%;
+			max-width: 290px;
+		}
+		& > label > input,
+		& > input {
+			background-color: var(--button-color);
+		}
+		& > button {
+			margin-block-end: 16px;
+		}
+		& > input {
+			margin: 5px;
+		}
+		& > b {
+			color: var(--danger-color);
+		}
+		& > label.current-pass {
+			margin: 16px;
+		}
 	}
 	span {
 		font-family: Demi;

@@ -18,6 +18,7 @@ import type { Themes } from 'config/theme';
 import type { Locales } from 'config/locale';
 import type { DexState } from './dex';
 import type { CipherState } from './cipher';
+import { ShaAlgorithms } from 'config/sha-algoritms';
 
 export interface ZRC1Token {
   id: string;
@@ -69,6 +70,8 @@ export interface Apps {
 export interface GuardType {
   isEnable: boolean;
   isReady: boolean;
+  algorithm: ShaAlgorithms;
+  iteractions: number;
 };
 
 export interface WalletState {

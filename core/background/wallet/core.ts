@@ -75,10 +75,7 @@ export class ZIlPayCore {
       lockTime: this.guard.lockTime,
       locale: this.locale.selected,
       theme: this.theme.selected,
-      guard: {
-        isReady: this.guard.isReady,
-        isEnable: this.guard.isEnable
-      },
+      guard: this.guard.state,
       rate: this.rate.rate,
       apps: {
         confirmApp: this.apps.confirmApp,
