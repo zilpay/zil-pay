@@ -9,13 +9,13 @@
  */
 import { Counter, ModeOfOperation, utils } from 'aes-js';
 import assert from 'assert';
+import { ErrorMessages } from 'config/errors';
 import { randomBytes } from 'lib/crypto/random';
 
-export const INCORRECT_ARGS = 'Incorrect arguments';
 export const Cipher = Object.freeze({
   encrypt(content: Uint8Array, key: Uint8Array) {
-    assert(Boolean(content), INCORRECT_ARGS);
-    assert(Boolean(key), INCORRECT_ARGS);
+    assert(Boolean(content), ErrorMessages.IncorrectParams);
+    assert(Boolean(key), ErrorMessages.IncorrectParams);
 
     const entropy = randomBytes(16);
     const iv = new Counter(entropy);
@@ -28,8 +28,8 @@ export const Cipher = Object.freeze({
     return bytes;
   },
   decrypt(bytes: Uint8Array, key: Uint8Array) {
-    assert(Boolean(bytes), INCORRECT_ARGS);
-    assert(Boolean(key), INCORRECT_ARGS);
+    assert(Boolean(bytes), ErrorMessages.IncorrectParams);
+    assert(Boolean(key), ErrorMessages.IncorrectParams);
 
     const [encrypted, iv] = utils.utf8.fromBytes(bytes).split('/');
 
