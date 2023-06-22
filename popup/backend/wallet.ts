@@ -8,6 +8,7 @@
  */
 import type { SetPasswordPayload } from 'types/cipher';
 import type { WalletState } from 'types/account';
+import type { ShaAlgorithms } from 'config/sha-algoritms';
 
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
@@ -46,12 +47,14 @@ export async function changePassword(payload: SetPasswordPayload) {
   return resolve;
 }
 
-export async function restorePhrase(seed: string, password: string) {
+export async function restorePhrase(seed: string, password: string, algorithm: ShaAlgorithms, iteractions: number) {
   const data = await new Message({
     type: MTypePopup.SET_SEED_AND_PASSWORD,
     payload: {
       seed,
-      password
+      password,
+      algorithm,
+      iteractions
     }
   }).send();
   const state = warpMessage(data) as WalletState;

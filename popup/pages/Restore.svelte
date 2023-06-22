@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pop, push } from 'svelte-spa-router';
+	import { push } from 'svelte-spa-router';
   import { fly } from 'svelte/transition';
   import flyTransition from 'popup/transitions/fly';
 	import { _ } from 'popup/i18n';
@@ -10,8 +10,12 @@
     MIN_NAME_LEN,
     DEFAULT_NAME
   } from 'popup/config/account';
+  import { ITERACTIONS } from 'config/guard';
+  import { ShaAlgorithms } from 'config/sha-algoritms';
 
 	import NavClose from '../components/NavClose.svelte';
+  import Guard from '../components/Guard.svelte';
+
 
   let error = '';
   let passError = '';
@@ -20,6 +24,10 @@
   let password: string;
   let confirmPassword: string;
 	let loading = false;
+  // guard
+  let algorithm = ShaAlgorithms.Sha512;
+  let iteractions = ITERACTIONS;
+  // guard
 
 	$: disabled = loading || !password || confirmPassword !== password || name.length < MIN_NAME_LEN;
 
@@ -28,7 +36,7 @@
     loading = true;
 
 		try {
-      await restorePhrase(words, password);
+      await restorePhrase(words, password, algorithm, iteractions);
       await createNextSeedAccount(name);
       loading = false;
       push('/created');
@@ -48,6 +56,10 @@
       passError = $_('restore.pass_len_error');
     }
 	};
+  const hanldeChangeGuard = (e: CustomEvent) => {
+    algorithm = e.detail.algorithm;
+    iteractions = e.detail.iteractions;
+  };
 </script>
 
 <main in:fly={flyTransition.in}>
@@ -92,6 +104,11 @@
       minlength={MIN_PASSWORD_LEN}
       required
     >
+    <Guard
+      algorithm={algorithm}
+      iteractions={iteractions}
+      on:input={hanldeChangeGuard}
+    />
     <button
 			class="secondary"
       class:loading={loading}

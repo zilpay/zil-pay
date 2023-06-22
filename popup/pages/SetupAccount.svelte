@@ -12,9 +12,13 @@
     MIN_NAME_LEN,
     DEFAULT_NAME
   } from 'popup/config/account';
+  import { ShaAlgorithms } from 'config/sha-algoritms';
+  import { ITERACTIONS } from 'config/guard';
 
   import BackBar from '../components/BackBar.svelte';
   import Toggle from '../components/Toggle.svelte';
+  import Guard from '../components/Guard.svelte';
+
 
 	let loading = false;
   let name = `${DEFAULT_NAME} 0`;
@@ -23,6 +27,10 @@
   let password: string;
   let confirmPassword: string;
   let accepted = false;
+  // guard
+  let algorithm = ShaAlgorithms.Sha512;
+  let iteractions = ITERACTIONS;
+  // guard
 
   $: disabled = loading || !password || confirmPassword !== password || name.length < MIN_NAME_LEN;
 
@@ -32,9 +40,6 @@
     }
   });
 
-	const handleInputTextarea = () => {
-		error = '';
-	};
   const handleInputPassword = () => {
     passError = '';
 	};
@@ -43,13 +48,13 @@
       passError = $_('restore.pass_len_error');
     }
 	};
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: Event) => {
 		e.preventDefault();
     loading = true;
 
 		try {
 			const seed = $wordsStore.join(' ');
-			await restorePhrase(seed, password);
+			await restorePhrase(seed, password, algorithm, iteractions);
       await createNextSeedAccount(name);
       push('/created');
 			loading = false;
@@ -57,7 +62,11 @@
 			passError = err.message;
       loading = false;
 		}
-	}
+	};
+  const hanldeChangeGuard = (e: CustomEvent) => {
+    algorithm = e.detail.algorithm;
+    iteractions = e.detail.iteractions;
+  };
 </script>
 
 <main in:fly={flyTransition.in}>
@@ -121,6 +130,11 @@
         on:toggle={() => accepted = !accepted}
       />
     </div>
+    <Guard
+      algorithm={algorithm}
+      iteractions={iteractions}
+      on:input={hanldeChangeGuard}
+    />
     <button
 			class="primary"
       class:loading={loading}

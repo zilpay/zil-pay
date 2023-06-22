@@ -19,6 +19,8 @@ import { ITERACTIONS } from 'config/guard';
 interface InitPayload {
   seed: string;
   password: string;
+  algorithm: string;
+  iteractions: number;
 }
 
 export class ZilPayPopup {
@@ -78,7 +80,7 @@ export class ZilPayPopup {
     try {
       this.#core.account.mnemonic.mnemonicToEntropy(payload.seed);
       await this.#core.account.reset();
-      await this.#core.guard.setGuardConfig(ShaAlgorithms.Sha512, ITERACTIONS);
+      await this.#core.guard.setGuardConfig(payload.algorithm, payload.iteractions);
       await this.#core.guard.setupVault(
         payload.seed,
         payload.password
@@ -121,12 +123,12 @@ export class ZilPayPopup {
     }
   }
 
-  public randomizeWords(length: number, sendResponse: StreamResponse) {
+  public async randomizeWords(length: number, sendResponse: StreamResponse) {
     try {
       const mnemonic = new MnemonicController();
-
+    
       sendResponse({
-        resolve: mnemonic.generateMnemonic(length)
+        resolve: await mnemonic.generateMnemonic(length)
       });
     } catch (err) {
       sendResponse({
