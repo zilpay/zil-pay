@@ -117,6 +117,11 @@
 				{$_('setup_acc.pass_description')}
       </p>
 		</label>
+    <Guard
+      algorithm={algorithm}
+      iteractions={iteractions}
+      on:input={hanldeChangeGuard}
+    />
     <div class="policy">
       <a
         href="https://zilpay.io/extension-policy"
@@ -130,11 +135,6 @@
         on:toggle={() => accepted = !accepted}
       />
     </div>
-    <Guard
-      algorithm={algorithm}
-      iteractions={iteractions}
-      on:input={hanldeChangeGuard}
-    />
     <button
 			class="primary"
       class:loading={loading}
