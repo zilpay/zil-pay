@@ -22,6 +22,7 @@ export const MTypePopup = {
   SET_PASSWORD: `@/${app}/popup-set-password`,
   LOG_OUT: `@/${app}/popup-logout`,
   SET_SEED_AND_PASSWORD: `@/${app}/popup-set-seed-words-and-password`,
+  WALET_PASSWORD_CHANGE: `@/${app}/change-password`,
 
   GET_WALLET_STATE: `@/${app}/get-wallet-state`,
 

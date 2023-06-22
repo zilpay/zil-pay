@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { _ } from 'popup/i18n';
+	import { push } from 'svelte-spa-router';
 
   import { AccountTypes } from 'config/account-type';
 
 	import { setPhishingDetection } from 'popup/backend/settings';
+	import { changePassword } from 'app/backend/wallet';
 
 	import walletStore from 'popup/store/wallet';
 	import phishingStore from 'app/store/phishing';
@@ -19,6 +21,7 @@
 	import Guard from '../../components/Guard.svelte';
 
 	import { MIN_PASSWORD_LEN } from 'config/guard';
+
 
 	let phraseModal = false;
 	let keyModal = false;
@@ -45,6 +48,25 @@
     algorithm = e.detail.algorithm;
     iteractions = e.detail.iteractions;
   };
+	const handleSubmit = async (e: Event) => {
+		e.preventDefault();
+    loading = true;
+
+		try {
+      await changePassword({
+				password,
+				current: currentPassword,
+				algorithm,
+				iteractions
+			});
+			push('/lock');
+      loading = false;
+		} catch (err) {
+			console.log(err);
+			passError = (err as Error).message;
+		}
+		loading = false;
+	}
 </script>
 
 <Modal
@@ -122,7 +144,7 @@
 			title={$_('security.password.title')}
 			description={$_('security.password.description')}
 		>
-			<form on:submit={() => null}>
+			<form on:submit={handleSubmit}>
 				<b>
 					{passError}
 				</b>

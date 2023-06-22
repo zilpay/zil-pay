@@ -6,11 +6,14 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import type { SetPasswordPayload } from 'types/cipher';
 import type { WalletState } from 'types/account';
+
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
+
 
 export async function getState() {
   const data = await Message.signal(
@@ -31,6 +34,16 @@ export async function unlockWallet(password: string) {
   const state = warpMessage(data) as WalletState;
   updateState(state);
   return state;
+}
+
+export async function changePassword(payload: SetPasswordPayload) {
+  const data = await new Message({
+    type: MTypePopup.WALET_PASSWORD_CHANGE,
+    payload
+  }).send();
+  const resolve = warpMessage(data);
+  updateState(resolve as WalletState);
+  return resolve;
 }
 
 export async function restorePhrase(seed: string, password: string) {

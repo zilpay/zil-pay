@@ -14,6 +14,7 @@ import { OldAes } from 'lib/crypto/aes';
 import qrcode from 'qrcode/lib/browser';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { AccountTypes } from 'config/account-type';
+import type { SetPasswordPayload } from 'types/cipher';
 
 interface PrivateKeyName {
   name: string;
@@ -44,6 +45,32 @@ export class ZilPayWallet {
       });
     } catch (err) {
       sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  async changePassword(payload: SetPasswordPayload, sendResponse: StreamResponse) {
+    try {
+      await this.#core.guard.unlock(payload.current);
+      this.#core.guard.checkSession();
+
+      const words = await this.#core.guard.exportMnemonic(payload.current);
+      const keys = this.#core.account.getImportedAccountKeys();
+  
+      await this.#core.guard.setGuardConfig(payload.algorithm, payload.iteractions);
+      await this.#core.guard.setupVault(words, payload.password);
+      await this.#core.account.updateImportedKeys(keys);
+      await this.#core.transactions.sync();
+      await this.#core.nft.sync();
+      await this.#core.zrc2.sync();
+      await this.#core.guard.logout();
+
+      sendResponse({
+        resolve: this.#core.state
+      });
+    } catch (err) {
+      return sendResponse({
         reject: err.message
       });
     }

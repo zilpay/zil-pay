@@ -112,6 +112,35 @@ export class AccountController {
     );
   }
 
+  public getImportedAccountKeys(): KeyPair[] {
+    const imported = this.wallet.identities.filter(
+      (acc) => acc.type === AccountTypes.PrivateKey
+    );
+
+    return imported.map((acc) => ({
+      pubKey: getPubKeyFromPrivateKey(acc.privKey),
+      privKey: this.#guard.decryptPrivateKey(String(acc.privKey)),
+      base16: acc.base16
+    }));
+  }
+
+  public async updateImportedKeys(keys: KeyPair[]) {
+    this.#wallet.identities = this.#wallet.identities.map((acc) => {
+      if (acc.type === AccountTypes.PrivateKey) {
+        const found = keys.find((key) => key.base16 === acc.base16);
+        if (found) {
+          const privateKeyBytes = Buffer.from(found.privKey, 'hex');
+          acc.privKey = this.#guard.encryptPrivateKey(privateKeyBytes);
+        }
+      }
+      return acc;
+    });
+
+    await BrowserStorage.set(
+      buildObject(Fields.WALLET, this.#wallet)
+    );
+  }
+
   public async fromSeed(seed: Uint8Array, index = 0): Promise<KeyPair> {
     const path = this.mnemonic.getKey(index);
     const hdKey = this.#hdKey.fromMasterSeed(Buffer.from(seed));
