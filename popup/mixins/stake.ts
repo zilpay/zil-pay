@@ -115,7 +115,7 @@ export class AvelyStake {
   async withdrawStakeOrder(stZIL: string) {
     const amount = toDecimals(stZIL, this.stZIL.decimals).toString();
     const contract = this.stZIL.base16;
-    const tag = 'WithdrawStakeAmt';
+    const tag = 'WithdrawTokensAmt';
     const params = [
       {
         vname: 'amount',

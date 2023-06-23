@@ -57,9 +57,9 @@
 						on:mouseup={() => hanldeOnSelect(item)}
 					/>
 					<div on:mouseup={() => hanldeOnSelect(item)}>
-						<b>
+						<div class="domain">
 							{item.domain}
-						</b>
+						</div>
 						<p>
 							{item.title}
 						</p>
@@ -68,10 +68,34 @@
 						class="icon"
 						on:mouseup={() => hanldeOnRemove(item)}
 					>
-						<TrashIcon className="trash-icon" />
+					<TrashIcon className="trash-icon" />
 					</div>
 				</li>
 			{/each}
+			{#each connections as item}
+			<li class="card">
+				<img
+					src={item.icon}
+					alt="icon"
+					width="30"
+					on:mouseup={() => hanldeOnSelect(item)}
+				/>
+				<div on:mouseup={() => hanldeOnSelect(item)}>
+					<div class="domain">
+						{item.domain}
+					</div>
+					<p>
+						{item.title}
+					</p>
+				</div>
+				<div
+					class="icon"
+					on:mouseup={() => hanldeOnRemove(item)}
+				>
+				<TrashIcon className="trash-icon" />
+				</div>
+			</li>
+		{/each}
 		</ul>
 		<div>
 			{#if $appStore.connections.length !== 0}
@@ -120,7 +144,7 @@
 			margin: 5px;
 
 			@include flex-between-row;
-			@include border-radius($default-border-radius);
+			@include border-radius(16px);
 
 			& > img {
 				cursor: pointer;
@@ -140,9 +164,11 @@
             }
 					}
 				}
-				& > b {
+				& > div.domain {
 					color: var(--text-color);
-					font-size: 16px;
+					font-size: 14pt;
+					max-width: 160px;
+					font-weight: 800;
 					@include text-shorten;
 				}
 				& > p {

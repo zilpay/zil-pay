@@ -65,12 +65,13 @@
 	ul {
 		padding: 0;
     margin: 0;
+		margin-block-start: 16px;
     overflow-y: scroll;
 		padding-block-end: 70px;
 
-		max-width: 390px;
 		width: 100%;
     min-height: 530px;
+		max-width: 640px;
 
 		& > li {
 			cursor: pointer;
