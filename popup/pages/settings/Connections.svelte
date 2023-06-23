@@ -72,30 +72,6 @@
 					</div>
 				</li>
 			{/each}
-			{#each connections as item}
-			<li class="card">
-				<img
-					src={item.icon}
-					alt="icon"
-					width="30"
-					on:mouseup={() => hanldeOnSelect(item)}
-				/>
-				<div on:mouseup={() => hanldeOnSelect(item)}>
-					<div class="domain">
-						{item.domain}
-					</div>
-					<p>
-						{item.title}
-					</p>
-				</div>
-				<div
-					class="icon"
-					on:mouseup={() => hanldeOnRemove(item)}
-				>
-				<TrashIcon className="trash-icon" />
-				</div>
-			</li>
-		{/each}
 		</ul>
 		<div>
 			{#if $appStore.connections.length !== 0}
