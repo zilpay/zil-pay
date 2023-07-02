@@ -30,6 +30,7 @@ import { OldAes } from 'lib/crypto/aes';
 export class AuthGuard {
   // hash of the password.
   #hash = new WeakMap<AuthGuard, Uint8Array>();
+  #oldHash = new WeakMap<AuthGuard, Uint8Array>();
   #algorithm = ShaAlgorithms.sha256;
   #iteractions = 0;
 
@@ -42,7 +43,6 @@ export class AuthGuard {
   #privateExtendedKey?: Uint8Array;
   // Seed phase storage in encrypted.
   #encryptMnemonic?: Uint8Array;
-  #encryptImported?: string;
 
   // Current time + some hours.
   #endSession = new Date(-1);
@@ -198,6 +198,7 @@ export class AuthGuard {
 
       const mnemonicController = new MnemonicController();
       const hash = await this.#getKeyring(password);
+      const oldHash = await sha256(utils.utf8.toBytes(password));
       const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
       const mnemonic = utils.utf8.fromBytes(mnemonicBytes);
 
@@ -210,6 +211,7 @@ export class AuthGuard {
       this.#isEnable = true;
       this.#updateSession();
       this.#hash.set(this, hash);
+      this.#oldHash.set(this, oldHash);
     } catch (err) {
       this.logout();
       throw new Error(`${ErrorMessages.IncorrectPassword}, ${err.message}`);
@@ -248,8 +250,18 @@ export class AuthGuard {
 
   decryptPrivateKey(content: string): string {
     const hash = this.#hash.get(this) as Uint8Array;
-    const bytes = Cipher.decrypt(Buffer.from(content, 'base64'), hash);
-    const privateKey = Buffer.from(bytes).toString('hex');
+    const oldHash = this.#oldHash.get(this) as Uint8Array;
+    let privateKey: string;
+
+    try {
+      privateKey = OldAes.decrypt(content, Buffer.from(oldHash).toString('hex'));
+
+      isPrivateKey(privateKey);
+    } catch {
+      const bytes = Cipher.decrypt(Buffer.from(content, 'base64'), hash);
+
+      privateKey = Buffer.from(bytes).toString('hex');
+    }
 
     isPrivateKey(privateKey);
 
