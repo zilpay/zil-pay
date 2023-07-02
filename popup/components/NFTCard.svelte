@@ -23,7 +23,7 @@
     thisImage.onload = () => {
       loadingSide = false;
     };
-    thisImage.onerror = () => {
+    thisImage.onerror = (e) => {
       error = true;
       loadingSide = false;
     };

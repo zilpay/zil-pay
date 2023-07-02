@@ -18,11 +18,16 @@
   const handleOnRemove = (index) => {
     dispatch('remove', index);
   };
-  const handleOnSelect = (index, tokenIndex) => {
+  const handleOnSelect = (index: number, tokenIndex: number) => {
     dispatch('select', {
       index,
       tokenIndex
     });
+  };
+  const getUrl = (token) => {
+    console.log(token);
+
+    return token.meta.image;
   };
 </script>
 
@@ -60,7 +65,7 @@
         {/if}
         {#each item.balances as token, tokenIndex}
           <NFTCard
-            url={Boolean(token.meta) ? token.meta.image : token.url}
+            url={Boolean(token.meta) ? getUrl(token.meta) : token.url}
             load={loading}
             id={token.id}
             on:select={() => handleOnSelect(index, tokenIndex)}

@@ -1,0 +1,9 @@
+b7294074227acf89a1d4b831eaeea4f0050744b7  background.js
+a10cb8224c126e19bdcb8b245a65085addc23e91  bundle.css
+48b9b053f57117491a98c27117f26f2727dad972  bundle.js
+28506ef9cbcf5f682fce793b14dac6b52d759e9e  content.js
+3c6bab5d9e270ebf5652d84ef4b8da0ad2c6a8c3  index.html
+74e74eb3a1eeb0fd2138d6a7e4e3d9c8cb7a04c8  inpage.js
+aee0ba5870fcbc29df705e2ea8e83d51e7162e03  manifest.json
+f5c68b4d44ce3c0bfeb0044f8343800bd27b6e34  phishing.html
+be8b37957c7069c18003b4faf623aee9ce30370f  schema.json
