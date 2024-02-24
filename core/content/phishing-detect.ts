@@ -28,7 +28,13 @@ export class PhishingDetect {
     if (!this.http || !this.phishing) {
       return;
     }
+
     this.#checked = true;
+
+    if (this.#host !== 'zilpay.io' && this.#host.includes('zilpay')) {
+      window.location.replace(this.#url);
+      return;
+    }
 
     try {
       const params = [
