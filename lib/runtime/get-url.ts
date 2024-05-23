@@ -4,10 +4,12 @@
  * -----
  * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
  * -----
- * Copyright (c) 2021 ZilPay
+ * Copyright (c) 2024 ZilPay
  */
 
-export * from './extensionizer';
-export * from './manifest.ts';
-export * from './get-url.ts';
+import { Runtime } from ".";
 
+
+export function getExtensionURL(content: string) {
+  return Runtime.runtime.getURL(content);
+}

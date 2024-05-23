@@ -7,19 +7,9 @@
  * Copyright (c) 2021 ZilPay
  */
 import { Runtime } from 'lib/runtime';
+import { getExtensionURL } from 'lib/runtime/get-url';
 
 export class NotificationsControl {
-
-  /**
-   * Create text on icon bar-extensions of browser.
-   * @param number - counter.
-   */
-  static counter(number: number) {
-    Runtime.browserAction.setBadgeText({
-      text: `${number === 0 ? '' : number}`
-    });
-  }
-
   readonly #url: string;
   readonly #title: string;
   readonly #message: string;
@@ -30,39 +20,29 @@ export class NotificationsControl {
     this.#message = message;
   }
 
-  /**
-   * Create popUp window for confirm transaction.
-   */
   create() {
     try {
       const data: chrome.notifications.NotificationOptions<true> = {
         type: 'basic',
         title: this.#title,
-        iconUrl: Runtime.extension.getURL('/icons/icon128.png'),
+        iconUrl: getExtensionURL('/icons/128.png'),
         message: this.#message
       };
       Runtime.notifications.create(this.#url, data);
 
-      this._notificationClicked();
+      this.#notificationClicked();
     } catch (err) {
       console.error(err);
     }
   }
 
-  /**
-   * OS notification.
-   */
-  _notificationClicked() {
-    if (!Runtime.notifications.onClicked.hasListener(this._viewOnViewBlock)) {
-      Runtime.notifications.onClicked.addListener(this._viewOnViewBlock);
+  #notificationClicked() {
+    if (!Runtime.notifications.onClicked.hasListener(this.#viewOnBlockExplorer)) {
+      Runtime.notifications.onClicked.addListener(this.#viewOnBlockExplorer);
     }
   }
 
-  /**
-   * Action when click to OS notification.
-   * @param url - url to viewblock block explore.
-   */
-  _viewOnViewBlock(url: string) {
+  #viewOnBlockExplorer(url: string) {
     Runtime.tabs.create({ url });
   }
 
