@@ -50,7 +50,7 @@ export class ZIlPayCore {
   public gas = new GasController(this.zilliqa);
   public dex = new DexController(this.zilliqa, this.netwrok);
   public readonly account = new AccountController(this.guard);
-  public readonly cipher = new CipherControl(this.account);
+  public readonly cipher = new CipherControl(this.account, this.badge);
   public transactions = new TransactionsController(this.netwrok, this.account, this.badge);
   public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account, this.dex);
   public nft = new NFTController(this.netwrok, this.zilliqa, this.account);
