@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 
-export * from './extensionizer';
-export * from './manifest';
-export * from './get-url';
-
+export enum ManifestVersions {
+  V2 = 2,
+  V3 = 3
+}

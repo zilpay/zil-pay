@@ -30,11 +30,13 @@ import { AddressController } from 'core/background/services/address';
 import { DexController } from 'core/background/services/dex';
 import { CipherControl } from 'core/background/services/cipher';
 import { StakeController } from 'background/services/stake';
+import { BadgeControl } from 'background/services/badge';
 
 export class ZIlPayCore {
   public netwrok = new NetworkControl();
   public readonly guard = new AuthGuard();
   public ud = new UnstoppableDomains();
+  public readonly badge = new BadgeControl();
   public prompt = new PromptService();
   public rate = new RateController();
   public theme = new ThemeController();
@@ -49,7 +51,7 @@ export class ZIlPayCore {
   public dex = new DexController(this.zilliqa, this.netwrok);
   public readonly account = new AccountController(this.guard);
   public readonly cipher = new CipherControl(this.account);
-  public transactions = new TransactionsController(this.netwrok, this.account);
+  public transactions = new TransactionsController(this.netwrok, this.account, this.badge);
   public zrc2 = new ZRC2Controller(this.netwrok, this.zilliqa, this.account, this.dex);
   public nft = new NFTController(this.netwrok, this.zilliqa, this.account);
   public ssn = new SSnController(this.zilliqa, this.netwrok);

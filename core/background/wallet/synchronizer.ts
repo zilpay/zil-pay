@@ -35,6 +35,12 @@ export class ZilPaySynchronizer {
     await this.#core.currencies.sync();
     await this.#core.prompt.sync();
     await this.#core.nft.sync();
+
+    const counter = this.#core.transactions.message ? 1 : 0;
+    this.#core.badge.setCounter(
+      this.#core.transactions.forConfirm.length + counter
+    );
+
     console.log('end-sync');
   }
 }
