@@ -7,6 +7,8 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { AppConnect } from 'types/app-connect';
+import type { BadgeControl } from './badge';
+
 import assert from 'assert';
 import { ErrorMessages } from 'config/errors';
 import { BrowserStorage, buildObject } from 'lib/storage';
@@ -14,6 +16,8 @@ import { Fields } from 'config/fields';
 import { NotificationsControl } from './notifications';
 
 export class AppConnectController {
+  readonly #badge: BadgeControl;
+
   #identities: AppConnect[] = [];
   #confirm?: AppConnect;
   #phishingDetection = 1;
@@ -30,6 +34,10 @@ export class AppConnectController {
     return Boolean(this.#phishingDetection);
   }
 
+  constructor(badge: BadgeControl) {
+    this.#badge = badge;
+  }
+
   #isUnique(connect: AppConnect) {
     for (const iterator of this.connections) {
       assert(
@@ -44,13 +52,11 @@ export class AppConnectController {
   }
 
   public async add(connect: AppConnect) {
-    this.#isUnique(connect);
-
-    connect.uuid = undefined;
+    this.#isUnique(connect); connect.uuid = undefined;
     this.#identities.push(connect);
     this.#confirm = undefined;
 
-    NotificationsControl.counter(0);
+    await this.#badge.decrease();
 
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_LIST, this.connections),
@@ -61,16 +67,16 @@ export class AppConnectController {
   public async addConfirm(connect: AppConnect) {
     this.#confirm = connect;
 
-    NotificationsControl.counter(1);
     await BrowserStorage.set(
       buildObject(Fields.CONNECT_DAPP, this.confirmApp)
     );
+    await this.#badge.increase();
   }
 
   public async rejectConfirm() {
     this.#confirm = undefined;
 
-    NotificationsControl.counter(0);
+    await this.#badge.decrease();
     await BrowserStorage.rm(Fields.CONNECT_DAPP);
   }
 
@@ -113,7 +119,7 @@ export class AppConnectController {
         this.#confirm = JSON.parse(String(confirm));
 
         if (Object.keys(this.#confirm).length > 0) {
-          NotificationsControl.counter(1);
+          await this.#badge.increase();
         }
       }
     } catch (err) {

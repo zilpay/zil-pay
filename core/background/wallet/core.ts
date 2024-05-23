@@ -41,7 +41,7 @@ export class ZIlPayCore {
   public rate = new RateController();
   public theme = new ThemeController();
   public locale = new LocalesController();
-  public apps = new AppConnectController();
+  public apps = new AppConnectController(this.badge);
   public currencies = new CurrenciesController();
   public contacts = new ContactController();
   public ledger = new LedgerWebHID();
