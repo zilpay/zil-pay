@@ -126,7 +126,7 @@ export class ZilPayPopup {
   public async randomizeWords(length: number, sendResponse: StreamResponse) {
     try {
       const mnemonic = new MnemonicController();
-    
+
       sendResponse({
         resolve: await mnemonic.generateMnemonic(length)
       });

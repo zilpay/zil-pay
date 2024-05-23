@@ -4,7 +4,7 @@
  * -----
  * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
  * -----
- * Copyright (c) 2021 ZilPay
+ * Copyright (c) 2024 ZilPay
  */
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
