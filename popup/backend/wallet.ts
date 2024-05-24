@@ -17,12 +17,17 @@ import { updateState } from './store-update';
 
 
 export async function getState() {
-  const data = await Message.signal(
-    MTypePopup.GET_WALLET_STATE
-  ).send();
-  const state = warpMessage(data) as WalletState;
-  updateState(state);
-  return state;
+  return new Promise((resolve) => {
+    let itr = setInterval(async () => {
+      const data = await Message.signal(
+        MTypePopup.GET_WALLET_STATE
+      ).send();
+      const state = warpMessage(data) as WalletState;
+      updateState(state);
+      clearInterval(itr);
+      resolve(state);
+    });
+  });
 }
 
 export async function unlockWallet(password: string) {
