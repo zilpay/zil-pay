@@ -20,7 +20,7 @@ import walletStore from 'popup/store/wallet';
 import gasStore from 'popup/store/gas';
 
 import { Contracts } from 'config/contracts';
-import { Runtime } from 'lib/runtime';
+import { getExtensionURL } from 'lib/runtime';
 import { sendToSignTx } from 'app/backend/sign';
 import { getLatestBlockNumber } from 'app/backend/netwrok';
 import { getAllowancesForSwap } from 'app/backend/tokens';
@@ -439,7 +439,7 @@ export class ZIlPayDex {
       }),
       code: '',
       gasPrice,
-      icon: Runtime.extension.getURL('/icons/icon128.png'),
+      icon: getExtensionURL('/icons/icon128.png'),
       title: 'Swap'
     });
   }

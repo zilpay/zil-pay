@@ -1,50 +1,51 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { _ } from 'popup/i18n';
-	import { push, pop } from 'svelte-spa-router';
+	import { onMount } from "svelte";
+	import { _ } from "popup/i18n";
+	import { push, pop } from "svelte-spa-router";
 	import { fade } from "svelte/transition";
 
-	import { QA } from 'popup/config/gas';
+	import { QA } from "popup/config/gas";
 
-  import { uuidv4 } from 'lib/crypto/uuid';
-	import { closePopup } from 'popup/mixins/popup';
-  import { trim } from 'popup/filters/trim';
-	import { jazziconCreate } from 'popup/mixins/jazzicon';
+	import { uuidv4 } from "lib/crypto/uuid";
+	import { closePopup } from "popup/mixins/popup";
+	import { trim } from "popup/filters/trim";
+	import { jazziconCreate } from "popup/mixins/jazzicon";
 	import {
 		rejectForSignTx,
 		sendTransactionToSign,
-		getTxRequiredParams
-	} from 'popup/backend/sign';
+		getTxRequiredParams,
+	} from "popup/backend/sign";
 
-	import format from 'popup/store/format';
-	import walletStore from 'popup/store/wallet';
-	import transactionsStore from 'popup/store/transactions';
-	import gasStore from 'popup/store/gas';
+	import format from "popup/store/format";
+	import walletStore from "popup/store/wallet";
+	import transactionsStore from "popup/store/transactions";
+	import gasStore from "popup/store/gas";
 
-	import TopBar from '../components/TopBar.svelte';
-  import SelectCard from '../components/SelectCard.svelte';
-  import Modal from '../components/Modal.svelte';
-	import AccountsModal from '../modals/Accounts.svelte';
-	import EditParamsModal from '../modals/EditParams.svelte';
-	import Params from '../components/confirm/Params.svelte';
-	import GasControl from '../components/GasControl.svelte';
-    import { AccountTypes } from 'config/account-type';
+	import TopBar from "../components/TopBar.svelte";
+	import SelectCard from "../components/SelectCard.svelte";
+	import Modal from "../components/Modal.svelte";
+	import AccountsModal from "../modals/Accounts.svelte";
+	import EditParamsModal from "../modals/EditParams.svelte";
+	import Params from "../components/confirm/Params.svelte";
+	import GasControl from "../components/GasControl.svelte";
+	import { AccountTypes } from "config/account-type";
 
 	export let params = {
-    index: 0
-  };
+		index: 0,
+	};
 
 	const url = new URL(window.location.href);
 
 	let uuid = uuidv4();
 	let accountsModal = false;
 	let editModal = false;
-	let error = '';
+	let error = "";
 	let loading = true;
 
 	let accountIndex = params.index || $walletStore.selectedAddress;
 	let gasMultiplier = $gasStore.multiplier;
-	let tx = $transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
+	let tx =
+		$transactionsStore.forConfirm[$transactionsStore.forConfirm.length - 1];
 	let startGasPrice = Number(tx.gasPrice);
 
 	$: list = $transactionsStore.forConfirm;
@@ -52,7 +53,7 @@
 	$: txIndex = $transactionsStore.forConfirm.length - 1;
 
 	const onUpdateParams = async () => {
-		error = '';
+		error = "";
 		loading = true;
 
 		try {
@@ -69,17 +70,16 @@
 		const isExtends = Boolean(tx.uuid);
 		if (list.length === 0) {
 			if (isExtends) {
-				
-				if (url.searchParams.has('type')) {
+				if (url.searchParams.has("type")) {
 					return closePopup();
 				}
 
 				pop();
-				
+
 				return;
 			}
 
-			push('/history');
+			push("/history");
 		} else {
 			tx = $transactionsStore.forConfirm[txIndex];
 			startGasPrice = Number(tx.gasPrice);
@@ -88,18 +88,18 @@
 		}
 	};
 
-	onMount(async() => {
+	onMount(async () => {
 		jazziconCreate(uuid, account.base16);
-		await onUpdateParams();		
-  });
+		await onUpdateParams();
+	});
 
 	const onGasChanged = () => {
 		tx.fee = (tx.gasPrice * tx.gasLimit) / QA;
 	};
 
 	const onSelectAccount = async ({ detail }) => {
-    accountIndex = detail;
-    accountsModal = false;
+		accountIndex = detail;
+		accountsModal = false;
 		jazziconCreate(uuid, account.base16);
 
 		await onUpdateParams();
@@ -111,7 +111,7 @@
 	};
 	const hanldeOnUpdateParams = ({ detail }) => {
 		editModal = !editModal;
-		error = '';
+		error = "";
 		const { gasLimit, gasPrice, nonce } = detail;
 
 		tx.gasLimit = Math.abs(gasLimit);
@@ -122,13 +122,13 @@
 			...tx,
 			gasLimit,
 			gasPrice,
-			nonce
+			nonce,
 		};
 		onGasChanged();
 	};
 
 	const handleOnReject = async () => {
-		error = '';
+		error = "";
 		try {
 			await rejectForSignTx(list.length - 1);
 		} catch {
@@ -139,7 +139,7 @@
 	};
 	const handleOnConfirm = async () => {
 		loading = true;
-		error = '';
+		error = "";
 		try {
 			await sendTransactionToSign(txIndex, accountIndex, tx);
 			await onNextTx();
@@ -151,68 +151,50 @@
 </script>
 
 <Modal
-  show={accountsModal}
-  title={$_('send.cards.token')}
-  on:close={() => accountsModal = !accountsModal}
+	show={accountsModal}
+	title={$_("send.cards.token")}
+	on:close={() => (accountsModal = !accountsModal)}
 >
-  <div class="m-warp">
-    <AccountsModal
-      list={$walletStore.identities}
-      index={accountIndex}
-      on:selected={onSelectAccount}
-    />
-  </div>
+	<div class="m-warp">
+		<AccountsModal
+			list={$walletStore.identities}
+			index={accountIndex}
+			on:selected={onSelectAccount}
+		/>
+	</div>
 </Modal>
 <Modal
-  show={editModal}
-  title={$_('confirm.params_modal.title')}
-  on:close={() => editModal = !editModal}
+	show={editModal}
+	title={$_("confirm.params_modal.title")}
+	on:close={() => (editModal = !editModal)}
 >
-	<EditParamsModal
-		tx={tx}
-		on:update={hanldeOnUpdateParams}
-	/>
+	<EditParamsModal {tx} on:update={hanldeOnUpdateParams} />
 </Modal>
 <section>
-	<TopBar
-		expand={false}
-		refresh
-		on:refresh={onUpdateParams}
-	/>
+	<TopBar expand={false} refresh on:refresh={onUpdateParams} />
 	<main>
 		<div>
 			<SelectCard
 				header={account.name}
 				text={trim(account[$format])}
-				on:click={() => accountsModal = !accountsModal}
+				on:click={() => (accountsModal = !accountsModal)}
 			>
-				<div id={uuid}/>
+				<div id={uuid} />
 			</SelectCard>
-			<hr/>
+			<hr />
 		</div>
 		{#if tx && tx.title && tx.icon}
-			<div
-				class="header"
-				in:fade
-			>
+			<div class="header" in:fade>
 				<h1>
 					{tx.title}
 				</h1>
-				<img
-					src={tx.icon}
-					alt="logo"
-					width="30px"
-					height="30px"
-				/>
+				<img src={tx.icon} alt="logo" width="30px" height="30px" />
 				<h2>
 					{error}
 				</h2>
 			</div>
 		{/if}
-		<div
-			class="params"
-			class:loading={loading}
-		>
+		<div class="params" class:loading>
 			<GasControl
 				multiplier={gasMultiplier}
 				gasLimit={tx.gasLimit || 5000}
@@ -220,23 +202,23 @@
 				on:select={handleOnChangeGasMultiplier}
 			/>
 			{#if !tx.cancel}
-				<h3 on:mouseup={() => editModal = !editModal}>
-					({$_('confirm.edit')})
+				<h3 on:mouseup={() => (editModal = !editModal)}>
+					({$_("confirm.edit")})
 				</h3>
 			{/if}
-			<Params tx={tx} />
+			<Params {tx} />
 		</div>
 		<div class="btns">
 			<button on:mouseup={handleOnReject}>
-				{$_('confirm.btns.reject')}
+				{$_("confirm.btns.reject")}
 			</button>
 			<button
 				class="primary"
-				class:loading={loading}
+				class:loading
 				disabled={loading || account.type === AccountTypes.Track}
 				on:mouseup={handleOnConfirm}
 			>
-				{$_('confirm.btns.confirm')}
+				{$_("confirm.btns.confirm")}
 			</button>
 		</div>
 	</main>
@@ -247,7 +229,7 @@
 	main {
 		height: calc(100vh - 36px);
 		max-height: 600px;
-    overflow-y: scroll;
+		overflow-y: scroll;
 
 		@include flex-center-column;
 		justify-content: space-between;
@@ -291,8 +273,8 @@
 		@include border-radius($default-border-radius);
 
 		&.loading {
-      @include loading-gradient(var(--background-color), var(--card-color));
-    }
+			@include loading-gradient(var(--background-color), var(--card-color));
+		}
 		& > h3 {
 			cursor: pointer;
 			text-align: right;

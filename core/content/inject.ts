@@ -6,7 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { getExtensionURL, Runtime } from 'lib/runtime';
+import { getExtensionURL } from 'lib/runtime';
 
 const { document } = globalThis;
 
