@@ -7,14 +7,14 @@
  * Copyright (c) 2021 ZilPay
  */
 import { Contracts } from 'config/contracts';
-import { Runtime } from 'lib/runtime';
+import { getExtensionURL, Runtime } from 'lib/runtime';
 import { RPCMethod } from 'config/methods';
 import { httpProvider } from './provider';
 
 export class PhishingDetect {
   #host = String(window.location.host).replace('www.', '');
   #field = 'domains';
-  #url = Runtime.extension.getURL('phishing.html');
+  #url = getExtensionURL('phishing.html');
   #checked = false;
 
   public get checked() {
