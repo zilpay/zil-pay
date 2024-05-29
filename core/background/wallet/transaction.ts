@@ -482,9 +482,7 @@ export class ZilPayTransaction {
       let signature: string;
 
       if (account.type === AccountTypes.Ledger) {
-        throw new Error('sig should be from popup');
-        // const transport = await this.#core.ledger.init(account.productId);
-        // signature = await transport.signHash(account.index, message);
+        signature = sig;
       } else {
         const keyPair = await this.#core.account.getKeyPair(index);
         const schnorrControl = new SchnorrControl(keyPair.privKey);

@@ -46,7 +46,7 @@
     loading = true;
 
     try {
-      await signMessageApprove(accountIndex);
+      await signMessageApprove(accountIndex, message);
       await closePopup();
     } catch (err) {
       error = err.message;
