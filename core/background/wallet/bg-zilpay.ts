@@ -33,7 +33,7 @@ export class ZIlPayBackground {
   public readonly settings = new ZilPaySettings(this.#core);
 
   public async sync() {
-    Runtime.runtime.onInstalled.addListener(async(event) => {
+    Runtime.runtime.onInstalled.addListener(async (event) => {
       await this.synchronizer.sync();
       if (event.reason !== 'update') {
         this.#core.prompt.openTab();
