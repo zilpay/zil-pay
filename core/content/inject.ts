@@ -6,18 +6,22 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { getExtensionURL } from 'lib/runtime';
+import { getExtensionURL, Runtime } from 'lib/runtime';
 
 const { document } = globalThis;
 
-export function inject(name: string) {
-  // Create new script tag in the document head.
-  const container = (document.head || document.documentElement);
-  const scriptTag = document.createElement('script');
-  const src = getExtensionURL(`/${name}`);
+export async function inject(name: string) {
+  // const s = document.createElement('script');
+  // s.src = getExtensionURL(`/${name}`);
+  // s.type = "module";
+  // s.onload = () => s.remove();
+  // console.log(s.src);
+  // (document.head || document.documentElement).append(s);
 
-  scriptTag.setAttribute('async', 'false');
-  scriptTag.src = src;
-  container.insertBefore(scriptTag, container.children[0]);
-  container.removeChild(scriptTag);
+  // chrome.scripting
+  //   .executeScript({
+  //     target: { tabId: getTabId() },
+  //     files: ["inpage.js"],
+  //   })
+  //   .then(() => console.log("script injected"));
 }
