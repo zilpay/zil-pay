@@ -13,11 +13,16 @@ import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
 
 export async function loadLedgerAccount(index: number, productId: number, name: string) {
-  const ledger = new LedgerWebHID();
-  await ledger.init(productId);
-  const { publicKey, pubAddr } = await ledger.interface.getPublicAddress(index);
+  try {
+    const ledger = new LedgerWebHID();
+    await ledger.init(productId);
+    console.log(ledger);
+    const { publicKey, pubAddr } = await ledger.interface.getPublicAddress(index);
+    console.log(publicKey, pubAddr);
+  } catch (err) {
+    console.log(err);
+  }
 
-  console.log(publicKey, pubAddr);
 
   // const data = await new Message({
   //   type: MTypePopup.LEDGER_LOAD_ACCOUNT,
