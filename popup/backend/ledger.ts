@@ -20,7 +20,7 @@ export async function loadLedgerAccount(index: number, productId: number, name: 
     const { publicKey, pubAddr } = await ledger.interface.getPublicAddress(index);
     console.log(publicKey, pubAddr);
   } catch (err) {
-    console.log(err);
+    alert(err);
   }
 
 
