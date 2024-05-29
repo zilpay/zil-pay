@@ -21,14 +21,6 @@ interface PrivateKeyName {
   privKey: string;
 }
 
-interface LedgerParams {
-  index: number;
-  name: string;
-  productId: number;
-  pubAddr?: string,
-  publicKey?: string;
-}
-
 export class ZilPayWallet {
   readonly #core: ZIlPayCore;
 
@@ -57,7 +49,7 @@ export class ZilPayWallet {
 
       const words = await this.#core.guard.exportMnemonic(payload.current);
       const keys = this.#core.account.getImportedAccountKeys();
-  
+
       await this.#core.guard.setGuardConfig(payload.algorithm, payload.iteractions);
       await this.#core.guard.setupVault(words, payload.password);
       await this.#core.account.updateImportedKeys(keys);
@@ -204,32 +196,6 @@ export class ZilPayWallet {
       await this.#core.account.addAccountForTrack(
         bech32,
         name
-      );
-      await this.#core.transactions.sync();
-      await this.#core.nft.sync();
-
-      sendResponse({
-        resolve: this.#core.state
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
-  public async loadLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
-    try {
-      this.#core.guard.checkSession();
-      await this.#core.ledger.init(payload.productId);
-      const { publicKey, pubAddr } = await this.#core.ledger.interface.getPublicAddress(payload.index);
-
-      await this.#core.account.addLedgerAccount(
-        publicKey,
-        pubAddr,
-        payload.index,
-        payload.name,
-        payload.productId
       );
       await this.#core.transactions.sync();
       await this.#core.nft.sync();

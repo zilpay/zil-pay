@@ -24,7 +24,6 @@ import { GasController } from 'core/background/services/gas';
 import { TransactionsController } from 'core/background/services/transactions';
 import { NonceController } from 'core/background/services/nonce';
 import { TransactionsQueue } from 'core/background/services/transactions';
-import { LedgerWebHID } from 'core/background/services/ledger';
 import { LocalesController } from 'core/background/services/locale';
 import { AddressController } from 'core/background/services/address';
 import { DexController } from 'core/background/services/dex';
@@ -44,7 +43,6 @@ export class ZIlPayCore {
   public apps = new AppConnectController(this.badge);
   public currencies = new CurrenciesController();
   public contacts = new ContactController();
-  public ledger = new LedgerWebHID();
   public addressFormat = new AddressController();
   public zilliqa = new ZilliqaControl(this.netwrok);
   public gas = new GasController(this.zilliqa);
