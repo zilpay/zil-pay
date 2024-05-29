@@ -475,7 +475,7 @@ export class ZilPayTransaction {
     }
   }
 
-  public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
+  public async confirmSignMessage(index: number, sig: string, sendResponse: StreamResponse) {
     try {
       const account = this.#core.account.wallet.identities[index];
       const message = this.#core.transactions.message;

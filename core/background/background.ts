@@ -83,6 +83,9 @@ export function startBackground(core: ZIlPayBackground) {
       case MTypePopup.UPDATE_RATE:
         core.settings.updateRate(sendResponse);
         return true;
+      case MTypePopup.ADD_LEDGER_ACCOUNT:
+        core.wallet.addLedgerAccount(msg.payload, sendResponse);
+        return true;
       case MTypePopup.ADD_CONTACT:
         core.contacts.addContact(msg.payload.contact, sendResponse);
         return true;
@@ -117,7 +120,7 @@ export function startBackground(core: ZIlPayBackground) {
         core.transaction.rejectMessage(sendResponse);
         return true;
       case MTypePopup.SIGN_MESSAGE_APPROVE:
-        core.transaction.confirmSignMessage(msg.payload.index, sendResponse);
+        core.transaction.confirmSignMessage(msg.payload.index, msg.payload.sig, sendResponse);
         return true;
       case MTypePopup.SELECT_ACCOUNT:
         core.wallet.selectAccount(msg.payload.index, sendResponse);

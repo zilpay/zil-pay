@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from "config/ledger";
+  import { LEDGER_USB_VENDOR_ID } from "config/ledger";
 
   import { push } from "svelte-spa-router";
   import { fly } from "svelte/transition";
   import flyTransition from "popup/transitions/fly";
   import { _ } from "popup/i18n";
-  import { isHid } from "popup/mixins/detect";
 
   import BackBar from "../../components/BackBar.svelte";
   import RefreshIcon from "../../components/icons/Refresh.svelte";
@@ -17,11 +16,6 @@
 
   const getHidTransport = async () => {
     loading = true;
-
-    if (!isHid()) {
-      push(`/ledger-connect/${LEDGER_PRODUCT_ID_U2F}`);
-      return null;
-    }
 
     try {
       devices = await window.navigator.hid.requestDevice({

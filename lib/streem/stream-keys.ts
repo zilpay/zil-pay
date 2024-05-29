@@ -108,7 +108,9 @@ export const MTypePopup = {
   RES_ENCRYPTION: `@/${app}/response-encryption`,
   RES_DECRYPTION: `@/${app}/response-decryption`,
 
-  GET_STAKE_PROPS: `@/${app}/get-stake-props`
+  GET_STAKE_PROPS: `@/${app}/get-stake-props`,
+
+  ADD_LEDGER_ACCOUNT: `@/${app}/add-ledger-account`,
 };
 
 export const MTypeTab = {

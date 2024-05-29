@@ -21,6 +21,14 @@ interface PrivateKeyName {
   privKey: string;
 }
 
+interface LedgerParams {
+  index: number;
+  name: string;
+  productId: number;
+  pubAddr: string,
+  publicKey: string;
+}
+
 export class ZilPayWallet {
   readonly #core: ZIlPayCore;
 
@@ -162,6 +170,30 @@ export class ZilPayWallet {
             zrc2: this.#core.zrc2.identities
           }
         }
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async addLedgerAccount(params: LedgerParams, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+
+      await this.#core.account.addLedgerAccount(
+        params.publicKey,
+        params.pubAddr,
+        params.index,
+        params.name,
+        params.productId
+      );
+      await this.#core.transactions.sync();
+      await this.#core.nft.sync();
+
+      sendResponse({
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({

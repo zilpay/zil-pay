@@ -10,11 +10,11 @@
     MIN_NAME_LEN,
     DEFAULT_LEDGER_NAME,
   } from "popup/config/account";
-  import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from "config/ledger";
+  import { LEDGER_USB_VENDOR_ID } from "config/ledger";
 
   import walletStore from "popup/store/wallet";
 
-  import { loadLedgerAccount } from "popup/backend/ledger";
+  import { addLedgerAccount } from "popup/backend/ledger";
 
   import BackBar from "../../components/BackBar.svelte";
 
@@ -58,12 +58,12 @@
     name = `${device.productName} ${lastIndex}`;
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
     loading = true;
 
     try {
-      await loadLedgerAccount(index, Number(params.id), name);
+      await addLedgerAccount(index, Number(params.id), name);
 
       push("/");
     } catch (err) {
