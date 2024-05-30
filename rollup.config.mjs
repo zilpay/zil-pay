@@ -10,7 +10,6 @@ import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import { visualizer } from 'rollup-plugin-visualizer';
-import define from 'rollup-plugin-define';
 
 import ignore from 'rollup-plugin-ignore';
 
@@ -191,48 +190,9 @@ const content = {
 		})
 	]
 };
-const inpage = {
-	input: 'core/inpage/index.ts',
-	output: {
-		sourcemap: !production,
-		format: 'iife',
-		name: 'inpage',
-		file: 'dist/inpage.js'
-	},
-	plugins: [
-		commonjs(),
-		nodePolyfills(),
-		json(),
-		resolve({
-			jsnext: true,
-			main: true,
-			brower: true,
-			preferBuiltins: false
-		}),
-		typescript({
-			sourceMap: !production,
-			inlineSources: !production
-		}),
-		production && visualizer({
-			filename: 'inpage.html'
-		}),
-		production && terser({
-			format: {
-				comments: false
-			},
-			compress: true
-		}),
-		define({
-			replacements: {
-				WebAssembly: 'null'
-			}
-		})
-	]
-};
 
 export default [
 	popup,
 	background,
-	content,
-	inpage
+	content
 ];
