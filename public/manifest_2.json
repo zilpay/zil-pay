@@ -46,7 +46,6 @@
     }
   ],
   "web_accessible_resources": [
-    "inpage.js",
     "phishing.html"
   ],
   "browser_action": {

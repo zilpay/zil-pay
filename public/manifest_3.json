@@ -8,8 +8,7 @@
     "storage",
     "notifications",
     "activeTab",
-    "alarms",
-    "scripting"
+    "alarms"
   ],
     "icons": {
     "16": "icons/icon16.png",
@@ -31,18 +30,14 @@
       "run_at": "document_start",
       "all_frames": true
     }
-  ]
-  "web_accessible_resources": [{
-    "resources": ["inpage.js"], 
-    "matches": ["<all_urls>"]
-  }],
+  ],
   "host_permissions": ["<all_urls>"],
   "minimum_chrome_version": "93",
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "bearby",
+    "default_title": "ZilPay",
     "default_popup": "index.html"
   }
 }
