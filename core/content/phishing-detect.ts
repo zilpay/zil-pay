@@ -7,7 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import { Contracts } from 'config/contracts';
-import { getExtensionURL, Runtime } from 'lib/runtime';
+import { getExtensionURL } from 'lib/runtime';
 import { RPCMethod } from 'config/methods';
 import { httpProvider } from './provider';
 
