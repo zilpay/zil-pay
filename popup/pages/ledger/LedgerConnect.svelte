@@ -67,6 +67,7 @@
 
       push("/");
     } catch (err) {
+      console.warn(err);
       error = err.message;
     }
     loading = false;

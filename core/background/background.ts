@@ -7,6 +7,7 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { ZIlPayBackground } from 'core/background/wallet/bg-zilpay';
+
 import { MTypePopup, MTypeTab } from 'lib/streem/stream-keys';
 import { Runtime } from 'lib/runtime';
 
