@@ -26,7 +26,7 @@ export class ZilPayNetwrok {
         netwrok: this.#core.netwrok.selected,
         node: this.#core.netwrok.provider
       }
-    }).send();
+    }).sendAll();
   }
 
   public async reset(sendResponse: StreamResponse) {
@@ -118,7 +118,7 @@ export class ZilPayNetwrok {
   public async changeConfig(config: typeof NETWORK, sendResponse: StreamResponse) {
     try {
       this.#core.guard.checkSession();
-      const [,, custom] = NETWORK_KEYS;
+      const [, , custom] = NETWORK_KEYS;
       const newConfig = {
         ...this.#core.netwrok.config,
         [custom]: config

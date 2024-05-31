@@ -145,6 +145,7 @@
 			await onNextTx();
 		} catch (err) {
 			error = err.message;
+			console.warn(error);
 		}
 		loading = false;
 	};

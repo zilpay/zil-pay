@@ -66,7 +66,7 @@ export class BlockController {
         payload: {
           block
         }
-      }).send();
+      }).sendAll();
     } catch (err) {
       console.error('BlockController.subscribe', err);
     }

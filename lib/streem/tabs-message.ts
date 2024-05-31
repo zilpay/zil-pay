@@ -34,12 +34,23 @@ export class TabsMessage {
     this._body = msg;
   }
 
-  /**
-   * Send msg for tabs.
-   */
-  public async send() {
-    // Get all active tabs.
+  async send(...domains: string[]) {
     const tabs = await TabsMessage.tabs();
+
+    tabs.forEach((tab) => {
+      if (tab && tab.url && domains.includes(new URL(tab.url).hostname)) {
+        const seralized = JSON.stringify(this._body);
+        const deserialized = JSON.parse(seralized);
+
+        Runtime.tabs.sendMessage(Number(tab.id), deserialized);
+      }
+    });
+  }
+
+  async sendAll() {
+    // Get all active tabs.
+    const tabs = (await TabsMessage.tabs())
+      .filter((tab) => tab.url && !tab.url.includes('chrome://'));
 
     try {
       for (let index = 0; index < tabs.length; index++) {
@@ -48,11 +59,11 @@ export class TabsMessage {
         const deserialized = JSON.parse(seralized);
 
         // Sending to each tabs(pages)
-        Runtime.tabs.sendMessage(tab.id, deserialized);
+        Runtime.tabs.sendMessage(Number(tab.id), deserialized);
       }
     } catch (err) {
+      console.error('TabsMessage', err);
       // If not tabs with injected script.
     }
   }
-
 }

@@ -82,7 +82,7 @@ export class ZilPayApps {
             uuid,
             account
           }
-        }).send();
+        }).sendAll();
         try {
           await this.#core.apps.add(app);
         } catch {
@@ -95,7 +95,7 @@ export class ZilPayApps {
             uuid,
             reject: ErrorMessages.Rejected
           }
-        }).send();
+        }).sendAll();
         await this.#core.apps.rejectConfirm();
       }
 
@@ -123,7 +123,7 @@ export class ZilPayApps {
           uuid: app.uuid,
           account: null
         }
-      }).send();
+      }).sendAll();
     } catch (err) {
       sendResponse({
         reject: err.message
@@ -146,7 +146,7 @@ export class ZilPayApps {
             account,
             uuid: app.uuid
           }
-        }).send();
+        }).sendAll();
       } else {
         await this.#core.apps.addConfirm(app);
         sendResponse({

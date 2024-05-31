@@ -59,7 +59,7 @@ export class ZilPayPopup {
           bech32
         }
       }
-    }).send();
+    }).sendAll();
   }
 
   public async logout(sendResponse: StreamResponse) {

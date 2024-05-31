@@ -13,29 +13,29 @@ import type { TabStream } from './tab-stream';
 /**
  * Can send encrypted msg.
  */
- export class ContentMessage {
-  private readonly _body: ReqBody;
+export class ContentMessage {
+ private readonly _body: ReqBody;
 
-  public get type() {
-    return this._body.type;
-  }
+ public get type() {
+  return this._body.type;
+ }
 
-  public get payload() {
-    return this._body.payload;
-  }
+ public get payload() {
+  return this._body.payload;
+ }
 
-  constructor(msg: ReqBody) {
-    this._body = msg;
-  }
+ constructor(msg: ReqBody) {
+  this._body = msg;
+ }
 
-  /**
-   * Method for send message.
-   */
-  public send(stream: TabStream, recipient: string) {
-    const seralized = JSON.stringify(this._body);
-    const deserialized = JSON.parse(seralized);
+ /**
+  * Method for send message.
+  */
+ public send(stream: TabStream, recipient: string) {
+  const seralized = JSON.stringify(this._body);
+  const deserialized = JSON.parse(seralized);
 
-    stream.send(deserialized, recipient);
-  }
+  stream.send(deserialized, recipient);
+ }
 
 }

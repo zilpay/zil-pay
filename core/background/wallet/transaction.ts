@@ -60,7 +60,7 @@ export class ZilPayTransaction {
           uuid: params.uuid,
           reject: err.message
         }
-      }).send();
+      }).sendAll();
     }
   }
 
@@ -85,7 +85,7 @@ export class ZilPayTransaction {
               }
             }
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeEncryption();
       } else {
         await new TabsMessage({
@@ -94,7 +94,7 @@ export class ZilPayTransaction {
             uuid,
             reject: ErrorMessages.Rejected
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeEncryption();
       }
 
@@ -127,7 +127,7 @@ export class ZilPayTransaction {
           uuid: params.uuid,
           reject: err.message
         }
-      }).send();
+      }).sendAll();
     }
   }
 
@@ -152,7 +152,7 @@ export class ZilPayTransaction {
               }
             }
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeDecryption();
       } else {
         await new TabsMessage({
@@ -161,7 +161,7 @@ export class ZilPayTransaction {
             uuid,
             reject: ErrorMessages.Rejected
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeDecryption();
       }
 
@@ -306,7 +306,7 @@ export class ZilPayTransaction {
           uuid: tx.uuid,
           reject: ErrorMessages.Rejected
         }
-      }).send();
+      }).sendAll();
 
       await this.#core.transactions.rmConfirm(index);
 
@@ -445,7 +445,7 @@ export class ZilPayTransaction {
               from: account.base16
             }
           }
-        }).send();
+        }).sendAll();
       }
 
       sendResponse({
@@ -500,7 +500,7 @@ export class ZilPayTransaction {
             publicKey: account.pubKey
           }
         }
-      }).send();
+      }).sendAll();
       await this.#core.transactions.rmMessage();
 
       sendResponse({
@@ -541,7 +541,7 @@ export class ZilPayTransaction {
           uuid: this.#core.transactions.message.uuid,
           reject: ErrorMessages.Rejected
         }
-      }).send();
+      }).sendAll();
       await this.#core.transactions.rmMessage();
 
       sendResponse({
