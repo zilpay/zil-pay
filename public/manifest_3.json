@@ -31,6 +31,12 @@
       "all_frames": true
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "inpage.js", "phishing.html" ],
+      "matches": [ "*://*/*" ]
+    }
+  ],
   "host_permissions": ["<all_urls>"],
   "minimum_chrome_version": "93",
   "background": {

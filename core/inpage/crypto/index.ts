@@ -6,11 +6,6 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { startStream } from './stream';
-import { inject } from './inject';
-
-export async function startBrowserContent() {
-  startStream();
-  inject('inpage.js');
-}
-
+export * from './utils';
+export * from './validator';
+export * from './zilliqa-utils';

@@ -6,11 +6,14 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-import { startStream } from './stream';
-import { inject } from './inject';
 
-export async function startBrowserContent() {
-  startStream();
-  inject('inpage.js');
+/**
+ * Get the favicon from current tab.
+ */
+ export function getFavicon() {
+  try {
+    return document.querySelector('link[rel*=\'icon\']')['href'];
+  } catch (err) {
+    return null;
+  }
 }
-
