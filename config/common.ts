@@ -15,3 +15,6 @@ export enum Common {
   NONCE_DIFFICULTY = 10,
   MAX_TX_QUEUE = 20
 }
+
+export const WORKER_POOLING = 8000; // Seconds
+
