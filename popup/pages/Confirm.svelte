@@ -6,6 +6,7 @@
 
 	import { QA } from "popup/config/gas";
 
+	import { Buffer } from "buffer";
 	import { uuidv4 } from "lib/crypto/uuid";
 	import { closePopup } from "popup/mixins/popup";
 	import { trim } from "popup/filters/trim";
@@ -29,6 +30,7 @@
 	import Params from "../components/confirm/Params.svelte";
 	import GasControl from "../components/GasControl.svelte";
 	import { AccountTypes } from "config/account-type";
+	import { LedgerWebHID } from "lib/ledger";
 
 	export let params = {
 		index: 0,
@@ -141,7 +143,21 @@
 		loading = true;
 		error = "";
 		try {
-			await sendTransactionToSign(txIndex, accountIndex, tx);
+			const ledger = new LedgerWebHID();
+			await ledger.init(account.productId);
+
+			if (account.type === AccountTypes.Ledger) {
+				const buf = await sendTransactionToSign(txIndex, accountIndex, tx);
+				const sig = await ledger.interface.signTxn(
+					account.index,
+					Buffer.from(buf, "hex"),
+				);
+				tx.signature = sig;
+				await sendTransactionToSign(txIndex, accountIndex, tx);
+			} else {
+				await sendTransactionToSign(txIndex, accountIndex, tx);
+			}
+
 			await onNextTx();
 		} catch (err) {
 			error = err.message;

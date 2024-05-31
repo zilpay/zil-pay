@@ -384,6 +384,7 @@ export class ZilPayTransaction {
       );
 
       newTx.cancel = params.cancel;
+      newTx.signature = params.signature;
 
       if (!params.version) {
         const version = await this.#core.zilliqa.getNetworkId();
@@ -396,11 +397,11 @@ export class ZilPayTransaction {
         token = await this.#getToken(newTx.toAddr);
       }
 
-      if (account.type === AccountTypes.Ledger) {
-        throw new Error('sig should be from popup');
-        // const transport = await this.#core.ledger.init(account.productId);
-        // newTx.signature = await transport.signTxn(account.index, newTx);
-      } else {
+      if (account.type === AccountTypes.Ledger && !newTx.signature) {
+        sendResponse({
+          resolve: newTx.encodedProto().toString('hex')
+        });
+      } else if (account.type !== AccountTypes.Ledger) {
         const keyPair = await this.#core.account.getKeyPair(accIndex);
         newTx.sign(keyPair.privKey);
       }

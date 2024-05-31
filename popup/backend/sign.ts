@@ -17,6 +17,7 @@ import { get } from 'svelte/store';
 import walletStore from 'popup/store/wallet';
 import { AccountTypes } from "config/account-type";
 import { LedgerWebHID } from "lib/ledger";
+import { TypeOf } from "lib/type/type-checker";
 
 export async function rejectSignMessage() {
   const data = await Message
@@ -78,7 +79,7 @@ export async function getTxRequiredParams(index: number) {
   return warpMessage(data);
 }
 
-export async function sendTransactionToSign(txIndex: number, index: number, params: TransactionForConfirm) {
+export async function sendTransactionToSign(txIndex: number, index: number, params: TransactionForConfirm): Promise<string> {
   const data = await new Message({
     type: MTypePopup.SEND_TO_SIGN_TX,
     payload: {
@@ -88,6 +89,11 @@ export async function sendTransactionToSign(txIndex: number, index: number, para
     }
   }).send();
   const state = warpMessage(data);
-  updateState(state);
-  return state;
+
+  if (TypeOf.isString(state)) {
+    return state;
+  } else {
+    updateState(state);
+    return '';
+  }
 }

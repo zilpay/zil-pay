@@ -109,15 +109,13 @@ export class LedgerInterface {
     return (result.toString('hex').slice(0, SigByteLen * 2));
   }
 
-  public signTxn(index: number, tx: Transaction): Promise<string> {
+  public async signTxn(index: number, txnBytes: Buffer): Promise<string> {
     // https://github.com/Zilliqa/Zilliqa-JavaScript-Library/tree/dev/packages/zilliqa-js-account#interfaces
     const P1 = 0x00;
     const P2 = 0x00;
 
     const indexBytes = Buffer.alloc(4);
     indexBytes.writeInt32LE(index);
-
-    let txnBytes = tx.encodedProto();
 
     // Stream in batches of STREAM_LEN bytes each.
     const STREAM_LEN = 128;
