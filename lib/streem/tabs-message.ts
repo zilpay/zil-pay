@@ -35,6 +35,8 @@ export class TabsMessage {
   }
 
   async send(...domains: string[]) {
+    // TODO: remove error.
+    throw new Error('send tabStream is not working');
     const tabs = await TabsMessage.tabs();
 
     tabs.forEach((tab) => {
