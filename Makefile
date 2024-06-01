@@ -9,18 +9,17 @@ all: build
 
 clean:
 	rm -fr $(BUILD_DIR) *.zip *.crx *.sha
-	$(YARN) cache clean
 
 build:
 	make clean
-	$(YARN) build
+	$(YARN) run build
 	cd dist &&\
 		zip -r $(MV2_FILE_NAME) ./ &&\
 		mv $(MV2_FILE_NAME)  ../ &&\
 		cd ..
 	shasum $(shell find ./dist/* -type f) > $(MV2_HASHSUM_FILE_NAME)
 	rm -fr dist
-	$(YARN) build:v3
+	$(YARN) run build:v3
 	cd dist &&\
 		zip -r $(MV3_FILE_NAME) ./ &&\
 		mv $(MV3_FILE_NAME)  ../ &&\
