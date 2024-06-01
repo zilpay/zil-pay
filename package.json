@@ -6,6 +6,7 @@
   "private": false,
   "scripts": {
     "build": "rollup -c",
+    "build:v3": "export MANIFEST=3 && rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json"
