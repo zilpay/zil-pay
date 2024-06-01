@@ -87,27 +87,6 @@ export class ZilPayWallet {
     }
   }
 
-  public async exportAccountQRCode(index: number, sendResponse: StreamResponse) {
-    try {
-      this.#core.guard.checkSession();
-      const account = this.#core.account.wallet.identities[index];
-      const base58 = await qrcode.toDataURL(
-        `zilliqa://${account.bech32}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
-      sendResponse({
-        resolve: base58
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
   public async exportSeedPhrase(password: string, sendResponse: StreamResponse) {
     try {
       await this.#core.guard.unlock(password);
