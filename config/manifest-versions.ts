@@ -6,5 +6,8 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-export * from './interface';
-export * from './ledger';
+
+export enum ManifestVersions {
+  V2 = 2,
+  V3 = 3
+}

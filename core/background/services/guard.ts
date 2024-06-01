@@ -25,7 +25,14 @@ import { EXTENSION_ID } from 'lib/runtime/id';
 import { TypeOf } from 'lib/type/type-checker';
 import { ErrorMessages } from 'config/errors';
 import { OldAes } from 'lib/crypto/aes';
+import { ManifestVersions } from 'config/manifest-versions';
+import { getManifestVersion, Runtime } from 'lib/runtime';
 
+export enum SessionKeys {
+  EndSession = "BEARBY_END_SESSION",
+  Hash = "BEABRY_HASH",
+  PrivateExtendedKey = "EXTENDED_KEY"
+}
 
 export class AuthGuard {
   // hash of the password.
@@ -118,6 +125,30 @@ export class AuthGuard {
       await BrowserStorage.set(
         buildObject(Fields.LOCK_TIME, String(Common.TIME_BEFORE_LOCK))
       );
+    }
+
+    if (ManifestVersions.V3 === getManifestVersion()) {
+      const data = await Runtime.storage.session.get([
+        SessionKeys.EndSession,
+        SessionKeys.Hash,
+        SessionKeys.PrivateExtendedKey
+      ]);
+
+      try {
+        if (data[SessionKeys.EndSession]) {
+          this.#endSession = new Date(data[SessionKeys.EndSession]);
+        }
+        if (data[SessionKeys.Hash]) {
+          const hash = utils.hex.toBytes(data[SessionKeys.Hash]);
+          this.#hash.set(this, hash);
+          this.#isEnable = true;
+        }
+        if (data[SessionKeys.PrivateExtendedKey]) {
+          this.#privateExtendedKey = utils.hex.toBytes(data[SessionKeys.PrivateExtendedKey]);
+        }
+      } catch (err) {
+        console.warn('guard.sync', err);
+      }
     }
   }
 
@@ -212,6 +243,14 @@ export class AuthGuard {
       this.#updateSession();
       this.#hash.set(this, hash);
       this.#oldHash.set(this, oldHash);
+
+      if (ManifestVersions.V3 === getManifestVersion()) {
+        Runtime.storage.session.set({
+          [SessionKeys.EndSession]: Number(this.#endSession),
+          [SessionKeys.Hash]: utils.hex.fromBytes(hash),
+          [SessionKeys.PrivateExtendedKey]: utils.hex.fromBytes(this.#privateExtendedKey),
+        });
+      }
     } catch (err) {
       this.logout();
       throw new Error(`${ErrorMessages.IncorrectPassword}, ${err.message}`);

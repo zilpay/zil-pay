@@ -60,7 +60,7 @@ export class ZilPayTransaction {
           uuid: params.uuid,
           reject: err.message
         }
-      }).send();
+      }).sendAll();
     }
   }
 
@@ -85,7 +85,7 @@ export class ZilPayTransaction {
               }
             }
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeEncryption();
       } else {
         await new TabsMessage({
@@ -94,7 +94,7 @@ export class ZilPayTransaction {
             uuid,
             reject: ErrorMessages.Rejected
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeEncryption();
       }
 
@@ -127,7 +127,7 @@ export class ZilPayTransaction {
           uuid: params.uuid,
           reject: err.message
         }
-      }).send();
+      }).sendAll();
     }
   }
 
@@ -152,7 +152,7 @@ export class ZilPayTransaction {
               }
             }
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeDecryption();
       } else {
         await new TabsMessage({
@@ -161,7 +161,7 @@ export class ZilPayTransaction {
             uuid,
             reject: ErrorMessages.Rejected
           }
-        }).send();
+        }).sendAll();
         await this.#core.cipher.removeDecryption();
       }
 
@@ -306,7 +306,7 @@ export class ZilPayTransaction {
           uuid: tx.uuid,
           reject: ErrorMessages.Rejected
         }
-      }).send();
+      }).sendAll();
 
       await this.#core.transactions.rmConfirm(index);
 
@@ -384,6 +384,7 @@ export class ZilPayTransaction {
       );
 
       newTx.cancel = params.cancel;
+      newTx.signature = params.signature;
 
       if (!params.version) {
         const version = await this.#core.zilliqa.getNetworkId();
@@ -396,10 +397,11 @@ export class ZilPayTransaction {
         token = await this.#getToken(newTx.toAddr);
       }
 
-      if (account.type === AccountTypes.Ledger) {
-        const transport = await this.#core.ledger.init(account.productId);
-        newTx.signature = await transport.signTxn(account.index, newTx);
-      } else {
+      if (account.type === AccountTypes.Ledger && !newTx.signature) {
+        sendResponse({
+          resolve: newTx.encodedProto().toString('hex')
+        });
+      } else if (account.type !== AccountTypes.Ledger) {
         const keyPair = await this.#core.account.getKeyPair(accIndex);
         newTx.sign(keyPair.privKey);
       }
@@ -444,7 +446,7 @@ export class ZilPayTransaction {
               from: account.base16
             }
           }
-        }).send();
+        }).sendAll();
       }
 
       sendResponse({
@@ -474,15 +476,14 @@ export class ZilPayTransaction {
     }
   }
 
-  public async confirmSignMessage(index: number, sendResponse: StreamResponse) {
+  public async confirmSignMessage(index: number, sig: string, sendResponse: StreamResponse) {
     try {
       const account = this.#core.account.wallet.identities[index];
       const message = this.#core.transactions.message;
       let signature: string;
 
       if (account.type === AccountTypes.Ledger) {
-        const transport = await this.#core.ledger.init(account.productId);
-        signature = await transport.signHash(account.index, message);
+        signature = sig;
       } else {
         const keyPair = await this.#core.account.getKeyPair(index);
         const schnorrControl = new SchnorrControl(keyPair.privKey);
@@ -500,7 +501,7 @@ export class ZilPayTransaction {
             publicKey: account.pubKey
           }
         }
-      }).send();
+      }).sendAll();
       await this.#core.transactions.rmMessage();
 
       sendResponse({
@@ -541,7 +542,7 @@ export class ZilPayTransaction {
           uuid: this.#core.transactions.message.uuid,
           reject: ErrorMessages.Rejected
         }
-      }).send();
+      }).sendAll();
       await this.#core.transactions.rmMessage();
 
       sendResponse({

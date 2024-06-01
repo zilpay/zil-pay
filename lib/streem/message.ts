@@ -6,9 +6,6 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-
-import type { SendResponseParams } from 'types/stream';
-
 import { Runtime } from 'lib/runtime';
 
 export interface ReqBody {
@@ -28,14 +25,14 @@ export interface ReqBody {
  * or
  * Message.signal('@example/type').send().then(() => / Do something... /)
  */
- export class Message {
+export class Message<T> {
   /**
    * Make just signal message.
    */
-  public static signal(type: string): Message {
+  public static signal(type: string): Message<object> {
     return new Message({
       type,
-      domain: window.document.domain
+      domain: globalThis.document.domain
     });
   }
 
@@ -49,10 +46,23 @@ export interface ReqBody {
     this._body = msg;
   }
 
-  /**
-   * Send MessageSelf object.
-   */
-  public send(): Promise<SendResponseParams> {
+  async send(): Promise<T> {
+    for (let index = 0; index < 100; index++) {
+      try {
+        const res = await this.#trySend();
+
+        if (res) {
+          return res;
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    throw new Error("service_worker_stoped");
+  }
+
+  #trySend(): Promise<T> {
     return new Promise((resolve) => {
       try {
         Runtime
@@ -62,6 +72,6 @@ export interface ReqBody {
         console.error(this, err);
         window.location.reload();
       }
-    })
+    });
   }
 }

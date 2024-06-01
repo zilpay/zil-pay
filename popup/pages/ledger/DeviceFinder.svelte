@@ -1,16 +1,15 @@
 <script lang="ts">
-  import { LEDGER_USB_VENDOR_ID, LEDGER_PRODUCT_ID_U2F } from 'config/ledger';
+  import { LEDGER_USB_VENDOR_ID } from "config/ledger";
 
-	import { push } from 'svelte-spa-router';
-  import { fly } from 'svelte/transition';
-  import flyTransition from 'popup/transitions/fly';
-	import { _ } from 'popup/i18n';
-  import { isHid } from 'popup/mixins/detect';
+  import { push } from "svelte-spa-router";
+  import { fly } from "svelte/transition";
+  import flyTransition from "popup/transitions/fly";
+  import { _ } from "popup/i18n";
 
-  import BackBar from '../../components/BackBar.svelte';
-  import RefreshIcon from '../../components/icons/Refresh.svelte';
+  import BackBar from "../../components/BackBar.svelte";
+  import RefreshIcon from "../../components/icons/Refresh.svelte";
 
-  let error = '';
+  let error = "";
   let loading = true;
   let accepted = false;
   let devices = [];
@@ -18,53 +17,42 @@
   const getHidTransport = async () => {
     loading = true;
 
-    if (!isHid()) {
-      push(`/ledger-connect/${LEDGER_PRODUCT_ID_U2F}`);
-      return null;
-    }
-
     try {
       devices = await window.navigator.hid.requestDevice({
-        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
+        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }],
       });
       devices = await window.navigator.hid.getDevices({
-        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
+        filters: [{ vendorId: LEDGER_USB_VENDOR_ID }],
       });
       if (devices.length > 0) {
         accepted = true;
       }
     } catch (err) {
       console.error(err);
-      
+
       error = err.message;
     } finally {
       loading = false;
     }
-  }
+  };
 </script>
 
 <main>
-  <BackBar
-    length={2}
-    selected={0}
-  />
+  <BackBar length={2} selected={0} />
   <h1>
-    {$_('ledger_finder.title')}
+    {$_("ledger_finder.title")}
   </h1>
   {#if !accepted}
-    <button
-      class="primary"
-      on:mouseup={getHidTransport}
-    >
-      {$_('ledger_finder.accept')}
+    <button class="primary" on:mouseup={getHidTransport}>
+      {$_("ledger_finder.accept")}
     </button>
   {:else}
     <div class="list-header">
       <b>
-        {$_('ledger_finder.list_title')}
+        {$_("ledger_finder.list_title")}
       </b>
       <span on:mouseup={getHidTransport}>
-        <RefreshIcon className="refresh"/>
+        <RefreshIcon className="refresh" />
       </span>
     </div>
     <ul>
@@ -74,11 +62,7 @@
           on:mouseup={() => push(`/ledger-connect/${device.productId}`)}
         >
           <div class="ledger-card">
-            <img
-              src="/imgs/ledger.webp"
-              alt="ledger"
-              height="30"
-            />
+            <img src="/imgs/ledger.webp" alt="ledger" height="30" />
             <div>
               <h3>
                 {device.productName}
@@ -95,13 +79,13 @@
 </main>
 
 <style lang="scss">
-	@import "../../styles";
+  @import "../../styles";
   main {
-		background-color: var(--background-color);
-		height: 100vh;
+    background-color: var(--background-color);
+    height: 100vh;
 
     @include flex-center-top-column;
-	}
+  }
   h1 {
     @include fluid-font(320px, 1024px, 22px, 55px);
   }
@@ -156,12 +140,12 @@
     margin: 0;
     margin-block-start: 0;
     overflow-y: scroll;
-		height: 100%;
+    height: 100%;
 
     @include flex-center-top-column;
 
     & > li {
-			min-width: 280px;
+      min-width: 280px;
       max-width: 500px;
       width: 100%;
       margin-block-end: 5px;

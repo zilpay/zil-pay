@@ -6,8 +6,7 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
-
 export * from './extensionizer';
-export * from './manifest.ts';
-export * from './get-url.ts';
+export * from './manifest';
+export * from './get-url';
 

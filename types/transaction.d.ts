@@ -111,6 +111,7 @@ export interface TransactionForConfirm extends MinParams {
   teg: string;
   fee: number;
   recipient: string;
+  signature?: string;
 }
 
 export interface StoredTx {

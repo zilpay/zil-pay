@@ -21,7 +21,7 @@ import rateStore from 'popup/store/rate';
 import zrcStore from 'popup/store/zrc';
 
 import { sendToSignTx } from 'app/backend/sign';
-import { Runtime } from 'lib/runtime';
+import { getExtensionURL } from 'lib/runtime';
 import { toDecimals } from 'app/filters/units';
 
 
@@ -140,7 +140,7 @@ export class AvelyStake {
       }),
       code: '',
       gasPrice,
-      icon: Runtime.extension.getURL('/icons/icon128.png')
+      icon: getExtensionURL('/icons/icon128.png')
     });
   }
 }

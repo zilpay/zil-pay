@@ -7,10 +7,17 @@
  * Copyright (c) 2021 ZilPay
  */
 import type { MinParams, TransactionForConfirm } from "types/transaction";
+import type { MessagePayload } from 'types/transaction';
+
 import { Message } from "lib/streem/message";
 import { MTypePopup, MTypeTab } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
+import { get } from 'svelte/store';
+import walletStore from 'popup/store/wallet';
+import { AccountTypes } from "config/account-type";
+import { LedgerWebHID } from "lib/ledger";
+import { TypeOf } from "lib/type/type-checker";
 
 export async function rejectSignMessage() {
   const data = await Message
@@ -19,7 +26,17 @@ export async function rejectSignMessage() {
   warpMessage(data);
 }
 
-export async function signMessageApprove(index: number, sig?: string) {
+export async function signMessageApprove(index: number, message: MessagePayload) {
+  const wallet = get(walletStore);
+  const account = wallet.identities[index];
+  let sig = '';
+
+  if (account.type === AccountTypes.Ledger) {
+    const ledger = new LedgerWebHID();
+    await ledger.init(account.productId);
+    sig = await ledger.interface.signHash(account.index, message);
+  }
+
   const data = await new Message({
     type: MTypePopup.SIGN_MESSAGE_APPROVE,
     payload: {
@@ -62,7 +79,7 @@ export async function getTxRequiredParams(index: number) {
   return warpMessage(data);
 }
 
-export async function sendTransactionToSign(txIndex: number, index: number, params: TransactionForConfirm) {
+export async function sendTransactionToSign(txIndex: number, index: number, params: TransactionForConfirm): Promise<string> {
   const data = await new Message({
     type: MTypePopup.SEND_TO_SIGN_TX,
     payload: {
@@ -72,6 +89,11 @@ export async function sendTransactionToSign(txIndex: number, index: number, para
     }
   }).send();
   const state = warpMessage(data);
-  updateState(state);
-  return state;
+
+  if (TypeOf.isString(state)) {
+    return state;
+  } else {
+    updateState(state);
+    return '';
+  }
 }

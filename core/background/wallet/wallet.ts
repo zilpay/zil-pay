@@ -11,7 +11,6 @@ import type { StreamResponse } from 'types/stream';
 import type { Wallet } from 'types/account';
 
 import { OldAes } from 'lib/crypto/aes';
-import qrcode from 'qrcode/lib/browser';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { AccountTypes } from 'config/account-type';
 import type { SetPasswordPayload } from 'types/cipher';
@@ -25,8 +24,8 @@ interface LedgerParams {
   index: number;
   name: string;
   productId: number;
-  pubAddr?: string,
-  publicKey?: string;
+  pubAddr: string,
+  publicKey: string;
 }
 
 export class ZilPayWallet {
@@ -57,7 +56,7 @@ export class ZilPayWallet {
 
       const words = await this.#core.guard.exportMnemonic(payload.current);
       const keys = this.#core.account.getImportedAccountKeys();
-  
+
       await this.#core.guard.setGuardConfig(payload.algorithm, payload.iteractions);
       await this.#core.guard.setupVault(words, payload.password);
       await this.#core.account.updateImportedKeys(keys);
@@ -80,27 +79,6 @@ export class ZilPayWallet {
     try {
       sendResponse({
         resolve: Buffer.from(this.#core.guard.encryptedMnemonic).toString('base64')
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
-  public async exportAccountQRCode(index: number, sendResponse: StreamResponse) {
-    try {
-      this.#core.guard.checkSession();
-      const account = this.#core.account.wallet.identities[index];
-      const base58 = await qrcode.toDataURL(
-        `zilliqa://${account.bech32}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
-      sendResponse({
-        resolve: base58
       });
     } catch (err) {
       sendResponse({
@@ -145,13 +123,6 @@ export class ZilPayWallet {
       };
       const uuid = uuidv4();
       const encrypted = OldAes.getEncrypted(data, password);
-      const base58 = await qrcode.toDataURL(
-        `${uuid}/${encrypted.iv}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
 
       wallet.identities = wallet.identities.filter(
         (acc) => acc.type !== AccountTypes.Ledger
@@ -162,14 +133,37 @@ export class ZilPayWallet {
 
       sendResponse({
         resolve: {
-          base58,
           uuid,
           data: {
             wallet,
-            cipher: encrypted.cipher,
+            ...encrypted,
             zrc2: this.#core.zrc2.identities
           }
         }
+      });
+    } catch (err) {
+      sendResponse({
+        reject: err.message
+      });
+    }
+  }
+
+  public async addLedgerAccount(params: LedgerParams, sendResponse: StreamResponse) {
+    try {
+      this.#core.guard.checkSession();
+
+      await this.#core.account.addLedgerAccount(
+        params.publicKey,
+        params.pubAddr,
+        params.index,
+        params.name,
+        params.productId
+      );
+      await this.#core.transactions.sync();
+      await this.#core.nft.sync();
+
+      sendResponse({
+        resolve: this.#core.state
       });
     } catch (err) {
       sendResponse({
@@ -204,32 +198,6 @@ export class ZilPayWallet {
       await this.#core.account.addAccountForTrack(
         bech32,
         name
-      );
-      await this.#core.transactions.sync();
-      await this.#core.nft.sync();
-
-      sendResponse({
-        resolve: this.#core.state
-      });
-    } catch (err) {
-      sendResponse({
-        reject: err.message
-      });
-    }
-  }
-
-  public async loadLedgerAccount(payload: LedgerParams, sendResponse: StreamResponse) {
-    try {
-      this.#core.guard.checkSession();
-      await this.#core.ledger.init(payload.productId);
-      const { publicKey, pubAddr } = await this.#core.ledger.interface.getPublicAddress(payload.index);
-
-      await this.#core.account.addLedgerAccount(
-        publicKey,
-        pubAddr,
-        payload.index,
-        payload.name,
-        payload.productId
       );
       await this.#core.transactions.sync();
       await this.#core.nft.sync();

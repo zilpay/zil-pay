@@ -6,14 +6,19 @@
  * -----
  * Copyright (c) 2021 ZilPay
  */
+import { LedgerWebHID } from "lib/ledger";
 import { Message } from "lib/streem/message";
 import { MTypePopup } from "lib/streem/stream-keys";
 import { warpMessage } from "lib/utils/warp-message";
 import { updateState } from './store-update';
 
-export async function loadLedgerAccount(index: number, productId: number, name: string, pubAddr?: string, publicKey?: string) {
+export async function addLedgerAccount(index: number, productId: number, name: string) {
+  const ledger = new LedgerWebHID();
+  await ledger.init(productId);
+  const { publicKey, pubAddr } = await ledger.interface.getPublicAddress(index);
+
   const data = await new Message({
-    type: MTypePopup.LEDGER_LOAD_ACCOUNT,
+    type: MTypePopup.ADD_LEDGER_ACCOUNT,
     payload: {
       index,
       name,

@@ -59,7 +59,7 @@ export class ZilPayPopup {
           bech32
         }
       }
-    }).send();
+    }).sendAll();
   }
 
   public async logout(sendResponse: StreamResponse) {
@@ -126,7 +126,7 @@ export class ZilPayPopup {
   public async randomizeWords(length: number, sendResponse: StreamResponse) {
     try {
       const mnemonic = new MnemonicController();
-    
+
       sendResponse({
         resolve: await mnemonic.generateMnemonic(length)
       });

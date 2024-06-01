@@ -8,6 +8,9 @@
  */
 import type { ZIlPayCore } from './core';
 
+import { Common } from 'config/common';
+import { Runtime } from 'lib/runtime';
+
 export class ZilPaySynchronizer {
   readonly #core: ZIlPayCore;
 
@@ -17,6 +20,13 @@ export class ZilPaySynchronizer {
 
   public async sync() {
     console.log('start-sync');
+
+    try {
+      Runtime.runtime.onInstalled.addListener(this.#onInstalled);
+    } catch (err) {
+      console.warn('installed', err);
+    }
+
     await this.#core.netwrok.sync();
     await this.#core.guard.sync();
     await this.#core.account.sync();
@@ -35,6 +45,24 @@ export class ZilPaySynchronizer {
     await this.#core.currencies.sync();
     await this.#core.prompt.sync();
     await this.#core.nft.sync();
+
+    const counter = this.#core.transactions.message ? 1 : 0;
+    this.#core.badge.setCounter(
+      this.#core.transactions.forConfirm.length + counter
+    );
+
     console.log('end-sync');
+  }
+
+  #onInstalled(event: chrome.runtime.InstalledDetails) {
+    try {
+      if (event.reason === Runtime.runtime.OnInstalledReason.INSTALL) {
+        const url = Runtime.runtime.getURL(Common.PROMT_PAGE);
+        Runtime.tabs.create({ url });
+        Runtime.runtime.onInstalled.removeListener(this.#onInstalled);
+      }
+    } catch {
+      ///
+    }
   }
 }

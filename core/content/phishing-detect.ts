@@ -7,14 +7,14 @@
  * Copyright (c) 2021 ZilPay
  */
 import { Contracts } from 'config/contracts';
-import { Runtime } from 'lib/runtime';
+import { getExtensionURL } from 'lib/runtime';
 import { RPCMethod } from 'config/methods';
 import { httpProvider } from './provider';
 
 export class PhishingDetect {
   #host = String(window.location.host).replace('www.', '');
   #field = 'domains';
-  #url = Runtime.extension.getURL('phishing.html');
+  #url = getExtensionURL('phishing.html');
   #checked = false;
 
   public get checked() {
@@ -30,11 +30,6 @@ export class PhishingDetect {
     }
 
     this.#checked = true;
-
-    if (this.#host !== 'zilpay.io' && this.#host.includes('zilpay')) {
-      window.location.replace(this.#url);
-      return;
-    }
 
     try {
       const params = [

@@ -98,11 +98,11 @@ export class Blockchain {
     return this.#provider.send(RPCMethod.GetTxnBodiesForTxBlock, String(block));
   }
 
-   /**
-   * getTransactionsForTxBlock
-   *
-   * Gets all transactions for a given TxBlock, grouped by shard id
-   */
+  /**
+  * getTransactionsForTxBlock
+  *
+  * Gets all transactions for a given TxBlock, grouped by shard id
+  */
   public getTransactionsForTxBlock(txBlock: number) {
     assert(!isNaN(txBlock), 'Txblock should be number');
     return this.#provider.send(
@@ -372,7 +372,7 @@ export class Blockchain {
    *
    * Gets the balance of an account by address
    */
-   public getBalance(addr: string) {
+  public getBalance(addr: string) {
     assert(Boolean(addr), `addr ${ErrorMessages.RequiredParam}`);
 
     const address = CryptoUtils.toHex(CryptoUtils.normaliseAddress(addr));

@@ -445,6 +445,6 @@ export class AccountController {
           bech32: this.selectedAccount.bech32
         }
       }
-    }).send();
+    }).sendAll();
   }
 }

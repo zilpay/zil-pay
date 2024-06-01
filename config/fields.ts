@@ -38,5 +38,6 @@ export enum Fields {
   FORMAT = 'address-format',
   POPUP_ENABLED = 'popup-enabled',
   PHISHING = 'phishing-detection',
-  DEX = 'dex-proto'
+  DEX = 'dex-proto',
+  BADGE_COUNTER = 'badge-counter'
 }

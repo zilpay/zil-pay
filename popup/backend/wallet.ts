@@ -121,16 +121,6 @@ export async function addAccountTracker(bech32: string, name: string) {
   return state;
 }
 
-export async function getQrCOde(index: number) {
-  const data = await new Message({
-    type: MTypePopup.EXPORT_QR_CODE,
-    payload: {
-      index
-    }
-  }).send();
-  return warpMessage(data);
-}
-
 export async function exportSecrePhrase(password: string) {
   const data = await new Message({
     type: MTypePopup.EXPORT_SEED,

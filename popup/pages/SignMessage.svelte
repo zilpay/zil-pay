@@ -1,44 +1,43 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
-	import { _ } from 'popup/i18n';
-	import { closePopup } from 'popup/mixins/popup';
+  import { onMount } from "svelte";
+  import { scale } from "svelte/transition";
+  import { _ } from "popup/i18n";
+  import { closePopup } from "popup/mixins/popup";
 
-  import { uuidv4 } from 'lib/crypto/uuid';
-  import { trim } from 'popup/filters/trim';
-	import { jazziconCreate } from 'popup/mixins/jazzicon';
-  import { rejectSignMessage, signMessageApprove } from 'popup/backend/sign';
+  import { uuidv4 } from "lib/crypto/uuid";
+  import { trim } from "popup/filters/trim";
+  import { jazziconCreate } from "popup/mixins/jazzicon";
+  import { rejectSignMessage, signMessageApprove } from "popup/backend/sign";
 
-	import format from 'popup/store/format';
-	import walletStore from 'popup/store/wallet';
-  import transactionsStore from 'popup/store/transactions';
+  import format from "popup/store/format";
+  import walletStore from "popup/store/wallet";
+  import transactionsStore from "popup/store/transactions";
 
-  import SelectCard from '../components/SelectCard.svelte';
-  import Modal from '../components/Modal.svelte';
-	import AccountsModal from '../modals/Accounts.svelte';
-	import Toggle from '../components/Toggle.svelte';
-  import { AccountTypes } from 'config/account-type';
-
+  import SelectCard from "../components/SelectCard.svelte";
+  import Modal from "../components/Modal.svelte";
+  import AccountsModal from "../modals/Accounts.svelte";
+  import Toggle from "../components/Toggle.svelte";
+  import { AccountTypes } from "config/account-type";
 
   let loading = false;
-  let error = '';
-	let accountsModal = false;
-	let accountIndex = $walletStore.selectedAddress;
+  let error = "";
+  let accountsModal = false;
+  let accountIndex = $walletStore.selectedAddress;
   let isHash = false;
 
-	$: account = $walletStore.identities[accountIndex];
+  $: account = $walletStore.identities[accountIndex];
   $: message = $transactionsStore.message;
 
   const uuid = uuidv4();
 
-	onMount(() => {
-		jazziconCreate(uuid, account.base16);
+  onMount(() => {
+    jazziconCreate(uuid, account.base16);
   });
 
-	const onSelectAccount = async ({ detail }) => {
+  const onSelectAccount = async ({ detail }) => {
     accountIndex = detail;
     accountsModal = false;
-	};
+  };
   const handleOnReject = async () => {
     await rejectSignMessage();
     await closePopup();
@@ -47,7 +46,7 @@
     loading = true;
 
     try {
-      await signMessageApprove(accountIndex);
+      await signMessageApprove(accountIndex, message);
       await closePopup();
     } catch (err) {
       error = err.message;
@@ -58,8 +57,8 @@
 
 <Modal
   show={accountsModal}
-  title={$_('send.cards.token')}
-  on:close={() => accountsModal = !accountsModal}
+  title={$_("send.cards.token")}
+  on:close={() => (accountsModal = !accountsModal)}
 >
   <div class="m-warp">
     <AccountsModal
@@ -73,20 +72,15 @@
   <SelectCard
     header={account.name}
     text={trim(account[$format])}
-    on:click={() => accountsModal = !accountsModal}
+    on:click={() => (accountsModal = !accountsModal)}
   >
-    <div id={uuid}/>
+    <div id={uuid} />
   </SelectCard>
-  <hr/>
+  <hr />
   <h1>
-    {$_('sig_message.title')}
+    {$_("sig_message.title")}
   </h1>
-  <img
-    src={message.icon}
-    alt={message.title}
-    width="55px"
-    height="55px"
-  />
+  <img src={message.icon} alt={message.title} width="55px" height="55px" />
   <h2>
     {message.title}
   </h2>
@@ -95,39 +89,33 @@
   </textarea>
   <div class="toggle">
     <h3>
-      {$_('sig_message.hash')}
+      {$_("sig_message.hash")}
     </h3>
-    <Toggle
-      checked={isHash}
-      on:toggle={() => isHash = !isHash}
-    />
+    <Toggle checked={isHash} on:toggle={() => (isHash = !isHash)} />
   </div>
   <hr />
   <div class="btns">
-    <button
-      on:mouseup={handleOnReject}
-      disabled={loading}
-    >
-      {$_('sig_message.btns.reject')}
+    <button on:mouseup={handleOnReject} disabled={loading}>
+      {$_("sig_message.btns.reject")}
     </button>
     <button
       class="primary"
-      class:loading={loading}
+      class:loading
       disabled={loading || account.type === AccountTypes.Track}
       on:mouseup={handleOnSign}
     >
-      {$_('sig_message.btns.confirm')}
+      {$_("sig_message.btns.confirm")}
     </button>
   </div>
 </main>
 
 <style lang="scss">
-	@import "../styles";
-	main {
-		background-color: var(--background-color);
-		height: 100vh;
-		@include flex-center-column;
-	}
+  @import "../styles";
+  main {
+    background-color: var(--background-color);
+    height: 100vh;
+    @include flex-center-column;
+  }
   h1 {
     @include fluid-font(320px, 1024px, 22px, 55px);
   }

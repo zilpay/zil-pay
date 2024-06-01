@@ -20,11 +20,15 @@ import { PhishingDetect } from './phishing-detect';
 
 export class ContentTabStream {
   readonly #stream: TabStream;
-
+  readonly #domain = globalThis.document.domain;
   #phishing = new PhishingDetect();
 
-  public get stream() {
+  get stream() {
     return this.#stream;
+  }
+
+  get domain() {
+    return this.#domain;
   }
 
   constructor() {
@@ -36,7 +40,8 @@ export class ContentTabStream {
   async #listener(msg: ReqBody) {
     if (!msg) return null;
 
-    msg.domain = window.document.domain;
+    msg.payload.domain = this.domain;
+    msg.domain = this.domain;
 
     switch (msg.type) {
       case MTypeTab.GET_WALLET_DATA:

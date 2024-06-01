@@ -92,7 +92,7 @@ const background = {
 			'./wordlists/chinese_traditional.json'
 		]),
 		resolve({
-			jsnext: true,   
+			jsnext: true,
 			main: true,
 			brower: true,
 			preferBuiltins: false
@@ -171,7 +171,7 @@ const content = {
 	plugins: [
 		commonjs(),
 		resolve({
-			jsnext: true,   
+			jsnext: true,
 			main: true,
 			brower: true,
 			preferBuiltins: false
@@ -204,7 +204,7 @@ const inpage = {
 		nodePolyfills(),
 		json(),
 		resolve({
-			jsnext: true,   
+			jsnext: true,
 			main: true,
 			brower: true,
 			preferBuiltins: false
@@ -223,10 +223,10 @@ const inpage = {
 			compress: true
 		}),
 		define({
-      replacements: {
+			replacements: {
 				WebAssembly: 'null'
-      }
-    })
+			}
+		})
 	]
 };
 

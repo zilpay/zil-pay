@@ -12,5 +12,6 @@ export enum Locales {
   EU = 'eu',
   DE = 'de',
   IT = 'it',
-  CN = 'cn'
+  CN = 'cn',
+  RU = 'ru'
 }

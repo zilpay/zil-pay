@@ -28,7 +28,6 @@ export const MTypePopup = {
 
   EXPORT_SEED: `@/${app}/popup-export-seed-words`,
   EXPORT_PRIVATE_KEY: `@/${app}/popup-export-private-key`,
-  EXPORT_QR_CODE: `@/${app}/export-qr-code-by-index`,
   EXPORT_QR_CODE_WALLET: `@/${app}/export-qr-code-wallet`,
 
   IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
@@ -78,8 +77,6 @@ export const MTypePopup = {
   ADD_CONTACT: `@/${app}/add-a-contact`,
   RM_CONTACT: `@/${app}/remove-a-contact`,
 
-  LEDGER_LOAD_ACCOUNT: `@/${app}/ledger-load-account`,
-
   CHANGE_CURRENCY: `@/${app}/change-currency`,
   UPDATE_RATE: `@/${app}/update-rate`,
   RESET_CURRENCY: `@/${app}/reset-currency`,
@@ -110,7 +107,9 @@ export const MTypePopup = {
   RES_ENCRYPTION: `@/${app}/response-encryption`,
   RES_DECRYPTION: `@/${app}/response-decryption`,
 
-  GET_STAKE_PROPS: `@/${app}/get-stake-props`
+  GET_STAKE_PROPS: `@/${app}/get-stake-props`,
+
+  ADD_LEDGER_ACCOUNT: `@/${app}/add-ledger-account`,
 };
 
 export const MTypeTab = {

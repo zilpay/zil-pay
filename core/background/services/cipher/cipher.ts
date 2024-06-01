@@ -8,6 +8,7 @@
  */
 import type { AccountController } from 'core/background/services/account';
 import type { CipherState, InputCipherParams } from 'types/cipher';
+import type { BadgeControl } from '../badge';
 
 import assert from 'assert';
 import { lib } from 'crypto-js';
@@ -19,7 +20,6 @@ import { ErrorMessages } from 'config/errors';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { Fields } from 'config/fields';
 import { OldAes } from 'lib/crypto/aes';
-import { NotificationsControl } from 'core/background/services/notifications';
 
 export enum AesMethod {
   Aes128,
@@ -33,6 +33,7 @@ export class CipherControl {
   #decryptParams?: InputCipherParams;
 
   readonly #account: AccountController;
+  readonly #badge: BadgeControl;
 
   get encryptParams() {
     return this.#encryptParams;
@@ -53,8 +54,9 @@ export class CipherControl {
     };
   }
 
-  constructor(account: AccountController) {
+  constructor(account: AccountController, badge: BadgeControl) {
     this.#account = account;
+    this.#badge = badge;
   }
 
   async addEncryption(params: InputCipherParams) {
@@ -65,11 +67,11 @@ export class CipherControl {
     assert(params.domain, ErrorMessages.IncorrectParams);
 
     this.#encryptParams = params;
-    this.#counter();
 
     await BrowserStorage.set(
       buildObject(Fields.ENCRYPT_DATA, JSON.stringify(params))
     );
+    await this.#badge.increase();
   }
 
   async addDecryption(params: InputCipherParams) {
@@ -80,23 +82,23 @@ export class CipherControl {
     assert(params.domain, ErrorMessages.IncorrectParams);
 
     this.#decryptParams = params;
-    this.#counter();
 
     await BrowserStorage.set(
       buildObject(Fields.DECRYPT_DATA, JSON.stringify(params))
     );
+    await this.#badge.increase();
   }
 
   async removeEncryption() {
     this.#encryptParams = undefined;
-    this.#counter();
     await BrowserStorage.rm(Fields.ENCRYPT_DATA);
+    await this.#badge.decrease();
   }
 
   async removeDecryption() {
     this.#decryptParams = undefined;
-    this.#counter();
     await BrowserStorage.rm(Fields.DECRYPT_DATA);
+    await this.#badge.decrease();
   }
 
   async sync() {
@@ -121,7 +123,9 @@ export class CipherControl {
       ///
     }
 
-    this.#counter();
+    if (this.#decryptParams || this.#encryptParams) {
+      this.#badge.increase();
+    }
   }
 
   async encrypt(index: number) {
@@ -154,19 +158,5 @@ export class CipherControl {
     assert(Boolean(content), ErrorMessages.InvalidDecryption);
 
     return content;
-  }
-
-  #counter() {
-    let counter = 0;
-
-    if (this.decryptParams) {
-      counter++;
-    }
-
-    if (this.encryptParams) {
-      counter++;
-    }
-
-    NotificationsControl.counter(counter);
   }
 }
