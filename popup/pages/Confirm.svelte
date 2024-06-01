@@ -143,10 +143,9 @@
 		loading = true;
 		error = "";
 		try {
-			const ledger = new LedgerWebHID();
-			await ledger.init(account.productId);
-
 			if (account.type === AccountTypes.Ledger) {
+				const ledger = new LedgerWebHID();
+				await ledger.init(account.productId);
 				const buf = await sendTransactionToSign(txIndex, accountIndex, tx);
 				const sig = await ledger.interface.signTxn(
 					account.index,
