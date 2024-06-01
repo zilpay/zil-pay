@@ -1,29 +1,26 @@
 <script lang="ts">
-	import {
-    MAX_NAME_LEN,
-    MIN_NAME_LEN
-  } from 'popup/config/account';
+	import { MAX_NAME_LEN, MIN_NAME_LEN } from "popup/config/account";
 
-	import { onMount, tick } from 'svelte';
-  import { fade, blur } from 'svelte/transition';
-	import { _ } from 'popup/i18n';
-	import { getCurrentNonce, resetNonce } from 'popup/backend/transactions';
-	import { getQrCOde, changeAccountName, selectAccount } from 'popup/backend/wallet';
+	import { onMount, tick } from "svelte";
+	import { fade, blur } from "svelte/transition";
+	import { _ } from "popup/i18n";
+	import { getCurrentNonce, resetNonce } from "popup/backend/transactions";
+	import { changeAccountName, selectAccount } from "popup/backend/wallet";
+	import qrcode from "qrcode/lib/browser";
 
-  import { trim } from 'popup/filters/trim';
+	import { trim } from "popup/filters/trim";
 
-	import walletStore from 'popup/store/wallet';
-	import format from 'popup/store/format';
-	import transactionsStore from 'popup/store/transactions';
+	import walletStore from "popup/store/wallet";
+	import format from "popup/store/format";
 
-	import NavClose from '../../components/NavClose.svelte';
-	import Arrow from '../../components/icons/Arrow.svelte';
-  import Modal from '../../components/Modal.svelte';
-  import AccountsModal from '../../modals/Accounts.svelte';
-	import EditIcon from '../../components/icons/Edit.svelte';
+	import NavClose from "../../components/NavClose.svelte";
+	import Arrow from "../../components/icons/Arrow.svelte";
+	import Modal from "../../components/Modal.svelte";
+	import AccountsModal from "../../modals/Accounts.svelte";
+	import EditIcon from "../../components/icons/Edit.svelte";
 
 	let accountsModal = false;
-	let base58 = '';
+	let base58 = "";
 	let index = $walletStore.selectedAddress;
 	let name = $walletStore.identities[index].name;
 	let nonce = 0;
@@ -33,9 +30,12 @@
 
 	async function updateState() {
 		loading = true;
-		base58 = '';
+		base58 = "";
 		try {
-			base58 = await getQrCOde(index);
+			base58 = await qrcode.toDataURL(`zilliqa://${account.bech32}`, {
+				width: 200,
+				height: 200,
+			});
 			nonce = await getCurrentNonce();
 		} catch {
 			///
@@ -43,14 +43,14 @@
 		loading = false;
 	}
 
-	onMount(async() => {
+	onMount(async () => {
 		await updateState();
 	});
 
 	const onSelectAccount = async ({ detail }) => {
-    index = detail;
-    accountsModal = false;
-    await tick();
+		index = detail;
+		accountsModal = false;
+		await tick();
 		await selectAccount(detail);
 		await updateState();
 	};
@@ -73,25 +73,21 @@
 </script>
 
 <Modal
-  show={accountsModal}
-  title={$_('send.cards.token')}
-  on:close={() => accountsModal = !accountsModal}
+	show={accountsModal}
+	title={$_("send.cards.token")}
+	on:close={() => (accountsModal = !accountsModal)}
 >
-  <div class="m-warp">
-    <AccountsModal
-      list={$walletStore.identities}
-      index={index}
-      on:selected={onSelectAccount}
-    />
-  </div>
+	<div class="m-warp">
+		<AccountsModal
+			list={$walletStore.identities}
+			{index}
+			on:selected={onSelectAccount}
+		/>
+	</div>
 </Modal>
 <main>
-	<NavClose title={$_('account.title')}/>
-	<div
-		class="card"
-		in:fade
-		on:mouseup={() => accountsModal = !accountsModal}
-	>
+	<NavClose title={$_("account.title")} />
+	<div class="card" in:fade on:mouseup={() => (accountsModal = !accountsModal)}>
 		<div>
 			<h3>
 				{account.name}
@@ -106,11 +102,7 @@
 	</div>
 	<div in:blur>
 		{#if base58}
-			<img
-				src={base58}
-				width="300"
-				alt="qrcode"
-			/>
+			<img src={base58} width="300" alt="qrcode" />
 		{/if}
 	</div>
 	<label in:fade>
@@ -119,19 +111,15 @@
 			type="text"
 			maxlength={MAX_NAME_LEN}
 			minlength={MIN_NAME_LEN}
-			placeholder={$_('setup_acc.name_placeholder')}
+			placeholder={$_("setup_acc.name_placeholder")}
 			on:blur={hanldeOnChangeName}
 		/>
 		<div>
 			<EditIcon />
 		</div>
 	</label>
-	<button
-		class:loading={loading}
-		disabled={loading}
-		on:mouseup={handleOnResetNonce}
-	>
-		{$_('account.reset')} #{nonce}
+	<button class:loading disabled={loading} on:mouseup={handleOnResetNonce}>
+		{$_("account.reset")} #{nonce}
 	</button>
 </main>
 
@@ -167,8 +155,8 @@
 			border: none;
 		}
 		&:focus-within {
-      border: solid 1px var(--text-color);
-    }
+			border: solid 1px var(--text-color);
+		}
 	}
 	div.card {
 		cursor: pointer;

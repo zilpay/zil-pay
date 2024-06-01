@@ -11,7 +11,6 @@ import type { StreamResponse } from 'types/stream';
 import type { Wallet } from 'types/account';
 
 import { OldAes } from 'lib/crypto/aes';
-import qrcode from 'qrcode/lib/browser';
 import { uuidv4 } from 'lib/crypto/uuid';
 import { AccountTypes } from 'config/account-type';
 import type { SetPasswordPayload } from 'types/cipher';
@@ -145,13 +144,6 @@ export class ZilPayWallet {
       };
       const uuid = uuidv4();
       const encrypted = OldAes.getEncrypted(data, password);
-      const base58 = await qrcode.toDataURL(
-        `${uuid}/${encrypted.iv}`,
-        {
-          width: 200,
-          height: 200,
-        }
-      );
 
       wallet.identities = wallet.identities.filter(
         (acc) => acc.type !== AccountTypes.Ledger
@@ -162,11 +154,10 @@ export class ZilPayWallet {
 
       sendResponse({
         resolve: {
-          base58,
           uuid,
           data: {
             wallet,
-            cipher: encrypted.cipher,
+            ...encrypted,
             zrc2: this.#core.zrc2.identities
           }
         }

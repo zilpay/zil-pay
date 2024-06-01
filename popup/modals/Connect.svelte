@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-	import { _ } from 'popup/i18n';
-	import { w3cwebsocket } from "websocket";
+  import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import { _ } from "popup/i18n";
+  import { w3cwebsocket } from "websocket";
+  import qrcode from "qrcode/lib/browser";
 
   import { ZilPayConnect } from "config/connect";
 
-  import { exportWalletQrcode } from 'popup/backend/wallet';
+  import { exportWalletQrcode } from "popup/backend/wallet";
 
   const dispatch = createEventDispatcher();
 
@@ -13,8 +14,8 @@
 
   let passwordElement = null;
   let loading = false;
-  let password = '';
-  let error = '';
+  let password = "";
+  let error = "";
   let data = null;
 
   $: buttonDisabled = loading || error || !password;
@@ -32,48 +33,51 @@
   });
 
   const handleSubmit = async (e: Event) => {
-		e.preventDefault();
+    e.preventDefault();
 
     loading = true;
-		try {
+    try {
       data = await exportWalletQrcode(password);
+      data.base58 = await qrcode.toDataURL(`${data.uuid}/${data.iv}`, {
+        width: 200,
+        height: 200,
+      });
       client = new w3cwebsocket(ZilPayConnect.Host, ZilPayConnect.Protocol);
-      client.onerror = function() {
+      client.onerror = function () {
         client.close();
       };
 
-      client.onopen = function() {
+      client.onopen = function () {
         if (client.readyState === client.OPEN) {
-          client.send(JSON.stringify({
-            data: data.data,
-            uuid: data.uuid,
-            type: 'Share'
-          }));
+          client.send(
+            JSON.stringify({
+              data: data.data,
+              uuid: data.uuid,
+              type: "Share",
+            }),
+          );
         }
-        client.onclose = function() {
-          dispatch('close');
-          console.log('echo-protocol Client Closed');
+        client.onclose = function () {
+          dispatch("close");
+          console.log("echo-protocol Client Closed");
         };
       };
-		} catch (err) {
+    } catch (err) {
+      console.warn(err);
       error = err.message;
-		}
-		loading = false;
-	}
+    }
+    loading = false;
+  };
 </script>
 
 <form on:submit={handleSubmit}>
   <div class="warn-message">
     <strong>
-      {$_('security.connect.warn_message')}
+      {$_("security.connect.warn_message")}
     </strong>
   </div>
   {#if data}
-    <img
-      src={data.base58}
-      width="300"
-      alt="qrcode"
-    />
+    <img src={data.base58} width="300" alt="qrcode" />
   {:else}
     <label>
       <input
@@ -83,22 +87,19 @@
         class:error={Boolean(error)}
         type="password"
         autocomplete="off"
-        placeholder={$_('lock.placeholder')}
+        placeholder={$_("lock.placeholder")}
         required
-        on:input={() => error = ''}
-      >
+        on:input={() => (error = "")}
+      />
     </label>
-    <button
-      class="warning"
-      disabled={Boolean(buttonDisabled)}
-    >
-      {$_('security.connect.btn')}
+    <button class="warning" disabled={Boolean(buttonDisabled)}>
+      {$_("security.connect.btn")}
     </button>
   {/if}
 </form>
 
 <style lang="scss">
-	@import "../styles";
+  @import "../styles";
   form {
     padding: 30px;
     height: 600px;
@@ -112,7 +113,7 @@
   }
   input.error {
     outline-color: var(--danger-color);
-    animation: shake .4s linear;
+    animation: shake 0.4s linear;
   }
   .warn-message {
     text-align: center;

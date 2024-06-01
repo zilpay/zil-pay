@@ -51,7 +51,7 @@ export class Wallet {
   public get defaultAccount() {
     return this.#defaultAccount;
   }
-  
+
   public get http() {
     return this.#http;
   }
