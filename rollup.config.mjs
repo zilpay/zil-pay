@@ -1,23 +1,22 @@
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import { sveltePreprocess } from 'svelte-preprocess'
+import { sveltePreprocess } from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
-import css from 'rollup-plugin-css-only';
 import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
 import copy from 'rollup-plugin-copy';
 import { visualizer } from 'rollup-plugin-visualizer';
 import replace from '@rollup/plugin-replace';
+import postcss from 'rollup-plugin-postcss';
+import cssnano from 'cssnano';
 
-// Read package.json
 import { readFileSync } from 'fs';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 const production = !process.env.ROLLUP_WATCH;
 const manifest = process.env.MANIFEST || 2;
 
-// Shared base configuration
 const createConfig = (name, input, output, extraPlugins = []) => ({
   input,
   output: {
@@ -28,14 +27,11 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
   },
   plugins: [
     ...extraPlugins,
-    
     resolve({
       browser: true,
       dedupe: ['svelte']
     }),
-    
     commonjs(),
-    
     typescript({
       sourceMap: !production,
       inlineSources: !production,
@@ -44,18 +40,13 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
         noEmit: false
       }
     }),
-    
     json(),
-    
-    // Minify in production
     production && terser({
       format: {
         comments: false
       },
       compress: true
     }),
-    
-    // Generate bundle visualizations in production
     production && visualizer({
       filename: `stats/${name}.html`
     })
@@ -65,7 +56,6 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
   }
 });
 
-// Popup configuration with Svelte and SCSS/SASS support
 const popup = createConfig(
   'popup',
   'popup/main.ts',
@@ -75,19 +65,25 @@ const popup = createConfig(
       preprocess: sveltePreprocess({
         sourceMap: !production,
         scss: {
-          // SCSS/SASS options
           renderSync: true,
           includePaths: ['popup/styles/'],
-          prependData: '@import "popup/styles/global.scss";'
+          prependData: '@use "popup/styles/global.scss"'
         }
       }),
       compilerOptions: {
         dev: !production
       }
     }),
-    
-    // Extract component CSS
-    css({ output: 'bundle.css' })
+    postcss({
+      extract: 'bundle.css',
+      minimize: production,
+      plugins: [
+        cssnano({
+          preset: 'default'
+        })
+      ],
+      sourceMap: !production
+    })
   ]
 );
 
@@ -96,15 +92,12 @@ const background = createConfig(
   'background/index.ts',
   'dist/background.js',
   [
-    // Replace any Node.js specific imports/code
     replace({
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
       'global': 'window',
       'process.browser': true
     }),
-    
-    // Copy static assets
     copy({
       targets: [
         { src: 'public/icons', dest: 'dist/' },
@@ -114,18 +107,15 @@ const background = createConfig(
         { src: 'public/index.html', dest: 'dist/' },
         { src: 'public/phishing.html', dest: 'dist/' },
         {
-  				src: `public/manifest_${manifest}.json`,
+          src: `public/manifest_${manifest}.json`,
           dest: 'dist/',
-					rename: 'manifest.json',
+          rename: 'manifest.json',
           transform: (contents) => {
             const jsonContent = JSON.parse(contents);
-            
-            // Update manifest with package.json values
             jsonContent.version = pkg.version;
             jsonContent.short_name = pkg.shortName || pkg.name;
             jsonContent.description = pkg.description;
             jsonContent.author = pkg.homepage;
-            
             return JSON.stringify(jsonContent, null, 2);
           }
         }
@@ -134,7 +124,6 @@ const background = createConfig(
   ]
 );
 
-// Content script
 const content = createConfig(
   'content',
   'content/index.ts',

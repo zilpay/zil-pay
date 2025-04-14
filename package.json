@@ -24,6 +24,7 @@
     "rollup": "^4.40.0",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^4.5.2",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-svelte": "^7.2.2",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-visualizer": "^5.14.0",
@@ -36,8 +37,7 @@
   "peerDependencies": {
     "typescript": "^5.8.3"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "keywords": [
     "blockchain",
     "zilliqa",

@@ -1,7 +1,9 @@
+@use "./mixins";
+
 :global(*),
 :global(*::after),
 :global(*::before) {
-  @include box-sizing(border-box);
+  @include mixins.box-sizing(border-box);
   margin: 0;
   padding: 0;
 }
