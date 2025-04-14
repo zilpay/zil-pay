@@ -1,7 +1,7 @@
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import sveltePreprocess from 'svelte-preprocess';
+import { sveltePreprocess } from 'svelte-preprocess'
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import { terser } from 'rollup-plugin-terser';
@@ -15,6 +15,7 @@ import { readFileSync } from 'fs';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 const production = !process.env.ROLLUP_WATCH;
+const manifest = process.env.MANIFEST || 2;
 
 // Shared base configuration
 const createConfig = (name, input, output, extraPlugins = []) => ({
@@ -76,7 +77,8 @@ const popup = createConfig(
         scss: {
           // SCSS/SASS options
           renderSync: true,
-          prependData: '@import "src/styles/variables.scss";'
+          includePaths: ['popup/styles/'],
+          prependData: '@import "popup/styles/global.scss";'
         }
       }),
       compilerOptions: {
@@ -89,7 +91,6 @@ const popup = createConfig(
   ]
 );
 
-// Background script for Manifest V3 (service worker)
 const background = createConfig(
   'background',
   'background/index.ts',
@@ -111,11 +112,11 @@ const background = createConfig(
         { src: 'public/lang', dest: 'dist/' },
         { src: 'public/imgs', dest: 'dist/' },
         { src: 'public/index.html', dest: 'dist/' },
-        { src: 'public/schema.json', dest: 'dist/' },
         { src: 'public/phishing.html', dest: 'dist/' },
         {
-          src: 'public/manifest.json',
+  				src: `public/manifest_${manifest}.json`,
           dest: 'dist/',
+					rename: 'manifest.json',
           transform: (contents) => {
             const jsonContent = JSON.parse(contents);
             
