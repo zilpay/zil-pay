@@ -67,7 +67,7 @@ const popup = createConfig(
         scss: {
           renderSync: true,
           includePaths: ['popup/styles/'],
-          prependData: '@use "popup/styles/global.scss"'
+          prependData: '@use "popup/styles/global.scss";'
         }
       }),
       compilerOptions: {
