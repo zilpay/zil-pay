@@ -6,7 +6,7 @@
   "type": "module",
   "private": false,
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
     "build": "rollup -c",
     "build:v3": "rollup -c",
