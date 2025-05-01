@@ -6,20 +6,27 @@ Source Tree:
 zil-pay
 ├── __tests__
 │   ├── crypto
-│   │   └── random.test.ts
+│   │   ├── aes256.test.ts
+│   │   ├── pbkdf2.test.ts
+│   │   ├── random.test.ts
+│   │   ├── sha256.test.ts
+│   │   └── sha512.test.ts
 │   └── setupTests.ts
 ├── background
 │   └── index.ts
 ├── config
 │   ├── errors.ts
-│   └── pbkdf2.ts
+│   ├── pbkdf2.ts
+│   └── sha.ts
 ├── content
 │   └── index.ts
 ├── crypto
 │   ├── aes256.ts
 │   ├── index.ts
 │   ├── pbkdf2.ts
-│   └── random.ts
+│   ├── random.ts
+│   ├── sha256.ts
+│   └── sha512.ts
 ├── lib
 │   └── assert.ts
 ├── package.json
@@ -32,6 +39,101 @@ zil-pay
 ├── rollup.config.mjs
 ├── tsconfig.json
 └── vitest.config.ts
+
+```
+
+`zil-pay/__tests__/crypto/aes256.test.ts`:
+
+```ts
+import { test, expect } from 'vitest';
+import { Cipher } from '../../crypto/aes256';
+import { ErrorMessages } from '../../config/errors';
+
+test('encrypt encrypts data and decrypt successfully recovers it', () => {
+  const key = new TextEncoder().encode('1234567890123456'); // 16-byte key
+  const content = new TextEncoder().encode('Hello, ZilPay!');
+
+  const encrypted = Cipher.encrypt(content, key);
+  const decrypted = Cipher.decrypt(encrypted, key);
+
+  expect(new TextDecoder().decode(decrypted)).toBe('Hello, ZilPay!');
+});
+
+test('decrypt with wrong key does not return original content', () => {
+  const key = new TextEncoder().encode('correctKey123456'); // 16-byte key
+  const wrongKey = new TextEncoder().encode('wrongKey12345678'); // 16-byte key
+
+  const content = new TextEncoder().encode('Secret message');
+  const encrypted = Cipher.encrypt(content, key);
+
+  const decrypted = Cipher.decrypt(encrypted, wrongKey);
+
+  expect(decrypted).not.toEqual(content);
+  expect(new TextDecoder().decode(decrypted)).not.toBe(
+    new TextDecoder().decode(content)
+  );
+});
+
+test('encrypt throws if key length is invalid', () => {
+  const invalidKey = new TextEncoder().encode('shortkey'); // <16 bytes
+  const content = new TextEncoder().encode('Data');
+
+  expect(() => Cipher.encrypt(content, invalidKey)).toThrowError(
+    ErrorMessages.InvalidKeyLength
+  );
+});
+
+```
+
+`zil-pay/__tests__/crypto/pbkdf2.test.ts`:
+
+```ts
+
+import { test, expect, vi } from 'vitest';
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { ShaAlgorithms } from '../../config/pbkdf2';
+import { utils } from 'aes-js';
+
+test('pbkdf2 calls Web Crypto API correctly with default SHA-512', async () => {
+  const password = new TextEncoder().encode('password');
+  const salt = new TextEncoder().encode('salt');
+  const iterations = 1000;
+  const result = await pbkdf2(password, salt, iterations, ShaAlgorithms.Sha512);
+  const shouldBe = "afe6c5530785b6cc6b1c6453384731bd5ee432ee549fd42fb6695779ad8a1c5bf59de69c48f774efc4007d5298f9033c0241d5ab69305e7b64eceeb8d834cfec";
+ 
+  expect(utils.hex.fromBytes(result)).toBe(shouldBe);
+});
+
+```
+
+`zil-pay/__tests__/crypto/random.test.ts`:
+
+```ts
+import { test, expect, vi } from 'vitest';
+import { randomBytes } from '../../crypto/random';
+
+test('randomBytes generates a non-zero Uint8Array of the specified length', () => {
+  const length = 16;
+  const result = randomBytes(length);
+
+  expect(result).toBeInstanceOf(Uint8Array);
+  expect(result.length).toBe(length);
+
+  const zeroArray = new Uint8Array(length);
+  expect(result).not.toEqual(zeroArray);
+
+  expect(result.some((byte) => byte !== 0)).toBe(true);
+});
+
+test('randomBytes uses window.crypto.getRandomValues to seed the ChaCha20 RNG', () => {
+  const spyGetRandomValues = vi.spyOn(window.crypto, 'getRandomValues');
+  const length = 8;
+  
+  randomBytes(length);
+  
+  expect(spyGetRandomValues).toHaveBeenCalled();
+  spyGetRandomValues.mockRestore();
+});
 
 ```
 
@@ -86,7 +188,6 @@ import { randomBytes } from "../crypto/random";
 export enum ErrorMessages {
   IncorrectParams = "Incorrect or missing parameters provided.",
   InvalidFormat = "Invalid data format encountered during decryption.",
-  DecryptionFailed = "Decryption failed. Data might be corrupt or the key is incorrect.",
   InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
 }
 
@@ -102,18 +203,32 @@ export enum ShaAlgorithms {
 
 ```
 
+`zil-pay/config/sha.ts`:
+
+```ts
+export enum ShaAlgorithms {
+  Sha512 = "SHA-512",
+  sha256 = "SHA-256",
+}
+
+```
+
 `zil-pay/crypto/aes256.ts`:
 
 ```ts
 import { Counter, ModeOfOperation, utils } from 'aes-js';
 import { ErrorMessages } from '../config/errors';
-import { randomBytes } from 'crypto';
-import assert from 'assert';
+import { randomBytes } from 'crypto/random';
+import { assert } from 'lib/assert';
 
 export const Cipher = Object.freeze({
   encrypt(content: Uint8Array, key: Uint8Array): Uint8Array {
     assert(Boolean(content), ErrorMessages.IncorrectParams);
     assert(Boolean(key), ErrorMessages.IncorrectParams);
+    
+    if (![16, 24, 32].includes(key.length)) {
+      throw new Error(ErrorMessages.InvalidKeyLength);
+    }
 
     const entropy = randomBytes(16);
     const iv = new Counter(entropy);
@@ -122,21 +237,19 @@ export const Cipher = Object.freeze({
     const bytes = utils.utf8.toBytes(
       `${utils.hex.fromBytes(encrypted)}/${utils.hex.fromBytes(entropy)}`
     );
-
     return bytes;
   },
   decrypt(bytes: Uint8Array, key: Uint8Array): Uint8Array {
     assert(Boolean(bytes), ErrorMessages.IncorrectParams);
     assert(Boolean(key), ErrorMessages.IncorrectParams);
 
+    if (![16, 24, 32].includes(key.length)) {
+      throw new Error(ErrorMessages.InvalidKeyLength);
+    }
+
     const [encrypted, iv] = utils.utf8.fromBytes(bytes).split('/');
-
     const counter = new Counter(utils.hex.toBytes(iv));
-    const aesCtr = new ModeOfOperation.ctr(
-      key,
-      counter
-    );
-
+    const aesCtr = new ModeOfOperation.ctr(key, counter);
     return aesCtr.decrypt(utils.hex.toBytes(encrypted));
   }
 });
@@ -200,6 +313,31 @@ export function randomBytes(length: number): Uint8Array {
 
 ```
 
+`zil-pay/crypto/sha256.ts`:
+
+```ts
+import { ShaAlgorithms } from "config/pbkdf2";
+
+export async function sha256(value: Uint8Array) {
+  const crypto = globalThis.crypto;
+  const hash = await crypto.subtle.digest(ShaAlgorithms.sha256, value);
+  return new Uint8Array(hash);
+}
+
+```
+
+`zil-pay/crypto/sha512.ts`:
+
+```ts
+import { ShaAlgorithms } from "config/pbkdf2";
+
+export async function sha512(value: Uint8Array) {
+  const crypto = globalThis.crypto;
+  return crypto.subtle.digest(ShaAlgorithms.Sha512, value);
+}
+
+```
+
 `zil-pay/lib/assert.ts`:
 
 ```ts
@@ -222,7 +360,7 @@ export function assert(expressions: boolean, msg: string) {
   "type": "module",
   "private": false,
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
     "build": "rollup -c",
     "build:v3": "rollup -c",
@@ -257,6 +395,7 @@ export function assert(expressions: boolean, msg: string) {
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@hicaru/argon2-pure.js": "^0.0.1",
     "@hicaru/chacharand.js": "^0.0.2",
     "aes-js": "^3.1.2"
   },

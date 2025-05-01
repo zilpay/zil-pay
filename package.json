@@ -41,6 +41,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@hicaru/argon2-pure.js": "^0.0.1",
     "@hicaru/chacharand.js": "^0.0.2",
     "aes-js": "^3.1.2"
   },
