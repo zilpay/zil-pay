@@ -1,7 +1,7 @@
 import { Counter, ModeOfOperation, utils } from 'aes-js';
 import { ErrorMessages } from '../config/errors';
-import { randomBytes } from 'crypto';
-import assert from 'assert';
+import { randomBytes } from 'crypto/random';
+import { assert } from 'lib/assert';
 
 export const Cipher = Object.freeze({
   encrypt(content: Uint8Array, key: Uint8Array): Uint8Array {
