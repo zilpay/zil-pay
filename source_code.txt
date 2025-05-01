@@ -1,0 +1,561 @@
+Project Path: zil-pay
+
+Source Tree:
+
+```txt
+zil-pay
+├── background
+│   └── index.ts
+├── config
+│   ├── errors.ts
+│   └── pbkdf2.ts
+├── content
+│   └── index.ts
+├── crypto
+│   ├── aes256.ts
+│   ├── index.ts
+│   ├── pbkdf2.ts
+│   └── random.ts
+├── package.json
+├── popup
+│   ├── index.ts
+│   └── main.ts
+├── public
+│   ├── manifest_2.json
+│   └── manifest_3.json
+├── rollup.config.mjs
+└── tsconfig.json
+
+```
+
+`zil-pay/background/index.ts`:
+
+```ts
+import { randomBytes } from "../crypto/random";
+
+(function() {
+  let bytes = randomBytes(16);
+
+  console.log(bytes);
+}());
+
+```
+
+`zil-pay/config/errors.ts`:
+
+```ts
+export enum ErrorMessages {
+  IncorrectParams = "Incorrect or missing parameters provided.",
+  InvalidFormat = "Invalid data format encountered during decryption.",
+  DecryptionFailed = "Decryption failed. Data might be corrupt or the key is incorrect.",
+  InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
+}
+
+```
+
+`zil-pay/config/pbkdf2.ts`:
+
+```ts
+export enum ShaAlgorithms {
+  Sha512 = 'SHA-512',
+  sha256 = 'SHA-256'
+}
+
+```
+
+`zil-pay/crypto/aes256.ts`:
+
+```ts
+import { Counter, ModeOfOperation, utils } from 'aes-js';
+import assert from 'assert';
+import { ErrorMessages } from '../config/errors';
+import { randomBytes } from 'crypto';
+
+export const Cipher = Object.freeze({
+  encrypt(content: Uint8Array, key: Uint8Array) {
+    assert(Boolean(content), ErrorMessages.IncorrectParams);
+    assert(Boolean(key), ErrorMessages.IncorrectParams);
+
+    const entropy = randomBytes(16);
+    const iv = new Counter(entropy);
+    const aesCtr = new ModeOfOperation.ctr(key, iv);
+    const encrypted = aesCtr.encrypt(content);
+    const bytes = utils.utf8.toBytes(
+      `${utils.hex.fromBytes(encrypted)}/${utils.hex.fromBytes(entropy)}`
+    );
+
+    return bytes;
+  },
+  decrypt(bytes: Uint8Array, key: Uint8Array) {
+    assert(Boolean(bytes), ErrorMessages.IncorrectParams);
+    assert(Boolean(key), ErrorMessages.IncorrectParams);
+
+    const [encrypted, iv] = utils.utf8.fromBytes(bytes).split('/');
+
+    const counter = new Counter(utils.hex.toBytes(iv));
+    const aesCtr = new ModeOfOperation.ctr(
+      key,
+      counter
+    );
+
+    return aesCtr.decrypt(utils.hex.toBytes(encrypted));
+  }
+});
+
+```
+
+`zil-pay/crypto/pbkdf2.ts`:
+
+```ts
+import { ShaAlgorithms } from "../config/pbkdf2";
+
+
+export async function pbkdf2(password: Uint8Array, salt: Uint8Array, iterations: number, algorithms = ShaAlgorithms.Sha512) {
+  const passphraseKey = await globalThis.crypto.subtle.importKey(
+    'raw',
+    password,
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey']
+  );
+  const webKey = await globalThis.crypto.subtle.deriveKey(
+    {
+      salt,
+      iterations,
+      name: 'PBKDF2',
+      hash: algorithms
+    },
+    passphraseKey,
+    {
+      name: "HMAC",
+      hash: algorithms,
+      length: 512
+    },
+    true,
+    ["sign", "verify"]
+  );
+  const hash = await globalThis.crypto.subtle.exportKey("raw", webKey);
+
+  return new Uint8Array(hash);
+}
+
+```
+
+`zil-pay/crypto/random.ts`:
+
+```ts
+import { ChaCha20Rng } from '@hicaru/chacharand.js';
+
+export function randomBytes(length: number): Uint8Array {
+  const buffer = new Uint8Array(length);
+  const randomSeed = new Uint8Array(32);
+
+  window.crypto.getRandomValues(randomSeed);
+
+  const rng = ChaCha20Rng(randomSeed);
+
+  rng.fillBytes(buffer);
+
+  return buffer;
+};
+
+```
+
+`zil-pay/package.json`:
+
+```json
+{
+  "name": "zil-pay",
+  "version": "1.4.1",
+  "description": "ZilPay browser Extension for zilliqa blockchain",
+  "shortName": "ZilPay",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "build": "rollup -c",
+    "build:v3": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public --no-clear",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/bun": "latest",
+    "@types/chrome": "^0.0.313",
+    "rollup": "^4.40.0",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-css-only": "^4.5.2",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-svelte": "^7.2.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-visualizer": "^5.14.0",
+    "sass": "^1.86.3",
+    "svelte": "^5.26.2",
+    "svelte-check": "^3.6.4",
+    "svelte-preprocess": "^6.0.3",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@hicaru/chacharand.js": "^0.0.2",
+    "aes-js": "^3.1.2"
+  },
+  "keywords": [
+    "blockchain",
+    "zilliqa",
+    "ZilPay",
+    "dapp",
+    "metamask"
+  ],
+  "license": "MIT",
+  "homepage": "https://zilpay.io/",
+  "author": "Rinat Hasanshin <lich666black@gmail.com>",
+  "engines": {
+    "node": ">=14",
+    "npm": "^8.0.0"
+  }
+}
+
+```
+
+`zil-pay/popup/main.ts`:
+
+```ts
+import { mount } from 'svelte';
+import App from './App.svelte';
+
+export default mount(App, {
+	target: document.body,
+});
+
+```
+
+`zil-pay/public/manifest_2.json`:
+
+```json
+{
+  "name": "ZilPay",
+  "author": "Rinat",
+  "manifest_version": 2,
+  "icons": {
+    "16": "icons/icon16.png",
+    "19": "icons/icon19.png",
+    "38": "icons/icon38.png",
+    "39": "icons/icon39.png",
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "chromeos": "Alt+Shift+Z",
+        "linux": "Alt+Shift+Z",
+        "mac": "Alt+Shift+Z",
+        "windows": "Alt+Shift+Z"
+      }
+    }
+  },
+  "permissions": [
+    "storage",
+    "notifications",
+    "activeTab",
+    "alarms",
+    "https://api.zilliqa.com/",
+    "https://dev-api.zilliqa.com/",
+    "http://127.0.0.1/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    "phishing.html"
+  ],
+  "browser_action": {
+    "default_icon": {
+      "19": "icons/icon19.png",
+      "38": "icons/icon38.png"
+    },
+    "default_title": "ZilPay",
+    "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
+}
+
+```
+
+`zil-pay/public/manifest_3.json`:
+
+```json
+
+{
+  "name": "ZilPay",
+  "author": "Rinat",
+  "description": "",
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "notifications",
+    "activeTab",
+    "alarms"
+  ],
+    "icons": {
+    "16": "icons/icon16.png",
+    "19": "icons/icon19.png",
+    "38": "icons/icon38.png",
+    "39": "icons/icon39.png",
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "inpage.js", "phishing.html" ],
+      "matches": [ "*://*/*" ]
+    }
+  ],
+  "host_permissions": ["<all_urls>"],
+  "minimum_chrome_version": "93",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "ZilPay",
+    "default_popup": "index.html"
+  }
+}
+
+```
+
+`zil-pay/rollup.config.mjs`:
+
+```mjs
+import svelte from 'rollup-plugin-svelte';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import { sveltePreprocess } from 'svelte-preprocess';
+import typescript from '@rollup/plugin-typescript';
+import { terser } from 'rollup-plugin-terser';
+import json from '@rollup/plugin-json';
+import copy from 'rollup-plugin-copy';
+import { visualizer } from 'rollup-plugin-visualizer';
+import replace from '@rollup/plugin-replace';
+import postcss from 'rollup-plugin-postcss';
+import cssnano from 'cssnano';
+
+import { readFileSync } from 'fs';
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+
+const production = !process.env.ROLLUP_WATCH;
+const manifest = process.env.MANIFEST || 2;
+
+const createConfig = (name, input, output, extraPlugins = []) => ({
+  input,
+  output: {
+    sourcemap: !production,
+    format: 'iife',
+    name,
+    file: output
+  },
+  plugins: [
+    ...extraPlugins,
+    resolve({
+      browser: true,
+      dedupe: ['svelte'],
+      extensions: ['.mjs', '.js', '.json', '.node', '.ts', '.svelte']
+    }),
+    commonjs(),
+    typescript({
+      sourceMap: !production,
+      inlineSources: !production,
+      // outputToFilesystem: true,
+      compilerOptions: {
+        // noEmit: false
+      }
+    }),
+    json(),
+    production && terser({
+      format: {
+        comments: false
+      },
+      compress: true
+    }),
+    production && visualizer({
+      filename: `stats/${name}.html`
+    })
+  ],
+  watch: {
+    clearScreen: false
+  }
+});
+
+const popup = createConfig(
+  'popup',
+  'popup/main.ts',
+  'dist/bundle.js',
+  [
+    svelte({
+      preprocess: sveltePreprocess({
+        sourceMap: !production,
+        scss: {
+          renderSync: true,
+          includePaths: ['popup/styles/'],
+          prependData: '@use "popup/styles/global.scss";'
+        }
+      }),
+      compilerOptions: {
+        dev: !production
+      }
+    }),
+    postcss({
+      extract: 'bundle.css',
+      minimize: production,
+      plugins: [
+        cssnano({
+          preset: 'default'
+        })
+      ],
+      sourceMap: !production
+    })
+  ]
+);
+
+const background = createConfig(
+  'background',
+  'background/index.ts',
+  'dist/background.js',
+  [
+    replace({
+      preventAssignment: true,
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+      'global': 'window',
+      'process.browser': true
+    }),
+    copy({
+      targets: [
+        { src: 'public/icons', dest: 'dist/' },
+        { src: 'public/fonts', dest: 'dist/' },
+        { src: 'public/lang', dest: 'dist/' },
+        { src: 'public/imgs', dest: 'dist/' },
+        { src: 'public/index.html', dest: 'dist/' },
+        { src: 'public/phishing.html', dest: 'dist/' },
+        {
+          src: `public/manifest_${manifest}.json`,
+          dest: 'dist/',
+          rename: 'manifest.json',
+          transform: (contents) => {
+            const jsonContent = JSON.parse(contents);
+            jsonContent.version = pkg.version;
+            jsonContent.short_name = pkg.shortName || pkg.name;
+            jsonContent.description = pkg.description;
+            jsonContent.author = pkg.homepage;
+            return JSON.stringify(jsonContent, null, 2);
+          }
+        }
+      ]
+    })
+  ]
+);
+
+const content = createConfig(
+  'content',
+  'content/index.ts',
+  'dist/content.js',
+  [
+    replace({
+      preventAssignment: true,
+    })
+  ]
+);
+
+export default [
+  popup,
+  background,
+  content
+];
+
+```
+
+`zil-pay/tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false,
+    
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "app/*": ["popup/*"],
+      "background/*": ["core/background/*"],
+      "content/*": ["core/content/*"],
+      "config/*": ["config/*"],
+      "lib/*": ["lib/*"],
+      "types/*": ["types/*"],
+    },
+    "types": ["svelte", "chrome"]
+  },
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
+  "include": [
+    "popup/**/*",
+    "core/**/*",
+    "lib/**/*",
+    "types/**/*"
+  ],
+  "extends": "@tsconfig/svelte/tsconfig.json"
+}
+
+```

@@ -10,10 +10,9 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import replace from '@rollup/plugin-replace';
 import postcss from 'rollup-plugin-postcss';
 import cssnano from 'cssnano';
-
 import { readFileSync } from 'fs';
-const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 const production = !process.env.ROLLUP_WATCH;
 const manifest = process.env.MANIFEST || 2;
 
@@ -26,21 +25,23 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
     file: output
   },
   plugins: [
-    ...extraPlugins,
-    resolve({
-      browser: true,
-      dedupe: ['svelte']
-    }),
-    commonjs(),
     typescript({
       sourceMap: !production,
       inlineSources: !production,
-      outputToFilesystem: true,
       compilerOptions: {
-        noEmit: false
+        noEmit: false,
+        declaration: false,
+        declarationMap: false
       }
     }),
+    resolve({
+      browser: true,
+      dedupe: ['svelte'],
+      extensions: ['.ts', '.mjs', '.js', '.json', '.svelte']
+    }),
+    commonjs(),
     json(),
+    ...extraPlugins,
     production && terser({
       format: {
         comments: false

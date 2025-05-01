@@ -9,7 +9,6 @@
     "build": "rollup -c",
     "build:v3": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
@@ -19,6 +18,7 @@
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-typescript": "^12.1.2",
     "@tsconfig/svelte": "^5.0.4",
+    "@types/aes-js": "^3.1.4",
     "@types/bun": "latest",
     "@types/chrome": "^0.0.313",
     "rollup": "^4.40.0",
@@ -37,7 +37,10 @@
   "peerDependencies": {
     "typescript": "^5.8.3"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@hicaru/chacharand.js": "^0.0.2",
+    "aes-js": "^3.1.2"
+  },
   "keywords": [
     "blockchain",
     "zilliqa",
