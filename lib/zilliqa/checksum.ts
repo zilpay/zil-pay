@@ -11,19 +11,20 @@ function hasHexPrefix(str: string): boolean {
   return str.toLowerCase().startsWith('0x');
 }
 
-export async function toChecksumAddress(address: string): Promise<string> {
-  let lowerCaseAddress = address.toLowerCase();
-  if (hasHexPrefix(address)) {
-    lowerCaseAddress = lowerCaseAddress.slice(2);
-  }
-
-  const addressBytes = new Uint8Array(utils.hex.toBytes(lowerCaseAddress));
+/**
+ * Calculates the checksummed hexadecimal address from a byte array.
+ *
+ * @param addressBytes The address as a Uint8Array.
+ * @returns The checksummed hexadecimal address string with the '0x' prefix.
+ */
+export async function toChecksumBytesAddress(addressBytes: Uint8Array): Promise<string> {
+  const addressHex = utils.hex.fromBytes(addressBytes);
   const hashBytes = await sha256(addressBytes);
   const hashBigInt = BigInt(`0x${utils.hex.fromBytes(hashBytes)}`);
   let checksumAddress = '0x';
 
-  for (let i = 0; i < lowerCaseAddress.length; i++) {
-    const char = lowerCaseAddress[i];
+  for (let i = 0; i < addressHex.length; i++) {
+    const char = addressHex[i];
     if (/[0-9]/.test(char)) {
       checksumAddress += char;
     } else {
@@ -40,4 +41,20 @@ export async function toChecksumAddress(address: string): Promise<string> {
   }
 
   return checksumAddress;
+}
+
+/**
+ * Calculates the checksummed hexadecimal address from a hexadecimal string.
+ *
+ * @param address The hexadecimal address string, optionally with the '0x' prefix.
+ * @returns The checksummed hexadecimal address string with the '0x' prefix.
+ */
+export async function toChecksumHexAddress(address: string): Promise<string> {
+  let lowerCaseAddress = address.toLowerCase();
+  if (hasHexPrefix(address)) {
+    lowerCaseAddress = lowerCaseAddress.slice(2);
+  }
+
+  const addressBytes = new Uint8Array(utils.hex.toBytes(lowerCaseAddress));
+  return toChecksumBytesAddress(addressBytes);
 }
