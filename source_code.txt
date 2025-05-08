@@ -1,0 +1,496 @@
+Project Path: streem
+
+Source Tree:
+
+```txt
+streem
+├── message.ts
+├── secure-message.ts
+├── stream-keys.ts
+├── subject.ts
+├── tab-stream.ts
+└── tabs-message.ts
+
+```
+
+`streem/message.ts`:
+
+```ts
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+import { Runtime } from 'lib/runtime';
+
+export interface ReqBody {
+  type: string;
+  payload?: any;
+  domain?: string;
+  from?: string;
+}
+
+/**
+ * Message class can send payload or make signal message.
+ * @example
+ * import { Message } from 'lib/stream/message'
+ * const msg = { type: '@example/type', payload: { test: 1} }
+ * const message = new Message(msg)
+ * message.send().then(() => / Do something... /)
+ * or
+ * Message.signal('@example/type').send().then(() => / Do something... /)
+ */
+export class Message<T> {
+  /**
+   * Make just signal message.
+   */
+  public static signal(type: string): Message<object> {
+    return new Message({
+      type,
+      domain: globalThis.document.domain
+    });
+  }
+
+  private readonly _body: ReqBody;
+
+  /**
+   * Recieve msg object.
+   * @param {Object} msg - Message for send.
+   */
+  constructor(msg: ReqBody) {
+    this._body = msg;
+  }
+
+  async send(): Promise<T> {
+    for (let index = 0; index < 100; index++) {
+      try {
+        const res = await this.#trySend();
+
+        if (res) {
+          return res;
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    throw new Error("service_worker_stoped");
+  }
+
+  #trySend(): Promise<T> {
+    return new Promise((resolve) => {
+      try {
+        Runtime
+          .runtime
+          .sendMessage(this._body, resolve);
+      } catch (err) {
+        console.error(this, err);
+        window.location.reload();
+      }
+    });
+  }
+}
+
+```
+
+`streem/secure-message.ts`:
+
+```ts
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+
+import type { ReqBody } from './message';
+import type { TabStream } from './tab-stream';
+
+/**
+ * Can send encrypted msg.
+ */
+export class ContentMessage {
+ private readonly _body: ReqBody;
+
+ public get type() {
+  return this._body.type;
+ }
+
+ public get payload() {
+  return this._body.payload;
+ }
+
+ constructor(msg: ReqBody) {
+  this._body = msg;
+ }
+
+ /**
+  * Method for send message.
+  */
+ public send(stream: TabStream, recipient: string) {
+  const seralized = JSON.stringify(this._body);
+  const deserialized = JSON.parse(seralized);
+
+  stream.send(deserialized, recipient);
+ }
+
+}
+
+```
+
+`streem/stream-keys.ts`:
+
+```ts
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+
+// This string need that sould did't have problem with conflicts.
+const app = 'zil-pay';
+
+export const MTypeTabContent = {
+  CONTENT: `@/${app}/content-script`,
+  INJECTED: `@/${app}/injected-script`
+};
+
+export const MTypePopup = {
+  GET_RANDOM_SEED: `@/${app}/generate-random-seed`,
+  CREATE_ACCOUNT_BY_SEED: `@/${app}/set-account-by-seed-words`,
+
+  SET_PASSWORD: `@/${app}/popup-set-password`,
+  LOG_OUT: `@/${app}/popup-logout`,
+  SET_SEED_AND_PASSWORD: `@/${app}/popup-set-seed-words-and-password`,
+  WALET_PASSWORD_CHANGE: `@/${app}/change-password`,
+
+  GET_WALLET_STATE: `@/${app}/get-wallet-state`,
+
+  EXPORT_SEED: `@/${app}/popup-export-seed-words`,
+  EXPORT_PRIVATE_KEY: `@/${app}/popup-export-private-key`,
+  EXPORT_QR_CODE_WALLET: `@/${app}/export-qr-code-wallet`,
+
+  IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
+  IMPORT_TRACK_ACCOUNT: `@/${app}/popup-import-track-account`,
+  IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
+  RM_ACCOUNT: `@/${app}/remove-selected-account`,
+  SELECT_ACCOUNT: `@/${app}/select-account`,
+  SET_ACCOUNT_NAME: `@/${app}/set-account-name`,
+
+  UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
+  UPDATE_TXNS: `@/${app}/check-processed-txns`,
+
+  DOMAIN_RESOLVE: `@/${app}/popup-resolve-domain`,
+
+  REJECT_CONFIRM_TX: `@/${app}/popup-reject-confirm-tx`,
+  REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
+  SEND_TO_SIGN_TX: `@/${app}/popup-send-to-sign-tx`,
+  GET_REQUIRED_PARAMS: `@/${app}/get-required-params`,
+  CLEAR_ALL_TXNS: `@/${app}/clear-all-txns`,
+  GET_CURRENT_NONCE: `@/${app}/get-current-nonce`,
+  RESET_NONCE: `@/${app}/reset-nonce`,
+
+  GET_ZRC2_STATE: `@/${app}/get-zrc2-token-info`,
+  ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
+  RM_TOKEN: `@/${app}/remove-token`,
+  GET_ZRC2_ALLOWANCES_FOR_SWAP: `@/${app}/get-zrc2-allowances-for-swap`,
+
+  UPDATE_NFT_LIST: `@/${app}/update-nft-list`,
+  GET_NFT_LIST: `@/${app}/get-nft-list`,
+  FETCH_NFT: `@/${app}/fetch-nft`,
+  ADD_NFT: `@/${app}/add-nft`,
+  REMOVE_NFT: `@/${app}/remove-nft`,
+
+  SELECT_SSN: `@/${app}/select-from-ssn-list`,
+  RESET_NETWROK: `@/${app}/reset-netwrok-settings`,
+  SET_NET_CONFIG: `@/${app}/set-netwrok-config`,
+  SELECT_NETWORK: `@/${app}/select-network`,
+  UPDATE_SSN_LIST: `@/${app}/update-ssn-list`,
+
+  ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
+
+  USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
+  RM_APP: `@/${app}/remove-dapp`,
+  CLEAR_APPS: `@/${app}/clear-all-apps`,
+  SET_PHISHING_DETECTION: `@/${app}/set-phishing-detection`,
+
+  ADD_CONTACT: `@/${app}/add-a-contact`,
+  RM_CONTACT: `@/${app}/remove-a-contact`,
+
+  CHANGE_CURRENCY: `@/${app}/change-currency`,
+  UPDATE_RATE: `@/${app}/update-rate`,
+  RESET_CURRENCY: `@/${app}/reset-currency`,
+
+  SET_THEME: `@/${app}/set-theme-mode`,
+  RESET_THEME: `@/${app}/reset-theme`,
+
+  SET_LOCALE: `@/${app}/set-locale`,
+  RESET_LOCALE: `@/${app}/reset-locale`,
+
+  SET_GAS_MULTIPLIER: `@/${app}/set-gas-multiplier`,
+  RESET_GAS: `@/${app}/reset-gas`,
+
+  SET_LOCK_TIME: `@/${app}/set-lock-timer`,
+  SET_ADDRESS_FORMAT: `@/${app}/set-address-format`,
+  SET_PROMT_ENABLED: `@/${app}/set-promt-enabled`,
+
+  REJECT_SIGN_MESSAGE: `@/${app}/reject-sign-message`,
+  SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`,
+
+  FROM_BECH32: `@/${app}/convert-from-bech32`,
+
+  UPDATE_DEX_DATA: `@/${app}/update-dex-data`,
+  UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`,
+
+  GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
+
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`,
+
+  GET_STAKE_PROPS: `@/${app}/get-stake-props`,
+
+  ADD_LEDGER_ACCOUNT: `@/${app}/add-ledger-account`,
+};
+
+export const MTypeTab = {
+  GET_WALLET_DATA: `@/${app}/injected-get-wallet-data`,
+  ADDRESS_CHANGED: `@/${app}/address-changed`,
+  NETWORK_CHANGED: `@/${app}/network-changed`,
+  LOCK_STAUS: `@/${app}/lack-status-updated`,
+
+  CONTENT_PROXY_MEHTOD: `@/${app}/request-through-content`,
+  CONTENT_PROXY_RESULT: `@/${app}/response-from-content`,
+
+  CALL_TO_SIGN_TX: `@/${app}/request-to-sign-tx`,
+  TX_RESULT: `@/${app}/response-tx-result`,
+
+  SIGN_MESSAGE: `@/${app}/request-to-sign-message`,
+  SING_MESSAGE_RES: `@/${app}/response-sign-message`,
+
+  NEW_BLOCK: `@/${app}/new-block-created`,
+
+  ADD_ENCRYPTION: `@/${app}/request-add-encryption`,
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  ADD_DECRYPTION: `@/${app}/add-decryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`,
+
+  CONNECT_APP: `@/${app}/request-to-connect-dapp`,
+  RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`,
+  DISCONNECT_APP: `@/${app}/request-to-disconnect-dapp`
+};
+
+```
+
+`streem/subject.ts`:
+
+```ts
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+import type { ReqBody } from "lib/streem/message";
+
+type Listener = (...args: ReqBody[]) => void;
+
+export class Subject {
+  readonly #events: Listener[] = [];
+
+  public on(listener: Listener): () => void {
+    this.#events.push(listener);
+    return () => this.removeListener(listener);
+  }
+
+  public removeListener(listener: Listener): void {
+    const idx: number = this.#events.indexOf(listener);
+    if(idx > -1) this.#events.splice(idx, 1);
+  }
+
+  public removeAllListeners(): void {
+    this.#events.splice(0, this.#events.length);
+  }
+
+  public emit(...args: ReqBody[]): void {
+    this.#events.forEach(listener => listener.apply(this, args));
+  }
+
+  public once(listener: Listener): void {
+    const remove: (() => void) = this.on((...args: ReqBody[]) => {
+      remove();
+      listener.apply(this, args);
+    });
+  }
+}
+
+```
+
+`streem/tab-stream.ts`:
+
+```ts
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+
+import type { ReqBody } from './message';
+import { MTypeTabContent } from './stream-keys';
+
+const { document } = globalThis;
+
+/**
+ * Used for communication between a web page and an extension's content script.
+ */
+ export class TabStream {
+
+  readonly #eventName: string;
+
+  /**
+   * Creates a new TabStream.
+   * @param {String} eventName - Event type.
+   */
+  constructor(eventName: string) {
+    this.#eventName = eventName
+  }
+
+  /**
+   * Message listener that returns decrypted messages when synced
+   */
+  public listen(cb: (payload: ReqBody) => void) {
+    document.addEventListener(this.#eventName, (event) => {
+      const detail = event['detail'];
+
+      if (detail) {
+        cb(JSON.parse(detail));
+      }
+    });
+  }
+
+  /**
+   * Message sender which encrypts messages and adds the sender.
+   * @param data - The payload to send.
+   * @param to - The stream to send messages to.
+   */
+  public send(data: ReqBody, to: string) {
+    data.from = this.#eventName;
+
+    if (Object.values(MTypeTabContent).includes(to)) {
+      this.#dispatch(JSON.stringify(data), to);
+    }
+  }
+
+  #dispatch(data: string, to: string) {
+    document.dispatchEvent(this.#getEvent(data, to));
+  }
+
+  /**
+   * Helper methods for building and sending events.
+   */
+  #getEventInit(detail: string) {
+    return {
+      detail
+    };
+  }
+
+  /**
+ * No modifly data
+ * @param encryptedData - No modifly data
+ * @param to - Event name.
+ */
+ #getEvent(detail: string, to: string) {
+    return new CustomEvent(to, this.#getEventInit(detail));
+  }
+}
+
+```
+
+`streem/tabs-message.ts`:
+
+```ts
+/*
+ * Project: ZilPay-wallet
+ * Author: Rinat(hiccaru)
+ * -----
+ * Modified By: the developer formerly known as Rinat(hiccaru) at <lich666black@gmail.com>
+ * -----
+ * Copyright (c) 2021 ZilPay
+ */
+import type { ReqBody } from './message';
+import { Runtime } from 'lib/runtime';
+
+/**
+ * TabsMessage is class for send messages for any tabs.
+ * @example
+ * import { TabsMessage } from 'lib/stream/message'
+ * const msg = { type: '@/tab/example', payload: {} }
+ * new TabsMessage(msg)
+ *   .send()
+ *   .then(() => / Do something... /)
+ */
+export class TabsMessage {
+  private readonly _body: ReqBody;
+
+  static tabs(): Promise<chrome.tabs.Tab[]> {
+    return new Promise(resolve => {
+      Runtime.tabs.query({}, resolve);
+    })
+  }
+
+  /**
+   * Recieve msg object.
+   */
+  constructor(msg: ReqBody) {
+    this._body = msg;
+  }
+
+  async send(...domains: string[]) {
+    // TODO: remove error.
+    throw new Error('send tabStream is not working');
+    const tabs = await TabsMessage.tabs();
+
+    tabs.forEach((tab) => {
+      if (tab && tab.url && domains.includes(new URL(tab.url).hostname)) {
+        const seralized = JSON.stringify(this._body);
+        const deserialized = JSON.parse(seralized);
+
+        Runtime.tabs.sendMessage(Number(tab.id), deserialized);
+      }
+    });
+  }
+
+  async sendAll() {
+    // Get all active tabs.
+    const tabs = (await TabsMessage.tabs())
+      .filter((tab) => tab.url && !tab.url.includes('chrome://'));
+
+    try {
+      for (let index = 0; index < tabs.length; index++) {
+        const tab = tabs[index];
+        const seralized = JSON.stringify(this._body);
+        const deserialized = JSON.parse(seralized);
+
+        // Sending to each tabs(pages)
+        Runtime.tabs.sendMessage(Number(tab.id), deserialized);
+      }
+    } catch (err) {
+      console.error('TabsMessage', err);
+      // If not tabs with injected script.
+    }
+  }
+}
+
+```
