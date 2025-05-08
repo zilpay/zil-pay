@@ -7,7 +7,7 @@ import { utils } from 'aes-js';
  * @param str The string to check.
  * @returns True if the string starts with '0x', false otherwise.
  */
-function hasHexPrefix(str: string): boolean {
+export function hasHexPrefix(str: string): boolean {
   return str.toLowerCase().startsWith('0x');
 }
 
