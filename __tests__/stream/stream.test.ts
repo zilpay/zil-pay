@@ -19,8 +19,7 @@ describe('Basic Test Message - Error Handling', () => {
   });
 
   it('should catch sendMessage error and log it', async () => {
-    const body: ReqBody = { type: 'ERROR_MESSAGE' };
-    const message = new Message(body);
+    const message = Message.signal("ERROR_MESSAGE");
     const sendMessageMock = Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>;
     const errorMessage = 'Simulated send error';
     sendMessageMock.mockImplementation(() => {
