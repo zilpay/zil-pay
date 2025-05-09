@@ -16,7 +16,7 @@ export class Message<T = unknown> {
     }
 
     async send(): Promise<T> {
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < 10; i++) {
             try {
                 const res = await this.#trySend();
                 if (res) return res;

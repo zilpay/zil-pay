@@ -26,7 +26,8 @@
       "content/*": ["content/*"],
       "config/*": ["config/*"],
       "crypto/*": ["crypto/*"],
-      "types/*": ["types/*"]
+      "types/*": ["types/*"],
+      "lib/*": ["lib/*"]
     },
     "types": ["svelte", "chrome"]
   },
