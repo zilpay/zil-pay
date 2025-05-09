@@ -16,7 +16,7 @@ export class Message<T = unknown> {
     }
 
     async send(): Promise<T> {
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 1; i++) {
             try {
                 const res = await this.#trySend();
                 if (res) return res;
@@ -26,20 +26,14 @@ export class Message<T = unknown> {
     }
 
     #trySend(): Promise<T> {
-        return new Promise((resolve, reject) => {
-            try {
-                Runtime.sendMessage(this.body)
-                  .then(resolve)
-                  .catch((err: Error) => {
-                    console.error(this, err);
-                    window.location.reload();
-                    reject(err);
-                  });
-            } catch (err) {
-                console.error(this, err);
-                window.location.reload();
-                reject(err);
-            }
+        return new Promise((resolve) => {
+          try {
+            let data = JSON.parse(JSON.stringify(this.body));
+            Runtime.runtime.sendMessage(data, resolve);
+          } catch (err) {
+            console.error(this, err);
+            window.location.reload();
+          }
         });
     }
 }
