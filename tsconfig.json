@@ -5,7 +5,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "verbatimModuleSyntax": true,
     "noEmit": false,
     "strict": true,
@@ -18,27 +18,16 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "rootDir": ".",
-    "baseUrl": ".",
+    "rootDir": "./",
+    "baseUrl": "./",
     "paths": {
-      "popup/*": ["popup/*"],
-      "background/*": ["background/*"],
-      "content/*": ["content/*"],
-      "config/*": ["config/*"],
-      "crypto/*": ["crypto/*"],
-      "types/*": ["types/*"],
-      "lib/*": ["lib/*"]
+      "lib/*": ["./lib/*"]
     },
     "types": ["svelte", "chrome"]
   },
   "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
   "include": [
-    "popup/**/*",
-    "background/**/*",
-    "content/**/*",
-    "config/**/*",
-    "crypto/**/*",
-    "types/**/*"
+    "lib/**/*"
   ],
   "extends": "@tsconfig/svelte/tsconfig.json"
 }

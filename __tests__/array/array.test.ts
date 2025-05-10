@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { shuffle } from 'lib/array/shuffle';
-import { chunk } from 'lib/array/chunk';
+import { shuffle } from '../../lib/array/shuffle';
+import { chunk } from '../../lib/array/chunk';
 
 describe('shuffle', () => {
   it('should shuffle an array of numbers', () => {
