@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as secp256k1 from 'noble-secp256k1';
 import { Schnorr } from '../../crypto/zilliqa/schnorr';
 import { utils } from 'aes-js';
+import { uint8ArrayToBigIntLittleEndian } from '../../crypto/number';
 
 describe('Schnorr Signature Tests', () => {
   it('should sign and verify correctly', async () => {
@@ -46,11 +47,9 @@ describe('Schnorr Signature Tests', () => {
 
       const signature = await Schnorr.sign(message, secretKey);
 
-      // Check r and s values
       expect(signature.r.toString(16)).toBe(expectedR.toLowerCase());
       expect(signature.s.toString(16)).toBe(expectedS.toLowerCase());
 
-      // Verify the signature
       const isValid = await Schnorr.verify(message, publicKey, signature);
       expect(isValid).toBe(true);
     }

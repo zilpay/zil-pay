@@ -30,7 +30,7 @@ export function uint8ArrayToBigIntBigEndian(array: Uint8Array): bigint {
  */
 export function uint8ArrayToBigIntLittleEndian(array: Uint8Array): bigint {
   if (!(array instanceof Uint8Array)) {
-    throw new TypeError('Input parameter must be an instance of Uint8Array.');
+    array = Uint8Array.from(array);
   }
 
   let result: bigint = 0n;

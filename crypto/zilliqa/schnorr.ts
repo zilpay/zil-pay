@@ -1,7 +1,7 @@
 import * as secp256k1 from 'noble-secp256k1';
 import { randomBytes } from '../random';
 import { sha256 } from '../sha256';
-import { uint8ArrayToBigIntBigEndian } from '../number';
+import { uint8ArrayToBigIntBigEndian, uint8ArrayToBigIntLittleEndian } from '../number';
 import { fromZILPrivateKey } from './pubkey';
 
 const MAX_TRY_SIGN = 100_000_000;
@@ -55,7 +55,7 @@ async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array):
   }
 
   // Compute s = k - r * secretKey mod n
-  const secretKeyScalar = uint8ArrayToBigIntBigEndian(secretKey);
+  const secretKeyScalar = uint8ArrayToBigIntLittleEndian(secretKey);
   const rTimesSecret = (r * secretKeyScalar) % secp256k1.CURVE.n;
   const s = (k - rTimesSecret + secp256k1.CURVE.n) % secp256k1.CURVE.n;
 
@@ -98,7 +98,7 @@ async function verify(
   // Compute r' = H(Q || publicKey || message) mod n
   const hasherInput = new Uint8Array([...Q, ...publicKey, ...message]);
   const hash = await sha256(hasherInput);
-  const rDash = uint8ArrayToBigIntBigEndian(hash) % secp256k1.CURVE.n;
+  const rDash = uint8ArrayToBigIntLittleEndian(hash) % secp256k1.CURVE.n;
 
   // Verification succeeds if r' == r
   return rDash === r;
