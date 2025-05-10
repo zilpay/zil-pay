@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import * as secp256k1 from 'noble-secp256k1';
-import { Schnorr } from '../../crypto/zilliqa/schnorr';
+import { signInner, verify } from '../../crypto/zilliqa/schnorr';
 import { utils } from 'aes-js';
-import { uint8ArrayToBigIntLittleEndian } from '../../crypto/number';
+import { uint8ArrayToBigIntBigEndian } from '../../crypto/number';
 
 describe('Schnorr Signature Tests', () => {
   it('should sign and verify correctly', async () => {
@@ -37,20 +36,22 @@ describe('Schnorr Signature Tests', () => {
         "2D78C77B736AD0A00FDF60695C01E96520656C13DC890A5B864672C6CED1C49A",
         "4B73D4D919D7B4DEF330391899EA02023851CABE044E34E18EAE3E10588CECCD",
         "D5DE85C4BDEA5910DC36AEF5660774D65291322C1E87FDA0D00C864E8C5FED29",
-      ],
+      ]
     ];
 
-    for (const [messageHex, publicKeyHex, secretKeyHex, _kHex, expectedR, expectedS] of cases) {
+    for (const [messageHex, publicKeyHex, secretKeyHex, kHex, expectedR, expectedS] of cases) {
       const message = utils.hex.toBytes(messageHex); // Hex-decoded message, as in Rust
       const publicKey = utils.hex.toBytes(publicKeyHex);
       const secretKey = utils.hex.toBytes(secretKeyHex);
+      const kBytes = utils.hex.toBytes(kHex);
+      const k = uint8ArrayToBigIntBigEndian(kBytes);
 
-      const signature = await Schnorr.sign(message, secretKey);
+      const signature = await signInner(k, message, secretKey);
 
-      expect(signature.r.toString(16)).toBe(expectedR.toLowerCase());
-      expect(signature.s.toString(16)).toBe(expectedS.toLowerCase());
+      expect(signature?.r.toString(16)).toBe(expectedR.toLowerCase());
+      expect(signature?.s.toString(16)).toBe(expectedS.toLowerCase());
 
-      const isValid = await Schnorr.verify(message, publicKey, signature);
+      const isValid = await verify(message, publicKey, signature!);
       expect(isValid).toBe(true);
     }
   });

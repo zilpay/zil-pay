@@ -1,21 +1,12 @@
 import * as secp256k1 from 'noble-secp256k1';
 import { randomBytes } from '../random';
 import { sha256 } from '../sha256';
-import { uint8ArrayToBigIntBigEndian, uint8ArrayToBigIntLittleEndian } from '../number';
+import { uint8ArrayToBigIntBigEndian } from '../number';
 import { fromZILPrivateKey } from './pubkey';
 
 const MAX_TRY_SIGN = 100_000_000;
 
-// Custom error class for Schnorr-related errors
-class SchnorrError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'SchnorrError';
-  }
-}
-
-// Sign a message using a secret key, following the Schnorr-like signature scheme
-async function sign(message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature> {
+export async function sign(message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature> {
   let safeCounter = 0;
 
   while (safeCounter < MAX_TRY_SIGN) {
@@ -32,11 +23,10 @@ async function sign(message: Uint8Array, secretKey: Uint8Array): Promise<secp256
     safeCounter++;
   }
 
-  throw new SchnorrError('InvalidSignTry: Exceeded maximum signing attempts');
+  throw new Error('InvalidSignTry: Exceeded maximum signing attempts');
 }
 
-// Inner signing function that attempts to create a signature with a given k
-async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature | null> {
+export async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature | null> {
   // Compute public key from secret key (compressed, 33 bytes)
   const publicKey = fromZILPrivateKey(secretKey);
 
@@ -55,7 +45,7 @@ async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array):
   }
 
   // Compute s = k - r * secretKey mod n
-  const secretKeyScalar = uint8ArrayToBigIntLittleEndian(secretKey);
+  const secretKeyScalar = uint8ArrayToBigIntBigEndian(secretKey);
   const rTimesSecret = (r * secretKeyScalar) % secp256k1.CURVE.n;
   const s = (k - rTimesSecret + secp256k1.CURVE.n) % secp256k1.CURVE.n;
 
@@ -68,24 +58,17 @@ async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array):
   return new secp256k1.Signature(r, s);
 }
 
-// Verify a signature for a message using a public key
-async function verify(
+export async function verify(
   message: Uint8Array,
   publicKey: Uint8Array,
   signature: secp256k1.Signature
 ): Promise<boolean> {
-  try {
-    secp256k1.Point.fromHex(publicKey); // Validate public key
-  } catch {
-    return false; // Invalid public key
-  }
-
   const r = signature.r;
   const s = signature.s;
 
   // Compute Q = s * G + r * publicKey
   const sG = secp256k1.Point.BASE.multiply(s); // s * G
-  const publicKeyPoint = secp256k1.Point.fromHex(publicKey);
+  const publicKeyPoint = secp256k1.Point.fromHex(Uint8Array.from(publicKey));
   const rPub = publicKeyPoint.multiply(r); // r * publicKey
   const QPoint = sG.add(rPub);
   const Q = QPoint.toRawBytes(true); // Compressed Q
@@ -98,15 +81,10 @@ async function verify(
   // Compute r' = H(Q || publicKey || message) mod n
   const hasherInput = new Uint8Array([...Q, ...publicKey, ...message]);
   const hash = await sha256(hasherInput);
-  const rDash = uint8ArrayToBigIntLittleEndian(hash) % secp256k1.CURVE.n;
+  const rDash = uint8ArrayToBigIntBigEndian(hash) % secp256k1.CURVE.n;
 
   // Verification succeeds if r' == r
   return rDash === r;
 }
 
-export const Schnorr = Object.freeze({
-  sign,
-  verify,
-  SchnorrError,
-});
 
