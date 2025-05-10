@@ -1,4 +1,4 @@
-import type { StorageKeyValue } from 'lib/storage';
+import type { StorageKeyValue } from './builder';
 import type { Fields } from 'config/fields';
 import { Runtime } from 'lib/runtime/extensionizer';
 

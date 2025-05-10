@@ -1,5 +1,5 @@
-import { TypeOf } from 'lib/type/type-checker';
 import type { Fields } from 'config/fields';
+import { TypeOf } from '../types/checker';
 
 export type StorageKeyValue = {
     [key: string]: string;
