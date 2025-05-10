@@ -27,8 +27,7 @@ describe('Basic Test Message - Error Handling', () => {
     });
 
     await expect(message.send()).rejects.toThrow('service_worker_stopped');
-
-    expect(sendMessageMock).toHaveBeenCalledTimes(1);
+    expect(sendMessageMock).toHaveBeenCalledTimes(10);
     expect(mockConsoleError).toHaveBeenCalledWith(message, new Error(errorMessage));
   });
 });
