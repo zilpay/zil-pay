@@ -29,7 +29,7 @@ export const Bip39 = Object.freeze({
    * @returns A mnemonic object with phrase and words.
    * @throws Error if entropyBits is invalid.
    */
-  generateMnemonic(entropyBits: number = 128, wordList: string[]): Mnemonic {
+  async generateMnemonic(entropyBits: number = 128, wordList: string[]): Promise<Mnemonic> {
     assert(ENTROPY_BITS.includes(entropyBits), Bip39Error.InvalidEntropy);
 
     const entropyBytes = entropyBits / 8;
@@ -39,7 +39,7 @@ export const Bip39 = Object.freeze({
     const wordCount = totalBits / 11;
 
     // Compute SHA-256 checksum
-    const hash = sha256(entropy);
+    const hash = await sha256(entropy);
     const checksum = hash[0] >> (8 - checksumBits);
 
     // Combine entropy and checksum
@@ -70,7 +70,7 @@ export const Bip39 = Object.freeze({
    * @returns True if valid, throws error otherwise.
    * @throws Error if mnemonic is invalid.
    */
-  validateMnemonic(mnemonic: string, wordList: string[]): boolean {
+  async validateMnemonic(mnemonic: string, wordList: string[]): Promise<boolean> {
     const words = mnemonic.trim().split(/\s+/);
     const wordCount = words.length;
     const validWordCounts = [12, 15, 18, 21, 24];
@@ -101,7 +101,7 @@ export const Bip39 = Object.freeze({
     }
 
     // Verify checksum
-    const hash = sha256(entropyBytes);
+    const hash = await sha256(entropyBytes);
     const computedChecksum = hash[0] >> (8 - (wordCount / 3));
     const expectedChecksum = parseInt(checksum, 2);
 
@@ -165,7 +165,7 @@ export const Bip39 = Object.freeze({
    * @returns A mnemonic object with phrase and words.
    * @throws Error if entropy length is invalid.
    */
-  entropyToMnemonic(entropy: Uint8Array, wordList: string[]): Mnemonic {
+  async entropyToMnemonic(entropy: Uint8Array, wordList: string[]): Promise<Mnemonic> {
     const entropyBits = entropy.length * 8;
     assert(ENTROPY_BITS.includes(entropyBits), Bip39Error.InvalidEntropy);
 
@@ -174,7 +174,7 @@ export const Bip39 = Object.freeze({
     const wordCount = totalBits / 11;
 
     // Compute SHA-256 checksum
-    const hash = sha256(entropy);
+    const hash = await sha256(entropy);
     const checksum = hash[0] >> (8 - checksumBits);
 
     // Combine entropy and checksum
