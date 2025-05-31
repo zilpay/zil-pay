@@ -4,7 +4,7 @@ import { utils } from 'aes-js';
 import { uint8ArrayToBigIntBigEndian } from '../../crypto/number';
 
 describe('Schnorr Signature Tests', () => {
-  it('should sign and verify correctly', async () => {
+ it('should sign and verify correctly', async () => {
     const cases: [
       message: string,
       publicKey: string,
@@ -40,7 +40,7 @@ describe('Schnorr Signature Tests', () => {
     ];
 
     for (const [messageHex, publicKeyHex, secretKeyHex, kHex, expectedR, expectedS] of cases) {
-      const message = utils.hex.toBytes(messageHex); // Hex-decoded message, as in Rust
+      const message = utils.hex.toBytes(messageHex);
       const publicKey = utils.hex.toBytes(publicKeyHex);
       const secretKey = utils.hex.toBytes(secretKeyHex);
       const kBytes = utils.hex.toBytes(kHex);

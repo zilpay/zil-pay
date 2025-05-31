@@ -1,27 +1,946 @@
-Project Path: crypto
+Project Path: zil-pay
 
 Source Tree:
 
 ```txt
-crypto
-├── aes256.ts
-├── index.ts
-├── number.ts
-├── pbkdf2.ts
-├── proto
-│   └── zq1.ts
-├── pubkey.ts
-├── random.ts
-├── sha256.ts
-├── sha512.ts
-├── uuid.ts
-└── zilliqa
-    ├── pubkey.ts
-    └── schnorr.ts
+zil-pay
+├── __tests__
+│   ├── array
+│   │   └── array.test.ts
+│   ├── crypto
+│   │   ├── aes256.test.ts
+│   │   ├── number.test.ts
+│   │   ├── pbkdf2.test.ts
+│   │   ├── pubkey.test.ts
+│   │   ├── random.test.ts
+│   │   ├── schnorr.test.ts
+│   │   ├── sha256.test.ts
+│   │   └── sha512.test.ts
+│   ├── setupTests.ts
+│   ├── storage
+│   │   └── storage.test.ts
+│   ├── stream
+│   │   └── stream.test.ts
+│   ├── types
+│   │   └── checker.test.ts
+│   └── zilliqa
+│       └── address.test.ts
+├── background
+│   └── index.ts
+├── config
+│   ├── errors.ts
+│   ├── fields.ts
+│   ├── pbkdf2.ts
+│   └── sha.ts
+├── content
+│   └── index.ts
+├── crypto
+│   ├── aes256.ts
+│   ├── index.ts
+│   ├── number.ts
+│   ├── pbkdf2.ts
+│   ├── proto
+│   │   └── zq1.ts
+│   ├── pubkey.ts
+│   ├── random.ts
+│   ├── sha256.ts
+│   ├── sha512.ts
+│   ├── uuid.ts
+│   └── zilliqa
+│       ├── pubkey.ts
+│       └── schnorr.ts
+├── lib
+│   ├── array
+│   │   ├── chunk.ts
+│   │   └── shuffle.ts
+│   ├── popup
+│   │   ├── clipboard.ts
+│   │   ├── printer.ts
+│   │   └── warp-message.ts
+│   ├── runtime
+│   │   ├── assert.ts
+│   │   ├── ext-id.ts
+│   │   ├── extensionizer.ts
+│   │   ├── get-url.ts
+│   │   └── manifest.ts
+│   ├── storage
+│   │   ├── builder.ts
+│   │   └── storage.ts
+│   ├── streem
+│   │   ├── TabsMessage.ts
+│   │   ├── keys.ts
+│   │   ├── message.ts
+│   │   ├── secure-message.ts
+│   │   ├── tab-stream.ts
+│   │   └── tabs-message.ts
+│   ├── types
+│   │   └── checker.ts
+│   └── zilliqa
+│       ├── bech32.ts
+│       ├── checksum.ts
+│       ├── config.ts
+│       └── pubkey.ts
+├── popup
+│   ├── index.ts
+│   └── main.ts
+└── vitest.config.ts
 
 ```
 
-`crypto/aes256.ts`:
+`zil-pay/__tests__/array/array.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { shuffle } from '../../lib/array/shuffle';
+import { chunk } from '../../lib/array/chunk';
+
+describe('shuffle', () => {
+  it('should shuffle an array of numbers', () => {
+    const array = [1, 2, 3, 4, 5];
+    const shuffledArray = shuffle([...array]);
+
+    expect(shuffledArray).toHaveLength(array.length);
+    expect(shuffledArray).not.toEqual(array);
+    expect(shuffledArray.sort()).toEqual(array.sort());
+  });
+
+  it('should shuffle an array of strings', () => {
+    const array = ['a', 'b', 'c', 'd', 'e'];
+    const shuffledArray = shuffle([...array]);
+
+    expect(shuffledArray).toHaveLength(array.length);
+    expect(shuffledArray).not.toEqual(array);
+    expect(shuffledArray.sort()).toEqual(array.sort());
+  });
+
+  it('should handle an empty array', () => {
+    const array: number[] = [];
+    const shuffledArray = shuffle([...array]);
+    expect(shuffledArray).toEqual([]);
+  });
+
+  it('should handle an array with one element', () => {
+    const array = [1];
+    const shuffledArray = shuffle([...array]);
+    expect(shuffledArray).toEqual([1]);
+  });
+});
+
+describe('chunk', () => {
+  it('should chunk an array into smaller arrays of the specified size', () => {
+    const array = [1, 2, 3, 4, 5, 6, 7, 8];
+    const chunkSize = 3;
+    const result = chunk(array, chunkSize);
+    expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7, 8]]);
+  });
+
+  it('should handle a chunk size larger than the array length', () => {
+    const array = [1, 2, 3, 4, 5];
+    const chunkSize = 10;
+    const result = chunk(array, chunkSize);
+    expect(result).toEqual([[1, 2, 3, 4, 5]]);
+  });
+
+  it('should handle an array with a length that is a multiple of the chunk size', () => {
+    const array = [1, 2, 3, 4, 5, 6];
+    const chunkSize = 2;
+    const result = chunk(array, chunkSize);
+    expect(result).toEqual([[1, 2], [3, 4], [5, 6]]);
+  });
+
+  it('should handle an empty array', () => {
+    const array: number[] = [];
+    const chunkSize = 3;
+    const result = chunk(array, chunkSize);
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error if the chunk size is zero', () => {
+    const array = [1, 2, 3, 4, 5];
+    const chunkSize = 0;
+    expect(() => chunk(array, chunkSize)).toThrowError("Size must be a positive number.");
+  });
+
+  it('should throw an error if the chunk size is negative', () => {
+    const array = [1, 2, 3, 4, 5];
+    const chunkSize = -1;
+    expect(() => chunk(array, chunkSize)).toThrowError("Size must be a positive number.");
+  });
+});
+
+
+```
+
+`zil-pay/__tests__/crypto/aes256.test.ts`:
+
+```ts
+import { test, expect } from 'vitest';
+import { Cipher } from '../../crypto/aes256';
+import { ErrorMessages } from '../../config/errors';
+
+test('encrypt encrypts data and decrypt successfully recovers it', () => {
+  const key = new TextEncoder().encode('1234567890123456'); // 16-byte key
+  const content = new TextEncoder().encode('Hello, ZilPay!');
+
+  const encrypted = Cipher.encrypt(content, key);
+  const decrypted = Cipher.decrypt(encrypted, key);
+
+  expect(new TextDecoder().decode(decrypted)).toBe('Hello, ZilPay!');
+});
+
+test('decrypt with wrong key does not return original content', () => {
+  const key = new TextEncoder().encode('correctKey123456'); // 16-byte key
+  const wrongKey = new TextEncoder().encode('wrongKey12345678'); // 16-byte key
+
+  const content = new TextEncoder().encode('Secret message');
+  const encrypted = Cipher.encrypt(content, key);
+
+  const decrypted = Cipher.decrypt(encrypted, wrongKey);
+
+  expect(decrypted).not.toEqual(content);
+  expect(new TextDecoder().decode(decrypted)).not.toBe(
+    new TextDecoder().decode(content)
+  );
+});
+
+test('encrypt throws if key length is invalid', () => {
+  const invalidKey = new TextEncoder().encode('shortkey'); // <16 bytes
+  const content = new TextEncoder().encode('Data');
+
+  expect(() => Cipher.encrypt(content, invalidKey)).toThrowError(
+    ErrorMessages.InvalidKeyLength
+  );
+});
+
+```
+
+`zil-pay/__tests__/crypto/number.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { uint8ArrayToBigIntBigEndian, uint8ArrayToBigIntLittleEndian } from '../../crypto/number';
+import { randomBytes } from '../../crypto/random';
+
+describe('uint8ArrayToBigIntBigEndian', () => {
+  it('should correctly convert a non-empty big-endian Uint8Array to bigint', () => {
+    const length = 8;
+    const byteArray = randomBytes(length);
+    const bigIntValue = uint8ArrayToBigIntBigEndian(byteArray);
+    expect(typeof bigIntValue).toBe('bigint');
+  });
+
+  it('should return 0n for an empty Uint8Array', () => {
+    const emptyArray = new Uint8Array([]);
+    expect(uint8ArrayToBigIntBigEndian(emptyArray)).toBe(0n);
+  });
+});
+
+describe('uint8ArrayToBigIntLittleEndian', () => {
+  it('should correctly convert a non-empty little-endian Uint8Array to bigint', () => {
+    const length = 8;
+    const byteArray = randomBytes(length);
+    const littleEndianArray = new Uint8Array([...byteArray].reverse());
+    const bigIntValue = uint8ArrayToBigIntLittleEndian(littleEndianArray);
+    expect(typeof bigIntValue).toBe('bigint');
+  });
+
+  it('should return 0n for an empty Uint8Array', () => {
+    const emptyArray = new Uint8Array([]);
+    expect(uint8ArrayToBigIntLittleEndian(emptyArray)).toBe(0n);
+  });
+});
+
+```
+
+`zil-pay/__tests__/crypto/pbkdf2.test.ts`:
+
+```ts
+
+import { test, expect, vi } from 'vitest';
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { ShaAlgorithms } from '../../config/pbkdf2';
+import { utils } from 'aes-js';
+
+test('pbkdf2 calls Web Crypto API correctly with default SHA-512', async () => {
+  const password = new TextEncoder().encode('password');
+  const salt = new TextEncoder().encode('salt');
+  const iterations = 1000;
+  const result = await pbkdf2(password, salt, iterations, ShaAlgorithms.Sha512);
+  const shouldBe = "afe6c5530785b6cc6b1c6453384731bd5ee432ee549fd42fb6695779ad8a1c5bf59de69c48f774efc4007d5298f9033c0241d5ab69305e7b64eceeb8d834cfec";
+ 
+  expect(utils.hex.fromBytes(result)).toBe(shouldBe);
+});
+
+```
+
+`zil-pay/__tests__/crypto/pubkey.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { fromZILPrivateKey } from '../../crypto/zilliqa/pubkey';
+import { utils } from 'aes-js';
+
+describe('test cases pubkey', () => {
+  it('test zil private key to pub key', async() => {
+    let sk = Uint8Array.from(utils.hex.toBytes("3a649fbe8198729669affd1e9ae93e9e81fd25b71ea5f79792bec9fa6ac9ed92"));
+    let pk = fromZILPrivateKey(sk);
+    let pkHex = utils.hex.fromBytes(pk); 
+
+    expect(pkHex).toEqual("025ded2f80f60d6c98d16ea5e1b2787427f44b8fcf11b5cacd56911e6c0e4c184c");
+  });
+});
+
+
+```
+
+`zil-pay/__tests__/crypto/random.test.ts`:
+
+```ts
+import { test, expect, vi } from 'vitest';
+import { randomBytes } from '../../crypto/random';
+
+test('randomBytes generates a non-zero Uint8Array of the specified length', () => {
+  const length = 16;
+  const result = randomBytes(length);
+
+  expect(result).toBeInstanceOf(Uint8Array);
+  expect(result.length).toBe(length);
+
+  const zeroArray = new Uint8Array(length);
+  expect(result).not.toEqual(zeroArray);
+
+  expect(result.some((byte) => byte !== 0)).toBe(true);
+});
+
+test('randomBytes uses window.crypto.getRandomValues to seed the ChaCha20 RNG', () => {
+  const spyGetRandomValues = vi.spyOn(window.crypto, 'getRandomValues');
+  const length = 8;
+  
+  randomBytes(length);
+  
+  expect(spyGetRandomValues).toHaveBeenCalled();
+  spyGetRandomValues.mockRestore();
+});
+
+```
+
+`zil-pay/__tests__/crypto/schnorr.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { signInner, verify } from '../../crypto/zilliqa/schnorr';
+import { utils } from 'aes-js';
+import { uint8ArrayToBigIntBigEndian } from '../../crypto/number';
+
+describe('Schnorr Signature Tests', () => {
+ it('should sign and verify correctly', async () => {
+    const cases: [
+      message: string,
+      publicKey: string,
+      secretKey: string,
+      k: string,
+      r: string,
+      s: string
+    ][] = [
+      [
+        "A7F1D92A82C8D8FE434D98558CE2B347171198542F112D0558F56BD68807999248336241F30D23E55F30D1C8ED610C4B0235398184B814A29CB45A672ACAE548E9C5F1B0C4158AE59B4D39F6F7E8A105D3FEEDA5D5F3D9E45BFA6CC351E220AE0CE106986D61FF34A11E19FD3650E9B7818FC33A1E0FC02C44557AC8AB50C9B2DEB2F6B5E24C4FDD9F8867BDCE1FF261008E7897970E346207D75E47A158298E5BA2F56246869CC42E362A02731264E60687EF5309D108534F51F8658FB4F080B7CB19EE9AEBD718CC4FA27C8C37DFC1ADA5D133D13ABE03F021E9B1B78CCBD82F7FF2B38C6D48D01E481B2D4FAF7171805FD7F2D39EF4C4F19B9496E81DAB8193B3737E1B27D9C43957166441B93515E8F03C95D8E8CE1E1864FAAD68DDFC5932130109390B0F1FE5CA716805F8362E98DCCAADC86ADBED25801A9A9DCFA6264319DDAFE83A89C51F3C6D199D38DE10E660C37BE872C3F2B31660DE8BC95902B9103262CDB941F77376F5D3DBB7A3D5A387797FC4819A035ECA704CEDB37110EE7F206B0C8805AAEBF4963E7C4708CE8D4E092366E71792A8A3B2BBCDEE321B3E15380C541EF0930888969F7457AFE18588826A419D58311C1784B5484EECDB393F6A0ACA11B91DF0866B500B8DEE501FD7EB9BCE09A17D74124B4605ADFC0777BED9816D8D7E8488544A18D8045CB3283B0A752B881B5F500FADB59010E63D",
+        "039E43C9810E6CC09F46AAD38E716DAE3191629534967DC457D3A687D2E2CDDC6A",
+        "0F494B8312E8D257E51730C78F8FE3B47B6840C59AAAEC7C2EBE404A2DE8B25A",
+        "532B2267C4A3054F380B3357339BDFB379E88366FE61B42ACA05F69BC3F6F54E",
+        "3AF3D288E830E96FF8ED0769F45ABDA774CD989E2AE32EF9E985C8505F14FF98",
+        "E191EB14A70B5B53ADA45AFFF4A04578F5D8BB2B1C8A22985EA159B53826CDE7",
+      ],
+      [
+        "1B664F8BDA2DBF33CB6BE21C8EB3ECA9D9D5BF144C08E9577ED0D1E5E560875109B340980580473DBC2E689A3BE838E77A0A3348FE960EC9BF81DA36F1868CA5D24788FA4C0C778BF0D12314285495636516CF40861B3D737FD35DBB591C5B5D25916EB1D86176B14E0E67D2D03957F0CF6C87834BF328540588360BA7C7C5F88541634FB7BADE5F94FF671D1FEBDCBDA116D2DA779038ED7679896C29198B2657B58C50EA054F644F4129C8BA8D8D544B727633DD40754398046796E038626FEF9237CE5B615BC08677EE5ABFBD85F73F7F8868CB1B5FBA4C1309F16061AA133821FBE2A758D2BBE6AA040A940D41B7D3B869CEE945150AA4A40E6FF719EEC24B2681CD5CE06B50273436584066046656D5EFED7315759189D68815DDB9E5F8D7FD53B6EC096616A773B9421F6704CED36EF4E484BA0C6C5A4855C71C33A54AC82BE803E5CFD175779FC444B7E6AA9001EEFABEBC0CF99754887C7B0A27AFDDC415F8A02C5AF1EFEA26AD1E5D92B1E29A8FAF5B2186C3094F4A137BCFAA65D7B274214DB64C86F3085B24938E1832FB310A6F064181E298D23062ABC817BA173023C8C04C5C3A1ECBF4AF72372B381FF69865C8F0E3C70B931C45A7419B3C441842EBFACC3D070AC3B433CD120B6E85B72DADCF40B23B173C34F6BE1B1901F6621F1497B085CF8E999D986EF8FF3A889A0238979983A8686F69E10EF9249A87",
+        "0245DC2911EDC02F2774E0A40FBEB0112EA60BF513F9EC50889D59FC94C97EC18F",
+        "8D566BB87EF69FFDA622E0A59FBAAFE57F486CE65844343A5D9B97DE9C4F619A",
+        "948AFFFF6E068CA2F2757BFD6085D6E4C3084B038E5533C5927ECB19EA0D329C",
+        "DFEE66E2C4799E73F0F778126A23032608408C27C2E7B3FA45A626BB9BDEB53C",
+        "75445CC9DBFE4E7BC64E020FA22CACFA4C40D5AA84DD6AEF661564FCA9746C40",
+      ],
+      [
+        "3444C8501F19A8A78670F748FA401C4020AE086D7157A3837EC721DEF0D6E095928C5B78ED9B95560CE33D5B22778BE66DCEF2D21878D481DFF41A4DEDCAFDCAEAB4BD78629D7EC40FD26F1DD954CA84A3B53B84E9903056E840837A1390F37BB8ADE799DAC1E465D811916547EB4B6A163082E9833634A1224C54F681B8DC70A792C0CB4671D4970CCC80E2168CE920CC8FA07B1F90E9898D16019913ED5B8EE8A8DE7AB6F7895601FD20E49FD73E6F5D24C0D97E67871539F0E4E32CCB6677AFF03356D1F3790945E94039E51A63B3C840B74E3053D95CA71C0D3AC20A9065828D30AB5BFB6188A8F291FB1EB4E1EED03E2F5F558C00D8E3084120DEEB8BFE908429B36A896A45D624E79372CC18DF37DB2D20C9726D4FEF7BECF220138B53BC54C2DA461A9955AFF33F2F93DD96464BF3E883FC5750BDBE79BC2F82427F41DE42659AC4B111D7CEF8085003469DF8C9D3541480C6841707CE4C8F3D003AF982AD35C2733D0FA3B1EE52A6DAB36203D99AEC179A565B5050F480235C3BC560AA28EF5DD5525BFA254E584A86FDBD4BCC5B56551BAD00255CB72F806D7F3C533321B0864007AFBA4E0FF9638517FA8D788F52766F3A28C57C428BFDD4234AA760CE8044DF1E1FBA58E8B1D9C5A79D2AC4592FC31702F7E83351D2160C09C5CEA554F2C93A61C040E225612DF2B550900B097E18638350E3BA15C9AD53CE1861",
+        "02237627FE7374061FBD80AEA842DCE76D9206F0DDC7B319F3B30FA75DBD4F009A",
+        "009755F442D66585A10B80A49850C77764AD029D1BEA73F4DA45AB331306E6E5",
+        "2D78C77B736AD0A00FDF60695C01E96520656C13DC890A5B864672C6CED1C49A",
+        "4B73D4D919D7B4DEF330391899EA02023851CABE044E34E18EAE3E10588CECCD",
+        "D5DE85C4BDEA5910DC36AEF5660774D65291322C1E87FDA0D00C864E8C5FED29",
+      ]
+    ];
+
+    for (const [messageHex, publicKeyHex, secretKeyHex, kHex, expectedR, expectedS] of cases) {
+      const message = utils.hex.toBytes(messageHex);
+      const publicKey = utils.hex.toBytes(publicKeyHex);
+      const secretKey = utils.hex.toBytes(secretKeyHex);
+      const kBytes = utils.hex.toBytes(kHex);
+      const k = uint8ArrayToBigIntBigEndian(kBytes);
+
+      const signature = await signInner(k, message, secretKey);
+
+      expect(signature?.r.toString(16)).toBe(expectedR.toLowerCase());
+      expect(signature?.s.toString(16)).toBe(expectedS.toLowerCase());
+
+      const isValid = await verify(message, publicKey, signature!);
+      expect(isValid).toBe(true);
+    }
+  });
+});
+
+```
+
+`zil-pay/__tests__/crypto/sha256.test.ts`:
+
+```ts
+import { test, expect } from 'vitest';
+import { sha256 } from '../../crypto/sha256';
+import { utils } from 'aes-js';
+
+test('sha256 hashes "test" correctly', async () => {
+  const input = new TextEncoder().encode('test');
+  const hash = await sha256(input);
+  const hexString = utils.hex.fromBytes(hash);
+
+  expect(hexString).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08');
+});
+
+```
+
+`zil-pay/__tests__/crypto/sha512.test.ts`:
+
+```ts
+import { test, expect } from 'vitest';
+import { sha512 } from '../../crypto/sha512';
+import { utils } from 'aes-js';
+
+test('sha512 hashes "test" correctly', async () => {
+  const input = new TextEncoder().encode('test');
+  const buffer = await sha512(input);
+  const hashArray = new Uint8Array(buffer);
+  const hexString = utils.hex.fromBytes(hashArray);
+  expect(hexString).toBe('ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff');
+});
+
+```
+
+`zil-pay/__tests__/setupTests.ts`:
+
+```ts
+import { vi } from 'vitest';
+import sinonChrome from 'sinon-chrome';
+
+
+global.chrome = sinonChrome;
+
+const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
+  for (let i = 0; i < array.length; i++) {
+    array[i] = Math.floor(Math.random() * 256); 
+  }
+  return array;
+};
+
+(global as any).window = {
+  crypto: {
+    getRandomValues: vi.fn(mockGetRandomValues),
+  },
+};
+
+```
+
+`zil-pay/__tests__/storage/storage.test.ts`:
+
+```ts
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { BrowserStorage } from '../../lib/storage/storage';
+import type { StorageKeyValue } from '../../lib/storage/builder';
+
+describe('BrowserStorage - Basic Operations', () => {
+  beforeEach(() => {
+    chrome.storage.local.set.reset();
+    chrome.storage.local.get.reset();
+    chrome.storage.local.remove.reset();
+    chrome.storage.local.clear.reset();
+    chrome.runtime.lastError = undefined;
+  });
+
+  it('sets a single key-value pair', async () => {
+    const mockData: StorageKeyValue = { key: 'value' };
+    chrome.storage.local.set.callsFake((data, callback) => callback());
+
+    await BrowserStorage.set(mockData);
+
+    expect(chrome.storage.local.set.calledWith(mockData)).toBe(true);
+  });
+
+  it('sets multiple key-value pairs', async () => {
+    const mockData1: StorageKeyValue = { key1: 'value1' };
+    const mockData2: StorageKeyValue = { key2: 'value2' };
+    chrome.storage.local.set.callsFake((data, callback) => callback());
+
+    await BrowserStorage.set(mockData1, mockData2);
+
+    expect(chrome.storage.local.set.calledWith({ key1: 'value1', key2: 'value2' })).toBe(true);
+  });
+
+  it('rejects on set error', async () => {
+    const mockData: StorageKeyValue = { key: 'value' };
+    chrome.storage.local.set.callsFake((data, callback) => {
+      chrome.runtime.lastError = { message: 'Storage set failed' };
+      callback();
+    });
+
+    await expect(BrowserStorage.set(mockData)).rejects.toThrow('Storage set failed');
+  });
+
+  it('gets a single key', async () => {
+    const key = 'key';
+    const mockResult = { key: 'value' };
+    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+
+    const result = await BrowserStorage.get(key);
+
+    expect(chrome.storage.local.get.calledWith([key])).toBe(true);
+    expect(result).toBe(mockResult[key]);
+  });
+
+  it('gets multiple keys', async () => {
+    const keys = ['key1', 'key2'];
+    const mockResult = { key1: 'value1', key2: 'value2' };
+    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+
+    const result = await BrowserStorage.get(...keys);
+
+    expect(chrome.storage.local.get.calledWith(keys)).toBe(true);
+    expect(result).toEqual(mockResult);
+  });
+
+  it('rejects on get error', async () => {
+    const key = 'key';
+    chrome.storage.local.get.callsFake((keys, callback) => {
+      chrome.runtime.lastError = { message: 'Storage get failed' };
+      callback();
+    });
+
+    await expect(BrowserStorage.get(key)).rejects.toThrow('Storage get failed');
+  });
+
+  it('gets all items', async () => {
+    const mockResult = { key1: 'value1', key2: 'value2' };
+    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+
+    const result = await BrowserStorage.getAll();
+
+    expect(chrome.storage.local.get.calledWith(null)).toBe(true);
+    expect(result).toEqual(mockResult);
+  });
+
+  it('removes keys', async () => {
+    const keys = ['key1', 'key2'];
+    chrome.storage.local.remove.callsFake((keys, callback) => callback());
+
+    await BrowserStorage.rm(...keys);
+
+    expect(chrome.storage.local.remove.calledWith(keys)).toBe(true);
+  });
+
+  it('rejects on remove error', async () => {
+    const key = 'key';
+    chrome.storage.local.remove.callsFake((keys, callback) => {
+      chrome.runtime.lastError = { message: 'Storage remove failed' };
+      callback();
+    });
+
+    await expect(BrowserStorage.rm(key)).rejects.toThrow('Storage remove failed');
+  });
+
+  it('clears storage', async () => {
+    chrome.storage.local.clear.callsFake((callback) => callback());
+
+    await BrowserStorage.clear();
+
+    expect(chrome.storage.local.clear.called).toBe(true);
+  });
+
+  it('rejects on clear error', async () => {
+    chrome.storage.local.clear.callsFake((callback) => {
+      chrome.runtime.lastError = { message: 'Storage clear failed' };
+      callback();
+    });
+
+    await expect(BrowserStorage.clear()).rejects.toThrow('Storage clear failed');
+  });
+});
+
+describe('BrowserStorage - Subscription', () => {
+  beforeEach(() => {
+    chrome.storage.onChanged.addListener.resetHistory();
+    chrome.storage.onChanged.removeListener.resetHistory();
+    chrome.runtime.lastError = undefined;
+  });
+
+  it('subscribes to storage changes and calls callback', () => {
+    const mockCallback = vi.fn();
+    const mockChanges = { key: { oldValue: 'old', newValue: 'new' } };
+
+    const { unsubscribe } = BrowserStorage.subscribe(mockCallback);
+    const listener = chrome.storage.onChanged.addListener.firstCall.args[0];
+
+    listener(mockChanges);
+
+    expect(chrome.storage.onChanged.addListener.called).toBe(true);
+    expect(mockCallback).toHaveBeenCalledWith(mockChanges);
+
+    unsubscribe();
+    expect(chrome.storage.onChanged.removeListener.called).toBe(true);
+  });
+
+  it('handles errors in subscription callback', () => {
+    const mockCallback = vi.fn(() => {
+      throw new Error('Callback error');
+    });
+    const mockConsoleError = vi.fn();
+    console.error = mockConsoleError;
+    const mockChanges = { key: { oldValue: 'old', newValue: 'new' } };
+
+    const { unsubscribe } = BrowserStorage.subscribe(mockCallback);
+    const listener = chrome.storage.onChanged.addListener.firstCall.args[0];
+
+    listener(mockChanges);
+
+    expect(mockCallback).toHaveBeenCalledWith(mockChanges);
+    expect(mockConsoleError).toHaveBeenCalledWith('Error in storage change callback:', expect.any(Error));
+
+    unsubscribe();
+    expect(chrome.storage.onChanged.removeListener.called).toBe(true);
+    console.error = console.error;
+  });
+});
+
+```
+
+`zil-pay/__tests__/stream/stream.test.ts`:
+
+```ts
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Message, ReqBody } from 'lib/streem/message';
+import { Runtime } from 'lib/runtime/extensionizer';
+
+vi.mock('lib/runtime/extensionizer', () => ({
+  Runtime: {
+    runtime: {
+      sendMessage: vi.fn(),
+    },
+  },
+}));
+
+describe('Basic Test Message - Error Handling', () => {
+  const mockConsoleError = vi.fn();
+
+  beforeEach(() => {
+    console.error = mockConsoleError;
+    (Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>).mockClear();
+  });
+
+  it('should catch sendMessage error and log it', async () => {
+    const message = Message.signal("ERROR_MESSAGE");
+    const sendMessageMock = Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>;
+    const errorMessage = 'Simulated send error';
+    sendMessageMock.mockImplementation(() => {
+      throw new Error(errorMessage);
+    });
+
+    await expect(message.send()).rejects.toThrow('service_worker_stopped');
+    expect(sendMessageMock).toHaveBeenCalledTimes(10);
+    expect(mockConsoleError).toHaveBeenCalledWith(message, new Error(errorMessage));
+  });
+});
+
+describe('Basic Test Message - Successful Send and Receive', () => {
+  beforeEach(() => {
+    (Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>).mockClear();
+  });
+
+  it('should send the message and receive a response', async () => {
+    const body: ReqBody<{ data: string }> = { type: 'TEST_MESSAGE', payload: { data: 'test' } };
+    const message = new Message(body);
+    const mockResponse = { result: 'success' };
+
+    (Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>).mockImplementation((_msg, callback) => {
+      callback(mockResponse);
+    });
+
+    const response = await message.send();
+
+    expect(Runtime.runtime.sendMessage).toHaveBeenCalledOnce();
+    expect(Runtime.runtime.sendMessage).toHaveBeenCalledWith(body, expect.any(Function));
+    expect(response).toEqual(mockResponse);
+  });
+});
+
+```
+
+`zil-pay/__tests__/types/checker.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { TypeOf } from 'lib/types/checker.ts';
+
+describe('TypeOf', () => {
+    it('should correctly identify arrays', () => {
+        expect(TypeOf.isArray([])).toBe(true);
+        expect(TypeOf.isArray([1, 2, 3])).toBe(true);
+        expect(TypeOf.isArray(new Array(3))).toBe(true);
+        expect(TypeOf.isArray({})).toBe(false);
+        expect(TypeOf.isArray(null)).toBe(false);
+        expect(TypeOf.isArray(undefined)).toBe(false);
+        expect(TypeOf.isArray('abc')).toBe(false);
+    });
+
+    it('should correctly identify plain objects', () => {
+        expect(TypeOf.isObject({})).toBe(true);
+        expect(TypeOf.isObject({ a: 1, b: 2 })).toBe(true);
+        expect(TypeOf.isObject(new Object())).toBe(true);
+        expect(TypeOf.isObject([])).toBe(false);
+        expect(TypeOf.isObject(null)).toBe(false);
+        expect(TypeOf.isObject(undefined)).toBe(false);
+        expect(TypeOf.isObject('abc')).toBe(false);
+        expect(TypeOf.isObject(new Date())).toBe(false);
+        expect(TypeOf.isObject(new Error())).toBe(false);
+        class MyClass {}
+        expect(TypeOf.isObject(new MyClass())).toBe(false);
+    });
+
+    it('should correctly identify numbers', () => {
+        expect(TypeOf.isNumber(0)).toBe(true);
+        expect(TypeOf.isNumber(10)).toBe(true);
+        expect(TypeOf.isNumber(-5)).toBe(true);
+        expect(TypeOf.isNumber(3.14)).toBe(true);
+        expect(TypeOf.isNumber(NaN)).toBe(false);
+        expect(TypeOf.isNumber(Infinity)).toBe(true);
+        expect(TypeOf.isNumber(-Infinity)).toBe(true);
+        expect(TypeOf.isNumber('10')).toBe(false);
+        expect(TypeOf.isNumber(null)).toBe(false);
+        expect(TypeOf.isNumber(undefined)).toBe(false);
+        expect(TypeOf.isNumber({})).toBe(false);
+    });
+
+    it('should correctly identify integers', () => {
+        expect(TypeOf.isInt(0)).toBe(true);
+        expect(TypeOf.isInt(10)).toBe(true);
+        expect(TypeOf.isInt(-5)).toBe(true);
+        expect(TypeOf.isInt(3.14)).toBe(false);
+        expect(TypeOf.isInt(NaN)).toBe(false);
+        expect(TypeOf.isInt(Infinity)).toBe(false);
+        expect(TypeOf.isInt('10')).toBe(false);
+        expect(TypeOf.isInt(null)).toBe(false);
+        expect(TypeOf.isInt(undefined)).toBe(false);
+        expect(TypeOf.isInt({})).toBe(false);
+        expect(TypeOf.isInt(Number.MAX_SAFE_INTEGER)).toBe(true);
+        expect(TypeOf.isInt(Number.MIN_SAFE_INTEGER)).toBe(true);
+    });
+
+    it('should correctly identify error objects', () => {
+        expect(TypeOf.isError(new Error())).toBe(true);
+        expect(TypeOf.isError(new TypeError())).toBe(true);
+        expect(TypeOf.isError(new SyntaxError())).toBe(true);
+        expect(TypeOf.isError({})).toBe(false);
+        expect(TypeOf.isError(null)).toBe(false);
+        expect(TypeOf.isError(undefined)).toBe(false);
+        expect(TypeOf.isError('Error')).toBe(false);
+    });
+
+    it('should correctly identify strings', () => {
+        expect(TypeOf.isString('')).toBe(true);
+        expect(TypeOf.isString('abc')).toBe(true);
+        expect(TypeOf.isString(new String('abc'))).toBe(true);
+        expect(TypeOf.isString(123)).toBe(false);
+        expect(TypeOf.isString(null)).toBe(false);
+        expect(TypeOf.isString(undefined)).toBe(false);
+        expect(TypeOf.isString({})).toBe(false);
+    });
+
+    it('should correctly identify booleans', () => {
+        expect(TypeOf.isBoolean(true)).toBe(true);
+        expect(TypeOf.isBoolean(false)).toBe(true);
+        expect(TypeOf.isBoolean(new Boolean(true))).toBe(true);
+        expect(TypeOf.isBoolean(0)).toBe(false);
+        expect(TypeOf.isBoolean(1)).toBe(false);
+        expect(TypeOf.isBoolean(null)).toBe(false);
+        expect(TypeOf.isBoolean(undefined)).toBe(false);
+        expect(TypeOf.isBoolean({})).toBe(false);
+    });
+
+    it('should correctly identify null', () => {
+        expect(TypeOf.isNull(null)).toBe(true);
+        expect(TypeOf.isNull(undefined)).toBe(false);
+        expect(TypeOf.isNull(0)).toBe(false);
+        expect(TypeOf.isNull('')).toBe(false);
+        expect(TypeOf.isNull({})).toBe(false);
+    });
+
+    it('should correctly identify undefined', () => {
+        expect(TypeOf.isUndefined(undefined)).toBe(true);
+        expect(TypeOf.isUndefined(null)).toBe(false);
+        expect(TypeOf.isUndefined(0)).toBe(false);
+        expect(TypeOf.isUndefined('')).toBe(false);
+        expect(TypeOf.isUndefined({})).toBe(false);
+    });
+
+    it('should correctly identify empty objects', () => {
+        expect(TypeOf.isEmptyObject({})).toBe(true);
+        expect(TypeOf.isEmptyObject({ a: 1 })).toBe(false);
+        expect(TypeOf.isEmptyObject(new Object())).toBe(true);
+        expect(TypeOf.isEmptyObject(null)).toBe(false);
+        expect(TypeOf.isEmptyObject(undefined)).toBe(false);
+        expect(TypeOf.isEmptyObject([])).toBe(false);
+    });
+
+    it('should correctly identify empty arrays', () => {
+        expect(TypeOf.isEmptyArray([])).toBe(true);
+        expect(TypeOf.isEmptyArray([1, 2, 3])).toBe(false);
+        expect(TypeOf.isEmptyArray(new Array(0))).toBe(true);
+        expect(TypeOf.isEmptyArray(null)).toBe(false);
+        expect(TypeOf.isEmptyArray(undefined)).toBe(false);
+        expect(TypeOf.isEmptyArray({})).toBe(false);
+    });
+});
+
+
+```
+
+`zil-pay/__tests__/zilliqa/address.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { toChecksumHexAddress, toChecksumBytesAddress } from 'lib/zilliqa/checksum';
+import { fromZilPubKey } from 'lib/zilliqa/pubkey.ts';
+import { utils } from 'aes-js';
+import { toBech32Address, fromBech32Address } from 'lib/zilliqa/bech32';
+
+describe('Address Conversion Tests', () => {
+    describe('toChecksumAddress', () => {
+        it('should correctly checksum a valid lowercase address', async () => {
+            const address = '8617b72e22090f0c13167865147ec48a6db788ff';
+            const checksummed = await toChecksumHexAddress(address);
+            expect(checksummed).toBe('0x8617B72E22090f0c13167865147eC48a6dB788ff');
+        });
+
+        it('should correctly checksum another valid address', async () => {
+            const address = '0000000000000000000000000000000000000000';
+            const checksummed = await toChecksumHexAddress(address);
+            expect(checksummed).toBe('0x0000000000000000000000000000000000000000');
+        });
+
+        it('should correctly derive a bech32 address from a public key', async () => {
+            const pubkeyHex = '03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da';
+            const pubkeyBytes = utils.hex.toBytes(pubkeyHex);
+            const addrBytes = await fromZilPubKey(pubkeyBytes);
+            const checksummed = await toChecksumBytesAddress(addrBytes);
+
+            expect(checksummed).toBe('0xEBd8b370Dddb636FAF641040D2181c55190840fb');
+        });
+    });
+
+    describe('toBech32Address', () => {
+        it('should correctly encode a valid hexadecimal address to Bech32', async () => {
+            const hexAddress = '0x7793a8e8c09d189d4d421ce5bc5b3674656c5ac1';
+            const bech32Address = await toBech32Address(hexAddress);
+            expect(bech32Address).toBe('zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8');
+        });
+    });
+
+    describe('fromBech32Address', () => {
+        it('should correctly decode a valid Bech32 address to a checksummed hexadecimal address', async () => {
+            const bech32Address = 'zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8';
+            const hexAddress = await fromBech32Address(bech32Address);
+            expect(hexAddress).toBe('0x7793a8e8c09D189D4d421CE5Bc5b3674656C5Ac1');
+        });
+
+        it('should throw an error for an invalid Bech32 address length', async () => {
+            const invalidBech32 = 'zi21w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8';
+            await expect(fromBech32Address(invalidBech32)).rejects.toThrow('Invalid Bech32 address.');
+        });
+
+        it('should throw an error for a Bech32 address with an incorrect HRP', async () => {
+            const wrongHRP = 'btc1qwertzuiopasdfghjklmnbvcxy';
+            await expect(fromBech32Address(wrongHRP)).rejects.toThrow("Invalid Bech32 address.");
+        });
+    });
+});
+
+```
+
+`zil-pay/config/errors.ts`:
+
+```ts
+export enum ErrorMessages {
+  IncorrectParams = "Incorrect or missing parameters provided.",
+  InvalidFormat = "Invalid data format encountered during decryption.",
+  InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
+}
+
+```
+
+`zil-pay/config/fields.ts`:
+
+```ts
+export enum Fields {
+  VAULT = 'vault',
+  VAULT_IMPORTED = 'importedvault',
+  CONFIG = 'config',
+  OLD_WALLET = 'wallet',
+  WALLET = 'wallet-identities',
+  SELECTED_NET = 'selectednet',
+  BLOCK_NUMBER = 'blocknumber',
+  TRANSACTIONS = 'transactions',
+  ENCRYPT_DATA = 'encryption-data',
+  DECRYPT_DATA = 'decryption-data',
+  CONFIRM_TX = 'confirm',
+  CONFIRM_MESSAGE = 'confirm-message',
+  STATIC = 'static',
+  LOCK_TIME = 'time_before_lock',
+  GUARD_CONFIG = 'guard-configuration',
+  CONNECT_DAPP = 'connect',
+  CONNECT_LIST = 'connection-list',
+  THEME = 'theme',
+  CONTACTS = 'contacts',
+  SELECTED_COIN = 'selectedcoin',
+  TOKENS = 'tokens-list',
+  COLLECTION = 'collections-list',
+  SSN = 'ssn-list',
+  GAS = 'chain-gas',
+  RATE_CURRENCIES = 'rate-of-currencies',
+  SELECTED_CURRENCY = 'selected-currency',
+  LOCALE = 'selected-local',
+  FORMAT = 'address-format',
+  POPUP_ENABLED = 'popup-enabled',
+  PHISHING = 'phishing-detection',
+  DEX = 'dex-proto',
+  BADGE_COUNTER = 'badge-counter'
+}
+
+```
+
+`zil-pay/config/pbkdf2.ts`:
+
+```ts
+export enum ShaAlgorithms {
+  Sha512 = 'SHA-512',
+  sha256 = 'SHA-256'
+}
+
+```
+
+`zil-pay/config/sha.ts`:
+
+```ts
+export enum ShaAlgorithms {
+  Sha512 = "SHA-512",
+  sha256 = "SHA-256",
+}
+
+```
+
+`zil-pay/crypto/aes256.ts`:
 
 ```ts
 import { Counter, ModeOfOperation, utils } from 'aes-js';
@@ -64,7 +983,7 @@ export const Cipher = Object.freeze({
 
 ```
 
-`crypto/number.ts`:
+`zil-pay/crypto/number.ts`:
 
 ```ts
 /**
@@ -111,7 +1030,7 @@ export function uint8ArrayToBigIntLittleEndian(array: Uint8Array): bigint {
 
 ```
 
-`crypto/pbkdf2.ts`:
+`zil-pay/crypto/pbkdf2.ts`:
 
 ```ts
 import { ShaAlgorithms } from "../config/pbkdf2";
@@ -148,7 +1067,7 @@ export async function pbkdf2(password: Uint8Array, salt: Uint8Array, iterations:
 
 ```
 
-`crypto/proto/zq1.ts`:
+`zil-pay/crypto/proto/zq1.ts`:
 
 ```ts
 export interface ByteArray {
@@ -1094,7 +2013,7 @@ function writeVarint64ZigZag(bb: ByteBuffer, value: Long): void {
 
 ```
 
-`crypto/pubkey.ts`:
+`zil-pay/crypto/pubkey.ts`:
 
 ```ts
 import { utils } from 'aes-js';
@@ -1195,7 +2114,7 @@ export class SecretKey {
 
 ```
 
-`crypto/random.ts`:
+`zil-pay/crypto/random.ts`:
 
 ```ts
 import { ChaCha20Rng } from '@hicaru/chacharand.js';
@@ -1215,7 +2134,7 @@ export function randomBytes(length: number): Uint8Array {
 
 ```
 
-`crypto/sha256.ts`:
+`zil-pay/crypto/sha256.ts`:
 
 ```ts
 import { ShaAlgorithms } from "config/pbkdf2";
@@ -1232,7 +2151,7 @@ export async function sha256(value: Uint8Array) {
 
 ```
 
-`crypto/sha512.ts`:
+`zil-pay/crypto/sha512.ts`:
 
 ```ts
 import { ShaAlgorithms } from "config/pbkdf2";
@@ -1244,7 +2163,7 @@ export async function sha512(value: Uint8Array) {
 
 ```
 
-`crypto/uuid.ts`:
+`zil-pay/crypto/uuid.ts`:
 
 ```ts
 export function uuid(): string {
@@ -1253,7 +2172,7 @@ export function uuid(): string {
 
 ```
 
-`crypto/zilliqa/pubkey.ts`:
+`zil-pay/crypto/zilliqa/pubkey.ts`:
 
 ```ts
 import { getPublicKey } from 'noble-secp256k1';
@@ -1266,27 +2185,18 @@ export function fromZILPrivateKey(privateKey: Uint8Array): Uint8Array {
 
 ```
 
-`crypto/zilliqa/schnorr.ts`:
+`zil-pay/crypto/zilliqa/schnorr.ts`:
 
 ```ts
 import * as secp256k1 from 'noble-secp256k1';
 import { randomBytes } from '../random';
 import { sha256 } from '../sha256';
-import { uint8ArrayToBigIntBigEndian, uint8ArrayToBigIntLittleEndian } from '../number';
+import { uint8ArrayToBigIntBigEndian } from '../number';
 import { fromZILPrivateKey } from './pubkey';
 
 const MAX_TRY_SIGN = 100_000_000;
 
-// Custom error class for Schnorr-related errors
-class SchnorrError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'SchnorrError';
-  }
-}
-
-// Sign a message using a secret key, following the Schnorr-like signature scheme
-async function sign(message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature> {
+export async function sign(message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature> {
   let safeCounter = 0;
 
   while (safeCounter < MAX_TRY_SIGN) {
@@ -1303,11 +2213,10 @@ async function sign(message: Uint8Array, secretKey: Uint8Array): Promise<secp256
     safeCounter++;
   }
 
-  throw new SchnorrError('InvalidSignTry: Exceeded maximum signing attempts');
+  throw new Error('InvalidSignTry: Exceeded maximum signing attempts');
 }
 
-// Inner signing function that attempts to create a signature with a given k
-async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature | null> {
+export async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array): Promise<secp256k1.Signature | null> {
   // Compute public key from secret key (compressed, 33 bytes)
   const publicKey = fromZILPrivateKey(secretKey);
 
@@ -1326,7 +2235,7 @@ async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array):
   }
 
   // Compute s = k - r * secretKey mod n
-  const secretKeyScalar = uint8ArrayToBigIntLittleEndian(secretKey);
+  const secretKeyScalar = uint8ArrayToBigIntBigEndian(secretKey);
   const rTimesSecret = (r * secretKeyScalar) % secp256k1.CURVE.n;
   const s = (k - rTimesSecret + secp256k1.CURVE.n) % secp256k1.CURVE.n;
 
@@ -1339,24 +2248,17 @@ async function signInner(k: bigint, message: Uint8Array, secretKey: Uint8Array):
   return new secp256k1.Signature(r, s);
 }
 
-// Verify a signature for a message using a public key
-async function verify(
+export async function verify(
   message: Uint8Array,
   publicKey: Uint8Array,
   signature: secp256k1.Signature
 ): Promise<boolean> {
-  try {
-    secp256k1.Point.fromHex(publicKey); // Validate public key
-  } catch {
-    return false; // Invalid public key
-  }
-
   const r = signature.r;
   const s = signature.s;
 
   // Compute Q = s * G + r * publicKey
   const sG = secp256k1.Point.BASE.multiply(s); // s * G
-  const publicKeyPoint = secp256k1.Point.fromHex(publicKey);
+  const publicKeyPoint = secp256k1.Point.fromHex(Uint8Array.from(publicKey));
   const rPub = publicKeyPoint.multiply(r); // r * publicKey
   const QPoint = sG.add(rPub);
   const Q = QPoint.toRawBytes(true); // Compressed Q
@@ -1369,17 +2271,1337 @@ async function verify(
   // Compute r' = H(Q || publicKey || message) mod n
   const hasherInput = new Uint8Array([...Q, ...publicKey, ...message]);
   const hash = await sha256(hasherInput);
-  const rDash = uint8ArrayToBigIntLittleEndian(hash) % secp256k1.CURVE.n;
+  const rDash = uint8ArrayToBigIntBigEndian(hash) % secp256k1.CURVE.n;
 
   // Verification succeeds if r' == r
   return rDash === r;
 }
 
-export const Schnorr = Object.freeze({
-  sign,
-  verify,
-  SchnorrError,
+
+
+```
+
+`zil-pay/lib/array/chunk.ts`:
+
+```ts
+/**
+ * Splits an array into chunks of a specified size.
+ * @template T - The type of elements in the input array.
+ * @param array - The input array to be chunked.
+ * @param size - The size of each chunk (must be greater than 0).
+ * @returns A new array containing the chunks.
+ * @throws {Error} If the size is not a positive number.
+ */
+export function chunk<T>(array: T[], size: number): T[][] {
+    if (size <= 0) {
+        throw new Error("Size must be a positive number.");
+    }
+
+    const result: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size));
+    }
+    return result;
+}
+
+
+```
+
+`zil-pay/lib/array/shuffle.ts`:
+
+```ts
+/**
+ * Shuffles the elements of an array in place using the Fisher-Yates algorithm.
+ * @template T - The type of elements in the array.
+ * @param array - The array to shuffle.
+ */
+export function shuffle<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+
+```
+
+`zil-pay/lib/popup/clipboard.ts`:
+
+```ts
+/**
+ * Asynchronously copies the provided text to the user's clipboard using the modern
+ * `navigator.clipboard` API. If the modern API is not available, it attempts
+ * to use the deprecated `document.execCommand('copy')` as a fallback.
+ *
+ * @param text The string to be copied to the clipboard.
+ * @returns A Promise that resolves to `true` if the copy operation was successful,
+ * or `false` if it failed (e.g., due to browser limitations or user denial of permissions).
+ */
+export async function clipboardCopy(text: string): Promise<boolean> {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {
+      return fallbackCopyToClipboard(text);
+    }
+  } else {
+    // Fallback for browsers that do not support the modern Clipboard API.
+    return fallbackCopyToClipboard(text);
+  }
+}
+
+/**
+ * Attempts to copy text to the clipboard using the deprecated `document.execCommand('copy')` method.
+ * This method is less reliable and may require user interaction or specific browser permissions.
+ *
+ * @param text The string to be copied to the clipboard.
+ * @returns `true` if the copy command was successful, `false` otherwise.
+ */
+function fallbackCopyToClipboard(text: string): boolean {
+  try {
+    const span = document.createElement('span');
+    span.textContent = text;
+    span.style.whiteSpace = 'pre';
+    span.style.userSelect = 'all';
+    document.body.appendChild(span);
+    const selection = window.getSelection();
+    const range = window.document.createRange();
+    selection?.removeAllRanges();
+    range.selectNode(span);
+    selection?.addRange(range);
+    const successful = window.document.execCommand('copy');
+    selection?.removeAllRanges();
+    document.body.removeChild(span);
+    return successful;
+  } catch (err) {
+    console.error('Failed to copy text using document.execCommand:', err);
+    return false;
+  }
+}
+
+```
+
+`zil-pay/lib/popup/printer.ts`:
+
+```ts
+interface PrintMnemonicOptions {
+  phrase: string;
+  translations: string[];
+  title: string;
+}
+
+export const printMnemonic = (options: PrintMnemonicOptions) => {
+  const { phrase, translations, title } = options;
+  return `<!DOCTYPE html>
+<html id="print-wallet">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f8f9fa; /* Light background for printing */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .print-container {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 80%; /* Occupies most of the width */
+      max-width: 700px; /* Limits maximum width */
+      padding: 30px;
+      margin-bottom: 50px; /* Bottom margin */
+    }
+
+    .print-text {
+      text-align: center;
+    }
+
+    p {
+      margin-bottom: 1em;
+      font-size: 1rem;
+    }
+
+    h3 {
+      color: #555;
+      letter-spacing: 0.03rem;
+      margin-top: 1.5em;
+      margin-bottom: 1em;
+      font-size: 1.4rem;
+      font-weight: 500;
+    }
+
+    .phrase {
+      font-family: Menlo, Monaco, Consolas, 'Courier New', monospace !important;
+      font-weight: bold !important;
+      font-size: 1.2rem;
+      background-color: #f0f8ff; /* Light background for the phrase */
+      color: #1e3a8a; /* Accent color for the phrase */
+      padding: 1rem;
+      border: 1px solid #aed9fe;
+      border-radius: 4px;
+      margin: 2rem auto;
+      max-width: 90%;
+      word-break: break-word;
+    }
+
+    .footer {
+      margin-top: 2em;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .footer a {
+      color: #777;
+      text-decoration: none;
+    }
+
+    @media print {
+      body {
+        background-color: #fff; /* White background when printing */
+      }
+      .print-container {
+        border: 1px solid #000; /* Black border when printing */
+        box-shadow: none; /* Removes shadow when printing */
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="print-container" id="print-container">
+    <article class="print-text">
+      <p>
+        ${translations[0]}<br>
+        ${translations[1]}<br>
+        ${translations[2]}
+      </p>
+      <h3>${translations[3]}</h3>
+      <div class="phrase">${phrase}</div>
+      <p>
+        ${translations[4]}
+      </p>
+      <p>
+        ${translations[5]}
+      </p>
+      <p>
+        ${translations[6]}
+      </p>
+      <aside class="footer">
+        <a href="https://zilpay.io/" rel="noopener noreferrer" target="_blank">ZilPay Wallet</a>
+      </aside>
+    </article>
+  </main>
+</body>
+</html>
+`;
+};
+
+```
+
+`zil-pay/lib/popup/warp-message.ts`:
+
+```ts
+import type { SendResponseParams } from 'types/stream';
+
+export function warpMessage<T>(msg: SendResponseParams): T | undefined {
+  if (!msg) {
+    return;
+  }
+
+  if (msg.reject) {
+    throw new Error(String(msg.reject));
+  }
+
+  return msg.resolve;
+}
+
+```
+
+`zil-pay/lib/runtime/assert.ts`:
+
+```ts
+export function assert(expressions: boolean, msg: string) {
+  if (!expressions) {
+    throw new Error(msg);
+  }
+}
+
+```
+
+`zil-pay/lib/runtime/ext-id.ts`:
+
+```ts
+import { Runtime } from "./extensionizer";
+
+export const EXTENSION_ID = Runtime.runtime.id;
+
+```
+
+`zil-pay/lib/runtime/extensionizer.ts`:
+
+```ts
+export const Runtime = globalThis.chrome;
+
+```
+
+`zil-pay/lib/runtime/get-url.ts`:
+
+```ts
+import { Runtime } from "./extensionizer";
+
+export function getExtensionURL(content: string) {
+  return Runtime.runtime.getURL(content);
+}
+
+
+```
+
+`zil-pay/lib/runtime/manifest.ts`:
+
+```ts
+import { Runtime } from './extensionizer';
+
+export function getManifestVersion() {
+  return Runtime.runtime.getManifest().manifest_version;
+}
+
+```
+
+`zil-pay/lib/storage/builder.ts`:
+
+```ts
+import type { Fields } from 'config/fields';
+import { TypeOf } from '../types/checker';
+
+export type StorageKeyValue = {
+    [key: string]: string;
+};
+
+/**
+ * Builds a payload object for writing to browser storage.
+ * Serializes objects and arrays to JSON strings.
+ *
+ * @example
+ * import { buildObject, BrowserStorage } from 'lib/storage';
+ *
+ * const storage = Object.freeze(new BrowserStorage()); // Предполагается, что BrowserStorage - Singleton
+ * storage.set(buildObject('key', 'any payload'));
+ * storage.set(buildObject('objectKey', { a: 1, b: 2 }));
+ * storage.set(buildObject('arrayKey', [1, 2, 3]));
+ */
+export function buildObject(key: Fields | string, value: string | object | any[]): StorageKeyValue { // Added any[]
+    let data: string;
+
+    if (TypeOf.isObject(value) || TypeOf.isArray(value)) {
+        try {
+            data = JSON.stringify(value);
+        } catch (error) {
+            // Handle the error appropriately.  For example:
+            console.error('Error serializing value to JSON:', error);
+            // Consider throwing the error, returning a default value, or logging.
+            return { [key]: '' }; // Return empty string,  or throw error.  IMPORTANT
+        }
+    } else {
+        data = String(value);
+    }
+
+    return {
+        [key]: data,
+    };
+}
+
+
+```
+
+`zil-pay/lib/storage/storage.ts`:
+
+```ts
+import type { StorageKeyValue } from './builder';
+import type { Fields } from 'config/fields';
+import { Runtime } from 'lib/runtime/extensionizer';
+
+type StorageChangesCallback = { [key: string]: chrome.storage.StorageChange; };
+
+/**
+ * Default class for working with browser Storage.
+ * @example
+ * import { BrowserStorage } from 'lib/storage'
+ * BrowserStorage.get('KEY').then(data => { ... });
+ */
+export const BrowserStorage = Object.freeze({
+    /**
+     * Subscribes to storage changes.
+     * @param callback - The callback function to be called when storage changes.
+     * @returns An object with an unsubscribe method.
+     */
+    subscribe(callback: (changes: StorageChangesCallback) => void) {
+        const listener = (changes: StorageChangesCallback) => {
+            try {
+                callback(changes);
+            } catch (error) {
+                console.error("Error in storage change callback:", error);
+            }
+        };
+
+        Runtime.storage.onChanged.addListener(listener);
+
+        return {
+            unsubscribe() {
+                Runtime.storage.onChanged.removeListener(listener);
+            },
+        };
+    },
+
+    /**
+     * Sets multiple key-value pairs in storage.
+     * @param items - An array of key-value objects to be stored.
+     * @returns A promise that resolves when all items are set.
+     */
+    async set(...items: StorageKeyValue[]): Promise<void> {
+        if (items.length === 0) return;
+
+        const data: StorageKeyValue = {};
+        for (const item of items) {
+            Object.assign(data, item); // Merge all items into a single object.  Handles duplicate keys.
+        }
+
+        return new Promise((resolve, reject) => {
+            Runtime.storage.local.set(data, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError); // Reject on error
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
+
+    /**
+     * Gets values from storage for the given keys.
+     * @param keys - An array of keys to retrieve from storage.
+     * @returns A promise that resolves with the retrieved data.  If one key is provided, the value is returned.  If multiple, an object is returned.
+     */
+    async get(...keys: (Fields | string)[]): Promise<StorageKeyValue | any> { // Use 'any' for more flexibility
+        return new Promise((resolve, reject) => {
+            Runtime.storage.local.get(keys, (result) => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                  if (keys.length === 1) {
+                    resolve(result[keys[0]]);
+                  } else {
+                    resolve(result);
+                  }
+                }
+            });
+        });
+    },
+
+    /**
+     * Gets all items from storage.
+     * @returns A promise that resolves with an object containing all stored items.
+     */
+    async getAll(): Promise<StorageKeyValue> {
+        return new Promise((resolve, reject) => {
+            Runtime.storage.local.get(null, (items) => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(items);
+                }
+            });
+        });
+    },
+
+    /**
+     * Removes items from storage for the given keys.
+     * @param keys - An array of keys to remove from storage.
+     * @returns A promise that resolves when the items are removed.
+     */
+    async rm(...keys: (Fields | string)[]): Promise<void> {
+        return new Promise((resolve, reject) => {
+            Runtime.storage.local.remove(keys, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
+
+    /**
+     * Clears all items from storage.
+     * @returns A promise that resolves when the storage is cleared.
+     */
+    async clear(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            Runtime.storage.local.clear(() => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
 });
 
+
+```
+
+`zil-pay/lib/streem/keys.ts`:
+
+```ts
+const app = 'zil-pay';
+
+export const MTypeTabContent = {
+  CONTENT: `@/${app}/content-script`,
+  INJECTED: `@/${app}/injected-script`
+};
+
+export const MTypePopupWallet = {
+  GET_RANDOM_SEED: `@/${app}/generate-random-seed`,
+  CREATE_ACCOUNT_BY_SEED: `@/${app}/set-account-by-seed-words`,
+  SET_PASSWORD: `@/${app}/popup-set-password`,
+  LOG_OUT: `@/${app}/popup-logout`,
+  SET_SEED_AND_PASSWORD: `@/${app}/popup-set-seed-words-and-password`,
+  WALET_PASSWORD_CHANGE: `@/${app}/change-password`,
+  GET_WALLET_STATE: `@/${app}/get-wallet-state`,
+  EXPORT_SEED: `@/${app}/popup-export-seed-words`,
+  EXPORT_PRIVATE_KEY: `@/${app}/popup-export-private-key`,
+  EXPORT_QR_CODE_WALLET: `@/${app}/export-qr-code-wallet`,
+  IMPORT_PRIVATE_KEY: `@/${app}/popup-import-private-key`,
+  IMPORT_TRACK_ACCOUNT: `@/${app}/popup-import-track-account`,
+  IMPORT_KEYSTORE: `@/${app}/popup-import-keystore`,
+  ENCRYPT_WALLET: `@/${app}/encrypt-wallet-aes`,
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`,
+};
+
+export const MTypePopupAccount = {
+  RM_ACCOUNT: `@/${app}/remove-selected-account`,
+  SELECT_ACCOUNT: `@/${app}/select-account`,
+  SET_ACCOUNT_NAME: `@/${app}/set-account-name`,
+  UPDATE_BALANCE: `@/${app}/popup-account-balance-upadte`,
+};
+
+export const MTypePopupTransaction = {
+  UPDATE_TXNS: `@/${app}/check-processed-txns`,
+  REJECT_CONFIRM_TX: `@/${app}/popup-reject-confirm-tx`,
+  REJECT_ALL_CONFIRM_TXNS: `@/${app}/popup-reject-al-confirm-txns`,
+  SEND_TO_SIGN_TX: `@/${app}/popup-send-to-sign-tx`,
+  GET_REQUIRED_PARAMS: `@/${app}/get-required-params`,
+  CLEAR_ALL_TXNS: `@/${app}/clear-all-txns`,
+  GET_CURRENT_NONCE: `@/${app}/get-current-nonce`,
+  RESET_NONCE: `@/${app}/reset-nonce`,
+};
+
+export const MTypePopupToken = {
+  GET_ZRC2_STATE: `@/${app}/get-zrc2-token-info`,
+  ADD_ZRC2_TOKEN: `@/${app}/add-new-zrc2-token`,
+  RM_TOKEN: `@/${app}/remove-token`,
+  GET_ZRC2_ALLOWANCES_FOR_SWAP: `@/${app}/get-zrc2-allowances-for-swap`,
+};
+
+export const MTypePopupNFT = {
+  UPDATE_NFT_LIST: `@/${app}/update-nft-list`,
+  GET_NFT_LIST: `@/${app}/get-nft-list`,
+  FETCH_NFT: `@/${app}/fetch-nft`,
+  ADD_NFT: `@/${app}/add-nft`,
+  REMOVE_NFT: `@/${app}/remove-nft`,
+};
+
+export const MTypePopupNetwork = {
+  SELECT_SSN: `@/${app}/select-from-ssn-list`,
+  RESET_NETWROK: `@/${app}/reset-netwrok-settings`,
+  SET_NET_CONFIG: `@/${app}/set-netwrok-config`,
+  SELECT_NETWORK: `@/${app}/select-network`,
+  UPDATE_SSN_LIST: `@/${app}/update-ssn-list`,
+  GET_LATEST_BLOCK: `@/${app}/get-latest-block-number`,
+};
+
+export const MTypePopupDApp = {
+  USER_RESPONSE_DAPP: `@/${app}/user-response-connect-dapp`,
+  RM_APP: `@/${app}/remove-dapp`,
+  CLEAR_APPS: `@/${app}/clear-all-apps`,
+  SET_PHISHING_DETECTION: `@/${app}/set-phishing-detection`,
+};
+
+export const MTypePopupContact = {
+  ADD_CONTACT: `@/${app}/add-a-contact`,
+  RM_CONTACT: `@/${app}/remove-a-contact`,
+};
+
+export const MTypePopupSettings = {
+  CHANGE_CURRENCY: `@/${app}/change-currency`,
+  UPDATE_RATE: `@/${app}/update-rate`,
+  RESET_CURRENCY: `@/${app}/reset-currency`,
+  SET_THEME: `@/${app}/set-theme-mode`,
+  RESET_THEME: `@/${app}/reset-theme`,
+  SET_LOCALE: `@/${app}/set-locale`,
+  RESET_LOCALE: `@/${app}/reset-locale`,
+  SET_GAS_MULTIPLIER: `@/${app}/set-gas-multiplier`,
+  RESET_GAS: `@/${app}/reset-gas`,
+  SET_LOCK_TIME: `@/${app}/set-lock-timer`,
+  SET_ADDRESS_FORMAT: `@/${app}/set-address-format`,
+  SET_PROMT_ENABLED: `@/${app}/set-promt-enabled`,
+};
+
+export const MTypePopupSign = {
+  REJECT_SIGN_MESSAGE: `@/${app}/reject-sign-message`,
+  SIGN_MESSAGE_APPROVE: `@/${app}/approve-sign-message`,
+};
+
+export const MTypePopupUtil = {
+  FROM_BECH32: `@/${app}/convert-from-bech32`,
+};
+
+export const MTypePopupDex = {
+  UPDATE_DEX_DATA: `@/${app}/update-dex-data`,
+  UPDATE_DEX_SETTINGS: `@/${app}/update-dex-settings`,
+};
+
+export const MTypePopupStake = {
+  GET_STAKE_PROPS: `@/${app}/get-stake-props`,
+};
+
+export const MTypePopupLedger = {
+  ADD_LEDGER_ACCOUNT: `@/${app}/add-ledger-account`,
+};
+
+export const MTypeTab = {
+  GET_WALLET_DATA: `@/${app}/injected-get-wallet-data`,
+  ADDRESS_CHANGED: `@/${app}/address-changed`,
+  NETWORK_CHANGED: `@/${app}/network-changed`,
+  LOCK_STAUS: `@/${app}/lack-status-updated`,
+  CONTENT_PROXY_MEHTOD: `@/${app}/request-through-content`,
+  CONTENT_PROXY_RESULT: `@/${app}/response-from-content`,
+  CALL_TO_SIGN_TX: `@/${app}/request-to-sign-tx`,
+  TX_RESULT: `@/${app}/response-tx-result`,
+  SIGN_MESSAGE: `@/${app}/request-to-sign-message`,
+  SING_MESSAGE_RES: `@/${app}/response-sign-message`,
+  NEW_BLOCK: `@/${app}/new-block-created`,
+  ADD_ENCRYPTION: `@/${app}/request-add-encryption`,
+  RES_ENCRYPTION: `@/${app}/response-encryption`,
+  ADD_DECRYPTION: `@/${app}/add-decryption`,
+  RES_DECRYPTION: `@/${app}/response-decryption`,
+  CONNECT_APP: `@/${app}/request-to-connect-dapp`,
+  RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`,
+  DISCONNECT_APP: `@/${app}/request-to-disconnect-dapp`
+};
+
+
+```
+
+`zil-pay/lib/streem/message.ts`:
+
+```ts
+import { Runtime } from "lib/runtime/extensionizer";
+
+
+export interface ReqBody<T = unknown> {
+    type: string;
+    payload?: T;
+    domain?: string;
+    from?: string;
+}
+
+export class Message<T = unknown> {
+    constructor(public readonly body: ReqBody<T>) {}
+
+    static signal(type: string): Message<object> {
+        return new Message({ type });
+    }
+
+    async send(): Promise<T> {
+        for (let i = 0; i < 10; i++) {
+            try {
+                const res = await this.#trySend();
+                if (res) return res;
+            } catch {}
+        }
+        throw new Error("service_worker_stopped");
+    }
+
+    #trySend(): Promise<T> {
+        return new Promise((resolve) => {
+          try {
+            let data = JSON.parse(JSON.stringify(this.body));
+            Runtime.runtime.sendMessage(data, resolve);
+          } catch (err) {
+            console.error(this, err);
+            window.location.reload();
+          }
+        });
+    }
+}
+
+```
+
+`zil-pay/lib/streem/secure-message.ts`:
+
+```ts
+import type { ReqBody } from './message';
+import type { TabStream } from './tab-stream';
+
+export class SecureContentMessage<T = unknown> {
+    constructor(public readonly body: ReqBody<T>) {}
+
+    get type() { return this.body.type; }
+    get payload() { return this.body.payload; }
+
+    send(stream: TabStream, recipient: string) {
+        stream.send(this.body, recipient);
+    }
+}
+
+```
+
+`zil-pay/lib/streem/tab-stream.ts`:
+
+```ts
+import type { ReqBody } from './message';
+import { Runtime } from "lib/runtime";
+import { MTypeTabContent } from './keys';
+
+export class TabStream {
+    constructor(public readonly eventName: string) {}
+
+    listen(cb: (payload: ReqBody) => void) {
+        globalThis.document?.addEventListener(this.eventName, (event: Event) => {
+            const detail = (event as CustomEvent).detail;
+            if (detail) {
+                try {
+                    cb(JSON.parse(detail));
+                } catch (e) {
+                    console.error("Error parsing event detail", e, event);
+                }
+            }
+        });
+    }
+
+    send(data: ReqBody, to: string) {
+        data.from = this.eventName;
+        if (Object.values(MTypeTabContent).includes(to)) {
+            this.#dispatch(JSON.stringify(data), to);
+        }
+    }
+
+    #dispatch(data: string, to: string) {
+        globalThis.document?.dispatchEvent(this.#getEvent(data, to));
+    }
+
+    #getEvent(detail: string, to: string) {
+        return new CustomEvent(to, { detail });
+    }
+
+    /**
+     * Sends a signal message to the specified tab.
+     * @param tabId - The ID of the tab.
+     * @param message - The message to send.
+     */
+    async sendSignalToTab(tabId: number, message: ReqBody): Promise<void> {
+        try {
+            await Runtime.tabs.sendMessage(tabId, message);
+        } catch (error) {
+            console.error(`Failed to send signal to tab ${tabId}:`, error);
+            throw error; // Re-throw the error to be handled by the caller
+        }
+    }
+
+    /**
+      * Sends message to all tabs except the excluded tabIds
+      * @param message
+      * @param excludedTabIds
+      */
+    async sendToAllTabs(message: ReqBody, excludedTabIds: number[] = []): Promise<void> {
+        try {
+            const tabs = await Runtime.tabs.query({});
+            for (const tab of tabs) {
+                if (tab?.id && !excludedTabIds.includes(tab.id)) {
+                    await Runtime.tabs.sendMessage(tab.id, message);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to send message to all tabs:", error);
+            throw error; // Re-throw the error
+        }
+    }
+}
+
+```
+
+`zil-pay/lib/streem/tabs-message.ts`:
+
+```ts
+import type { ReqBody } from './message';
+import { Runtime } from "lib/runtime";
+
+
+export class TabsMessage<T = any> {
+    constructor(public readonly body: ReqBody<T>) {}
+
+    static async getTabs(): Promise<chrome.tabs.Tab[]> {
+        return Runtime.tabs.query({});
+    }
+
+    async signal(domain: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            Runtime.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
+                const tab = tabs[0];
+                if (!tab) {
+                    reject(new Error("no active tabs"));
+                    return;
+                }
+
+                const { hostname } = new URL(tab.url!);
+
+                if (hostname !== domain) {
+                    reject(new Error("invalid domain"));
+                    return;
+                }
+                Runtime.tabs.sendMessage(Number(tab.id), this.body)
+                    .then(() => resolve(""))
+                    .catch(reject);
+            });
+        });
+    }
+
+
+
+    async send(...domains: string[]): Promise<void> {
+        const tabs = await TabsMessage.getTabs();
+
+        tabs.forEach(async (tab) => {
+            if (tab?.url && domains.includes(new URL(tab.url).hostname)) {
+                try {
+                    await Runtime.tabs.sendMessage(Number(tab.id), this.body);
+                } catch (err) {
+                    console.error(`Failed to send message to tab ${tab.id}`, err);
+                }
+            }
+        });
+    }
+
+    async sendAll(): Promise<void> {
+        const tabs = (await TabsMessage.getTabs())
+            .filter((tab) => tab?.url && !tab.url.startsWith("chrome://"));
+
+        try {
+            for (const tab of tabs) {
+                await Runtime.tabs.sendMessage(Number(tab.id), this.body);
+            }
+        } catch (err) {
+            console.error("TabsMessage", err);
+        }
+    }
+}
+
+```
+
+`zil-pay/lib/types/checker.ts`:
+
+```ts
+type Arg = unknown;
+
+export const TypeOf = Object.freeze({
+    /**
+     * Checks if the given argument is an array.
+     * @param arg The argument to check.
+     * @returns True if the argument is an array, false otherwise.
+     */
+    isArray(arg: Arg): boolean {
+        return Array.isArray(arg);
+    },
+
+    /**
+     * Checks if the given argument is a plain object.
+     * @param arg The argument to check.
+     * @returns True if the argument is a plain object, false otherwise.
+     */
+    isObject(arg: Arg): boolean {
+        return typeof arg === 'object' && arg !== null && !Array.isArray(arg) && !(arg instanceof Date) && !(arg instanceof Error) && Object.getPrototypeOf(arg) === Object.prototype;
+    },
+
+    /**
+     * Checks if the given argument is a number.
+     * @param arg The argument to check.
+     * @returns True if the argument is a number, false otherwise.
+     */
+    isNumber(arg: Arg): boolean {
+        return typeof arg === 'number' && !isNaN(arg as number);
+    },
+
+    /**
+     * Checks if the given argument is an integer.
+     * @param arg The argument to check.
+     * @returns True if the argument is an integer, false otherwise.
+     */
+    isInt(arg: Arg): boolean {
+        return Number.isInteger(arg as number);
+    },
+
+    /**
+     * Checks if the given argument is an error object.
+     * @param arg The argument to check.
+     * @returns True if the argument is an error object, false otherwise.
+     */
+    isError(arg: Arg): boolean {
+        return arg instanceof Error;
+    },
+
+    /**
+     * Checks if the given argument is a string.
+     * @param arg The argument to check.
+     * @returns True if the argument is a string, false otherwise.
+     */
+    isString(arg: Arg): boolean {
+        return typeof arg === 'string' || arg instanceof String;
+    },
+
+    /**
+     * Checks if the given argument is a boolean.
+     * @param arg The argument to check.
+     * @returns True if the argument is a boolean, false otherwise.
+     */
+    isBoolean(arg: Arg): boolean {
+        return typeof arg === 'boolean' || arg instanceof Boolean;
+    },
+
+    /**
+     * Checks if the given argument is null.
+     * @param arg The argument to check.
+     * @returns True if the argument is null, false otherwise.
+     */
+    isNull(arg: Arg): boolean {
+        return arg === null;
+    },
+
+    /**
+     * Checks if the given argument is undefined.
+     * @param arg The argument to check.
+     * @returns True if the argument is undefined, false otherwise.
+     */
+    isUndefined(arg: Arg): boolean {
+        return arg === undefined;
+    },
+
+    /**
+     * Checks if the given argument is an empty object.
+     * @param arg The argument to check.
+     * @returns True if the argument is an empty object, false otherwise.
+     */
+    isEmptyObject(arg: Arg): boolean {
+        return this.isObject(arg) && Object.keys(arg as object).length === 0;
+    },
+
+    /**
+     * Checks if the given argument is an empty array.
+     * @param arg The argument to check.
+     * @returns True if the argument is an empty array, false otherwise.
+     */
+    isEmptyArray(arg: Arg): boolean {
+        return this.isArray(arg) && (arg as Array<unknown>).length === 0;
+    },
+});
+
+
+```
+
+`zil-pay/lib/zilliqa/bech32.ts`:
+
+```ts
+import { assert } from 'lib/runtime/assert';
+import { CHARSET, HRP, GENERATOR } from 'lib/zilliqa/config';
+import { toChecksumHexAddress } from 'lib/zilliqa/checksum';
+import { utils } from 'aes-js';
+
+
+/**
+ * Calculates the polynomial modulo for Bech32 checksum calculation.
+ *
+ * @param values The Uint8Array of input values.
+ * @returns The polynomial modulo result.
+ */
+const polymod = (values: Uint8Array): number => {
+    let chk: number = 1;
+    for (let p: number = 0; p < values.length; ++p) {
+        const top: number = chk >> 25;
+        chk = ((chk & 0x1ffffff) << 5) ^ values[p];
+        for (let i: number = 0; i < 5; ++i) {
+            if ((top >> i) & 1) {
+                chk ^= GENERATOR[i];
+            }
+        }
+    }
+    return chk;
+};
+
+/**
+ * Expands the Human-Readable Part (HRP) into a Uint8Array for checksum calculation.
+ *
+ * @param hrp The Human-Readable Part string.
+ * @returns The Uint8Array representation of the expanded HRP.
+ */
+const hrpExpand = (hrp: string): Uint8Array => {
+    const ret: number[] = [];
+    for (let i: number = 0; i < hrp.length; ++i) {
+        ret.push(hrp.charCodeAt(i) >> 5);
+    }
+    ret.push(0);
+    for (let i: number = 0; i < hrp.length; ++i) {
+        ret.push(hrp.charCodeAt(i) & 31);
+    }
+    return new Uint8Array(ret);
+};
+
+/**
+ * Converts an array of numbers of `fromWidth` bits to an array of numbers of `toWidth` bits.
+ *
+ * @param data The input array of numbers.
+ * @param fromWidth The number of bits per input number.
+ * @param toWidth The number of bits per output number.
+ * @param pad Whether to pad the output if the input is not a multiple of `fromWidth`.
+ * @returns A new Uint8Array containing the converted bits, or null if input is invalid.
+ */
+export function convertBits(data: Uint8Array, fromWidth: number, toWidth: number, pad: boolean = true): Uint8Array | null {
+    let acc: number = 0;
+    let bits: number = 0;
+    const ret: number[] = [];
+    const maxv: number = (1 << toWidth) - 1;
+
+    for (const value of data) {
+        if (value < 0 || (value >> fromWidth) !== 0) {
+            return null;
+        }
+        acc = (acc << fromWidth) | value;
+        bits += fromWidth;
+        while (bits >= toWidth) {
+            bits -= toWidth;
+            ret.push((acc >> bits) & maxv);
+        }
+    }
+
+    if (pad) {
+        if (bits > 0) {
+            ret.push((acc << (toWidth - bits)) & maxv);
+        }
+    } else if (bits >= fromWidth || (acc << (toWidth - bits)) & maxv) {
+        return null;
+    }
+
+    return new Uint8Array(ret);
+}
+
+/**
+ * Verifies the checksum of a Bech32 encoded string.
+ *
+ * @param hrp The Human-Readable Part of the Bech32 string.
+ * @param data The Uint8Array of the data part of the Bech32 string.
+ * @returns True if the checksum is valid, false otherwise.
+ */
+function verifyChecksum(hrp: string, data: Uint8Array): boolean {
+    return polymod(new Uint8Array([...hrpExpand(hrp), ...data])) === 1;
+}
+
+/**
+ * Creates the checksum for a given HRP and data.
+ *
+ * @param hrp The Human-Readable Part string.
+ * @param data The Uint8Array of the data to be checksummed.
+ * @returns A Uint8Array representing the checksum.
+ */
+function createChecksum(hrp: string, data: Uint8Array): Uint8Array {
+    const values: Uint8Array = new Uint8Array([...hrpExpand(hrp), ...data, 0, 0, 0, 0, 0, 0]);
+    const mod: number = polymod(values) ^ 1;
+    const ret: number[] = [];
+    for (let p: number = 0; p < 6; ++p) {
+        ret.push((mod >> (5 * (5 - p))) & 31);
+    }
+    return new Uint8Array(ret);
+}
+
+/**
+ * Encodes data with a Human-Readable Part (HRP) into a Bech32 string.
+ *
+ * @param hrp The Human-Readable Part string.
+ * @param data The Uint8Array of data to encode.
+ * @returns The Bech32 encoded string.
+ */
+export const encode = (hrp: string, data: Uint8Array): string => {
+    const checksum: Uint8Array = createChecksum(hrp, data);
+    const combined: Uint8Array = new Uint8Array([...data, ...checksum]);
+    let ret: string = hrp + '1';
+    for (const value of combined) {
+        ret += CHARSET.charAt(value);
+    }
+    return ret;
+};
+
+/**
+ * Decodes a Bech32 encoded string into its Human-Readable Part (HRP) and data.
+ *
+ * @param bechString The Bech32 encoded string to decode.
+ * @returns An object containing the HRP and the Uint8Array of data, or null if decoding fails.
+ */
+export const decode = (bechString: string): { hrp: string; data: Uint8Array } | null => {
+    let hasLower: boolean = false;
+    let hasUpper: boolean = false;
+    for (let i: number = 0; i < bechString.length; ++i) {
+        const charCode: number = bechString.charCodeAt(i);
+        if (charCode < 33 || charCode > 126) {
+            return null;
+        }
+        if (charCode >= 97 && charCode <= 122) {
+            hasLower = true;
+        }
+        if (charCode >= 65 && charCode <= 90) {
+            hasUpper = true;
+        }
+    }
+
+    if (hasLower && hasUpper) {
+        return null;
+    }
+
+    const lowerBechString: string = bechString.toLowerCase();
+    const pos: number = lowerBechString.lastIndexOf('1');
+
+    if (pos < 1 || pos + 7 > lowerBechString.length || lowerBechString.length > 90) {
+        return null;
+    }
+
+    const hrp: string = lowerBechString.substring(0, pos);
+    const data: number[] = [];
+    for (let i: number = pos + 1; i < lowerBechString.length; ++i) {
+        const d: number = CHARSET.indexOf(lowerBechString.charAt(i));
+        if (d === -1) {
+            return null;
+        }
+        data.push(d);
+    }
+
+    const dataBytes: Uint8Array = new Uint8Array(data);
+    if (!verifyChecksum(hrp, dataBytes)) {
+        return null;
+    }
+
+    return { hrp, data: dataBytes.slice(0, dataBytes.length - 6) };
+};
+
+/**
+ * Checks if a string starts with the '0x' prefix (case-insensitive).
+ *
+ * @param str The string to check.
+ * @returns True if the string starts with '0x', false otherwise.
+ */
+function hasHexPrefix(str: string): boolean {
+    return str.toLowerCase().startsWith('0x');
+}
+
+/**
+ * Validates if a string is a valid hexadecimal Zilliqa address.
+ *
+ * @param address The string to validate.
+ * @returns True if the string is a valid hexadecimal address, false otherwise.
+ */
+function isValidHexAddress(address: string): boolean {
+    return !address || typeof address !== 'string' || (!hasHexPrefix(address) ? address.length !== 40 : address.length !== 42) || !/^[0-9a-fA-F]+$/.test(hasHexPrefix(address) ? address.slice(2) : address);
+}
+
+/**
+ * Converts a hexadecimal address to a Bech32 encoded Zilliqa address.
+ *
+ * @param address The hexadecimal address string (with or without '0x' prefix).
+ * @returns The Bech32 encoded Zilliqa address.
+ * @throws {Error} If the provided address is invalid or conversion fails.
+ */
+export const toBech32Address = async (address: string): Promise<string> => {
+    assert(!isValidHexAddress(address), 'Invalid address provided.');
+
+    const hexString: string = hasHexPrefix(address) ? address.slice(2) : address;
+    const addressBytes: Uint8Array | null = utils.hex.toBytes(hexString);
+    assert(addressBytes !== null, 'Cannot convert hex string to bytes.');
+
+    const addrBz: Uint8Array | null = convertBits(addressBytes, 8, 5);
+    assert(addrBz !== null, 'Cannot convert bytes to Bech32 bits.');
+
+    return encode(HRP, addrBz!);
+};
+
+/**
+ * Converts a Bech32 encoded Zilliqa address to a checksummed hexadecimal address.
+ *
+ * @param address The Bech32 encoded Zilliqa address.
+ * @returns The checksummed hexadecimal address string with the '0x' prefix.
+ * @throws {Error} If the provided Bech32 address is invalid or conversion fails.
+ */
+export const fromBech32Address = async (address: string): Promise<string> => {
+    const res = decode(address);
+    assert(res !== null, 'Invalid Bech32 address.');
+
+    // Explicitly assert the type of 'res' after the null check
+    const { hrp, data } = res as { hrp: string; data: Uint8Array };
+    assert(hrp === HRP, `Expected HRP '${HRP}', but got '${hrp}'.`);
+
+    const buf: Uint8Array | null = convertBits(data, 5, 8, false);
+    assert(buf !== null, 'Cannot convert Bech32 bits to bytes.');
+
+    const hexAddress: string = Array.from(buf!)
+        .map((b: number) => b.toString(16).padStart(2, '0'))
+        .join('');
+
+    return toChecksumHexAddress(`0x${hexAddress}`);
+};
+
+```
+
+`zil-pay/lib/zilliqa/checksum.ts`:
+
+```ts
+import { sha256 } from 'crypto/sha256';
+import { utils } from 'aes-js';
+
+/**
+ * Checks if a string starts with the '0x' prefix (case-insensitive).
+ *
+ * @param str The string to check.
+ * @returns True if the string starts with '0x', false otherwise.
+ */
+export function hasHexPrefix(str: string): boolean {
+  return str.toLowerCase().startsWith('0x');
+}
+
+/**
+ * Calculates the checksummed hexadecimal address from a byte array.
+ *
+ * @param addressBytes The address as a Uint8Array.
+ * @returns The checksummed hexadecimal address string with the '0x' prefix.
+ */
+export async function toChecksumBytesAddress(addressBytes: Uint8Array): Promise<string> {
+  const addressHex = utils.hex.fromBytes(addressBytes);
+  const hashBytes = await sha256(addressBytes);
+  const hashBigInt = BigInt(`0x${utils.hex.fromBytes(hashBytes)}`);
+  let checksumAddress = '0x';
+
+  for (let i = 0; i < addressHex.length; i++) {
+    const char = addressHex[i];
+    if (/[0-9]/.test(char)) {
+      checksumAddress += char;
+    } else {
+      const bitPosition = BigInt(255 - 6 * i);
+      const mask = BigInt(2) ** bitPosition;
+      const shouldBeUpper = (hashBigInt & mask) >= BigInt(1);
+
+      if (shouldBeUpper) {
+        checksumAddress += char.toUpperCase();
+      } else {
+        checksumAddress += char.toLowerCase();
+      }
+    }
+  }
+
+  return checksumAddress;
+}
+
+/**
+ * Calculates the checksummed hexadecimal address from a hexadecimal string.
+ *
+ * @param address The hexadecimal address string, optionally with the '0x' prefix.
+ * @returns The checksummed hexadecimal address string with the '0x' prefix.
+ */
+export async function toChecksumHexAddress(address: string): Promise<string> {
+  let lowerCaseAddress = address.toLowerCase();
+  if (hasHexPrefix(address)) {
+    lowerCaseAddress = lowerCaseAddress.slice(2);
+  }
+
+  const addressBytes = new Uint8Array(utils.hex.toBytes(lowerCaseAddress));
+  return toChecksumBytesAddress(addressBytes);
+}
+
+```
+
+`zil-pay/lib/zilliqa/config.ts`:
+
+```ts
+export const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+export const HRP = 'zil';
+export const GENERATOR = [
+  0x3b6a57b2,
+  0x26508e6d,
+  0x1ea119fa,
+  0x3d4233dd,
+  0x2a1462b3
+];
+
+```
+
+`zil-pay/lib/zilliqa/pubkey.ts`:
+
+```ts
+import { sha256 } from 'crypto/sha256';
+
+export async function fromZilPubKey(pubKey: Uint8Array): Promise<Uint8Array> {
+  const hashBytes = await sha256(pubKey);
+  const addressBytes = hashBytes.slice(12);
+
+  if (addressBytes.length !== 20) {
+    throw new Error('Invalid public key length or unexpected hash output length.');
+  }
+
+  return addressBytes;
+}
+
+```
+
+`zil-pay/popup/main.ts`:
+
+```ts
+import { mount } from 'svelte';
+import App from './App.svelte';
+
+export default mount(App, {
+	target: document.body,
+});
+
+```
+
+`zil-pay/vitest.config.ts`:
+
+```ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    globals: true,
+    setupFiles: '__tests__/setupTests.ts',
+    include: ['__tests__/**/*.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      reportsDirectory: 'stats/coverage',
+    },
+    reporters: [
+      'default',
+      ['html', { outputDir: 'stats/report' }]
+    ],
+  },
+});
 
 ```
