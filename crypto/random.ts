@@ -1,4 +1,4 @@
-import { ChaCha20Rng } from '@hicaru/chacharand.js';
+import { ChaCha20Rng } from "@hicaru/chacharand.js";
 
 export function randomBytes(length: number): Uint8Array {
   const buffer = new Uint8Array(length);
@@ -11,4 +11,4 @@ export function randomBytes(length: number): Uint8Array {
   rng.fillBytes(buffer);
 
   return buffer;
-};
+}

@@ -11,6 +11,7 @@
     "build": "rollup -c",
     "build:v3": "rollup -c",
     "dev": "rollup -c -w",
+    "format": "prettier --write ./**/*.{js,ts}",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "@types/aes-js": "^3.1.4",
     "@types/bun": "latest",
     "@types/chrome": "^0.0.313",
+    "prettier": "^3.5.3",
     "rollup": "^4.40.0",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^4.5.2",

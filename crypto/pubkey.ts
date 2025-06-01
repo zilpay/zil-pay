@@ -1,4 +1,4 @@
-import { utils } from 'aes-js';
+import { utils } from "aes-js";
 
 const SECRET_KEY_SIZE = 32;
 
@@ -46,9 +46,15 @@ export class SecretKey {
 
     switch (keyType) {
       case 0:
-        return new SecretKey(SecretKeyType.Secp256k1Sha256Zilliqa, keyDataArray);
+        return new SecretKey(
+          SecretKeyType.Secp256k1Sha256Zilliqa,
+          keyDataArray,
+        );
       case 1:
-        return new SecretKey(SecretKeyType.Secp256k1Keccak256Ethereum, keyDataArray);
+        return new SecretKey(
+          SecretKeyType.Secp256k1Keccak256Ethereum,
+          keyDataArray,
+        );
       default:
         throw new Error(SecretKeyError.InvalidKeyType);
     }
