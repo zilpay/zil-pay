@@ -3367,7 +3367,7 @@ import {
 import { ShaAlgorithms } from "../config/pbkdf2";
 
 // Constants
-const HARDENED_BIT = 1 << 31;
+const HARDENED_BIT = 0x80000000;
 const BITCOIN_SEED = new TextEncoder().encode("Bitcoin seed");
 
 // Error enum
@@ -3387,48 +3387,31 @@ export class Bip32Error extends Error {
 }
 
 // ChildNumber class
-export class ChildNumber {
-  private value: number;
+class ChildNumber {
+  constructor(public value: number) {}
 
-  /**
-   * Constructs a ChildNumber from a 32-bit unsigned integer.
-   * @param value - The 32-bit unsigned integer representing the child index.
-   */
-  constructor(value: number) {
-    this.value = value;
-  }
-
-  /**
-   * Checks if the child number is hardened (i.e., has the hardened bit set).
-   * @returns True if the child number is hardened, false otherwise.
-   */
-  public isHardened(): boolean {
+  isHardened(): boolean {
     return (this.value & HARDENED_BIT) === HARDENED_BIT;
   }
 
-  /**
-   * Converts the child number to a 4-byte big-endian array.
-   * @returns A 4-byte Uint8Array representing the child number.
-   */
-  public toBytes(): Uint8Array {
-    const buffer = new ArrayBuffer(4);
-    new DataView(buffer).setUint32(0, this.value, false); // Big-endian
-    return new Uint8Array(buffer);
+  toBytes(): Uint8Array {
+    const buffer = new Uint8Array(4);
+    buffer[0] = (this.value >>> 24) & 0xff;
+    buffer[1] = (this.value >>> 16) & 0xff;
+    buffer[2] = (this.value >>> 8) & 0xff;
+    buffer[3] = this.value & 0xff;
+    return buffer;
   }
 
-  /**
-   * Parses a string representation of a child number (e.g., "0" or "0'").
-   * @param s - The string to parse.
-   * @returns A ChildNumber instance.
-   * @throws Bip32Error if the string is invalid or the index is too large.
-   */
-  public static fromString(s: string): ChildNumber {
-    const [numStr, hardened] = s.endsWith("'")
-      ? [s.slice(0, -1), true]
-      : [s, false];
-
+  static fromString(s: string): ChildNumber {
+    let numStr = s;
+    let hardened = false;
+    if (s.endsWith("'")) {
+      numStr = s.slice(0, -1);
+      hardened = true;
+    }
     const index = parseInt(numStr, 10);
-    if (isNaN(index)) {
+    if (isNaN(index) || index < 0) {
       throw new Bip32Error(
         Bip32ErrorCode.InvalidChild,
         `Failed to parse child number: ${s}`,
@@ -3440,8 +3423,8 @@ export class ChildNumber {
         "Child number too large",
       );
     }
-
-    return new ChildNumber(hardened ? index | HARDENED_BIT : index);
+    const value = hardened ? index | HARDENED_BIT : index;
+    return new ChildNumber(value);
   }
 }
 

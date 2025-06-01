@@ -1,4 +1,3 @@
-import { pbkdf2 } from "../crypto/pbkdf2";
 import * as secp256k1 from "noble-secp256k1";
 import {
   bigIntToUint8ArrayBigEndian,
@@ -80,8 +79,26 @@ async function hmacSha512(
   data: Uint8Array,
 ): Promise<Uint8Array> {
   try {
-    const result = await pbkdf2(data, key, 1, ShaAlgorithms.Sha512);
-    return new Uint8Array(result);
+    // Import the key for HMAC. The key should be treated as 'raw' bytes.
+    const importedKey = await globalThis.crypto.subtle.importKey(
+      "raw", // format of the key
+      key, // the key material
+      {
+        name: "HMAC",
+        hash: { name: ShaAlgorithms.Sha512 }, // algorithm for HMAC
+      },
+      false, // whether the key is extractable (i.e. can be used in exportKey)
+      ["sign"], // what the key can be used for
+    );
+
+    // Sign the data using the imported HMAC key.
+    const signature = await globalThis.crypto.subtle.sign(
+      "HMAC", // algorithm identifier
+      importedKey, // key to use
+      data, // data to sign
+    );
+
+    return new Uint8Array(signature);
   } catch (error) {
     throw new Bip32Error(
       Bip32ErrorCode.HmacError,
@@ -99,9 +116,14 @@ async function hmacSha512(
 async function deriveMasterKey(
   seed: Uint8Array,
 ): Promise<{ key: Uint8Array; chainCode: Uint8Array }> {
+  // Derive the master key using HMAC-SHA512 with "Bitcoin seed" as the key.
   const hmacResult = await hmacSha512(BITCOIN_SEED, seed);
-  const [key, chainCode] = [hmacResult.slice(0, 32), hmacResult.slice(32, 64)];
+  // The first 32 bytes are the master private key, the next 32 bytes are the chain code.
+  // Явно создаем новые Uint8Array из срезов, чтобы избежать возможных проблем с ссылками.
+  const key = new Uint8Array(hmacResult.slice(0, 32));
+  const chainCode = new Uint8Array(hmacResult.slice(32, 64));
 
+  // Validate that the derived key is a valid secp256k1 private key.
   if (!secp256k1.utils.isValidPrivateKey(key)) {
     throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid master key");
   }
@@ -122,28 +144,41 @@ async function deriveChildKey(
   chainCode: Uint8Array,
   child: ChildNumber,
 ): Promise<{ key: Uint8Array; chainCode: Uint8Array }> {
-  const data = new Uint8Array(
-    child.isHardened()
-      ? [0, ...parentKey]
-      : [...secp256k1.getPublicKey(parentKey, true)],
-  );
-  data.set(child.toBytes(), data.length);
+  let dataToHash: Uint8Array;
 
-  const hmacResult = await hmacSha512(chainCode, data);
-  const [childKeyPart, newChainCode] = [
-    hmacResult.slice(0, 32),
-    hmacResult.slice(32, 64),
-  ];
+  // Determine the data to be hashed based on whether the child is hardened.
+  if (child.isHardened()) {
+    // For hardened children, the data is 0x00 followed by the parent private key.
+    dataToHash = new Uint8Array([0, ...parentKey, ...child.toBytes()]);
+  } else {
+    // For non-hardened children, the data is the compressed public key of the parent.
+    // The public key is derived from the parent private key.
+    const publicKey = secp256k1.getPublicKey(parentKey, true); // true for compressed public key (33 bytes)
+    dataToHash = new Uint8Array([...publicKey, ...child.toBytes()]);
+  }
 
-  // Add parent key and child key part (modulo curve order)
+  // Compute HMAC-SHA512 using the chain code as the key and the prepared data.
+  const hmacResult = await hmacSha512(chainCode, dataToHash);
+  // The first 32 bytes are the child key part, the next 32 bytes are the new chain code.
+  // Явно создаем новые Uint8Array из срезов, чтобы избежать возможных проблем с ссылками.
+  const childKeyPart = new Uint8Array(hmacResult.slice(0, 32));
+  const newChainCode = new Uint8Array(hmacResult.slice(32, 64));
+
+  // Convert both parent private key and child key part to BigInt for scalar addition.
   const parentScalar = uint8ArrayToBigIntBigEndian(parentKey);
   const childScalar = uint8ArrayToBigIntBigEndian(childKeyPart);
+
+  // The curve order 'n' for secp256k1.
   const curveOrder = BigInt(
     "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141",
   );
+
+  // Add the parent scalar and child scalar modulo the curve order.
   const sum = (parentScalar + childScalar) % curveOrder;
+  // Convert the resulting BigInt back to a 32-byte Uint8Array.
   const resultKey = bigIntToUint8ArrayBigEndian(sum, 32);
 
+  // Validate that the derived child key is a valid secp256k1 private key.
   if (!secp256k1.utils.isValidPrivateKey(resultKey)) {
     throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid child key");
   }
@@ -162,6 +197,7 @@ export async function derivePrivateKey(
   seed: Uint8Array,
   path: string,
 ): Promise<Uint8Array> {
+  // Validate that the derivation path starts with "m/".
   if (!path.startsWith("m/")) {
     throw new Bip32Error(
       Bip32ErrorCode.InvalidPath,
@@ -169,18 +205,28 @@ export async function derivePrivateKey(
     );
   }
 
+  // Split the path into parts and filter out any empty strings (e.g., from trailing slashes).
   const pathParts = path
-    .slice(2)
+    .slice(2) // Remove "m/" prefix
     .split("/")
     .filter((part) => part !== "");
+
+  // Derive the initial master key and chain code from the seed.
   let { key, chainCode } = await deriveMasterKey(seed);
 
+  // Iterate through each part of the derivation path to derive child keys.
   for (const part of pathParts) {
+    // Parse the child number from the path part (e.g., "44'" or "0").
     const childNumber = ChildNumber.fromString(part);
+    // Derive the child key and its new chain code.
     const result = await deriveChildKey(key, chainCode, childNumber);
+    // Update the current key and chain code for the next iteration.
     key = result.key;
     chainCode = result.chainCode;
   }
 
+  // Return the final derived private key.
   return key;
 }
+
+
