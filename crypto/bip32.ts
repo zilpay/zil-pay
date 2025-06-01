@@ -28,7 +28,7 @@ export class Bip32Error extends Error {
 /**
  * Represents a child number in a BIP-32 derivation path.
  */
-class ChildNumber {
+export class ChildNumber {
   constructor(public value: number) {}
 
   /**
@@ -121,7 +121,7 @@ async function hmacSha512(
  * @returns {Promise<{ key: Uint8Array; chainCode: Uint8Array }>} The master key and chain code.
  * @throws {Bip32Error} If the master key is invalid.
  */
-async function deriveMasterKey(
+export async function deriveMasterKey(
   seed: Uint8Array,
 ): Promise<{ key: Uint8Array; chainCode: Uint8Array }> {
   const hmacResult = await hmacSha512(BITCOIN_SEED, seed);
@@ -143,11 +143,15 @@ async function deriveMasterKey(
  * @returns {Promise<{ key: Uint8Array; chainCode: Uint8Array }>} The child key and chain code.
  * @throws {Bip32Error} If the child key is invalid.
  */
-async function deriveChildKey(
+export async function deriveChildKey(
   parentKey: Uint8Array,
   chainCode: Uint8Array,
   child: ChildNumber,
 ): Promise<{ key: Uint8Array; chainCode: Uint8Array }> {
+  if (!secp256k1.utils.isValidPrivateKey(parentKey)) {
+    throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid parent key");
+  }
+
   let dataToHash: Uint8Array;
 
   if (child.isHardened()) {
@@ -165,10 +169,20 @@ async function deriveChildKey(
     "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141",
   );
 
-  const parentScalar = uint8ArrayToBigIntBigEndian(parentKey);
+  let parentScalar = uint8ArrayToBigIntBigEndian(parentKey);
   let childScalar = uint8ArrayToBigIntBigEndian(childKeyPart);
+
+  // Ensure childScalar is within the curve order
   childScalar = childScalar % curveOrder;
-  const sum = (parentScalar + childScalar) % curveOrder;
+
+  // Add scalars and reduce modulo curve order
+  let sum = (parentScalar + childScalar) % curveOrder;
+
+  // Handle the case where sum is 0 (invalid private key)
+  if (sum === 0n) {
+    throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid child key: sum is zero");
+  }
+
   const resultKey = bigIntToUint8ArrayBigEndian(sum, 32);
 
   if (!secp256k1.utils.isValidPrivateKey(resultKey)) {
