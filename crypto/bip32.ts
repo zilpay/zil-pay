@@ -25,14 +25,24 @@ export class Bip32Error extends Error {
   }
 }
 
-// ChildNumber class
+/**
+ * Represents a child number in a BIP-32 derivation path.
+ */
 class ChildNumber {
   constructor(public value: number) {}
 
+  /**
+   * Checks if the child number is hardened.
+   * @returns {boolean} True if hardened, false otherwise.
+   */
   isHardened(): boolean {
-    return (this.value & HARDENED_BIT) === HARDENED_BIT;
+    return this.value < 0;
   }
 
+  /**
+   * Converts the child number to a 4-byte Uint8Array.
+   * @returns {Uint8Array} The byte representation.
+   */
   toBytes(): Uint8Array {
     const buffer = new Uint8Array(4);
     buffer[0] = (this.value >>> 24) & 0xff;
@@ -42,6 +52,12 @@ class ChildNumber {
     return buffer;
   }
 
+  /**
+   * Creates a ChildNumber from a string representation.
+   * @param {string} s - The string representation (e.g., "0'", "1").
+   * @returns {ChildNumber} The parsed ChildNumber.
+   * @throws {Bip32Error} If the string is invalid.
+   */
   static fromString(s: string): ChildNumber {
     let numStr = s;
     let hardened = false;
@@ -56,12 +72,6 @@ class ChildNumber {
         `Failed to parse child number: ${s}`,
       );
     }
-    if (index >= HARDENED_BIT) {
-      throw new Bip32Error(
-        Bip32ErrorCode.InvalidChild,
-        "Child number too large",
-      );
-    }
     const value = hardened ? index | HARDENED_BIT : index;
     return new ChildNumber(value);
   }
@@ -69,33 +79,31 @@ class ChildNumber {
 
 /**
  * Computes an HMAC-SHA512 hash of the data using the provided key.
- * @param key - The key for HMAC computation.
- * @param data - The data to hash.
- * @returns A 64-byte Uint8Array containing the HMAC-SHA512 result.
- * @throws Bip32Error if the HMAC computation fails.
+ * @param {Uint8Array} key - The HMAC key.
+ * @param {Uint8Array} data - The data to hash.
+ * @returns {Promise<Uint8Array>} The HMAC result.
+ * @throws {Bip32Error} If HMAC computation fails.
  */
 async function hmacSha512(
   key: Uint8Array,
   data: Uint8Array,
 ): Promise<Uint8Array> {
   try {
-    // Import the key for HMAC. The key should be treated as 'raw' bytes.
     const importedKey = await globalThis.crypto.subtle.importKey(
-      "raw", // format of the key
-      key, // the key material
+      "raw",
+      key,
       {
         name: "HMAC",
-        hash: { name: ShaAlgorithms.Sha512 }, // algorithm for HMAC
+        hash: { name: ShaAlgorithms.Sha512 },
       },
-      false, // whether the key is extractable (i.e. can be used in exportKey)
-      ["sign"], // what the key can be used for
+      false,
+      ["sign"],
     );
 
-    // Sign the data using the imported HMAC key.
     const signature = await globalThis.crypto.subtle.sign(
-      "HMAC", // algorithm identifier
-      importedKey, // key to use
-      data, // data to sign
+      "HMAC",
+      importedKey,
+      data,
     );
 
     return new Uint8Array(signature);
@@ -109,21 +117,17 @@ async function hmacSha512(
 
 /**
  * Derives the master private key and chain code from a seed.
- * @param seed - The seed bytes (typically 16-64 bytes).
- * @returns An object containing the master private key and chain code.
- * @throws Bip32Error if the key is invalid or HMAC fails.
+ * @param {Uint8Array} seed - The seed bytes.
+ * @returns {Promise<{ key: Uint8Array; chainCode: Uint8Array }>} The master key and chain code.
+ * @throws {Bip32Error} If the master key is invalid.
  */
 async function deriveMasterKey(
   seed: Uint8Array,
 ): Promise<{ key: Uint8Array; chainCode: Uint8Array }> {
-  // Derive the master key using HMAC-SHA512 with "Bitcoin seed" as the key.
   const hmacResult = await hmacSha512(BITCOIN_SEED, seed);
-  // The first 32 bytes are the master private key, the next 32 bytes are the chain code.
-  // Явно создаем новые Uint8Array из срезов, чтобы избежать возможных проблем с ссылками.
   const key = new Uint8Array(hmacResult.slice(0, 32));
   const chainCode = new Uint8Array(hmacResult.slice(32, 64));
 
-  // Validate that the derived key is a valid secp256k1 private key.
   if (!secp256k1.utils.isValidPrivateKey(key)) {
     throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid master key");
   }
@@ -133,11 +137,11 @@ async function deriveMasterKey(
 
 /**
  * Derives a child private key and chain code from a parent key, chain code, and child number.
- * @param parentKey - The parent private key.
- * @param chainCode - The parent chain code.
- * @param child - The child number (hardened or non-hardened).
- * @returns An object containing the child private key and chain code.
- * @throws Bip32Error if the key is invalid or HMAC fails.
+ * @param {Uint8Array} parentKey - The parent private key.
+ * @param {Uint8Array} chainCode - The parent chain code.
+ * @param {ChildNumber} child - The child number.
+ * @returns {Promise<{ key: Uint8Array; chainCode: Uint8Array }>} The child key and chain code.
+ * @throws {Bip32Error} If the child key is invalid.
  */
 async function deriveChildKey(
   parentKey: Uint8Array,
@@ -146,39 +150,27 @@ async function deriveChildKey(
 ): Promise<{ key: Uint8Array; chainCode: Uint8Array }> {
   let dataToHash: Uint8Array;
 
-  // Determine the data to be hashed based on whether the child is hardened.
   if (child.isHardened()) {
-    // For hardened children, the data is 0x00 followed by the parent private key.
     dataToHash = new Uint8Array([0, ...parentKey, ...child.toBytes()]);
   } else {
-    // For non-hardened children, the data is the compressed public key of the parent.
-    // The public key is derived from the parent private key.
-    const publicKey = secp256k1.getPublicKey(parentKey, true); // true for compressed public key (33 bytes)
+    const publicKey = secp256k1.getPublicKey(parentKey, true);
     dataToHash = new Uint8Array([...publicKey, ...child.toBytes()]);
   }
 
-  // Compute HMAC-SHA512 using the chain code as the key and the prepared data.
   const hmacResult = await hmacSha512(chainCode, dataToHash);
-  // The first 32 bytes are the child key part, the next 32 bytes are the new chain code.
-  // Явно создаем новые Uint8Array из срезов, чтобы избежать возможных проблем с ссылками.
   const childKeyPart = new Uint8Array(hmacResult.slice(0, 32));
   const newChainCode = new Uint8Array(hmacResult.slice(32, 64));
 
-  // Convert both parent private key and child key part to BigInt for scalar addition.
-  const parentScalar = uint8ArrayToBigIntBigEndian(parentKey);
-  const childScalar = uint8ArrayToBigIntBigEndian(childKeyPart);
-
-  // The curve order 'n' for secp256k1.
   const curveOrder = BigInt(
     "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141",
   );
 
-  // Add the parent scalar and child scalar modulo the curve order.
+  const parentScalar = uint8ArrayToBigIntBigEndian(parentKey);
+  let childScalar = uint8ArrayToBigIntBigEndian(childKeyPart);
+  childScalar = childScalar % curveOrder;
   const sum = (parentScalar + childScalar) % curveOrder;
-  // Convert the resulting BigInt back to a 32-byte Uint8Array.
   const resultKey = bigIntToUint8ArrayBigEndian(sum, 32);
 
-  // Validate that the derived child key is a valid secp256k1 private key.
   if (!secp256k1.utils.isValidPrivateKey(resultKey)) {
     throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid child key");
   }
@@ -188,16 +180,15 @@ async function deriveChildKey(
 
 /**
  * Derives a private key from a seed and a BIP-32 derivation path.
- * @param seed - The seed bytes (typically 16-64 bytes).
- * @param path - The derivation path (e.g., "m/44'/60'/0'/0/0").
- * @returns The derived private key as a Uint8Array.
- * @throws Bip32Error if the path is invalid, key derivation fails, or inputs are invalid.
+ * @param {Uint8Array} seed - The seed bytes.
+ * @param {string} path - The BIP-32 derivation path (e.g., "m/44'/60'/0'/0/0").
+ * @returns {Promise<Uint8Array>} The derived private key.
+ * @throws {Bip32Error} If the path is invalid or derivation fails.
  */
 export async function derivePrivateKey(
   seed: Uint8Array,
   path: string,
 ): Promise<Uint8Array> {
-  // Validate that the derivation path starts with "m/".
   if (!path.startsWith("m/")) {
     throw new Bip32Error(
       Bip32ErrorCode.InvalidPath,
@@ -205,28 +196,19 @@ export async function derivePrivateKey(
     );
   }
 
-  // Split the path into parts and filter out any empty strings (e.g., from trailing slashes).
   const pathParts = path
-    .slice(2) // Remove "m/" prefix
+    .slice(2)
     .split("/")
     .filter((part) => part !== "");
 
-  // Derive the initial master key and chain code from the seed.
   let { key, chainCode } = await deriveMasterKey(seed);
 
-  // Iterate through each part of the derivation path to derive child keys.
   for (const part of pathParts) {
-    // Parse the child number from the path part (e.g., "44'" or "0").
     const childNumber = ChildNumber.fromString(part);
-    // Derive the child key and its new chain code.
     const result = await deriveChildKey(key, chainCode, childNumber);
-    // Update the current key and chain code for the next iteration.
     key = result.key;
     chainCode = result.chainCode;
   }
 
-  // Return the final derived private key.
   return key;
 }
-
-
