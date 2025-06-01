@@ -2061,6 +2061,17 @@ describe('bip39', () => {
     expect(mnemonic.phrase).equal('zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong');
   });
 
+  it.each([12, 15, 18, 21, 24])(
+      'generates mnemonic with %i words',
+      async (wordCount) => {
+        const entropyBits = (wordCount * 11 * 32) / 33;
+        const mnemonic = await Bip39.generateMnemonic(entropyBits, WORD_LIST);
+
+        expect(mnemonic.words.length).toBe(wordCount);
+        expect(mnemonic.phrase.split(' ').length).toBe(wordCount);
+      }
+    );
 });
+
 
 
