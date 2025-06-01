@@ -39,3 +39,21 @@ export function uint8ArrayToBigIntLittleEndian(array: Uint8Array): bigint {
   }
   return result;
 }
+
+/**
+ * Converts a bigint to a big-endian Uint8Array of specified length.
+ * @param value - The bigint to convert.
+ * @param length - The desired length of the output array.
+ * @returns The Uint8Array representation of the bigint.
+ */
+export function bigIntToUint8ArrayBigEndian(
+  value: bigint,
+  length: number,
+): Uint8Array {
+  const hex = value.toString(16).padStart(length * 2, "0");
+  const bytes = new Uint8Array(length);
+  for (let i = 0; i < length; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
