@@ -79,7 +79,7 @@ export const Bip39 = Object.freeze({
 
     // Verify all words are in wordlist
     for (const word of words) {
-      assert(wordList.includes(word), Bip39Error.InvalidWord);
+      assert(wordList.includes(word), `${Bip39Error.InvalidWord}, ${word}`);
     }
 
     // Reconstruct entropy and checksum
@@ -117,8 +117,8 @@ export const Bip39 = Object.freeze({
    * @returns A 512-bit seed as Uint8Array.
    * @throws Error if mnemonic is invalid.
    */
-  async mnemonicToSeed(mnemonic: string, passphrase: string = ''): Promise<Uint8Array> {
-    assert(this.validateMnemonic(mnemonic), Bip39Error.InvalidMnemonic);
+  async mnemonicToSeed(mnemonic: string, passphrase: string = '', wordList: string[]): Promise<Uint8Array> {
+    assert(await Bip39.validateMnemonic(mnemonic, wordList), Bip39Error.InvalidMnemonic);
 
     const password = new TextEncoder().encode(mnemonic);
     const salt = new TextEncoder().encode(`mnemonic${passphrase}`);
@@ -135,8 +135,8 @@ export const Bip39 = Object.freeze({
    * @returns The original entropy as Uint8Array.
    * @throws Error if mnemonic is invalid.
    */
-  mnemonicToEntropy(mnemonic: string, wordList: string[]): Uint8Array {
-    assert(this.validateMnemonic(mnemonic), Bip39Error.InvalidMnemonic);
+  async mnemonicToEntropy(mnemonic: string, wordList: string[]): Promise<Uint8Array> {
+    assert(await Bip39.validateMnemonic(mnemonic, wordList), Bip39Error.InvalidMnemonic);
 
     const words = mnemonic.trim().split(/\s+/);
     const wordCount = words.length;
