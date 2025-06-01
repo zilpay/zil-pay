@@ -180,7 +180,10 @@ export async function deriveChildKey(
 
   // Handle the case where sum is 0 (invalid private key)
   if (sum === 0n) {
-    throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid child key: sum is zero");
+    throw new Bip32Error(
+      Bip32ErrorCode.InvalidKey,
+      "Invalid child key: sum is zero",
+    );
   }
 
   const resultKey = bigIntToUint8ArrayBigEndian(sum, 32);
