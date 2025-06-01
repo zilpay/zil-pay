@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { derivePrivateKey, deriveChildKey, ChildNumber, Bip32Error, deriveMasterKey } from '../../crypto/bip32';
+import { describe, it, expect, vi } from 'vitest';
+import { derivePrivateKey, deriveChildKey, ChildNumber, Bip32Error, deriveMasterKey, Bip32ErrorCode } from '../../crypto/bip32';
 import { Bip39 } from '../../crypto/bip39';
 import { WORD_LIST } from './word_list';
 import { utils } from 'aes-js';
@@ -48,3 +48,20 @@ describe('derivePrivateKey Error Handling', () => {
     await expect(derivePrivateKey(seed, "m/44'/invalid'/0'/0/0")).rejects.toThrow(Bip32Error);
   });
 });
+
+describe('deriveChildKey', () => {
+  const parentKey = utils.hex.toBytes("e8f32e723decf4051aefc8e2e8929c9c53337309202da64260e18c95815ff8a1");
+  const chainCode = utils.hex.toBytes("044108d81081692c577005ce106a7980ade51d384664082531e457e515d086c1");
+
+  it('should throw Bip32Error if hmacSha512 fails during child derivation', async () => {
+    vi.spyOn(globalThis.crypto.subtle, 'sign').mockImplementationOnce(async () => {
+      throw new Error("Mock HMAC failure during child derivation");
+    });
+
+    const childNumber = ChildNumber.fromString("0");
+
+    await expect(deriveChildKey(parentKey, chainCode, childNumber)).rejects.toThrow(Bip32Error);
+    await expect(deriveChildKey(parentKey, chainCode, childNumber)).rejects.toThrow(new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid parent key"));
+  });
+});
+
