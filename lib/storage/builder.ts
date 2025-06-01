@@ -1,4 +1,4 @@
-import type { Fields } from 'config/fields';
+import type { OldFields } from 'config/fields';
 import { TypeOf } from '../types/checker';
 
 export type StorageKeyValue = {
@@ -17,7 +17,7 @@ export type StorageKeyValue = {
  * storage.set(buildObject('objectKey', { a: 1, b: 2 }));
  * storage.set(buildObject('arrayKey', [1, 2, 3]));
  */
-export function buildObject(key: Fields | string, value: string | object | any[]): StorageKeyValue { // Added any[]
+export function buildObject(key: OldFields | string, value: string | object | any[]): StorageKeyValue { // Added any[]
     let data: string;
 
     if (TypeOf.isObject(value) || TypeOf.isArray(value)) {

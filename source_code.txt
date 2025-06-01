@@ -9,6 +9,7 @@ zil-pay
 │   │   └── array.test.ts
 │   ├── crypto
 │   │   ├── aes256.test.ts
+│   │   ├── b64.test.ts
 │   │   ├── bip32.test.ts
 │   │   ├── bip39.test.ts
 │   │   ├── number.test.ts
@@ -29,7 +30,9 @@ zil-pay
 │   └── zilliqa
 │       └── address.test.ts
 ├── background
-│   └── index.ts
+│   ├── index.ts
+│   └── services
+│       └── guard.ts
 ├── config
 │   ├── errors.ts
 │   ├── fields.ts
@@ -39,6 +42,7 @@ zil-pay
 │   └── index.ts
 ├── crypto
 │   ├── aes256.ts
+│   ├── b64.ts
 │   ├── bip32.ts
 │   ├── bip39.ts
 │   ├── index.ts
@@ -215,6 +219,57 @@ test('encrypt throws if key length is invalid', () => {
   expect(() => Cipher.encrypt(content, invalidKey)).toThrowError(
     ErrorMessages.InvalidKeyLength
   );
+});
+
+```
+
+`zil-pay/__tests__/crypto/b64.test.ts`:
+
+```ts
+import { describe, it, expect } from 'vitest';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
+
+describe('base64 Conversion Functions', () => {
+  describe('base64ToUint8Array', () => {
+    it('converts valid base64 string to Uint8Array', () => {
+      const base64 = 'SGVsbG8='; // "Hello"
+      const expected = new Uint8Array([72, 101, 108, 108, 111]);
+      expect(base64ToUint8Array(base64)).toEqual(expected);
+    });
+
+    it('handles empty base64 string', () => {
+      expect(base64ToUint8Array('')).toEqual(new Uint8Array([]));
+    });
+
+    it('throws error for invalid base64 string', () => {
+      expect(() => base64ToUint8Array('invalid!')).toThrow('Invalid base64 string');
+    });
+  });
+
+  describe('uint8ArrayToBase64', () => {
+    it('converts Uint8Array to valid base64 string', () => {
+      const uint8Array = new Uint8Array([72, 101, 108, 108, 111]); // "Hello"
+      expect(uint8ArrayToBase64(uint8Array)).toBe('SGVsbG8=');
+    });
+
+    it('handles empty Uint8Array', () => {
+      expect(uint8ArrayToBase64(new Uint8Array([]))).toBe('');
+    });
+  });
+
+  describe('round-trip conversion', () => {
+    it('converts base64 to Uint8Array and back', () => {
+      const original = 'SGVsbG8=';
+      const uint8Array = base64ToUint8Array(original);
+      expect(uint8ArrayToBase64(uint8Array)).toBe(original);
+    });
+
+    it('converts Uint8Array to base64 and back', () => {
+      const original = new Uint8Array([72, 101, 108, 108, 111]);
+      const base64 = uint8ArrayToBase64(original);
+      expect(base64ToUint8Array(base64)).toEqual(original);
+    });
+  });
 });
 
 ```
@@ -3406,6 +3461,41 @@ export const Cipher = Object.freeze({
 
 ```
 
+`zil-pay/crypto/b64.ts`:
+
+```ts
+/**
+ * Converts a base64 string to a Uint8Array.
+ * @param base64 - The base64 string to convert.
+ * @returns A Uint8Array containing the decoded data.
+ * @throws {Error} If the input string is not a valid base64 string.
+ */
+export function base64ToUint8Array(base64: string): Uint8Array {
+  try {
+    const binaryString = atob(base64);
+    const length = binaryString.length;
+    const bytes = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  } catch (error) {
+    throw new Error("Invalid base64 string");
+  }
+}
+
+/**
+ * Converts a Uint8Array to a base64 string.
+ * @param uint8Array - The Uint8Array to convert.
+ * @returns A base64 string representing the input data.
+ */
+export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+  const binaryString = String.fromCharCode(...uint8Array);
+  return btoa(binaryString);
+}
+
+```
+
 `zil-pay/crypto/bip32.ts`:
 
 ```ts
@@ -3591,7 +3681,10 @@ export async function deriveChildKey(
 
   // Handle the case where sum is 0 (invalid private key)
   if (sum === 0n) {
-    throw new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid child key: sum is zero");
+    throw new Bip32Error(
+      Bip32ErrorCode.InvalidKey,
+      "Invalid child key: sum is zero",
+    );
   }
 
   const resultKey = bigIntToUint8ArrayBigEndian(sum, 32);

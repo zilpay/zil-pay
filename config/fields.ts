@@ -1,4 +1,4 @@
-export enum Fields {
+export enum OldFields {
   VAULT = "vault",
   VAULT_IMPORTED = "importedvault",
   CONFIG = "config",

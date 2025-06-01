@@ -1,5 +1,5 @@
 import type { StorageKeyValue } from './builder';
-import type { Fields } from 'config/fields';
+import type { OldFields } from 'config/fields';
 import { Runtime } from 'lib/runtime/extensionizer';
 
 type StorageChangesCallback = { [key: string]: chrome.storage.StorageChange; };
@@ -63,7 +63,7 @@ export const BrowserStorage = Object.freeze({
      * @param keys - An array of keys to retrieve from storage.
      * @returns A promise that resolves with the retrieved data.  If one key is provided, the value is returned.  If multiple, an object is returned.
      */
-    async get(...keys: (Fields | string)[]): Promise<StorageKeyValue | any> { // Use 'any' for more flexibility
+    async get(...keys: (OldFields | string)[]): Promise<StorageKeyValue | any> { // Use 'any' for more flexibility
         return new Promise((resolve, reject) => {
             Runtime.storage.local.get(keys, (result) => {
                 if (chrome.runtime.lastError) {
@@ -100,7 +100,7 @@ export const BrowserStorage = Object.freeze({
      * @param keys - An array of keys to remove from storage.
      * @returns A promise that resolves when the items are removed.
      */
-    async rm(...keys: (Fields | string)[]): Promise<void> {
+    async rm(...keys: (OldFields | string)[]): Promise<void> {
         return new Promise((resolve, reject) => {
             Runtime.storage.local.remove(keys, () => {
                 if (chrome.runtime.lastError) {
