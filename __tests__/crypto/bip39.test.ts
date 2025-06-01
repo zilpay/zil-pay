@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Bip39 } from '../../crypto/bip39';
+import { Bip39, Bip39Error } from '../../crypto/bip39';
 import { utils } from 'aes-js';
 import { sha256 } from '../../crypto/sha256';
 
@@ -2292,5 +2292,44 @@ describe('bip39_checksum', () => {
         const checksum = parseInt(bits.slice(ENT, ENT + CS), 2);
 
         expect(computedChecksum).toBe(checksum);
+    });
+});
+
+describe('bip39_invalid_mnemonic', () => {
+    it('should throw UnknownWord error for invalid word at position 0', async () => {
+        const invalidMnemonic = 'getter advice cage absurd amount doctor acoustic avoid letter advice cage above';
+        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidWord);
+    });
+
+    it('should throw UnknownWord error for invalid word at position 2', async () => {
+        const invalidMnemonic = 'letter advice cagex absurd amount doctor acoustic avoid letter advice cage above';
+        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidWord);
+    });
+
+    it('should throw BadWordCount error for 11 words', async () => {
+        const invalidMnemonic = 'advice cage absurd amount doctor acoustic avoid letter advice cage above';
+        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidWordCount);
+    });
+
+    it('should throw InvalidChecksum error for invalid checksum', async () => {
+        const invalidMnemonic = 'primary advice cage absurd amount doctor acoustic avoid letter advice cage above';
+        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidChecksum);
+    });
+});
+
+describe('bip39_invalid_entropy', () => {
+    it('should throw BadEntropyBitCount for entropy not divisible by 32 bits', async () => {
+        const entropy = new Uint8Array(17); // 136 бит
+        await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidEntropy);
+    });
+
+    it('should throw BadEntropyBitCount for entropy less than 128 bits', async () => {
+        const entropy = new Uint8Array(4); // 32 бита
+        await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidEntropy);
+    });
+
+    it('should throw BadEntropyBitCount for entropy greater than 256 bits', async () => {
+        const entropy = new Uint8Array(36); // 288 бит
+        await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidEntropy);
     });
 });
