@@ -280,15 +280,12 @@ export class AuthGuard {
     try {
       assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
 
-      const mnemonicController = new MnemonicController();
       const hash = await this.#getKeyring(password);
       const oldHash = await sha256(utils.utf8.toBytes(password));
       const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
       const mnemonic = utils.utf8.fromBytes(mnemonicBytes);
 
-      assert(mnemonicController.validateMnemonic(mnemonic), ErrorMessages.IncorrectPassword);
-
-      const seed = await mnemonicController.mnemonicToSeed(mnemonic);
+      const seed = await Bip39.mnemonicToSeed(mnemonic);
 
       this.#privateExtendedKey = Cipher.encrypt(seed, hash);
 
