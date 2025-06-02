@@ -1,6 +1,8 @@
-import { ShaAlgorithms } from "config/pbkdf2";
+import { ShaAlgorithms } from "../config/pbkdf2";
 
-export async function sha512(value: Uint8Array) {
+export async function sha512(value: Uint8Array): Promise<Uint8Array> {
   const crypto = globalThis.crypto;
-  return crypto.subtle.digest(ShaAlgorithms.Sha512, value);
+  const hash = await crypto.subtle.digest(ShaAlgorithms.Sha512, value);
+
+  return new Uint8Array(hash);
 }

@@ -6,14 +6,5 @@ export default defineConfig({
     globals: true,
     setupFiles: '__tests__/setupTests.ts',
     include: ['__tests__/**/*.test.{ts,tsx}'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      reportsDirectory: 'stats/coverage',
-    },
-    reporters: [
-      'default',
-      ['html', { outputDir: 'stats/report' }]
-    ],
   },
 });
