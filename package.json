@@ -54,14 +54,9 @@
     "blockchain",
     "zilliqa",
     "ZilPay",
-    "dapp",
-    "metamask"
+    "dapp"
   ],
   "license": "MIT",
   "homepage": "https://zilpay.io/",
-  "author": "Rinat Hasanshin <lich666black@gmail.com>",
-  "engines": {
-    "node": ">=14",
-    "npm": "^8.0.0"
-  }
+  "author": "Rinat Hasanshin <lich666black@gmail.com>"
 }

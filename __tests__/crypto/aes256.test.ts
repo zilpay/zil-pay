@@ -1,5 +1,8 @@
 import { test, expect } from "vitest";
 import { CipherV2, CipherV3, ErrorMessages } from "../../crypto/aes256";
+import { sha256 } from "../../crypto/sha256";
+import { IMPORTED_KEY, PASSWORD, STORAGE_V2, WORDS } from "../data";
+import { utils } from "aes-js";
 
 test("encrypt encrypts data and decrypt successfully recovers it", () => {
   const key = new TextEncoder().encode("1234567890123456"); // 16-byte key
@@ -44,4 +47,29 @@ test("test AES-v2", async () => {
   let decrypted = await CipherV2.decrypt(encrypted, key);
 
   expect(decrypted).toEqual(content);
+});
+
+test("decrypt Storage v2 AES-v2", async () => {
+  let vault = STORAGE_V2.vault;
+  let password = utils.utf8.toBytes(PASSWORD);
+  let keyBytes = await sha256(password);
+  let key = utils.hex.fromBytes(keyBytes);
+  let decrypted = await CipherV2.decrypt(vault, key);
+
+  expect(decrypted).toEqual(WORDS);
+});
+
+test("decrypt accounts Storage v2 AES-v2", async () => {
+  let accounts = JSON.parse(STORAGE_V2["wallet-identities"]);
+  let identities = accounts.identities;
+  let importedAccount = identities[1];
+  let privKey = importedAccount.privKey;
+
+  let password = utils.utf8.toBytes(PASSWORD);
+  let keyBytes = await sha256(password);
+  let key = utils.hex.fromBytes(keyBytes);
+
+  let decrypted = await CipherV2.decrypt(privKey, key);
+
+  expect(decrypted).toEqual(IMPORTED_KEY);
 });
