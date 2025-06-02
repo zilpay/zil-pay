@@ -11,7 +11,7 @@
     "build": "rollup -c",
     "build:v3": "rollup -c",
     "dev": "rollup -c -w",
-    "format": "prettier --write ./**/*.{js,ts}",
+    "format": "prettier --write ./**/*.{js,ts,test.ts}",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
@@ -47,6 +47,7 @@
     "@hicaru/argon2-pure.js": "^0.0.1",
     "@hicaru/chacharand.js": "^0.0.2",
     "aes-js": "^3.1.2",
+    "js-md5": "^0.8.3",
     "noble-secp256k1": "^1.2.14"
   },
   "keywords": [

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { BrowserStorage } from '../../lib/storage/storage';
-import type { StorageKeyValue } from '../../lib/storage/builder';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { BrowserStorage } from "../../lib/storage/storage";
+import type { StorageKeyValue } from "../../lib/storage/builder";
 
-describe('BrowserStorage - Basic Operations', () => {
+describe("BrowserStorage - Basic Operations", () => {
   beforeEach(() => {
     chrome.storage.local.set.reset();
     chrome.storage.local.get.reset();
@@ -11,8 +11,8 @@ describe('BrowserStorage - Basic Operations', () => {
     chrome.runtime.lastError = undefined;
   });
 
-  it('sets a single key-value pair', async () => {
-    const mockData: StorageKeyValue = { key: 'value' };
+  it("sets a single key-value pair", async () => {
+    const mockData: StorageKeyValue = { key: "value" };
     chrome.storage.local.set.callsFake((data, callback) => callback());
 
     await BrowserStorage.set(mockData);
@@ -20,30 +20,36 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(chrome.storage.local.set.calledWith(mockData)).toBe(true);
   });
 
-  it('sets multiple key-value pairs', async () => {
-    const mockData1: StorageKeyValue = { key1: 'value1' };
-    const mockData2: StorageKeyValue = { key2: 'value2' };
+  it("sets multiple key-value pairs", async () => {
+    const mockData1: StorageKeyValue = { key1: "value1" };
+    const mockData2: StorageKeyValue = { key2: "value2" };
     chrome.storage.local.set.callsFake((data, callback) => callback());
 
     await BrowserStorage.set(mockData1, mockData2);
 
-    expect(chrome.storage.local.set.calledWith({ key1: 'value1', key2: 'value2' })).toBe(true);
+    expect(
+      chrome.storage.local.set.calledWith({ key1: "value1", key2: "value2" }),
+    ).toBe(true);
   });
 
-  it('rejects on set error', async () => {
-    const mockData: StorageKeyValue = { key: 'value' };
+  it("rejects on set error", async () => {
+    const mockData: StorageKeyValue = { key: "value" };
     chrome.storage.local.set.callsFake((data, callback) => {
-      chrome.runtime.lastError = { message: 'Storage set failed' };
+      chrome.runtime.lastError = { message: "Storage set failed" };
       callback();
     });
 
-    await expect(BrowserStorage.set(mockData)).rejects.toThrow('Storage set failed');
+    await expect(BrowserStorage.set(mockData)).rejects.toThrow(
+      "Storage set failed",
+    );
   });
 
-  it('gets a single key', async () => {
-    const key = 'key';
-    const mockResult = { key: 'value' };
-    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+  it("gets a single key", async () => {
+    const key = "key";
+    const mockResult = { key: "value" };
+    chrome.storage.local.get.callsFake((keys, callback) =>
+      callback(mockResult),
+    );
 
     const result = await BrowserStorage.get(key);
 
@@ -51,10 +57,12 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(result).toBe(mockResult[key]);
   });
 
-  it('gets multiple keys', async () => {
-    const keys = ['key1', 'key2'];
-    const mockResult = { key1: 'value1', key2: 'value2' };
-    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+  it("gets multiple keys", async () => {
+    const keys = ["key1", "key2"];
+    const mockResult = { key1: "value1", key2: "value2" };
+    chrome.storage.local.get.callsFake((keys, callback) =>
+      callback(mockResult),
+    );
 
     const result = await BrowserStorage.get(...keys);
 
@@ -62,19 +70,21 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(result).toEqual(mockResult);
   });
 
-  it('rejects on get error', async () => {
-    const key = 'key';
+  it("rejects on get error", async () => {
+    const key = "key";
     chrome.storage.local.get.callsFake((keys, callback) => {
-      chrome.runtime.lastError = { message: 'Storage get failed' };
+      chrome.runtime.lastError = { message: "Storage get failed" };
       callback();
     });
 
-    await expect(BrowserStorage.get(key)).rejects.toThrow('Storage get failed');
+    await expect(BrowserStorage.get(key)).rejects.toThrow("Storage get failed");
   });
 
-  it('gets all items', async () => {
-    const mockResult = { key1: 'value1', key2: 'value2' };
-    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+  it("gets all items", async () => {
+    const mockResult = { key1: "value1", key2: "value2" };
+    chrome.storage.local.get.callsFake((keys, callback) =>
+      callback(mockResult),
+    );
 
     const result = await BrowserStorage.getAll();
 
@@ -82,8 +92,8 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(result).toEqual(mockResult);
   });
 
-  it('removes keys', async () => {
-    const keys = ['key1', 'key2'];
+  it("removes keys", async () => {
+    const keys = ["key1", "key2"];
     chrome.storage.local.remove.callsFake((keys, callback) => callback());
 
     await BrowserStorage.rm(...keys);
@@ -91,17 +101,19 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(chrome.storage.local.remove.calledWith(keys)).toBe(true);
   });
 
-  it('rejects on remove error', async () => {
-    const key = 'key';
+  it("rejects on remove error", async () => {
+    const key = "key";
     chrome.storage.local.remove.callsFake((keys, callback) => {
-      chrome.runtime.lastError = { message: 'Storage remove failed' };
+      chrome.runtime.lastError = { message: "Storage remove failed" };
       callback();
     });
 
-    await expect(BrowserStorage.rm(key)).rejects.toThrow('Storage remove failed');
+    await expect(BrowserStorage.rm(key)).rejects.toThrow(
+      "Storage remove failed",
+    );
   });
 
-  it('clears storage', async () => {
+  it("clears storage", async () => {
     chrome.storage.local.clear.callsFake((callback) => callback());
 
     await BrowserStorage.clear();
@@ -109,26 +121,28 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(chrome.storage.local.clear.called).toBe(true);
   });
 
-  it('rejects on clear error', async () => {
+  it("rejects on clear error", async () => {
     chrome.storage.local.clear.callsFake((callback) => {
-      chrome.runtime.lastError = { message: 'Storage clear failed' };
+      chrome.runtime.lastError = { message: "Storage clear failed" };
       callback();
     });
 
-    await expect(BrowserStorage.clear()).rejects.toThrow('Storage clear failed');
+    await expect(BrowserStorage.clear()).rejects.toThrow(
+      "Storage clear failed",
+    );
   });
 });
 
-describe('BrowserStorage - Subscription', () => {
+describe("BrowserStorage - Subscription", () => {
   beforeEach(() => {
     chrome.storage.onChanged.addListener.resetHistory();
     chrome.storage.onChanged.removeListener.resetHistory();
     chrome.runtime.lastError = undefined;
   });
 
-  it('subscribes to storage changes and calls callback', () => {
+  it("subscribes to storage changes and calls callback", () => {
     const mockCallback = vi.fn();
-    const mockChanges = { key: { oldValue: 'old', newValue: 'new' } };
+    const mockChanges = { key: { oldValue: "old", newValue: "new" } };
 
     const { unsubscribe } = BrowserStorage.subscribe(mockCallback);
     const listener = chrome.storage.onChanged.addListener.firstCall.args[0];
@@ -142,13 +156,13 @@ describe('BrowserStorage - Subscription', () => {
     expect(chrome.storage.onChanged.removeListener.called).toBe(true);
   });
 
-  it('handles errors in subscription callback', () => {
+  it("handles errors in subscription callback", () => {
     const mockCallback = vi.fn(() => {
-      throw new Error('Callback error');
+      throw new Error("Callback error");
     });
     const mockConsoleError = vi.fn();
     console.error = mockConsoleError;
-    const mockChanges = { key: { oldValue: 'old', newValue: 'new' } };
+    const mockChanges = { key: { oldValue: "old", newValue: "new" } };
 
     const { unsubscribe } = BrowserStorage.subscribe(mockCallback);
     const listener = chrome.storage.onChanged.addListener.firstCall.args[0];
@@ -156,7 +170,10 @@ describe('BrowserStorage - Subscription', () => {
     listener(mockChanges);
 
     expect(mockCallback).toHaveBeenCalledWith(mockChanges);
-    expect(mockConsoleError).toHaveBeenCalledWith('Error in storage change callback:', expect.any(Error));
+    expect(mockConsoleError).toHaveBeenCalledWith(
+      "Error in storage change callback:",
+      expect.any(Error),
+    );
 
     unsubscribe();
     expect(chrome.storage.onChanged.removeListener.called).toBe(true);
