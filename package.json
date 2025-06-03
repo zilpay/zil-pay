@@ -46,7 +46,7 @@
   "dependencies": {
     "@hicaru/argon2-pure.js": "^0.0.1",
     "@hicaru/chacharand.js": "^0.0.3",
-    "@hicaru/ntrup.js": "^0.0.9",
+    "@hicaru/ntrup.js": "^0.0.10",
     "aes-js": "^3.1.2",
     "js-md5": "^0.8.3",
     "noble-secp256k1": "^1.2.14"

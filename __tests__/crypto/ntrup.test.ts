@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ntruKeysFromSeed } from "../../crypto/ntrup";
+import { ntruDecrypt, ntruEncrypt, ntruKeysFromSeed } from "../../crypto/ntrup";
 import { sha512 } from "../../crypto/sha512";
 import { utils } from "aes-js";
 import { params761 } from "@hicaru/ntrup.js";
@@ -11,7 +11,7 @@ describe("NTRU", () => {
       const seed = await sha512(bytes);
       let { pk, sk } = ntruKeysFromSeed(seed);
 
-      expect(pk.toBytes(params761)).not.toEqual([
+      expect(utils.hex.fromBytes(pk.toBytes(params761))).toEqual(utils.hex.fromBytes([
         8, 8, 0, 21, 249, 176, 1, 159, 3, 97, 248, 156, 249, 223, 249, 50, 249,
         238, 5, 123, 8, 32, 253, 63, 1, 76, 252, 108, 2, 44, 1, 122, 2, 158, 0,
         24, 7, 17, 7, 210, 0, 117, 3, 125, 250, 219, 1, 248, 253, 226, 6, 102,
@@ -105,9 +105,9 @@ describe("NTRU", () => {
         150, 7, 106, 249, 160, 2, 23, 254, 250, 8, 233, 4, 108, 254, 30, 1, 63,
         250, 15, 5, 21, 0, 107, 6, 221, 248, 72, 1, 151, 248, 200, 7, 146, 7,
         228, 255, 67,
-      ]);
+      ]));
 
-      expect(sk.toBytes(params761)).not.toEqual([
+      expect(utils.hex.fromBytes(sk.toBytes(params761))).toEqual(utils.hex.fromBytes([
         37, 6, 97, 20, 8, 41, 102, 136, 0, 8, 89, 132, 66, 37, 69, 170, 66, 10,
         134, 85, 10, 165, 145, 68, 37, 166, 106, 104, 37, 149, 149, 106, 36,
         146, 169, 20, 9, 17, 6, 134, 150, 10, 137, 0, 148, 5, 86, 133, 85, 85,
@@ -132,7 +132,17 @@ describe("NTRU", () => {
         104, 85, 149, 85, 25, 97, 21, 86, 89, 1, 40, 69, 89, 69, 90, 85, 149,
         146, 86, 40, 149, 134, 82, 21, 168, 69, 4, 84, 85, 149, 69, 69, 73, 89,
         138, 1,
-      ]);
+      ]));
     });
+  });
+
+  it("test bytes encrypt/decrypt", async () => {
+    let bytes = utils.utf8.toBytes("hello");
+    const seed = await sha512(bytes);
+    let { pk, sk } = ntruKeysFromSeed(seed);
+    const ciphertext = ntruEncrypt(pk, bytes);
+    const decrypted = ntruDecrypt(sk, ciphertext);
+
+          expect(decrypted).toEqual(bytes);
   });
 });
