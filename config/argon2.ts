@@ -1,0 +1,1 @@
+export const WALLET_SALT = "ZILPAY:54040c2f-1ec1-4eb1-9595-6e4294d14fd6";

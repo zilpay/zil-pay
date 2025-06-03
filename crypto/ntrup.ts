@@ -1,7 +1,7 @@
 import { ChaCha20Rng, ChaChaRng } from "@hicaru/chacharand.js";
 import {
-    bytesRqDecode,
-    ErrorType,
+  bytesRqDecode,
+  ErrorType,
   generateKeyPair,
   packBytes,
   params761,
@@ -24,7 +24,7 @@ function bytesEncrypt(
   rng: ChaChaRng,
   plaintext: Uint8Array,
   pubKey: PubKey,
-  params: ParamsConfig
+  params: ParamsConfig,
 ): Uint8Array {
   const unlimitedPoly = r3DecodeChunks(plaintext);
   const getU32 = () => rng.nextU32();
@@ -37,7 +37,7 @@ function bytesEncrypt(
     const rqBytes = hr.toBytes(params);
     encryptedBytes.push(rqBytes);
   }
-  
+
   const totalLength = encryptedBytes.reduce((sum, arr) => sum + arr.length, 0);
   const dataBytes = new Uint8Array(totalLength);
 
@@ -47,14 +47,14 @@ function bytesEncrypt(
     dataBytes.set(arr, offset);
     offset += arr.length;
   }
-  
+
   return packBytes(dataBytes, size, seed);
 }
 
 function bytesDecrypt(
   cipher: Uint8Array,
   privKey: PrivKey,
-  params: ParamsConfig
+  params: ParamsConfig,
 ): Uint8Array {
   const { dataBytes, size, seed } = unpackBytes(cipher);
   const chunkCount = Math.floor(dataBytes.length / params.RQ_BYTES);
@@ -62,7 +62,7 @@ function bytesDecrypt(
   if (dataBytes.length % params.RQ_BYTES !== 0) {
     throw ErrorType.InvalidRqChunkSize;
   }
-  
+
   const decryptedChunks: Int8Array[] = [];
 
   for (let i = 0; i < chunkCount; i++) {
@@ -77,9 +77,9 @@ function bytesDecrypt(
     const r3 = rqDecrypt(rq, privKey, params);
     decryptedChunks.push(r3.coeffs);
   }
-  
+
   const outR3 = r3MergeWChunks(decryptedChunks, size, seed, params);
-  
+
   return r3EncodeChunks(outR3);
 }
 
