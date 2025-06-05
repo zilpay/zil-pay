@@ -98,7 +98,7 @@ describe("KeyChain", () => {
     const seed = randomBytes(32);
     const plaintext = randomBytes(1024);
     const keychain = await KeyChain.fromSeed(seed);
-    const options = [CipherOrders.AESGCM256, CipherOrders.NTRUP761];
+    const options = [CipherOrders.AESGCM256, CipherOrders.NTRUP761, CipherOrders.KUZNECHIK];
 
     const ciphertext = await keychain.encrypt(plaintext, options);
     const decrypted = await keychain.decrypt(ciphertext, options);
@@ -106,16 +106,14 @@ describe("KeyChain", () => {
     expect(ciphertext).not.toEqual(plaintext);
     expect(decrypted).toEqual(plaintext);
 
-    // const invalidOptions = [CipherOrders.NTRUP761, CipherOrders.AESGCM256];
-    // await expect(keychain.decrypt(ciphertext, invalidOptions)).rejects.toThrow(
-    //   /decryption failed/i,
-    // );
+    const invalidOptions = [CipherOrders.NTRUP761, CipherOrders.AESGCM256];
+    await expect(keychain.decrypt(ciphertext, invalidOptions)).rejects.toThrow();
   });
 
   it("should make and verify proof correctly", async () => {
     const seed = randomBytes(32);
     const keychain = await KeyChain.fromSeed(seed);
-    const options = [CipherOrders.NTRUP761, CipherOrders.AESGCM256];
+    const options = [CipherOrders.NTRUP761, CipherOrders.AESGCM256, CipherOrders.KUZNECHIK];
     const proofSeed = randomBytes(32);
 
     const proofCipher = await keychain.makeProof(proofSeed, options);

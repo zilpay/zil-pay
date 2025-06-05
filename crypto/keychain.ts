@@ -7,14 +7,14 @@ import {
 } from "./ntrup";
 import { sha256 } from "./sha256";
 import { deriveArgon2Key, Argon2Config } from "./argon2";
-import { kuznechikDecrypt, kuznechikEncrypt } from "./kuznechik";
+import { kuznechikDecrypt, kuznechikEncrypt, KUZNECHIK_KEY_SIZE } from "./kuznechik";
 import { AESCipherV3 } from "./aes256";
 
-export const PUBLICKEYS_BYTES = 1522;
-export const SECRETKEYS_BYTES = 382;
-export const AES_GCM_KEY_SIZE = 32;
+export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
+export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
+export const AES_GCM_KEY_SIZE = KUZNECHIK_KEY_SIZE;
 export const KEYCHAIN_BYTES_SIZE =
-  PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE;
+  PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE + KUZNECHIK_KEY_SIZE;
 
 export async function deriveKeyFromSeed(
   seed: Uint8Array,
@@ -72,12 +72,15 @@ export class KeyChain {
     );
     const aesKey = bytes.slice(
       PUBLICKEYS_BYTES + SECRETKEYS_BYTES,
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE,
+    );
+    const kuznechikKey = bytes.slice(
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE,
       KEYCHAIN_BYTES_SIZE,
     );
 
     const pk = PubKey.import(pkBytes, NTRU_CONFIG);
     const sk = PrivKey.import(skBytes, NTRU_CONFIG);
-    const kuznechikKey = await deriveKeyFromSeed(aesKey, 1);
 
     return new KeyChain({ pk, sk }, aesKey, kuznechikKey);
   }
@@ -86,11 +89,13 @@ export class KeyChain {
     const pkBytes = this.ntrupKeys.pk.toBytes(NTRU_CONFIG);
     const skBytes = this.ntrupKeys.sk.toBytes(NTRU_CONFIG);
     const aesKey = this.aesKey;
+    const kuznechikKey = this.kuznechikKey;
 
     const res = new Uint8Array(KEYCHAIN_BYTES_SIZE);
     res.set(pkBytes, 0);
     res.set(skBytes, PUBLICKEYS_BYTES);
     res.set(aesKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
+    res.set(kuznechikKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE);
     return res;
   }
 
