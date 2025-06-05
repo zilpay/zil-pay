@@ -46,6 +46,7 @@
   "dependencies": {
     "@hicaru/argon2-pure.js": "^0.0.4",
     "@hicaru/chacharand.js": "^0.0.3",
+    "@hicaru/kuznechik.js": "^0.0.2",
     "@hicaru/ntrup.js": "^0.0.10",
     "aes-js": "^3.1.2",
     "js-md5": "^0.8.3",
