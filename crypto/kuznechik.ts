@@ -1,7 +1,7 @@
 import { KeyStore, AlgOfb, MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
 import { randomBytes } from './random';
 
-export function kuznechik_encrypt(key: Uint8Array, plaintext: Uint8Array): Uint8Array {
+export function kuznechikEncrypt(key: Uint8Array, plaintext: Uint8Array): Uint8Array {
     const keyStore = new KeyStore();
     keyStore.setMasterKey(key);
     const gamma = randomBytes(MIN_GAMMA_SIZE);
@@ -14,7 +14,7 @@ export function kuznechik_encrypt(key: Uint8Array, plaintext: Uint8Array): Uint8
     return finalCiphertext;
 }
 
-export function kuznechik_decrypt(key: Uint8Array, ciphertext: Uint8Array): Uint8Array {
+export function kuznechikDecrypt(key: Uint8Array, ciphertext: Uint8Array): Uint8Array {
     const gamma = ciphertext.slice(ciphertext.length - MIN_GAMMA_SIZE);
     const actualCiphertext = ciphertext.slice(0, ciphertext.length - MIN_GAMMA_SIZE);
     const keyStore = new KeyStore();

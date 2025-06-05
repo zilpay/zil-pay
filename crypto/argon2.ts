@@ -1,7 +1,9 @@
 import { Config, hashRaw } from '@hicaru/argon2-pure.js';
 import { WALLET_SALT } from '../config/argon2';
 
-export function deriveArgon2Key(password: Uint8Array, salt: string, config: Config) {
+export type Argon2Config = Config;
+
+export function deriveArgon2Key(password: Uint8Array, salt: string, config: Argon2Config) {
   const textEncoder = new TextEncoder();
   const saltBytes = textEncoder.encode(salt);
 

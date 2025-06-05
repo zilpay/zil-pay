@@ -20,6 +20,8 @@ import {
 } from "@hicaru/ntrup.js";
 import { randomBytes } from "../crypto/random";
 
+export const NTRU_CONFIG = params761;
+
 function bytesEncrypt(
   rng: ChaChaRng,
   plaintext: Uint8Array,
@@ -90,15 +92,15 @@ export function ntruKeysFromSeed(seedBytes: Uint8Array): {
   const seedPq = seedBytes.slice(0, 32);
   const pqRng = ChaCha20Rng(seedPq);
 
-  return generateKeyPair(pqRng, params761);
+  return generateKeyPair(pqRng, NTRU_CONFIG);
 }
 
 export function ntruEncrypt(pk: PubKey, plaintext: Uint8Array) {
   const seed = randomBytes(32);
   const rng = ChaCha20Rng(seed);
-  return bytesEncrypt(rng, plaintext, pk, params761);
+  return bytesEncrypt(rng, plaintext, pk, NTRU_CONFIG);
 }
 
 export function ntruDecrypt(sk: PrivKey, ciphertext: Uint8Array) {
-  return bytesDecrypt(ciphertext, sk, params761);
+  return bytesDecrypt(ciphertext, sk, NTRU_CONFIG);
 }
