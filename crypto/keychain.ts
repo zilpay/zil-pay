@@ -7,7 +7,11 @@ import {
 } from "./ntrup";
 import { sha256 } from "./sha256";
 import { deriveArgon2Key, Argon2Config } from "./argon2";
-import { kuznechikDecrypt, kuznechikEncrypt, KUZNECHIK_KEY_SIZE } from "./kuznechik";
+import {
+  kuznechikDecrypt,
+  kuznechikEncrypt,
+  KUZNECHIK_KEY_SIZE,
+} from "./kuznechik";
 import { AESCipherV3 } from "./aes256";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
@@ -95,7 +99,10 @@ export class KeyChain {
     res.set(pkBytes, 0);
     res.set(skBytes, PUBLICKEYS_BYTES);
     res.set(aesKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
-    res.set(kuznechikKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE);
+    res.set(
+      kuznechikKey,
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE,
+    );
     return res;
   }
 

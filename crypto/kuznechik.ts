@@ -1,4 +1,9 @@
-import { KeyStore, AlgOfb, MIN_GAMMA_SIZE, MASTER_KEY_SIZE } from "@hicaru/kuznechik.js";
+import {
+  KeyStore,
+  AlgOfb,
+  MIN_GAMMA_SIZE,
+  MASTER_KEY_SIZE,
+} from "@hicaru/kuznechik.js";
 import { randomBytes } from "./random";
 
 export const KUZNECHIK_KEY_SIZE = MASTER_KEY_SIZE;
