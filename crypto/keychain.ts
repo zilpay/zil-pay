@@ -16,7 +16,7 @@ export const AES_GCM_KEY_SIZE = 32;
 export const KEYCHAIN_BYTES_SIZE =
   PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE;
 
-async function deriveKeyFromSeed(
+export async function deriveKeyFromSeed(
   seed: Uint8Array,
   idx: number,
 ): Promise<Uint8Array> {
