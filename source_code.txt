@@ -209,7 +209,7 @@ describe("chunk", () => {
 
 ```ts
 import { test, expect } from "vitest";
-import { CipherV2, CipherV3, ErrorMessages } from "../../crypto/aes256";
+import { AESCipherV2, AESCipherV3, ErrorMessages } from "../../crypto/aes256";
 import { sha256 } from "../../crypto/sha256";
 import { IMPORTED_KEY, PASSWORD, STORAGE_V2, WORDS } from "../data";
 import { utils } from "aes-js";
@@ -218,8 +218,8 @@ test("encrypt encrypts data and decrypt successfully recovers it", () => {
   const key = new TextEncoder().encode("1234567890123456"); // 16-byte key
   const content = new TextEncoder().encode("Hello, ZilPay!");
 
-  const encrypted = CipherV3.encrypt(content, key);
-  const decrypted = CipherV3.decrypt(encrypted, key);
+  const encrypted = AESCipherV3.encrypt(content, key);
+  const decrypted = AESCipherV3.decrypt(encrypted, key);
 
   expect(new TextDecoder().decode(decrypted)).toBe("Hello, ZilPay!");
 });
@@ -229,9 +229,9 @@ test("decrypt with wrong key does not return original content", () => {
   const wrongKey = new TextEncoder().encode("wrongKey12345678"); // 16-byte key
 
   const content = new TextEncoder().encode("Secret message");
-  const encrypted = CipherV3.encrypt(content, key);
+  const encrypted = AESCipherV3.encrypt(content, key);
 
-  const decrypted = CipherV3.decrypt(encrypted, wrongKey);
+  const decrypted = AESCipherV3.decrypt(encrypted, wrongKey);
 
   expect(decrypted).not.toEqual(content);
   expect(new TextDecoder().decode(decrypted)).not.toBe(
@@ -243,7 +243,7 @@ test("encrypt throws if key length is invalid", () => {
   const invalidKey = new TextEncoder().encode("shortkey"); // <16 bytes
   const content = new TextEncoder().encode("Data");
 
-  expect(() => CipherV3.encrypt(content, invalidKey)).toThrowError(
+  expect(() => AESCipherV3.encrypt(content, invalidKey)).toThrowError(
     ErrorMessages.InvalidKeyLength,
   );
 });
@@ -254,7 +254,7 @@ test("test AES-v2", async () => {
     "8bfed20592daf43ca798ee263fcca946013876e00f34aeab3f0836872ccc19da";
   let encrypted =
     "U2FsdGVkX19nN1qtOBORWCorbwujy5Nxm7bfehROWZn/vLrxMXuXJE3Bs1PLx2j0V/xd8Ts3e1QUv5EK9Hx4k+jnUVGFtB0Wcg+oVN4/3KcR5U54gxJUf9UTR6kWSQe5";
-  let decrypted = await CipherV2.decrypt(encrypted, key);
+  let decrypted = await AESCipherV2.decrypt(encrypted, key);
 
   expect(decrypted).toEqual(content);
 });
@@ -264,7 +264,7 @@ test("decrypt Storage v2 AES-v2", async () => {
   let password = utils.utf8.toBytes(PASSWORD);
   let keyBytes = await sha256(password);
   let key = utils.hex.fromBytes(keyBytes);
-  let decrypted = await CipherV2.decrypt(vault, key);
+  let decrypted = await AESCipherV2.decrypt(vault, key);
 
   expect(decrypted).toEqual(WORDS);
 });
@@ -279,7 +279,7 @@ test("decrypt accounts Storage v2 AES-v2", async () => {
   let keyBytes = await sha256(password);
   let key = utils.hex.fromBytes(keyBytes);
 
-  let decrypted = await CipherV2.decrypt(privKey, key);
+  let decrypted = await AESCipherV2.decrypt(privKey, key);
 
   expect(decrypted).toEqual(IMPORTED_KEY);
 });
@@ -803,7 +803,7 @@ describe("bip39_invalid_entropy", () => {
 
 ```ts
 import { describe, test, expect } from 'vitest';
-import { kuznechik_encrypt, kuznechik_decrypt } from '../../crypto/kuznechik';
+import { kuznechikEncrypt, kuznechikDecrypt } from '../../crypto/kuznechik';
 import { MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
 
 describe('kuznechik_encrypt and kuznechik_decrypt', () => {
@@ -811,38 +811,38 @@ describe('kuznechik_encrypt and kuznechik_decrypt', () => {
   const plaintext = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   test('encrypt and decrypt should return original plaintext', () => {
-    const ciphertext = kuznechik_encrypt(key, plaintext);
-    const decrypted = kuznechik_decrypt(key, ciphertext);
+    const ciphertext = kuznechikEncrypt(key, plaintext);
+    const decrypted = kuznechikDecrypt(key, ciphertext);
     expect(decrypted).toEqual(plaintext);
   });
 
   test('ciphertext length should be plaintext length plus MIN_GAMMA_SIZE', () => {
-    const ciphertext = kuznechik_encrypt(key, plaintext);
+    const ciphertext = kuznechikEncrypt(key, plaintext);
     expect(ciphertext.length).toBe(plaintext.length + MIN_GAMMA_SIZE);
   });
 
   test('encrypt and decrypt empty plaintext', () => {
     const emptyPlaintext = new Uint8Array(0);
-    const ciphertext = kuznechik_encrypt(key, emptyPlaintext);
+    const ciphertext = kuznechikEncrypt(key, emptyPlaintext);
     expect(ciphertext.length).toBe(MIN_GAMMA_SIZE);
-    const decrypted = kuznechik_decrypt(key, ciphertext);
+    const decrypted = kuznechikDecrypt(key, ciphertext);
     expect(decrypted).toEqual(emptyPlaintext);
   });
 
   test('decrypt with short ciphertext should throw error', () => {
     const shortCiphertext = new Uint8Array(MIN_GAMMA_SIZE - 1);
-    expect(() => kuznechik_decrypt(key, shortCiphertext)).toThrow();
+    expect(() => kuznechikDecrypt(key, shortCiphertext)).toThrow();
   });
 
   test('encrypt with invalid key size should throw error', () => {
     const invalidKey = new Uint8Array(31); 
-    expect(() => kuznechik_encrypt(invalidKey, plaintext)).toThrow();
+    expect(() => kuznechikEncrypt(invalidKey, plaintext)).toThrow();
   });
 
   test('decrypt with different key should not return original plaintext', () => {
     const differentKey = new Uint8Array(32).fill(0x02);
-    const ciphertext = kuznechik_encrypt(key, plaintext);
-    const decrypted = kuznechik_decrypt(differentKey, ciphertext);
+    const ciphertext = kuznechikEncrypt(key, plaintext);
+    const decrypted = kuznechikDecrypt(differentKey, ciphertext);
     expect(decrypted).not.toEqual(plaintext);
   });
 });
@@ -4348,7 +4348,7 @@ export enum ErrorMessages {
   IncorrectParams = "Password is not correct",
 }
 
-export const CipherV3 = Object.freeze({
+export const AESCipherV3 = Object.freeze({
   encrypt(content: Uint8Array, key: Uint8Array): Uint8Array {
     if (![16, 24, 32].includes(key.length)) {
       throw new Error(ErrorMessages.InvalidKeyLength);
@@ -4375,7 +4375,7 @@ export const CipherV3 = Object.freeze({
   },
 });
 
-export const CipherV2 = Object.freeze({
+export const AESCipherV2 = Object.freeze({
   async decrypt(data: string, key: string): Promise<any> {
     const combined = base64ToUint8Array(data);
 
@@ -4387,7 +4387,7 @@ export const CipherV2 = Object.freeze({
     const salt = combined.slice(8, 16);
     const ciphertext = combined.slice(16);
     const passwordBytes = new TextEncoder().encode(key);
-    const { key: derivedKey, iv } = await CipherV2.evpKDF(
+    const { key: derivedKey, iv } = await AESCipherV2.evpKDF(
       passwordBytes,
       salt,
       32,
@@ -4436,7 +4436,7 @@ export const CipherV2 = Object.freeze({
 
     while (derived.length < totalSize) {
       const input = new Uint8Array([...previousBlock, ...password, ...salt]);
-      const block = await CipherV2.md5Hash(input);
+      const block = await AESCipherV2.md5Hash(input);
       derived = new Uint8Array([...derived, ...block]);
       previousBlock = Uint8Array.from(block);
     }
@@ -4462,7 +4462,9 @@ export const CipherV2 = Object.freeze({
 import { Config, hashRaw } from '@hicaru/argon2-pure.js';
 import { WALLET_SALT } from '../config/argon2';
 
-export function deriveArgon2Key(password: Uint8Array, salt: string, config: Config) {
+export type Argon2Config = Config;
+
+export function deriveArgon2Key(password: Uint8Array, salt: string, config: Argon2Config) {
   const textEncoder = new TextEncoder();
   const saltBytes = textEncoder.encode(salt);
 
@@ -4987,10 +4989,123 @@ export const Bip39 = Object.freeze({
 `zil-pay/crypto/keychain.ts`:
 
 ```ts
-export enum CipherOptions {
+import { PrivKey, PubKey } from '@hicaru/ntrup.js';
+import { NTRU_CONFIG, ntruDecrypt, ntruEncrypt, ntruKeysFromSeed } from './ntrup';
+import { sha256 } from './sha256';
+import { deriveArgon2Key, Argon2Config } from './argon2';
+import { kuznechikDecrypt, kuznechikEncrypt } from './kuznechik';
+import { AESCipherV3 } from './aes256';
+
+const PUBLICKEYS_BYTES = 1522; 
+const SECRETKEYS_BYTES = 382; 
+const AES_GCM_KEY_SIZE = 32; 
+const KEYCHAIN_BYTES_SIZE = PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE;
+
+async function deriveKeyFromSeed(seed: Uint8Array, idx: number): Promise<Uint8Array> {
+    const hasher = new Uint8Array([...seed, idx]);
+    return sha256(hasher);
+}
+
+export enum CipherOrders {
   AESGCM256,
   KUZNECHIK,
-  NTRUP1277,
+  NTRUP761,
+}
+
+
+export class KeyChain {
+    public ntrupKeys: { pk: PubKey; sk: PrivKey };
+    public aesKey: Uint8Array;
+    public kuznechikKey: Uint8Array;
+
+    constructor(ntrupKeys: { pk: PubKey; sk: PrivKey }, aesKey: Uint8Array, kuznechikKey: Uint8Array) {
+        this.ntrupKeys = ntrupKeys;
+        this.aesKey = aesKey;
+        this.kuznechikKey = kuznechikKey;
+    }
+
+    static async fromSeed(seed: Uint8Array): Promise<KeyChain> {
+        const ntrupKeys = ntruKeysFromSeed(seed);
+        const aesKey = await deriveKeyFromSeed(seed, 0);
+        const kuznechikKey = await deriveKeyFromSeed(seed, 1);
+        return new KeyChain(ntrupKeys, aesKey, kuznechikKey);
+    }
+
+    static async fromPass(password: Uint8Array, fingerprint: string, argonConfig: Argon2Config): Promise<KeyChain> {
+        const seed = deriveArgon2Key(password, fingerprint, argonConfig);
+        return KeyChain.fromSeed(seed);
+    }
+
+    static async fromBytes(bytes: Uint8Array): Promise<KeyChain> {
+        if (bytes.length !== KEYCHAIN_BYTES_SIZE) {
+            throw new Error('Invalid byte length');
+        }
+        const pkBytes = bytes.slice(0, PUBLICKEYS_BYTES);
+        const skBytes = bytes.slice(PUBLICKEYS_BYTES, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
+        const aesKey = bytes.slice(PUBLICKEYS_BYTES + SECRETKEYS_BYTES, KEYCHAIN_BYTES_SIZE);
+
+        const pk = PubKey.import(pkBytes, NTRU_CONFIG); 
+        const sk = PrivKey.import(skBytes, NTRU_CONFIG); 
+        const kuznechikKey = await deriveKeyFromSeed(aesKey, 1);
+
+        return new KeyChain({ pk, sk }, aesKey, kuznechikKey);
+    }
+
+    toBytes(): Uint8Array {
+        const pkBytes = this.ntrupKeys.pk.toBytes(NTRU_CONFIG);
+        const skBytes = this.ntrupKeys.sk.toBytes(NTRU_CONFIG);
+        const aesKey = this.aesKey;
+
+        const res = new Uint8Array(KEYCHAIN_BYTES_SIZE);
+        res.set(pkBytes, 0);
+        res.set(skBytes, PUBLICKEYS_BYTES);
+        res.set(aesKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
+        return res;
+    }
+
+    async encrypt(plaintext: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
+        let data = plaintext;
+        for (const o of options) {
+            switch (o) {
+                case CipherOrders.AESGCM256:
+                    data = AESCipherV3.encrypt(data, this.aesKey);
+                    break;
+                case CipherOrders.KUZNECHIK:
+                    data = kuznechikEncrypt(this.kuznechikKey, data);
+                    break;
+                case CipherOrders.NTRUP761:
+                    data = ntruEncrypt(this.ntrupKeys.pk, data);
+                    break;
+            }
+        }
+        return data;
+    }
+
+    async decrypt(ciphertext: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
+        let data = ciphertext;
+        for (const o of options.slice().reverse()) {
+            switch (o) {
+                case CipherOrders.AESGCM256:
+                    data = AESCipherV3.decrypt(data, this.aesKey );
+                    break;
+                case CipherOrders.KUZNECHIK:
+                    data = kuznechikDecrypt(this.kuznechikKey, data);
+                    break;
+                case CipherOrders.NTRUP761:
+                    data = ntruDecrypt(this.ntrupKeys.sk, data);
+                    break;
+            }
+        }
+        return data;
+    }
+
+    async makeProof(seed: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
+        return this.encrypt(seed, options);
+    }
+
+    async getProof(cipherProof: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
+        return this.decrypt(cipherProof, options);
+    }
 }
 
 ```
@@ -5001,7 +5116,7 @@ export enum CipherOptions {
 import { KeyStore, AlgOfb, MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
 import { randomBytes } from './random';
 
-export function kuznechik_encrypt(key: Uint8Array, plaintext: Uint8Array): Uint8Array {
+export function kuznechikEncrypt(key: Uint8Array, plaintext: Uint8Array): Uint8Array {
     const keyStore = new KeyStore();
     keyStore.setMasterKey(key);
     const gamma = randomBytes(MIN_GAMMA_SIZE);
@@ -5014,7 +5129,7 @@ export function kuznechik_encrypt(key: Uint8Array, plaintext: Uint8Array): Uint8
     return finalCiphertext;
 }
 
-export function kuznechik_decrypt(key: Uint8Array, ciphertext: Uint8Array): Uint8Array {
+export function kuznechikDecrypt(key: Uint8Array, ciphertext: Uint8Array): Uint8Array {
     const gamma = ciphertext.slice(ciphertext.length - MIN_GAMMA_SIZE);
     const actualCiphertext = ciphertext.slice(0, ciphertext.length - MIN_GAMMA_SIZE);
     const keyStore = new KeyStore();
@@ -5051,6 +5166,8 @@ import {
   unpackBytes,
 } from "@hicaru/ntrup.js";
 import { randomBytes } from "../crypto/random";
+
+export const NTRU_CONFIG = params761;
 
 function bytesEncrypt(
   rng: ChaChaRng,
@@ -5122,17 +5239,17 @@ export function ntruKeysFromSeed(seedBytes: Uint8Array): {
   const seedPq = seedBytes.slice(0, 32);
   const pqRng = ChaCha20Rng(seedPq);
 
-  return generateKeyPair(pqRng, params761);
+  return generateKeyPair(pqRng, NTRU_CONFIG);
 }
 
 export function ntruEncrypt(pk: PubKey, plaintext: Uint8Array) {
   const seed = randomBytes(32);
   const rng = ChaCha20Rng(seed);
-  return bytesEncrypt(rng, plaintext, pk, params761);
+  return bytesEncrypt(rng, plaintext, pk, NTRU_CONFIG);
 }
 
 export function ntruDecrypt(sk: PrivKey, ciphertext: Uint8Array) {
-  return bytesDecrypt(ciphertext, sk, params761);
+  return bytesDecrypt(ciphertext, sk, NTRU_CONFIG);
 }
 
 ```
