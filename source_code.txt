@@ -9,9 +9,12 @@ zil-pay
 │   │   └── array.test.ts
 │   ├── crypto
 │   │   ├── aes256.test.ts
+│   │   ├── argon2.test.ts
 │   │   ├── b64.test.ts
 │   │   ├── bip32.test.ts
 │   │   ├── bip39.test.ts
+│   │   ├── kuznechik.test.ts
+│   │   ├── ntrup.test.ts
 │   │   ├── number.test.ts
 │   │   ├── pbkdf2.test.ts
 │   │   ├── pubkey.test.ts
@@ -20,6 +23,7 @@ zil-pay
 │   │   ├── sha256.test.ts
 │   │   ├── sha512.test.ts
 │   │   └── word_list.ts
+│   ├── data.ts
 │   ├── setupTests.ts
 │   ├── storage
 │   │   └── storage.test.ts
@@ -34,18 +38,25 @@ zil-pay
 │   └── services
 │       └── guard.ts
 ├── config
+│   ├── argon2.ts
+│   ├── common.ts
 │   ├── errors.ts
 │   ├── fields.ts
+│   ├── manifest.ts
 │   ├── pbkdf2.ts
 │   └── sha.ts
 ├── content
 │   └── index.ts
 ├── crypto
 │   ├── aes256.ts
+│   ├── argon2.ts
 │   ├── b64.ts
 │   ├── bip32.ts
 │   ├── bip39.ts
 │   ├── index.ts
+│   ├── keychain.ts
+│   ├── kuznechik.ts
+│   ├── ntrup.ts
 │   ├── number.ts
 │   ├── pbkdf2.ts
 │   ├── proto
@@ -71,9 +82,11 @@ zil-pay
 │   │   ├── ext-id.ts
 │   │   ├── extensionizer.ts
 │   │   ├── get-url.ts
+│   │   ├── index.ts
 │   │   └── manifest.ts
 │   ├── storage
 │   │   ├── builder.ts
+│   │   ├── index.ts
 │   │   └── storage.ts
 │   ├── streem
 │   │   ├── TabsMessage.ts
@@ -83,7 +96,8 @@ zil-pay
 │   │   ├── tab-stream.ts
 │   │   └── tabs-message.ts
 │   ├── types
-│   │   └── checker.ts
+│   │   ├── checker.ts
+│   │   └── index.ts
 │   └── zilliqa
 │       ├── bech32.ts
 │       ├── checksum.ts
@@ -99,12 +113,12 @@ zil-pay
 `zil-pay/__tests__/array/array.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { shuffle } from '../../lib/array/shuffle';
-import { chunk } from '../../lib/array/chunk';
+import { describe, expect, it } from "vitest";
+import { shuffle } from "../../lib/array/shuffle";
+import { chunk } from "../../lib/array/chunk";
 
-describe('shuffle', () => {
-  it('should shuffle an array of numbers', () => {
+describe("shuffle", () => {
+  it("should shuffle an array of numbers", () => {
     const array = [1, 2, 3, 4, 5];
     const shuffledArray = shuffle([...array]);
 
@@ -113,8 +127,8 @@ describe('shuffle', () => {
     expect(shuffledArray.sort()).toEqual(array.sort());
   });
 
-  it('should shuffle an array of strings', () => {
-    const array = ['a', 'b', 'c', 'd', 'e'];
+  it("should shuffle an array of strings", () => {
+    const array = ["a", "b", "c", "d", "e"];
     const shuffledArray = shuffle([...array]);
 
     expect(shuffledArray).toHaveLength(array.length);
@@ -122,103 +136,188 @@ describe('shuffle', () => {
     expect(shuffledArray.sort()).toEqual(array.sort());
   });
 
-  it('should handle an empty array', () => {
+  it("should handle an empty array", () => {
     const array: number[] = [];
     const shuffledArray = shuffle([...array]);
     expect(shuffledArray).toEqual([]);
   });
 
-  it('should handle an array with one element', () => {
+  it("should handle an array with one element", () => {
     const array = [1];
     const shuffledArray = shuffle([...array]);
     expect(shuffledArray).toEqual([1]);
   });
 });
 
-describe('chunk', () => {
-  it('should chunk an array into smaller arrays of the specified size', () => {
+describe("chunk", () => {
+  it("should chunk an array into smaller arrays of the specified size", () => {
     const array = [1, 2, 3, 4, 5, 6, 7, 8];
     const chunkSize = 3;
     const result = chunk(array, chunkSize);
-    expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7, 8]]);
+    expect(result).toEqual([
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8],
+    ]);
   });
 
-  it('should handle a chunk size larger than the array length', () => {
+  it("should handle a chunk size larger than the array length", () => {
     const array = [1, 2, 3, 4, 5];
     const chunkSize = 10;
     const result = chunk(array, chunkSize);
     expect(result).toEqual([[1, 2, 3, 4, 5]]);
   });
 
-  it('should handle an array with a length that is a multiple of the chunk size', () => {
+  it("should handle an array with a length that is a multiple of the chunk size", () => {
     const array = [1, 2, 3, 4, 5, 6];
     const chunkSize = 2;
     const result = chunk(array, chunkSize);
-    expect(result).toEqual([[1, 2], [3, 4], [5, 6]]);
+    expect(result).toEqual([
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]);
   });
 
-  it('should handle an empty array', () => {
+  it("should handle an empty array", () => {
     const array: number[] = [];
     const chunkSize = 3;
     const result = chunk(array, chunkSize);
     expect(result).toEqual([]);
   });
 
-  it('should throw an error if the chunk size is zero', () => {
+  it("should throw an error if the chunk size is zero", () => {
     const array = [1, 2, 3, 4, 5];
     const chunkSize = 0;
-    expect(() => chunk(array, chunkSize)).toThrowError("Size must be a positive number.");
+    expect(() => chunk(array, chunkSize)).toThrowError(
+      "Size must be a positive number.",
+    );
   });
 
-  it('should throw an error if the chunk size is negative', () => {
+  it("should throw an error if the chunk size is negative", () => {
     const array = [1, 2, 3, 4, 5];
     const chunkSize = -1;
-    expect(() => chunk(array, chunkSize)).toThrowError("Size must be a positive number.");
+    expect(() => chunk(array, chunkSize)).toThrowError(
+      "Size must be a positive number.",
+    );
   });
 });
-
 
 ```
 
 `zil-pay/__tests__/crypto/aes256.test.ts`:
 
 ```ts
-import { test, expect } from 'vitest';
-import { Cipher } from '../../crypto/aes256';
-import { ErrorMessages } from '../../config/errors';
+import { test, expect } from "vitest";
+import { CipherV2, CipherV3, ErrorMessages } from "../../crypto/aes256";
+import { sha256 } from "../../crypto/sha256";
+import { IMPORTED_KEY, PASSWORD, STORAGE_V2, WORDS } from "../data";
+import { utils } from "aes-js";
 
-test('encrypt encrypts data and decrypt successfully recovers it', () => {
-  const key = new TextEncoder().encode('1234567890123456'); // 16-byte key
-  const content = new TextEncoder().encode('Hello, ZilPay!');
+test("encrypt encrypts data and decrypt successfully recovers it", () => {
+  const key = new TextEncoder().encode("1234567890123456"); // 16-byte key
+  const content = new TextEncoder().encode("Hello, ZilPay!");
 
-  const encrypted = Cipher.encrypt(content, key);
-  const decrypted = Cipher.decrypt(encrypted, key);
+  const encrypted = CipherV3.encrypt(content, key);
+  const decrypted = CipherV3.decrypt(encrypted, key);
 
-  expect(new TextDecoder().decode(decrypted)).toBe('Hello, ZilPay!');
+  expect(new TextDecoder().decode(decrypted)).toBe("Hello, ZilPay!");
 });
 
-test('decrypt with wrong key does not return original content', () => {
-  const key = new TextEncoder().encode('correctKey123456'); // 16-byte key
-  const wrongKey = new TextEncoder().encode('wrongKey12345678'); // 16-byte key
+test("decrypt with wrong key does not return original content", () => {
+  const key = new TextEncoder().encode("correctKey123456"); // 16-byte key
+  const wrongKey = new TextEncoder().encode("wrongKey12345678"); // 16-byte key
 
-  const content = new TextEncoder().encode('Secret message');
-  const encrypted = Cipher.encrypt(content, key);
+  const content = new TextEncoder().encode("Secret message");
+  const encrypted = CipherV3.encrypt(content, key);
 
-  const decrypted = Cipher.decrypt(encrypted, wrongKey);
+  const decrypted = CipherV3.decrypt(encrypted, wrongKey);
 
   expect(decrypted).not.toEqual(content);
   expect(new TextDecoder().decode(decrypted)).not.toBe(
-    new TextDecoder().decode(content)
+    new TextDecoder().decode(content),
   );
 });
 
-test('encrypt throws if key length is invalid', () => {
-  const invalidKey = new TextEncoder().encode('shortkey'); // <16 bytes
-  const content = new TextEncoder().encode('Data');
+test("encrypt throws if key length is invalid", () => {
+  const invalidKey = new TextEncoder().encode("shortkey"); // <16 bytes
+  const content = new TextEncoder().encode("Data");
 
-  expect(() => Cipher.encrypt(content, invalidKey)).toThrowError(
-    ErrorMessages.InvalidKeyLength
+  expect(() => CipherV3.encrypt(content, invalidKey)).toThrowError(
+    ErrorMessages.InvalidKeyLength,
   );
+});
+
+test("test AES-v2", async () => {
+  let key = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
+  let content =
+    "8bfed20592daf43ca798ee263fcca946013876e00f34aeab3f0836872ccc19da";
+  let encrypted =
+    "U2FsdGVkX19nN1qtOBORWCorbwujy5Nxm7bfehROWZn/vLrxMXuXJE3Bs1PLx2j0V/xd8Ts3e1QUv5EK9Hx4k+jnUVGFtB0Wcg+oVN4/3KcR5U54gxJUf9UTR6kWSQe5";
+  let decrypted = await CipherV2.decrypt(encrypted, key);
+
+  expect(decrypted).toEqual(content);
+});
+
+test("decrypt Storage v2 AES-v2", async () => {
+  let vault = STORAGE_V2.vault;
+  let password = utils.utf8.toBytes(PASSWORD);
+  let keyBytes = await sha256(password);
+  let key = utils.hex.fromBytes(keyBytes);
+  let decrypted = await CipherV2.decrypt(vault, key);
+
+  expect(decrypted).toEqual(WORDS);
+});
+
+test("decrypt accounts Storage v2 AES-v2", async () => {
+  let accounts = JSON.parse(STORAGE_V2["wallet-identities"]);
+  let identities = accounts.identities;
+  let importedAccount = identities[1];
+  let privKey = importedAccount.privKey;
+
+  let password = utils.utf8.toBytes(PASSWORD);
+  let keyBytes = await sha256(password);
+  let key = utils.hex.fromBytes(keyBytes);
+
+  let decrypted = await CipherV2.decrypt(privKey, key);
+
+  expect(decrypted).toEqual(IMPORTED_KEY);
+});
+
+```
+
+`zil-pay/__tests__/crypto/argon2.test.ts`:
+
+```ts
+import { describe, expect, it } from "vitest";
+import { deriveArgon2Key } from '../../crypto/argon2';
+import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
+import { APP_ID } from "../../config/argon2";
+
+describe("argon2", () => {
+  it('should derive the correct key', () => {
+    const password = new TextEncoder().encode('test_password');
+    const salt = 'some_salt';
+    const config = new Config(
+      APP_ID,          
+      64,              
+      2,               
+      65536,           
+      new Uint8Array(),
+      1,               
+      Variant.Argon2id,
+      Version.Version13
+    );
+    const key = deriveArgon2Key(password, salt, config);
+    const expected = new Uint8Array([
+      241, 5, 105, 168, 214, 152, 5, 38, 199, 60, 34, 215, 245, 198, 217, 49, 108, 140,
+      86, 183, 92, 152, 168, 92, 64, 48, 241, 204, 238, 247, 198, 88, 18, 126, 75, 177,
+      211, 74, 244, 234, 39, 92, 32, 255, 148, 131, 9, 175, 213, 251, 48, 220, 238, 146,
+      16, 147, 132, 15, 46, 51, 176, 134, 238, 69
+    ]);
+    
+    expect(key).toEqual(expected);
+  });
 });
 
 ```
@@ -226,45 +325,47 @@ test('encrypt throws if key length is invalid', () => {
 `zil-pay/__tests__/crypto/b64.test.ts`:
 
 ```ts
-import { describe, it, expect } from 'vitest';
-import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
+import { describe, it, expect } from "vitest";
+import { base64ToUint8Array, uint8ArrayToBase64 } from "../../crypto/b64";
 
-describe('base64 Conversion Functions', () => {
-  describe('base64ToUint8Array', () => {
-    it('converts valid base64 string to Uint8Array', () => {
-      const base64 = 'SGVsbG8='; // "Hello"
+describe("base64 Conversion Functions", () => {
+  describe("base64ToUint8Array", () => {
+    it("converts valid base64 string to Uint8Array", () => {
+      const base64 = "SGVsbG8="; // "Hello"
       const expected = new Uint8Array([72, 101, 108, 108, 111]);
       expect(base64ToUint8Array(base64)).toEqual(expected);
     });
 
-    it('handles empty base64 string', () => {
-      expect(base64ToUint8Array('')).toEqual(new Uint8Array([]));
+    it("handles empty base64 string", () => {
+      expect(base64ToUint8Array("")).toEqual(new Uint8Array([]));
     });
 
-    it('throws error for invalid base64 string', () => {
-      expect(() => base64ToUint8Array('invalid!')).toThrow('Invalid base64 string');
+    it("throws error for invalid base64 string", () => {
+      expect(() => base64ToUint8Array("invalid!")).toThrow(
+        "Invalid base64 string",
+      );
     });
   });
 
-  describe('uint8ArrayToBase64', () => {
-    it('converts Uint8Array to valid base64 string', () => {
+  describe("uint8ArrayToBase64", () => {
+    it("converts Uint8Array to valid base64 string", () => {
       const uint8Array = new Uint8Array([72, 101, 108, 108, 111]); // "Hello"
-      expect(uint8ArrayToBase64(uint8Array)).toBe('SGVsbG8=');
+      expect(uint8ArrayToBase64(uint8Array)).toBe("SGVsbG8=");
     });
 
-    it('handles empty Uint8Array', () => {
-      expect(uint8ArrayToBase64(new Uint8Array([]))).toBe('');
+    it("handles empty Uint8Array", () => {
+      expect(uint8ArrayToBase64(new Uint8Array([]))).toBe("");
     });
   });
 
-  describe('round-trip conversion', () => {
-    it('converts base64 to Uint8Array and back', () => {
-      const original = 'SGVsbG8=';
+  describe("round-trip conversion", () => {
+    it("converts base64 to Uint8Array and back", () => {
+      const original = "SGVsbG8=";
       const uint8Array = base64ToUint8Array(original);
       expect(uint8ArrayToBase64(uint8Array)).toBe(original);
     });
 
-    it('converts Uint8Array to base64 and back', () => {
+    it("converts Uint8Array to base64 and back", () => {
       const original = new Uint8Array([72, 101, 108, 108, 111]);
       const base64 = uint8ArrayToBase64(original);
       expect(base64ToUint8Array(base64)).toEqual(original);
@@ -277,362 +378,633 @@ describe('base64 Conversion Functions', () => {
 `zil-pay/__tests__/crypto/bip32.test.ts`:
 
 ```ts
-import { describe, it, expect, vi } from 'vitest';
-import { derivePrivateKey, deriveChildKey, ChildNumber, Bip32Error, deriveMasterKey, Bip32ErrorCode } from '../../crypto/bip32';
-import { Bip39 } from '../../crypto/bip39';
-import { WORD_LIST } from './word_list';
-import { utils } from 'aes-js';
+import { describe, it, expect, vi } from "vitest";
+import {
+  derivePrivateKey,
+  deriveChildKey,
+  ChildNumber,
+  Bip32Error,
+  deriveMasterKey,
+  Bip32ErrorCode,
+} from "../../crypto/bip32";
+import { Bip39 } from "../../crypto/bip39";
+import { WORD_LIST } from "./word_list";
+import { utils } from "aes-js";
 
-describe('BIP-32 Derivation', () => {
-  it('should derive correct private key from BIP-39 mnemonic', async () => {
-    const phrase = 'panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside';
-    const expectedSecretKey = "ff1e68eb7bf2f48651c47ef0177eb815857322257c5894bb4cfd1176c9989314";
-    const seed = await Bip39.mnemonicToSeed(phrase, '', WORD_LIST);
+describe("BIP-32 Derivation", () => {
+  it("should derive correct private key from BIP-39 mnemonic", async () => {
+    const phrase =
+      "panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside";
+    const expectedSecretKey =
+      "ff1e68eb7bf2f48651c47ef0177eb815857322257c5894bb4cfd1176c9989314";
+    const seed = await Bip39.mnemonicToSeed(phrase, "", WORD_LIST);
     const privateKey = await derivePrivateKey(seed, "m/44'/60'/0'/0/0");
 
     expect(utils.hex.fromBytes(privateKey)).toEqual(expectedSecretKey);
   });
 });
 
-describe('ChildNumber', () => {
-  it('should correctly parse a hardened child number', () => {
+describe("ChildNumber", () => {
+  it("should correctly parse a hardened child number", () => {
     const childNumber = ChildNumber.fromString("44'");
     expect(childNumber.value).toBe(44 | 0x80000000);
     expect(childNumber.isHardened()).toBe(true);
   });
 
-  it('should correctly parse a non-hardened child number', () => {
+  it("should correctly parse a non-hardened child number", () => {
     const childNumber = ChildNumber.fromString("0");
     expect(childNumber.value).toBe(0);
     expect(childNumber.isHardened()).toBe(false);
   });
 
-  it('should throw an error for invalid child number string', () => {
+  it("should throw an error for invalid child number string", () => {
     expect(() => ChildNumber.fromString("invalid")).toThrow(Bip32Error);
   });
 
-  it('should throw an error for negative child number', () => {
+  it("should throw an error for negative child number", () => {
     expect(() => ChildNumber.fromString("-1")).toThrow(Bip32Error);
   });
 });
 
-describe('derivePrivateKey Error Handling', () => {
-  it('should throw an error for invalid path', async () => {
+describe("derivePrivateKey Error Handling", () => {
+  it("should throw an error for invalid path", async () => {
     const seed = utils.hex.toBytes("000102030405060708090a0b0c0d0e0f");
-    await expect(derivePrivateKey(seed, "invalid/path")).rejects.toThrow(Bip32Error);
+    await expect(derivePrivateKey(seed, "invalid/path")).rejects.toThrow(
+      Bip32Error,
+    );
   });
 
-  it('should throw an error for invalid child number in path', async () => {
+  it("should throw an error for invalid child number in path", async () => {
     const seed = utils.hex.toBytes("000102030405060708090a0b0c0d0e0f");
-    await expect(derivePrivateKey(seed, "m/44'/invalid'/0'/0/0")).rejects.toThrow(Bip32Error);
+    await expect(
+      derivePrivateKey(seed, "m/44'/invalid'/0'/0/0"),
+    ).rejects.toThrow(Bip32Error);
   });
 });
 
-describe('deriveChildKey', () => {
-  const parentKey = utils.hex.toBytes("e8f32e723decf4051aefc8e2e8929c9c53337309202da64260e18c95815ff8a1");
-  const chainCode = utils.hex.toBytes("044108d81081692c577005ce106a7980ade51d384664082531e457e515d086c1");
+describe("deriveChildKey", () => {
+  const parentKey = utils.hex.toBytes(
+    "e8f32e723decf4051aefc8e2e8929c9c53337309202da64260e18c95815ff8a1",
+  );
+  const chainCode = utils.hex.toBytes(
+    "044108d81081692c577005ce106a7980ade51d384664082531e457e515d086c1",
+  );
 
-  it('should throw Bip32Error if hmacSha512 fails during child derivation', async () => {
-    vi.spyOn(globalThis.crypto.subtle, 'sign').mockImplementationOnce(async () => {
-      throw new Error("Mock HMAC failure during child derivation");
-    });
+  it("should throw Bip32Error if hmacSha512 fails during child derivation", async () => {
+    vi.spyOn(globalThis.crypto.subtle, "sign").mockImplementationOnce(
+      async () => {
+        throw new Error("Mock HMAC failure during child derivation");
+      },
+    );
 
     const childNumber = ChildNumber.fromString("0");
 
-    await expect(deriveChildKey(parentKey, chainCode, childNumber)).rejects.toThrow(Bip32Error);
-    await expect(deriveChildKey(parentKey, chainCode, childNumber)).rejects.toThrow(new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid parent key"));
+    await expect(
+      deriveChildKey(parentKey, chainCode, childNumber),
+    ).rejects.toThrow(Bip32Error);
+    await expect(
+      deriveChildKey(parentKey, chainCode, childNumber),
+    ).rejects.toThrow(
+      new Bip32Error(Bip32ErrorCode.InvalidKey, "Invalid parent key"),
+    );
   });
 });
-
 
 ```
 
 `zil-pay/__tests__/crypto/bip39.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { Bip39, Bip39Error } from '../../crypto/bip39';
-import { utils } from 'aes-js';
-import { sha256 } from '../../crypto/sha256';
-import { WORD_LIST } from './word_list';
+import { describe, expect, it } from "vitest";
+import { Bip39, Bip39Error } from "../../crypto/bip39";
+import { utils } from "aes-js";
+import { sha256 } from "../../crypto/sha256";
+import { WORD_LIST } from "./word_list";
 
 const TEST_VECTORS = [
   {
-    entropy: '00000000000000000000000000000000',
+    entropy: "00000000000000000000000000000000",
     mnemonic:
-      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-    seed: 'c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04',
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+    seed: "c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04",
   },
   {
-    entropy: '7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f',
-    mnemonic: 'legal winner thank year wave sausage worth useful legal winner thank yellow',
-    seed: '2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6fa457fe1296106559a3c80937a1c1069be3a3a5bd381ee6260e8d9739fce1f607',
-  },
-  {
-    entropy: '80808080808080808080808080808080',
-    mnemonic: 'letter advice cage absurd amount doctor acoustic avoid letter advice cage above',
-    seed: 'd71de856f81a8acc65e6fc851a38d4d7ec216fd0796d0a6827a3ad6ed5511a30fa280f12eb2e47ed2ac03b5c462a0358d18d69fe4f985ec81778c1b370b652a8',
-  },
-  {
-    entropy: 'ffffffffffffffffffffffffffffffff',
-    mnemonic: 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong',
-    seed: 'ac27495480225222079d7be181583751e86f571027b0497b5b5d11218e0a8a13332572917f0f8e5a589620c6f15b11c61dee327651a14c34e18231052e48c069',
-  },
-  {
-    entropy: '000000000000000000000000000000000000000000000000',
+    entropy: "7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f",
     mnemonic:
-      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent',
-    seed: '035895f2f481b1b0f01fcf8c289c794660b289981a78f8106447707fdd9666ca06da5a9a565181599b79f53b844d8a71dd9f439c52a3d7b3e8a79c906ac845fa',
+      "legal winner thank year wave sausage worth useful legal winner thank yellow",
+    seed: "2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6fa457fe1296106559a3c80937a1c1069be3a3a5bd381ee6260e8d9739fce1f607",
   },
   {
-    entropy: '7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f',
+    entropy: "80808080808080808080808080808080",
     mnemonic:
-      'legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal will',
-    seed: 'f2b94508732bcbacbcc020faefecfc89feafa6649a5491b8c952cede496c214a0c7b3c392d168748f2d4a612bada0753b52a1c7ac53c1e93abd5c6320b9e95dd',
+      "letter advice cage absurd amount doctor acoustic avoid letter advice cage above",
+    seed: "d71de856f81a8acc65e6fc851a38d4d7ec216fd0796d0a6827a3ad6ed5511a30fa280f12eb2e47ed2ac03b5c462a0358d18d69fe4f985ec81778c1b370b652a8",
   },
   {
-    entropy: '808080808080808080808080808080808080808080808080',
+    entropy: "ffffffffffffffffffffffffffffffff",
+    mnemonic: "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong",
+    seed: "ac27495480225222079d7be181583751e86f571027b0497b5b5d11218e0a8a13332572917f0f8e5a589620c6f15b11c61dee327651a14c34e18231052e48c069",
+  },
+  {
+    entropy: "000000000000000000000000000000000000000000000000",
     mnemonic:
-      'letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter always',
-    seed: '107d7c02a5aa6f38c58083ff74f04c607c2d2c0ecc55501dadd72d025b751bc27fe913ffb796f841c49b1d33b610cf0e91d3aa239027f5e99fe4ce9e5088cd65',
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent",
+    seed: "035895f2f481b1b0f01fcf8c289c794660b289981a78f8106447707fdd9666ca06da5a9a565181599b79f53b844d8a71dd9f439c52a3d7b3e8a79c906ac845fa",
   },
   {
-    entropy: 'ffffffffffffffffffffffffffffffffffffffffffffffff',
+    entropy: "7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f",
     mnemonic:
-      'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo when',
-    seed: '0cd6e5d827bb62eb8fc1e262254223817fd068a74b5b449cc2f667c3f1f985a76379b43348d952e2265b4cd129090758b3e3c2c49103b5051aac2eaeb890a528',
+      "legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal will",
+    seed: "f2b94508732bcbacbcc020faefecfc89feafa6649a5491b8c952cede496c214a0c7b3c392d168748f2d4a612bada0753b52a1c7ac53c1e93abd5c6320b9e95dd",
   },
   {
-    entropy: '0000000000000000000000000000000000000000000000000000000000000000',
+    entropy: "808080808080808080808080808080808080808080808080",
     mnemonic:
-      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art',
-    seed: 'bda85446c68413707090a52022edd26a1c9462295029f2e60cd7c4f2bbd3097170af7a4d73245cafa9c3cca8d561a7c3de6f5d4a10be8ed2a5e608d68f92fcc8',
+      "letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter always",
+    seed: "107d7c02a5aa6f38c58083ff74f04c607c2d2c0ecc55501dadd72d025b751bc27fe913ffb796f841c49b1d33b610cf0e91d3aa239027f5e99fe4ce9e5088cd65",
   },
   {
-    entropy: '7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f',
+    entropy: "ffffffffffffffffffffffffffffffffffffffffffffffff",
     mnemonic:
-      'legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth title',
-    seed: 'bc09fca1804f7e69da93c2f2028eb238c227f2e9dda30cd63699232578480a4021b146ad717fbb7e451ce9eb835f43620bf5c514db0f8add49f5d121449d3e87',
+      "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo when",
+    seed: "0cd6e5d827bb62eb8fc1e262254223817fd068a74b5b449cc2f667c3f1f985a76379b43348d952e2265b4cd129090758b3e3c2c49103b5051aac2eaeb890a528",
   },
   {
-    entropy: '8080808080808080808080808080808080808080808080808080808080808080',
+    entropy: "0000000000000000000000000000000000000000000000000000000000000000",
     mnemonic:
-      'letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless',
-    seed: 'c0c519bd0e91a2ed54357d9d1ebef6f5af218a153624cf4f2da911a0ed8f7a09e2ef61af0aca007096df430022f7a2b6fb91661a9589097069720d015e4e982f',
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art",
+    seed: "bda85446c68413707090a52022edd26a1c9462295029f2e60cd7c4f2bbd3097170af7a4d73245cafa9c3cca8d561a7c3de6f5d4a10be8ed2a5e608d68f92fcc8",
   },
   {
-    entropy: 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    entropy: "7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f",
     mnemonic:
-      'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo vote',
-    seed: 'dd48c104698c30cfe2b6142103248622fb7bb0ff692eebb00089b32d22484e1613912f0a5b694407be899ffd31ed3992c456cdf60f5d4564b8ba3f05a69890ad',
+      "legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth title",
+    seed: "bc09fca1804f7e69da93c2f2028eb238c227f2e9dda30cd63699232578480a4021b146ad717fbb7e451ce9eb835f43620bf5c514db0f8add49f5d121449d3e87",
   },
   {
-    entropy: '9e885d952ad362caeb4efe34a8e91bd2',
-    mnemonic: 'ozone drill grab fiber curtain grace pudding thank cruise elder eight picnic',
-    seed: '274ddc525802f7c828d8ef7ddbcdc5304e87ac3535913611fbbfa986d0c9e5476c91689f9c8a54fd55bd38606aa6a8595ad213d4c9c9f9aca3fb217069a41028',
-  },
-  {
-    entropy: '6610b25967cdcca9d59875f5cb50b0ea75433311869e930b',
+    entropy: "8080808080808080808080808080808080808080808080808080808080808080",
     mnemonic:
-      'gravity machine north sort system female filter attitude volume fold club stay feature office ecology stable narrow fog',
-    seed: '628c3827a8823298ee685db84f55caa34b5cc195a778e52d45f59bcf75aba68e4d7590e101dc414bc1bbd5737666fbbef35d1f1903953b66624f910feef245ac',
+      "letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless",
+    seed: "c0c519bd0e91a2ed54357d9d1ebef6f5af218a153624cf4f2da911a0ed8f7a09e2ef61af0aca007096df430022f7a2b6fb91661a9589097069720d015e4e982f",
   },
   {
-    entropy: '68a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc74e6ce7c',
+    entropy: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     mnemonic:
-      'hamster diagram private dutch cause delay private meat slide toddler razor book happy fancy gospel tennis maple dilemma loan word shrug inflict delay length',
-    seed: '64c87cde7e12ecf6704ab95bb1408bef047c22db4cc7491c4271d170a1b213d20b385bc1588d9c7b38f1b39d415665b8a9030c9ec653d75e65f847d8fc1fc440',
+      "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo vote",
+    seed: "dd48c104698c30cfe2b6142103248622fb7bb0ff692eebb00089b32d22484e1613912f0a5b694407be899ffd31ed3992c456cdf60f5d4564b8ba3f05a69890ad",
   },
   {
-    entropy: 'c0ba5a8e914111210f2bd131f3d5e08d',
-    mnemonic: 'scheme spot photo card baby mountain device kick cradle pact join borrow',
-    seed: 'ea725895aaae8d4c1cf682c1bfd2d358d52ed9f0f0591131b559e2724bb234fca05aa9c02c57407e04ee9dc3b454aa63fbff483a8b11de949624b9f1831a9612',
-  },
-  {
-    entropy: '6d9be1ee6ebd27a258115aad99b7317b9c8d28b6d76431c3',
+    entropy: "9e885d952ad362caeb4efe34a8e91bd2",
     mnemonic:
-      'horn tenant knee talent sponsor spell gate clip pulse soap slush warm silver nephew swap uncle crack brave',
-    seed: 'fd579828af3da1d32544ce4db5c73d53fc8acc4ddb1e3b251a31179cdb71e853c56d2fcb11aed39898ce6c34b10b5382772db8796e52837b54468aeb312cfc3d',
+      "ozone drill grab fiber curtain grace pudding thank cruise elder eight picnic",
+    seed: "274ddc525802f7c828d8ef7ddbcdc5304e87ac3535913611fbbfa986d0c9e5476c91689f9c8a54fd55bd38606aa6a8595ad213d4c9c9f9aca3fb217069a41028",
   },
   {
-    entropy: '9f6a2878b2520799a44ef18bc7df394e7061a224d2c33cd015b157d746869863',
+    entropy: "6610b25967cdcca9d59875f5cb50b0ea75433311869e930b",
     mnemonic:
-      'panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside',
-    seed: '72be8e052fc4919d2adf28d5306b5474b0069df35b02303de8c1729c9538dbb6fc2d731d5f832193cd9fb6aeecbc469594a70e3dd50811b5067f3b88b28c3e8d',
+      "gravity machine north sort system female filter attitude volume fold club stay feature office ecology stable narrow fog",
+    seed: "628c3827a8823298ee685db84f55caa34b5cc195a778e52d45f59bcf75aba68e4d7590e101dc414bc1bbd5737666fbbef35d1f1903953b66624f910feef245ac",
   },
   {
-    entropy: '23db8160a31d3e0dca3688ed941adbf3',
-    mnemonic: 'cat swing flag economy stadium alone churn speed unique patch report train',
-    seed: 'deb5f45449e615feff5640f2e49f933ff51895de3b4381832b3139941c57b59205a42480c52175b6efcffaa58a2503887c1e8b363a707256bdd2b587b46541f5',
-  },
-  {
-    entropy: '8197a4a47f0425faeaa69deebc05ca29c0a5b5cc76ceacc0',
+    entropy: "68a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc74e6ce7c",
     mnemonic:
-      'light rule cinnamon wrap drastic word pride squirrel upgrade then income fatal apart sustain crack supply proud access',
-    seed: '4cbdff1ca2db800fd61cae72a57475fdc6bab03e441fd63f96dabd1f183ef5b782925f00105f318309a7e9c3ea6967c7801e46c8a58082674c860a37b93eda02',
+      "hamster diagram private dutch cause delay private meat slide toddler razor book happy fancy gospel tennis maple dilemma loan word shrug inflict delay length",
+    seed: "64c87cde7e12ecf6704ab95bb1408bef047c22db4cc7491c4271d170a1b213d20b385bc1588d9c7b38f1b39d415665b8a9030c9ec653d75e65f847d8fc1fc440",
   },
   {
-    entropy: '066dca1a2bb7e8a1db2832148ce9933eea0f3ac9548d793112d9a95c9407efad',
+    entropy: "c0ba5a8e914111210f2bd131f3d5e08d",
     mnemonic:
-      'all hour make first leader extend hole alien behind guard gospel lava path output census museum junior mass reopen famous sing advance salt reform',
-    seed: '26e975ec644423f4a4c4f4215ef09b4bd7ef924e85d1d17c4cf3f136c2863cf6df0a475045652c57eb5fb41513ca2a2d67722b77e954b4b3fc11f7590449191d',
+      "scheme spot photo card baby mountain device kick cradle pact join borrow",
+    seed: "ea725895aaae8d4c1cf682c1bfd2d358d52ed9f0f0591131b559e2724bb234fca05aa9c02c57407e04ee9dc3b454aa63fbff483a8b11de949624b9f1831a9612",
   },
   {
-    entropy: 'f30f8c1da665478f49b001d94c5fc452',
-    mnemonic: 'vessel ladder alter error federal sibling chat ability sun glass valve picture',
-    seed: '2aaa9242daafcee6aa9d7269f17d4efe271e1b9a529178d7dc139cd18747090bf9d60295d0ce74309a78852a9caadf0af48aae1c6253839624076224374bc63f',
-  },
-  {
-    entropy: 'c10ec20dc3cd9f652c7fac2f1230f7a3c828389a14392f05',
+    entropy: "6d9be1ee6ebd27a258115aad99b7317b9c8d28b6d76431c3",
     mnemonic:
-      'scissors invite lock maple supreme raw rapid void congress muscle digital elegant little brisk hair mango congress clump',
-    seed: '7b4a10be9d98e6cba265566db7f136718e1398c71cb581e1b2f464cac1ceedf4f3e274dc270003c670ad8d02c4558b2f8e39edea2775c9e232c7cb798b069e88',
+      "horn tenant knee talent sponsor spell gate clip pulse soap slush warm silver nephew swap uncle crack brave",
+    seed: "fd579828af3da1d32544ce4db5c73d53fc8acc4ddb1e3b251a31179cdb71e853c56d2fcb11aed39898ce6c34b10b5382772db8796e52837b54468aeb312cfc3d",
   },
   {
-    entropy: 'f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f',
+    entropy: "9f6a2878b2520799a44ef18bc7df394e7061a224d2c33cd015b157d746869863",
     mnemonic:
-      'void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold',
-    seed: '01f5bced59dec48e362f2c45b5de68b9fd6c92c6634f44d6d40aab69056506f0e35524a518034ddc1192e1dacd32c1ed3eaa3c3b131c88ed8e7e54c49a5d0998',
+      "panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside",
+    seed: "72be8e052fc4919d2adf28d5306b5474b0069df35b02303de8c1729c9538dbb6fc2d731d5f832193cd9fb6aeecbc469594a70e3dd50811b5067f3b88b28c3e8d",
+  },
+  {
+    entropy: "23db8160a31d3e0dca3688ed941adbf3",
+    mnemonic:
+      "cat swing flag economy stadium alone churn speed unique patch report train",
+    seed: "deb5f45449e615feff5640f2e49f933ff51895de3b4381832b3139941c57b59205a42480c52175b6efcffaa58a2503887c1e8b363a707256bdd2b587b46541f5",
+  },
+  {
+    entropy: "8197a4a47f0425faeaa69deebc05ca29c0a5b5cc76ceacc0",
+    mnemonic:
+      "light rule cinnamon wrap drastic word pride squirrel upgrade then income fatal apart sustain crack supply proud access",
+    seed: "4cbdff1ca2db800fd61cae72a57475fdc6bab03e441fd63f96dabd1f183ef5b782925f00105f318309a7e9c3ea6967c7801e46c8a58082674c860a37b93eda02",
+  },
+  {
+    entropy: "066dca1a2bb7e8a1db2832148ce9933eea0f3ac9548d793112d9a95c9407efad",
+    mnemonic:
+      "all hour make first leader extend hole alien behind guard gospel lava path output census museum junior mass reopen famous sing advance salt reform",
+    seed: "26e975ec644423f4a4c4f4215ef09b4bd7ef924e85d1d17c4cf3f136c2863cf6df0a475045652c57eb5fb41513ca2a2d67722b77e954b4b3fc11f7590449191d",
+  },
+  {
+    entropy: "f30f8c1da665478f49b001d94c5fc452",
+    mnemonic:
+      "vessel ladder alter error federal sibling chat ability sun glass valve picture",
+    seed: "2aaa9242daafcee6aa9d7269f17d4efe271e1b9a529178d7dc139cd18747090bf9d60295d0ce74309a78852a9caadf0af48aae1c6253839624076224374bc63f",
+  },
+  {
+    entropy: "c10ec20dc3cd9f652c7fac2f1230f7a3c828389a14392f05",
+    mnemonic:
+      "scissors invite lock maple supreme raw rapid void congress muscle digital elegant little brisk hair mango congress clump",
+    seed: "7b4a10be9d98e6cba265566db7f136718e1398c71cb581e1b2f464cac1ceedf4f3e274dc270003c670ad8d02c4558b2f8e39edea2775c9e232c7cb798b069e88",
+  },
+  {
+    entropy: "f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f",
+    mnemonic:
+      "void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold",
+    seed: "01f5bced59dec48e362f2c45b5de68b9fd6c92c6634f44d6d40aab69056506f0e35524a518034ddc1192e1dacd32c1ed3eaa3c3b131c88ed8e7e54c49a5d0998",
   },
 ];
 
-describe('bip39', () => {
-  it('test entropyToMnemonic', async () => {
-    const entropy = utils.hex.toBytes('ffffffffffffffffffffffffffffffff');
+describe("bip39", () => {
+  it("test entropyToMnemonic", async () => {
+    const entropy = utils.hex.toBytes("ffffffffffffffffffffffffffffffff");
     const mnemonic = await Bip39.entropyToMnemonic(entropy, WORD_LIST);
 
-    expect(mnemonic.phrase).equal('zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong');
+    expect(mnemonic.phrase).equal(
+      "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong",
+    );
   });
 
+  it.each(TEST_VECTORS)(
+    "validates vector: $mnemonic",
+    async ({ entropy, mnemonic, seed }) => {
+      const entropyBytes = Uint8Array.from(
+        entropy.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
+      );
+      const seedBytes = Uint8Array.from(
+        seed.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
+      );
 
-    it.each(TEST_VECTORS)(
-      'validates vector: $mnemonic',
-      async ({ entropy, mnemonic, seed }) => {
-        const entropyBytes = Uint8Array.from(
-          entropy.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
-        );
-        const seedBytes = Uint8Array.from(
-          seed.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
-        );
+      // Test entropy to mnemonic
+      const generatedMnemonic = await Bip39.entropyToMnemonic(
+        entropyBytes,
+        WORD_LIST,
+      );
+      expect(generatedMnemonic.phrase).toBe(mnemonic);
 
-        // Test entropy to mnemonic
-        const generatedMnemonic = await Bip39.entropyToMnemonic(entropyBytes, WORD_LIST);
-        expect(generatedMnemonic.phrase).toBe(mnemonic);
+      // Test mnemonic validation
+      await expect(Bip39.validateMnemonic(mnemonic, WORD_LIST)).resolves.toBe(
+        true,
+      );
 
-        // Test mnemonic validation
-        await expect(Bip39.validateMnemonic(mnemonic, WORD_LIST)).resolves.toBe(true);
+      // Test mnemonic to seed
+      const generatedSeed = await Bip39.mnemonicToSeed(
+        mnemonic,
+        "TREZOR",
+        WORD_LIST,
+      );
+      expect(generatedSeed).toEqual(seedBytes);
 
-        // Test mnemonic to seed
-        const generatedSeed = await Bip39.mnemonicToSeed(mnemonic, 'TREZOR', WORD_LIST);
-        expect(generatedSeed).toEqual(seedBytes);
-
-        // // Test mnemonic to entropy
-        const recoveredEntropy = await Bip39.mnemonicToEntropy(mnemonic, WORD_LIST);
-        expect(recoveredEntropy).toEqual(entropyBytes);
-      }
-    );
+      // // Test mnemonic to entropy
+      const recoveredEntropy = await Bip39.mnemonicToEntropy(
+        mnemonic,
+        WORD_LIST,
+      );
+      expect(recoveredEntropy).toEqual(entropyBytes);
+    },
+  );
 
   it.each([12, 15, 18, 21, 24])(
-      'generates mnemonic with %i words',
-      async (wordCount) => {
-        const entropyBits = (wordCount * 11 * 32) / 33;
-        const mnemonic = await Bip39.generateMnemonic(entropyBits, WORD_LIST);
+    "generates mnemonic with %i words",
+    async (wordCount) => {
+      const entropyBits = (wordCount * 11 * 32) / 33;
+      const mnemonic = await Bip39.generateMnemonic(entropyBits, WORD_LIST);
 
-        expect(mnemonic.words.length).toBe(wordCount);
-        expect(mnemonic.phrase.split(' ').length).toBe(wordCount);
-      }
+      expect(mnemonic.words.length).toBe(wordCount);
+      expect(mnemonic.phrase.split(" ").length).toBe(wordCount);
+    },
+  );
+});
+
+describe("bip39_checksum", () => {
+  const vectors = [
+    "00000000000000000000000000000000",
+    "7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f",
+    "80808080808080808080808080808080",
+    "ffffffffffffffffffffffffffffffff",
+    "000000000000000000000000000000000000000000000000",
+    "7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f",
+    "808080808080808080808080808080808080808080808080",
+    "ffffffffffffffffffffffffffffffffffffffffffffffff",
+    "0000000000000000000000000000000000000000000000000000000000000000",
+    "7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f",
+    "8080808080808080808080808080808080808080808080808080808080808080",
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "9e885d952ad362caeb4efe34a8e91bd2",
+    "6610b25967cdcca9d59875f5cb50b0ea75433311869e930b",
+    "68a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc74e6ce7c",
+    "c0ba5a8e914111210f2bd131f3d5e08d",
+    "6d9be1ee6ebd27a258115aad99b7317b9c8d28b6d76431c3",
+    "9f6a2878b2520799a44ef18bc7df394e7061a224d2c33cd015b157d746869863",
+    "23db8160a31d3e0dca3688ed941adbf3",
+    "8197a4a47f0425faeaa69deebc05ca29c0a5b5cc76ceacc0",
+    "066dca1a2bb7e8a1db2832148ce9933eea0f3ac9548d793112d9a95c9407efad",
+    "f30f8c1da665478f49b001d94c5fc452",
+    "c10ec20dc3cd9f652c7fac2f1230f7a3c828389a14392f05",
+    "f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f",
+  ];
+
+  it.each(vectors)("verifies checksum for entropy: %s", async (entropyHex) => {
+    const entropy = Uint8Array.from(
+      entropyHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
     );
+    const mnemonic = await Bip39.entropyToMnemonic(entropy, WORD_LIST);
+
+    const ENT = entropy.length * 8; // Длина энтропии в битах
+    const CS = ENT / 32; // Длина контрольной суммы
+
+    const hash = await sha256(entropy);
+    const computedChecksum = hash[0] >> (8 - CS);
+
+    const bits = mnemonic.words
+      .map((word) => {
+        const index = WORD_LIST.indexOf(word);
+        return index.toString(2).padStart(11, "0");
+      })
+      .join("");
+    const checksum = parseInt(bits.slice(ENT, ENT + CS), 2);
+
+    expect(computedChecksum).toBe(checksum);
+  });
 });
 
-describe('bip39_checksum', () => {
-    const vectors = [
-      '00000000000000000000000000000000',
-      '7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f',
-      '80808080808080808080808080808080',
-      'ffffffffffffffffffffffffffffffff',
-      '000000000000000000000000000000000000000000000000',
-      '7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f',
-      '808080808080808080808080808080808080808080808080',
-      'ffffffffffffffffffffffffffffffffffffffffffffffff',
-      '0000000000000000000000000000000000000000000000000000000000000000',
-      '7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f',
-      '8080808080808080808080808080808080808080808080808080808080808080',
-      'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-      '9e885d952ad362caeb4efe34a8e91bd2',
-      '6610b25967cdcca9d59875f5cb50b0ea75433311869e930b',
-      '68a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc74e6ce7c',
-      'c0ba5a8e914111210f2bd131f3d5e08d',
-      '6d9be1ee6ebd27a258115aad99b7317b9c8d28b6d76431c3',
-      '9f6a2878b2520799a44ef18bc7df394e7061a224d2c33cd015b157d746869863',
-      '23db8160a31d3e0dca3688ed941adbf3',
-      '8197a4a47f0425faeaa69deebc05ca29c0a5b5cc76ceacc0',
-      '066dca1a2bb7e8a1db2832148ce9933eea0f3ac9548d793112d9a95c9407efad',
-      'f30f8c1da665478f49b001d94c5fc452',
-      'c10ec20dc3cd9f652c7fac2f1230f7a3c828389a14392f05',
-      'f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f',
-    ];
+describe("bip39_invalid_mnemonic", () => {
+  it("should throw UnknownWord error for invalid word at position 0", async () => {
+    const invalidMnemonic =
+      "getter advice cage absurd amount doctor acoustic avoid letter advice cage above";
+    await expect(
+      Bip39.validateMnemonic(invalidMnemonic, WORD_LIST),
+    ).rejects.toThrow(Bip39Error.InvalidWord);
+  });
 
-    it.each(vectors)('verifies checksum for entropy: %s', async (entropyHex) => {
-        const entropy = Uint8Array.from(
-            entropyHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
-        );
-        const mnemonic = await Bip39.entropyToMnemonic(entropy, WORD_LIST);
+  it("should throw UnknownWord error for invalid word at position 2", async () => {
+    const invalidMnemonic =
+      "letter advice cagex absurd amount doctor acoustic avoid letter advice cage above";
+    await expect(
+      Bip39.validateMnemonic(invalidMnemonic, WORD_LIST),
+    ).rejects.toThrow(Bip39Error.InvalidWord);
+  });
 
-        const ENT = entropy.length * 8; // Длина энтропии в битах
-        const CS = ENT / 32; // Длина контрольной суммы
+  it("should throw BadWordCount error for 11 words", async () => {
+    const invalidMnemonic =
+      "advice cage absurd amount doctor acoustic avoid letter advice cage above";
+    await expect(
+      Bip39.validateMnemonic(invalidMnemonic, WORD_LIST),
+    ).rejects.toThrow(Bip39Error.InvalidWordCount);
+  });
 
-        const hash = await sha256(entropy);
-        const computedChecksum = hash[0] >> (8 - CS);
-
-        const bits = mnemonic.words
-            .map((word) => {
-                const index = WORD_LIST.indexOf(word);
-                return index.toString(2).padStart(11, '0');
-            })
-            .join('');
-        const checksum = parseInt(bits.slice(ENT, ENT + CS), 2);
-
-        expect(computedChecksum).toBe(checksum);
-    });
+  it("should throw InvalidChecksum error for invalid checksum", async () => {
+    const invalidMnemonic =
+      "primary advice cage absurd amount doctor acoustic avoid letter advice cage above";
+    await expect(
+      Bip39.validateMnemonic(invalidMnemonic, WORD_LIST),
+    ).rejects.toThrow(Bip39Error.InvalidChecksum);
+  });
 });
 
-describe('bip39_invalid_mnemonic', () => {
-    it('should throw UnknownWord error for invalid word at position 0', async () => {
-        const invalidMnemonic = 'getter advice cage absurd amount doctor acoustic avoid letter advice cage above';
-        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidWord);
-    });
+describe("bip39_invalid_entropy", () => {
+  it("should throw BadEntropyBitCount for entropy not divisible by 32 bits", async () => {
+    const entropy = new Uint8Array(17); // 136 бит
+    await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(
+      Bip39Error.InvalidEntropy,
+    );
+  });
 
-    it('should throw UnknownWord error for invalid word at position 2', async () => {
-        const invalidMnemonic = 'letter advice cagex absurd amount doctor acoustic avoid letter advice cage above';
-        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidWord);
-    });
+  it("should throw BadEntropyBitCount for entropy less than 128 bits", async () => {
+    const entropy = new Uint8Array(4); // 32 бита
+    await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(
+      Bip39Error.InvalidEntropy,
+    );
+  });
 
-    it('should throw BadWordCount error for 11 words', async () => {
-        const invalidMnemonic = 'advice cage absurd amount doctor acoustic avoid letter advice cage above';
-        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidWordCount);
-    });
-
-    it('should throw InvalidChecksum error for invalid checksum', async () => {
-        const invalidMnemonic = 'primary advice cage absurd amount doctor acoustic avoid letter advice cage above';
-        await expect(Bip39.validateMnemonic(invalidMnemonic, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidChecksum);
-    });
+  it("should throw BadEntropyBitCount for entropy greater than 256 bits", async () => {
+    const entropy = new Uint8Array(36); // 288 бит
+    await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(
+      Bip39Error.InvalidEntropy,
+    );
+  });
 });
 
-describe('bip39_invalid_entropy', () => {
-    it('should throw BadEntropyBitCount for entropy not divisible by 32 bits', async () => {
-        const entropy = new Uint8Array(17); // 136 бит
-        await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidEntropy);
-    });
+```
 
-    it('should throw BadEntropyBitCount for entropy less than 128 bits', async () => {
-        const entropy = new Uint8Array(4); // 32 бита
-        await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidEntropy);
-    });
+`zil-pay/__tests__/crypto/kuznechik.test.ts`:
 
-    it('should throw BadEntropyBitCount for entropy greater than 256 bits', async () => {
-        const entropy = new Uint8Array(36); // 288 бит
-        await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(Bip39Error.InvalidEntropy);
+```ts
+import { describe, test, expect } from 'vitest';
+import { kuznechik_encrypt, kuznechik_decrypt } from '../../crypto/kuznechik';
+import { MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
+
+describe('kuznechik_encrypt and kuznechik_decrypt', () => {
+  const key = new Uint8Array(32).fill(0x01);
+  const plaintext = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+
+  test('encrypt and decrypt should return original plaintext', () => {
+    const ciphertext = kuznechik_encrypt(key, plaintext);
+    const decrypted = kuznechik_decrypt(key, ciphertext);
+    expect(decrypted).toEqual(plaintext);
+  });
+
+  test('ciphertext length should be plaintext length plus MIN_GAMMA_SIZE', () => {
+    const ciphertext = kuznechik_encrypt(key, plaintext);
+    expect(ciphertext.length).toBe(plaintext.length + MIN_GAMMA_SIZE);
+  });
+
+  test('encrypt and decrypt empty plaintext', () => {
+    const emptyPlaintext = new Uint8Array(0);
+    const ciphertext = kuznechik_encrypt(key, emptyPlaintext);
+    expect(ciphertext.length).toBe(MIN_GAMMA_SIZE);
+    const decrypted = kuznechik_decrypt(key, ciphertext);
+    expect(decrypted).toEqual(emptyPlaintext);
+  });
+
+  test('decrypt with short ciphertext should throw error', () => {
+    const shortCiphertext = new Uint8Array(MIN_GAMMA_SIZE - 1);
+    expect(() => kuznechik_decrypt(key, shortCiphertext)).toThrow();
+  });
+
+  test('encrypt with invalid key size should throw error', () => {
+    const invalidKey = new Uint8Array(31); 
+    expect(() => kuznechik_encrypt(invalidKey, plaintext)).toThrow();
+  });
+
+  test('decrypt with different key should not return original plaintext', () => {
+    const differentKey = new Uint8Array(32).fill(0x02);
+    const ciphertext = kuznechik_encrypt(key, plaintext);
+    const decrypted = kuznechik_decrypt(differentKey, ciphertext);
+    expect(decrypted).not.toEqual(plaintext);
+  });
+});
+
+```
+
+`zil-pay/__tests__/crypto/ntrup.test.ts`:
+
+```ts
+import { describe, it, expect } from "vitest";
+import { ntruDecrypt, ntruEncrypt, ntruKeysFromSeed } from "../../crypto/ntrup";
+import { sha512 } from "../../crypto/sha512";
+import { utils } from "aes-js";
+import { params761 } from "@hicaru/ntrup.js";
+
+describe("NTRU", () => {
+  describe("keys", () => {
+    it("converts Uint8Array to valid base64 string", async () => {
+      let bytes = utils.utf8.toBytes("hello");
+      const seed = await sha512(bytes);
+      let { pk, sk } = ntruKeysFromSeed(seed);
+
+      expect(utils.hex.fromBytes(pk.toBytes(params761))).toEqual(
+        utils.hex.fromBytes([
+          8, 8, 0, 21, 249, 176, 1, 159, 3, 97, 248, 156, 249, 223, 249, 50,
+          249, 238, 5, 123, 8, 32, 253, 63, 1, 76, 252, 108, 2, 44, 1, 122, 2,
+          158, 0, 24, 7, 17, 7, 210, 0, 117, 3, 125, 250, 219, 1, 248, 253, 226,
+          6, 102, 3, 47, 6, 62, 250, 6, 6, 62, 6, 227, 249, 217, 7, 199, 7, 88,
+          255, 106, 5, 54, 247, 90, 251, 22, 253, 243, 1, 218, 2, 190, 250, 15,
+          252, 231, 3, 54, 255, 174, 5, 242, 6, 254, 0, 197, 248, 177, 252, 252,
+          1, 201, 2, 197, 254, 197, 3, 227, 251, 68, 248, 92, 252, 12, 252, 233,
+          6, 54, 250, 72, 250, 36, 0, 72, 4, 200, 247, 194, 255, 42, 6, 145,
+          255, 87, 5, 40, 255, 27, 255, 224, 255, 112, 249, 2, 249, 133, 249,
+          252, 0, 11, 253, 174, 252, 149, 7, 90, 6, 207, 255, 250, 254, 85, 4,
+          97, 247, 214, 5, 126, 8, 87, 253, 232, 252, 97, 251, 255, 251, 73, 1,
+          151, 8, 201, 4, 254, 3, 219, 254, 51, 248, 208, 3, 195, 6, 13, 2, 128,
+          251, 217, 247, 245, 7, 130, 250, 43, 253, 100, 254, 180, 251, 6, 255,
+          167, 253, 53, 248, 6, 249, 224, 8, 68, 254, 103, 248, 132, 8, 144, 2,
+          107, 254, 163, 251, 201, 247, 14, 0, 116, 3, 99, 8, 191, 252, 4, 255,
+          246, 250, 52, 247, 219, 248, 143, 8, 65, 4, 227, 0, 30, 253, 197, 254,
+          105, 0, 187, 7, 201, 1, 120, 250, 79, 255, 65, 252, 28, 6, 134, 250,
+          85, 0, 194, 3, 236, 8, 26, 248, 234, 6, 217, 3, 55, 250, 56, 5, 123,
+          8, 55, 254, 73, 253, 120, 5, 214, 255, 33, 1, 51, 250, 185, 7, 241,
+          249, 120, 254, 181, 8, 239, 5, 122, 8, 112, 247, 148, 254, 237, 251,
+          27, 253, 132, 0, 15, 253, 100, 253, 194, 253, 52, 3, 105, 0, 95, 248,
+          233, 250, 86, 254, 124, 7, 80, 1, 45, 6, 103, 6, 176, 2, 26, 252, 198,
+          2, 188, 254, 89, 1, 223, 248, 144, 3, 169, 254, 195, 251, 34, 254,
+          127, 249, 71, 254, 149, 251, 75, 5, 36, 5, 171, 3, 203, 8, 1, 255, 64,
+          5, 160, 249, 126, 247, 53, 252, 253, 251, 197, 4, 29, 247, 52, 7, 176,
+          1, 66, 5, 129, 250, 197, 254, 46, 255, 94, 5, 245, 1, 160, 253, 245,
+          254, 200, 251, 158, 7, 128, 249, 138, 5, 159, 248, 79, 5, 130, 2, 239,
+          1, 158, 0, 118, 6, 59, 252, 92, 7, 246, 0, 141, 0, 147, 2, 169, 0,
+          115, 8, 119, 247, 220, 6, 90, 4, 12, 8, 232, 253, 242, 250, 216, 255,
+          149, 2, 87, 248, 130, 248, 144, 255, 34, 247, 120, 1, 110, 248, 159,
+          248, 255, 7, 182, 0, 243, 7, 130, 248, 88, 254, 239, 1, 135, 0, 45,
+          249, 21, 7, 202, 255, 106, 252, 137, 8, 5, 7, 101, 0, 8, 2, 36, 1,
+          142, 7, 236, 4, 251, 247, 254, 252, 106, 0, 220, 2, 101, 247, 94, 249,
+          127, 3, 217, 0, 62, 0, 56, 248, 182, 250, 9, 250, 32, 253, 11, 4, 167,
+          249, 123, 5, 201, 3, 26, 5, 184, 2, 154, 5, 17, 254, 81, 253, 62, 2,
+          63, 8, 60, 253, 61, 5, 166, 250, 14, 255, 210, 3, 123, 8, 228, 8, 183,
+          254, 126, 5, 151, 255, 121, 248, 22, 250, 126, 5, 202, 249, 113, 1, 9,
+          250, 205, 255, 6, 5, 63, 6, 52, 7, 22, 1, 178, 249, 56, 6, 224, 1, 48,
+          247, 57, 249, 173, 2, 215, 251, 239, 255, 137, 251, 106, 6, 131, 8,
+          182, 248, 201, 5, 51, 7, 213, 253, 241, 8, 181, 6, 2, 252, 247, 247,
+          113, 4, 55, 248, 150, 6, 61, 247, 157, 250, 19, 250, 153, 2, 193, 252,
+          105, 255, 149, 2, 242, 7, 202, 3, 75, 253, 0, 7, 76, 3, 78, 6, 52, 1,
+          245, 251, 121, 252, 47, 250, 186, 250, 11, 250, 232, 254, 223, 252,
+          153, 0, 6, 249, 180, 3, 142, 4, 56, 247, 33, 249, 52, 251, 70, 6, 73,
+          1, 49, 255, 220, 5, 174, 255, 191, 251, 208, 1, 125, 0, 215, 253, 81,
+          247, 137, 247, 61, 1, 157, 255, 247, 247, 40, 255, 76, 251, 10, 247,
+          194, 251, 158, 5, 157, 248, 218, 4, 253, 248, 196, 254, 97, 249, 170,
+          4, 145, 6, 139, 247, 229, 7, 196, 251, 0, 255, 106, 255, 209, 2, 168,
+          0, 187, 5, 86, 252, 132, 0, 199, 2, 112, 248, 231, 247, 253, 3, 155,
+          250, 35, 252, 83, 3, 146, 8, 212, 3, 174, 250, 121, 3, 207, 255, 130,
+          254, 138, 4, 247, 249, 159, 0, 236, 249, 193, 249, 167, 5, 48, 250,
+          237, 249, 8, 8, 77, 250, 238, 0, 117, 249, 60, 7, 38, 1, 13, 5, 206,
+          248, 213, 2, 240, 6, 127, 248, 231, 1, 238, 250, 192, 6, 210, 248,
+          156, 8, 66, 6, 93, 7, 70, 2, 227, 247, 125, 0, 226, 251, 11, 1, 119,
+          252, 6, 1, 106, 6, 66, 255, 92, 253, 82, 0, 242, 2, 186, 254, 117, 2,
+          155, 252, 137, 3, 180, 3, 93, 4, 231, 4, 35, 5, 160, 8, 47, 254, 75,
+          1, 225, 251, 209, 252, 149, 0, 93, 252, 150, 7, 108, 254, 91, 0, 43,
+          249, 207, 253, 181, 250, 8, 7, 140, 249, 246, 249, 199, 252, 154, 253,
+          105, 248, 48, 252, 176, 5, 0, 253, 226, 3, 245, 1, 8, 253, 61, 0, 156,
+          248, 30, 252, 20, 253, 254, 8, 23, 2, 217, 252, 59, 0, 159, 2, 239, 1,
+          114, 249, 150, 248, 153, 3, 1, 252, 238, 8, 230, 249, 4, 252, 54, 248,
+          187, 251, 126, 8, 116, 1, 72, 252, 192, 255, 212, 5, 220, 4, 164, 7,
+          212, 253, 207, 2, 200, 6, 158, 3, 250, 251, 175, 0, 40, 250, 183, 250,
+          96, 6, 38, 1, 163, 255, 125, 255, 167, 251, 10, 254, 84, 1, 249, 2,
+          169, 250, 127, 5, 106, 247, 22, 4, 98, 3, 87, 250, 30, 248, 63, 247,
+          41, 250, 35, 4, 8, 250, 34, 255, 45, 254, 124, 250, 75, 2, 108, 1,
+          216, 251, 34, 2, 117, 3, 169, 252, 49, 251, 250, 7, 130, 255, 107,
+          252, 81, 252, 83, 2, 30, 7, 243, 6, 202, 253, 240, 249, 207, 3, 174,
+          251, 131, 253, 64, 8, 247, 0, 151, 8, 168, 6, 58, 251, 210, 254, 117,
+          5, 137, 251, 219, 6, 14, 255, 30, 249, 126, 5, 90, 249, 244, 251, 165,
+          248, 228, 3, 122, 7, 56, 8, 92, 0, 29, 1, 130, 1, 46, 252, 28, 254,
+          72, 254, 45, 255, 228, 1, 78, 253, 53, 247, 14, 4, 94, 3, 66, 3, 109,
+          8, 55, 3, 124, 251, 135, 254, 105, 249, 178, 7, 125, 7, 2, 2, 181, 4,
+          27, 251, 11, 4, 106, 3, 166, 253, 74, 250, 46, 247, 189, 8, 93, 254,
+          58, 247, 63, 3, 33, 247, 190, 250, 164, 250, 40, 253, 219, 255, 111,
+          252, 185, 4, 192, 248, 62, 248, 87, 7, 4, 7, 247, 1, 185, 252, 13, 2,
+          202, 247, 27, 6, 201, 250, 34, 255, 12, 4, 138, 5, 239, 2, 65, 6, 105,
+          254, 67, 3, 117, 3, 146, 2, 75, 254, 22, 254, 0, 247, 78, 247, 151,
+          252, 42, 8, 74, 251, 172, 255, 1, 5, 122, 249, 160, 251, 223, 4, 255,
+          252, 112, 5, 228, 8, 152, 255, 230, 2, 233, 252, 119, 2, 183, 6, 143,
+          253, 10, 0, 84, 247, 213, 7, 192, 4, 26, 8, 146, 1, 69, 0, 11, 251,
+          147, 1, 237, 250, 247, 251, 241, 255, 112, 5, 207, 2, 249, 252, 70,
+          252, 168, 2, 160, 248, 132, 5, 97, 248, 221, 255, 213, 254, 67, 0, 22,
+          248, 115, 8, 80, 8, 96, 2, 249, 2, 208, 255, 7, 253, 73, 253, 86, 0,
+          227, 251, 213, 251, 11, 249, 130, 252, 220, 255, 254, 3, 152, 5, 74,
+          8, 242, 250, 135, 1, 159, 254, 33, 8, 16, 250, 138, 250, 136, 6, 112,
+          7, 208, 250, 221, 248, 209, 1, 244, 254, 15, 3, 242, 247, 166, 253,
+          31, 255, 111, 253, 165, 254, 119, 251, 138, 248, 11, 249, 210, 2, 208,
+          1, 241, 4, 120, 250, 179, 5, 96, 3, 217, 255, 43, 2, 56, 7, 122, 250,
+          125, 249, 16, 253, 240, 1, 105, 0, 43, 0, 152, 1, 129, 254, 190, 3,
+          230, 7, 197, 0, 59, 5, 19, 250, 169, 250, 26, 5, 238, 251, 190, 251,
+          42, 3, 171, 254, 209, 5, 17, 254, 221, 2, 29, 249, 53, 3, 23, 252,
+          150, 7, 106, 249, 160, 2, 23, 254, 250, 8, 233, 4, 108, 254, 30, 1,
+          63, 250, 15, 5, 21, 0, 107, 6, 221, 248, 72, 1, 151, 248, 200, 7, 146,
+          7, 228, 255, 67,
+        ]),
+      );
+
+      expect(utils.hex.fromBytes(sk.toBytes(params761))).toEqual(
+        utils.hex.fromBytes([
+          37, 6, 97, 20, 8, 41, 102, 136, 0, 8, 89, 132, 66, 37, 69, 170, 66,
+          10, 134, 85, 10, 165, 145, 68, 37, 166, 106, 104, 37, 149, 149, 106,
+          36, 146, 169, 20, 9, 17, 6, 134, 150, 10, 137, 0, 148, 5, 86, 133, 85,
+          85, 144, 69, 161, 98, 100, 130, 26, 41, 130, 132, 33, 68, 169, 149,
+          137, 85, 24, 86, 81, 137, 33, 40, 38, 66, 137, 40, 0, 134, 81, 86,
+          149, 96, 166, 2, 90, 137, 164, 164, 90, 17, 152, 130, 128, 166, 66,
+          97, 128, 150, 16, 68, 69, 9, 0, 148, 73, 90, 6, 73, 65, 164, 66, 20,
+          6, 73, 6, 160, 138, 133, 102, 72, 97, 5, 90, 160, 88, 146, 4, 24, 128,
+          160, 10, 136, 128, 37, 4, 70, 74, 80, 64, 5, 101, 138, 86, 168, 130,
+          160, 26, 64, 5, 97, 144, 9, 136, 164, 24, 80, 106, 153, 4, 1, 145,
+          164, 82, 73, 101, 85, 66, 20, 1, 96, 26, 102, 25, 162, 17, 5, 137, 26,
+          136, 152, 150, 65, 102, 165, 90, 73, 69, 104, 161, 36, 0, 90, 100, 74,
+          85, 98, 165, 70, 166, 85, 21, 90, 22, 85, 85, 134, 97, 84, 86, 149,
+          98, 24, 153, 85, 69, 84, 149, 85, 89, 69, 82, 105, 64, 89, 130, 106,
+          89, 90, 149, 149, 86, 153, 137, 133, 102, 90, 69, 73, 153, 68, 84,
+          102, 68, 37, 133, 85, 25, 68, 97, 101, 85, 85, 81, 85, 85, 66, 100,
+          68, 81, 85, 21, 85, 37, 64, 84, 132, 148, 101, 66, 101, 86, 21, 82,
+          101, 85, 101, 89, 22, 101, 149, 37, 102, 85, 81, 101, 149, 145, 86,
+          66, 85, 22, 89, 101, 5, 6, 128, 85, 85, 89, 153, 86, 21, 86, 25, 25,
+          21, 101, 88, 133, 149, 89, 165, 165, 145, 153, 21, 145, 130, 81, 145,
+          38, 101, 88, 89, 85, 102, 89, 85, 89, 65, 149, 86, 85, 102, 101, 85,
+          68, 101, 85, 105, 149, 149, 102, 149, 81, 100, 104, 85, 149, 85, 25,
+          97, 21, 86, 89, 1, 40, 69, 89, 69, 90, 85, 149, 146, 86, 40, 149, 134,
+          82, 21, 168, 69, 4, 84, 85, 149, 69, 69, 73, 89, 138, 1,
+        ]),
+      );
     });
+  });
+
+  it("test bytes encrypt/decrypt", async () => {
+    let bytes = utils.utf8.toBytes("hello");
+    const seed = await sha512(bytes);
+    let { pk, sk } = ntruKeysFromSeed(seed);
+    const ciphertext = ntruEncrypt(pk, bytes);
+    const decrypted = ntruDecrypt(sk, ciphertext);
+
+    expect(decrypted).toEqual(bytes);
+  });
 });
 
 ```
@@ -640,34 +1012,37 @@ describe('bip39_invalid_entropy', () => {
 `zil-pay/__tests__/crypto/number.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { uint8ArrayToBigIntBigEndian, uint8ArrayToBigIntLittleEndian } from '../../crypto/number';
-import { randomBytes } from '../../crypto/random';
+import { describe, expect, it } from "vitest";
+import {
+  uint8ArrayToBigIntBigEndian,
+  uint8ArrayToBigIntLittleEndian,
+} from "../../crypto/number";
+import { randomBytes } from "../../crypto/random";
 
-describe('uint8ArrayToBigIntBigEndian', () => {
-  it('should correctly convert a non-empty big-endian Uint8Array to bigint', () => {
+describe("uint8ArrayToBigIntBigEndian", () => {
+  it("should correctly convert a non-empty big-endian Uint8Array to bigint", () => {
     const length = 8;
     const byteArray = randomBytes(length);
     const bigIntValue = uint8ArrayToBigIntBigEndian(byteArray);
-    expect(typeof bigIntValue).toBe('bigint');
+    expect(typeof bigIntValue).toBe("bigint");
   });
 
-  it('should return 0n for an empty Uint8Array', () => {
+  it("should return 0n for an empty Uint8Array", () => {
     const emptyArray = new Uint8Array([]);
     expect(uint8ArrayToBigIntBigEndian(emptyArray)).toBe(0n);
   });
 });
 
-describe('uint8ArrayToBigIntLittleEndian', () => {
-  it('should correctly convert a non-empty little-endian Uint8Array to bigint', () => {
+describe("uint8ArrayToBigIntLittleEndian", () => {
+  it("should correctly convert a non-empty little-endian Uint8Array to bigint", () => {
     const length = 8;
     const byteArray = randomBytes(length);
     const littleEndianArray = new Uint8Array([...byteArray].reverse());
     const bigIntValue = uint8ArrayToBigIntLittleEndian(littleEndianArray);
-    expect(typeof bigIntValue).toBe('bigint');
+    expect(typeof bigIntValue).toBe("bigint");
   });
 
-  it('should return 0n for an empty Uint8Array', () => {
+  it("should return 0n for an empty Uint8Array", () => {
     const emptyArray = new Uint8Array([]);
     expect(uint8ArrayToBigIntLittleEndian(emptyArray)).toBe(0n);
   });
@@ -678,19 +1053,19 @@ describe('uint8ArrayToBigIntLittleEndian', () => {
 `zil-pay/__tests__/crypto/pbkdf2.test.ts`:
 
 ```ts
+import { test, expect, vi } from "vitest";
+import { pbkdf2 } from "../../crypto/pbkdf2";
+import { ShaAlgorithms } from "../../config/pbkdf2";
+import { utils } from "aes-js";
 
-import { test, expect, vi } from 'vitest';
-import { pbkdf2 } from '../../crypto/pbkdf2';
-import { ShaAlgorithms } from '../../config/pbkdf2';
-import { utils } from 'aes-js';
-
-test('pbkdf2 calls Web Crypto API correctly with default SHA-512', async () => {
-  const password = new TextEncoder().encode('password');
-  const salt = new TextEncoder().encode('salt');
+test("pbkdf2 calls Web Crypto API correctly with default SHA-512", async () => {
+  const password = new TextEncoder().encode("password");
+  const salt = new TextEncoder().encode("salt");
   const iterations = 1000;
   const result = await pbkdf2(password, salt, iterations, ShaAlgorithms.Sha512);
-  const shouldBe = "afe6c5530785b6cc6b1c6453384731bd5ee432ee549fd42fb6695779ad8a1c5bf59de69c48f774efc4007d5298f9033c0241d5ab69305e7b64eceeb8d834cfec";
- 
+  const shouldBe =
+    "afe6c5530785b6cc6b1c6453384731bd5ee432ee549fd42fb6695779ad8a1c5bf59de69c48f774efc4007d5298f9033c0241d5ab69305e7b64eceeb8d834cfec";
+
   expect(utils.hex.fromBytes(result)).toBe(shouldBe);
 });
 
@@ -699,30 +1074,35 @@ test('pbkdf2 calls Web Crypto API correctly with default SHA-512', async () => {
 `zil-pay/__tests__/crypto/pubkey.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { fromZILPrivateKey } from '../../crypto/zilliqa/pubkey';
-import { utils } from 'aes-js';
+import { describe, expect, it } from "vitest";
+import { fromZILPrivateKey } from "../../crypto/zilliqa/pubkey";
+import { utils } from "aes-js";
 
-describe('test cases pubkey', () => {
-  it('test zil private key to pub key', async() => {
-    let sk = Uint8Array.from(utils.hex.toBytes("3a649fbe8198729669affd1e9ae93e9e81fd25b71ea5f79792bec9fa6ac9ed92"));
+describe("test cases pubkey", () => {
+  it("test zil private key to pub key", async () => {
+    let sk = Uint8Array.from(
+      utils.hex.toBytes(
+        "3a649fbe8198729669affd1e9ae93e9e81fd25b71ea5f79792bec9fa6ac9ed92",
+      ),
+    );
     let pk = fromZILPrivateKey(sk);
-    let pkHex = utils.hex.fromBytes(pk); 
+    let pkHex = utils.hex.fromBytes(pk);
 
-    expect(pkHex).toEqual("025ded2f80f60d6c98d16ea5e1b2787427f44b8fcf11b5cacd56911e6c0e4c184c");
+    expect(pkHex).toEqual(
+      "025ded2f80f60d6c98d16ea5e1b2787427f44b8fcf11b5cacd56911e6c0e4c184c",
+    );
   });
 });
-
 
 ```
 
 `zil-pay/__tests__/crypto/random.test.ts`:
 
 ```ts
-import { test, expect, vi } from 'vitest';
-import { randomBytes } from '../../crypto/random';
+import { test, expect, vi } from "vitest";
+import { randomBytes } from "../../crypto/random";
 
-test('randomBytes generates a non-zero Uint8Array of the specified length', () => {
+test("randomBytes generates a non-zero Uint8Array of the specified length", () => {
   const length = 16;
   const result = randomBytes(length);
 
@@ -735,12 +1115,12 @@ test('randomBytes generates a non-zero Uint8Array of the specified length', () =
   expect(result.some((byte) => byte !== 0)).toBe(true);
 });
 
-test('randomBytes uses window.crypto.getRandomValues to seed the ChaCha20 RNG', () => {
-  const spyGetRandomValues = vi.spyOn(window.crypto, 'getRandomValues');
+test("randomBytes uses window.crypto.getRandomValues to seed the ChaCha20 RNG", () => {
+  const spyGetRandomValues = vi.spyOn(window.crypto, "getRandomValues");
   const length = 8;
-  
+
   randomBytes(length);
-  
+
   expect(spyGetRandomValues).toHaveBeenCalled();
   spyGetRandomValues.mockRestore();
 });
@@ -750,20 +1130,20 @@ test('randomBytes uses window.crypto.getRandomValues to seed the ChaCha20 RNG', 
 `zil-pay/__tests__/crypto/schnorr.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { signInner, verify } from '../../crypto/zilliqa/schnorr';
-import { utils } from 'aes-js';
-import { uint8ArrayToBigIntBigEndian } from '../../crypto/number';
+import { describe, expect, it } from "vitest";
+import { signInner, verify } from "../../crypto/zilliqa/schnorr";
+import { utils } from "aes-js";
+import { uint8ArrayToBigIntBigEndian } from "../../crypto/number";
 
-describe('Schnorr Signature Tests', () => {
- it('should sign and verify correctly', async () => {
+describe("Schnorr Signature Tests", () => {
+  it("should sign and verify correctly", async () => {
     const cases: [
       message: string,
       publicKey: string,
       secretKey: string,
       k: string,
       r: string,
-      s: string
+      s: string,
     ][] = [
       [
         "A7F1D92A82C8D8FE434D98558CE2B347171198542F112D0558F56BD68807999248336241F30D23E55F30D1C8ED610C4B0235398184B814A29CB45A672ACAE548E9C5F1B0C4158AE59B4D39F6F7E8A105D3FEEDA5D5F3D9E45BFA6CC351E220AE0CE106986D61FF34A11E19FD3650E9B7818FC33A1E0FC02C44557AC8AB50C9B2DEB2F6B5E24C4FDD9F8867BDCE1FF261008E7897970E346207D75E47A158298E5BA2F56246869CC42E362A02731264E60687EF5309D108534F51F8658FB4F080B7CB19EE9AEBD718CC4FA27C8C37DFC1ADA5D133D13ABE03F021E9B1B78CCBD82F7FF2B38C6D48D01E481B2D4FAF7171805FD7F2D39EF4C4F19B9496E81DAB8193B3737E1B27D9C43957166441B93515E8F03C95D8E8CE1E1864FAAD68DDFC5932130109390B0F1FE5CA716805F8362E98DCCAADC86ADBED25801A9A9DCFA6264319DDAFE83A89C51F3C6D199D38DE10E660C37BE872C3F2B31660DE8BC95902B9103262CDB941F77376F5D3DBB7A3D5A387797FC4819A035ECA704CEDB37110EE7F206B0C8805AAEBF4963E7C4708CE8D4E092366E71792A8A3B2BBCDEE321B3E15380C541EF0930888969F7457AFE18588826A419D58311C1784B5484EECDB393F6A0ACA11B91DF0866B500B8DEE501FD7EB9BCE09A17D74124B4605ADFC0777BED9816D8D7E8488544A18D8045CB3283B0A752B881B5F500FADB59010E63D",
@@ -788,10 +1168,17 @@ describe('Schnorr Signature Tests', () => {
         "2D78C77B736AD0A00FDF60695C01E96520656C13DC890A5B864672C6CED1C49A",
         "4B73D4D919D7B4DEF330391899EA02023851CABE044E34E18EAE3E10588CECCD",
         "D5DE85C4BDEA5910DC36AEF5660774D65291322C1E87FDA0D00C864E8C5FED29",
-      ]
+      ],
     ];
 
-    for (const [messageHex, publicKeyHex, secretKeyHex, kHex, expectedR, expectedS] of cases) {
+    for (const [
+      messageHex,
+      publicKeyHex,
+      secretKeyHex,
+      kHex,
+      expectedR,
+      expectedS,
+    ] of cases) {
       const message = utils.hex.toBytes(messageHex);
       const publicKey = utils.hex.toBytes(publicKeyHex);
       const secretKey = utils.hex.toBytes(secretKeyHex);
@@ -814,16 +1201,18 @@ describe('Schnorr Signature Tests', () => {
 `zil-pay/__tests__/crypto/sha256.test.ts`:
 
 ```ts
-import { test, expect } from 'vitest';
-import { sha256 } from '../../crypto/sha256';
-import { utils } from 'aes-js';
+import { test, expect } from "vitest";
+import { sha256 } from "../../crypto/sha256";
+import { utils } from "aes-js";
 
 test('sha256 hashes "test" correctly', async () => {
-  const input = new TextEncoder().encode('test');
+  const input = new TextEncoder().encode("test");
   const hash = await sha256(input);
   const hexString = utils.hex.fromBytes(hash);
 
-  expect(hexString).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08');
+  expect(hexString).toBe(
+    "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+  );
 });
 
 ```
@@ -831,16 +1220,18 @@ test('sha256 hashes "test" correctly', async () => {
 `zil-pay/__tests__/crypto/sha512.test.ts`:
 
 ```ts
-import { test, expect } from 'vitest';
-import { sha512 } from '../../crypto/sha512';
-import { utils } from 'aes-js';
+import { test, expect } from "vitest";
+import { sha512 } from "../../crypto/sha512";
+import { utils } from "aes-js";
 
 test('sha512 hashes "test" correctly', async () => {
-  const input = new TextEncoder().encode('test');
+  const input = new TextEncoder().encode("test");
   const buffer = await sha512(input);
   const hashArray = new Uint8Array(buffer);
   const hexString = utils.hex.fromBytes(hashArray);
-  expect(hexString).toBe('ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff');
+  expect(hexString).toBe(
+    "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+  );
 });
 
 ```
@@ -2901,6 +3292,41 @@ export const WORD_LIST = [
 
 ```
 
+`zil-pay/__tests__/data.ts`:
+
+```ts
+export const WORDS =
+  "rule hard brush glare magic east glimpse tank junk will media submit";
+export const PASSWORD = "iA3J&UKNRSp7Y3&yhzo68gjib9L&Vh*W1mT1zS6T";
+export const KEY =
+  "717da2dd3d2ca78461d814c0bfbdbaf3e676be396585f83a0fbee04e89e0a64d";
+export const IMPORTED_KEY =
+  "7e5727ce710c2e96c152a7a1e5c571c6695539866b407a578575981e92177ae4";
+export const STORAGE_V2 = {
+  "address-format": "bech32",
+  blocknumber: "0",
+  connect: "undefined",
+  "connection-list": "[]",
+  contacts: "[]",
+  "phishing-detection": "1",
+  "popup-enabled": "1",
+  "rate-of-currencies": '{"usd":0.01126979,"btc":1.07634e-7,"eth":0.0000045}',
+  "selected-currency": "usd",
+  "selected-local": "auto",
+  "ssn-list":
+    '{"selected":0,"list":[{"address":"0x0000000000000000000000000000000000000000","api":"https://api.zilliqa.com","id":1,"name":"Main","ok":true,"time":420}]}',
+  theme: "light",
+  time_before_lock: "3",
+  "tokens-list/mainnet":
+    '[{"base16":"0x0000000000000000000000000000000000000000","bech32":"zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz","decimals":12,"name":"Zilliqa","symbol":"ZIL","rate":1},{"base16":"0xfbd07e692543d3064b9cf570b27faabfd7948da4","bech32":"zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4","decimals":18,"name":"ZilPay wallet","symbol":"ZLP","rate":2.7688998049}]',
+  vault:
+    "U2FsdGVkX19+DrC9DG/qvYEC6koZfMhpQl6K4eVH5GSE1qXyn4vENND7zZFNT5R4yZM/45MiWMTw+Olu2Va948mputTGoby3VfmNmIm1uiVgRYt6hycdMiUBFuWs0KqN",
+  "wallet-identities":
+    '{"selectedAddress":1,"identities":[{"name":"Account 0","bech32":"zil1ntrynx04349sk6py7uyata03gka6qswg7um95y","index":0,"base16":"0x9ac64999F58d4b0B6824f709D5f5f145BBA041c8","type":2,"pubKey":"0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10","zrc2":{"0x0000000000000000000000000000000000000000":"0","0xfbd07e692543d3064b9cf570b27faabfd7948da4":"0"},"nft":{}},{"name":"Imported 0","bech32":"zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43","index":0,"base16":"0xaf574f0BB2a87315F09e8d790228D3F839D0d9B5","type":1,"pubKey":"0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024","privKey":"U2FsdGVkX1+E7PpB7lTzKwR7J0aWq1xJWMTNRrxo3Vd76jcnA7GmMTS9DtkRQCkAWJdYemsAVH90lMRGzLFOYPYxd6UhNsPWiGD7MlNxvfHtRdL64G+tdULtICMXB23F","zrc2":{"0x0000000000000000000000000000000000000000":"0","0xfbd07e692543d3064b9cf570b27faabfd7948da4":"0"},"nft":{}}]}',
+};
+
+```
+
 `zil-pay/__tests__/setupTests.ts`:
 
 ```ts
@@ -2927,11 +3353,11 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
 `zil-pay/__tests__/storage/storage.test.ts`:
 
 ```ts
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { BrowserStorage } from '../../lib/storage/storage';
-import type { StorageKeyValue } from '../../lib/storage/builder';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { BrowserStorage } from "../../lib/storage/storage";
+import type { StorageKeyValue } from "../../lib/storage/builder";
 
-describe('BrowserStorage - Basic Operations', () => {
+describe("BrowserStorage - Basic Operations", () => {
   beforeEach(() => {
     chrome.storage.local.set.reset();
     chrome.storage.local.get.reset();
@@ -2940,8 +3366,8 @@ describe('BrowserStorage - Basic Operations', () => {
     chrome.runtime.lastError = undefined;
   });
 
-  it('sets a single key-value pair', async () => {
-    const mockData: StorageKeyValue = { key: 'value' };
+  it("sets a single key-value pair", async () => {
+    const mockData: StorageKeyValue = { key: "value" };
     chrome.storage.local.set.callsFake((data, callback) => callback());
 
     await BrowserStorage.set(mockData);
@@ -2949,30 +3375,36 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(chrome.storage.local.set.calledWith(mockData)).toBe(true);
   });
 
-  it('sets multiple key-value pairs', async () => {
-    const mockData1: StorageKeyValue = { key1: 'value1' };
-    const mockData2: StorageKeyValue = { key2: 'value2' };
+  it("sets multiple key-value pairs", async () => {
+    const mockData1: StorageKeyValue = { key1: "value1" };
+    const mockData2: StorageKeyValue = { key2: "value2" };
     chrome.storage.local.set.callsFake((data, callback) => callback());
 
     await BrowserStorage.set(mockData1, mockData2);
 
-    expect(chrome.storage.local.set.calledWith({ key1: 'value1', key2: 'value2' })).toBe(true);
+    expect(
+      chrome.storage.local.set.calledWith({ key1: "value1", key2: "value2" }),
+    ).toBe(true);
   });
 
-  it('rejects on set error', async () => {
-    const mockData: StorageKeyValue = { key: 'value' };
+  it("rejects on set error", async () => {
+    const mockData: StorageKeyValue = { key: "value" };
     chrome.storage.local.set.callsFake((data, callback) => {
-      chrome.runtime.lastError = { message: 'Storage set failed' };
+      chrome.runtime.lastError = { message: "Storage set failed" };
       callback();
     });
 
-    await expect(BrowserStorage.set(mockData)).rejects.toThrow('Storage set failed');
+    await expect(BrowserStorage.set(mockData)).rejects.toThrow(
+      "Storage set failed",
+    );
   });
 
-  it('gets a single key', async () => {
-    const key = 'key';
-    const mockResult = { key: 'value' };
-    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+  it("gets a single key", async () => {
+    const key = "key";
+    const mockResult = { key: "value" };
+    chrome.storage.local.get.callsFake((keys, callback) =>
+      callback(mockResult),
+    );
 
     const result = await BrowserStorage.get(key);
 
@@ -2980,10 +3412,12 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(result).toBe(mockResult[key]);
   });
 
-  it('gets multiple keys', async () => {
-    const keys = ['key1', 'key2'];
-    const mockResult = { key1: 'value1', key2: 'value2' };
-    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+  it("gets multiple keys", async () => {
+    const keys = ["key1", "key2"];
+    const mockResult = { key1: "value1", key2: "value2" };
+    chrome.storage.local.get.callsFake((keys, callback) =>
+      callback(mockResult),
+    );
 
     const result = await BrowserStorage.get(...keys);
 
@@ -2991,19 +3425,21 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(result).toEqual(mockResult);
   });
 
-  it('rejects on get error', async () => {
-    const key = 'key';
+  it("rejects on get error", async () => {
+    const key = "key";
     chrome.storage.local.get.callsFake((keys, callback) => {
-      chrome.runtime.lastError = { message: 'Storage get failed' };
+      chrome.runtime.lastError = { message: "Storage get failed" };
       callback();
     });
 
-    await expect(BrowserStorage.get(key)).rejects.toThrow('Storage get failed');
+    await expect(BrowserStorage.get(key)).rejects.toThrow("Storage get failed");
   });
 
-  it('gets all items', async () => {
-    const mockResult = { key1: 'value1', key2: 'value2' };
-    chrome.storage.local.get.callsFake((keys, callback) => callback(mockResult));
+  it("gets all items", async () => {
+    const mockResult = { key1: "value1", key2: "value2" };
+    chrome.storage.local.get.callsFake((keys, callback) =>
+      callback(mockResult),
+    );
 
     const result = await BrowserStorage.getAll();
 
@@ -3011,8 +3447,8 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(result).toEqual(mockResult);
   });
 
-  it('removes keys', async () => {
-    const keys = ['key1', 'key2'];
+  it("removes keys", async () => {
+    const keys = ["key1", "key2"];
     chrome.storage.local.remove.callsFake((keys, callback) => callback());
 
     await BrowserStorage.rm(...keys);
@@ -3020,17 +3456,19 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(chrome.storage.local.remove.calledWith(keys)).toBe(true);
   });
 
-  it('rejects on remove error', async () => {
-    const key = 'key';
+  it("rejects on remove error", async () => {
+    const key = "key";
     chrome.storage.local.remove.callsFake((keys, callback) => {
-      chrome.runtime.lastError = { message: 'Storage remove failed' };
+      chrome.runtime.lastError = { message: "Storage remove failed" };
       callback();
     });
 
-    await expect(BrowserStorage.rm(key)).rejects.toThrow('Storage remove failed');
+    await expect(BrowserStorage.rm(key)).rejects.toThrow(
+      "Storage remove failed",
+    );
   });
 
-  it('clears storage', async () => {
+  it("clears storage", async () => {
     chrome.storage.local.clear.callsFake((callback) => callback());
 
     await BrowserStorage.clear();
@@ -3038,26 +3476,28 @@ describe('BrowserStorage - Basic Operations', () => {
     expect(chrome.storage.local.clear.called).toBe(true);
   });
 
-  it('rejects on clear error', async () => {
+  it("rejects on clear error", async () => {
     chrome.storage.local.clear.callsFake((callback) => {
-      chrome.runtime.lastError = { message: 'Storage clear failed' };
+      chrome.runtime.lastError = { message: "Storage clear failed" };
       callback();
     });
 
-    await expect(BrowserStorage.clear()).rejects.toThrow('Storage clear failed');
+    await expect(BrowserStorage.clear()).rejects.toThrow(
+      "Storage clear failed",
+    );
   });
 });
 
-describe('BrowserStorage - Subscription', () => {
+describe("BrowserStorage - Subscription", () => {
   beforeEach(() => {
     chrome.storage.onChanged.addListener.resetHistory();
     chrome.storage.onChanged.removeListener.resetHistory();
     chrome.runtime.lastError = undefined;
   });
 
-  it('subscribes to storage changes and calls callback', () => {
+  it("subscribes to storage changes and calls callback", () => {
     const mockCallback = vi.fn();
-    const mockChanges = { key: { oldValue: 'old', newValue: 'new' } };
+    const mockChanges = { key: { oldValue: "old", newValue: "new" } };
 
     const { unsubscribe } = BrowserStorage.subscribe(mockCallback);
     const listener = chrome.storage.onChanged.addListener.firstCall.args[0];
@@ -3071,13 +3511,13 @@ describe('BrowserStorage - Subscription', () => {
     expect(chrome.storage.onChanged.removeListener.called).toBe(true);
   });
 
-  it('handles errors in subscription callback', () => {
+  it("handles errors in subscription callback", () => {
     const mockCallback = vi.fn(() => {
-      throw new Error('Callback error');
+      throw new Error("Callback error");
     });
     const mockConsoleError = vi.fn();
     console.error = mockConsoleError;
-    const mockChanges = { key: { oldValue: 'old', newValue: 'new' } };
+    const mockChanges = { key: { oldValue: "old", newValue: "new" } };
 
     const { unsubscribe } = BrowserStorage.subscribe(mockCallback);
     const listener = chrome.storage.onChanged.addListener.firstCall.args[0];
@@ -3085,7 +3525,10 @@ describe('BrowserStorage - Subscription', () => {
     listener(mockChanges);
 
     expect(mockCallback).toHaveBeenCalledWith(mockChanges);
-    expect(mockConsoleError).toHaveBeenCalledWith('Error in storage change callback:', expect.any(Error));
+    expect(mockConsoleError).toHaveBeenCalledWith(
+      "Error in storage change callback:",
+      expect.any(Error),
+    );
 
     unsubscribe();
     expect(chrome.storage.onChanged.removeListener.called).toBe(true);
@@ -3098,11 +3541,11 @@ describe('BrowserStorage - Subscription', () => {
 `zil-pay/__tests__/stream/stream.test.ts`:
 
 ```ts
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Message, ReqBody } from 'lib/streem/message';
-import { Runtime } from 'lib/runtime/extensionizer';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { Message, ReqBody } from "lib/streem/message";
+import { Runtime } from "lib/runtime/extensionizer";
 
-vi.mock('lib/runtime/extensionizer', () => ({
+vi.mock("lib/runtime/extensionizer", () => ({
   Runtime: {
     runtime: {
       sendMessage: vi.fn(),
@@ -3110,7 +3553,7 @@ vi.mock('lib/runtime/extensionizer', () => ({
   },
 }));
 
-describe('Basic Test Message - Error Handling', () => {
+describe("Basic Test Message - Error Handling", () => {
   const mockConsoleError = vi.fn();
 
   beforeEach(() => {
@@ -3118,38 +3561,51 @@ describe('Basic Test Message - Error Handling', () => {
     (Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>).mockClear();
   });
 
-  it('should catch sendMessage error and log it', async () => {
+  it("should catch sendMessage error and log it", async () => {
     const message = Message.signal("ERROR_MESSAGE");
-    const sendMessageMock = Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>;
-    const errorMessage = 'Simulated send error';
+    const sendMessageMock = Runtime.runtime.sendMessage as ReturnType<
+      typeof vi.fn
+    >;
+    const errorMessage = "Simulated send error";
     sendMessageMock.mockImplementation(() => {
       throw new Error(errorMessage);
     });
 
-    await expect(message.send()).rejects.toThrow('service_worker_stopped');
+    await expect(message.send()).rejects.toThrow("service_worker_stopped");
     expect(sendMessageMock).toHaveBeenCalledTimes(10);
-    expect(mockConsoleError).toHaveBeenCalledWith(message, new Error(errorMessage));
+    expect(mockConsoleError).toHaveBeenCalledWith(
+      message,
+      new Error(errorMessage),
+    );
   });
 });
 
-describe('Basic Test Message - Successful Send and Receive', () => {
+describe("Basic Test Message - Successful Send and Receive", () => {
   beforeEach(() => {
     (Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>).mockClear();
   });
 
-  it('should send the message and receive a response', async () => {
-    const body: ReqBody<{ data: string }> = { type: 'TEST_MESSAGE', payload: { data: 'test' } };
+  it("should send the message and receive a response", async () => {
+    const body: ReqBody<{ data: string }> = {
+      type: "TEST_MESSAGE",
+      payload: { data: "test" },
+    };
     const message = new Message(body);
-    const mockResponse = { result: 'success' };
+    const mockResponse = { result: "success" };
 
-    (Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>).mockImplementation((_msg, callback) => {
+    (
+      Runtime.runtime.sendMessage as ReturnType<typeof vi.fn>
+    ).mockImplementation((_msg, callback) => {
       callback(mockResponse);
     });
 
     const response = await message.send();
 
     expect(Runtime.runtime.sendMessage).toHaveBeenCalledOnce();
-    expect(Runtime.runtime.sendMessage).toHaveBeenCalledWith(body, expect.any(Function));
+    expect(Runtime.runtime.sendMessage).toHaveBeenCalledWith(
+      body,
+      expect.any(Function),
+    );
     expect(response).toEqual(mockResponse);
   });
 });
@@ -3159,209 +3615,660 @@ describe('Basic Test Message - Successful Send and Receive', () => {
 `zil-pay/__tests__/types/checker.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { TypeOf } from 'lib/types/checker.ts';
+import { describe, expect, it } from "vitest";
+import { TypeOf } from "lib/types/checker.ts";
 
-describe('TypeOf', () => {
-    it('should correctly identify arrays', () => {
-        expect(TypeOf.isArray([])).toBe(true);
-        expect(TypeOf.isArray([1, 2, 3])).toBe(true);
-        expect(TypeOf.isArray(new Array(3))).toBe(true);
-        expect(TypeOf.isArray({})).toBe(false);
-        expect(TypeOf.isArray(null)).toBe(false);
-        expect(TypeOf.isArray(undefined)).toBe(false);
-        expect(TypeOf.isArray('abc')).toBe(false);
-    });
+describe("TypeOf", () => {
+  it("should correctly identify arrays", () => {
+    expect(TypeOf.isArray([])).toBe(true);
+    expect(TypeOf.isArray([1, 2, 3])).toBe(true);
+    expect(TypeOf.isArray(new Array(3))).toBe(true);
+    expect(TypeOf.isArray({})).toBe(false);
+    expect(TypeOf.isArray(null)).toBe(false);
+    expect(TypeOf.isArray(undefined)).toBe(false);
+    expect(TypeOf.isArray("abc")).toBe(false);
+  });
 
-    it('should correctly identify plain objects', () => {
-        expect(TypeOf.isObject({})).toBe(true);
-        expect(TypeOf.isObject({ a: 1, b: 2 })).toBe(true);
-        expect(TypeOf.isObject(new Object())).toBe(true);
-        expect(TypeOf.isObject([])).toBe(false);
-        expect(TypeOf.isObject(null)).toBe(false);
-        expect(TypeOf.isObject(undefined)).toBe(false);
-        expect(TypeOf.isObject('abc')).toBe(false);
-        expect(TypeOf.isObject(new Date())).toBe(false);
-        expect(TypeOf.isObject(new Error())).toBe(false);
-        class MyClass {}
-        expect(TypeOf.isObject(new MyClass())).toBe(false);
-    });
+  it("should correctly identify plain objects", () => {
+    expect(TypeOf.isObject({})).toBe(true);
+    expect(TypeOf.isObject({ a: 1, b: 2 })).toBe(true);
+    expect(TypeOf.isObject(new Object())).toBe(true);
+    expect(TypeOf.isObject([])).toBe(false);
+    expect(TypeOf.isObject(null)).toBe(false);
+    expect(TypeOf.isObject(undefined)).toBe(false);
+    expect(TypeOf.isObject("abc")).toBe(false);
+    expect(TypeOf.isObject(new Date())).toBe(false);
+    expect(TypeOf.isObject(new Error())).toBe(false);
+    class MyClass {}
+    expect(TypeOf.isObject(new MyClass())).toBe(false);
+  });
 
-    it('should correctly identify numbers', () => {
-        expect(TypeOf.isNumber(0)).toBe(true);
-        expect(TypeOf.isNumber(10)).toBe(true);
-        expect(TypeOf.isNumber(-5)).toBe(true);
-        expect(TypeOf.isNumber(3.14)).toBe(true);
-        expect(TypeOf.isNumber(NaN)).toBe(false);
-        expect(TypeOf.isNumber(Infinity)).toBe(true);
-        expect(TypeOf.isNumber(-Infinity)).toBe(true);
-        expect(TypeOf.isNumber('10')).toBe(false);
-        expect(TypeOf.isNumber(null)).toBe(false);
-        expect(TypeOf.isNumber(undefined)).toBe(false);
-        expect(TypeOf.isNumber({})).toBe(false);
-    });
+  it("should correctly identify numbers", () => {
+    expect(TypeOf.isNumber(0)).toBe(true);
+    expect(TypeOf.isNumber(10)).toBe(true);
+    expect(TypeOf.isNumber(-5)).toBe(true);
+    expect(TypeOf.isNumber(3.14)).toBe(true);
+    expect(TypeOf.isNumber(NaN)).toBe(false);
+    expect(TypeOf.isNumber(Infinity)).toBe(true);
+    expect(TypeOf.isNumber(-Infinity)).toBe(true);
+    expect(TypeOf.isNumber("10")).toBe(false);
+    expect(TypeOf.isNumber(null)).toBe(false);
+    expect(TypeOf.isNumber(undefined)).toBe(false);
+    expect(TypeOf.isNumber({})).toBe(false);
+  });
 
-    it('should correctly identify integers', () => {
-        expect(TypeOf.isInt(0)).toBe(true);
-        expect(TypeOf.isInt(10)).toBe(true);
-        expect(TypeOf.isInt(-5)).toBe(true);
-        expect(TypeOf.isInt(3.14)).toBe(false);
-        expect(TypeOf.isInt(NaN)).toBe(false);
-        expect(TypeOf.isInt(Infinity)).toBe(false);
-        expect(TypeOf.isInt('10')).toBe(false);
-        expect(TypeOf.isInt(null)).toBe(false);
-        expect(TypeOf.isInt(undefined)).toBe(false);
-        expect(TypeOf.isInt({})).toBe(false);
-        expect(TypeOf.isInt(Number.MAX_SAFE_INTEGER)).toBe(true);
-        expect(TypeOf.isInt(Number.MIN_SAFE_INTEGER)).toBe(true);
-    });
+  it("should correctly identify integers", () => {
+    expect(TypeOf.isInt(0)).toBe(true);
+    expect(TypeOf.isInt(10)).toBe(true);
+    expect(TypeOf.isInt(-5)).toBe(true);
+    expect(TypeOf.isInt(3.14)).toBe(false);
+    expect(TypeOf.isInt(NaN)).toBe(false);
+    expect(TypeOf.isInt(Infinity)).toBe(false);
+    expect(TypeOf.isInt("10")).toBe(false);
+    expect(TypeOf.isInt(null)).toBe(false);
+    expect(TypeOf.isInt(undefined)).toBe(false);
+    expect(TypeOf.isInt({})).toBe(false);
+    expect(TypeOf.isInt(Number.MAX_SAFE_INTEGER)).toBe(true);
+    expect(TypeOf.isInt(Number.MIN_SAFE_INTEGER)).toBe(true);
+  });
 
-    it('should correctly identify error objects', () => {
-        expect(TypeOf.isError(new Error())).toBe(true);
-        expect(TypeOf.isError(new TypeError())).toBe(true);
-        expect(TypeOf.isError(new SyntaxError())).toBe(true);
-        expect(TypeOf.isError({})).toBe(false);
-        expect(TypeOf.isError(null)).toBe(false);
-        expect(TypeOf.isError(undefined)).toBe(false);
-        expect(TypeOf.isError('Error')).toBe(false);
-    });
+  it("should correctly identify error objects", () => {
+    expect(TypeOf.isError(new Error())).toBe(true);
+    expect(TypeOf.isError(new TypeError())).toBe(true);
+    expect(TypeOf.isError(new SyntaxError())).toBe(true);
+    expect(TypeOf.isError({})).toBe(false);
+    expect(TypeOf.isError(null)).toBe(false);
+    expect(TypeOf.isError(undefined)).toBe(false);
+    expect(TypeOf.isError("Error")).toBe(false);
+  });
 
-    it('should correctly identify strings', () => {
-        expect(TypeOf.isString('')).toBe(true);
-        expect(TypeOf.isString('abc')).toBe(true);
-        expect(TypeOf.isString(new String('abc'))).toBe(true);
-        expect(TypeOf.isString(123)).toBe(false);
-        expect(TypeOf.isString(null)).toBe(false);
-        expect(TypeOf.isString(undefined)).toBe(false);
-        expect(TypeOf.isString({})).toBe(false);
-    });
+  it("should correctly identify strings", () => {
+    expect(TypeOf.isString("")).toBe(true);
+    expect(TypeOf.isString("abc")).toBe(true);
+    expect(TypeOf.isString(new String("abc"))).toBe(true);
+    expect(TypeOf.isString(123)).toBe(false);
+    expect(TypeOf.isString(null)).toBe(false);
+    expect(TypeOf.isString(undefined)).toBe(false);
+    expect(TypeOf.isString({})).toBe(false);
+  });
 
-    it('should correctly identify booleans', () => {
-        expect(TypeOf.isBoolean(true)).toBe(true);
-        expect(TypeOf.isBoolean(false)).toBe(true);
-        expect(TypeOf.isBoolean(new Boolean(true))).toBe(true);
-        expect(TypeOf.isBoolean(0)).toBe(false);
-        expect(TypeOf.isBoolean(1)).toBe(false);
-        expect(TypeOf.isBoolean(null)).toBe(false);
-        expect(TypeOf.isBoolean(undefined)).toBe(false);
-        expect(TypeOf.isBoolean({})).toBe(false);
-    });
+  it("should correctly identify booleans", () => {
+    expect(TypeOf.isBoolean(true)).toBe(true);
+    expect(TypeOf.isBoolean(false)).toBe(true);
+    expect(TypeOf.isBoolean(new Boolean(true))).toBe(true);
+    expect(TypeOf.isBoolean(0)).toBe(false);
+    expect(TypeOf.isBoolean(1)).toBe(false);
+    expect(TypeOf.isBoolean(null)).toBe(false);
+    expect(TypeOf.isBoolean(undefined)).toBe(false);
+    expect(TypeOf.isBoolean({})).toBe(false);
+  });
 
-    it('should correctly identify null', () => {
-        expect(TypeOf.isNull(null)).toBe(true);
-        expect(TypeOf.isNull(undefined)).toBe(false);
-        expect(TypeOf.isNull(0)).toBe(false);
-        expect(TypeOf.isNull('')).toBe(false);
-        expect(TypeOf.isNull({})).toBe(false);
-    });
+  it("should correctly identify null", () => {
+    expect(TypeOf.isNull(null)).toBe(true);
+    expect(TypeOf.isNull(undefined)).toBe(false);
+    expect(TypeOf.isNull(0)).toBe(false);
+    expect(TypeOf.isNull("")).toBe(false);
+    expect(TypeOf.isNull({})).toBe(false);
+  });
 
-    it('should correctly identify undefined', () => {
-        expect(TypeOf.isUndefined(undefined)).toBe(true);
-        expect(TypeOf.isUndefined(null)).toBe(false);
-        expect(TypeOf.isUndefined(0)).toBe(false);
-        expect(TypeOf.isUndefined('')).toBe(false);
-        expect(TypeOf.isUndefined({})).toBe(false);
-    });
+  it("should correctly identify undefined", () => {
+    expect(TypeOf.isUndefined(undefined)).toBe(true);
+    expect(TypeOf.isUndefined(null)).toBe(false);
+    expect(TypeOf.isUndefined(0)).toBe(false);
+    expect(TypeOf.isUndefined("")).toBe(false);
+    expect(TypeOf.isUndefined({})).toBe(false);
+  });
 
-    it('should correctly identify empty objects', () => {
-        expect(TypeOf.isEmptyObject({})).toBe(true);
-        expect(TypeOf.isEmptyObject({ a: 1 })).toBe(false);
-        expect(TypeOf.isEmptyObject(new Object())).toBe(true);
-        expect(TypeOf.isEmptyObject(null)).toBe(false);
-        expect(TypeOf.isEmptyObject(undefined)).toBe(false);
-        expect(TypeOf.isEmptyObject([])).toBe(false);
-    });
+  it("should correctly identify empty objects", () => {
+    expect(TypeOf.isEmptyObject({})).toBe(true);
+    expect(TypeOf.isEmptyObject({ a: 1 })).toBe(false);
+    expect(TypeOf.isEmptyObject(new Object())).toBe(true);
+    expect(TypeOf.isEmptyObject(null)).toBe(false);
+    expect(TypeOf.isEmptyObject(undefined)).toBe(false);
+    expect(TypeOf.isEmptyObject([])).toBe(false);
+  });
 
-    it('should correctly identify empty arrays', () => {
-        expect(TypeOf.isEmptyArray([])).toBe(true);
-        expect(TypeOf.isEmptyArray([1, 2, 3])).toBe(false);
-        expect(TypeOf.isEmptyArray(new Array(0))).toBe(true);
-        expect(TypeOf.isEmptyArray(null)).toBe(false);
-        expect(TypeOf.isEmptyArray(undefined)).toBe(false);
-        expect(TypeOf.isEmptyArray({})).toBe(false);
-    });
+  it("should correctly identify empty arrays", () => {
+    expect(TypeOf.isEmptyArray([])).toBe(true);
+    expect(TypeOf.isEmptyArray([1, 2, 3])).toBe(false);
+    expect(TypeOf.isEmptyArray(new Array(0))).toBe(true);
+    expect(TypeOf.isEmptyArray(null)).toBe(false);
+    expect(TypeOf.isEmptyArray(undefined)).toBe(false);
+    expect(TypeOf.isEmptyArray({})).toBe(false);
+  });
 });
-
 
 ```
 
 `zil-pay/__tests__/zilliqa/address.test.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest';
-import { toChecksumHexAddress, toChecksumBytesAddress } from 'lib/zilliqa/checksum';
-import { fromZilPubKey } from 'lib/zilliqa/pubkey.ts';
-import { utils } from 'aes-js';
-import { toBech32Address, fromBech32Address } from 'lib/zilliqa/bech32';
+import { describe, expect, it } from "vitest";
+import {
+  toChecksumHexAddress,
+  toChecksumBytesAddress,
+} from "lib/zilliqa/checksum";
+import { fromZilPubKey } from "lib/zilliqa/pubkey.ts";
+import { utils } from "aes-js";
+import { toBech32Address, fromBech32Address } from "lib/zilliqa/bech32";
 
-describe('Address Conversion Tests', () => {
-    describe('toChecksumAddress', () => {
-        it('should correctly checksum a valid lowercase address', async () => {
-            const address = '8617b72e22090f0c13167865147ec48a6db788ff';
-            const checksummed = await toChecksumHexAddress(address);
-            expect(checksummed).toBe('0x8617B72E22090f0c13167865147eC48a6dB788ff');
-        });
-
-        it('should correctly checksum another valid address', async () => {
-            const address = '0000000000000000000000000000000000000000';
-            const checksummed = await toChecksumHexAddress(address);
-            expect(checksummed).toBe('0x0000000000000000000000000000000000000000');
-        });
-
-        it('should correctly derive a bech32 address from a public key', async () => {
-            const pubkeyHex = '03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da';
-            const pubkeyBytes = utils.hex.toBytes(pubkeyHex);
-            const addrBytes = await fromZilPubKey(pubkeyBytes);
-            const checksummed = await toChecksumBytesAddress(addrBytes);
-
-            expect(checksummed).toBe('0xEBd8b370Dddb636FAF641040D2181c55190840fb');
-        });
+describe("Address Conversion Tests", () => {
+  describe("toChecksumAddress", () => {
+    it("should correctly checksum a valid lowercase address", async () => {
+      const address = "8617b72e22090f0c13167865147ec48a6db788ff";
+      const checksummed = await toChecksumHexAddress(address);
+      expect(checksummed).toBe("0x8617B72E22090f0c13167865147eC48a6dB788ff");
     });
 
-    describe('toBech32Address', () => {
-        it('should correctly encode a valid hexadecimal address to Bech32', async () => {
-            const hexAddress = '0x7793a8e8c09d189d4d421ce5bc5b3674656c5ac1';
-            const bech32Address = await toBech32Address(hexAddress);
-            expect(bech32Address).toBe('zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8');
-        });
+    it("should correctly checksum another valid address", async () => {
+      const address = "0000000000000000000000000000000000000000";
+      const checksummed = await toChecksumHexAddress(address);
+      expect(checksummed).toBe("0x0000000000000000000000000000000000000000");
     });
 
-    describe('fromBech32Address', () => {
-        it('should correctly decode a valid Bech32 address to a checksummed hexadecimal address', async () => {
-            const bech32Address = 'zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8';
-            const hexAddress = await fromBech32Address(bech32Address);
-            expect(hexAddress).toBe('0x7793a8e8c09D189D4d421CE5Bc5b3674656C5Ac1');
-        });
+    it("should correctly derive a bech32 address from a public key", async () => {
+      const pubkeyHex =
+        "03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da";
+      const pubkeyBytes = utils.hex.toBytes(pubkeyHex);
+      const addrBytes = await fromZilPubKey(pubkeyBytes);
+      const checksummed = await toChecksumBytesAddress(addrBytes);
 
-        it('should throw an error for an invalid Bech32 address length', async () => {
-            const invalidBech32 = 'zi21w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8';
-            await expect(fromBech32Address(invalidBech32)).rejects.toThrow('Invalid Bech32 address.');
-        });
-
-        it('should throw an error for a Bech32 address with an incorrect HRP', async () => {
-            const wrongHRP = 'btc1qwertzuiopasdfghjklmnbvcxy';
-            await expect(fromBech32Address(wrongHRP)).rejects.toThrow("Invalid Bech32 address.");
-        });
+      expect(checksummed).toBe("0xEBd8b370Dddb636FAF641040D2181c55190840fb");
     });
+  });
+
+  describe("toBech32Address", () => {
+    it("should correctly encode a valid hexadecimal address to Bech32", async () => {
+      const hexAddress = "0x7793a8e8c09d189d4d421ce5bc5b3674656c5ac1";
+      const bech32Address = await toBech32Address(hexAddress);
+      expect(bech32Address).toBe("zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8");
+    });
+  });
+
+  describe("fromBech32Address", () => {
+    it("should correctly decode a valid Bech32 address to a checksummed hexadecimal address", async () => {
+      const bech32Address = "zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8";
+      const hexAddress = await fromBech32Address(bech32Address);
+      expect(hexAddress).toBe("0x7793a8e8c09D189D4d421CE5Bc5b3674656C5Ac1");
+    });
+
+    it("should throw an error for an invalid Bech32 address length", async () => {
+      const invalidBech32 = "zi21w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8";
+      await expect(fromBech32Address(invalidBech32)).rejects.toThrow(
+        "Invalid Bech32 address.",
+      );
+    });
+
+    it("should throw an error for a Bech32 address with an incorrect HRP", async () => {
+      const wrongHRP = "btc1qwertzuiopasdfghjklmnbvcxy";
+      await expect(fromBech32Address(wrongHRP)).rejects.toThrow(
+        "Invalid Bech32 address.",
+      );
+    });
+  });
 });
 
 ```
 
-`zil-pay/config/errors.ts`:
+`zil-pay/background/services/guard.ts`:
 
 ```ts
+import { utils } from 'aes-js';
+import { sha256 } from '../../crypto/sha256';
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { Bip39 } from '../../crypto/bip39';
+import { Cipher } from '../../crypto/aes256';
+
+import { BrowserStorage, buildObject, StorageKeyValue } from '../../lib/storage';
+import { getManifestVersion, Runtime , assert, EXTENSION_ID } from '../../lib/runtime';
+import { TypeOf } from '../../lib/types';
+
+import { ShaAlgorithms } from '../../config/sha';
+import { Common } from '../../config/common';
+import { OldFields } from '../../config/fields';
+import { ManifestVersions } from '../../config/manifest';
+
+/**
+ * Defines keys used for session storage.
+ */
+export enum SessionKeys {
+  EndSession = "BEARBY_END_SESSION",
+  Hash = "BEABRY_HASH",
+  PrivateExtendedKey = "EXTENDED_KEY"
+}
+
+/**
+ * Defines error messages used throughout the AuthGuard class.
+ */
 export enum ErrorMessages {
-  IncorrectParams = "Incorrect or missing parameters provided.",
+  GuardNotSynced = 'Guard is not synced',
+  WalletNotReady = 'Wallet is not sync.',
+  IncorrectPassword = 'Incorect password',
+  WalletNotEnabled = 'Wallet is not enabled.',
+  IncorrectConfigParams = 'Incorrect Config params',
+  MustBeInt = 'Must be Int.',
+  IncorrectParams = 'Incorrect argument',
   InvalidFormat = "Invalid data format encountered during decryption.",
   InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
 }
+
+/**
+ * Manages wallet authentication, session, and encryption/decryption of sensitive data.
+ */
+export class AuthGuard {
+  #hash = new WeakMap<AuthGuard, Uint8Array>();
+  #oldHash = new WeakMap<AuthGuard, Uint8Array>();
+  #algorithm = ShaAlgorithms.sha256;
+  #iteractions = 0;
+
+  #isEnable = false;
+
+  #isReady = false;
+
+  #privateExtendedKey?: Uint8Array;
+  #encryptMnemonic?: Uint8Array;
+
+  #endSession = new Date(-1);
+  #time = Common.TIME_BEFORE_LOCK;
+
+  /**
+   * Retrieves the decrypted seed. Requires an active session.
+   * @returns The decrypted seed as a Uint8Array.
+   */
+  get seed() {
+    this.checkSession();
+
+    const session = this.#hash.get(this) as Uint8Array;
+    const decryptSeedBytes = Cipher.decrypt(
+      this.#privateExtendedKey as Uint8Array,
+      session
+    );
+
+    return Uint8Array.from(decryptSeedBytes);
+  }
+
+  /**
+   * Gets the configured lock time in hours.
+   * @returns The lock time as a number.
+   */
+  get lockTime() {
+    return Number(this.#time);
+  }
+
+  /**
+   * Checks if the session is currently enabled and active.
+   * @returns True if the session is enabled and not expired, false otherwise.
+   */
+  get isEnable() {
+    const now = new Date().getTime();
+    const timeDifference = this.#endSession.getTime() - now;
+
+    return timeDifference > 0 && this.#isEnable;
+  }
+
+  /**
+   * Checks if the wallet is ready (i.e., mnemonic is loaded).
+   * @returns True if the wallet is ready, false otherwise.
+   */
+  get isReady() {
+    return this.#isReady;
+  }
+
+  /**
+   * Provides the current state of the AuthGuard.
+   * @returns An object containing the session enable status, wallet readiness, iterations, and algorithm.
+   */
+  get state() {
+    return {
+      isEnable: this.isEnable,
+      isReady: this.isReady,
+      iteractions: this.#iteractions,
+      algorithm: this.#algorithm
+    };
+  }
+
+  /**
+   * Gets the encrypted mnemonic.
+   * @returns The encrypted mnemonic as a Uint8Array, or undefined if not set.
+   */
+  get encryptedMnemonic() {
+    return this.#encryptMnemonic;
+  }
+
+  /**
+   * Synchronizes the AuthGuard state with data from browser storage and session storage.
+   */
+  async sync() {
+    const data = await BrowserStorage.get(
+      OldFields.VAULT,
+      OldFields.LOCK_TIME,
+      OldFields.GUARD_CONFIG
+    ) as StorageKeyValue;
+
+    if (data && data[OldFields.VAULT]) {
+      this.#encryptMnemonic = Buffer.from(data[OldFields.VAULT], 'base64');
+      this.#isReady = Boolean(this.#encryptMnemonic);
+    }
+
+    if (data && data[OldFields.GUARD_CONFIG]) {
+      const [algorithm, iteractions] = String(data[OldFields.GUARD_CONFIG]).split(':');
+
+      if (algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512) {
+        this.#algorithm = algorithm;
+      }
+
+      if (!isNaN(Number(iteractions))) {
+        this.#iteractions = Number(iteractions);
+      }
+    }
+
+    if (data[OldFields.LOCK_TIME]) {
+      this.#time = Number(data[OldFields.LOCK_TIME]);
+    } else {
+      await BrowserStorage.set(
+        buildObject(OldFields.LOCK_TIME, String(Common.TIME_BEFORE_LOCK))
+      );
+    }
+
+    if (ManifestVersions.V3 === getManifestVersion()) {
+      const data = await Runtime.storage.session.get([
+        SessionKeys.EndSession,
+        SessionKeys.Hash,
+        SessionKeys.PrivateExtendedKey
+      ]);
+
+      try {
+        if (data[SessionKeys.EndSession]) {
+          this.#endSession = new Date(data[SessionKeys.EndSession]);
+        }
+        if (data[SessionKeys.Hash]) {
+          const hash = utils.hex.toBytes(data[SessionKeys.Hash]);
+          this.#hash.set(this, hash);
+          this.#isEnable = true;
+        }
+        if (data[SessionKeys.PrivateExtendedKey]) {
+          this.#privateExtendedKey = utils.hex.toBytes(data[SessionKeys.PrivateExtendedKey]);
+        }
+      } catch (err) {
+        console.warn('guard.sync', err);
+      }
+    }
+  }
+
+  /**
+   * Sets the guard configuration, including the hashing algorithm and iterations.
+   * @param algorithm The SHA algorithm to use (sha256 or sha512).
+   * @param iteractions The number of iterations for key derivation. Must be a non-negative even number.
+   */
+  async setGuardConfig(algorithm: string, iteractions: number) {
+    assert(
+      algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512,
+      ErrorMessages.IncorrectConfigParams
+    );
+    assert(iteractions >= 0, ErrorMessages.IncorrectConfigParams);
+    assert(iteractions % 2 === 0, ErrorMessages.IncorrectConfigParams);
+
+    this.#algorithm = algorithm as ShaAlgorithms;
+    this.#iteractions = iteractions;
+
+    const newConfig = `${algorithm}:${iteractions}`;
+
+    await BrowserStorage.set(
+      buildObject(OldFields.GUARD_CONFIG, newConfig)
+    );
+  }
+
+  /**
+   * Sets the logout timer for the session.
+   * @param timer The time in hours before the session automatically logs out. Must be a positive integer.
+   */
+  async setLogOutTimer(timer: number) {
+    assert(TypeOf.isInt(timer), ErrorMessages.MustBeInt);
+    assert(timer > 0, ErrorMessages.IncorrectParams);
+
+    this.#time = timer;
+
+    await BrowserStorage.set(
+      buildObject(OldFields.LOCK_TIME, String(this.lockTime))
+    );
+  }
+
+  /**
+   * Exports the decrypted mnemonic using the provided password.
+   * @param password The password to decrypt the mnemonic.
+   * @returns The decrypted mnemonic as a UTF-8 string.
+   * @throws Error if the wallet is not ready, guard is not synced, or password is incorrect.
+   */
+  async exportMnemonic(password: string) {
+    assert(this.isReady, ErrorMessages.WalletNotReady);
+
+    try {
+      assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
+
+      const hash = await this.#getKeyring(password);
+      const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
+
+      return utils.utf8.fromBytes(mnemonicBytes);
+    } catch (err) {
+      this.logout();
+      throw new Error(ErrorMessages.IncorrectPassword);
+    }
+  }
+
+  /**
+   * Retrieves mnemonic and keys from old storage format.
+   * @param password The password to decrypt old storage data.
+   * @returns An object containing the mnemonic and an array of old guard vault keys.
+   */
+  async getFromOldStorage(password: string) {
+    const data = await BrowserStorage.get(
+      OldFields.VAULT,
+      OldFields.VAULT_IMPORTED,
+    );
+    const hash = OldAes.hash(password);
+    const encryptedKeys = data[OldFields.VAULT_IMPORTED];
+    const mnemonic = OldAes.decrypt(data[OldFields.VAULT], hash);
+    let keys: OldGuardVaultKeys[] = [];
+
+    if (encryptedKeys) {
+      try {
+        keys = JSON.parse(OldAes.decrypt(encryptedKeys, hash));
+      } catch {
+        // Handle parsing error silently
+      }
+    }
+
+    return {
+      mnemonic,
+      keys
+    };
+  }
+
+  /**
+   * Unlocks the wallet using the provided password, decrypting the mnemonic and setting up the session.
+   * @param password The password to unlock the wallet.
+   * @throws Error if the wallet is not ready, guard is not synced, or password is incorrect.
+   */
+  async unlock(password: string) {
+    assert(this.isReady, ErrorMessages.WalletNotReady);
+
+    try {
+      assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
+
+      const hash = await this.#getKeyring(password);
+      const oldHash = await sha256(utils.utf8.toBytes(password));
+      const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
+      const mnemonic = utils.utf8.fromBytes(mnemonicBytes);
+
+      const seed = await Bip39.mnemonicToSeed(mnemonic);
+
+      this.#privateExtendedKey = Cipher.encrypt(seed, hash);
+
+      this.#isEnable = true;
+      this.#updateSession();
+      this.#hash.set(this, hash);
+      this.#oldHash.set(this, oldHash);
+
+      if (ManifestVersions.V3 === getManifestVersion()) {
+        Runtime.storage.session.set({
+          [SessionKeys.EndSession]: Number(this.#endSession),
+          [SessionKeys.Hash]: utils.hex.fromBytes(hash),
+          [SessionKeys.PrivateExtendedKey]: utils.hex.fromBytes(this.#privateExtendedKey),
+        });
+      }
+    } catch (err) {
+      this.logout();
+      throw new Error(`${ErrorMessages.IncorrectPassword}, ${err.message}`);
+    }
+  }
+
+  /**
+   * Sets up the wallet vault with a new mnemonic and password, encrypting the mnemonic and private extended key.
+   * @param mnemonic The mnemonic phrase.
+   * @param password The password to encrypt the mnemonic.
+   * @param wordList The word list for BIP39.
+   * @param passphrase Optional passphrase for BIP39.
+   */
+  async setupVault(mnemonic: string, password: string, wordList: string[], passphrase?: string ) {
+    const mnemonicBuf = utils.utf8.toBytes(mnemonic);
+    const hash = await this.#getKeyring(password);
+    const seed = await Bip39.mnemonicToSeed(
+      mnemonic,
+      passphrase,
+      wordList,
+    );
+
+    this.#encryptMnemonic = Cipher.encrypt(mnemonicBuf, hash);
+    this.#privateExtendedKey = Cipher.encrypt(seed, hash);
+
+    this.#isReady = true;
+    this.#isEnable = true;
+    this.#updateSession();
+    this.#hash.set(this, hash);
+
+    await BrowserStorage.set(
+      buildObject(OldFields.VAULT, Buffer.from(this.#encryptMnemonic).toString('base64'))
+    );
+  }
+
+  /**
+   * Encrypts a private key using the current session hash.
+   * @param privKey The private key as a Uint8Array.
+   * @returns The encrypted private key as a base64 string.
+   */
+  encryptPrivateKey(privKey: Uint8Array) {
+    const hash = this.#hash.get(this) as Uint8Array;
+    const encrypted = Cipher.encrypt(privKey, hash);
+
+    return Buffer.from(encrypted).toString('base64');
+  }
+
+  /**
+   * Decrypts a private key. Tries to decrypt with old hash first, then with current session hash.
+   * @param content The encrypted private key as a base64 string.
+   * @returns The decrypted private key as a hex string.
+   */
+  decryptPrivateKey(content: string): string {
+    const hash = this.#hash.get(this) as Uint8Array;
+    const oldHash = this.#oldHash.get(this) as Uint8Array;
+    let privateKey: string;
+
+    try {
+      privateKey = OldAes.decrypt(content, Buffer.from(oldHash).toString('hex'));
+
+    } catch {
+      const bytes = Cipher.decrypt(Buffer.from(content, 'base64'), hash);
+
+      privateKey = Buffer.from(bytes).toString('hex');
+    }
+
+    return privateKey;
+  }
+
+  /**
+   * Checks if the session is active and the wallet is ready. Throws an error if not.
+   */
+  checkSession() {
+    assert(this.#isReady, ErrorMessages.WalletNotReady);
+    assert(this.#isEnable, ErrorMessages.WalletNotEnabled);
+  }
+
+  /**
+   * Logs out the current session, disabling it and clearing session-related data.
+   */
+  async logout() {
+    this.#isEnable = false;
+    this.#endSession = new Date(-1);
+
+    this.#hash.delete(this);
+  }
+
+  /**
+   * Updates the session end time based on the configured lock time.
+   */
+  async #updateSession() {
+    const now = new Date().getTime();
+    const h = Number(this.#time);
+    const newSession = new Date();
+
+    newSession.setTime(now + (h * 60 * 60 * 1000));
+
+    this.#endSession = newSession;
+  }
+
+  /**
+   * Derives a key from the password using either SHA256 or PBKDF2, based on configuration.
+   * @param password The password to derive the key from.
+   * @returns The derived key as a Uint8Array.
+   */
+  async #getKeyring(password: string) {
+    const salt = utils.utf8.toBytes(EXTENSION_ID);
+    const passwordBytes = utils.utf8.toBytes(password);
+
+    if (this.#algorithm === ShaAlgorithms.sha256 && this.#iteractions === 0) {
+      return await sha256(passwordBytes);
+    }
+
+    const key = await pbkdf2(passwordBytes, salt, this.#iteractions, this.#algorithm);
+
+    return await sha256(key);
+  }
+}
+
+
+```
+
+`zil-pay/config/argon2.ts`:
+
+```ts
+import { utils } from "aes-js";
+
+export const WALLET_SALT = utils.utf8.toBytes("ZILPAY:54040c2f-1ec1-4eb1-9595-6e4294d14fd6");
+export const APP_ID = utils.utf8.toBytes("ZilPay-wallet-app");
+
+
+```
+
+`zil-pay/config/common.ts`:
+
+```ts
+export enum Common {
+  TIME_BEFORE_LOCK = 3,
+  POPUP_WIDTH = 320,
+  POPUP_HEIGHT = 600,
+  PROMT_PAGE = "index.html",
+  NONCE_DIFFICULTY = 10,
+  MAX_TX_QUEUE = 20,
+}
+
+export const WORKER_POOLING = 8000; // Seconds
 
 ```
 
 `zil-pay/config/fields.ts`:
 
 ```ts
-export enum Fields {
+export enum OldFields {
   VAULT = "vault",
   VAULT_IMPORTED = "importedvault",
   CONFIG = "config",
@@ -3398,6 +4305,16 @@ export enum Fields {
 
 ```
 
+`zil-pay/config/manifest.ts`:
+
+```ts
+export enum ManifestVersions {
+  V2 = 2,
+  V3 = 3,
+}
+
+```
+
 `zil-pay/config/pbkdf2.ts`:
 
 ```ts
@@ -3422,15 +4339,17 @@ export enum ShaAlgorithms {
 
 ```ts
 import { Counter, ModeOfOperation, utils } from "aes-js";
-import { ErrorMessages } from "../config/errors";
-import { randomBytes } from "crypto/random";
-import { assert } from "lib/runtime/assert";
+import { randomBytes } from "../crypto/random";
+import { md5 } from "js-md5";
+import { base64ToUint8Array } from "./b64";
 
-export const Cipher = Object.freeze({
+export enum ErrorMessages {
+  InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
+  IncorrectParams = "Password is not correct",
+}
+
+export const CipherV3 = Object.freeze({
   encrypt(content: Uint8Array, key: Uint8Array): Uint8Array {
-    assert(Boolean(content), ErrorMessages.IncorrectParams);
-    assert(Boolean(key), ErrorMessages.IncorrectParams);
-
     if (![16, 24, 32].includes(key.length)) {
       throw new Error(ErrorMessages.InvalidKeyLength);
     }
@@ -3445,9 +4364,6 @@ export const Cipher = Object.freeze({
     return bytes;
   },
   decrypt(bytes: Uint8Array, key: Uint8Array): Uint8Array {
-    assert(Boolean(bytes), ErrorMessages.IncorrectParams);
-    assert(Boolean(key), ErrorMessages.IncorrectParams);
-
     if (![16, 24, 32].includes(key.length)) {
       throw new Error(ErrorMessages.InvalidKeyLength);
     }
@@ -3458,6 +4374,107 @@ export const Cipher = Object.freeze({
     return aesCtr.decrypt(utils.hex.toBytes(encrypted));
   },
 });
+
+export const CipherV2 = Object.freeze({
+  async decrypt(data: string, key: string): Promise<any> {
+    const combined = base64ToUint8Array(data);
+
+    const prefix = new TextDecoder().decode(combined.slice(0, 8));
+    if (prefix !== "Salted__") {
+      throw new Error(ErrorMessages.IncorrectParams);
+    }
+
+    const salt = combined.slice(8, 16);
+    const ciphertext = combined.slice(16);
+    const passwordBytes = new TextEncoder().encode(key);
+    const { key: derivedKey, iv } = await CipherV2.evpKDF(
+      passwordBytes,
+      salt,
+      32,
+      16,
+    );
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "raw",
+      derivedKey,
+      { name: "AES-CBC" },
+      false,
+      ["decrypt"],
+    );
+
+    let decrypted: ArrayBuffer;
+    try {
+      decrypted = await crypto.subtle.decrypt(
+        { name: "AES-CBC", iv },
+        cryptoKey,
+        ciphertext,
+      );
+    } catch {
+      throw new Error("ErrorMessages.IncorrectPassword");
+    }
+
+    const content = new TextDecoder().decode(decrypted);
+    if (!content) {
+      throw new Error("ErrorMessages.IncorrectPassword");
+    }
+
+    try {
+      return JSON.parse(content);
+    } catch {
+      return content;
+    }
+  },
+  async evpKDF(
+    password: Uint8Array,
+    salt: Uint8Array,
+    keySize: number,
+    ivSize: number,
+  ): Promise<{ key: Uint8Array; iv: Uint8Array }> {
+    const totalSize = keySize + ivSize;
+    let derived = new Uint8Array(0);
+    let previousBlock = new Uint8Array(0);
+
+    while (derived.length < totalSize) {
+      const input = new Uint8Array([...previousBlock, ...password, ...salt]);
+      const block = await CipherV2.md5Hash(input);
+      derived = new Uint8Array([...derived, ...block]);
+      previousBlock = Uint8Array.from(block);
+    }
+
+    const key = derived.slice(0, keySize);
+    const iv = derived.slice(keySize, keySize + ivSize);
+    return { key, iv };
+  },
+
+  async md5Hash(data: Uint8Array): Promise<Uint8Array> {
+    const hasher = md5.create();
+    hasher.update(data);
+    const hash = hasher.arrayBuffer();
+    return new Uint8Array(hash);
+  },
+});
+
+```
+
+`zil-pay/crypto/argon2.ts`:
+
+```ts
+import { Config, hashRaw } from '@hicaru/argon2-pure.js';
+import { WALLET_SALT } from '../config/argon2';
+
+export function deriveArgon2Key(password: Uint8Array, salt: string, config: Config) {
+  const textEncoder = new TextEncoder();
+  const saltBytes = textEncoder.encode(salt);
+
+    const combinedSalt = new Uint8Array(saltBytes.length + WALLET_SALT.length);
+
+    combinedSalt.set(saltBytes, 0);
+    combinedSalt.set(WALLET_SALT, saltBytes.length);
+
+    const hash = hashRaw(password, combinedSalt, config);
+
+    return hash;
+}
 
 ```
 
@@ -3964,6 +4981,159 @@ export const Bip39 = Object.freeze({
     };
   },
 });
+
+```
+
+`zil-pay/crypto/keychain.ts`:
+
+```ts
+export enum CipherOptions {
+  AESGCM256,
+  KUZNECHIK,
+  NTRUP1277,
+}
+
+```
+
+`zil-pay/crypto/kuznechik.ts`:
+
+```ts
+import { KeyStore, AlgOfb, MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
+import { randomBytes } from './random';
+
+export function kuznechik_encrypt(key: Uint8Array, plaintext: Uint8Array): Uint8Array {
+    const keyStore = new KeyStore();
+    keyStore.setMasterKey(key);
+    const gamma = randomBytes(MIN_GAMMA_SIZE);
+    const alg = new AlgOfb(keyStore);
+    alg.setGamma(gamma);
+    const encrypted = alg.encrypt(plaintext);
+    const finalCiphertext = new Uint8Array(encrypted.length + gamma.length);
+    finalCiphertext.set(encrypted, 0);
+    finalCiphertext.set(gamma, encrypted.length);
+    return finalCiphertext;
+}
+
+export function kuznechik_decrypt(key: Uint8Array, ciphertext: Uint8Array): Uint8Array {
+    const gamma = ciphertext.slice(ciphertext.length - MIN_GAMMA_SIZE);
+    const actualCiphertext = ciphertext.slice(0, ciphertext.length - MIN_GAMMA_SIZE);
+    const keyStore = new KeyStore();
+    keyStore.setMasterKey(key);
+    const alg = new AlgOfb(keyStore);
+    alg.setGamma(gamma);
+    const plaintext = alg.decrypt(actualCiphertext);
+    return plaintext;
+}
+
+```
+
+`zil-pay/crypto/ntrup.ts`:
+
+```ts
+import { ChaCha20Rng, ChaChaRng } from "@hicaru/chacharand.js";
+import {
+  bytesRqDecode,
+  ErrorType,
+  generateKeyPair,
+  packBytes,
+  params761,
+  ParamsConfig,
+  PrivKey,
+  PubKey,
+  R3,
+  r3DecodeChunks,
+  r3EncodeChunks,
+  r3Encrypt,
+  r3MergeWChunks,
+  r3SplitWChunks,
+  Rq,
+  rqDecrypt,
+  unpackBytes,
+} from "@hicaru/ntrup.js";
+import { randomBytes } from "../crypto/random";
+
+function bytesEncrypt(
+  rng: ChaChaRng,
+  plaintext: Uint8Array,
+  pubKey: PubKey,
+  params: ParamsConfig,
+): Uint8Array {
+  const unlimitedPoly = r3DecodeChunks(plaintext);
+  const getU32 = () => rng.nextU32();
+  const { chunks, size, seed } = r3SplitWChunks(unlimitedPoly, getU32, params);
+  const encryptedBytes: Uint8Array[] = [];
+
+  for (const chunk of chunks) {
+    const r3 = R3.from(chunk, params);
+    const hr = r3Encrypt(r3, pubKey, params);
+    const rqBytes = hr.toBytes(params);
+    encryptedBytes.push(rqBytes);
+  }
+
+  const totalLength = encryptedBytes.reduce((sum, arr) => sum + arr.length, 0);
+  const dataBytes = new Uint8Array(totalLength);
+
+  let offset = 0;
+
+  for (const arr of encryptedBytes) {
+    dataBytes.set(arr, offset);
+    offset += arr.length;
+  }
+
+  return packBytes(dataBytes, size, seed);
+}
+
+function bytesDecrypt(
+  cipher: Uint8Array,
+  privKey: PrivKey,
+  params: ParamsConfig,
+): Uint8Array {
+  const { dataBytes, size, seed } = unpackBytes(cipher);
+  const chunkCount = Math.floor(dataBytes.length / params.RQ_BYTES);
+
+  if (dataBytes.length % params.RQ_BYTES !== 0) {
+    throw ErrorType.InvalidRqChunkSize;
+  }
+
+  const decryptedChunks: Int8Array[] = [];
+
+  for (let i = 0; i < chunkCount; i++) {
+    const start = i * params.RQ_BYTES;
+    const end = start + params.RQ_BYTES;
+    const chunkBytes = dataBytes.subarray(start, end);
+    if (chunkBytes.length !== params.RQ_BYTES) {
+      throw ErrorType.InvalidRqChunkSize;
+    }
+    const coeffs = bytesRqDecode(chunkBytes, params);
+    const rq = Rq.from(coeffs, params);
+    const r3 = rqDecrypt(rq, privKey, params);
+    decryptedChunks.push(r3.coeffs);
+  }
+
+  const outR3 = r3MergeWChunks(decryptedChunks, size, seed, params);
+
+  return r3EncodeChunks(outR3);
+}
+
+export function ntruKeysFromSeed(seedBytes: Uint8Array): {
+  pk: PubKey;
+  sk: PrivKey;
+} {
+  const seedPq = seedBytes.slice(0, 32);
+  const pqRng = ChaCha20Rng(seedPq);
+
+  return generateKeyPair(pqRng, params761);
+}
+
+export function ntruEncrypt(pk: PubKey, plaintext: Uint8Array) {
+  const seed = randomBytes(32);
+  const rng = ChaCha20Rng(seed);
+  return bytesEncrypt(rng, plaintext, pk, params761);
+}
+
+export function ntruDecrypt(sk: PrivKey, ciphertext: Uint8Array) {
+  return bytesDecrypt(ciphertext, sk, params761);
+}
 
 ```
 
@@ -5166,11 +6336,13 @@ export async function sha256(value: Uint8Array) {
 `zil-pay/crypto/sha512.ts`:
 
 ```ts
-import { ShaAlgorithms } from "config/pbkdf2";
+import { ShaAlgorithms } from "../config/pbkdf2";
 
-export async function sha512(value: Uint8Array) {
+export async function sha512(value: Uint8Array): Promise<Uint8Array> {
   const crypto = globalThis.crypto;
-  return crypto.subtle.digest(ShaAlgorithms.Sha512, value);
+  const hash = await crypto.subtle.digest(ShaAlgorithms.Sha512, value);
+
+  return new Uint8Array(hash);
 }
 
 ```
@@ -5581,6 +6753,18 @@ export function getExtensionURL(content: string) {
 
 ```
 
+`zil-pay/lib/runtime/index.ts`:
+
+```ts
+export * from './assert';
+export * from './ext-id';
+export * from './extensionizer';
+export * from './manifest';
+export * from './get-url';
+
+
+```
+
 `zil-pay/lib/runtime/manifest.ts`:
 
 ```ts
@@ -5595,7 +6779,7 @@ export function getManifestVersion() {
 `zil-pay/lib/storage/builder.ts`:
 
 ```ts
-import type { Fields } from 'config/fields';
+import type { OldFields } from 'config/fields';
 import { TypeOf } from '../types/checker';
 
 export type StorageKeyValue = {
@@ -5614,7 +6798,7 @@ export type StorageKeyValue = {
  * storage.set(buildObject('objectKey', { a: 1, b: 2 }));
  * storage.set(buildObject('arrayKey', [1, 2, 3]));
  */
-export function buildObject(key: Fields | string, value: string | object | any[]): StorageKeyValue { // Added any[]
+export function buildObject(key: OldFields | string, value: string | object | any[]): StorageKeyValue { // Added any[]
     let data: string;
 
     if (TypeOf.isObject(value) || TypeOf.isArray(value)) {
@@ -5638,11 +6822,19 @@ export function buildObject(key: Fields | string, value: string | object | any[]
 
 ```
 
+`zil-pay/lib/storage/index.ts`:
+
+```ts
+export * from './builder';
+export * from './storage';
+
+```
+
 `zil-pay/lib/storage/storage.ts`:
 
 ```ts
 import type { StorageKeyValue } from './builder';
-import type { Fields } from 'config/fields';
+import type { OldFields } from 'config/fields';
 import { Runtime } from 'lib/runtime/extensionizer';
 
 type StorageChangesCallback = { [key: string]: chrome.storage.StorageChange; };
@@ -5706,7 +6898,7 @@ export const BrowserStorage = Object.freeze({
      * @param keys - An array of keys to retrieve from storage.
      * @returns A promise that resolves with the retrieved data.  If one key is provided, the value is returned.  If multiple, an object is returned.
      */
-    async get(...keys: (Fields | string)[]): Promise<StorageKeyValue | any> { // Use 'any' for more flexibility
+    async get(...keys: (OldFields | string)[]): Promise<StorageKeyValue | any> { // Use 'any' for more flexibility
         return new Promise((resolve, reject) => {
             Runtime.storage.local.get(keys, (result) => {
                 if (chrome.runtime.lastError) {
@@ -5743,7 +6935,7 @@ export const BrowserStorage = Object.freeze({
      * @param keys - An array of keys to remove from storage.
      * @returns A promise that resolves when the items are removed.
      */
-    async rm(...keys: (Fields | string)[]): Promise<void> {
+    async rm(...keys: (OldFields | string)[]): Promise<void> {
         return new Promise((resolve, reject) => {
             Runtime.storage.local.remove(keys, () => {
                 if (chrome.runtime.lastError) {
@@ -6234,6 +7426,14 @@ export const TypeOf = Object.freeze({
 
 ```
 
+`zil-pay/lib/types/index.ts`:
+
+```ts
+export * from './checker';
+
+
+```
+
 `zil-pay/lib/zilliqa/bech32.ts`:
 
 ```ts
@@ -6604,15 +7804,6 @@ export default defineConfig({
     globals: true,
     setupFiles: '__tests__/setupTests.ts',
     include: ['__tests__/**/*.test.{ts,tsx}'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      reportsDirectory: 'stats/coverage',
-    },
-    reporters: [
-      'default',
-      ['html', { outputDir: 'stats/report' }]
-    ],
   },
 });
 

@@ -8,7 +8,7 @@ export enum ErrorMessages {
   IncorrectParams = "Password is not correct",
 }
 
-export const CipherV3 = Object.freeze({
+export const AESCipherV3 = Object.freeze({
   encrypt(content: Uint8Array, key: Uint8Array): Uint8Array {
     if (![16, 24, 32].includes(key.length)) {
       throw new Error(ErrorMessages.InvalidKeyLength);
@@ -35,7 +35,7 @@ export const CipherV3 = Object.freeze({
   },
 });
 
-export const CipherV2 = Object.freeze({
+export const AESCipherV2 = Object.freeze({
   async decrypt(data: string, key: string): Promise<any> {
     const combined = base64ToUint8Array(data);
 
@@ -47,7 +47,7 @@ export const CipherV2 = Object.freeze({
     const salt = combined.slice(8, 16);
     const ciphertext = combined.slice(16);
     const passwordBytes = new TextEncoder().encode(key);
-    const { key: derivedKey, iv } = await CipherV2.evpKDF(
+    const { key: derivedKey, iv } = await AESCipherV2.evpKDF(
       passwordBytes,
       salt,
       32,
@@ -96,7 +96,7 @@ export const CipherV2 = Object.freeze({
 
     while (derived.length < totalSize) {
       const input = new Uint8Array([...previousBlock, ...password, ...salt]);
-      const block = await CipherV2.md5Hash(input);
+      const block = await AESCipherV2.md5Hash(input);
       derived = new Uint8Array([...derived, ...block]);
       previousBlock = Uint8Array.from(block);
     }
