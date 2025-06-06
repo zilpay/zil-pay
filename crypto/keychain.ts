@@ -12,7 +12,7 @@ import {
   kuznechikEncrypt,
   KUZNECHIK_KEY_SIZE,
 } from "./kuznechik";
-import { AESCipherV3 } from "./aes256";
+import { AESCipherV3,  AESCipherV2 } from "./aes256";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
 export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
@@ -29,6 +29,7 @@ export async function deriveKeyFromSeed(
 }
 
 export enum CipherOrders {
+  AESCBC,
   AESGCM256,
   KUZNECHIK,
   NTRUP761,
@@ -113,6 +114,8 @@ export class KeyChain {
     let data = plaintext;
     for (const o of options) {
       switch (o) {
+        case CipherOrders.AESCBC:
+          throw new Error("OLD method, AESCBC");
         case CipherOrders.AESGCM256:
           data = AESCipherV3.encrypt(data, this.aesKey);
           break;
@@ -134,6 +137,12 @@ export class KeyChain {
     let data = ciphertext;
     for (const o of options.slice().reverse()) {
       switch (o) {
+        case CipherOrders.AESCBC:
+          const aesKeyStr = new TextDecoder().decode(this.aesKey);
+          const dataStr = new TextDecoder().decode(data);
+          const decryptedStr = await AESCipherV2.decrypt(dataStr, aesKeyStr);
+          data = new TextEncoder().encode(decryptedStr);
+          break;
         case CipherOrders.AESGCM256:
           data = AESCipherV3.decrypt(data, this.aesKey);
           break;
