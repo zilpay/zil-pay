@@ -1,9 +1,7 @@
 export class Notification {
   transactions: boolean;
 
-  constructor(data: {
-    transactions: boolean;
-  }) {
-    this.transactions = data.transactions;
+  constructor(data: Record<string, unknown>) {
+    this.transactions = data.transactions as boolean;
   }
 }

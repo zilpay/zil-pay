@@ -13,25 +13,19 @@ export class Wallet {
   settings: WalletSettings;
   defaultChainHash: number;
 
-  constructor(data: {
-    walletType: string;
-    walletName: string;
-    authType: string;
-    walletAddress: string;
-    accounts: Account[];
-    selectedAccount: number;
-    tokens: FToken[];
-    settings: WalletSettings;
-    defaultChainHash: number;
-  }) {
-    this.walletType = data.walletType;
-    this.walletName = data.walletName;
-    this.authType = data.authType;
-    this.walletAddress = data.walletAddress;
-    this.accounts = data.accounts;
-    this.selectedAccount = data.selectedAccount;
-    this.tokens = data.tokens;
-    this.settings = data.settings;
-    this.defaultChainHash = data.defaultChainHash;
+  constructor(data: Record<string, unknown>) {
+    this.walletType = data.walletType as string;
+    this.walletName = data.walletName as string;
+    this.authType = data.authType as string;
+    this.walletAddress = data.walletAddress as string;
+    this.accounts = (data.accounts as Record<string, unknown>[]).map(
+      (a) => new Account(a)
+    );
+    this.selectedAccount = data.selectedAccount as number;
+    this.tokens = (data.tokens as Record<string, unknown>[]).map(
+      (t) => new FToken(t)
+    );
+    this.settings = new WalletSettings(data.settings as Record<string, unknown>);
+    this.defaultChainHash = data.defaultChainHash as number;
   }
 }

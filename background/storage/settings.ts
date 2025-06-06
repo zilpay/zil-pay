@@ -1,7 +1,12 @@
-import { WalletArgon2Params } from "./argon";
+import { WalletArgon2Params } from './argon';
+import { CipherOrders } from '../../crypto/keychain';
+
+export enum RatesApiOptions {
+  CoinGecko
+} 
 
 export class WalletSettings {
-  cipherOrders: Uint8Array;
+  cipherOrders: CipherOrders[];
   argonParams: WalletArgon2Params;
   currencyConvert: string;
   ipfsNode: string | null;
@@ -10,29 +15,18 @@ export class WalletSettings {
   nodeRankingEnabled: boolean;
   maxConnections: number;
   requestTimeoutSecs: number;
-  ratesApiOptions: number;
+  ratesApiOptions: RatesApiOptions;
 
-  constructor(data: {
-    cipherOrders: Uint8Array;
-    argonParams: WalletArgon2Params;
-    currencyConvert: string;
-    ipfsNode?: string | null;
-    ensEnabled: boolean;
-    tokensListFetcher: boolean;
-    nodeRankingEnabled: boolean;
-    maxConnections: number;
-    requestTimeoutSecs: number;
-    ratesApiOptions: number;
-  }) {
-    this.cipherOrders = data.cipherOrders;
-    this.argonParams = data.argonParams;
-    this.currencyConvert = data.currencyConvert;
-    this.ipfsNode = data.ipfsNode ?? null;
-    this.ensEnabled = data.ensEnabled;
-    this.tokensListFetcher = data.tokensListFetcher;
-    this.nodeRankingEnabled = data.nodeRankingEnabled;
-    this.maxConnections = data.maxConnections;
-    this.requestTimeoutSecs = data.requestTimeoutSecs;
-    this.ratesApiOptions = data.ratesApiOptions;
+  constructor(data: Record<string, unknown>) {
+    this.cipherOrders = data.cipherOrders as CipherOrders[];
+    this.argonParams = new WalletArgon2Params(data.argonParams as Record<string, unknown>);
+    this.currencyConvert = data.currencyConvert as string;
+    this.ipfsNode = data.ipfsNode as string || null;
+    this.ensEnabled = data.ensEnabled as boolean;
+    this.tokensListFetcher = data.tokensListFetcher as boolean;
+    this.nodeRankingEnabled = data.nodeRankingEnabled as boolean;
+    this.maxConnections = data.maxConnections as number;
+    this.requestTimeoutSecs = data.requestTimeoutSecs as number;
+    this.ratesApiOptions = data.ratesApiOptions as RatesApiOptions;
   }
 }

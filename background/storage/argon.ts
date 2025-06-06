@@ -4,15 +4,10 @@ export class WalletArgon2Params {
   threads: number;
   secret: string;
 
-  constructor(data: {
-    memory: number;
-    iterations: number;
-    threads: number;
-    secret: string;
-  }) {
-    this.memory = data.memory;
-    this.iterations = data.iterations;
-    this.threads = data.threads;
-    this.secret = data.secret;
+  constructor(data: Record<string, unknown>) {
+    this.memory = data.memory as number;
+    this.iterations = data.iterations as number;
+    this.threads = data.threads as number;
+    this.secret = data.secret as string;
   }
 }

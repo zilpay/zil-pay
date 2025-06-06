@@ -4,15 +4,10 @@ export class Explorer {
   icon: string | null;
   standard: number;
 
-  constructor(data: {
-    name: string;
-    url: string;
-    icon?: string | null;
-    standard: number;
-  }) {
-    this.name = data.name;
-    this.url = data.url;
-    this.icon = data.icon ?? null;
-    this.standard = data.standard;
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.url = data.url as string;
+    this.icon = data.icon as string | null ?? null;
+    this.standard = data.standard as number;
   }
 }

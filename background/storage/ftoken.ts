@@ -1,9 +1,11 @@
+import { AddressType } from './address-type';
+ 
 export class FToken {
   name: string;
   symbol: string;
   decimals: number;
   addr: string;
-  addrType: number;
+  addrType: AddressType;
   logo: string | null;
   balances: Record<number, string>;
   rate: number;
@@ -11,29 +13,17 @@ export class FToken {
   native: boolean;
   chainHash: number;
 
-  constructor(data: {
-    name: string;
-    symbol: string;
-    decimals: number;
-    addr: string;
-    addrType: number;
-    logo?: string | null;
-    balances: Record<number, string>;
-    rate: number;
-    default_: boolean;
-    native: boolean;
-    chainHash: number;
-  }) {
-    this.name = data.name;
-    this.symbol = data.symbol;
-    this.decimals = data.decimals;
-    this.addr = data.addr;
-    this.addrType = data.addrType;
-    this.logo = data.logo ?? null;
-    this.balances = data.balances;
-    this.rate = data.rate;
-    this.default_ = data.default_;
-    this.native = data.native;
-    this.chainHash = data.chainHash;
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.symbol = data.symbol as string;
+    this.decimals = data.decimals as number;
+    this.addr = data.addr as string;
+    this.addrType = data.addrType as AddressType;
+    this.logo = data.logo as string | null ?? null;
+    this.balances = data.balances as Record<number, string>;
+    this.rate = data.rate as number;
+    this.default_ = data.default_ as boolean;
+    this.native = data.native as boolean;
+    this.chainHash = data.chainHash as number;
   }
 }
