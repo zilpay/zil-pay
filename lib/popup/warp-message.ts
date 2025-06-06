@@ -1,4 +1,16 @@
-import type { SendResponseParams } from 'types/stream';
+export type Params = object[] | string[] | number[] | (string | string[] | number[])[];
+
+export interface SendResponseParams {
+  resolve?: unknown;
+  reject?: unknown;
+}
+export type StreamResponse = (params: SendResponseParams) => void;
+
+export interface ProxyContentType {
+  params: Params;
+  method: string;
+  uuid: string;
+}
 
 export function warpMessage<T>(msg: SendResponseParams): T | undefined {
   if (!msg) {
@@ -9,5 +21,5 @@ export function warpMessage<T>(msg: SendResponseParams): T | undefined {
     throw new Error(String(msg.reject));
   }
 
-  return msg.resolve;
+  return msg.resolve as T;
 }

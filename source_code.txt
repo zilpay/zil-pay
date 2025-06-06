@@ -13,6 +13,7 @@ zil-pay
 │   │   ├── b64.test.ts
 │   │   ├── bip32.test.ts
 │   │   ├── bip39.test.ts
+│   │   ├── keychain.test.ts
 │   │   ├── kuznechik.test.ts
 │   │   ├── ntrup.test.ts
 │   │   ├── number.test.ts
@@ -35,6 +36,11 @@ zil-pay
 │       └── address.test.ts
 ├── background
 │   ├── index.ts
+│   ├── secure
+│   │   ├── index.ts
+│   │   ├── migrator.ts
+│   │   ├── session.ts
+│   │   └── storage.ts
 │   └── services
 │       └── guard.ts
 ├── config
@@ -211,8 +217,40 @@ describe("chunk", () => {
 import { test, expect } from "vitest";
 import { AESCipherV2, AESCipherV3, ErrorMessages } from "../../crypto/aes256";
 import { sha256 } from "../../crypto/sha256";
-import { IMPORTED_KEY, PASSWORD, STORAGE_V2, WORDS } from "../data";
+import { IMPORTED_KEY, PASSWORD, STORAGE_V2, STORAGE_V3, WORDS, EXTENSION_ID } from "../data";
 import { utils } from "aes-js";
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { base64ToUint8Array } from "../../crypto/b64";
+import { ShaAlgorithms } from "../../config/pbkdf2";
+
+test("decrypt Storage v3 AES-v3", async () => {
+  const salt = utils.utf8.toBytes(EXTENSION_ID);
+  const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(':');
+  const vaultBase64 = STORAGE_V3.vault;
+  const vaultBytes = base64ToUint8Array(vaultBase64);
+  const passwordBytes = utils.utf8.toBytes(PASSWORD);
+  const key = await pbkdf2(passwordBytes, salt, Number(iteractions), algorithm as ShaAlgorithms);
+  const key32 = await sha256(key);
+  const decryptedBytes = AESCipherV3.decrypt(vaultBytes, key32);
+  const decrypted = utils.utf8.fromBytes(decryptedBytes);
+
+  expect(decrypted).toEqual(WORDS);
+});
+
+test("decrypt accounts Storage v3 AES-v3", async () => {
+  const salt = utils.utf8.toBytes(EXTENSION_ID);
+  const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(':');
+  const passwordBytes = utils.utf8.toBytes(PASSWORD);
+  const key = await pbkdf2(passwordBytes, salt, Number(iteractions), algorithm as ShaAlgorithms);
+  const key32 = await sha256(key);
+  const walletIdentities = JSON.parse(STORAGE_V3["wallet-identities"]);
+  const importedAccount = walletIdentities.identities[1];
+  const privKeyBase64 = importedAccount.privKey;
+  const privKeyBytes = base64ToUint8Array(privKeyBase64);
+  const decryptedBytes = AESCipherV3.decrypt(privKeyBytes, key32);
+  const decryptedPrivKey = utils.hex.fromBytes(decryptedBytes);
+  expect(decryptedPrivKey).toEqual(IMPORTED_KEY);
+});
 
 test("encrypt encrypts data and decrypt successfully recovers it", () => {
   const key = new TextEncoder().encode("1234567890123456"); // 16-byte key
@@ -290,32 +328,32 @@ test("decrypt accounts Storage v2 AES-v2", async () => {
 
 ```ts
 import { describe, expect, it } from "vitest";
-import { deriveArgon2Key } from '../../crypto/argon2';
+import { deriveArgon2Key } from "../../crypto/argon2";
 import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
 import { APP_ID } from "../../config/argon2";
 
 describe("argon2", () => {
-  it('should derive the correct key', () => {
-    const password = new TextEncoder().encode('test_password');
-    const salt = 'some_salt';
+  it("should derive the correct key", () => {
+    const password = new TextEncoder().encode("test_password");
+    const salt = "some_salt";
     const config = new Config(
-      APP_ID,          
-      64,              
-      2,               
-      65536,           
+      APP_ID,
+      64,
+      2,
+      65536,
       new Uint8Array(),
-      1,               
+      1,
       Variant.Argon2id,
-      Version.Version13
+      Version.Version13,
     );
     const key = deriveArgon2Key(password, salt, config);
     const expected = new Uint8Array([
-      241, 5, 105, 168, 214, 152, 5, 38, 199, 60, 34, 215, 245, 198, 217, 49, 108, 140,
-      86, 183, 92, 152, 168, 92, 64, 48, 241, 204, 238, 247, 198, 88, 18, 126, 75, 177,
-      211, 74, 244, 234, 39, 92, 32, 255, 148, 131, 9, 175, 213, 251, 48, 220, 238, 146,
-      16, 147, 132, 15, 46, 51, 176, 134, 238, 69
+      241, 5, 105, 168, 214, 152, 5, 38, 199, 60, 34, 215, 245, 198, 217, 49,
+      108, 140, 86, 183, 92, 152, 168, 92, 64, 48, 241, 204, 238, 247, 198, 88,
+      18, 126, 75, 177, 211, 74, 244, 234, 39, 92, 32, 255, 148, 131, 9, 175,
+      213, 251, 48, 220, 238, 146, 16, 147, 132, 15, 46, 51, 176, 134, 238, 69,
     ]);
-    
+
     expect(key).toEqual(expected);
   });
 });
@@ -799,29 +837,170 @@ describe("bip39_invalid_entropy", () => {
 
 ```
 
+`zil-pay/__tests__/crypto/keychain.test.ts`:
+
+```ts
+import { describe, it, expect } from "vitest";
+import {
+  KeyChain,
+  CipherOrders,
+  AES_GCM_KEY_SIZE,
+  KEYCHAIN_BYTES_SIZE,
+  deriveKeyFromSeed,
+} from "../../crypto/keychain";
+import { PubKey, PrivKey } from "@hicaru/ntrup.js";
+import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
+import { APP_ID } from "../../config/argon2";
+import { randomBytes } from "../../crypto/random";
+import { NTRU_CONFIG } from "../../crypto/ntrup";
+
+const LIGHT_ARGON2_CONFIG = new Config(
+  APP_ID,
+  64,
+  1,
+  64,
+  new Uint8Array([]),
+  1,
+  Variant.Argon2id,
+  Version.Version13,
+);
+
+describe("KeyChain", () => {
+  it("test derive key from seed and index", async () => {
+    const seed = Uint8Array.from([
+      42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,
+      42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,
+    ]);
+    const r1 = await deriveKeyFromSeed(seed, 1);
+    const r2 = await deriveKeyFromSeed(seed, 2);
+
+    expect(r1).toEqual(
+      Uint8Array.from([
+        110, 184, 151, 158, 154, 167, 152, 8, 9, 51, 232, 16, 76, 69, 174, 96,
+        19, 234, 70, 139, 138, 205, 60, 15, 254, 119, 216, 112, 88, 218, 122, 9,
+      ]),
+    );
+    expect(r2).toEqual(
+      Uint8Array.from([
+        64, 210, 75, 227, 185, 9, 209, 199, 53, 232, 57, 9, 149, 24, 239, 67,
+        71, 55, 108, 54, 149, 48, 252, 151, 140, 50, 74, 170, 67, 174, 246, 190,
+      ]),
+    );
+  });
+
+  it("should initialize from seed", async () => {
+    const seed = randomBytes(32);
+    const keychain = await KeyChain.fromSeed(seed);
+
+    expect(keychain).toBeDefined();
+    expect(keychain.aesKey).toBeInstanceOf(Uint8Array);
+    expect(keychain.aesKey.length).toBe(AES_GCM_KEY_SIZE);
+    expect(keychain.ntrupKeys.pk).toBeInstanceOf(PubKey);
+    expect(keychain.ntrupKeys.sk).toBeInstanceOf(PrivKey);
+    expect(keychain.kuznechikKey).toBeInstanceOf(Uint8Array);
+  });
+
+  it("should initialize from password", async () => {
+    const password = randomBytes(32);
+    const fingerprint = "";
+
+    const keychain = await KeyChain.fromPass(
+      password,
+      fingerprint,
+      LIGHT_ARGON2_CONFIG,
+    );
+
+    expect(keychain).toBeDefined();
+    expect(keychain.aesKey).toBeInstanceOf(Uint8Array);
+    expect(keychain.aesKey.length).toBe(AES_GCM_KEY_SIZE);
+    expect(keychain.ntrupKeys.pk).toBeInstanceOf(PubKey);
+    expect(keychain.ntrupKeys.sk).toBeInstanceOf(PrivKey);
+    expect(keychain.kuznechikKey).toBeInstanceOf(Uint8Array);
+  });
+
+  it("should serialize to bytes and deserialize correctly", async () => {
+    const seed = randomBytes(32);
+    const keychain = await KeyChain.fromSeed(seed);
+
+    const bytes = keychain.toBytes();
+    const restoredKeychain = await KeyChain.fromBytes(bytes);
+
+    expect(bytes.length).toBe(KEYCHAIN_BYTES_SIZE);
+    expect(restoredKeychain.aesKey).toEqual(keychain.aesKey);
+    expect(restoredKeychain.ntrupKeys.pk.toBytes(NTRU_CONFIG)).toEqual(
+      keychain.ntrupKeys.pk.toBytes(NTRU_CONFIG),
+    );
+    expect(restoredKeychain.ntrupKeys.sk.toBytes(NTRU_CONFIG)).toEqual(
+      keychain.ntrupKeys.sk.toBytes(NTRU_CONFIG),
+    );
+    expect(restoredKeychain.kuznechikKey).toEqual(keychain.kuznechikKey);
+  });
+
+  it("should encrypt and decrypt correctly", async () => {
+    const seed = randomBytes(32);
+    const plaintext = randomBytes(1024);
+    const keychain = await KeyChain.fromSeed(seed);
+    const options = [
+      CipherOrders.AESGCM256,
+      CipherOrders.NTRUP761,
+      CipherOrders.KUZNECHIK,
+    ];
+
+    const ciphertext = await keychain.encrypt(plaintext, options);
+    const decrypted = await keychain.decrypt(ciphertext, options);
+
+    expect(ciphertext).not.toEqual(plaintext);
+    expect(decrypted).toEqual(plaintext);
+
+    const invalidOptions = [CipherOrders.NTRUP761, CipherOrders.AESGCM256];
+    await expect(
+      keychain.decrypt(ciphertext, invalidOptions),
+    ).rejects.toThrow();
+  });
+
+  it("should make and verify proof correctly", async () => {
+    const seed = randomBytes(32);
+    const keychain = await KeyChain.fromSeed(seed);
+    const options = [
+      CipherOrders.NTRUP761,
+      CipherOrders.AESGCM256,
+      CipherOrders.KUZNECHIK,
+    ];
+    const proofSeed = randomBytes(32);
+
+    const proofCipher = await keychain.makeProof(proofSeed, options);
+    const retrievedSeed = await keychain.getProof(proofCipher, options);
+
+    expect(proofCipher).not.toEqual(proofSeed);
+    expect(retrievedSeed).toEqual(proofSeed);
+  });
+});
+
+```
+
 `zil-pay/__tests__/crypto/kuznechik.test.ts`:
 
 ```ts
-import { describe, test, expect } from 'vitest';
-import { kuznechikEncrypt, kuznechikDecrypt } from '../../crypto/kuznechik';
-import { MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
+import { describe, test, expect } from "vitest";
+import { kuznechikEncrypt, kuznechikDecrypt } from "../../crypto/kuznechik";
+import { MIN_GAMMA_SIZE } from "@hicaru/kuznechik.js";
 
-describe('kuznechik_encrypt and kuznechik_decrypt', () => {
+describe("kuznechik_encrypt and kuznechik_decrypt", () => {
   const key = new Uint8Array(32).fill(0x01);
   const plaintext = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
-  test('encrypt and decrypt should return original plaintext', () => {
+  test("encrypt and decrypt should return original plaintext", () => {
     const ciphertext = kuznechikEncrypt(key, plaintext);
     const decrypted = kuznechikDecrypt(key, ciphertext);
     expect(decrypted).toEqual(plaintext);
   });
 
-  test('ciphertext length should be plaintext length plus MIN_GAMMA_SIZE', () => {
+  test("ciphertext length should be plaintext length plus MIN_GAMMA_SIZE", () => {
     const ciphertext = kuznechikEncrypt(key, plaintext);
     expect(ciphertext.length).toBe(plaintext.length + MIN_GAMMA_SIZE);
   });
 
-  test('encrypt and decrypt empty plaintext', () => {
+  test("encrypt and decrypt empty plaintext", () => {
     const emptyPlaintext = new Uint8Array(0);
     const ciphertext = kuznechikEncrypt(key, emptyPlaintext);
     expect(ciphertext.length).toBe(MIN_GAMMA_SIZE);
@@ -829,17 +1008,17 @@ describe('kuznechik_encrypt and kuznechik_decrypt', () => {
     expect(decrypted).toEqual(emptyPlaintext);
   });
 
-  test('decrypt with short ciphertext should throw error', () => {
+  test("decrypt with short ciphertext should throw error", () => {
     const shortCiphertext = new Uint8Array(MIN_GAMMA_SIZE - 1);
     expect(() => kuznechikDecrypt(key, shortCiphertext)).toThrow();
   });
 
-  test('encrypt with invalid key size should throw error', () => {
-    const invalidKey = new Uint8Array(31); 
+  test("encrypt with invalid key size should throw error", () => {
+    const invalidKey = new Uint8Array(31);
     expect(() => kuznechikEncrypt(invalidKey, plaintext)).toThrow();
   });
 
-  test('decrypt with different key should not return original plaintext', () => {
+  test("decrypt with different key should not return original plaintext", () => {
     const differentKey = new Uint8Array(32).fill(0x02);
     const ciphertext = kuznechikEncrypt(key, plaintext);
     const decrypted = kuznechikDecrypt(differentKey, ciphertext);
@@ -3324,6 +3503,35 @@ export const STORAGE_V2 = {
   "wallet-identities":
     '{"selectedAddress":1,"identities":[{"name":"Account 0","bech32":"zil1ntrynx04349sk6py7uyata03gka6qswg7um95y","index":0,"base16":"0x9ac64999F58d4b0B6824f709D5f5f145BBA041c8","type":2,"pubKey":"0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10","zrc2":{"0x0000000000000000000000000000000000000000":"0","0xfbd07e692543d3064b9cf570b27faabfd7948da4":"0"},"nft":{}},{"name":"Imported 0","bech32":"zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43","index":0,"base16":"0xaf574f0BB2a87315F09e8d790228D3F839D0d9B5","type":1,"pubKey":"0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024","privKey":"U2FsdGVkX1+E7PpB7lTzKwR7J0aWq1xJWMTNRrxo3Vd76jcnA7GmMTS9DtkRQCkAWJdYemsAVH90lMRGzLFOYPYxd6UhNsPWiGD7MlNxvfHtRdL64G+tdULtICMXB23F","zrc2":{"0x0000000000000000000000000000000000000000":"0","0xfbd07e692543d3064b9cf570b27faabfd7948da4":"0"},"nft":{}}]}',
 };
+export const STORAGE_V3 = {
+  "address-format": "bech32",
+  "badge-counter": "0",
+  blocknumber: "0",
+  "confirm/mainnet": "[]",
+  connect: "undefined",
+  "connection-list": "[]",
+  contacts: "[]",
+  "dex-proto":
+    '{"liquidityFee":0,"protocolFee":0,"slippage":1,"blocks":10,"rewarded":"0x0000000000000000000000000000000000000000","contract":{"mainnet":"0x30dfe64740ed459ea115b517bd737bbadf21b838","testnet":"0xb0c677b5ba660925a8f1d5d9687d0c2c379e16ee","private":""}}',
+  "guard-configuration": "SHA-512:442368",
+  "phishing-detection": "1",
+  "popup-enabled": "1",
+  "rate-of-currencies":
+    '{"aed":0.04247757,"amd":4.44,"ars":13.71,"aud":0.01781949,"bdt":1.41,"bhd":0.00435975,"brl":0.065154,"btc":1.099e-7,"cad":0.01581764,"chf":0.00947171,"clp":10.85,"cny":0.083074,"cop":47.37,"crc":5.88,"czk":0.251386,"dkk":0.075591,"dop":0.682575,"eth":0.0000044,"eur":0.01013389,"gbp":0.0085369,"gel":0.0317456,"gtq":0.088835,"hkd":0.090732,"hnl":0.300787,"huf":4.08,"idr":188.38,"ils":0.04029691,"inr":0.99304,"jpy":1.65,"kes":1.5,"krw":15.73,"lbp":1035.62,"lkr":3.46,"ltc":0.00013082,"mmk":24.26,"mxn":0.222062,"myr":0.04908136,"ngn":18.22,"nok":0.116999,"nzd":0.01918035,"pen":0.04188673,"php":0.643042,"pkr":3.26,"pln":0.04338162,"ron":0.05104161,"rub":0.917076,"sar":0.0433747,"sek":0.110942,"sgd":0.01488506,"svc":0.101144,"thb":0.377194,"try":0.454718,"twd":0.346177,"uah":0.479191,"usd":0.01156488,"vnd":301.88,"xrp":0.00524131,"zar":0.206394}',
+  "selected-currency": "btc",
+  "selected-local": "auto",
+  "ssn-list":
+    '{"selected":0,"list":[{"address":"0x0000000000000000000000000000000000000000","api":"https://api.zilliqa.com","id":1,"name":"Main","ok":true,"time":420}]}',
+  theme: "light",
+  time_before_lock: "3",
+  "tokens-list/mainnet":
+    '[{"base16":"0x0000000000000000000000000000000000000000","bech32":"zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz","decimals":12,"name":"Zilliqa","symbol":"ZIL","rate":1,"pool":[]},{"base16":"0xfbd07e692543d3064b9cf570b27faabfd7948da4","bech32":"zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4","decimals":18,"name":"ZilPay wallet","symbol":"ZLP","rate":2.7915277475,"pool":["65618957804322222","23506468048851034758203"]},{"base16":"0xe6f14afc8739a4ead0a542c07d3ff978190e3b92","bech32":"zil1umc54ly88xjw4599gtq860le0qvsuwuj72s246","decimals":12,"name":"StZIL","symbol":"stZIL","rate":1.2063766095,"pool":["363937420859731210","301678114446274419"]}]',
+  vault:
+    "ZGM1ODdhZGI0YWVhY2E3Njk4MDJlYTEyMzMxOGY5OGZlMjMxMzNhYzY1ZDc4ZTUzYjFiZmI0YTYxNDY5OTAzZGQ2NDAzNWFjZmQzNGVkODZjYzc3NTc0NWE4NjI4N2Y3NWI0OTdiYzk4OGFjMzg0MDM5MWY5MGJjY2FmMjllNmU4NmEyMjJkMy8zODIzZWMwNmEyMDA4ZDZhODcyMTY3MzAwMzlmZTBlYw==",
+  "wallet-identities":
+    '{"selectedAddress":1,"identities":[{"name":"Account 0","bech32":"zil1ntrynx04349sk6py7uyata03gka6qswg7um95y","index":0,"base16":"0x9ac64999F58d4b0B6824f709D5f5f145BBA041c8","type":2,"pubKey":"0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10","zrc2":{"0x0000000000000000000000000000000000000000":"0","0xfbd07e692543d3064b9cf570b27faabfd7948da4":"0","0xe6f14afc8739a4ead0a542c07d3ff978190e3b92":"0"},"nft":{}},{"name":"Imported 0","bech32":"zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43","index":0,"base16":"0xaf574f0BB2a87315F09e8d790228D3F839D0d9B5","type":1,"pubKey":"0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024","privKey":"OGRmNzA0YzAzM2Q4ZmVhODM4ODFlMmYyZjI3ZDIyMzQ4NTM1ZmZiZDVjNDMzNmM1MDBjZWM4YzU4ZDg2YWU5Yi82NTVkYWRjZWZkNDZiODEyOWRhYzZhZTUxMjE2NTdiMQ==","zrc2":{"0x0000000000000000000000000000000000000000":"0","0xfbd07e692543d3064b9cf570b27faabfd7948da4":"0","0xe6f14afc8739a4ead0a542c07d3ff978190e3b92":"0"},"nft":{}}]}',
+};
+export const EXTENSION_ID = "klnaejjgbibmhlephnhpmaofohgkpgkd";
 
 ```
 
@@ -3810,6 +4018,252 @@ describe("Address Conversion Tests", () => {
 
 ```
 
+`zil-pay/background/secure/migrator.ts`:
+
+```ts
+import { Argon2Config } from "../../crypto/argon2";
+import { CipherOrders, PasswordHashFunctions } from "../../crypto/keychain";
+
+export interface StorageMeta {
+  dataSchemaVersion: string;    // e.g., "4.0.0" - Semantic version for the overall data structure.
+  securitySchemaVersion: string; // e.g., "2.0.0" - Version for encryption methods and parameters.
+  lastMigrationTimestamp?: string; // ISO 8601 string, timestamp of the last successful migration.
+  extensionId: string;          // Store the extension ID, useful for salts or unique identifiers.
+  createdAt: string;            // ISO 8601 string, timestamp of initial vault creation.
+  lastUnlockedTimestamp?: string; // ISO 8601 string, timestamp of the last successful unlock.
+}
+
+export interface UserPreferences {
+  theme: 'light' | 'dark' | 'system';
+  selectedLocale: string;           // e.g., "en-US", "ru-RU", or "auto" for browser default.
+  popupEnabled: boolean;            // Whether the extension opens as a popup or new tab.
+  defaultCurrency: string;          // User's preferred fiat currency for display, e.g., "usd", "eur".
+  badgeCounterEnabled: boolean;     // Show pending transaction/message count on extension icon.
+  hideBalances: boolean;            // User preference to hide balances globally.
+}
+
+export interface AppState {
+  currentBlockNumber: string;         // Last known block number, as a string for large numbers.
+  lastFullSyncTimestamp?: string;    // ISO 8601, for data that requires periodic full refresh.
+  lastPriceUpdateTimestamp?: string; // ISO 8601, for currency rates.
+  isFirstLaunch?: boolean;           // Flag for onboarding or initial setup.
+}
+
+export interface EncryptionParameters {
+  algorithm: CipherOrders[];
+  keyDerivationFunction: PasswordHashFunctions;
+  argonConfig: Argon2Config;
+}
+
+export interface SecuritySettings {
+  autoLockMinutes: number;           // Time in minutes before the wallet auto-locks.
+  phishingDetectionEnabled: boolean;
+  vaultEncryption: EncryptionParameters;
+  privateKeyEncryption: EncryptionParameters;
+}
+
+export interface TokenBalance {
+  amount: string;          // Token amount as a string to preserve precision.
+  lastUpdated: string;  // ISO 8601, if granular balance updates are tracked.
+}
+
+export interface NftIdentifier {
+  contractAddress: string; // Base16 address of the NFT contract.
+  tokenId: string;
+  name?: string;
+  imageUrl?: string; // A small thumbnail or link.
+  collectionName?: string;
+}
+
+export interface Wallet {
+  id: string;                      // Unique identifier for this wallet instance (e.g., UUID).
+  name: string;                    // User-defined name, e.g., "Primary Account", "Savings".
+  type: 'hd' | 'imported_pk' | 'ledger' | 'readonly'; // Type of wallet.
+  base16Address: string;
+  bech32Address: string;
+  publicKey: string;               // Uncompressed public key in hex format.
+  hdPath?: string;                  // Derivation path for 'hd' and 'ledger' types, e.g., "m/44'/313'/0'/0/0".
+  index?: number;                   // Account index within the HD path.
+  encryptedPrivateKey?: string;     // For 'imported_pk' type. Base64 encoded ciphertext.
+  balances: {
+    [tokenIdentifier: string]: TokenBalance;
+  };
+  nfts: NftIdentifier[];             // List of NFTs owned by this wallet.
+  createdAt: string;               // ISO 8601, when this specific wallet/account was added.
+}
+
+// --------------------------
+// --- Network & Tokens ---
+// --------------------------
+interface TokenDefinition {
+  address: string; // Base16 address of the token contract.
+  symbol: string;
+  name: string;
+  decimals: number;
+  logoUrl?: string;
+  isCustom: boolean;       // True if user-added, false if part of default list.
+  isNative: boolean;       // True if user-added, false if part of default list.
+  isDefault: boolean;       // True if user-added, false if part of default list.
+}
+
+export interface NetworkConfiguration {
+  id: string;                      // Unique identifier, e.g., "mainnet", "testnet_zilliqa_v9".
+  name: string;                    // User-friendly name, e.g., "Zilliqa Mainnet".
+  chainId: string;                 // Zilliqa specific chain ID.
+  apiUrl: string;                  // RPC/API endpoint URL.
+  explorerUrl?: string;             // URL for the block explorer (template if needed).
+  nativeTokenSymbol: string;       // e.g., "ZIL".
+  defaultGasPrice: string;         // Smallest unit (e.g., Li for ZIL), as string.
+  defaultGasLimit: string;         // Default gas limit for transactions, as string.
+  isDefault: boolean;              // Is this one of the predefined networks?
+  tokens: TokenDefinition[];       // List of known/added tokens for this network.
+}
+
+export interface Contact {
+  id: string; // UUID
+  name: string;
+  address: string; // bech32
+  notes?: string;
+  createdAt: string; // ISO 8601
+}
+
+export interface ConnectedDApp {
+  origin: string;                  // e.g., "[https://dapp.example.com](https://dapp.example.com)"
+  name?: string;                    // DApp-provided name (if available).
+  iconUrl?: string;
+  connectedDate: string;           // ISO 8601.
+  connectedWalletIds: string[];    // IDs of wallets connected to this DApp.
+  permissionsGranted?: string[];    // e.g., ["VIEW_ADDRESS", "REQUEST_SIGNATURE"].
+}
+
+export interface PendingConfirmation {
+  id: string;                      // Unique ID for the confirmation request.
+  type: 'transaction' | 'signMessage' | 'connectDapp';
+  origin?: string;                  // DApp origin, if applicable.
+  walletId: string;                // ID of the wallet requested for action.
+  networkId: string;               // Network ID for the transaction/message.
+  payload: object;                    // Transaction details, message string, or connection request details.
+  createdAt: string;               // ISO 8601.
+  expiresAt?: string;               // ISO 8601, if applicable.
+}
+
+export interface ZilPayStorageSchemaV4 {
+  meta: StorageMeta;
+  userPreferences: UserPreferences;
+  appState: AppState;
+  security: {
+    settings: SecuritySettings;
+    encryptedVault: string;
+  };
+  wallets: {
+    all: Wallet[];
+    selectedWalletIndex: number;
+  };
+  networks: NetworkConfiguration[];
+  contacts: Contact[];
+  connectedDapps: ConnectedDApp[];
+  pendingConfirmations: PendingConfirmation[];
+  currencyRates: {
+    [currencyCode: string]: number;
+  };
+}
+
+function isV2Storage(data: Record<string, unknown>) {
+  return false;
+}
+
+function isV3Storage(data: Record<string, unknown>) {
+  return false;
+}
+
+function isV4Storage(data: Record<string, unknown>) {
+  return false;
+}
+
+export function upgradeStorageToV4(data: Record<string, unknown>) {
+  if (isV4Storage(data)) {
+    return data; 
+  }
+
+  return data;
+}
+
+```
+
+`zil-pay/background/secure/storage.ts`:
+
+```ts
+import { BrowserStorage } from '../../lib/storage';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
+
+export interface StorageConfig {
+  lockTime: number;
+  version: number;
+  passwordHashFunction: PasswordHashFunctions;
+  vaultVersion: string;
+}
+
+export class AuthStorage {
+  #config: StorageConfig;
+  #vault: Uint8Array;
+
+  sync(data: Record<string, unknown>): void {
+    this.#validateAndSetConfig(data);
+    this.#validateAndSetVault(data);
+  }
+
+  #validateAndSetConfig(data: Record<string, unknown>): void {
+    const configStr = data['storageConfig'];
+    if (typeof configStr !== 'string') {
+      throw new Error('Invalid storage config: must be a string');
+    }
+    try {
+      const config = JSON.parse(configStr) as StorageConfig;
+
+      if (!config.lockTime || !config.version || !config.passwordHashFunction || !config.vaultVersion) {
+        throw new Error('Missing required config fields');
+      }
+      this.#config = config;
+    } catch (err) {
+      throw new Error(`Failed to parse storage config: ${err.message}`);
+    }
+  }
+
+  #validateAndSetVault(data: Record<string, unknown>): void {
+    const vaultStr = data['vault'];
+    if (typeof vaultStr !== 'string') {
+      throw new Error('Invalid vault: must be a string');
+    }
+    try {
+      this.#vault = base64ToUint8Array(vaultStr);
+    } catch (err) {
+      throw new Error(`Failed to decode vault: ${err.message}`);
+    }
+  }
+
+  async setStorageConfig(config: StorageConfig): Promise<void> {
+    const configStr = JSON.stringify(config);
+    await BrowserStorage.set({ storageConfig: configStr });
+    this.#config = config;
+  }
+
+  async setVault(vault: Uint8Array): Promise<void> {
+    const vaultStr = uint8ArrayToBase64(vault);
+    await BrowserStorage.set({ vault: vaultStr });
+    this.#vault = vault;
+  }
+
+  getConfig(): StorageConfig | null {
+    return this.#config;
+  }
+
+  getVault(): Uint8Array | null {
+    return this.#vault;
+  }
+}
+
+```
+
 `zil-pay/background/services/guard.ts`:
 
 ```ts
@@ -4243,9 +4697,10 @@ export class AuthGuard {
 ```ts
 import { utils } from "aes-js";
 
-export const WALLET_SALT = utils.utf8.toBytes("ZILPAY:54040c2f-1ec1-4eb1-9595-6e4294d14fd6");
+export const WALLET_SALT = utils.utf8.toBytes(
+  "ZILPAY:54040c2f-1ec1-4eb1-9595-6e4294d14fd6",
+);
 export const APP_ID = utils.utf8.toBytes("ZilPay-wallet-app");
-
 
 ```
 
@@ -4459,23 +4914,27 @@ export const AESCipherV2 = Object.freeze({
 `zil-pay/crypto/argon2.ts`:
 
 ```ts
-import { Config, hashRaw } from '@hicaru/argon2-pure.js';
-import { WALLET_SALT } from '../config/argon2';
+import { Config, hashRaw } from "@hicaru/argon2-pure.js";
+import { WALLET_SALT } from "../config/argon2";
 
 export type Argon2Config = Config;
 
-export function deriveArgon2Key(password: Uint8Array, salt: string, config: Argon2Config) {
+export function deriveArgon2Key(
+  password: Uint8Array,
+  salt: string,
+  config: Argon2Config,
+) {
   const textEncoder = new TextEncoder();
   const saltBytes = textEncoder.encode(salt);
 
-    const combinedSalt = new Uint8Array(saltBytes.length + WALLET_SALT.length);
+  const combinedSalt = new Uint8Array(saltBytes.length + WALLET_SALT.length);
 
-    combinedSalt.set(saltBytes, 0);
-    combinedSalt.set(WALLET_SALT, saltBytes.length);
+  combinedSalt.set(saltBytes, 0);
+  combinedSalt.set(WALLET_SALT, saltBytes.length);
 
-    const hash = hashRaw(password, combinedSalt, config);
+  const hash = hashRaw(password, combinedSalt, config);
 
-    return hash;
+  return hash;
 }
 
 ```
@@ -4989,21 +5448,40 @@ export const Bip39 = Object.freeze({
 `zil-pay/crypto/keychain.ts`:
 
 ```ts
-import { PrivKey, PubKey } from '@hicaru/ntrup.js';
-import { NTRU_CONFIG, ntruDecrypt, ntruEncrypt, ntruKeysFromSeed } from './ntrup';
-import { sha256 } from './sha256';
-import { deriveArgon2Key, Argon2Config } from './argon2';
-import { kuznechikDecrypt, kuznechikEncrypt } from './kuznechik';
-import { AESCipherV3 } from './aes256';
+import { PrivKey, PubKey } from "@hicaru/ntrup.js";
+import {
+  NTRU_CONFIG,
+  ntruDecrypt,
+  ntruEncrypt,
+  ntruKeysFromSeed,
+} from "./ntrup";
+import { sha256 } from "./sha256";
+import { deriveArgon2Key, Argon2Config } from "./argon2";
+import {
+  kuznechikDecrypt,
+  kuznechikEncrypt,
+  KUZNECHIK_KEY_SIZE,
+} from "./kuznechik";
+import { AESCipherV3 } from "./aes256";
 
-const PUBLICKEYS_BYTES = 1522; 
-const SECRETKEYS_BYTES = 382; 
-const AES_GCM_KEY_SIZE = 32; 
-const KEYCHAIN_BYTES_SIZE = PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE;
+export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
+export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
+export const AES_GCM_KEY_SIZE = KUZNECHIK_KEY_SIZE;
+export const KEYCHAIN_BYTES_SIZE =
+  PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE + KUZNECHIK_KEY_SIZE;
 
-async function deriveKeyFromSeed(seed: Uint8Array, idx: number): Promise<Uint8Array> {
-    const hasher = new Uint8Array([...seed, idx]);
-    return sha256(hasher);
+export async function deriveKeyFromSeed(
+  seed: Uint8Array,
+  idx: number,
+): Promise<Uint8Array> {
+  const hasher = new Uint8Array([...seed, idx]);
+  return sha256(hasher);
+}
+
+export enum PasswordHashFunctions {
+  Pbkdf2Size512,
+  Pbkdf2Size256,
+  Argon2Size512,
 }
 
 export enum CipherOrders {
@@ -5012,100 +5490,133 @@ export enum CipherOrders {
   NTRUP761,
 }
 
-
 export class KeyChain {
-    public ntrupKeys: { pk: PubKey; sk: PrivKey };
-    public aesKey: Uint8Array;
-    public kuznechikKey: Uint8Array;
+  public ntrupKeys: { pk: PubKey; sk: PrivKey };
+  public aesKey: Uint8Array;
+  public kuznechikKey: Uint8Array;
 
-    constructor(ntrupKeys: { pk: PubKey; sk: PrivKey }, aesKey: Uint8Array, kuznechikKey: Uint8Array) {
-        this.ntrupKeys = ntrupKeys;
-        this.aesKey = aesKey;
-        this.kuznechikKey = kuznechikKey;
+  constructor(
+    ntrupKeys: { pk: PubKey; sk: PrivKey },
+    aesKey: Uint8Array,
+    kuznechikKey: Uint8Array,
+  ) {
+    this.ntrupKeys = ntrupKeys;
+    this.aesKey = aesKey;
+    this.kuznechikKey = kuznechikKey;
+  }
+
+  static async fromSeed(seed: Uint8Array): Promise<KeyChain> {
+    const ntrupKeys = ntruKeysFromSeed(seed);
+    const aesKey = await deriveKeyFromSeed(seed, 0);
+    const kuznechikKey = await deriveKeyFromSeed(seed, 1);
+    return new KeyChain(ntrupKeys, aesKey, kuznechikKey);
+  }
+
+  static async fromPass(
+    password: Uint8Array,
+    fingerprint: string,
+    argonConfig: Argon2Config,
+  ): Promise<KeyChain> {
+    const seed = deriveArgon2Key(password, fingerprint, argonConfig);
+    return KeyChain.fromSeed(seed);
+  }
+
+  static async fromBytes(bytes: Uint8Array): Promise<KeyChain> {
+    if (bytes.length !== KEYCHAIN_BYTES_SIZE) {
+      throw new Error("Invalid byte length");
     }
+    const pkBytes = bytes.slice(0, PUBLICKEYS_BYTES);
+    const skBytes = bytes.slice(
+      PUBLICKEYS_BYTES,
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES,
+    );
+    const aesKey = bytes.slice(
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES,
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE,
+    );
+    const kuznechikKey = bytes.slice(
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE,
+      KEYCHAIN_BYTES_SIZE,
+    );
 
-    static async fromSeed(seed: Uint8Array): Promise<KeyChain> {
-        const ntrupKeys = ntruKeysFromSeed(seed);
-        const aesKey = await deriveKeyFromSeed(seed, 0);
-        const kuznechikKey = await deriveKeyFromSeed(seed, 1);
-        return new KeyChain(ntrupKeys, aesKey, kuznechikKey);
+    const pk = PubKey.import(pkBytes, NTRU_CONFIG);
+    const sk = PrivKey.import(skBytes, NTRU_CONFIG);
+
+    return new KeyChain({ pk, sk }, aesKey, kuznechikKey);
+  }
+
+  toBytes(): Uint8Array {
+    const pkBytes = this.ntrupKeys.pk.toBytes(NTRU_CONFIG);
+    const skBytes = this.ntrupKeys.sk.toBytes(NTRU_CONFIG);
+    const aesKey = this.aesKey;
+    const kuznechikKey = this.kuznechikKey;
+
+    const res = new Uint8Array(KEYCHAIN_BYTES_SIZE);
+    res.set(pkBytes, 0);
+    res.set(skBytes, PUBLICKEYS_BYTES);
+    res.set(aesKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
+    res.set(
+      kuznechikKey,
+      PUBLICKEYS_BYTES + SECRETKEYS_BYTES + AES_GCM_KEY_SIZE,
+    );
+    return res;
+  }
+
+  async encrypt(
+    plaintext: Uint8Array,
+    options: CipherOrders[],
+  ): Promise<Uint8Array> {
+    let data = plaintext;
+    for (const o of options) {
+      switch (o) {
+        case CipherOrders.AESGCM256:
+          data = AESCipherV3.encrypt(data, this.aesKey);
+          break;
+        case CipherOrders.KUZNECHIK:
+          data = kuznechikEncrypt(this.kuznechikKey, data);
+          break;
+        case CipherOrders.NTRUP761:
+          data = ntruEncrypt(this.ntrupKeys.pk, data);
+          break;
+      }
     }
+    return data;
+  }
 
-    static async fromPass(password: Uint8Array, fingerprint: string, argonConfig: Argon2Config): Promise<KeyChain> {
-        const seed = deriveArgon2Key(password, fingerprint, argonConfig);
-        return KeyChain.fromSeed(seed);
+  async decrypt(
+    ciphertext: Uint8Array,
+    options: CipherOrders[],
+  ): Promise<Uint8Array> {
+    let data = ciphertext;
+    for (const o of options.slice().reverse()) {
+      switch (o) {
+        case CipherOrders.AESGCM256:
+          data = AESCipherV3.decrypt(data, this.aesKey);
+          break;
+        case CipherOrders.KUZNECHIK:
+          data = kuznechikDecrypt(this.kuznechikKey, data);
+          break;
+        case CipherOrders.NTRUP761:
+          data = ntruDecrypt(this.ntrupKeys.sk, data);
+          break;
+      }
     }
+    return data;
+  }
 
-    static async fromBytes(bytes: Uint8Array): Promise<KeyChain> {
-        if (bytes.length !== KEYCHAIN_BYTES_SIZE) {
-            throw new Error('Invalid byte length');
-        }
-        const pkBytes = bytes.slice(0, PUBLICKEYS_BYTES);
-        const skBytes = bytes.slice(PUBLICKEYS_BYTES, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
-        const aesKey = bytes.slice(PUBLICKEYS_BYTES + SECRETKEYS_BYTES, KEYCHAIN_BYTES_SIZE);
+  async makeProof(
+    seed: Uint8Array,
+    options: CipherOrders[],
+  ): Promise<Uint8Array> {
+    return this.encrypt(seed, options);
+  }
 
-        const pk = PubKey.import(pkBytes, NTRU_CONFIG); 
-        const sk = PrivKey.import(skBytes, NTRU_CONFIG); 
-        const kuznechikKey = await deriveKeyFromSeed(aesKey, 1);
-
-        return new KeyChain({ pk, sk }, aesKey, kuznechikKey);
-    }
-
-    toBytes(): Uint8Array {
-        const pkBytes = this.ntrupKeys.pk.toBytes(NTRU_CONFIG);
-        const skBytes = this.ntrupKeys.sk.toBytes(NTRU_CONFIG);
-        const aesKey = this.aesKey;
-
-        const res = new Uint8Array(KEYCHAIN_BYTES_SIZE);
-        res.set(pkBytes, 0);
-        res.set(skBytes, PUBLICKEYS_BYTES);
-        res.set(aesKey, PUBLICKEYS_BYTES + SECRETKEYS_BYTES);
-        return res;
-    }
-
-    async encrypt(plaintext: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
-        let data = plaintext;
-        for (const o of options) {
-            switch (o) {
-                case CipherOrders.AESGCM256:
-                    data = AESCipherV3.encrypt(data, this.aesKey);
-                    break;
-                case CipherOrders.KUZNECHIK:
-                    data = kuznechikEncrypt(this.kuznechikKey, data);
-                    break;
-                case CipherOrders.NTRUP761:
-                    data = ntruEncrypt(this.ntrupKeys.pk, data);
-                    break;
-            }
-        }
-        return data;
-    }
-
-    async decrypt(ciphertext: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
-        let data = ciphertext;
-        for (const o of options.slice().reverse()) {
-            switch (o) {
-                case CipherOrders.AESGCM256:
-                    data = AESCipherV3.decrypt(data, this.aesKey );
-                    break;
-                case CipherOrders.KUZNECHIK:
-                    data = kuznechikDecrypt(this.kuznechikKey, data);
-                    break;
-                case CipherOrders.NTRUP761:
-                    data = ntruDecrypt(this.ntrupKeys.sk, data);
-                    break;
-            }
-        }
-        return data;
-    }
-
-    async makeProof(seed: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
-        return this.encrypt(seed, options);
-    }
-
-    async getProof(cipherProof: Uint8Array, options: CipherOrders[]): Promise<Uint8Array> {
-        return this.decrypt(cipherProof, options);
-    }
+  async getProof(
+    cipherProof: Uint8Array,
+    options: CipherOrders[],
+  ): Promise<Uint8Array> {
+    return this.decrypt(cipherProof, options);
+  }
 }
 
 ```
@@ -5113,31 +5624,47 @@ export class KeyChain {
 `zil-pay/crypto/kuznechik.ts`:
 
 ```ts
-import { KeyStore, AlgOfb, MIN_GAMMA_SIZE } from '@hicaru/kuznechik.js';
-import { randomBytes } from './random';
+import {
+  KeyStore,
+  AlgOfb,
+  MIN_GAMMA_SIZE,
+  MASTER_KEY_SIZE,
+} from "@hicaru/kuznechik.js";
+import { randomBytes } from "./random";
 
-export function kuznechikEncrypt(key: Uint8Array, plaintext: Uint8Array): Uint8Array {
-    const keyStore = new KeyStore();
-    keyStore.setMasterKey(key);
-    const gamma = randomBytes(MIN_GAMMA_SIZE);
-    const alg = new AlgOfb(keyStore);
-    alg.setGamma(gamma);
-    const encrypted = alg.encrypt(plaintext);
-    const finalCiphertext = new Uint8Array(encrypted.length + gamma.length);
-    finalCiphertext.set(encrypted, 0);
-    finalCiphertext.set(gamma, encrypted.length);
-    return finalCiphertext;
+export const KUZNECHIK_KEY_SIZE = MASTER_KEY_SIZE;
+
+export function kuznechikEncrypt(
+  key: Uint8Array,
+  plaintext: Uint8Array,
+): Uint8Array {
+  const keyStore = new KeyStore();
+  keyStore.setMasterKey(key);
+  const gamma = randomBytes(MIN_GAMMA_SIZE);
+  const alg = new AlgOfb(keyStore);
+  alg.setGamma(gamma);
+  const encrypted = alg.encrypt(plaintext);
+  const finalCiphertext = new Uint8Array(encrypted.length + gamma.length);
+  finalCiphertext.set(encrypted, 0);
+  finalCiphertext.set(gamma, encrypted.length);
+  return finalCiphertext;
 }
 
-export function kuznechikDecrypt(key: Uint8Array, ciphertext: Uint8Array): Uint8Array {
-    const gamma = ciphertext.slice(ciphertext.length - MIN_GAMMA_SIZE);
-    const actualCiphertext = ciphertext.slice(0, ciphertext.length - MIN_GAMMA_SIZE);
-    const keyStore = new KeyStore();
-    keyStore.setMasterKey(key);
-    const alg = new AlgOfb(keyStore);
-    alg.setGamma(gamma);
-    const plaintext = alg.decrypt(actualCiphertext);
-    return plaintext;
+export function kuznechikDecrypt(
+  key: Uint8Array,
+  ciphertext: Uint8Array,
+): Uint8Array {
+  const gamma = ciphertext.slice(ciphertext.length - MIN_GAMMA_SIZE);
+  const actualCiphertext = ciphertext.slice(
+    0,
+    ciphertext.length - MIN_GAMMA_SIZE,
+  );
+  const keyStore = new KeyStore();
+  keyStore.setMasterKey(key);
+  const alg = new AlgOfb(keyStore);
+  alg.setGamma(gamma);
+  const plaintext = alg.decrypt(actualCiphertext);
+  return plaintext;
 }
 
 ```
