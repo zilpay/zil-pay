@@ -11,6 +11,9 @@ import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
 import { APP_ID } from "../../config/argon2";
 import { randomBytes } from "../../crypto/random";
 import { NTRU_CONFIG } from "../../crypto/ntrup";
+import { utils } from "aes-js";
+import { PASSWORD, STORAGE_V2, WORDS } from "../data";
+import { sha256 } from "../../crypto/sha256";
 
 const LIGHT_ARGON2_CONFIG = new Config(
   APP_ID,
@@ -131,5 +134,27 @@ describe("KeyChain", () => {
 
     expect(proofCipher).not.toEqual(proofSeed);
     expect(retrievedSeed).toEqual(proofSeed);
+  });
+
+  it("should decrypt old AESCBC encrypted data correctly", async () => {
+    let password = utils.utf8.toBytes(PASSWORD);
+    let keyBytes = await sha256(password);
+    let key = utils.hex.fromBytes(keyBytes);
+    let aesKey = new TextEncoder().encode(key);
+
+    const dummySeed = randomBytes(32);
+    const dummyKeychain = await KeyChain.fromSeed(dummySeed);
+    const ntrupKeys = dummyKeychain.ntrupKeys;
+    const kuznechikKey = dummyKeychain.kuznechikKey;
+
+    const keychain = new KeyChain(ntrupKeys, aesKey, kuznechikKey);
+
+    let vault = STORAGE_V2.vault;
+    let ciphertext = new TextEncoder().encode(vault);
+
+    const decrypted = await keychain.decrypt(ciphertext, [CipherOrders.AESCBC]);
+    const decryptedStr = new TextDecoder().decode(decrypted);
+
+    expect(decryptedStr).toEqual(WORDS);
   });
 });
