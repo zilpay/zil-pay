@@ -12,7 +12,7 @@ import {
   kuznechikEncrypt,
   KUZNECHIK_KEY_SIZE,
 } from "./kuznechik";
-import { AESCipherV3,  AESCipherV2 } from "./aes256";
+import { AESCipherV3, AESCipherV2 } from "./aes256";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
 export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;

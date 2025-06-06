@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import sinonChrome from "sinon-chrome";
-import { EXTENSION_ID } from './data';
+import { EXTENSION_ID } from "./data";
 
 global.chrome = sinonChrome;
 global.chrome.runtime.id = EXTENSION_ID;

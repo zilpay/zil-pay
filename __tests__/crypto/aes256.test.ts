@@ -1,19 +1,31 @@
 import { test, expect } from "vitest";
 import { AESCipherV2, AESCipherV3, ErrorMessages } from "../../crypto/aes256";
 import { sha256 } from "../../crypto/sha256";
-import { IMPORTED_KEY, PASSWORD, STORAGE_V2, STORAGE_V3, WORDS, EXTENSION_ID } from "../data";
+import {
+  IMPORTED_KEY,
+  PASSWORD,
+  STORAGE_V2,
+  STORAGE_V3,
+  WORDS,
+  EXTENSION_ID,
+} from "../data";
 import { utils } from "aes-js";
-import { pbkdf2 } from '../../crypto/pbkdf2';
+import { pbkdf2 } from "../../crypto/pbkdf2";
 import { base64ToUint8Array } from "../../crypto/b64";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 
 test("decrypt Storage v3 AES-v3", async () => {
   const salt = utils.utf8.toBytes(EXTENSION_ID);
-  const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(':');
+  const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(":");
   const vaultBase64 = STORAGE_V3.vault;
   const vaultBytes = base64ToUint8Array(vaultBase64);
   const passwordBytes = utils.utf8.toBytes(PASSWORD);
-  const key = await pbkdf2(passwordBytes, salt, Number(iteractions), algorithm as ShaAlgorithms);
+  const key = await pbkdf2(
+    passwordBytes,
+    salt,
+    Number(iteractions),
+    algorithm as ShaAlgorithms,
+  );
   const key32 = await sha256(key);
   const decryptedBytes = AESCipherV3.decrypt(vaultBytes, key32);
   const decrypted = utils.utf8.fromBytes(decryptedBytes);
@@ -23,9 +35,14 @@ test("decrypt Storage v3 AES-v3", async () => {
 
 test("decrypt accounts Storage v3 AES-v3", async () => {
   const salt = utils.utf8.toBytes(EXTENSION_ID);
-  const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(':');
+  const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(":");
   const passwordBytes = utils.utf8.toBytes(PASSWORD);
-  const key = await pbkdf2(passwordBytes, salt, Number(iteractions), algorithm as ShaAlgorithms);
+  const key = await pbkdf2(
+    passwordBytes,
+    salt,
+    Number(iteractions),
+    algorithm as ShaAlgorithms,
+  );
   const key32 = await sha256(key);
   const walletIdentities = JSON.parse(STORAGE_V3["wallet-identities"]);
   const importedAccount = walletIdentities.identities[1];
