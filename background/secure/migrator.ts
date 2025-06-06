@@ -1,157 +1,80 @@
-import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
-import { TypeOf } from "../../lib/types/checker";
-import { uuid } from "../../crypto/uuid";
-import { CipherOrders } from "../../crypto/keychain";
-import { AESCipherV2, AESCipherV3 } from "../../crypto/aes256";
-import { sha256 } from "../../crypto/sha256";
-import { pbkdf2 } from "../../crypto/pbkdf2";
-import { utils } from "aes-js";
-import { ShaAlgorithms } from "../../config/pbkdf2";
-import { base64ToUint8Array, uint8ArrayToBase64 } from "../../crypto/b64";
-import { deriveArgon2Key } from "../../crypto/argon2";
-import { APP_ID } from "../../config/argon2";
-import { EXTENSION_ID } from "../../lib/runtime";
+import { Config, Variant, Version } from '@hicaru/argon2-pure.js';
+import { utils } from 'aes-js';
+import { TypeOf } from '../../lib/types/checker';
+import { EXTENSION_ID } from '../../lib/runtime';
+import { AESCipherV2, AESCipherV3 } from '../../crypto/aes256';
+import { sha256 } from '../../crypto/sha256';
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { ShaAlgorithms } from '../../config/pbkdf2';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
+import { deriveArgon2Key } from '../../crypto/argon2';
+import { APP_ID } from '../../config/argon2';
+import { CipherOrders } from '../../crypto/keychain';
+import { BackgroundState, AppearancesTheme } from '../storage/background';
+import { ChainConfig } from '../storage/chain';
+import { Wallet } from '../storage/wallet';
+import { Account } from '../storage/account';
+import { FToken } from '../storage/ftoken';
+import { AddressType } from '../storage/address-type';
+import { WalletSettings } from '../storage/settings';
+import { WalletArgon2Params } from '../storage/argon';
 
-export interface StorageMeta {
-  dataSchemaVersion: string;
-  securitySchemaVersion: string;
-  lastMigrationTimestamp?: string;
-  extensionId: string;
-  createdAt: string;
-  lastUnlockedTimestamp?: string;
+interface OldWallets {
+  selectedAddress: number;
+  identities: OldIdentity[];
 }
 
-export interface UserPreferences {
-  theme: "light" | "dark" | "system";
-  selectedLocale: string;
-  popupEnabled: boolean;
-  defaultCurrency: string;
-  badgeCounterEnabled: boolean;
-  hideBalances: boolean;
-}
-
-export interface AppState {
-  currentBlockNumber: string;
-  lastFullSyncTimestamp?: string;
-  lastPriceUpdateTimestamp?: string;
-  isFirstLaunch?: boolean;
-}
-
-export interface Argon2Config extends Config {}
-
-export interface EncryptionParameters {
-  algorithm: CipherOrders[];
-  argonConfig: Argon2Config;
-}
-
-export interface SecuritySettings {
-  autoLockMinutes: number;
-  phishingDetectionEnabled: boolean;
-  vaultEncryption: EncryptionParameters;
-  privateKeyEncryption: EncryptionParameters;
-}
-
-export interface TokenBalance {
-  amount: string;
-  lastUpdated: string;
-}
-
-export interface NftIdentifier {
-  contractAddress: string;
-  tokenId: string;
-  name?: string;
-  imageUrl?: string;
-  collectionName?: string;
-}
-
-export interface Wallet {
-  id: string;
+interface OldIdentity {
   name: string;
-  type: "hd" | "imported_pk" | "ledger" | "readonly";
-  base16Address: string;
-  bech32Address: string;
-  publicKey: string;
-  hdPath?: string;
-  index?: number;
-  encryptedPrivateKey?: string;
-  balances: {
-    [tokenIdentifier: string]: TokenBalance;
-  };
-  nfts: NftIdentifier[];
-  createdAt: string;
+  bech32: string;
+  base16: string;
+  index: number;
+  type: number;
+  pubKey: string;
+  privKey?: string;
+  zrc2: Record<string, string>;
+  nft: Record<string, unknown>;
 }
 
-interface TokenDefinition {
+interface OldNetworkList {
+  selected: number;
+  list: OldNetwork[];
+}
+
+interface OldNetwork {
   address: string;
-  symbol: string;
+  api: string;
+  id: number;
   name: string;
+}
+
+interface OldToken {
+  base16: string;
+  bech32: string;
   decimals: number;
-  logoUrl?: string;
-  isCustom: boolean;
-  isNative: boolean;
-  isDefault: boolean;
-}
-
-export interface NetworkConfiguration {
-  id: string;
   name: string;
-  chainId: string;
-  apiUrl: string;
-  nativeTokenSymbol: string;
-  defaultGasPrice: string;
-  defaultGasLimit: string;
-  isDefault: boolean;
-  tokens: TokenDefinition[];
+  symbol: string;
+  rate: number;
 }
 
-export interface Contact {
-  id: string;
-  name: string;
-  address: string;
-  notes?: string;
-  createdAt: string;
+function isV3Storage(data: Record<string, unknown>): boolean {
+  return (
+    !data.meta &&
+    TypeOf.isString(data['guard-configuration']) &&
+    TypeOf.isString(data['wallet-identities'])
+  );
 }
 
-export interface ConnectedDApp {
-  origin: string;
-  name?: string;
-  iconUrl?: string;
-  connectedDate: string;
-  connectedWalletIds: string[];
-  permissionsGranted?: string[];
+function isV2Storage(data: Record<string, unknown>): boolean {
+  return (
+    !data.meta &&
+    !data['guard-configuration'] &&
+    TypeOf.isString(data['wallet-identities'])
+  );
 }
 
-export interface PendingConfirmation {
-  id: string;
-  type: "transaction" | "signMessage" | "connectDapp" | "signTypedData";
-  origin?: string;
-  walletId: string;
-  networkId: string;
-  payload: object;
-  createdAt: string;
-  expiresAt?: string;
-}
-
-export interface ZilPayStorageSchemaV4 {
-  meta: StorageMeta;
-  userPreferences: UserPreferences;
-  appState: AppState;
-  security: {
-    settings: SecuritySettings;
-    encryptedVault: string;
-  };
-  wallets: {
-    all: Wallet[];
-    selectedWalletIndex: number;
-  };
-  networks: NetworkConfiguration[];
-  contacts: Contact[];
-  connectedDapps: ConnectedDApp[];
-  pendingConfirmations: PendingConfirmation[];
-  currencyRates: {
-    [currencyCode: string]: number;
-  };
-  [value: string]: unknown;
+function needsMigration(data: Record<string, unknown>): boolean {
+  return isV2Storage(data) || isV3Storage(data);
 }
 
 const safeJsonParse = <T>(jsonString: unknown, defaultValue: T): T => {
@@ -165,190 +88,67 @@ const safeJsonParse = <T>(jsonString: unknown, defaultValue: T): T => {
   }
 };
 
-export const getDefaultEncryptionParams = (): EncryptionParameters => ({
-  algorithm: [
-    CipherOrders.AESGCM256,
-    CipherOrders.NTRUP761,
-    CipherOrders.KUZNECHIK,
-  ],
-  argonConfig: new Config(
-    APP_ID,
-    64,
-    4,
-    65536,
-    new Uint8Array(),
-    2,
-    Variant.Argon2id,
-    Version.Version13
-  ) as Argon2Config,
-});
-
-function migrateToV4(
-  oldData: Record<string, unknown>
-): ZilPayStorageSchemaV4 {
-  const now = new Date().toISOString();
-  const defaultEncryptionParams = getDefaultEncryptionParams();
-
-  const oldWallets = safeJsonParse(oldData["wallet-identities"], {
-    selectedAddress: 0,
-    identities: [],
-  });
-  const oldNetworks = safeJsonParse(oldData["ssn-list"], {
-    selected: 0,
-    list: [],
-  });
-  const mainnetTokens = safeJsonParse(oldData["tokens-list/mainnet"], []);
-  const oldContacts = safeJsonParse(oldData["contacts"], []);
-  const oldConnections = safeJsonParse(oldData["connection-list"], []);
-  const oldConfirmations = safeJsonParse(oldData["confirm/mainnet"], []);
-  const oldRates = safeJsonParse(oldData["rate-of-currencies"], {});
-
-  const wallets: Wallet[] = oldWallets.identities.map((identity: any) => {
-    const balances: { [tokenIdentifier: string]: TokenBalance } = {};
-    if (identity.zrc2) {
-      for (const tokenAddr in identity.zrc2) {
-        balances[tokenAddr] = {
-          amount: String(identity.zrc2[tokenAddr]),
-          lastUpdated: now,
-        };
-      }
-    }
-
-    const walletType = identity.type === 1 ? "imported_pk" : "hd";
-    let hdPath: string | undefined;
-    if (walletType === "hd") {
-      hdPath = `m/44'/313'/0'/0/${identity.index}`;
-    }
-
-    const nfts = identity.nft ? Object.values(identity.nft) : [];
-
-    return {
-      id: uuid(),
-      name: identity.name,
-      type: walletType,
-      base16Address: identity.base16,
-      bech32Address: identity.bech32,
-      publicKey: identity.pubKey,
-      hdPath,
-      index: identity.index,
-      encryptedPrivateKey: identity.privKey,
-      balances,
-      nfts: nfts as NftIdentifier[],
-      createdAt: now,
-    };
+const getDefaultSettings = (oldData: Record<string, unknown>): WalletSettings => {
+  const originArgon2Config = Config.original();
+  const argonParams = new WalletArgon2Params({
+    memory: originArgon2Config.memCost,
+    iterations: originArgon2Config.timeCost,
+    threads: originArgon2Config.lanes,
+    secret: "",
   });
 
-  const networks: NetworkConfiguration[] = oldNetworks.list.map(
-    (network: any) => {
-      const isMainnet = network.name === "Main";
-      const networkTokens: TokenDefinition[] = isMainnet
-        ? mainnetTokens.map((token: any) => ({
-            address: token.base16,
-            symbol: token.symbol,
-            name: token.name,
-            decimals: token.decimals,
-            logoUrl: token.logoUrl,
-            isCustom: false,
-            isNative: token.symbol === "ZIL",
-            isDefault: true,
-          }))
-        : [];
+  return new WalletSettings({
+    cipherOrders: [
+      CipherOrders.AESGCM256,
+      CipherOrders.NTRUP761,
+      CipherOrders.KUZNECHIK,
+    ],
+    argonParams,
+    currencyConvert: String(oldData['selected-currency'] || 'btc'),
+    ipfsNode: null,
+    ensEnabled: false,
+    tokensListFetcher: true,
+    nodeRankingEnabled: true,
+    maxConnections: 10,
+    requestTimeoutSecs: 30,
+    ratesApiOptions: 0,
+  });
+};
 
-      return {
-        id: network.name.toLowerCase().replace(/\s+/g, "_"),
-        name: network.name,
-        chainId: String(network.id),
-        apiUrl: network.api,
-        nativeTokenSymbol: "ZIL",
-        defaultGasPrice: "2000000000",
-        defaultGasLimit: "1",
-        isDefault: isMainnet,
-        tokens: networkTokens,
-      };
+const getTheme = (theme: unknown): AppearancesTheme => {
+    switch(theme) {
+        case 'dark': return AppearancesTheme.Dark;
+        case 'light': return AppearancesTheme.Light;
+        default: return AppearancesTheme.System;
     }
-  );
-
-  return {
-    meta: {
-      dataSchemaVersion: "4.0.0",
-      securitySchemaVersion: "2.0.0",
-      lastMigrationTimestamp: now,
-      extensionId: EXTENSION_ID,
-      createdAt: now,
-    },
-    userPreferences: {
-      theme: (oldData.theme as "light" | "dark" | "system") || "system",
-      selectedLocale: oldData["selected-local"] as string,
-      popupEnabled: oldData["popup-enabled"] === "1",
-      defaultCurrency: oldData["selected-currency"] as string,
-      badgeCounterEnabled: (oldData["badge-counter"] ?? "1") === "1",
-      hideBalances: false,
-    },
-    appState: {
-      currentBlockNumber: oldData.blocknumber as string,
-      isFirstLaunch: false,
-      lastFullSyncTimestamp: now,
-      lastPriceUpdateTimestamp: now,
-    },
-    security: {
-      settings: {
-        autoLockMinutes: Number(oldData.time_before_lock),
-        phishingDetectionEnabled: oldData["phishing-detection"] === "1",
-        vaultEncryption: defaultEncryptionParams,
-        privateKeyEncryption: defaultEncryptionParams,
-      },
-      encryptedVault: oldData.vault as string,
-    },
-    wallets: {
-      all: wallets,
-      selectedWalletIndex: oldWallets.selectedAddress,
-    },
-    networks,
-    contacts: oldContacts.map((contact: any) => ({
-      id: uuid(),
-      name: contact.name,
-      address: contact.address,
-      notes: contact.notes,
-      createdAt: now,
-    })),
-    connectedDapps: oldConnections.map((dapp: any) => ({
-      origin: dapp.domain,
-      name: dapp.title,
-      iconUrl: dapp.icon,
-      connectedDate: new Date(dapp.date).toISOString(),
-      connectedWalletIds: [],
-      permissionsGranted: [],
-    })),
-    pendingConfirmations: oldConfirmations as PendingConfirmation[],
-    currencyRates: oldRates,
-  };
 }
 
-export async function migrateEncryptedState(
+async function migrateEncryptedKeys(
   oldData: Record<string, unknown>,
   password: string,
-  wallets: Wallet[]
-): Promise<{ encryptedVault: string; wallets: Wallet[] }> {
+  accounts: Account[]
+): Promise<{ newVault: Uint8Array, updatedAccounts: Account[] }> {
   const passwordBytes = utils.utf8.toBytes(password);
   const oldEncryptedVault = oldData.vault as string;
-  const oldIdentities = safeJsonParse(oldData["wallet-identities"], {
+  const oldIdentities = safeJsonParse<OldWallets>(oldData['wallet-identities'], {
     identities: [],
+    selectedAddress: 0
   }).identities;
 
   let decryptionKey: Uint8Array | string;
-  let decryptVault: (encrypted: string, key: any) => Promise<string | Uint8Array>;
-  let decryptPrivKey: (encrypted: string, key: any) => Promise<string | Uint8Array>;
+  let decryptVault: (encrypted: string) => Promise<string | Uint8Array>;
+  let decryptPrivKey: (encrypted: string) => Promise<string | Uint8Array>;
 
   if (isV2Storage(oldData)) {
     const keyBytes = await sha256(passwordBytes);
     decryptionKey = utils.hex.fromBytes(keyBytes);
-    decryptVault = async (vault, key) => AESCipherV2.decrypt(vault, key);
-    decryptPrivKey = async (privKey, key) => AESCipherV2.decrypt(privKey, key);
-  } else if (isV3Storage(oldData)) {
+    decryptVault = (vault) => AESCipherV2.decrypt(vault, decryptionKey);
+    decryptPrivKey = (privKey) => AESCipherV2.decrypt(privKey, decryptionKey);
+  } else {
     const salt = utils.utf8.toBytes(EXTENSION_ID);
     const [algorithm, iterations] = String(
-      oldData["guard-configuration"]
-    ).split(":");
+      oldData['guard-configuration']
+    ).split(':');
     const key = await pbkdf2(
       passwordBytes,
       salt,
@@ -356,99 +156,152 @@ export async function migrateEncryptedState(
       algorithm as ShaAlgorithms
     );
     decryptionKey = await sha256(key);
-    decryptVault = async (vault, key) => AESCipherV3.decrypt(base64ToUint8Array(vault), key);
-    decryptPrivKey = async (privKey, key) => AESCipherV3.decrypt(base64ToUint8Array(privKey), key);
-  } else {
-    throw new Error(
-      "Cannot migrate encrypted state from unknown storage version."
-    );
+    decryptVault = (vault) => AESCipherV3.decrypt(base64ToUint8Array(vault), decryptionKey);
+    decryptPrivKey = (privKey) => AESCipherV3.decrypt(base64ToUint8Array(privKey), decryptionKey);
   }
 
-  const decryptedMnemonicBytes = await decryptVault(
-    oldEncryptedVault,
-    decryptionKey
-  );
-  const newEncryptionKey = await sha256(
-    deriveArgon2Key(
-      passwordBytes,
-      EXTENSION_ID,
-      getDefaultEncryptionParams().argonConfig
-    )
+  const argonConfig = new Config(
+    APP_ID, 64, 4, 65536, new Uint8Array(), 2, Variant.Argon2id, Version.Version13
   );
 
-  const newEncryptedVaultBytes = AESCipherV3.encrypt(
-    TypeOf.isString(decryptedMnemonicBytes)
-      ? utils.utf8.toBytes(decryptedMnemonicBytes as string)
-      : (decryptedMnemonicBytes as Uint8Array),
-    newEncryptionKey
+  const newEncryptionKey = await sha256(
+    deriveArgon2Key(passwordBytes, EXTENSION_ID, argonConfig)
   );
-  const newEncryptedVault = uint8ArrayToBase64(newEncryptedVaultBytes);
+  
+  const decryptedMnemonicBytes = await decryptVault(oldEncryptedVault);
+  const mnemonicBytes = TypeOf.isString(decryptedMnemonicBytes)
+      ? utils.utf8.toBytes(decryptedMnemonicBytes as string)
+      : (decryptedMnemonicBytes as Uint8Array);
+
+  const newVault = AESCipherV3.encrypt(mnemonicBytes, newEncryptionKey);
+
+  const updatedAccounts = [...accounts];
 
   for (const identity of oldIdentities) {
-    if (identity["type"] === 1 && identity["privKey"]) {
-      const decryptedPkBytes = await decryptPrivKey(
-        identity["privKey"],
-        decryptionKey
-      );
-      const newEncryptedPkBytes = AESCipherV3.encrypt(
-        TypeOf.isString(decryptedPkBytes)
-          ? utils.hex.toBytes(decryptedPkBytes as string)
-          : (decryptedPkBytes as Uint8Array),
-        newEncryptionKey
-      );
+    if (identity.type === 1 && identity.privKey) {
+      const decryptedPkBytes = await decryptPrivKey(identity.privKey);
+      const pkBytes = TypeOf.isString(decryptedPkBytes)
+        ? utils.hex.toBytes(decryptedPkBytes as string)
+        : (decryptedPkBytes as Uint8Array);
 
-      const wallet = wallets.find((w) => w.base16Address === identity["base16"]);
-      if (wallet) {
-        wallet.encryptedPrivateKey = uint8ArrayToBase64(newEncryptedPkBytes);
+      const newEncryptedPkBytes = AESCipherV3.encrypt(pkBytes, newEncryptionKey);
+      const newEncryptedPk = uint8ArrayToBase64(newEncryptedPkBytes);
+      
+      const accountIndex = updatedAccounts.findIndex(acc => acc.addr === identity.base16);
+      if (accountIndex > -1) {
+        updatedAccounts[accountIndex].encryptedPrivKey = newEncryptedPk;
       }
     }
   }
 
-  return {
-    encryptedVault: newEncryptedVault,
-    wallets,
-  };
+  return { newVault, updatedAccounts };
 }
 
-export function isV4Storage(
-  data: Record<string, unknown>
-): data is ZilPayStorageSchemaV4 {
-  const meta = data.meta as Record<string, unknown> | undefined;
-  return (
-    !!meta &&
-    TypeOf.isObject(meta) &&
-    TypeOf.isString(meta.dataSchemaVersion) &&
-    (meta.dataSchemaVersion as string).startsWith("4")
+function transformToV4(oldData: Record<string, unknown>): BackgroundState {
+  const oldWallets = safeJsonParse<OldWallets>(oldData['wallet-identities'], { selectedAddress: 0, identities: [] });
+  const oldNetworks = safeJsonParse<OldNetworkList>(oldData['ssn-list'], { selected: 0, list: [] });
+  const mainnetTokens = safeJsonParse<OldToken[]>(oldData['tokens-list/mainnet'], []);
+
+  const accounts = oldWallets.identities.map(
+    (identity) =>
+      new Account({
+        addr: identity.base16,
+        addrType: AddressType.EthCheckSum,
+        name: identity.name,
+        pubKey: identity.pubKey,
+        chainHash: 1,
+        chainId: 1,
+        slip44: 313,
+        index: identity.index,
+        encryptedPrivKey: identity.privKey, 
+      })
   );
-}
 
-export function isV3Storage(data: Record<string, unknown>): boolean {
-  return (
-    !data.meta &&
-    TypeOf.isString(data["guard-configuration"]) &&
-    TypeOf.isString(data["wallet-identities"])
+  const wallet = new Wallet({
+    walletType: 'hd',
+    walletName: 'My Zilliqa Wallet',
+    authType: 'mnemonic',
+    walletAddress: accounts[oldWallets.selectedAddress]?.addr || '',
+    accounts: accounts,
+    selectedAccount: oldWallets.selectedAddress,
+    tokens: [],
+    settings: getDefaultSettings(oldData),
+    defaultChainHash: 1,
+  });
+
+  const zilTokens = mainnetTokens.map(
+    (token) =>
+      new FToken({
+        name: token.name,
+        symbol: token.symbol,
+        decimals: token.decimals,
+        addr: token.base16,
+        addrType: AddressType.EthCheckSum,
+        logo: null,
+        balances: oldWallets.identities.reduce((acc, identity, index) => {
+            acc[index] = identity.zrc2[token.base16] || '0';
+            return acc;
+        }, {} as Record<number, string>),
+        rate: token.rate,
+        default_: true,
+        native: token.symbol === 'ZIL',
+        chainHash: 1,
+      })
   );
+
+  const zilliqaChain = new ChainConfig({
+      name: 'Zilliqa Mainnet',
+      logo: 'https://static.debank.com/image/chain/logo_url/zilliqa/a78998063143521b2d076f82b7194635.png',
+      chain: 'zilliqa',
+      shortName: 'zil',
+      rpc: [oldNetworks.list.find(n => n.id === 1)?.api || 'https://api.zilliqa.com'],
+      features: [],
+      chainId: 1,
+      chainIds: [BigInt(1)],
+      slip44: 313,
+      diffBlockTime: 45,
+      chainHash: 1,
+      ens: null,
+      explorers: [],
+      fallbackEnabled: true,
+      testnet: false,
+      ftokens: zilTokens
+  });
+
+  return new BackgroundState({
+    wallets: [wallet],
+    notificationsGlobalEnabled: true,
+    locale: String(oldData['selected-local'] || 'auto'),
+    appearances: getTheme(oldData['theme']),
+    abbreviatedNumber: false,
+    hideBalance: false,
+    chains: [zilliqaChain],
+  });
 }
 
-export function isV2Storage(data: Record<string, unknown>): boolean {
-  return (
-    !data.meta &&
-    !data["guard-configuration"] &&
-    TypeOf.isString(data["wallet-identities"])
-  );
-}
+// --- PUBLIC API ---
 
-export function upgradeStorageToV4(
-  data: Record<string, unknown>
-): ZilPayStorageSchemaV4 | Record<string, unknown> {
-  if (isV4Storage(data)) {
-    return data;
+export async function migrateStorageToV4(
+  oldData: Record<string, unknown>,
+  password: string
+): Promise<BackgroundState | null> {
+  if (!needsMigration(oldData)) {
+    return null;
   }
 
-  if (isV3Storage(data) || isV2Storage(data)) {
-    return migrateToV4(data);
-  }
+  const v4State = transformToV4(oldData);
+  const mainWallet = v4State.wallets[0];
 
-  return data;
+  const { newVault, updatedAccounts } = await migrateEncryptedKeys(
+    oldData,
+    password,
+    mainWallet.accounts
+  );
+
+  mainWallet.accounts = updatedAccounts;
+  mainWallet.vault = uint8ArrayToBase64(newVault);
+  
+  return v4State;
 }
+
 

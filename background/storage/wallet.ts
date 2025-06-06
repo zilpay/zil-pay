@@ -12,9 +12,11 @@ export class Wallet {
   tokens: FToken[];
   settings: WalletSettings;
   defaultChainHash: number;
+  vault: string;
 
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as string;
+    this.vault = data.vault as string;
     this.walletName = data.walletName as string;
     this.authType = data.authType as string;
     this.walletAddress = data.walletAddress as string;

@@ -14,6 +14,7 @@ export class BackgroundState {
   appearances: AppearancesTheme;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
+  storageVersion: number;
   chains: ChainConfig[];
 
   constructor(data: Record<string, unknown>) {

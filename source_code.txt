@@ -14,6 +14,7 @@ background
 │   └── guard.ts
 └── storage
     ├── account.ts
+    ├── address-type.ts
     ├── argon.ts
     ├── background.ts
     ├── chain.ts
@@ -956,9 +957,11 @@ export class AuthGuard {
 `background/storage/account.ts`:
 
 ```ts
+import { AddressType } from './address-type';
+
 export class Account {
   addr: string;
-  addrType: number;
+  addrType: AddressType;
   name: string;
   pubKey: string;
   chainHash: number;
@@ -966,26 +969,28 @@ export class Account {
   slip44: number;
   index: number;
 
-  constructor(data: {
-    addr: string;
-    addrType: number;
-    name: string;
-    pubKey: string;
-    chainHash: number;
-    chainId: number;
-    slip44: number;
-    index: number;
-  }) {
-    this.addr = data.addr;
-    this.addrType = data.addrType;
-    this.name = data.name;
-    this.pubKey = data.pubKey;
-    this.chainHash = data.chainHash;
-    this.chainId = data.chainId;
-    this.slip44 = data.slip44;
-    this.index = data.index;
+  constructor(data: Record<string, unknown>) {
+    this.addr = data.addr as string;
+    this.addrType = data.addrType as AddressType;
+    this.name = data.name as string;
+    this.pubKey = data.pubKey as string;
+    this.chainHash = data.chainHash as number;
+    this.chainId = data.chainId as number;
+    this.slip44 = data.slip44 as number;
+    this.index = data.index as number;
   }
 }
+
+```
+
+`background/storage/address-type.ts`:
+
+```ts
+export enum AddressType {
+  Bech32,
+  EthCheckSum
+}
+
 
 ```
 
@@ -998,16 +1003,11 @@ export class WalletArgon2Params {
   threads: number;
   secret: string;
 
-  constructor(data: {
-    memory: number;
-    iterations: number;
-    threads: number;
-    secret: string;
-  }) {
-    this.memory = data.memory;
-    this.iterations = data.iterations;
-    this.threads = data.threads;
-    this.secret = data.secret;
+  constructor(data: Record<string, unknown>) {
+    this.memory = data.memory as number;
+    this.iterations = data.iterations as number;
+    this.threads = data.threads as number;
+    this.secret = data.secret as string;
   }
 }
 
@@ -1019,28 +1019,33 @@ export class WalletArgon2Params {
 import { ChainConfig } from './chain';
 import { Wallet } from './wallet';
 
+export enum AppearancesTheme {
+  System,
+  Dark,
+  Light
+}
+
 export class BackgroundState {
   wallets: Wallet[];
   notificationsGlobalEnabled: boolean;
   locale: string | null;
-  appearances: number;
+  appearances: AppearancesTheme;
   abbreviatedNumber: boolean;
+  hideBalance: boolean;
   chains: ChainConfig[];
 
-  constructor(data: {
-    wallets: Wallet[];
-    notificationsGlobalEnabled: boolean;
-    locale?: string | null;
-    appearances: number;
-    abbreviatedNumber: boolean;
-    chains: ChainConfig[];
-  }) {
-    this.wallets = data.wallets;
-    this.notificationsGlobalEnabled = data.notificationsGlobalEnabled;
-    this.locale = data.locale ?? null;
-    this.appearances = data.appearances;
-    this.abbreviatedNumber = data.abbreviatedNumber;
-    this.chains = data.chains;
+  constructor(data: Record<string, unknown>) {
+    this.wallets = (data.wallets as Record<string, unknown>[]).map(
+      (w) => new Wallet(w)
+    );
+    this.notificationsGlobalEnabled = data.notificationsGlobalEnabled as boolean;
+    this.locale = data.locale as string | null ?? null;
+    this.appearances = data.appearances as AppearancesTheme;
+    this.abbreviatedNumber = data.abbreviatedNumber as boolean;
+    this.hideBalance= data.hideBalance as boolean;
+    this.chains = (data.chains as Record<string, unknown>[]).map(
+      (c) => new ChainConfig(c)
+    );
   }
 }
 
@@ -1070,40 +1075,27 @@ export class ChainConfig {
   testnet: boolean | null;
   ftokens: FToken[];
 
-  constructor(data: {
-    name: string;
-    logo: string;
-    chain: string;
-    shortName: string;
-    rpc: string[];
-    features: number[];
-    chainId: number;
-    chainIds: BigUint64Array;
-    slip44: number;
-    diffBlockTime: number;
-    chainHash: number;
-    ens?: string | null;
-    explorers: Explorer[];
-    fallbackEnabled: boolean;
-    testnet?: boolean | null;
-    ftokens: FToken[];
-  }) {
-    this.name = data.name;
-    this.logo = data.logo;
-    this.chain = data.chain;
-    this.shortName = data.shortName;
-    this.rpc = data.rpc;
-    this.features = data.features;
-    this.chainId = data.chainId;
-    this.chainIds = data.chainIds;
-    this.slip44 = data.slip44;
-    this.diffBlockTime = data.diffBlockTime;
-    this.chainHash = data.chainHash;
-    this.ens = data.ens ?? null;
-    this.explorers = data.explorers;
-    this.fallbackEnabled = data.fallbackEnabled;
-    this.testnet = data.testnet ?? null;
-    this.ftokens = data.ftokens;
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.logo = data.logo as string;
+    this.chain = data.chain as string;
+    this.shortName = data.shortName as string;
+    this.rpc = data.rpc as string[];
+    this.features = data.features as number[];
+    this.chainId = data.chainId as number;
+    this.chainIds = data.chainIds as BigUint64Array;
+    this.slip44 = data.slip44 as number;
+    this.diffBlockTime = data.diffBlockTime as number;
+    this.chainHash = data.chainHash as number;
+    this.ens = data.ens as string | null ?? null;
+    this.explorers = (data.explorers as Record<string, unknown>[]).map(
+      (e) => new Explorer(e)
+    );
+    this.fallbackEnabled = data.fallbackEnabled as boolean;
+    this.testnet = data.testnet as boolean | null ?? null;
+    this.ftokens = (data.ftokens as Record<string, unknown>[]).map(
+      (t) => new FToken(t)
+    );
   }
 }
 
@@ -1118,16 +1110,11 @@ export class Explorer {
   icon: string | null;
   standard: number;
 
-  constructor(data: {
-    name: string;
-    url: string;
-    icon?: string | null;
-    standard: number;
-  }) {
-    this.name = data.name;
-    this.url = data.url;
-    this.icon = data.icon ?? null;
-    this.standard = data.standard;
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.url = data.url as string;
+    this.icon = data.icon as string | null ?? null;
+    this.standard = data.standard as number;
   }
 }
 
@@ -1136,12 +1123,14 @@ export class Explorer {
 `background/storage/ftoken.ts`:
 
 ```ts
+import { AddressType } from './address-type';
+ 
 export class FToken {
   name: string;
   symbol: string;
   decimals: number;
   addr: string;
-  addrType: number;
+  addrType: AddressType;
   logo: string | null;
   balances: Record<number, string>;
   rate: number;
@@ -1149,30 +1138,18 @@ export class FToken {
   native: boolean;
   chainHash: number;
 
-  constructor(data: {
-    name: string;
-    symbol: string;
-    decimals: number;
-    addr: string;
-    addrType: number;
-    logo?: string | null;
-    balances: Record<number, string>;
-    rate: number;
-    default_: boolean;
-    native: boolean;
-    chainHash: number;
-  }) {
-    this.name = data.name;
-    this.symbol = data.symbol;
-    this.decimals = data.decimals;
-    this.addr = data.addr;
-    this.addrType = data.addrType;
-    this.logo = data.logo ?? null;
-    this.balances = data.balances;
-    this.rate = data.rate;
-    this.default_ = data.default_;
-    this.native = data.native;
-    this.chainHash = data.chainHash;
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.symbol = data.symbol as string;
+    this.decimals = data.decimals as number;
+    this.addr = data.addr as string;
+    this.addrType = data.addrType as AddressType;
+    this.logo = data.logo as string | null ?? null;
+    this.balances = data.balances as Record<number, string>;
+    this.rate = data.rate as number;
+    this.default_ = data.default_ as boolean;
+    this.native = data.native as boolean;
+    this.chainHash = data.chainHash as number;
   }
 }
 
@@ -1184,10 +1161,8 @@ export class FToken {
 export class Notification {
   transactions: boolean;
 
-  constructor(data: {
-    transactions: boolean;
-  }) {
-    this.transactions = data.transactions;
+  constructor(data: Record<string, unknown>) {
+    this.transactions = data.transactions as boolean;
   }
 }
 
@@ -1196,10 +1171,15 @@ export class Notification {
 `background/storage/settings.ts`:
 
 ```ts
-import { WalletArgon2Params } from "./argon";
+import { WalletArgon2Params } from './argon';
+import { CipherOrders } from '../../crypto/keychain';
+
+export enum RatesApiOptions {
+  CoinGecko
+} 
 
 export class WalletSettings {
-  cipherOrders: Uint8Array;
+  cipherOrders: CipherOrders[];
   argonParams: WalletArgon2Params;
   currencyConvert: string;
   ipfsNode: string | null;
@@ -1208,30 +1188,19 @@ export class WalletSettings {
   nodeRankingEnabled: boolean;
   maxConnections: number;
   requestTimeoutSecs: number;
-  ratesApiOptions: number;
+  ratesApiOptions: RatesApiOptions;
 
-  constructor(data: {
-    cipherOrders: Uint8Array;
-    argonParams: WalletArgon2Params;
-    currencyConvert: string;
-    ipfsNode?: string | null;
-    ensEnabled: boolean;
-    tokensListFetcher: boolean;
-    nodeRankingEnabled: boolean;
-    maxConnections: number;
-    requestTimeoutSecs: number;
-    ratesApiOptions: number;
-  }) {
-    this.cipherOrders = data.cipherOrders;
-    this.argonParams = data.argonParams;
-    this.currencyConvert = data.currencyConvert;
-    this.ipfsNode = data.ipfsNode ?? null;
-    this.ensEnabled = data.ensEnabled;
-    this.tokensListFetcher = data.tokensListFetcher;
-    this.nodeRankingEnabled = data.nodeRankingEnabled;
-    this.maxConnections = data.maxConnections;
-    this.requestTimeoutSecs = data.requestTimeoutSecs;
-    this.ratesApiOptions = data.ratesApiOptions;
+  constructor(data: Record<string, unknown>) {
+    this.cipherOrders = data.cipherOrders as CipherOrders[];
+    this.argonParams = new WalletArgon2Params(data.argonParams as Record<string, unknown>);
+    this.currencyConvert = data.currencyConvert as string;
+    this.ipfsNode = data.ipfsNode as string || null;
+    this.ensEnabled = data.ensEnabled as boolean;
+    this.tokensListFetcher = data.tokensListFetcher as boolean;
+    this.nodeRankingEnabled = data.nodeRankingEnabled as boolean;
+    this.maxConnections = data.maxConnections as number;
+    this.requestTimeoutSecs = data.requestTimeoutSecs as number;
+    this.ratesApiOptions = data.ratesApiOptions as RatesApiOptions;
   }
 }
 
@@ -1255,26 +1224,20 @@ export class Wallet {
   settings: WalletSettings;
   defaultChainHash: number;
 
-  constructor(data: {
-    walletType: string;
-    walletName: string;
-    authType: string;
-    walletAddress: string;
-    accounts: Account[];
-    selectedAccount: number;
-    tokens: FToken[];
-    settings: WalletSettings;
-    defaultChainHash: number;
-  }) {
-    this.walletType = data.walletType;
-    this.walletName = data.walletName;
-    this.authType = data.authType;
-    this.walletAddress = data.walletAddress;
-    this.accounts = data.accounts;
-    this.selectedAccount = data.selectedAccount;
-    this.tokens = data.tokens;
-    this.settings = data.settings;
-    this.defaultChainHash = data.defaultChainHash;
+  constructor(data: Record<string, unknown>) {
+    this.walletType = data.walletType as string;
+    this.walletName = data.walletName as string;
+    this.authType = data.authType as string;
+    this.walletAddress = data.walletAddress as string;
+    this.accounts = (data.accounts as Record<string, unknown>[]).map(
+      (a) => new Account(a)
+    );
+    this.selectedAccount = data.selectedAccount as number;
+    this.tokens = (data.tokens as Record<string, unknown>[]).map(
+      (t) => new FToken(t)
+    );
+    this.settings = new WalletSettings(data.settings as Record<string, unknown>);
+    this.defaultChainHash = data.defaultChainHash as number;
   }
 }
 
