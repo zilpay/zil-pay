@@ -63,22 +63,29 @@ export class KeyChain {
   }
 
   static async fromAesV2(password: Uint8Array): Promise<KeyChain> {
-    const keyBytes = await sha256(password);
-    const ntrupKeys = ntruKeysFromSeed(Uint8Array.from([...keyBytes, ...keyBytes]));
+    const keyHashBytes = await sha256(password);
+    
+    const keyHashHex = utils.hex.fromBytes(keyHashBytes);
+    const aesKeyForV2 = utils.utf8.toBytes(keyHashHex);
 
-    return new KeyChain(ntrupKeys, keyBytes, keyBytes);
+    const ntrupKeys = ntruKeysFromSeed(
+      Uint8Array.from([...keyHashBytes, ...keyHashBytes]),
+    );
+
+    return new KeyChain(ntrupKeys, aesKeyForV2, keyHashBytes);
   }
 
-  static async fromAesV3(password: Uint8Array, algorithm: ShaAlgorithms, iteractions: number): Promise<KeyChain> {
+  static async fromAesV3(
+    password: Uint8Array,
+    algorithm: ShaAlgorithms,
+    iteractions: number,
+  ): Promise<KeyChain> {
     const salt = utils.utf8.toBytes(EXTENSION_ID);
-    const key = await pbkdf2(
-      password,
-      salt,
-      iteractions,
-      algorithm,
-    );
+    const key = await pbkdf2(password, salt, iteractions, algorithm);
     const keyBytes = await sha256(key);
-    const ntrupKeys = ntruKeysFromSeed(Uint8Array.from([...keyBytes, ...keyBytes]));
+    const ntrupKeys = ntruKeysFromSeed(
+      Uint8Array.from([...keyBytes, ...keyBytes]),
+    );
 
     return new KeyChain(ntrupKeys, keyBytes, keyBytes);
   }
@@ -164,10 +171,8 @@ export class KeyChain {
     for (const o of options.slice().reverse()) {
       switch (o) {
         case CipherOrders.AESCBC:
-          const aesKeyStr = new TextDecoder().decode(this.aesKey);
-          const dataStr = new TextDecoder().decode(data);
-          const decryptedStr = await AESCipherV2.decrypt(dataStr, aesKeyStr);
-          data = new TextEncoder().encode(decryptedStr);
+          const decryptedString = await AESCipherV2.decrypt(data, this.aesKey);
+          data = new TextEncoder().encode(decryptedString);
           break;
         case CipherOrders.AESGCM256:
           data = AESCipherV3.decrypt(data, this.aesKey);

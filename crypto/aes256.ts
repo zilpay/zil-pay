@@ -36,8 +36,8 @@ export const AESCipherV3 = Object.freeze({
 });
 
 export const AESCipherV2 = Object.freeze({
-  async decrypt(data: string, key: string): Promise<any> {
-    const combined = base64ToUint8Array(data);
+  async decrypt(data: Uint8Array, key: Uint8Array): Promise<any> {
+    const combined = data;
 
     const prefix = new TextDecoder().decode(combined.slice(0, 8));
     if (prefix !== "Salted__") {
@@ -46,7 +46,7 @@ export const AESCipherV2 = Object.freeze({
 
     const salt = combined.slice(8, 16);
     const ciphertext = combined.slice(16);
-    const passwordBytes = new TextEncoder().encode(key);
+    const passwordBytes = key;
     const { key: derivedKey, iv } = await AESCipherV2.evpKDF(
       passwordBytes,
       salt,
@@ -84,6 +84,7 @@ export const AESCipherV2 = Object.freeze({
       return content;
     }
   },
+
   async evpKDF(
     password: Uint8Array,
     salt: Uint8Array,
