@@ -1,0 +1,1107 @@
+Project Path: background
+
+Source Tree:
+
+```txt
+background
+├── index.ts
+├── secure
+│   ├── index.ts
+│   ├── migrator.ts
+│   ├── session.ts
+│   └── storage.ts
+├── services
+│   └── guard.ts
+└── storage
+    ├── account.ts
+    ├── address-type.ts
+    ├── argon.ts
+    ├── background.ts
+    ├── chain.ts
+    ├── explorer.ts
+    ├── ftoken.ts
+    ├── index.ts
+    ├── notification.ts
+    ├── settings.ts
+    └── wallet.ts
+
+```
+
+`background/secure/migrator.ts`:
+
+```ts
+import { BackgroundState, AppearancesTheme } from '../storage/background';
+import { ChainConfig } from '../storage/chain';
+import { FToken } from '../storage/ftoken';
+import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
+import { Account } from '../storage/account';
+import { AddressType } from '../storage/address-type';
+import { WalletSettings, RatesApiOptions } from '../storage/settings';
+import { HashTypes, WalletHashParams } from '../storage/argon';
+import { CipherOrders } from '../../crypto/keychain';
+import { ShaAlgorithms } from '../../config/pbkdf2';
+
+interface WalletIdentities {
+  selectedAddress: number;
+  identities: {
+    name: string;
+    bech32: string;
+    index: number;
+    base16: string;
+    type: number;
+    pubKey: string;
+    privKey?: string;
+    zrc2: Record<string, string>;
+    nft: Record<string, unknown>;
+  }[];
+}
+
+interface TokenData {
+  base16: string;
+  bech32: string;
+  decimals: number;
+  name: string;
+  symbol: string;
+  rate: number;
+  pool?: string[];
+}
+
+type TokenWithBase16 = { ftoken: FToken; base16: string };
+
+const ZILLIQA_MAINNET_CHAIN = new ChainConfig({
+    name: 'Zilliqa',
+    chain: 'ZIL',
+    logo: 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg',
+    rpc: [
+      'https://api.zilliqa.com',
+      'https://ssn.zilpay.io/api',
+      'https://zilliqa.avely.fi/api',
+      'https://ssn.zillet.io',
+    ],
+    features: [],
+    ftokens: [
+      new FToken({
+        native: true,
+        logo: 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp',
+        addr: '0x0000000000000000000000000000000000000000',
+        name: 'Zilliqa',
+        symbol: 'ZIL',
+        decimals: 18,
+        addrType: AddressType.EthCheckSum,
+        balances: {},
+        rate: 0,
+        default_: true,
+        chainHash: 1
+      }),
+      new FToken({
+        native: true,
+        logo: 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp',
+        addr: 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz',
+        name: 'Zilliqa',
+        symbol: 'ZIL',
+        decimals: 12,
+        addrType: AddressType.Bech32,
+        balances: {},
+        rate: 0,
+        default_: true,
+        chainHash: 1
+      }),
+    ],
+    chainIds: [32769, 1],
+    infoURL: 'https://www.zilliqa.com/',
+    shortName: 'zilliqa',
+    slip44: 313,
+    explorers: [
+      {
+        name: 'Viewblock',
+        url: 'https://viewblock.io/zilliqa',
+        icon: 'https://viewblock.io/apple-touch-icon.png',
+        standard: 'EIP3091',
+      },
+      {
+        name: 'Otterscan',
+        icon: 'https://otterscan.zilliqa.com/assets/otter-DYFeLtFi.png',
+        url: 'https://otterscan.zilliqa.com/',
+        standard: 'EIP3091',
+      },
+    ],
+    chainId: 1,
+    chainHash: 1,
+    diffBlockTime: 30,
+    ens: null,
+    fallbackEnabled: false,
+    testnet: false
+});
+
+export function migrateToV4(storage: Record<string, unknown>): BackgroundState {
+  if (storage['storageVersion'] == 4) {
+    return new BackgroundState(storage);
+  } else {
+      return migrateFromV2orV3(storage);
+  }
+}
+
+function parseTokens(tokensJson: string, chainHash: number): TokenWithBase16[] {
+    const tokens: TokenData[] = JSON.parse(tokensJson);
+    return tokens.map(token => ({
+      ftoken: new FToken({
+        name: token.name,
+        symbol: token.symbol,
+        decimals: token.decimals,
+        addr: token.bech32,
+        addrType: AddressType.Bech32,
+        logo: `https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/${token.bech32}/%{dark,light}%.webp`,
+        balances: {},
+        rate: token.rate,
+        default_: token.symbol === 'ZIL',
+        native: token.base16 === '0x0000000000000000000000000000000000000000',
+        chainHash,
+      }),
+      base16: token.base16,
+    }));
+  }
+
+function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
+    const walletIdentities: WalletIdentities = JSON.parse(storage['wallet-identities'] as string);
+    const mainChain = ZILLIQA_MAINNET_CHAIN;
+    const cipher = 'guard-configuration' in storage ? CipherOrders.AESGCM256 : CipherOrders.AESCBC;
+    const parsedTokens = parseTokens(storage['tokens-list/mainnet'] as string, mainChain.hash());
+    let [algorithm, iteractions] = String(storage["guard-configuration"]).split(":");
+
+    if (!iteractions) {
+      iteractions = '0';
+    }
+
+    if (!algorithm || (algorithm != ShaAlgorithms.sha256 && algorithm != ShaAlgorithms.Sha512)) {
+      algorithm = ShaAlgorithms.sha256;
+    }
+
+    const accounts = walletIdentities.identities.map(identity => new Account({
+        addr: identity.bech32,
+        addrType: AddressType.Bech32,
+        name: identity.name,
+        pubKey: identity.pubKey,
+        chainHash: mainChain.hash(),
+        chainId: mainChain.chainId,
+        slip44: mainChain.slip44,
+        index: identity.index,
+    }));
+
+    const walletTokens = parsedTokens.map(({ ftoken, base16 }) => {
+        const balances: Record<number, string> = {};
+        accounts.forEach((_, index) => {
+            const identity = walletIdentities.identities[index];
+            balances[index] = identity.zrc2[base16.toLowerCase()] || '0';
+        });
+        return new FToken({ ...ftoken, balances });
+    });
+
+    const wallet = new Wallet({
+        walletType: WalletTypes.SecretPhrase,
+        walletName: 'Zilliqa Wallet',
+        authType: AuthMethod.None,
+        walletAddress: accounts[0].addr,
+        accounts,
+        selectedAccount: walletIdentities.selectedAddress,
+        tokens: walletTokens, 
+        settings: new WalletSettings({
+            cipherOrders: [cipher],
+            hashFnParams: new WalletHashParams({
+                memory: 1024,
+                iterations: Number(iteractions),
+                threads: 1,
+                secret: '',
+                hashType: HashTypes.Pbkdf2, 
+                hashSize: algorithm ?? ShaAlgorithms.sha256,
+            }),
+            currencyConvert: storage['selected-currency'],
+            ipfsNode: null,
+            ensEnabled: false,
+            tokensListFetcher: false,
+            nodeRankingEnabled: false,
+            maxConnections: 10,
+            requestTimeoutSecs: 30,
+            ratesApiOptions: RatesApiOptions.CoinGecko,
+        }),
+        defaultChainHash: mainChain.hash(),
+        vault: storage.vault,
+    });
+
+    const backgroundState = new BackgroundState({
+        wallets: [wallet],
+        notificationsGlobalEnabled: true,
+        locale: 'auto',
+        appearances: AppearancesTheme.System,
+        abbreviatedNumber: true,
+        hideBalance: false,
+        chains: [mainChain], 
+    });
+
+    return backgroundState;
+}
+
+
+```
+
+`background/secure/storage.ts`:
+
+```ts
+import { BrowserStorage } from '../../lib/storage';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
+
+export class AuthStorage {
+  #vault: Uint8Array;
+
+  sync(data: Record<string, unknown>): void {
+    this.#validateAndSetVault(data);
+  }
+
+
+  #validateAndSetVault(data: Record<string, unknown>): void {
+    const vaultStr = data['vault'];
+    if (typeof vaultStr !== 'string') {
+      throw new Error('Invalid vault: must be a string');
+    }
+    try {
+      this.#vault = base64ToUint8Array(vaultStr);
+    } catch (err) {
+      throw new Error(`Failed to decode vault: ${err.message}`);
+    }
+  }
+
+  async setVault(vault: Uint8Array): Promise<void> {
+    const vaultStr = uint8ArrayToBase64(vault);
+    await BrowserStorage.set({ vault: vaultStr });
+    this.#vault = vault;
+  }
+
+  getVault(): Uint8Array | null {
+    return this.#vault;
+  }
+}
+
+```
+
+`background/services/guard.ts`:
+
+```ts
+import { utils } from 'aes-js';
+import { sha256 } from '../../crypto/sha256';
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { Bip39 } from '../../crypto/bip39';
+import { Cipher } from '../../crypto/aes256';
+
+import { BrowserStorage, buildObject, StorageKeyValue } from '../../lib/storage';
+import { getManifestVersion, Runtime , assert, EXTENSION_ID } from '../../lib/runtime';
+import { TypeOf } from '../../lib/types';
+
+import { ShaAlgorithms } from '../../config/sha';
+import { Common } from '../../config/common';
+import { OldFields } from '../../config/fields';
+import { ManifestVersions } from '../../config/manifest';
+
+/**
+ * Defines keys used for session storage.
+ */
+export enum SessionKeys {
+  EndSession = "BEARBY_END_SESSION",
+  Hash = "BEABRY_HASH",
+  PrivateExtendedKey = "EXTENDED_KEY"
+}
+
+/**
+ * Defines error messages used throughout the AuthGuard class.
+ */
+export enum ErrorMessages {
+  GuardNotSynced = 'Guard is not synced',
+  WalletNotReady = 'Wallet is not sync.',
+  IncorrectPassword = 'Incorect password',
+  WalletNotEnabled = 'Wallet is not enabled.',
+  IncorrectConfigParams = 'Incorrect Config params',
+  MustBeInt = 'Must be Int.',
+  IncorrectParams = 'Incorrect argument',
+  InvalidFormat = "Invalid data format encountered during decryption.",
+  InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
+}
+
+/**
+ * Manages wallet authentication, session, and encryption/decryption of sensitive data.
+ */
+export class AuthGuard {
+  #hash = new WeakMap<AuthGuard, Uint8Array>();
+  #oldHash = new WeakMap<AuthGuard, Uint8Array>();
+  #algorithm = ShaAlgorithms.sha256;
+  #iteractions = 0;
+
+  #isEnable = false;
+
+  #isReady = false;
+
+  #privateExtendedKey?: Uint8Array;
+  #encryptMnemonic?: Uint8Array;
+
+  #endSession = new Date(-1);
+  #time = Common.TIME_BEFORE_LOCK;
+
+  /**
+   * Retrieves the decrypted seed. Requires an active session.
+   * @returns The decrypted seed as a Uint8Array.
+   */
+  get seed() {
+    this.checkSession();
+
+    const session = this.#hash.get(this) as Uint8Array;
+    const decryptSeedBytes = Cipher.decrypt(
+      this.#privateExtendedKey as Uint8Array,
+      session
+    );
+
+    return Uint8Array.from(decryptSeedBytes);
+  }
+
+  /**
+   * Gets the configured lock time in hours.
+   * @returns The lock time as a number.
+   */
+  get lockTime() {
+    return Number(this.#time);
+  }
+
+  /**
+   * Checks if the session is currently enabled and active.
+   * @returns True if the session is enabled and not expired, false otherwise.
+   */
+  get isEnable() {
+    const now = new Date().getTime();
+    const timeDifference = this.#endSession.getTime() - now;
+
+    return timeDifference > 0 && this.#isEnable;
+  }
+
+  /**
+   * Checks if the wallet is ready (i.e., mnemonic is loaded).
+   * @returns True if the wallet is ready, false otherwise.
+   */
+  get isReady() {
+    return this.#isReady;
+  }
+
+  /**
+   * Provides the current state of the AuthGuard.
+   * @returns An object containing the session enable status, wallet readiness, iterations, and algorithm.
+   */
+  get state() {
+    return {
+      isEnable: this.isEnable,
+      isReady: this.isReady,
+      iteractions: this.#iteractions,
+      algorithm: this.#algorithm
+    };
+  }
+
+  /**
+   * Gets the encrypted mnemonic.
+   * @returns The encrypted mnemonic as a Uint8Array, or undefined if not set.
+   */
+  get encryptedMnemonic() {
+    return this.#encryptMnemonic;
+  }
+
+  /**
+   * Synchronizes the AuthGuard state with data from browser storage and session storage.
+   */
+  async sync() {
+    const data = await BrowserStorage.get(
+      OldFields.VAULT,
+      OldFields.LOCK_TIME,
+      OldFields.GUARD_CONFIG
+    ) as StorageKeyValue;
+
+    if (data && data[OldFields.VAULT]) {
+      this.#encryptMnemonic = Buffer.from(data[OldFields.VAULT], 'base64');
+      this.#isReady = Boolean(this.#encryptMnemonic);
+    }
+
+    if (data && data[OldFields.GUARD_CONFIG]) {
+      const [algorithm, iteractions] = String(data[OldFields.GUARD_CONFIG]).split(':');
+
+      if (algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512) {
+        this.#algorithm = algorithm;
+      }
+
+      if (!isNaN(Number(iteractions))) {
+        this.#iteractions = Number(iteractions);
+      }
+    }
+
+    if (data[OldFields.LOCK_TIME]) {
+      this.#time = Number(data[OldFields.LOCK_TIME]);
+    } else {
+      await BrowserStorage.set(
+        buildObject(OldFields.LOCK_TIME, String(Common.TIME_BEFORE_LOCK))
+      );
+    }
+
+    if (ManifestVersions.V3 === getManifestVersion()) {
+      const data = await Runtime.storage.session.get([
+        SessionKeys.EndSession,
+        SessionKeys.Hash,
+        SessionKeys.PrivateExtendedKey
+      ]);
+
+      try {
+        if (data[SessionKeys.EndSession]) {
+          this.#endSession = new Date(data[SessionKeys.EndSession]);
+        }
+        if (data[SessionKeys.Hash]) {
+          const hash = utils.hex.toBytes(data[SessionKeys.Hash]);
+          this.#hash.set(this, hash);
+          this.#isEnable = true;
+        }
+        if (data[SessionKeys.PrivateExtendedKey]) {
+          this.#privateExtendedKey = utils.hex.toBytes(data[SessionKeys.PrivateExtendedKey]);
+        }
+      } catch (err) {
+        console.warn('guard.sync', err);
+      }
+    }
+  }
+
+  /**
+   * Sets the guard configuration, including the hashing algorithm and iterations.
+   * @param algorithm The SHA algorithm to use (sha256 or sha512).
+   * @param iteractions The number of iterations for key derivation. Must be a non-negative even number.
+   */
+  async setGuardConfig(algorithm: string, iteractions: number) {
+    assert(
+      algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512,
+      ErrorMessages.IncorrectConfigParams
+    );
+    assert(iteractions >= 0, ErrorMessages.IncorrectConfigParams);
+    assert(iteractions % 2 === 0, ErrorMessages.IncorrectConfigParams);
+
+    this.#algorithm = algorithm as ShaAlgorithms;
+    this.#iteractions = iteractions;
+
+    const newConfig = `${algorithm}:${iteractions}`;
+
+    await BrowserStorage.set(
+      buildObject(OldFields.GUARD_CONFIG, newConfig)
+    );
+  }
+
+  /**
+   * Sets the logout timer for the session.
+   * @param timer The time in hours before the session automatically logs out. Must be a positive integer.
+   */
+  async setLogOutTimer(timer: number) {
+    assert(TypeOf.isInt(timer), ErrorMessages.MustBeInt);
+    assert(timer > 0, ErrorMessages.IncorrectParams);
+
+    this.#time = timer;
+
+    await BrowserStorage.set(
+      buildObject(OldFields.LOCK_TIME, String(this.lockTime))
+    );
+  }
+
+  /**
+   * Exports the decrypted mnemonic using the provided password.
+   * @param password The password to decrypt the mnemonic.
+   * @returns The decrypted mnemonic as a UTF-8 string.
+   * @throws Error if the wallet is not ready, guard is not synced, or password is incorrect.
+   */
+  async exportMnemonic(password: string) {
+    assert(this.isReady, ErrorMessages.WalletNotReady);
+
+    try {
+      assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
+
+      const hash = await this.#getKeyring(password);
+      const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
+
+      return utils.utf8.fromBytes(mnemonicBytes);
+    } catch (err) {
+      this.logout();
+      throw new Error(ErrorMessages.IncorrectPassword);
+    }
+  }
+
+  /**
+   * Retrieves mnemonic and keys from old storage format.
+   * @param password The password to decrypt old storage data.
+   * @returns An object containing the mnemonic and an array of old guard vault keys.
+   */
+  async getFromOldStorage(password: string) {
+    const data = await BrowserStorage.get(
+      OldFields.VAULT,
+      OldFields.VAULT_IMPORTED,
+    );
+    const hash = OldAes.hash(password);
+    const encryptedKeys = data[OldFields.VAULT_IMPORTED];
+    const mnemonic = OldAes.decrypt(data[OldFields.VAULT], hash);
+    let keys: OldGuardVaultKeys[] = [];
+
+    if (encryptedKeys) {
+      try {
+        keys = JSON.parse(OldAes.decrypt(encryptedKeys, hash));
+      } catch {
+        // Handle parsing error silently
+      }
+    }
+
+    return {
+      mnemonic,
+      keys
+    };
+  }
+
+  /**
+   * Unlocks the wallet using the provided password, decrypting the mnemonic and setting up the session.
+   * @param password The password to unlock the wallet.
+   * @throws Error if the wallet is not ready, guard is not synced, or password is incorrect.
+   */
+  async unlock(password: string) {
+    assert(this.isReady, ErrorMessages.WalletNotReady);
+
+    try {
+      assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
+
+      const hash = await this.#getKeyring(password);
+      const oldHash = await sha256(utils.utf8.toBytes(password));
+      const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
+      const mnemonic = utils.utf8.fromBytes(mnemonicBytes);
+
+      const seed = await Bip39.mnemonicToSeed(mnemonic);
+
+      this.#privateExtendedKey = Cipher.encrypt(seed, hash);
+
+      this.#isEnable = true;
+      this.#updateSession();
+      this.#hash.set(this, hash);
+      this.#oldHash.set(this, oldHash);
+
+      if (ManifestVersions.V3 === getManifestVersion()) {
+        Runtime.storage.session.set({
+          [SessionKeys.EndSession]: Number(this.#endSession),
+          [SessionKeys.Hash]: utils.hex.fromBytes(hash),
+          [SessionKeys.PrivateExtendedKey]: utils.hex.fromBytes(this.#privateExtendedKey),
+        });
+      }
+    } catch (err) {
+      this.logout();
+      throw new Error(`${ErrorMessages.IncorrectPassword}, ${err.message}`);
+    }
+  }
+
+  /**
+   * Sets up the wallet vault with a new mnemonic and password, encrypting the mnemonic and private extended key.
+   * @param mnemonic The mnemonic phrase.
+   * @param password The password to encrypt the mnemonic.
+   * @param wordList The word list for BIP39.
+   * @param passphrase Optional passphrase for BIP39.
+   */
+  async setupVault(mnemonic: string, password: string, wordList: string[], passphrase?: string ) {
+    const mnemonicBuf = utils.utf8.toBytes(mnemonic);
+    const hash = await this.#getKeyring(password);
+    const seed = await Bip39.mnemonicToSeed(
+      mnemonic,
+      passphrase,
+      wordList,
+    );
+
+    this.#encryptMnemonic = Cipher.encrypt(mnemonicBuf, hash);
+    this.#privateExtendedKey = Cipher.encrypt(seed, hash);
+
+    this.#isReady = true;
+    this.#isEnable = true;
+    this.#updateSession();
+    this.#hash.set(this, hash);
+
+    await BrowserStorage.set(
+      buildObject(OldFields.VAULT, Buffer.from(this.#encryptMnemonic).toString('base64'))
+    );
+  }
+
+  /**
+   * Encrypts a private key using the current session hash.
+   * @param privKey The private key as a Uint8Array.
+   * @returns The encrypted private key as a base64 string.
+   */
+  encryptPrivateKey(privKey: Uint8Array) {
+    const hash = this.#hash.get(this) as Uint8Array;
+    const encrypted = Cipher.encrypt(privKey, hash);
+
+    return Buffer.from(encrypted).toString('base64');
+  }
+
+  /**
+   * Decrypts a private key. Tries to decrypt with old hash first, then with current session hash.
+   * @param content The encrypted private key as a base64 string.
+   * @returns The decrypted private key as a hex string.
+   */
+  decryptPrivateKey(content: string): string {
+    const hash = this.#hash.get(this) as Uint8Array;
+    const oldHash = this.#oldHash.get(this) as Uint8Array;
+    let privateKey: string;
+
+    try {
+      privateKey = OldAes.decrypt(content, Buffer.from(oldHash).toString('hex'));
+
+    } catch {
+      const bytes = Cipher.decrypt(Buffer.from(content, 'base64'), hash);
+
+      privateKey = Buffer.from(bytes).toString('hex');
+    }
+
+    return privateKey;
+  }
+
+  /**
+   * Checks if the session is active and the wallet is ready. Throws an error if not.
+   */
+  checkSession() {
+    assert(this.#isReady, ErrorMessages.WalletNotReady);
+    assert(this.#isEnable, ErrorMessages.WalletNotEnabled);
+  }
+
+  /**
+   * Logs out the current session, disabling it and clearing session-related data.
+   */
+  async logout() {
+    this.#isEnable = false;
+    this.#endSession = new Date(-1);
+
+    this.#hash.delete(this);
+  }
+
+  /**
+   * Updates the session end time based on the configured lock time.
+   */
+  async #updateSession() {
+    const now = new Date().getTime();
+    const h = Number(this.#time);
+    const newSession = new Date();
+
+    newSession.setTime(now + (h * 60 * 60 * 1000));
+
+    this.#endSession = newSession;
+  }
+
+  /**
+   * Derives a key from the password using either SHA256 or PBKDF2, based on configuration.
+   * @param password The password to derive the key from.
+   * @returns The derived key as a Uint8Array.
+   */
+  async #getKeyring(password: string) {
+    const salt = utils.utf8.toBytes(EXTENSION_ID);
+    const passwordBytes = utils.utf8.toBytes(password);
+
+    if (this.#algorithm === ShaAlgorithms.sha256 && this.#iteractions === 0) {
+      return await sha256(passwordBytes);
+    }
+
+    const key = await pbkdf2(passwordBytes, salt, this.#iteractions, this.#algorithm);
+
+    return await sha256(key);
+  }
+}
+
+
+```
+
+`background/storage/account.ts`:
+
+```ts
+import { AddressType } from './address-type';
+
+export class Account {
+  addr: string;
+  addrType: AddressType;
+  name: string;
+  pubKey: string;
+  chainHash: number;
+  chainId: number;
+  slip44: number;
+  index: number;
+
+  constructor(data: Record<string, unknown>) {
+    this.addr = data.addr as string;
+    this.addrType = data.addrType as AddressType;
+    this.name = data.name as string;
+    this.pubKey = data.pubKey as string;
+    this.chainHash = data.chainHash as number;
+    this.chainId = data.chainId as number;
+    this.slip44 = data.slip44 as number;
+    this.index = data.index as number;
+  }
+}
+
+```
+
+`background/storage/address-type.ts`:
+
+```ts
+export enum AddressType {
+  Bech32,
+  EthCheckSum
+}
+
+
+```
+
+`background/storage/argon.ts`:
+
+```ts
+import { Variant, Version, Config } from '@hicaru/argon2-pure.js';
+import { APP_ID } from '../../config/argon2';
+import { Argon2Config, deriveArgon2Key } from '../../crypto/argon2';
+import { utils } from 'aes-js';
+import { pbkdf2 } from '../../crypto/pbkdf2';
+import { ShaAlgorithms } from '../../config/pbkdf2';
+import { sha256 } from '../../crypto/sha256';
+import { EXTENSION_ID } from '../../lib/runtime';
+import { KeyChain } from '../../crypto/keychain';
+
+export enum HashTypes {
+  Argon2,
+  Pbkdf2,
+}
+
+export class WalletHashParams {
+  memory: number;
+  iterations: number;
+  threads: number;
+  secret: string;
+  hashType: HashTypes;
+  hashSize: ShaAlgorithms;
+
+  get argon2(): Argon2Config {
+    return new Config(
+      APP_ID,
+      64,
+      this.threads,
+      this.memory,
+      utils.hex.toBytes(this.secret),
+      this.iterations,
+      Variant.Argon2id,
+      Version.Version13,
+    );
+  }
+
+  constructor(data: Record<string, unknown>) {
+    this.memory = data.memory as number;
+    this.iterations = data.iterations as number;
+    this.threads = data.threads as number;
+    this.secret = data.secret as string;
+    this.hashType = data.hashType as HashTypes;
+    this.hashSize = data.hashSize as ShaAlgorithms;
+  }
+
+  async deriveKey(password: Uint8Array, salt: Uint8Array): Promise<KeyChain> {
+    if (this.hashType == HashTypes.Argon2) {
+      const seed = deriveArgon2Key(password, salt, this.argon2);      
+      return KeyChain.fromSeed(seed);
+    } else if(ShaAlgorithms.Sha512 == this.hashSize) {
+      return KeyChain.fromAesV3(password, this.hashSize, this.iterations);
+    } else {
+      return KeyChain.fromAesV2(password);
+    }
+  }
+}
+
+```
+
+`background/storage/background.ts`:
+
+```ts
+import { ChainConfig } from './chain';
+import { Wallet } from './wallet';
+
+export enum AppearancesTheme {
+  System,
+  Dark,
+  Light
+}
+
+export class BackgroundState {
+  readonly storageVersion  = 4;
+  wallets: Wallet[];
+  notificationsGlobalEnabled: boolean;
+  locale: string | null;
+  appearances: AppearancesTheme;
+  abbreviatedNumber: boolean;
+  hideBalance: boolean;
+  chains: ChainConfig[];
+
+  constructor(data: Record<string, unknown>) {
+    this.wallets = (data.wallets as Record<string, unknown>[]).map(
+      (w) => new Wallet(w)
+    );
+    this.notificationsGlobalEnabled = data.notificationsGlobalEnabled as boolean;
+    this.locale = data.locale as string | null ?? null;
+    this.appearances = data.appearances as AppearancesTheme;
+    this.abbreviatedNumber = data.abbreviatedNumber as boolean;
+    this.hideBalance= data.hideBalance as boolean;
+    this.chains = (data.chains as Record<string, unknown>[]).map(
+      (c) => new ChainConfig(c)
+    );
+  }
+}
+
+```
+
+`background/storage/chain.ts`:
+
+```ts
+import { FToken } from './ftoken';
+import { Explorer } from './explorer';
+
+export class ChainConfig {
+  name: string;
+  logo: string;
+  chain: string;
+  shortName: string;
+  rpc: string[];
+  features: number[];
+  chainId: number;
+  chainIds: number[];
+  slip44: number;
+  diffBlockTime: number;
+  ens: string | null;
+  explorers: Explorer[];
+  fallbackEnabled: boolean;
+  testnet: boolean | null;
+  ftokens: FToken[];
+
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.logo = data.logo as string;
+    this.chain = data.chain as string;
+    this.shortName = data.shortName as string;
+    this.rpc = data.rpc as string[];
+    this.features = data.features as number[];
+    this.chainId = data.chainId as number;
+    this.chainIds = data.chainIds as number[];
+    this.slip44 = data.slip44 as number;
+    this.diffBlockTime = data.diffBlockTime as number;
+    this.ens = data.ens as string | null ?? null;
+    this.explorers = (data.explorers as Record<string, unknown>[]).map(
+      (e) => new Explorer(e)
+    );
+    this.fallbackEnabled = data.fallbackEnabled as boolean;
+    this.testnet = data.testnet as boolean | null ?? null;
+    this.ftokens = (data.ftokens as Record<string, unknown>[]).map(
+      (t) => new FToken(t)
+    );
+  }
+
+  public hash(): number {
+    let hash = 0;
+
+    const chainIdsSum = this.chainIds[0] + this.chainIds[1];
+
+    hash = this.hashNumber(hash, chainIdsSum);
+    hash = this.hashNumber(hash, this.slip44);
+    hash = this.hashString(hash, this.chain);
+
+    return hash;
+  }
+
+  private hashNumber(hash: number, value: number): number {
+    hash = (hash << 5) - hash + value;
+    return hash & 0xFFFFFFFF;
+  }
+
+  private hashString(hash: number, str: string): number {
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash = hash & 0xFFFFFFFF;
+    }
+    return hash;
+  }
+}
+
+```
+
+`background/storage/explorer.ts`:
+
+```ts
+export class Explorer {
+  name: string;
+  url: string;
+  icon: string | null;
+  standard: number;
+
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.url = data.url as string;
+    this.icon = data.icon as string | null ?? null;
+    this.standard = data.standard as number;
+  }
+}
+
+```
+
+`background/storage/ftoken.ts`:
+
+```ts
+import { AddressType } from './address-type';
+ 
+export class FToken {
+  name: string;
+  symbol: string;
+  decimals: number;
+  addr: string;
+  addrType: AddressType;
+  logo: string | null;
+  balances: Record<number, string>;
+  rate: number;
+  default_: boolean;
+  native: boolean;
+  chainHash: number;
+
+  constructor(data: Record<string, unknown>) {
+    this.name = data.name as string;
+    this.symbol = data.symbol as string;
+    this.decimals = data.decimals as number;
+    this.addr = data.addr as string;
+    this.addrType = data.addrType as AddressType;
+    this.logo = data.logo as string | null ?? null;
+    this.balances = data.balances as Record<number, string>;
+    this.rate = data.rate as number;
+    this.default_ = data.default_ as boolean;
+    this.native = data.native as boolean;
+    this.chainHash = data.chainHash as number;
+  }
+}
+
+```
+
+`background/storage/notification.ts`:
+
+```ts
+export class Notification {
+  transactions: boolean;
+
+  constructor(data: Record<string, unknown>) {
+    this.transactions = data.transactions as boolean;
+  }
+}
+
+```
+
+`background/storage/settings.ts`:
+
+```ts
+import { WalletHashParams } from './argon';
+import { CipherOrders } from '../../crypto/keychain';
+
+export enum RatesApiOptions {
+  CoinGecko
+} 
+
+export class WalletSettings {
+  cipherOrders: CipherOrders[];
+  hashFnParams: WalletHashParams;
+  currencyConvert: string;
+  ipfsNode: string | null;
+  ensEnabled: boolean;
+  tokensListFetcher: boolean;
+  nodeRankingEnabled: boolean;
+  maxConnections: number;
+  requestTimeoutSecs: number;
+  ratesApiOptions: RatesApiOptions;
+
+  constructor(data: Record<string, unknown>) {
+    this.cipherOrders = data.cipherOrders as CipherOrders[];
+    this.hashFnParams = new WalletHashParams(data.hashFnParams as Record<string, unknown>);
+    this.currencyConvert = data.currencyConvert as string;
+    this.ipfsNode = data.ipfsNode as string || null;
+    this.ensEnabled = data.ensEnabled as boolean;
+    this.tokensListFetcher = data.tokensListFetcher as boolean;
+    this.nodeRankingEnabled = data.nodeRankingEnabled as boolean;
+    this.maxConnections = data.maxConnections as number;
+    this.requestTimeoutSecs = data.requestTimeoutSecs as number;
+    this.ratesApiOptions = data.ratesApiOptions as RatesApiOptions;
+  }
+}
+
+```
+
+`background/storage/wallet.ts`:
+
+```ts
+import { utils } from 'aes-js';
+import { base64ToUint8Array } from '../../crypto/b64';
+import { EXTENSION_ID, generateSalt } from '../../lib/runtime';
+import { KeyChain } from '../../crypto/keychain';
+import { Account } from './account';
+import { FToken } from './ftoken';
+import { WalletSettings } from './settings';
+
+export enum WalletTypes {
+    Ledger,
+    SecretPhrase,
+    SecretKey,
+}
+
+export enum AuthMethod {
+    Biometric,
+    None,
+}
+
+export class Wallet {
+  walletType: WalletTypes;
+  walletName: string;
+  authType: AuthMethod;
+  walletAddress: string;
+  accounts: Account[];
+  selectedAccount: number;
+  tokens: FToken[];
+  settings: WalletSettings;
+  defaultChainHash: number;
+  vault: string;
+
+  constructor(data: Record<string, unknown>) {
+    this.walletType = data.walletType as WalletTypes;
+    this.vault = data.vault as string;
+    this.walletName = data.walletName as string;
+    this.authType = data.authType as AuthMethod;
+    this.walletAddress = data.walletAddress as string;
+    this.accounts = (data.accounts as Record<string, unknown>[]).map(
+      (a) => new Account(a)
+    );
+    this.selectedAccount = data.selectedAccount as number;
+    this.tokens = (data.tokens as Record<string, unknown>[]).map(
+      (t) => new FToken(t)
+    );
+    this.settings = new WalletSettings(data.settings as Record<string, unknown>);
+    this.defaultChainHash = data.defaultChainHash as number;
+  }
+
+  async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
+    const salt = await generateSalt();
+    const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
+    const ciphertext = base64ToUint8Array(this.vault);
+    const decrypted = await keychain.decrypt(ciphertext, this.settings.cipherOrders);
+
+    if (this.walletType == WalletTypes.SecretKey) {      
+      return decrypted;
+    } else if (this.walletType == WalletTypes.SecretPhrase) {
+      return utils.utf8.fromBytes(decrypted);
+    } else {
+      throw new Error("unknown wallet type");
+    }
+  }
+
+  async encrypt(password: Uint8Array, plaintext: Uint8Array) : Promise<Uint8Array>{
+    const salt = await generateSalt();
+    const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
+    const cipher = await keychain.encrypt(plaintext, this.settings.cipherOrders);
+
+    return cipher;
+  }
+}
+
+```
