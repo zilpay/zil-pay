@@ -12,7 +12,6 @@ export class ChainConfig {
   chainIds: number[];
   slip44: number;
   diffBlockTime: number;
-  chainHash: number;
   ens: string | null;
   explorers: Explorer[];
   fallbackEnabled: boolean;
@@ -30,7 +29,6 @@ export class ChainConfig {
     this.chainIds = data.chainIds as number[];
     this.slip44 = data.slip44 as number;
     this.diffBlockTime = data.diffBlockTime as number;
-    this.chainHash = data.chainHash as number;
     this.ens = data.ens as string | null ?? null;
     this.explorers = (data.explorers as Record<string, unknown>[]).map(
       (e) => new Explorer(e)

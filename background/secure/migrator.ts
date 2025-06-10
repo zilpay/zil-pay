@@ -75,7 +75,7 @@ const ZILLIQA_MAINNET_CHAIN = new ChainConfig({
         chainHash: 1
       }),
     ],
-    chainIds: new BigUint64Array([32769n, 1n]),
+    chainIds: [32769, 1],
     infoURL: 'https://www.zilliqa.com/',
     shortName: 'zilliqa',
     slip44: 313,
@@ -133,7 +133,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
     const walletIdentities: WalletIdentities = JSON.parse(storage['wallet-identities'] as string);
     const mainChain = ZILLIQA_MAINNET_CHAIN;
     const cipher = 'guard-configuration' in storage ? CipherOrders.AESGCM256 : CipherOrders.AESCBC;
-    const parsedTokens = parseTokens(storage['tokens-list/mainnet'] as string, mainChain.chainHash);
+    const parsedTokens = parseTokens(storage['tokens-list/mainnet'] as string, mainChain.hash());
     let [algorithm, iteractions] = String(storage["guard-configuration"]).split(":");
 
     if (!iteractions) {
@@ -149,7 +149,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         addrType: AddressType.Bech32,
         name: identity.name,
         pubKey: identity.pubKey,
-        chainHash: mainChain.chainHash,
+        chainHash: mainChain.hash(),
         chainId: mainChain.chainId,
         slip44: mainChain.slip44,
         index: identity.index,
@@ -191,7 +191,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
             requestTimeoutSecs: 30,
             ratesApiOptions: RatesApiOptions.CoinGecko,
         }),
-        defaultChainHash: mainChain.chainHash,
+        defaultChainHash: mainChain.hash(),
         vault: storage.vault,
     });
 
