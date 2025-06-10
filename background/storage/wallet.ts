@@ -2,10 +2,21 @@ import { Account } from './account';
 import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
 
+export enum WalletTypes {
+    Ledger,
+    SecretPhrase,
+    SecretKey,
+}
+
+export enum AuthMethod {
+    Biometric,
+    None,
+}
+
 export class Wallet {
-  walletType: string;
+  walletType: WalletTypes;
   walletName: string;
-  authType: string;
+  authType: AuthMethod;
   walletAddress: string;
   accounts: Account[];
   selectedAccount: number;
@@ -15,10 +26,10 @@ export class Wallet {
   vault: string;
 
   constructor(data: Record<string, unknown>) {
-    this.walletType = data.walletType as string;
+    this.walletType = data.walletType as WalletTypes;
     this.vault = data.vault as string;
     this.walletName = data.walletName as string;
-    this.authType = data.authType as string;
+    this.authType = data.authType as AuthMethod;
     this.walletAddress = data.walletAddress as string;
     this.accounts = (data.accounts as Record<string, unknown>[]).map(
       (a) => new Account(a)

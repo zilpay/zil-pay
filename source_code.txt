@@ -1,960 +1,24 @@
-Project Path: background
+Project Path: storage
 
 Source Tree:
 
 ```txt
-background
+storage
+├── account.ts
+├── address-type.ts
+├── argon.ts
+├── background.ts
+├── chain.ts
+├── explorer.ts
+├── ftoken.ts
 ├── index.ts
-├── secure
-│   ├── index.ts
-│   ├── migrator.ts
-│   ├── session.ts
-│   └── storage.ts
-├── services
-│   └── guard.ts
-└── storage
-    ├── account.ts
-    ├── address-type.ts
-    ├── argon.ts
-    ├── background.ts
-    ├── chain.ts
-    ├── explorer.ts
-    ├── ftoken.ts
-    ├── index.ts
-    ├── notification.ts
-    ├── settings.ts
-    └── wallet.ts
+├── notification.ts
+├── settings.ts
+└── wallet.ts
 
 ```
 
-`background/secure/migrator.ts`:
-
-```ts
-import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
-import { TypeOf } from "../../lib/types/checker";
-import { uuid } from "../../crypto/uuid";
-import { CipherOrders } from "../../crypto/keychain";
-import { AESCipherV2, AESCipherV3 } from "../../crypto/aes256";
-import { sha256 } from "../../crypto/sha256";
-import { pbkdf2 } from "../../crypto/pbkdf2";
-import { utils } from "aes-js";
-import { ShaAlgorithms } from "../../config/pbkdf2";
-import { base64ToUint8Array, uint8ArrayToBase64 } from "../../crypto/b64";
-import { deriveArgon2Key } from "../../crypto/argon2";
-import { APP_ID } from "../../config/argon2";
-import { EXTENSION_ID } from "../../lib/runtime";
-
-export interface StorageMeta {
-  dataSchemaVersion: string;
-  securitySchemaVersion: string;
-  lastMigrationTimestamp?: string;
-  extensionId: string;
-  createdAt: string;
-  lastUnlockedTimestamp?: string;
-}
-
-export interface UserPreferences {
-  theme: "light" | "dark" | "system";
-  selectedLocale: string;
-  popupEnabled: boolean;
-  defaultCurrency: string;
-  badgeCounterEnabled: boolean;
-  hideBalances: boolean;
-}
-
-export interface AppState {
-  currentBlockNumber: string;
-  lastFullSyncTimestamp?: string;
-  lastPriceUpdateTimestamp?: string;
-  isFirstLaunch?: boolean;
-}
-
-export interface Argon2Config extends Config {}
-
-export interface EncryptionParameters {
-  algorithm: CipherOrders[];
-  argonConfig: Argon2Config;
-}
-
-export interface SecuritySettings {
-  autoLockMinutes: number;
-  phishingDetectionEnabled: boolean;
-  vaultEncryption: EncryptionParameters;
-  privateKeyEncryption: EncryptionParameters;
-}
-
-export interface TokenBalance {
-  amount: string;
-  lastUpdated: string;
-}
-
-export interface NftIdentifier {
-  contractAddress: string;
-  tokenId: string;
-  name?: string;
-  imageUrl?: string;
-  collectionName?: string;
-}
-
-export interface Wallet {
-  id: string;
-  name: string;
-  type: "hd" | "imported_pk" | "ledger" | "readonly";
-  base16Address: string;
-  bech32Address: string;
-  publicKey: string;
-  hdPath?: string;
-  index?: number;
-  encryptedPrivateKey?: string;
-  balances: {
-    [tokenIdentifier: string]: TokenBalance;
-  };
-  nfts: NftIdentifier[];
-  createdAt: string;
-}
-
-interface TokenDefinition {
-  address: string;
-  symbol: string;
-  name: string;
-  decimals: number;
-  logoUrl?: string;
-  isCustom: boolean;
-  isNative: boolean;
-  isDefault: boolean;
-}
-
-export interface NetworkConfiguration {
-  id: string;
-  name: string;
-  chainId: string;
-  apiUrl: string;
-  nativeTokenSymbol: string;
-  defaultGasPrice: string;
-  defaultGasLimit: string;
-  isDefault: boolean;
-  tokens: TokenDefinition[];
-}
-
-export interface Contact {
-  id: string;
-  name: string;
-  address: string;
-  notes?: string;
-  createdAt: string;
-}
-
-export interface ConnectedDApp {
-  origin: string;
-  name?: string;
-  iconUrl?: string;
-  connectedDate: string;
-  connectedWalletIds: string[];
-  permissionsGranted?: string[];
-}
-
-export interface PendingConfirmation {
-  id: string;
-  type: "transaction" | "signMessage" | "connectDapp" | "signTypedData";
-  origin?: string;
-  walletId: string;
-  networkId: string;
-  payload: object;
-  createdAt: string;
-  expiresAt?: string;
-}
-
-export interface ZilPayStorageSchemaV4 {
-  meta: StorageMeta;
-  userPreferences: UserPreferences;
-  appState: AppState;
-  security: {
-    settings: SecuritySettings;
-    encryptedVault: string;
-  };
-  wallets: {
-    all: Wallet[];
-    selectedWalletIndex: number;
-  };
-  networks: NetworkConfiguration[];
-  contacts: Contact[];
-  connectedDapps: ConnectedDApp[];
-  pendingConfirmations: PendingConfirmation[];
-  currencyRates: {
-    [currencyCode: string]: number;
-  };
-  [value: string]: unknown;
-}
-
-const safeJsonParse = <T>(jsonString: unknown, defaultValue: T): T => {
-  if (!TypeOf.isString(jsonString)) {
-    return defaultValue;
-  }
-  try {
-    return JSON.parse(String(jsonString)) as T;
-  } catch (e) {
-    return defaultValue;
-  }
-};
-
-export const getDefaultEncryptionParams = (): EncryptionParameters => ({
-  algorithm: [
-    CipherOrders.AESGCM256,
-    CipherOrders.NTRUP761,
-    CipherOrders.KUZNECHIK,
-  ],
-  argonConfig: new Config(
-    APP_ID,
-    64,
-    4,
-    65536,
-    new Uint8Array(),
-    2,
-    Variant.Argon2id,
-    Version.Version13
-  ) as Argon2Config,
-});
-
-function migrateToV4(
-  oldData: Record<string, unknown>
-): ZilPayStorageSchemaV4 {
-  const now = new Date().toISOString();
-  const defaultEncryptionParams = getDefaultEncryptionParams();
-
-  const oldWallets = safeJsonParse(oldData["wallet-identities"], {
-    selectedAddress: 0,
-    identities: [],
-  });
-  const oldNetworks = safeJsonParse(oldData["ssn-list"], {
-    selected: 0,
-    list: [],
-  });
-  const mainnetTokens = safeJsonParse(oldData["tokens-list/mainnet"], []);
-  const oldContacts = safeJsonParse(oldData["contacts"], []);
-  const oldConnections = safeJsonParse(oldData["connection-list"], []);
-  const oldConfirmations = safeJsonParse(oldData["confirm/mainnet"], []);
-  const oldRates = safeJsonParse(oldData["rate-of-currencies"], {});
-
-  const wallets: Wallet[] = oldWallets.identities.map((identity: any) => {
-    const balances: { [tokenIdentifier: string]: TokenBalance } = {};
-    if (identity.zrc2) {
-      for (const tokenAddr in identity.zrc2) {
-        balances[tokenAddr] = {
-          amount: String(identity.zrc2[tokenAddr]),
-          lastUpdated: now,
-        };
-      }
-    }
-
-    const walletType = identity.type === 1 ? "imported_pk" : "hd";
-    let hdPath: string | undefined;
-    if (walletType === "hd") {
-      hdPath = `m/44'/313'/0'/0/${identity.index}`;
-    }
-
-    const nfts = identity.nft ? Object.values(identity.nft) : [];
-
-    return {
-      id: uuid(),
-      name: identity.name,
-      type: walletType,
-      base16Address: identity.base16,
-      bech32Address: identity.bech32,
-      publicKey: identity.pubKey,
-      hdPath,
-      index: identity.index,
-      encryptedPrivateKey: identity.privKey,
-      balances,
-      nfts: nfts as NftIdentifier[],
-      createdAt: now,
-    };
-  });
-
-  const networks: NetworkConfiguration[] = oldNetworks.list.map(
-    (network: any) => {
-      const isMainnet = network.name === "Main";
-      const networkTokens: TokenDefinition[] = isMainnet
-        ? mainnetTokens.map((token: any) => ({
-            address: token.base16,
-            symbol: token.symbol,
-            name: token.name,
-            decimals: token.decimals,
-            logoUrl: token.logoUrl,
-            isCustom: false,
-            isNative: token.symbol === "ZIL",
-            isDefault: true,
-          }))
-        : [];
-
-      return {
-        id: network.name.toLowerCase().replace(/\s+/g, "_"),
-        name: network.name,
-        chainId: String(network.id),
-        apiUrl: network.api,
-        nativeTokenSymbol: "ZIL",
-        defaultGasPrice: "2000000000",
-        defaultGasLimit: "1",
-        isDefault: isMainnet,
-        tokens: networkTokens,
-      };
-    }
-  );
-
-  return {
-    meta: {
-      dataSchemaVersion: "4.0.0",
-      securitySchemaVersion: "2.0.0",
-      lastMigrationTimestamp: now,
-      extensionId: EXTENSION_ID,
-      createdAt: now,
-    },
-    userPreferences: {
-      theme: (oldData.theme as "light" | "dark" | "system") || "system",
-      selectedLocale: oldData["selected-local"] as string,
-      popupEnabled: oldData["popup-enabled"] === "1",
-      defaultCurrency: oldData["selected-currency"] as string,
-      badgeCounterEnabled: (oldData["badge-counter"] ?? "1") === "1",
-      hideBalances: false,
-    },
-    appState: {
-      currentBlockNumber: oldData.blocknumber as string,
-      isFirstLaunch: false,
-      lastFullSyncTimestamp: now,
-      lastPriceUpdateTimestamp: now,
-    },
-    security: {
-      settings: {
-        autoLockMinutes: Number(oldData.time_before_lock),
-        phishingDetectionEnabled: oldData["phishing-detection"] === "1",
-        vaultEncryption: defaultEncryptionParams,
-        privateKeyEncryption: defaultEncryptionParams,
-      },
-      encryptedVault: oldData.vault as string,
-    },
-    wallets: {
-      all: wallets,
-      selectedWalletIndex: oldWallets.selectedAddress,
-    },
-    networks,
-    contacts: oldContacts.map((contact: any) => ({
-      id: uuid(),
-      name: contact.name,
-      address: contact.address,
-      notes: contact.notes,
-      createdAt: now,
-    })),
-    connectedDapps: oldConnections.map((dapp: any) => ({
-      origin: dapp.domain,
-      name: dapp.title,
-      iconUrl: dapp.icon,
-      connectedDate: new Date(dapp.date).toISOString(),
-      connectedWalletIds: [],
-      permissionsGranted: [],
-    })),
-    pendingConfirmations: oldConfirmations as PendingConfirmation[],
-    currencyRates: oldRates,
-  };
-}
-
-export async function migrateEncryptedState(
-  oldData: Record<string, unknown>,
-  password: string,
-  wallets: Wallet[]
-): Promise<{ encryptedVault: string; wallets: Wallet[] }> {
-  const passwordBytes = utils.utf8.toBytes(password);
-  const oldEncryptedVault = oldData.vault as string;
-  const oldIdentities = safeJsonParse(oldData["wallet-identities"], {
-    identities: [],
-  }).identities;
-
-  let decryptionKey: Uint8Array | string;
-  let decryptVault: (encrypted: string, key: any) => Promise<string | Uint8Array>;
-  let decryptPrivKey: (encrypted: string, key: any) => Promise<string | Uint8Array>;
-
-  if (isV2Storage(oldData)) {
-    const keyBytes = await sha256(passwordBytes);
-    decryptionKey = utils.hex.fromBytes(keyBytes);
-    decryptVault = async (vault, key) => AESCipherV2.decrypt(vault, key);
-    decryptPrivKey = async (privKey, key) => AESCipherV2.decrypt(privKey, key);
-  } else if (isV3Storage(oldData)) {
-    const salt = utils.utf8.toBytes(EXTENSION_ID);
-    const [algorithm, iterations] = String(
-      oldData["guard-configuration"]
-    ).split(":");
-    const key = await pbkdf2(
-      passwordBytes,
-      salt,
-      Number(iterations),
-      algorithm as ShaAlgorithms
-    );
-    decryptionKey = await sha256(key);
-    decryptVault = async (vault, key) => AESCipherV3.decrypt(base64ToUint8Array(vault), key);
-    decryptPrivKey = async (privKey, key) => AESCipherV3.decrypt(base64ToUint8Array(privKey), key);
-  } else {
-    throw new Error(
-      "Cannot migrate encrypted state from unknown storage version."
-    );
-  }
-
-  const decryptedMnemonicBytes = await decryptVault(
-    oldEncryptedVault,
-    decryptionKey
-  );
-  const newEncryptionKey = await sha256(
-    deriveArgon2Key(
-      passwordBytes,
-      EXTENSION_ID,
-      getDefaultEncryptionParams().argonConfig
-    )
-  );
-
-  const newEncryptedVaultBytes = AESCipherV3.encrypt(
-    TypeOf.isString(decryptedMnemonicBytes)
-      ? utils.utf8.toBytes(decryptedMnemonicBytes as string)
-      : (decryptedMnemonicBytes as Uint8Array),
-    newEncryptionKey
-  );
-  const newEncryptedVault = uint8ArrayToBase64(newEncryptedVaultBytes);
-
-  for (const identity of oldIdentities) {
-    if (identity["type"] === 1 && identity["privKey"]) {
-      const decryptedPkBytes = await decryptPrivKey(
-        identity["privKey"],
-        decryptionKey
-      );
-      const newEncryptedPkBytes = AESCipherV3.encrypt(
-        TypeOf.isString(decryptedPkBytes)
-          ? utils.hex.toBytes(decryptedPkBytes as string)
-          : (decryptedPkBytes as Uint8Array),
-        newEncryptionKey
-      );
-
-      const wallet = wallets.find((w) => w.base16Address === identity["base16"]);
-      if (wallet) {
-        wallet.encryptedPrivateKey = uint8ArrayToBase64(newEncryptedPkBytes);
-      }
-    }
-  }
-
-  return {
-    encryptedVault: newEncryptedVault,
-    wallets,
-  };
-}
-
-export function isV4Storage(
-  data: Record<string, unknown>
-): data is ZilPayStorageSchemaV4 {
-  const meta = data.meta as Record<string, unknown> | undefined;
-  return (
-    !!meta &&
-    TypeOf.isObject(meta) &&
-    TypeOf.isString(meta.dataSchemaVersion) &&
-    (meta.dataSchemaVersion as string).startsWith("4")
-  );
-}
-
-export function isV3Storage(data: Record<string, unknown>): boolean {
-  return (
-    !data.meta &&
-    TypeOf.isString(data["guard-configuration"]) &&
-    TypeOf.isString(data["wallet-identities"])
-  );
-}
-
-export function isV2Storage(data: Record<string, unknown>): boolean {
-  return (
-    !data.meta &&
-    !data["guard-configuration"] &&
-    TypeOf.isString(data["wallet-identities"])
-  );
-}
-
-export function upgradeStorageToV4(
-  data: Record<string, unknown>
-): ZilPayStorageSchemaV4 | Record<string, unknown> {
-  if (isV4Storage(data)) {
-    return data;
-  }
-
-  if (isV3Storage(data) || isV2Storage(data)) {
-    return migrateToV4(data);
-  }
-
-  return data;
-}
-
-
-```
-
-`background/secure/storage.ts`:
-
-```ts
-import { BrowserStorage } from '../../lib/storage';
-import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
-
-export class AuthStorage {
-  #vault: Uint8Array;
-
-  sync(data: Record<string, unknown>): void {
-    this.#validateAndSetVault(data);
-  }
-
-
-  #validateAndSetVault(data: Record<string, unknown>): void {
-    const vaultStr = data['vault'];
-    if (typeof vaultStr !== 'string') {
-      throw new Error('Invalid vault: must be a string');
-    }
-    try {
-      this.#vault = base64ToUint8Array(vaultStr);
-    } catch (err) {
-      throw new Error(`Failed to decode vault: ${err.message}`);
-    }
-  }
-
-  async setVault(vault: Uint8Array): Promise<void> {
-    const vaultStr = uint8ArrayToBase64(vault);
-    await BrowserStorage.set({ vault: vaultStr });
-    this.#vault = vault;
-  }
-
-  getVault(): Uint8Array | null {
-    return this.#vault;
-  }
-}
-
-```
-
-`background/services/guard.ts`:
-
-```ts
-import { utils } from 'aes-js';
-import { sha256 } from '../../crypto/sha256';
-import { pbkdf2 } from '../../crypto/pbkdf2';
-import { Bip39 } from '../../crypto/bip39';
-import { Cipher } from '../../crypto/aes256';
-
-import { BrowserStorage, buildObject, StorageKeyValue } from '../../lib/storage';
-import { getManifestVersion, Runtime , assert, EXTENSION_ID } from '../../lib/runtime';
-import { TypeOf } from '../../lib/types';
-
-import { ShaAlgorithms } from '../../config/sha';
-import { Common } from '../../config/common';
-import { OldFields } from '../../config/fields';
-import { ManifestVersions } from '../../config/manifest';
-
-/**
- * Defines keys used for session storage.
- */
-export enum SessionKeys {
-  EndSession = "BEARBY_END_SESSION",
-  Hash = "BEABRY_HASH",
-  PrivateExtendedKey = "EXTENDED_KEY"
-}
-
-/**
- * Defines error messages used throughout the AuthGuard class.
- */
-export enum ErrorMessages {
-  GuardNotSynced = 'Guard is not synced',
-  WalletNotReady = 'Wallet is not sync.',
-  IncorrectPassword = 'Incorect password',
-  WalletNotEnabled = 'Wallet is not enabled.',
-  IncorrectConfigParams = 'Incorrect Config params',
-  MustBeInt = 'Must be Int.',
-  IncorrectParams = 'Incorrect argument',
-  InvalidFormat = "Invalid data format encountered during decryption.",
-  InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
-}
-
-/**
- * Manages wallet authentication, session, and encryption/decryption of sensitive data.
- */
-export class AuthGuard {
-  #hash = new WeakMap<AuthGuard, Uint8Array>();
-  #oldHash = new WeakMap<AuthGuard, Uint8Array>();
-  #algorithm = ShaAlgorithms.sha256;
-  #iteractions = 0;
-
-  #isEnable = false;
-
-  #isReady = false;
-
-  #privateExtendedKey?: Uint8Array;
-  #encryptMnemonic?: Uint8Array;
-
-  #endSession = new Date(-1);
-  #time = Common.TIME_BEFORE_LOCK;
-
-  /**
-   * Retrieves the decrypted seed. Requires an active session.
-   * @returns The decrypted seed as a Uint8Array.
-   */
-  get seed() {
-    this.checkSession();
-
-    const session = this.#hash.get(this) as Uint8Array;
-    const decryptSeedBytes = Cipher.decrypt(
-      this.#privateExtendedKey as Uint8Array,
-      session
-    );
-
-    return Uint8Array.from(decryptSeedBytes);
-  }
-
-  /**
-   * Gets the configured lock time in hours.
-   * @returns The lock time as a number.
-   */
-  get lockTime() {
-    return Number(this.#time);
-  }
-
-  /**
-   * Checks if the session is currently enabled and active.
-   * @returns True if the session is enabled and not expired, false otherwise.
-   */
-  get isEnable() {
-    const now = new Date().getTime();
-    const timeDifference = this.#endSession.getTime() - now;
-
-    return timeDifference > 0 && this.#isEnable;
-  }
-
-  /**
-   * Checks if the wallet is ready (i.e., mnemonic is loaded).
-   * @returns True if the wallet is ready, false otherwise.
-   */
-  get isReady() {
-    return this.#isReady;
-  }
-
-  /**
-   * Provides the current state of the AuthGuard.
-   * @returns An object containing the session enable status, wallet readiness, iterations, and algorithm.
-   */
-  get state() {
-    return {
-      isEnable: this.isEnable,
-      isReady: this.isReady,
-      iteractions: this.#iteractions,
-      algorithm: this.#algorithm
-    };
-  }
-
-  /**
-   * Gets the encrypted mnemonic.
-   * @returns The encrypted mnemonic as a Uint8Array, or undefined if not set.
-   */
-  get encryptedMnemonic() {
-    return this.#encryptMnemonic;
-  }
-
-  /**
-   * Synchronizes the AuthGuard state with data from browser storage and session storage.
-   */
-  async sync() {
-    const data = await BrowserStorage.get(
-      OldFields.VAULT,
-      OldFields.LOCK_TIME,
-      OldFields.GUARD_CONFIG
-    ) as StorageKeyValue;
-
-    if (data && data[OldFields.VAULT]) {
-      this.#encryptMnemonic = Buffer.from(data[OldFields.VAULT], 'base64');
-      this.#isReady = Boolean(this.#encryptMnemonic);
-    }
-
-    if (data && data[OldFields.GUARD_CONFIG]) {
-      const [algorithm, iteractions] = String(data[OldFields.GUARD_CONFIG]).split(':');
-
-      if (algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512) {
-        this.#algorithm = algorithm;
-      }
-
-      if (!isNaN(Number(iteractions))) {
-        this.#iteractions = Number(iteractions);
-      }
-    }
-
-    if (data[OldFields.LOCK_TIME]) {
-      this.#time = Number(data[OldFields.LOCK_TIME]);
-    } else {
-      await BrowserStorage.set(
-        buildObject(OldFields.LOCK_TIME, String(Common.TIME_BEFORE_LOCK))
-      );
-    }
-
-    if (ManifestVersions.V3 === getManifestVersion()) {
-      const data = await Runtime.storage.session.get([
-        SessionKeys.EndSession,
-        SessionKeys.Hash,
-        SessionKeys.PrivateExtendedKey
-      ]);
-
-      try {
-        if (data[SessionKeys.EndSession]) {
-          this.#endSession = new Date(data[SessionKeys.EndSession]);
-        }
-        if (data[SessionKeys.Hash]) {
-          const hash = utils.hex.toBytes(data[SessionKeys.Hash]);
-          this.#hash.set(this, hash);
-          this.#isEnable = true;
-        }
-        if (data[SessionKeys.PrivateExtendedKey]) {
-          this.#privateExtendedKey = utils.hex.toBytes(data[SessionKeys.PrivateExtendedKey]);
-        }
-      } catch (err) {
-        console.warn('guard.sync', err);
-      }
-    }
-  }
-
-  /**
-   * Sets the guard configuration, including the hashing algorithm and iterations.
-   * @param algorithm The SHA algorithm to use (sha256 or sha512).
-   * @param iteractions The number of iterations for key derivation. Must be a non-negative even number.
-   */
-  async setGuardConfig(algorithm: string, iteractions: number) {
-    assert(
-      algorithm === ShaAlgorithms.sha256 || algorithm === ShaAlgorithms.Sha512,
-      ErrorMessages.IncorrectConfigParams
-    );
-    assert(iteractions >= 0, ErrorMessages.IncorrectConfigParams);
-    assert(iteractions % 2 === 0, ErrorMessages.IncorrectConfigParams);
-
-    this.#algorithm = algorithm as ShaAlgorithms;
-    this.#iteractions = iteractions;
-
-    const newConfig = `${algorithm}:${iteractions}`;
-
-    await BrowserStorage.set(
-      buildObject(OldFields.GUARD_CONFIG, newConfig)
-    );
-  }
-
-  /**
-   * Sets the logout timer for the session.
-   * @param timer The time in hours before the session automatically logs out. Must be a positive integer.
-   */
-  async setLogOutTimer(timer: number) {
-    assert(TypeOf.isInt(timer), ErrorMessages.MustBeInt);
-    assert(timer > 0, ErrorMessages.IncorrectParams);
-
-    this.#time = timer;
-
-    await BrowserStorage.set(
-      buildObject(OldFields.LOCK_TIME, String(this.lockTime))
-    );
-  }
-
-  /**
-   * Exports the decrypted mnemonic using the provided password.
-   * @param password The password to decrypt the mnemonic.
-   * @returns The decrypted mnemonic as a UTF-8 string.
-   * @throws Error if the wallet is not ready, guard is not synced, or password is incorrect.
-   */
-  async exportMnemonic(password: string) {
-    assert(this.isReady, ErrorMessages.WalletNotReady);
-
-    try {
-      assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
-
-      const hash = await this.#getKeyring(password);
-      const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
-
-      return utils.utf8.fromBytes(mnemonicBytes);
-    } catch (err) {
-      this.logout();
-      throw new Error(ErrorMessages.IncorrectPassword);
-    }
-  }
-
-  /**
-   * Retrieves mnemonic and keys from old storage format.
-   * @param password The password to decrypt old storage data.
-   * @returns An object containing the mnemonic and an array of old guard vault keys.
-   */
-  async getFromOldStorage(password: string) {
-    const data = await BrowserStorage.get(
-      OldFields.VAULT,
-      OldFields.VAULT_IMPORTED,
-    );
-    const hash = OldAes.hash(password);
-    const encryptedKeys = data[OldFields.VAULT_IMPORTED];
-    const mnemonic = OldAes.decrypt(data[OldFields.VAULT], hash);
-    let keys: OldGuardVaultKeys[] = [];
-
-    if (encryptedKeys) {
-      try {
-        keys = JSON.parse(OldAes.decrypt(encryptedKeys, hash));
-      } catch {
-        // Handle parsing error silently
-      }
-    }
-
-    return {
-      mnemonic,
-      keys
-    };
-  }
-
-  /**
-   * Unlocks the wallet using the provided password, decrypting the mnemonic and setting up the session.
-   * @param password The password to unlock the wallet.
-   * @throws Error if the wallet is not ready, guard is not synced, or password is incorrect.
-   */
-  async unlock(password: string) {
-    assert(this.isReady, ErrorMessages.WalletNotReady);
-
-    try {
-      assert(Boolean(this.#encryptMnemonic), ErrorMessages.GuardNotSynced);
-
-      const hash = await this.#getKeyring(password);
-      const oldHash = await sha256(utils.utf8.toBytes(password));
-      const mnemonicBytes = Cipher.decrypt(this.#encryptMnemonic as Uint8Array, hash);
-      const mnemonic = utils.utf8.fromBytes(mnemonicBytes);
-
-      const seed = await Bip39.mnemonicToSeed(mnemonic);
-
-      this.#privateExtendedKey = Cipher.encrypt(seed, hash);
-
-      this.#isEnable = true;
-      this.#updateSession();
-      this.#hash.set(this, hash);
-      this.#oldHash.set(this, oldHash);
-
-      if (ManifestVersions.V3 === getManifestVersion()) {
-        Runtime.storage.session.set({
-          [SessionKeys.EndSession]: Number(this.#endSession),
-          [SessionKeys.Hash]: utils.hex.fromBytes(hash),
-          [SessionKeys.PrivateExtendedKey]: utils.hex.fromBytes(this.#privateExtendedKey),
-        });
-      }
-    } catch (err) {
-      this.logout();
-      throw new Error(`${ErrorMessages.IncorrectPassword}, ${err.message}`);
-    }
-  }
-
-  /**
-   * Sets up the wallet vault with a new mnemonic and password, encrypting the mnemonic and private extended key.
-   * @param mnemonic The mnemonic phrase.
-   * @param password The password to encrypt the mnemonic.
-   * @param wordList The word list for BIP39.
-   * @param passphrase Optional passphrase for BIP39.
-   */
-  async setupVault(mnemonic: string, password: string, wordList: string[], passphrase?: string ) {
-    const mnemonicBuf = utils.utf8.toBytes(mnemonic);
-    const hash = await this.#getKeyring(password);
-    const seed = await Bip39.mnemonicToSeed(
-      mnemonic,
-      passphrase,
-      wordList,
-    );
-
-    this.#encryptMnemonic = Cipher.encrypt(mnemonicBuf, hash);
-    this.#privateExtendedKey = Cipher.encrypt(seed, hash);
-
-    this.#isReady = true;
-    this.#isEnable = true;
-    this.#updateSession();
-    this.#hash.set(this, hash);
-
-    await BrowserStorage.set(
-      buildObject(OldFields.VAULT, Buffer.from(this.#encryptMnemonic).toString('base64'))
-    );
-  }
-
-  /**
-   * Encrypts a private key using the current session hash.
-   * @param privKey The private key as a Uint8Array.
-   * @returns The encrypted private key as a base64 string.
-   */
-  encryptPrivateKey(privKey: Uint8Array) {
-    const hash = this.#hash.get(this) as Uint8Array;
-    const encrypted = Cipher.encrypt(privKey, hash);
-
-    return Buffer.from(encrypted).toString('base64');
-  }
-
-  /**
-   * Decrypts a private key. Tries to decrypt with old hash first, then with current session hash.
-   * @param content The encrypted private key as a base64 string.
-   * @returns The decrypted private key as a hex string.
-   */
-  decryptPrivateKey(content: string): string {
-    const hash = this.#hash.get(this) as Uint8Array;
-    const oldHash = this.#oldHash.get(this) as Uint8Array;
-    let privateKey: string;
-
-    try {
-      privateKey = OldAes.decrypt(content, Buffer.from(oldHash).toString('hex'));
-
-    } catch {
-      const bytes = Cipher.decrypt(Buffer.from(content, 'base64'), hash);
-
-      privateKey = Buffer.from(bytes).toString('hex');
-    }
-
-    return privateKey;
-  }
-
-  /**
-   * Checks if the session is active and the wallet is ready. Throws an error if not.
-   */
-  checkSession() {
-    assert(this.#isReady, ErrorMessages.WalletNotReady);
-    assert(this.#isEnable, ErrorMessages.WalletNotEnabled);
-  }
-
-  /**
-   * Logs out the current session, disabling it and clearing session-related data.
-   */
-  async logout() {
-    this.#isEnable = false;
-    this.#endSession = new Date(-1);
-
-    this.#hash.delete(this);
-  }
-
-  /**
-   * Updates the session end time based on the configured lock time.
-   */
-  async #updateSession() {
-    const now = new Date().getTime();
-    const h = Number(this.#time);
-    const newSession = new Date();
-
-    newSession.setTime(now + (h * 60 * 60 * 1000));
-
-    this.#endSession = newSession;
-  }
-
-  /**
-   * Derives a key from the password using either SHA256 or PBKDF2, based on configuration.
-   * @param password The password to derive the key from.
-   * @returns The derived key as a Uint8Array.
-   */
-  async #getKeyring(password: string) {
-    const salt = utils.utf8.toBytes(EXTENSION_ID);
-    const passwordBytes = utils.utf8.toBytes(password);
-
-    if (this.#algorithm === ShaAlgorithms.sha256 && this.#iteractions === 0) {
-      return await sha256(passwordBytes);
-    }
-
-    const key = await pbkdf2(passwordBytes, salt, this.#iteractions, this.#algorithm);
-
-    return await sha256(key);
-  }
-}
-
-
-```
-
-`background/storage/account.ts`:
+`storage/account.ts`:
 
 ```ts
 import { AddressType } from './address-type';
@@ -983,7 +47,7 @@ export class Account {
 
 ```
 
-`background/storage/address-type.ts`:
+`storage/address-type.ts`:
 
 ```ts
 export enum AddressType {
@@ -994,14 +58,33 @@ export enum AddressType {
 
 ```
 
-`background/storage/argon.ts`:
+`storage/argon.ts`:
 
 ```ts
+import { Variant, Version, Config } from '@hicaru/argon2-pure.js';
+import { APP_ID } from '../../config/argon2';
+import { Argon2Config } from '../../crypto/argon2';
+import { utils } from 'aes-js';
+
 export class WalletArgon2Params {
   memory: number;
   iterations: number;
   threads: number;
   secret: string;
+
+  get argonConfgi(): Argon2Config {
+    return new Config(
+      APP_ID,
+      64,
+      this.threads,
+      this.memory,
+      utils.hex.toBytes(this.secret),
+      this.iterations,
+      Variant.Argon2id,
+      Version.Version13,
+
+    );
+  }
 
   constructor(data: Record<string, unknown>) {
     this.memory = data.memory as number;
@@ -1013,7 +96,7 @@ export class WalletArgon2Params {
 
 ```
 
-`background/storage/background.ts`:
+`storage/background.ts`:
 
 ```ts
 import { ChainConfig } from './chain';
@@ -1032,6 +115,7 @@ export class BackgroundState {
   appearances: AppearancesTheme;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
+  storageVersion: number;
   chains: ChainConfig[];
 
   constructor(data: Record<string, unknown>) {
@@ -1051,7 +135,7 @@ export class BackgroundState {
 
 ```
 
-`background/storage/chain.ts`:
+`storage/chain.ts`:
 
 ```ts
 import { FToken } from './ftoken';
@@ -1101,7 +185,7 @@ export class ChainConfig {
 
 ```
 
-`background/storage/explorer.ts`:
+`storage/explorer.ts`:
 
 ```ts
 export class Explorer {
@@ -1120,7 +204,7 @@ export class Explorer {
 
 ```
 
-`background/storage/ftoken.ts`:
+`storage/ftoken.ts`:
 
 ```ts
 import { AddressType } from './address-type';
@@ -1155,7 +239,7 @@ export class FToken {
 
 ```
 
-`background/storage/notification.ts`:
+`storage/notification.ts`:
 
 ```ts
 export class Notification {
@@ -1168,7 +252,7 @@ export class Notification {
 
 ```
 
-`background/storage/settings.ts`:
+`storage/settings.ts`:
 
 ```ts
 import { WalletArgon2Params } from './argon';
@@ -1206,7 +290,7 @@ export class WalletSettings {
 
 ```
 
-`background/storage/wallet.ts`:
+`storage/wallet.ts`:
 
 ```ts
 import { Account } from './account';
@@ -1223,9 +307,11 @@ export class Wallet {
   tokens: FToken[];
   settings: WalletSettings;
   defaultChainHash: number;
+  vault: string;
 
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as string;
+    this.vault = data.vault as string;
     this.walletName = data.walletName as string;
     this.authType = data.authType as string;
     this.walletAddress = data.walletAddress as string;
