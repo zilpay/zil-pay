@@ -59,7 +59,7 @@ export class KeyChain {
 
   static async fromPass(
     password: Uint8Array,
-    fingerprint: string,
+    fingerprint: Uint8Array,
     argonConfig: Argon2Config,
   ): Promise<KeyChain> {
     const seed = deriveArgon2Key(password, fingerprint, argonConfig);

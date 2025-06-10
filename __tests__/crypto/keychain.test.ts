@@ -63,7 +63,7 @@ describe("KeyChain", () => {
 
   it("should initialize from password", async () => {
     const password = randomBytes(32);
-    const fingerprint = "";
+    const fingerprint = new Uint8Array();
 
     const keychain = await KeyChain.fromPass(
       password,

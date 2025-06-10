@@ -1,3 +1,7 @@
+import { utils } from 'aes-js';
+import { base64ToUint8Array } from '../../crypto/b64';
+import { EXTENSION_ID, generateSalt } from '../../lib/runtime';
+import { KeyChain } from '../../crypto/keychain';
 import { Account } from './account';
 import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
@@ -40,5 +44,30 @@ export class Wallet {
     );
     this.settings = new WalletSettings(data.settings as Record<string, unknown>);
     this.defaultChainHash = data.defaultChainHash as number;
+  }
+
+  async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
+    const salt = await generateSalt();
+    const seed = await this.settings.hashFnParams.deriveKey(password, salt);
+    const keychain = await KeyChain.fromSeed(seed);
+    const ciphertext = base64ToUint8Array(this.vault);
+    const decrypted = await keychain.decrypt(ciphertext, this.settings.cipherOrders);
+
+    if (this.walletType == WalletTypes.SecretKey) {      
+      return decrypted;
+    } else if (this.walletType == WalletTypes.SecretPhrase) {
+      return utils.utf8.fromBytes(decrypted);
+    } else {
+      throw new Error("unknown wallet type");
+    }
+  }
+
+  async encrypt(password: Uint8Array, plaintext: Uint8Array) : Promise<Uint8Array>{
+    const salt = await generateSalt();
+    const seed = await this.settings.hashFnParams.deriveKey(password, salt);
+    const keychain = await KeyChain.fromSeed(seed);
+    const cipher = await keychain.encrypt(plaintext, this.settings.cipherOrders);
+
+    return cipher;
   }
 }
