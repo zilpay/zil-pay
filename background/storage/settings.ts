@@ -1,4 +1,4 @@
-import { WalletArgon2Params } from './argon';
+import { WalletHashParams } from './argon';
 import { CipherOrders } from '../../crypto/keychain';
 
 export enum RatesApiOptions {
@@ -7,7 +7,7 @@ export enum RatesApiOptions {
 
 export class WalletSettings {
   cipherOrders: CipherOrders[];
-  argonParams: WalletArgon2Params;
+  hashFnParams: WalletHashParams;
   currencyConvert: string;
   ipfsNode: string | null;
   ensEnabled: boolean;
@@ -19,7 +19,7 @@ export class WalletSettings {
 
   constructor(data: Record<string, unknown>) {
     this.cipherOrders = data.cipherOrders as CipherOrders[];
-    this.argonParams = new WalletArgon2Params(data.argonParams as Record<string, unknown>);
+    this.hashFnParams = new WalletHashParams(data.hashFnParams as Record<string, unknown>);
     this.currencyConvert = data.currencyConvert as string;
     this.ipfsNode = data.ipfsNode as string || null;
     this.ensEnabled = data.ensEnabled as boolean;

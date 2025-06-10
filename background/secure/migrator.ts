@@ -5,7 +5,10 @@ import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
 import { Account } from '../storage/account';
 import { AddressType } from '../storage/address-type';
 import { WalletSettings, RatesApiOptions } from '../storage/settings';
-import { WalletArgon2Params } from '../storage/argon';
+import { HashTypes, WalletHashParams } from '../storage/argon';
+import { CipherOrders } from '../../crypto/keychain';
+import { ShaAlgorithms } from '../../config/pbkdf2';
+import { TypeOf } from '../../lib/types';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -130,8 +133,17 @@ function parseTokens(tokensJson: string, chainHash: number): TokenWithBase16[] {
 function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
     const walletIdentities: WalletIdentities = JSON.parse(storage['wallet-identities'] as string);
     const mainChain = ZILLIQA_MAINNET_CHAIN;
-    const isV3 = 'guard-configuration' in storage;
+    const cipher = 'guard-configuration' in storage ? CipherOrders.AESGCM256 : CipherOrders.AESCBC;
     const parsedTokens = parseTokens(storage['tokens-list/mainnet'] as string, mainChain.chainHash);
+    let [algorithm, iteractions] = String(storage["guard-configuration"]).split(":");
+
+    if (!iteractions) {
+      iteractions = '0';
+    }
+
+    if (!algorithm || (algorithm != ShaAlgorithms.sha256 && algorithm != ShaAlgorithms.Sha512)) {
+      algorithm = ShaAlgorithms.sha256;
+    }
 
     const accounts = walletIdentities.identities.map(identity => new Account({
         addr: identity.bech32,
@@ -162,12 +174,14 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         selectedAccount: walletIdentities.selectedAddress,
         tokens: walletTokens, 
         settings: new WalletSettings({
-            cipherOrders: [],
-            argonParams: new WalletArgon2Params({
+            cipherOrders: [cipher],
+            hashFnParams: new WalletHashParams({
                 memory: 1024,
-                iterations: 3,
+                iterations: Number(iteractions),
                 threads: 1,
                 secret: '',
+                hashType: HashTypes.Pbkdf2, 
+                hashSize: algorithm ?? ShaAlgorithms.sha256,
             }),
             currencyConvert: storage['selected-currency'],
             ipfsNode: null,

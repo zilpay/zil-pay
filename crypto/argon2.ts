@@ -5,12 +5,9 @@ export type Argon2Config = Config;
 
 export function deriveArgon2Key(
   password: Uint8Array,
-  salt: string,
+  saltBytes: Uint8Array,
   config: Argon2Config,
 ) {
-  const textEncoder = new TextEncoder();
-  const saltBytes = textEncoder.encode(salt);
-
   const combinedSalt = new Uint8Array(saltBytes.length + WALLET_SALT.length);
 
   combinedSalt.set(saltBytes, 0);
