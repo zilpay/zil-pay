@@ -85,7 +85,7 @@ describe("migrateToV4", () => {
     expect(account0.pubKey).toBe(
       "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10",
     );
-    expect(account0.chainHash).toBe(208425510);
+    expect(account0.chainHash).toBe(result.chains[0].hash());
     expect(account0.chainId).toBe(1);
     expect(account0.slip44).toBe(313);
     expect(account0.index).toBe(0);
@@ -113,7 +113,7 @@ describe("migrateToV4", () => {
     expect(zilToken.rate).toBe(1);
     expect(zilToken.default_).toBe(true);
     expect(zilToken.native).toBe(true);
-    expect(zilToken.chainHash).toBe(208425510);
+    expect(zilToken.chainHash).toBe(result.chains[0].hash());
 
     const zlpToken = wallet.tokens.find((t) => t.symbol === "ZLP")!;
     expect(zlpToken).toBeDefined();
@@ -168,7 +168,7 @@ describe("migrateToV4", () => {
     expect(wallet.authType).toBe(AuthMethod.None);
     expect(wallet.selectedAccount).toBe(1);
     expect(wallet.vault).toBe(STORAGE_V3.vault);
-    expect(wallet.defaultChainHash).toBe(208425510);
+    expect(wallet.defaultChainHash).toBe(result.chains[0].hash());
 
     // Accounts
     expect(wallet.accounts).toHaveLength(2);
