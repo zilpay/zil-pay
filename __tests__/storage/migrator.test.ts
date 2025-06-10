@@ -16,7 +16,7 @@ import { AddressType } from "../../background/storage/address-type";
 import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
-import { PASSWORD, STORAGE_V2, STORAGE_V3 } from "../data";
+import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "../data";
 import { utils } from "aes-js";
 
 // Helper function to create a minimal storage object for version 4
@@ -237,7 +237,10 @@ describe("migrateToV4", () => {
     const result = migrateToV4(STORAGE_V2);
     const wallet = result.wallets[0];
     const password = utils.utf8.toBytes(PASSWORD);
+    const decrypted = await wallet.decrypt(password);
 
-    console.log(await wallet.decrypt(password));
+    console.log(decrypted);
+
+    // expect(utils.utf8.fromBytes(decrypted)).toEqual(WORDS);
   });
 });

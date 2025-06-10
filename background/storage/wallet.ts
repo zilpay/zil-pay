@@ -48,8 +48,7 @@ export class Wallet {
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
     const salt = await generateSalt();
-    const seed = await this.settings.hashFnParams.deriveKey(password, salt);
-    const keychain = await KeyChain.fromSeed(seed);
+    const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
     const ciphertext = base64ToUint8Array(this.vault);
     const decrypted = await keychain.decrypt(ciphertext, this.settings.cipherOrders);
 
@@ -64,8 +63,7 @@ export class Wallet {
 
   async encrypt(password: Uint8Array, plaintext: Uint8Array) : Promise<Uint8Array>{
     const salt = await generateSalt();
-    const seed = await this.settings.hashFnParams.deriveKey(password, salt);
-    const keychain = await KeyChain.fromSeed(seed);
+    const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
     const cipher = await keychain.encrypt(plaintext, this.settings.cipherOrders);
 
     return cipher;

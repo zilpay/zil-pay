@@ -6,6 +6,7 @@ import { pbkdf2 } from '../../crypto/pbkdf2';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { sha256 } from '../../crypto/sha256';
 import { EXTENSION_ID } from '../../lib/runtime';
+import { KeyChain } from '../../crypto/keychain';
 
 export enum HashTypes {
   Argon2,
@@ -42,21 +43,14 @@ export class WalletHashParams {
     this.hashSize = data.hashSize as ShaAlgorithms;
   }
 
-  async deriveKey(password: Uint8Array, salt: Uint8Array): Promise<Uint8Array> {
+  async deriveKey(password: Uint8Array, salt: Uint8Array): Promise<KeyChain> {
     if (this.hashType == HashTypes.Argon2) {
-      return deriveArgon2Key(password, salt, this.argon2);      
+      const seed = deriveArgon2Key(password, salt, this.argon2);      
+      return KeyChain.fromSeed(seed);
     } else if(ShaAlgorithms.Sha512 == this.hashSize) {
-      salt = utils.utf8.toBytes(EXTENSION_ID);
-      const key = await pbkdf2(
-        password,
-        salt,
-        this.iterations,
-        this.hashSize,
-      );
-
-      return await sha256(key);
+      return KeyChain.fromAesV3(password, this.hashSize, this.iterations);
     } else {
-       return await sha256(password);
+      return KeyChain.fromAesV2(password);
     }
   }
 }
