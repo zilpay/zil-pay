@@ -239,8 +239,15 @@ describe("migrateToV4", () => {
     const password = utils.utf8.toBytes(PASSWORD);
     const decrypted = await wallet.decrypt(password);
 
-    console.log(decrypted);
+    expect(decrypted).toEqual(WORDS);
+  });
 
-    // expect(utils.utf8.fromBytes(decrypted)).toEqual(WORDS);
+  it("test migrate and decrypt storage v3", async () => {
+    const result = migrateToV4(STORAGE_V3);
+    const wallet = result.wallets[0];
+    const password = utils.utf8.toBytes(PASSWORD);
+    const decrypted = await wallet.decrypt(password);
+
+    expect(decrypted).toEqual(WORDS);
   });
 });
