@@ -70,7 +70,7 @@ describe("migrateToV4", () => {
     expect(wallet.authType).toBe(AuthMethod.None);
     expect(wallet.selectedAccount).toBe(1); // From STORAGE_V2.selectedAddress
     expect(wallet.walletAddress).toBe(
-      "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
+      "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y",
     );
     expect(wallet.vault).toBe(STORAGE_V2.vault);
     expect(wallet.defaultChainHash).toBe(1);
@@ -83,7 +83,7 @@ describe("migrateToV4", () => {
     expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y");
     expect(account0.addrType).toBe(AddressType.Bech32);
     expect(account0.pubKey).toBe(
-      "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10"
+      "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10",
     );
     expect(account0.chainHash).toBe(1);
     expect(account0.chainId).toBe(1);
@@ -94,7 +94,7 @@ describe("migrateToV4", () => {
     expect(account1.name).toBe("Imported 0");
     expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43");
     expect(account1.pubKey).toBe(
-      "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024"
+      "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
     );
     expect(account1.index).toBe(0);
 
@@ -166,7 +166,7 @@ describe("migrateToV4", () => {
     expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
     expect(wallet.walletName).toBe("Zilliqa Wallet");
     expect(wallet.authType).toBe(AuthMethod.None);
-    expect(wallet.selectedAccount).toBe(1); // From STORAGE_V3.selectedAddress
+    expect(wallet.selectedAccount).toBe(1);
     expect(wallet.vault).toBe(STORAGE_V3.vault);
     expect(wallet.defaultChainHash).toBe(1);
 
@@ -176,7 +176,7 @@ describe("migrateToV4", () => {
     expect(account0.name).toBe("Account 0");
     expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y");
     expect(account0.pubKey).toBe(
-      "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10"
+      "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10",
     );
     expect(account0.index).toBe(0);
 
@@ -184,7 +184,7 @@ describe("migrateToV4", () => {
     expect(account1.name).toBe("Imported 0");
     expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43");
     expect(account1.pubKey).toBe(
-      "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024"
+      "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
     );
     expect(account1.index).toBe(0);
 
