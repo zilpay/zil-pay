@@ -9,7 +9,7 @@ export class ChainConfig {
   rpc: string[];
   features: number[];
   chainId: number;
-  chainIds: BigUint64Array;
+  chainIds: number[];
   slip44: number;
   diffBlockTime: number;
   chainHash: number;
@@ -27,7 +27,7 @@ export class ChainConfig {
     this.rpc = data.rpc as string[];
     this.features = data.features as number[];
     this.chainId = data.chainId as number;
-    this.chainIds = data.chainIds as BigUint64Array;
+    this.chainIds = data.chainIds as number[];
     this.slip44 = data.slip44 as number;
     this.diffBlockTime = data.diffBlockTime as number;
     this.chainHash = data.chainHash as number;
@@ -40,5 +40,30 @@ export class ChainConfig {
     this.ftokens = (data.ftokens as Record<string, unknown>[]).map(
       (t) => new FToken(t)
     );
+  }
+
+  public hash(): number {
+    let hash = 0;
+
+    const chainIdsSum = this.chainIds[0] + this.chainIds[1];
+
+    hash = this.hashNumber(hash, chainIdsSum);
+    hash = this.hashNumber(hash, this.slip44);
+    hash = this.hashString(hash, this.chain);
+
+    return hash;
+  }
+
+  private hashNumber(hash: number, value: number): number {
+    hash = (hash << 5) - hash + value;
+    return hash & 0xFFFFFFFF;
+  }
+
+  private hashString(hash: number, str: string): number {
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash = hash & 0xFFFFFFFF;
+    }
+    return hash;
   }
 }
