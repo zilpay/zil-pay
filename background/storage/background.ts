@@ -8,13 +8,13 @@ export enum AppearancesTheme {
 }
 
 export class BackgroundState {
+  readonly storageVersion  = 4;
   wallets: Wallet[];
   notificationsGlobalEnabled: boolean;
   locale: string | null;
   appearances: AppearancesTheme;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
-  storageVersion: number;
   chains: ChainConfig[];
 
   constructor(data: Record<string, unknown>) {
