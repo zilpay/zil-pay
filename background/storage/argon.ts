@@ -5,6 +5,7 @@ import { utils } from 'aes-js';
 import { pbkdf2 } from '../../crypto/pbkdf2';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { sha256 } from '../../crypto/sha256';
+import { EXTENSION_ID } from '../../lib/runtime';
 
 export enum HashTypes {
   Argon2,
@@ -45,6 +46,7 @@ export class WalletHashParams {
     if (this.hashType == HashTypes.Argon2) {
       return deriveArgon2Key(password, salt, this.argon2);      
     } else if(ShaAlgorithms.Sha512 == this.hashSize) {
+      salt = utils.utf8.toBytes(EXTENSION_ID);
       const key = await pbkdf2(
         password,
         salt,

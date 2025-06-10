@@ -6,6 +6,7 @@ import {
   ntruKeysFromSeed,
 } from "./ntrup";
 import { sha256 } from "./sha256";
+import { EXTENSION_ID } from "../lib/runtime";
 import { deriveArgon2Key, Argon2Config } from "./argon2";
 import {
   kuznechikDecrypt,
@@ -13,6 +14,9 @@ import {
   KUZNECHIK_KEY_SIZE,
 } from "./kuznechik";
 import { AESCipherV3, AESCipherV2 } from "./aes256";
+import { pbkdf2 } from "./pbkdf2";
+import { utils } from "aes-js";
+import { ShaAlgorithms } from "../config/pbkdf2";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
 export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
@@ -36,9 +40,9 @@ export enum CipherOrders {
 }
 
 export class KeyChain {
-  public ntrupKeys: { pk: PubKey; sk: PrivKey };
-  public aesKey: Uint8Array;
-  public kuznechikKey: Uint8Array;
+  public readonly ntrupKeys: { pk: PubKey; sk: PrivKey };
+  public readonly aesKey: Uint8Array;
+  public readonly kuznechikKey: Uint8Array;
 
   constructor(
     ntrupKeys: { pk: PubKey; sk: PrivKey },
@@ -54,7 +58,29 @@ export class KeyChain {
     const ntrupKeys = ntruKeysFromSeed(seed);
     const aesKey = await deriveKeyFromSeed(seed, 0);
     const kuznechikKey = await deriveKeyFromSeed(seed, 1);
+
     return new KeyChain(ntrupKeys, aesKey, kuznechikKey);
+  }
+
+  static async fromAesV2(password: Uint8Array): Promise<KeyChain> {
+    const keyBytes = await sha256(password);
+    const ntrupKeys = ntruKeysFromSeed(Uint8Array.from([...keyBytes, ...keyBytes]));
+
+    return new KeyChain(ntrupKeys, keyBytes, keyBytes);
+  }
+
+  static async fromAesV3(password: Uint8Array, algorithm: ShaAlgorithms, iteractions: number): Promise<KeyChain> {
+    const salt = utils.utf8.toBytes(EXTENSION_ID);
+    const key = await pbkdf2(
+      password,
+      salt,
+      iteractions,
+      algorithm,
+    );
+    const keyBytes = await sha256(key);
+    const ntrupKeys = ntruKeysFromSeed(Uint8Array.from([...keyBytes, ...keyBytes]));
+
+    return new KeyChain(ntrupKeys, keyBytes, keyBytes);
   }
 
   static async fromPass(
