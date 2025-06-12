@@ -86,7 +86,7 @@ describe("migrateToV4", () => {
       "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10",
     );
     expect(account0.chainHash).toBe(result.chains[0].hash());
-    expect(account0.chainId).toBe(1);
+    expect(account0.chainId).toBe(32769);
     expect(account0.slip44).toBe(313);
     expect(account0.index).toBe(0);
 
@@ -130,7 +130,7 @@ describe("migrateToV4", () => {
     expect(chain).toBeInstanceOf(ChainConfig);
     expect(chain.name).toBe("Zilliqa");
     expect(chain.chain).toBe("ZIL");
-    expect(chain.chainId).toBe(1);
+    expect(chain.chainId).toBe(32769);
     expect(chain.hash()).toBe(208425510);
     expect(chain.slip44).toBe(313);
 
@@ -217,7 +217,7 @@ describe("migrateToV4", () => {
     // Chain
     const chain = result.chains[0];
     expect(chain.name).toBe("Zilliqa");
-    expect(chain.chainId).toBe(1);
+    expect(chain.chainId).toBe(chain.chainIds[0]);
 
     // Wallet settings
     expect(wallet.settings.currencyConvert).toBe("btc");

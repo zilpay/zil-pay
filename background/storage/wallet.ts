@@ -69,7 +69,7 @@ export class Wallet {
     const seed = await Bip39.mnemonicToSeed(words, passphrase);
     const accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed))); 
 
-    console.log(accounts);
+    // console.log(accounts);
   }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
