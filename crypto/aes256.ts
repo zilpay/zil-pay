@@ -1,7 +1,6 @@
 import { Counter, ModeOfOperation, utils } from "aes-js";
 import { randomBytes } from "../crypto/random";
 import { md5 } from "js-md5";
-import { base64ToUint8Array } from "./b64";
 
 export enum ErrorMessages {
   InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",

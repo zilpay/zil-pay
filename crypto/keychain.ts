@@ -64,7 +64,7 @@ export class KeyChain {
 
   static async fromAesV2(password: Uint8Array): Promise<KeyChain> {
     const keyHashBytes = await sha256(password);
-    
+
     const keyHashHex = utils.hex.fromBytes(keyHashBytes);
     const aesKeyForV2 = utils.utf8.toBytes(keyHashHex);
 

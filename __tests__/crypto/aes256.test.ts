@@ -93,7 +93,7 @@ test("test AES-v2", async () => {
     "8bfed20592daf43ca798ee263fcca946013876e00f34aeab3f0836872ccc19da";
   let encrypted =
     "U2FsdGVkX19nN1qtOBORWCorbwujy5Nxm7bfehROWZn/vLrxMXuXJE3Bs1PLx2j0V/xd8Ts3e1QUv5EK9Hx4k+jnUVGFtB0Wcg+oVN4/3KcR5U54gxJUf9UTR6kWSQe5";
-  
+
   const encryptedBytes = base64ToUint8Array(encrypted);
   const keyBytes = new TextEncoder().encode(key); // В оригинальном коде была ошибка, здесь мы ее имитируем для прохождения теста
   let decrypted = await AESCipherV2.decrypt(encryptedBytes, keyBytes);
@@ -105,7 +105,7 @@ test("decrypt Storage v2 AES-v2", async () => {
   const vault = STORAGE_V2.vault;
   const passwordBytes = utils.utf8.toBytes(PASSWORD);
   const keyHashBytes = await sha256(passwordBytes);
-  
+
   const keyHashHex = utils.hex.fromBytes(keyHashBytes);
   const keyForEvpKDF = utils.utf8.toBytes(keyHashHex);
 
@@ -132,4 +132,3 @@ test("decrypt accounts Storage v2 AES-v2", async () => {
 
   expect(decrypted).toEqual(IMPORTED_KEY);
 });
-

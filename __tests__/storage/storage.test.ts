@@ -1,30 +1,37 @@
-import { BackgroundState, AppearancesTheme } from '../../background/storage/background';
-import { ChainConfig } from '../../background/storage/chain';
-import { Wallet, AuthMethod, WalletTypes } from '../../background/storage/wallet';
-import { FToken } from '../../background/storage/ftoken';
-import { Account } from '../../background/storage/account';
-import { WalletSettings } from '../../background/storage/settings';
-import { WalletHashParams, HashTypes } from '../../background/storage/argon';
-import { AddressType } from '../../background/storage/address-type';
-import { CipherOrders } from '../../crypto/keychain';
-import { ShaAlgorithms } from '../../config/pbkdf2';
-import { describe, expect, it } from 'vitest';
+import {
+  BackgroundState,
+  AppearancesTheme,
+} from "../../background/storage/background";
+import { ChainConfig } from "../../background/storage/chain";
+import {
+  Wallet,
+  AuthMethod,
+  WalletTypes,
+} from "../../background/storage/wallet";
+import { FToken } from "../../background/storage/ftoken";
+import { Account } from "../../background/storage/account";
+import { WalletSettings } from "../../background/storage/settings";
+import { WalletHashParams, HashTypes } from "../../background/storage/argon";
+import { AddressType } from "../../background/storage/address-type";
+import { CipherOrders } from "../../crypto/keychain";
+import { ShaAlgorithms } from "../../config/pbkdf2";
+import { describe, expect, it } from "vitest";
 
-describe('BackgroundState', () => {
-  it('should initialize with correct properties', () => {
+describe("BackgroundState", () => {
+  it("should initialize with correct properties", () => {
     const mockData = {
       wallets: [
         {
           walletType: WalletTypes.SecretPhrase,
-          walletName: 'Test Wallet',
+          walletName: "Test Wallet",
           authType: AuthMethod.None,
-          walletAddress: 'zil1testaddress',
+          walletAddress: "zil1testaddress",
           accounts: [
             {
-              addr: 'zil1testaddress',
+              addr: "zil1testaddress",
               addrType: AddressType.Bech32,
-              name: 'Test Account',
-              pubKey: 'testPubKey',
+              name: "Test Account",
+              pubKey: "testPubKey",
               chainHash: 1,
               chainId: 1,
               slip44: 313,
@@ -34,13 +41,13 @@ describe('BackgroundState', () => {
           selectedAccount: 0,
           tokens: [
             {
-              name: 'Zilliqa',
-              symbol: 'ZIL',
+              name: "Zilliqa",
+              symbol: "ZIL",
               decimals: 12,
-              addr: 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz',
+              addr: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
               addrType: AddressType.Bech32,
               logo: null,
-              balances: { 0: '1000' },
+              balances: { 0: "1000" },
               rate: 0,
               default_: true,
               native: true,
@@ -53,11 +60,11 @@ describe('BackgroundState', () => {
               memory: 1024,
               iterations: 0,
               threads: 1,
-              secret: '',
+              secret: "",
               hashType: HashTypes.Pbkdf2,
               hashSize: ShaAlgorithms.sha256,
             },
-            currencyConvert: 'btc',
+            currencyConvert: "btc",
             ipfsNode: null,
             ensEnabled: false,
             tokensListFetcher: false,
@@ -67,21 +74,21 @@ describe('BackgroundState', () => {
             ratesApiOptions: 0,
           },
           defaultChainHash: 1,
-          vault: 'testVault',
+          vault: "testVault",
         },
       ],
       notificationsGlobalEnabled: true,
-      locale: 'en',
+      locale: "en",
       appearances: AppearancesTheme.System,
       abbreviatedNumber: true,
       hideBalance: false,
       chains: [
         {
-          name: 'Zilliqa',
-          chain: 'ZIL',
-          logo: 'testLogo',
-          shortName: 'zilliqa',
-          rpc: ['https://api.zilliqa.com'],
+          name: "Zilliqa",
+          chain: "ZIL",
+          logo: "testLogo",
+          shortName: "zilliqa",
+          rpc: ["https://api.zilliqa.com"],
           features: [],
           chainId: 1,
           chainIds: [1, 32769],
@@ -102,7 +109,7 @@ describe('BackgroundState', () => {
     expect(state.wallets).toHaveLength(1);
     expect(state.wallets[0]).toBeInstanceOf(Wallet);
     expect(state.notificationsGlobalEnabled).toBe(true);
-    expect(state.locale).toBe('en');
+    expect(state.locale).toBe("en");
     expect(state.appearances).toBe(AppearancesTheme.System);
     expect(state.abbreviatedNumber).toBe(true);
     expect(state.hideBalance).toBe(false);
@@ -110,7 +117,7 @@ describe('BackgroundState', () => {
     expect(state.chains[0]).toBeInstanceOf(ChainConfig);
   });
 
-  it('should handle null locale correctly', () => {
+  it("should handle null locale correctly", () => {
     const mockData = {
       wallets: [],
       notificationsGlobalEnabled: false,

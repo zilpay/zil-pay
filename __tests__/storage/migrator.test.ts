@@ -16,7 +16,7 @@ import { AddressType } from "../../background/storage/address-type";
 import { HashTypes, WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
-import { TypeOf } from '../../lib/types';
+import { TypeOf } from "../../lib/types";
 import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "../data";
 import { utils } from "aes-js";
 
@@ -242,7 +242,10 @@ describe("migrateToV4", () => {
 
     expect(decrypted).toEqual(WORDS);
 
-    wallet.settings.cipherOrders = [CipherOrders.AESGCM256, CipherOrders.NTRUP761];
+    wallet.settings.cipherOrders = [
+      CipherOrders.AESGCM256,
+      CipherOrders.NTRUP761,
+    ];
     wallet.settings.hashFnParams = WalletHashParams.default();
     await wallet.encrypt(password, utils.utf8.toBytes(String(decrypted)));
     const decryptedWithArgon = await wallet.decrypt(password);
@@ -261,7 +264,10 @@ describe("migrateToV4", () => {
     expect(decrypted).toEqual(WORDS);
 
     wallet.settings.hashFnParams = WalletHashParams.default();
-    wallet.settings.cipherOrders = [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK];
+    wallet.settings.cipherOrders = [
+      CipherOrders.AESGCM256,
+      CipherOrders.KUZNECHIK,
+    ];
 
     await wallet.encrypt(password, utils.utf8.toBytes(String(decrypted)));
     const decryptedWithArgon = await wallet.decrypt(password);
