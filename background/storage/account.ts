@@ -1,9 +1,10 @@
+import { derivePrivateKey } from '../../crypto/bip32';
 import { DerivationPath } from '../../crypto/bip49';
 import { AddressType } from './address-type';
 
 export interface Bip32Account {
   name: string;
-  index: string;
+  index: number;
 }
 
 export class Account {
@@ -27,7 +28,9 @@ export class Account {
     this.index = data.index as number;
   }
 
-  fromBip39(bip32Account: Bip32Account, slip44: number) {
-    let hdPath = new DerivationPath(slip44, bip32Account.index);
+  async fromBip39(bip32Account: Bip32Account, slip44: number, seed: Uint8Array) {
+    const hdPath = new DerivationPath(slip44, bip32Account.index);
+    const privateKey = await derivePrivateKey(seed, hdPath.getPath());
+    const pubKey = '';
   }
 }

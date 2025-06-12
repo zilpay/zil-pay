@@ -16,7 +16,7 @@ import { AddressType } from "../../background/storage/address-type";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
-import { CHAINS } from '../data';
+import { CHAINS } from "../data";
 
 describe("BackgroundState", () => {
   it("should initialize with correct properties", () => {

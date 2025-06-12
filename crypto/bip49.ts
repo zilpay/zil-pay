@@ -1,4 +1,4 @@
-import { ZILLIQA, ETHEREUM } from '../config/slip44';
+import { ZILLIQA, ETHEREUM } from "../config/slip44";
 
 export class DerivationPath {
   private slip44: number;
@@ -25,4 +25,3 @@ export class DerivationPath {
     return this.getPath();
   }
 }
-
