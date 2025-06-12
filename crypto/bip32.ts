@@ -14,6 +14,7 @@ const BITCOIN_SEED = new TextEncoder().encode("Bitcoin seed");
 export enum Bip32ErrorCode {
   InvalidChild = "InvalidChild",
   InvalidPath = "InvalidPath",
+  InvalidSlip44 = "invalid slip44",
   InvalidKey = "InvalidKey",
   HmacError = "HmacError",
 }
@@ -240,5 +241,5 @@ export async function deriveFromPrivateKeyPublicKey(
     return secp256k1.getPublicKey(privateKey, compressed);
   }
 
-  throw new Error("invalid slip44");
+  throw new Error(Bip32ErrorCode.InvalidSlip44);
 }

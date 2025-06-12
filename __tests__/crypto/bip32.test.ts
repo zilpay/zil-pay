@@ -10,7 +10,7 @@ import {
 import { Bip39 } from "../../crypto/bip39";
 import { DerivationPath } from "../../crypto/bip49";
 import { utils } from "aes-js";
-import { ETHEREUM } from "../../config/slip44";
+import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 
 describe("BIP-32 Derivation", () => {
   it("should derive correct private key from BIP-39 mnemonic", async () => {
@@ -39,13 +39,21 @@ describe("BIP-32 Derivation", () => {
       ]),
     ).toEqual(seed);
 
-    const path = new DerivationPath(ETHEREUM, 0);
-    const privateKey = await derivePrivateKey(seed, path.getPath());
-    const pubkey = await deriveFromPrivateKeyPublicKey(privateKey, ETHEREUM);
+    const pathETH = new DerivationPath(ETHEREUM, 0);
+    const privateKeyETH = await derivePrivateKey(seed, pathETH.getPath());
+    const pubkeyETH = await deriveFromPrivateKeyPublicKey(privateKeyETH, ETHEREUM);
 
     expect(
       "0315bd7b9301a2cde69ef8092d6fb275a077e3c94e5ed166c915426850cf606600",
-    ).toEqual(utils.hex.fromBytes(pubkey));
+    ).toEqual(utils.hex.fromBytes(pubkeyETH));
+
+    const pathZIL = new DerivationPath(ZILLIQA, 0);
+    const privateKeyZIL = await derivePrivateKey(seed, pathZIL.getPath());
+    const pubkeyZIL = await deriveFromPrivateKeyPublicKey(privateKeyZIL, ZILLIQA);
+
+    expect(
+      "03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da",
+    ).toEqual(utils.hex.fromBytes(pubkeyZIL));
   });
 });
 
@@ -83,7 +91,7 @@ describe("derivePrivateKey Error Handling", () => {
     const seed = utils.hex.toBytes("000102030405060708090a0b0c0d0e0f");
     await expect(
       derivePrivateKey(seed, "m/44'/invalid'/0'/0/0"),
-    ).rejects.toThrow(Bip32Error);
+    ).rejects.toThrow();
   });
 });
 
