@@ -13,6 +13,7 @@ zil-pay
 │   │   ├── b64.test.ts
 │   │   ├── bip32.test.ts
 │   │   ├── bip39.test.ts
+│   │   ├── bip49.test.ts
 │   │   ├── keychain.test.ts
 │   │   ├── kuznechik.test.ts
 │   │   ├── ntrup.test.ts
@@ -25,6 +26,8 @@ zil-pay
 │   │   ├── sha512.test.ts
 │   │   └── word_list.ts
 │   ├── data.ts
+│   ├── session
+│   │   └── session.test.ts
 │   ├── setupTests.ts
 │   ├── storage
 │   │   ├── migrator.test.ts
@@ -62,7 +65,8 @@ zil-pay
 │   ├── fields.ts
 │   ├── manifest.ts
 │   ├── pbkdf2.ts
-│   └── sha.ts
+│   ├── sha.ts
+│   └── slip44.ts
 ├── content
 │   └── index.ts
 ├── crypto
@@ -71,6 +75,7 @@ zil-pay
 │   ├── b64.ts
 │   ├── bip32.ts
 │   ├── bip39.ts
+│   ├── bip49.ts
 │   ├── index.ts
 │   ├── keychain.ts
 │   ├── kuznechik.ts
@@ -79,7 +84,6 @@ zil-pay
 │   ├── pbkdf2.ts
 │   ├── proto
 │   │   └── zq1.ts
-│   ├── pubkey.ts
 │   ├── random.ts
 │   ├── sha256.ts
 │   ├── sha512.ts
@@ -322,7 +326,7 @@ test("test AES-v2", async () => {
     "8bfed20592daf43ca798ee263fcca946013876e00f34aeab3f0836872ccc19da";
   let encrypted =
     "U2FsdGVkX19nN1qtOBORWCorbwujy5Nxm7bfehROWZn/vLrxMXuXJE3Bs1PLx2j0V/xd8Ts3e1QUv5EK9Hx4k+jnUVGFtB0Wcg+oVN4/3KcR5U54gxJUf9UTR6kWSQe5";
-  
+
   const encryptedBytes = base64ToUint8Array(encrypted);
   const keyBytes = new TextEncoder().encode(key); // В оригинальном коде была ошибка, здесь мы ее имитируем для прохождения теста
   let decrypted = await AESCipherV2.decrypt(encryptedBytes, keyBytes);
@@ -334,7 +338,7 @@ test("decrypt Storage v2 AES-v2", async () => {
   const vault = STORAGE_V2.vault;
   const passwordBytes = utils.utf8.toBytes(PASSWORD);
   const keyHashBytes = await sha256(passwordBytes);
-  
+
   const keyHashHex = utils.hex.fromBytes(keyHashBytes);
   const keyForEvpKDF = utils.utf8.toBytes(keyHashHex);
 
@@ -361,7 +365,6 @@ test("decrypt accounts Storage v2 AES-v2", async () => {
 
   expect(decrypted).toEqual(IMPORTED_KEY);
 });
-
 
 ```
 
@@ -464,11 +467,9 @@ import {
   deriveChildKey,
   ChildNumber,
   Bip32Error,
-  deriveMasterKey,
   Bip32ErrorCode,
 } from "../../crypto/bip32";
 import { Bip39 } from "../../crypto/bip39";
-import { WORD_LIST } from "./word_list";
 import { utils } from "aes-js";
 
 describe("BIP-32 Derivation", () => {
@@ -477,7 +478,7 @@ describe("BIP-32 Derivation", () => {
       "panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside";
     const expectedSecretKey =
       "ff1e68eb7bf2f48651c47ef0177eb815857322257c5894bb4cfd1176c9989314";
-    const seed = await Bip39.mnemonicToSeed(phrase, "", WORD_LIST);
+    const seed = await Bip39.mnemonicToSeed(phrase, "");
     const privateKey = await derivePrivateKey(seed, "m/44'/60'/0'/0/0");
 
     expect(utils.hex.fromBytes(privateKey)).toEqual(expectedSecretKey);
@@ -874,6 +875,40 @@ describe("bip39_invalid_entropy", () => {
     await expect(Bip39.entropyToMnemonic(entropy, WORD_LIST)).rejects.toThrow(
       Bip39Error.InvalidEntropy,
     );
+  });
+});
+
+```
+
+`zil-pay/__tests__/crypto/bip49.test.ts`:
+
+```ts
+import { describe, expect, test } from "vitest";
+import { DerivationPath } from "../../crypto/bip49";
+import { ETHEREUM, ZILLIQA } from "../../config/slip44";
+
+describe("DerivationPath", () => {
+  test("should create correct Ethereum path", () => {
+    const ethPath = new DerivationPath(ETHEREUM, 0);
+    expect(ethPath.getPath()).toBe("m/44'/60'/0'/0/0");
+    expect(ethPath.getBasePath()).toBe("m/44'/60'/0'/0/");
+  });
+
+  test("should create correct Zilliqa path", () => {
+    const zilPath = new DerivationPath(ZILLIQA, 0);
+    expect(zilPath.getPath()).toBe("m/44'/313'/0'/0/0");
+    expect(zilPath.getBasePath()).toBe("m/44'/313'/0'/0/");
+  });
+
+  test("should handle different indexes", () => {
+    const ethPath = new DerivationPath(ETHEREUM, 5);
+    expect(ethPath.getPath()).toBe("m/44'/60'/0'/0/5");
+    expect(ethPath.getIndex()).toBe(5);
+  });
+
+  test("should display correct string", () => {
+    const ethPath = new DerivationPath(ETHEREUM, 0);
+    expect(ethPath.toString()).toBe("m/44'/60'/0'/0/0");
   });
 });
 
@@ -3592,6 +3627,179 @@ export const STORAGE_V3 = {
 };
 export const EXTENSION_ID = "klnaejjgbibmhlephnhpmaofohgkpgkd";
 
+export const CHAINS = JSON.parse(`[
+  {
+    "name": "Zilliqa proto",
+    "chain": "ZIL",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://api.zq2-protomainnet.zilliqa.com"
+    ],
+    "features": [],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Zilliqa",
+        "symbol": "ZIL",
+        "decimals": 18
+      },
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
+        "name": "Zilliqa Scilla",
+        "symbol": "ZIL",
+        "decimals": 12
+      }
+    ],
+    "chainIds": [32770, 2],
+    "infoURL": "https://www.zilliqa.com/",
+    "testnet": true,
+    "shortName": "zilliqa",
+    "slip44": 313,
+    "explorers": [
+      {
+        "name": "Otterscan",
+        "icon": "https://explorer.zq2-protomainnet.zilliqa.com/assets/otter-DYFeLtFi.png",
+        "url": "https://explorer.zq2-protomainnet.zilliqa.com",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Binance testnet",
+    "chain": "BNB",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      "https://data-seed-prebsc-2-s1.binance.org:8545/",
+      "http://data-seed-prebsc-1-s2.binance.org:8545/",
+      "http://data-seed-prebsc-2-s2.binance.org:8545/",
+      "https://data-seed-prebsc-1-s3.binance.org:8545/",
+      "https://data-seed-prebsc-2-s3.binance.org:8545/"
+    ],
+    "features": [
+      "EIP1559",
+      "EIP155",
+      "EIP4844"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/bnbchain/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "BinanceCoin",
+        "symbol": "BNB",
+        "decimals": 18
+      }
+    ],
+    "infoURL": "https://www.bnbchain.org",
+    "shortName": "bnbchain",
+    "testnet": true,
+    "chainIds": [97, 0],
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "BscScan",
+        "url": "https://testnet.bscscan.com",
+        "icon": "https://bscscan.com/assets/bsc/images/svg/brandassets/logo-symbol.svg",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Sepolia",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/ethereum/chain/%{dark,light}%.svg",
+    "chain": "ETH",
+    "rpc": [
+      "https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8",
+      "https://rpc-sepolia.rockx.com",
+      "https://rpc.sepolia.dev"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559",
+      "EIP4844"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Ethereum",
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/bnbchain/%{contract_address}%/%{dark,light}%.webp",
+        "symbol": "ETH",
+        "decimals": 18
+      }
+    ],
+    "testnet": true,
+    "infoURL": "https://sepolia.dev/",
+    "shortName": "ethereum",
+    "chainIds": [11155111, 0],
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Etherscan",
+        "url": "https://sepolia.etherscan.io/",
+        "icon": "https://etherscan.io/images/brandassets/etherscan-logo-circle.svg",
+        "standard": "EIP3091"
+      }
+    ]
+  }
+]`);
+
+```
+
+`zil-pay/__tests__/session/session.test.ts`:
+
+```ts
+import "../setupTests";
+import { describe, it, expect } from "vitest";
+import { Session, SessionStorageKeys } from "../../background/secure/session";
+import { utils } from "aes-js";
+import { Runtime } from "../../lib/runtime";
+import { uuid } from "../../crypto/uuid";
+
+describe("Session", () => {
+  const vaultContent = utils.utf8.toBytes("test vault");
+  const sessionTime = 60;
+  const testUuid = uuid(); // Generate a test UUID
+
+  it("setSession stores and getVault retrieves content", async () => {
+    const session = new Session(testUuid);
+    await session.setSession(sessionTime, vaultContent);
+    const result = await session.getVault();
+    expect(result).toEqual(vaultContent);
+  });
+
+  it("clearSession removes all data", async () => {
+    const session = new Session(testUuid);
+    await session.setSession(sessionTime, vaultContent);
+    await session.clearSession();
+    const result = await session.getVault();
+    expect(result).toBeNull();
+  });
+
+  it("getVault returns null after session expires", async () => {
+    const session = new Session(testUuid);
+    await session.setSession(1, vaultContent); // 1 second
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+    const result = await session.getVault();
+    expect(result).toBeNull();
+    const data = await Runtime.storage.session.get([
+      `${SessionStorageKeys.EndSession}:${testUuid}`,
+      `${SessionStorageKeys.SessionKey}:${testUuid}`,
+      `${SessionStorageKeys.VaultCipher}:${testUuid}`,
+    ]);
+    expect(data).toEqual({
+      [`${SessionStorageKeys.EndSession}:${testUuid}`]: undefined,
+      [`${SessionStorageKeys.SessionKey}:${testUuid}`]: undefined,
+      [`${SessionStorageKeys.VaultCipher}:${testUuid}`]: undefined,
+    });
+  });
+});
+
 ```
 
 `zil-pay/__tests__/setupTests.ts`:
@@ -3603,6 +3811,41 @@ import { EXTENSION_ID } from "./data";
 
 global.chrome = sinonChrome;
 global.chrome.runtime.id = EXTENSION_ID;
+
+const sessionStorageMock = (() => {
+  let store: { [key: string]: any } = {};
+
+  return {
+    set: vi.fn(async (items: { [key: string]: any }) => {
+      store = { ...store, ...items };
+    }),
+    get: vi.fn(async (keys?: string | string[] | null) => {
+      if (!keys) return store;
+      if (typeof keys === "string") return { [keys]: store[keys] };
+      if (Array.isArray(keys)) {
+        const result: { [key: string]: any } = {};
+        for (const key of keys) {
+          result[key] = store[key];
+        }
+        return result;
+      }
+      return {};
+    }),
+    clear: vi.fn(async () => {
+      store = {};
+    }),
+    setAccessLevel: vi.fn(
+      async ({ accessLevel: level }: { accessLevel: string }) => {
+        if (
+          level !== "TRUSTED_CONTEXTS" &&
+          level !== "TRUSTED_AND_UNTRUSTED_CONTEXTS"
+        ) {
+          throw new Error("Invalid access level");
+        }
+      },
+    ),
+  };
+})();
 
 const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
   for (let i = 0; i < array.length; i++) {
@@ -3617,11 +3860,14 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
   },
 };
 
+(globalThis as any).chrome.storage.session = sessionStorageMock;
+
 ```
 
 `zil-pay/__tests__/storage/migrator.test.ts`:
 
 ```ts
+import "../setupTests";
 import { describe, it, expect } from "vitest";
 import { migrateToV4 } from "../../background/secure/migrator";
 import {
@@ -3640,7 +3886,7 @@ import { AddressType } from "../../background/storage/address-type";
 import { HashTypes, WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
-import { TypeOf } from '../../lib/types';
+import { TypeOf } from "../../lib/types";
 import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "../data";
 import { utils } from "aes-js";
 
@@ -3695,9 +3941,6 @@ describe("migrateToV4", () => {
     expect(wallet.walletName).toBe("Zilliqa Wallet");
     expect(wallet.authType).toBe(AuthMethod.None);
     expect(wallet.selectedAccount).toBe(1); // From STORAGE_V2.selectedAddress
-    expect(wallet.walletAddress).toBe(
-      "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y",
-    );
     expect(wallet.vault).toBe(STORAGE_V2.vault);
     expect(wallet.defaultChainHash).toBe(208425510);
 
@@ -3866,7 +4109,10 @@ describe("migrateToV4", () => {
 
     expect(decrypted).toEqual(WORDS);
 
-    wallet.settings.cipherOrders = [CipherOrders.AESGCM256, CipherOrders.NTRUP761];
+    wallet.settings.cipherOrders = [
+      CipherOrders.AESGCM256,
+      CipherOrders.NTRUP761,
+    ];
     wallet.settings.hashFnParams = WalletHashParams.default();
     await wallet.encrypt(password, utils.utf8.toBytes(String(decrypted)));
     const decryptedWithArgon = await wallet.decrypt(password);
@@ -3885,7 +4131,10 @@ describe("migrateToV4", () => {
     expect(decrypted).toEqual(WORDS);
 
     wallet.settings.hashFnParams = WalletHashParams.default();
-    wallet.settings.cipherOrders = [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK];
+    wallet.settings.cipherOrders = [
+      CipherOrders.AESGCM256,
+      CipherOrders.KUZNECHIK,
+    ];
 
     await wallet.encrypt(password, utils.utf8.toBytes(String(decrypted)));
     const decryptedWithArgon = await wallet.decrypt(password);
@@ -3900,33 +4149,41 @@ describe("migrateToV4", () => {
 `zil-pay/__tests__/storage/storage.test.ts`:
 
 ```ts
-import { BackgroundState, AppearancesTheme } from '../../background/storage/background';
-import { ChainConfig } from '../../background/storage/chain';
-import { Wallet, AuthMethod, WalletTypes } from '../../background/storage/wallet';
-import { FToken } from '../../background/storage/ftoken';
-import { Account } from '../../background/storage/account';
-import { WalletSettings } from '../../background/storage/settings';
-import { WalletHashParams, HashTypes } from '../../background/storage/argon';
-import { AddressType } from '../../background/storage/address-type';
-import { CipherOrders } from '../../crypto/keychain';
-import { ShaAlgorithms } from '../../config/pbkdf2';
-import { describe, expect, it } from 'vitest';
+import {
+  BackgroundState,
+  AppearancesTheme,
+} from "../../background/storage/background";
+import { ChainConfig } from "../../background/storage/chain";
+import {
+  Wallet,
+  AuthMethod,
+  WalletTypes,
+} from "../../background/storage/wallet";
+import { FToken } from "../../background/storage/ftoken";
+import { Account } from "../../background/storage/account";
+import { WalletSettings } from "../../background/storage/settings";
+import { WalletHashParams, HashTypes } from "../../background/storage/argon";
+import { AddressType } from "../../background/storage/address-type";
+import { CipherOrders } from "../../crypto/keychain";
+import { ShaAlgorithms } from "../../config/pbkdf2";
+import { describe, expect, it } from "vitest";
+import { CHAINS } from "../data";
 
-describe('BackgroundState', () => {
-  it('should initialize with correct properties', () => {
+describe("BackgroundState", () => {
+  it("should initialize with correct properties", () => {
     const mockData = {
       wallets: [
         {
           walletType: WalletTypes.SecretPhrase,
-          walletName: 'Test Wallet',
+          walletName: "Test Wallet",
           authType: AuthMethod.None,
-          walletAddress: 'zil1testaddress',
+          walletAddress: "zil1testaddress",
           accounts: [
             {
-              addr: 'zil1testaddress',
+              addr: "zil1testaddress",
               addrType: AddressType.Bech32,
-              name: 'Test Account',
-              pubKey: 'testPubKey',
+              name: "Test Account",
+              pubKey: "testPubKey",
               chainHash: 1,
               chainId: 1,
               slip44: 313,
@@ -3936,13 +4193,13 @@ describe('BackgroundState', () => {
           selectedAccount: 0,
           tokens: [
             {
-              name: 'Zilliqa',
-              symbol: 'ZIL',
+              name: "Zilliqa",
+              symbol: "ZIL",
               decimals: 12,
-              addr: 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz',
+              addr: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
               addrType: AddressType.Bech32,
               logo: null,
-              balances: { 0: '1000' },
+              balances: { 0: "1000" },
               rate: 0,
               default_: true,
               native: true,
@@ -3955,11 +4212,11 @@ describe('BackgroundState', () => {
               memory: 1024,
               iterations: 0,
               threads: 1,
-              secret: '',
+              secret: "",
               hashType: HashTypes.Pbkdf2,
               hashSize: ShaAlgorithms.sha256,
             },
-            currencyConvert: 'btc',
+            currencyConvert: "btc",
             ipfsNode: null,
             ensEnabled: false,
             tokensListFetcher: false,
@@ -3969,33 +4226,15 @@ describe('BackgroundState', () => {
             ratesApiOptions: 0,
           },
           defaultChainHash: 1,
-          vault: 'testVault',
+          vault: "testVault",
         },
       ],
       notificationsGlobalEnabled: true,
-      locale: 'en',
+      locale: "en",
       appearances: AppearancesTheme.System,
       abbreviatedNumber: true,
       hideBalance: false,
-      chains: [
-        {
-          name: 'Zilliqa',
-          chain: 'ZIL',
-          logo: 'testLogo',
-          shortName: 'zilliqa',
-          rpc: ['https://api.zilliqa.com'],
-          features: [],
-          chainId: 1,
-          chainIds: [1, 32769],
-          slip44: 313,
-          diffBlockTime: 30,
-          ens: null,
-          explorers: [],
-          fallbackEnabled: false,
-          testnet: false,
-          ftokens: [],
-        },
-      ],
+      chains: CHAINS,
     };
 
     const state = new BackgroundState(mockData);
@@ -4004,15 +4243,15 @@ describe('BackgroundState', () => {
     expect(state.wallets).toHaveLength(1);
     expect(state.wallets[0]).toBeInstanceOf(Wallet);
     expect(state.notificationsGlobalEnabled).toBe(true);
-    expect(state.locale).toBe('en');
+    expect(state.locale).toBe("en");
     expect(state.appearances).toBe(AppearancesTheme.System);
     expect(state.abbreviatedNumber).toBe(true);
     expect(state.hideBalance).toBe(false);
-    expect(state.chains).toHaveLength(1);
+    expect(state.chains).toHaveLength(3);
     expect(state.chains[0]).toBeInstanceOf(ChainConfig);
   });
 
-  it('should handle null locale correctly', () => {
+  it("should handle null locale correctly", () => {
     const mockData = {
       wallets: [],
       notificationsGlobalEnabled: false,
@@ -4522,6 +4761,78 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
 
 ```
 
+`zil-pay/background/secure/session.ts`:
+
+```ts
+import { AESCipherV3 } from '../../crypto/aes256';
+import { uint8ArrayToBase64, base64ToUint8Array } from '../../crypto/b64';
+import { randomBytes } from '../../crypto/random';
+import { Runtime } from '../../lib/runtime';
+
+export enum SessionStorageKeys {
+  EndSession = 'SESSION_END',
+  SessionKey = 'SESSION_KEY',
+  VaultCipher = 'VAULT_CIPHER',
+}
+
+export class Session {
+  #uuid: string;
+
+  constructor(uuid: string) {
+    Runtime.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+    this.#uuid = uuid;
+  }
+
+  private getKey(key: SessionStorageKeys): string {
+    return `${key}:${this.#uuid}`;
+  }
+
+  async setSession(sessionTime: number, vaultContent: Uint8Array): Promise<void> {
+    const endSession = Date.now() + sessionTime * 1000;
+    const key = randomBytes(32);
+    const vaultCipher = AESCipherV3.encrypt(vaultContent, key);
+
+    const data = {
+      [this.getKey(SessionStorageKeys.EndSession)]: endSession,
+      [this.getKey(SessionStorageKeys.SessionKey)]: uint8ArrayToBase64(key),
+      [this.getKey(SessionStorageKeys.VaultCipher)]: uint8ArrayToBase64(vaultCipher),
+    };
+    await Runtime.storage.session.set(data);
+  }
+
+  async clearSession(): Promise<void> {
+    await Runtime.storage.session.clear();
+  }
+
+  async getVault(): Promise<Uint8Array | null> {
+    const data = await Runtime.storage.session.get([
+      this.getKey(SessionStorageKeys.EndSession),
+      this.getKey(SessionStorageKeys.SessionKey),
+      this.getKey(SessionStorageKeys.VaultCipher),
+    ]);
+
+    const endSession = data[this.getKey(SessionStorageKeys.EndSession)];
+    if (!endSession || Date.now() > endSession) {
+      await this.clearSession();
+      return null;
+    }
+
+    const sessionKeyBase64 = data[this.getKey(SessionStorageKeys.SessionKey)];
+    const vaultCipherBase64 = data[this.getKey(SessionStorageKeys.VaultCipher)];
+
+    if (!sessionKeyBase64 || !vaultCipherBase64) {
+      return null;
+    }
+
+    const sessionKey = base64ToUint8Array(sessionKeyBase64);
+    const vaultCipher = base64ToUint8Array(vaultCipherBase64);
+
+    return AESCipherV3.decrypt(vaultCipher, sessionKey);
+  }
+}
+
+```
+
 `zil-pay/background/services/guard.ts`:
 
 ```ts
@@ -4953,7 +5264,14 @@ export class AuthGuard {
 `zil-pay/background/storage/account.ts`:
 
 ```ts
+import { derivePrivateKey } from '../../crypto/bip32';
+import { DerivationPath } from '../../crypto/bip49';
 import { AddressType } from './address-type';
+
+export interface Bip32Account {
+  name: string;
+  index: number;
+}
 
 export class Account {
   addr: string;
@@ -4974,6 +5292,12 @@ export class Account {
     this.chainId = data.chainId as number;
     this.slip44 = data.slip44 as number;
     this.index = data.index as number;
+  }
+
+  async fromBip39(bip32Account: Bip32Account, slip44: number, seed: Uint8Array) {
+    const hdPath = new DerivationPath(slip44, bip32Account.index);
+    const privateKey = await derivePrivateKey(seed, hdPath.getPath());
+    const pubKey = '';
   }
 }
 
@@ -5300,6 +5624,10 @@ import { generateSalt } from '../../lib/runtime';
 import { Account } from './account';
 import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
+import { Session } from '../secure/session';
+import { ChainConfig } from './chain';
+import { Bip32Account } from './account';
+import { Bip39 } from '../../crypto/bip39';
 
 export enum WalletTypes {
     Ledger,
@@ -5313,10 +5641,12 @@ export enum AuthMethod {
 }
 
 export class Wallet {
+  #session: Session;
+
+  uuid: string;
   walletType: WalletTypes;
   walletName: string;
   authType: AuthMethod;
-  walletAddress: string;
   accounts: Account[];
   selectedAccount: number;
   tokens: FToken[];
@@ -5329,7 +5659,6 @@ export class Wallet {
     this.vault = data.vault as string;
     this.walletName = data.walletName as string;
     this.authType = data.authType as AuthMethod;
-    this.walletAddress = data.walletAddress as string;
     this.accounts = (data.accounts as Record<string, unknown>[]).map(
       (a) => new Account(a)
     );
@@ -5339,6 +5668,25 @@ export class Wallet {
     );
     this.settings = new WalletSettings(data.settings as Record<string, unknown>);
     this.defaultChainHash = data.defaultChainHash as number;
+    this.uuid = data.uuid as string;
+    this.#session = new Session(this.uuid);
+  }
+
+  async fromBip39(
+    words: string,
+    verifyCheckSum: boolean,
+    walletName: string,
+    accounts: Bip32Account[],
+    settings: WalletSettings,
+    chain: ChainConfig,
+    wordList: string[],
+    passphrase?: string
+  ) {
+    if (verifyCheckSum) {
+      await Bip39.validateMnemonic(words, wordList);
+    }
+
+    const seed = await Bip39.mnemonicToSeed(words, passphrase);
   }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
@@ -5467,13 +5815,20 @@ export enum ShaAlgorithms {
 
 ```
 
+`zil-pay/config/slip44.ts`:
+
+```ts
+export const ETHEREUM = 60;
+export const ZILLIQA = 313;
+
+```
+
 `zil-pay/crypto/aes256.ts`:
 
 ```ts
 import { Counter, ModeOfOperation, utils } from "aes-js";
 import { randomBytes } from "../crypto/random";
 import { md5 } from "js-md5";
-import { base64ToUint8Array } from "./b64";
 
 export enum ErrorMessages {
   InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
@@ -6017,13 +6372,7 @@ export const Bip39 = Object.freeze({
   async mnemonicToSeed(
     mnemonic: string,
     passphrase: string = "",
-    wordList: string[],
   ): Promise<Uint8Array> {
-    assert(
-      await Bip39.validateMnemonic(mnemonic, wordList),
-      Bip39Error.InvalidMnemonic,
-    );
-
     const password = new TextEncoder().encode(mnemonic);
     const salt = new TextEncoder().encode(`mnemonic${passphrase}`);
     const seed = await pbkdf2(
@@ -6032,8 +6381,6 @@ export const Bip39 = Object.freeze({
       PBKDF2_ITERATIONS,
       ShaAlgorithms.Sha512,
     );
-
-    assert(seed.length === SEED_LENGTH, "Invalid seed length.");
 
     return seed;
   },
@@ -6120,6 +6467,39 @@ export const Bip39 = Object.freeze({
 
 ```
 
+`zil-pay/crypto/bip49.ts`:
+
+```ts
+import { ZILLIQA, ETHEREUM } from "../config/slip44";
+
+export class DerivationPath {
+  private slip44: number;
+  private index: number;
+
+  constructor(slip44: number, index: number) {
+    this.slip44 = slip44;
+    this.index = index;
+  }
+
+  public getPath(): string {
+    return `m/44'/${this.slip44}'/0'/0/${this.index}`;
+  }
+
+  public getBasePath(): string {
+    return `m/44'/${this.slip44}'/0'/0/`;
+  }
+
+  public getIndex(): number {
+    return this.index;
+  }
+
+  public toString(): string {
+    return this.getPath();
+  }
+}
+
+```
+
 `zil-pay/crypto/keychain.ts`:
 
 ```ts
@@ -6189,7 +6569,7 @@ export class KeyChain {
 
   static async fromAesV2(password: Uint8Array): Promise<KeyChain> {
     const keyHashBytes = await sha256(password);
-    
+
     const keyHashHex = utils.hex.fromBytes(keyHashBytes);
     const aesKeyForV2 = utils.utf8.toBytes(keyHashHex);
 
@@ -7538,113 +7918,6 @@ function writeVarint64ZigZag(bb: ByteBuffer, value: Long): void {
     high: ((high << 1) | (low >>> 31)) ^ flip,
     unsigned: false,
   });
-}
-
-```
-
-`zil-pay/crypto/pubkey.ts`:
-
-```ts
-import { utils } from "aes-js";
-
-const SECRET_KEY_SIZE = 32;
-
-export enum SecretKeyType {
-  Secp256k1Sha256Zilliqa,
-  Secp256k1Keccak256Ethereum,
-}
-
-export enum SecretKeyError {
-  SecretKeySliceError = "Secret key slice error",
-  InvalidHex = "Invalid hex string",
-  InvalidLength = "Invalid key length",
-  InvalidKeyType = "Invalid key type",
-}
-
-export class SecretKey {
-  public type: SecretKeyType;
-  public data: Uint8Array;
-
-  constructor(type: SecretKeyType, data: Uint8Array) {
-    this.type = type;
-    this.data = data;
-
-    if (data.length !== SECRET_KEY_SIZE) {
-      throw new Error(SecretKeyError.InvalidLength);
-    }
-  }
-
-  toBytes(): Uint8Array {
-    const result = new Uint8Array(SECRET_KEY_SIZE + 1);
-    result[0] = this.type === SecretKeyType.Secp256k1Sha256Zilliqa ? 0 : 1;
-    result.set(this.data, 1);
-    return result;
-  }
-
-  static fromBytes(bytes: Uint8Array): SecretKey {
-    const keyType = bytes[0];
-    const keyData = bytes.slice(1);
-
-    if (keyData.length !== SECRET_KEY_SIZE) {
-      throw new Error(SecretKeyError.SecretKeySliceError);
-    }
-
-    const keyDataArray = new Uint8Array(keyData);
-
-    switch (keyType) {
-      case 0:
-        return new SecretKey(
-          SecretKeyType.Secp256k1Sha256Zilliqa,
-          keyDataArray,
-        );
-      case 1:
-        return new SecretKey(
-          SecretKeyType.Secp256k1Keccak256Ethereum,
-          keyDataArray,
-        );
-      default:
-        throw new Error(SecretKeyError.InvalidKeyType);
-    }
-  }
-
-  toHexString(): string {
-    return utils.hex.fromBytes(this.toBytes());
-  }
-
-  static fromString(s: string): SecretKey {
-    try {
-      const data = utils.hex.toBytes(s);
-
-      if (!data || data.length === 0) {
-        throw new Error(SecretKeyError.InvalidHex);
-      }
-
-      const prefix = data[0];
-      const keyData = data.slice(1);
-
-      if (keyData.length !== SECRET_KEY_SIZE) {
-        throw new Error(SecretKeyError.InvalidLength);
-      }
-
-      const keyDataArray = new Uint8Array(keyData);
-
-      let type: SecretKeyType;
-      switch (prefix) {
-        case 0:
-          type = SecretKeyType.Secp256k1Sha256Zilliqa;
-          break;
-        case 1:
-          type = SecretKeyType.Secp256k1Keccak256Ethereum;
-          break;
-        default:
-          throw new Error(SecretKeyError.InvalidKeyType);
-      }
-
-      return new SecretKey(type, keyDataArray);
-    } catch (error) {
-      throw new Error(SecretKeyError.InvalidHex);
-    }
-  }
 }
 
 ```

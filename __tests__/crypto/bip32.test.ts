@@ -5,9 +5,12 @@ import {
   ChildNumber,
   Bip32Error,
   Bip32ErrorCode,
+  deriveFromPrivateKeyPublicKey,
 } from "../../crypto/bip32";
 import { Bip39 } from "../../crypto/bip39";
+import { DerivationPath } from "../../crypto/bip49";
 import { utils } from "aes-js";
+import { ETHEREUM } from "../../config/slip44";
 
 describe("BIP-32 Derivation", () => {
   it("should derive correct private key from BIP-39 mnemonic", async () => {
@@ -19,6 +22,30 @@ describe("BIP-32 Derivation", () => {
     const privateKey = await derivePrivateKey(seed, "m/44'/60'/0'/0/0");
 
     expect(utils.hex.fromBytes(privateKey)).toEqual(expectedSecretKey);
+  });
+
+  it("shoud get pubKey from privateKey", async () => {
+    const phrase =
+      "green process gate doctor slide whip priority shrug diamond crumble average help";
+    const seed = await Bip39.mnemonicToSeed(phrase, "");
+
+    expect(
+      Uint8Array.from([
+        143, 219, 233, 88, 72, 55, 94, 13, 19, 72, 66, 197, 121, 69, 163, 46,
+        15, 247, 4, 104, 60, 132, 106, 5, 135, 186, 182, 62, 54, 56, 209, 5,
+        182, 104, 244, 78, 184, 167, 36, 156, 3, 14, 212, 191, 102, 69, 11, 214,
+        43, 181, 138, 7, 21, 241, 122, 192, 73, 244, 36, 136, 187, 175, 159,
+        181,
+      ]),
+    ).toEqual(seed);
+
+    const path = new DerivationPath(ETHEREUM, 0);
+    const privateKey = await derivePrivateKey(seed, path.getPath());
+    const pubkey = await deriveFromPrivateKeyPublicKey(privateKey, ETHEREUM);
+
+    expect(
+      "0315bd7b9301a2cde69ef8092d6fb275a077e3c94e5ed166c915426850cf606600",
+    ).toEqual(utils.hex.fromBytes(pubkey));
   });
 });
 

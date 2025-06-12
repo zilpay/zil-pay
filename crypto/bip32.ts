@@ -4,6 +4,7 @@ import {
   uint8ArrayToBigIntBigEndian,
 } from "./number";
 import { ShaAlgorithms } from "../config/pbkdf2";
+import { ETHEREUM, ZILLIQA } from "../config/slip44";
 
 // Constants
 const HARDENED_BIT = 0x80000000;
@@ -228,4 +229,16 @@ export async function derivePrivateKey(
   }
 
   return key;
+}
+
+export async function deriveFromPrivateKeyPublicKey(
+  privateKey: Uint8Array,
+  slip44: number,
+  compressed = true,
+): Promise<Uint8Array> {
+  if (slip44 == ZILLIQA || slip44 == ETHEREUM) {
+    return secp256k1.getPublicKey(privateKey, compressed);
+  }
+
+  throw new Error("invalid slip44");
 }

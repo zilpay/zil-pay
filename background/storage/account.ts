@@ -31,6 +31,7 @@ export class Account {
   async fromBip39(bip32Account: Bip32Account, slip44: number, seed: Uint8Array) {
     const hdPath = new DerivationPath(slip44, bip32Account.index);
     const privateKey = await derivePrivateKey(seed, hdPath.getPath());
+
     const pubKey = '';
   }
 }
