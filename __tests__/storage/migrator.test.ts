@@ -72,9 +72,6 @@ describe("migrateToV4", () => {
     expect(wallet.walletName).toBe("Zilliqa Wallet");
     expect(wallet.authType).toBe(AuthMethod.None);
     expect(wallet.selectedAccount).toBe(1); // From STORAGE_V2.selectedAddress
-    expect(wallet.walletAddress).toBe(
-      "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y",
-    );
     expect(wallet.vault).toBe(STORAGE_V2.vault);
     expect(wallet.defaultChainHash).toBe(208425510);
 

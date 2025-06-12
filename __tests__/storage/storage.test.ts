@@ -16,6 +16,7 @@ import { AddressType } from "../../background/storage/address-type";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
+import { CHAINS } from '../data';
 
 describe("BackgroundState", () => {
   it("should initialize with correct properties", () => {
@@ -82,25 +83,7 @@ describe("BackgroundState", () => {
       appearances: AppearancesTheme.System,
       abbreviatedNumber: true,
       hideBalance: false,
-      chains: [
-        {
-          name: "Zilliqa",
-          chain: "ZIL",
-          logo: "testLogo",
-          shortName: "zilliqa",
-          rpc: ["https://api.zilliqa.com"],
-          features: [],
-          chainId: 1,
-          chainIds: [1, 32769],
-          slip44: 313,
-          diffBlockTime: 30,
-          ens: null,
-          explorers: [],
-          fallbackEnabled: false,
-          testnet: false,
-          ftokens: [],
-        },
-      ],
+      chains: CHAINS,
     };
 
     const state = new BackgroundState(mockData);
@@ -113,7 +96,7 @@ describe("BackgroundState", () => {
     expect(state.appearances).toBe(AppearancesTheme.System);
     expect(state.abbreviatedNumber).toBe(true);
     expect(state.hideBalance).toBe(false);
-    expect(state.chains).toHaveLength(1);
+    expect(state.chains).toHaveLength(3);
     expect(state.chains[0]).toBeInstanceOf(ChainConfig);
   });
 
