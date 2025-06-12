@@ -126,13 +126,7 @@ export const Bip39 = Object.freeze({
   async mnemonicToSeed(
     mnemonic: string,
     passphrase: string = "",
-    wordList: string[],
   ): Promise<Uint8Array> {
-    assert(
-      await Bip39.validateMnemonic(mnemonic, wordList),
-      Bip39Error.InvalidMnemonic,
-    );
-
     const password = new TextEncoder().encode(mnemonic);
     const salt = new TextEncoder().encode(`mnemonic${passphrase}`);
     const seed = await pbkdf2(
@@ -141,8 +135,6 @@ export const Bip39 = Object.freeze({
       PBKDF2_ITERATIONS,
       ShaAlgorithms.Sha512,
     );
-
-    assert(seed.length === SEED_LENGTH, "Invalid seed length.");
 
     return seed;
   },

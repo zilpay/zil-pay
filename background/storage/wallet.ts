@@ -6,6 +6,8 @@ import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
 import { Session } from '../secure/session';
 import { ChainConfig } from './chain';
+import { Bip32Account } from './account';
+import { Bip39 } from '../../crypto/bip39';
 
 export enum WalletTypes {
     Ledger,
@@ -16,11 +18,6 @@ export enum WalletTypes {
 export enum AuthMethod {
     Biometric,
     None,
-}
-
-export interface Bip32Accounts {
-  name: string;
-  index: string;
 }
 
 export class Wallet {
@@ -59,11 +56,18 @@ export class Wallet {
     words: string,
     verifyCheckSum: boolean,
     walletName: string,
-    accounts: Bip32Accounts[],
+    accounts: Bip32Account[],
     settings: WalletSettings,
-    authType: AuthMethod,
     chain: ChainConfig,
-  ) {}
+    wordList: string[],
+    passphrase?: string
+  ) {
+    if (verifyCheckSum) {
+      await Bip39.validateMnemonic(words, wordList);
+    }
+
+    const seed = await Bip39.mnemonicToSeed(words, passphrase);
+  }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
     const salt = await generateSalt();

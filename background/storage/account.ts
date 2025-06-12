@@ -1,4 +1,10 @@
+import { DerivationPath } from '../../crypto/bip49';
 import { AddressType } from './address-type';
+
+export interface Bip32Account {
+  name: string;
+  index: string;
+}
 
 export class Account {
   addr: string;
@@ -19,5 +25,9 @@ export class Account {
     this.chainId = data.chainId as number;
     this.slip44 = data.slip44 as number;
     this.index = data.index as number;
+  }
+
+  fromBip39(bip32Account: Bip32Account, slip44: number) {
+    let hdPath = new DerivationPath(slip44, bip32Account.index);
   }
 }
