@@ -4,6 +4,7 @@ import { generateSalt } from '../../lib/runtime';
 import { Account } from './account';
 import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
+import { Session } from '../secure/session';
 
 export enum WalletTypes {
     Ledger,
@@ -17,6 +18,9 @@ export enum AuthMethod {
 }
 
 export class Wallet {
+  #session: Session;
+
+  uuid: string;
   walletType: WalletTypes;
   walletName: string;
   authType: AuthMethod;
@@ -43,6 +47,8 @@ export class Wallet {
     );
     this.settings = new WalletSettings(data.settings as Record<string, unknown>);
     this.defaultChainHash = data.defaultChainHash as number;
+    this.uuid = data.uuid as string;
+    this.#session = new Session(this.uuid);
   }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {

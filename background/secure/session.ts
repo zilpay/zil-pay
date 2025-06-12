@@ -10,8 +10,15 @@ export enum SessionStorageKeys {
 }
 
 export class Session {
-  constructor() {
+  #uuid: string;
+
+  constructor(uuid: string) {
     Runtime.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+    this.#uuid = uuid;
+  }
+
+  private getKey(key: SessionStorageKeys): string {
+    return `${key}:${this.#uuid}`;
   }
 
   async setSession(sessionTime: number, vaultContent: Uint8Array): Promise<void> {
@@ -20,9 +27,9 @@ export class Session {
     const vaultCipher = AESCipherV3.encrypt(vaultContent, key);
 
     const data = {
-      [SessionStorageKeys.EndSession]: endSession,
-      [SessionStorageKeys.SessionKey]: uint8ArrayToBase64(key),
-      [SessionStorageKeys.VaultCipher]: uint8ArrayToBase64(vaultCipher),
+      [this.getKey(SessionStorageKeys.EndSession)]: endSession,
+      [this.getKey(SessionStorageKeys.SessionKey)]: uint8ArrayToBase64(key),
+      [this.getKey(SessionStorageKeys.VaultCipher)]: uint8ArrayToBase64(vaultCipher),
     };
     await Runtime.storage.session.set(data);
   }
@@ -33,19 +40,19 @@ export class Session {
 
   async getVault(): Promise<Uint8Array | null> {
     const data = await Runtime.storage.session.get([
-      SessionStorageKeys.EndSession,
-      SessionStorageKeys.SessionKey,
-      SessionStorageKeys.VaultCipher,
+      this.getKey(SessionStorageKeys.EndSession),
+      this.getKey(SessionStorageKeys.SessionKey),
+      this.getKey(SessionStorageKeys.VaultCipher),
     ]);
 
-    const endSession = data[SessionStorageKeys.EndSession];
+    const endSession = data[this.getKey(SessionStorageKeys.EndSession)];
     if (!endSession || Date.now() > endSession) {
       await this.clearSession();
       return null;
     }
 
-    const sessionKeyBase64 = data[SessionStorageKeys.SessionKey];
-    const vaultCipherBase64 = data[SessionStorageKeys.VaultCipher];
+    const sessionKeyBase64 = data[this.getKey(SessionStorageKeys.SessionKey)];
+    const vaultCipherBase64 = data[this.getKey(SessionStorageKeys.VaultCipher)];
 
     if (!sessionKeyBase64 || !vaultCipherBase64) {
       return null;
