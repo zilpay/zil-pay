@@ -13,9 +13,10 @@ import {
 } from "../../background/storage/wallet";
 import { Account } from "../../background/storage/account";
 import { AddressType } from "../../background/storage/address-type";
-import { HashTypes } from "../../background/storage/argon";
+import { HashTypes, WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
+import { TypeOf } from '../../lib/types';
 import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "../data";
 import { utils } from "aes-js";
 
@@ -240,6 +241,14 @@ describe("migrateToV4", () => {
     const decrypted = await wallet.decrypt(password);
 
     expect(decrypted).toEqual(WORDS);
+
+    wallet.settings.cipherOrders = [CipherOrders.AESGCM256, CipherOrders.NTRUP761];
+    wallet.settings.hashFnParams = WalletHashParams.default();
+    await wallet.encrypt(password, utils.utf8.toBytes(String(decrypted)));
+    const decryptedWithArgon = await wallet.decrypt(password);
+
+    expect(TypeOf.isString(decryptedWithArgon)).toBe(true);
+    expect(decryptedWithArgon).toEqual(WORDS);
   });
 
   it("test migrate and decrypt storage v3", async () => {
@@ -248,6 +257,16 @@ describe("migrateToV4", () => {
     const password = utils.utf8.toBytes(PASSWORD);
     const decrypted = await wallet.decrypt(password);
 
+    expect(TypeOf.isString(decrypted)).toBe(true);
     expect(decrypted).toEqual(WORDS);
+
+    wallet.settings.hashFnParams = WalletHashParams.default();
+    wallet.settings.cipherOrders = [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK];
+
+    await wallet.encrypt(password, utils.utf8.toBytes(String(decrypted)));
+    const decryptedWithArgon = await wallet.decrypt(password);
+
+    expect(TypeOf.isString(decryptedWithArgon)).toBe(true);
+    expect(decryptedWithArgon).toEqual(WORDS);
   });
 });

@@ -1,7 +1,6 @@
 import { utils } from 'aes-js';
-import { base64ToUint8Array } from '../../crypto/b64';
-import { EXTENSION_ID, generateSalt } from '../../lib/runtime';
-import { KeyChain } from '../../crypto/keychain';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
+import { generateSalt } from '../../lib/runtime';
 import { Account } from './account';
 import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
@@ -65,6 +64,8 @@ export class Wallet {
     const salt = await generateSalt();
     const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
     const cipher = await keychain.encrypt(plaintext, this.settings.cipherOrders);
+
+    this.vault = uint8ArrayToBase64(cipher);
 
     return cipher;
   }

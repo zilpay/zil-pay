@@ -2,10 +2,7 @@ import { Variant, Version, Config } from '@hicaru/argon2-pure.js';
 import { APP_ID } from '../../config/argon2';
 import { Argon2Config, deriveArgon2Key } from '../../crypto/argon2';
 import { utils } from 'aes-js';
-import { pbkdf2 } from '../../crypto/pbkdf2';
 import { ShaAlgorithms } from '../../config/pbkdf2';
-import { sha256 } from '../../crypto/sha256';
-import { EXTENSION_ID } from '../../lib/runtime';
 import { KeyChain } from '../../crypto/keychain';
 
 export enum HashTypes {
@@ -33,6 +30,31 @@ export class WalletHashParams {
       Version.Version13,
     );
   }
+
+  static default(): WalletHashParams {
+    const original = Config.original();
+
+    return new WalletHashParams({
+      memory: original.memCost, 
+      threads: original.lanes,
+      secret: original.secret,
+      iterations: original.timeCost,
+      hashType: HashTypes.Argon2,
+      hashSize: ShaAlgorithms.Sha512,
+    });
+  }
+
+  static pq(): WalletHashParams {
+    return new WalletHashParams({
+      memory: 2097152, 
+      threads: 2,
+      secret: new Uint8Array(),
+      iterations: 1,
+      hashType: HashTypes.Argon2,
+      hashSize: ShaAlgorithms.Sha512,
+    });
+  }
+
 
   constructor(data: Record<string, unknown>) {
     this.memory = data.memory as number;
