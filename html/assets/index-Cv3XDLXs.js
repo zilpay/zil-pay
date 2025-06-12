@@ -33987,32 +33987,30 @@ function Kpe({ center: e, config: t, graph: r, selection: o }) {
 }
 function Xpe({ config: e, center: t, graph: r, selection: o }) {
   o == null ||
-    o
-      .select(".link__label")
-      .attr("transform", (s) =>
-        s.source.x === void 0 ||
-        s.source.y === void 0 ||
-        s.target.x === void 0 ||
-        s.target.y === void 0
-          ? "translate(0, 0)"
-          : s.source.id === s.target.id
-            ? Os.reflexive.labelTransform({
+    o.select(".link__label").attr("transform", (s) =>
+      s.source.x === void 0 ||
+      s.source.y === void 0 ||
+      s.target.x === void 0 ||
+      s.target.y === void 0
+        ? "translate(0, 0)"
+        : s.source.id === s.target.id
+          ? Os.reflexive.labelTransform({
+              config: e,
+              node: s.source,
+              center: t,
+            })
+          : S1(r, s.source, s.target)
+            ? Os.arc.labelTransform({
                 config: e,
-                node: s.source,
-                center: t,
+                source: s.source,
+                target: s.target,
               })
-            : S1(r, s.source, s.target)
-              ? Os.arc.labelTransform({
-                  config: e,
-                  source: s.source,
-                  target: s.target,
-                })
-              : Os.line.labelTransform({
-                  config: e,
-                  source: s.source,
-                  target: s.target,
-                }),
-      );
+            : Os.line.labelTransform({
+                config: e,
+                source: s.source,
+                target: s.target,
+              }),
+    );
 }
 function S1(e, t, r) {
   return (

@@ -14,7 +14,7 @@ const sessionStorageMock = (() => {
     }),
     get: vi.fn(async (keys?: string | string[] | null) => {
       if (!keys) return store;
-      if (typeof keys === 'string') return { [keys]: store[keys] };
+      if (typeof keys === "string") return { [keys]: store[keys] };
       if (Array.isArray(keys)) {
         const result: { [key: string]: any } = {};
         for (const key of keys) {
@@ -27,11 +27,16 @@ const sessionStorageMock = (() => {
     clear: vi.fn(async () => {
       store = {};
     }),
-    setAccessLevel: vi.fn(async ({ accessLevel: level }: { accessLevel: string }) => {
-      if (level !== 'TRUSTED_CONTEXTS' && level !== 'TRUSTED_AND_UNTRUSTED_CONTEXTS') {
-        throw new Error('Invalid access level');
-      }
-    }),
+    setAccessLevel: vi.fn(
+      async ({ accessLevel: level }: { accessLevel: string }) => {
+        if (
+          level !== "TRUSTED_CONTEXTS" &&
+          level !== "TRUSTED_AND_UNTRUSTED_CONTEXTS"
+        ) {
+          throw new Error("Invalid access level");
+        }
+      },
+    ),
   };
 })();
 
@@ -48,5 +53,4 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
   },
 };
 
-(globalThis as any).chrome.storage.session = sessionStorageMock; 
-
+(globalThis as any).chrome.storage.session = sessionStorageMock;
