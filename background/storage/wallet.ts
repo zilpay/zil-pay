@@ -52,11 +52,11 @@ export class Wallet {
     this.#session = new Session(this.uuid);
   }
 
-  async fromBip39(
+  static async fromBip39(
     words: string,
     verifyCheckSum: boolean,
     walletName: string,
-    accounts: Bip32Account[],
+    bip32Accounts: Bip32Account[],
     settings: WalletSettings,
     chain: ChainConfig,
     wordList: string[],
@@ -67,6 +67,9 @@ export class Wallet {
     }
 
     const seed = await Bip39.mnemonicToSeed(words, passphrase);
+    const accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed))); 
+
+    console.log(accounts);
   }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {

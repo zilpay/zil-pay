@@ -25,8 +25,8 @@ export class ChainConfig {
     this.shortName = data.shortName as string;
     this.rpc = data.rpc as string[];
     this.features = data.features as number[];
-    this.chainId = data.chainId as number;
     this.chainIds = data.chainIds as number[];
+    this.chainId = this.chainIds[0];
     this.slip44 = data.slip44 as number;
     this.diffBlockTime = data.diffBlockTime as number;
     this.ens = data.ens as string | null ?? null;
