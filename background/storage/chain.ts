@@ -5,6 +5,28 @@ import { AddressType } from './address-type';
 import { fromZilPubKey, toBech32Address } from '../../lib/zilliqa';
 import { utils } from 'aes-js';
 
+function hashNumber(hash: number, value: number): number {
+  hash = (hash << 5) - hash + value;
+  return hash & 0xFFFFFFFF;
+}
+
+function hashString(hash: number, str: string): number {
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash = hash & 0xFFFFFFFF;
+  }
+  return hash;
+}
+
+function hashChainConfig(chainIds: number[], slip44: number, chain: string): number {
+  let hash = 0;
+  const chainIdsSum = chainIds[0] + chainIds[1];
+  hash = hashNumber(hash, chainIdsSum);
+  hash = hashNumber(hash, slip44);
+  hash = hashString(hash, chain);
+  return hash;
+}
+
 export class ChainConfig {
   name: string;
   logo: string;
@@ -40,7 +62,14 @@ export class ChainConfig {
     this.fallbackEnabled = data.fallbackEnabled as boolean;
     this.testnet = data.testnet as boolean | null ?? null;
     this.ftokens = (data.ftokens as Record<string, unknown>[]).map(
-      (t) => new FToken(t)
+      (t) => new FToken({
+        ...t,
+        default_: true,
+        rate: 0,
+        chainHash: t.chainHash ?? hashChainConfig(this.chainIds, this.slip44, this.chain),
+        addrType: this.addressType(),
+        balances: t.balances ?? {},
+      })
     );
   }
 
@@ -68,27 +97,6 @@ export class ChainConfig {
   }
 
   hash(): number {
-    let hash = 0;
-
-    const chainIdsSum = this.chainIds[0] + this.chainIds[1];
-
-    hash = this.#hashNumber(hash, chainIdsSum);
-    hash = this.#hashNumber(hash, this.slip44);
-    hash = this.#hashString(hash, this.chain);
-
-    return hash;
-  }
-
-  #hashNumber(hash: number, value: number): number {
-    hash = (hash << 5) - hash + value;
-    return hash & 0xFFFFFFFF;
-  }
-
-  #hashString(hash: number, str: string): number {
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash = hash & 0xFFFFFFFF;
-    }
-    return hash;
+    return hashChainConfig(this.chainIds, this.slip44, this.chain);
   }
 }

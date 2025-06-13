@@ -3,8 +3,6 @@ import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from '../../crypto/bi
 import { DerivationPath } from '../../crypto/bip49';
 import { AddressType } from './address-type';
 import { ChainConfig } from './chain';
-import { fromZilPubKey, toBech32Address } from '../../lib/zilliqa';
-import { ETHEREUM, ZILLIQA } from '../../config/slip44';
 
 export interface Bip32Account {
   name: string;

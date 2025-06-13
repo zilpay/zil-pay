@@ -8,6 +8,7 @@ import { Session } from '../secure/session';
 import { ChainConfig } from './chain';
 import { Bip32Account } from './account';
 import { Bip39 } from '../../crypto/bip39';
+import { uuid } from '../../crypto/uuid';
 
 export enum WalletTypes {
     Ledger,
@@ -36,7 +37,6 @@ export class Wallet {
 
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as WalletTypes;
-    this.vault = data.vault as string;
     this.walletName = data.walletName as string;
     this.authType = data.authType as AuthMethod;
     this.accounts = (data.accounts as Record<string, unknown>[]).map(
@@ -50,6 +50,8 @@ export class Wallet {
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
     this.#session = new Session(this.uuid);
+
+    this.vault = data.vault as string ?? "";
   }
 
   static async fromBip39(
@@ -59,6 +61,7 @@ export class Wallet {
     bip32Accounts: Bip32Account[],
     settings: WalletSettings,
     chain: ChainConfig,
+    password: string,
     wordList: string[],
     passphrase?: string
   ) {
@@ -67,9 +70,24 @@ export class Wallet {
     }
 
     const seed = await Bip39.mnemonicToSeed(words, passphrase);
-    const accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed))); 
+    const wallet = new Wallet({
+      settings,
+      walletName,
+      walletType: WalletTypes.SecretPhrase,
+      selectedAccount: 0,
+      tokens: chain.ftokens,
+      defaultChainHash: chain.hash(),
+      uuid: uuid(),
+      accounts: [],
+      authType: AuthMethod.None,
+    });
+    const passwordBytes = utils.utf8.toBytes(password);
+    const wordsBytes = utils.utf8.toBytes(words);
 
-    // console.log(accounts);
+    wallet.accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed)));
+    await wallet.encrypt(passwordBytes, wordsBytes);
+
+    return wallet;
   }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
