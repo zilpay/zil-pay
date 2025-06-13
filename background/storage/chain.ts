@@ -4,16 +4,17 @@ import { ETHEREUM, ZILLIQA } from '../../config/slip44';
 import { AddressType } from './address-type';
 import { fromZilPubKey, toBech32Address } from '../../lib/zilliqa';
 import { utils } from 'aes-js';
+import { addr } from 'micro-eth-signer';
 
 function hashNumber(hash: number, value: number): number {
   hash = (hash << 5) - hash + value;
-  return hash & 0xFFFFFFFF;
+  return hash >>> 0; 
 }
 
 function hashString(hash: number, str: string): number {
   for (let i = 0; i < str.length; i++) {
     hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash = hash & 0xFFFFFFFF;
+    hash = hash >>> 0; 
   }
   return hash;
 }
@@ -24,7 +25,7 @@ function hashChainConfig(chainIds: number[], slip44: number, chain: string): num
   hash = hashNumber(hash, chainIdsSum);
   hash = hashNumber(hash, slip44);
   hash = hashString(hash, chain);
-  return hash;
+  return hash >>> 0;
 }
 
 export class ChainConfig {
@@ -73,19 +74,19 @@ export class ChainConfig {
     );
   }
 
-  async addrFromPubKey(pubKey: Uint8Array) {
+  async addrFromPubKey(pubKey: Uint8Array): Promise<string> {
     switch (this.slip44) {
       case ZILLIQA:
         const base16 = await fromZilPubKey(pubKey);
         return await toBech32Address(utils.hex.fromBytes(base16));
       case ETHEREUM:
-        throw new Error();
+        return addr.fromPublicKey(pubKey);
       default:
-        throw new Error();
+        throw new Error("invlid slip44");
     }
   }
 
-  addressType() {
+  addressType(): AddressType {
     switch (this.slip44) {
       case ZILLIQA:
         return AddressType.Bech32;
