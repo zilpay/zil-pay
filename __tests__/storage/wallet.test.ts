@@ -6,6 +6,7 @@ import { WORD_LIST } from "../crypto/word_list";
 import { CHAINS, PASSWORD } from '../data';
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
+import { utils } from "aes-js";
 
 describe("Wallet.fromBip39", () => {
   it("creates accounts from valid mnemonic with correct properties", async () => {
@@ -104,6 +105,10 @@ describe("Wallet.fromBip39", () => {
     // Vault
     expect(newWallet.vault).toBeDefined();
     expect(typeof newWallet.vault).toBe("string");
+
+    const decrypted = await newWallet.decrypt(utils.utf8.toBytes(PASSWORD));
+
+    expect(decrypted).toBe(mnemonic);
   });
 });
 
