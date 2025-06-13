@@ -50,6 +50,7 @@
     "@hicaru/ntrup.js": "^0.0.10",
     "aes-js": "^3.1.2",
     "js-md5": "^0.8.3",
+    "micro-eth-signer": "^0.15.0",
     "noble-secp256k1": "^1.2.14"
   },
   "keywords": [

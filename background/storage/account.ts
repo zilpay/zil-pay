@@ -55,6 +55,8 @@ export class Account {
     const addrType = chain.addressType();
     const addr = await chain.addrFromPubKey(pubKey);
 
+    
+
     const account = new Account({
       addr,
       addrType,
