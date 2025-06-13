@@ -897,44 +897,6 @@ function writeVarint64(bb: ByteBuffer, value: Long): void {
     case 3: bytes[offset + 2] = size !== 3 ? (part0 >>> 14) | 0x80 : (part0 >>> 14) & 0x7F;
     case 2: bytes[offset + 1] = size !== 2 ? (part0 >>> 7) | 0x80 : (part0 >>> 7) & 0x7F;
     case 1: bytes[offset] = size !== 1 ? part0 | 0x80 : part0 & 0x7F;
+    default: break;
   }
-}
-
-function readVarint32ZigZag(bb: ByteBuffer): number {
-  let value = readVarint32(bb);
-
-  // ref: src/google/protobuf/wire_format_lite.h
-  return (value >>> 1) ^ -(value & 1);
-}
-
-function writeVarint32ZigZag(bb: ByteBuffer, value: number): void {
-  // ref: src/google/protobuf/wire_format_lite.h
-  writeVarint32(bb, (value << 1) ^ (value >> 31));
-}
-
-function readVarint64ZigZag(bb: ByteBuffer): Long {
-  let value = readVarint64(bb, /* unsigned */ false);
-  let low = value.low;
-  let high = value.high;
-  let flip = -(low & 1);
-
-  // ref: src/google/protobuf/wire_format_lite.h
-  return {
-    low: ((low >>> 1) | (high << 31)) ^ flip,
-    high: (high >>> 1) ^ flip,
-    unsigned: false,
-  };
-}
-
-function writeVarint64ZigZag(bb: ByteBuffer, value: Long): void {
-  let low = value.low;
-  let high = value.high;
-  let flip = high >> 31;
-
-  // ref: src/google/protobuf/wire_format_lite.h
-  writeVarint64(bb, {
-    low: (low << 1) ^ flip,
-    high: ((high << 1) | (low >>> 31)) ^ flip,
-    unsigned: false,
-  });
 }

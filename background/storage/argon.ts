@@ -1,6 +1,7 @@
+import type { Argon2Config } from '../../crypto/argon2';
 import { Variant, Version, Config } from '@hicaru/argon2-pure.js';
 import { APP_ID } from '../../config/argon2';
-import { Argon2Config, deriveArgon2Key } from '../../crypto/argon2';
+import { deriveArgon2Key } from '../../crypto/argon2';
 import { utils } from 'aes-js';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { KeyChain } from '../../crypto/keychain';

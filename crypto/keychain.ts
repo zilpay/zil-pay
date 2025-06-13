@@ -1,3 +1,4 @@
+import type { Argon2Config } from "./argon2";
 import { PrivKey, PubKey } from "@hicaru/ntrup.js";
 import {
   NTRU_CONFIG,
@@ -7,7 +8,7 @@ import {
 } from "./ntrup";
 import { sha256 } from "./sha256";
 import { EXTENSION_ID } from "../lib/runtime";
-import { deriveArgon2Key, Argon2Config } from "./argon2";
+import { deriveArgon2Key } from "./argon2";
 import {
   kuznechikDecrypt,
   kuznechikEncrypt,

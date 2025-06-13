@@ -1,3 +1,4 @@
+import type { Bip32Account } from './account';
 import { utils } from 'aes-js';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
 import { generateSalt } from '../../lib/runtime';
@@ -6,7 +7,6 @@ import { FToken } from './ftoken';
 import { WalletSettings } from './settings';
 import { Session } from '../secure/session';
 import { ChainConfig } from './chain';
-import { Bip32Account } from './account';
 import { Bip39 } from '../../crypto/bip39';
 import { uuid } from '../../crypto/uuid';
 

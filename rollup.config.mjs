@@ -6,9 +6,9 @@ import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
 import copy from 'rollup-plugin-copy';
-import { visualizer } from 'rollup-plugin-visualizer';
 import replace from '@rollup/plugin-replace';
 import postcss from 'rollup-plugin-postcss';
+import { visualizer } from 'rollup-plugin-visualizer';
 import cssnano from 'cssnano';
 import { readFileSync } from 'fs';
 
@@ -29,15 +29,28 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
       sourceMap: !production,
       inlineSources: !production,
       compilerOptions: {
+        target: 'ES2020',
+        module: 'esnext',
+        moduleResolution: 'node',
+        lib: ['ES2020', 'DOM'],
+        allowSyntheticDefaultImports: true,
+        esModuleInterop: true,
+        skipLibCheck: true,
+        strict: false,
+        noFallthroughCasesInSwitch: false,
         noEmit: false,
         declaration: false,
-        declarationMap: false
-      }
+        declarationMap: false,
+        resolveJsonModule: true,
+      },
+      include: ['**/*.ts', '**/*.tsx'],
+      exclude: ['node_modules/**', '__tests__/**']
     }),
     resolve({
       browser: true,
       dedupe: ['svelte'],
-      extensions: ['.ts', '.mjs', '.js', '.json', '.svelte']
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.json', '.svelte'],
+      preferBuiltins: false
     }),
     commonjs(),
     json(),
@@ -50,10 +63,16 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
     }),
     production && visualizer({
       filename: `stats/${name}.html`
-    })
-  ],
+    }),
+  ].filter(Boolean),
   watch: {
     clearScreen: false
+  },
+  external: [],
+  onwarn(warning, warn) {
+    if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+    if (warning.code === 'TS7029' && warning.loc?.file?.includes('proto/zq1.ts')) return;
+    warn(warning);
   }
 });
 
@@ -65,6 +84,14 @@ const popup = createConfig(
     svelte({
       preprocess: sveltePreprocess({
         sourceMap: !production,
+        typescript: {
+          tsconfigFile: './tsconfig.json',
+          compilerOptions: {
+            target: 'ES2020',
+            module: 'esnext',
+            verbatimModuleSyntax: false
+          }
+        },
         scss: {
           renderSync: true,
           includePaths: ['popup/styles/'],
@@ -95,9 +122,12 @@ const background = createConfig(
   [
     replace({
       preventAssignment: true,
-      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
-      'global': 'window',
-      'process.browser': true
+      delimiters: ['', ''],
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+        'global.': 'globalThis.',
+        'process.browser': 'true'
+      }
     }),
     copy({
       targets: [
@@ -132,6 +162,8 @@ const content = createConfig(
   [
     replace({
       preventAssignment: true,
+      delimiters: ['', ''],
+      values: {}
     })
   ]
 );
@@ -141,3 +173,4 @@ export default [
   background,
   content
 ];
+

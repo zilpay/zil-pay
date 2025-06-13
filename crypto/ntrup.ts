@@ -1,3 +1,4 @@
+import type { ParamsConfig } from "@hicaru/ntrup.js";
 import { ChaCha20Rng, ChaChaRng } from "@hicaru/chacharand.js";
 import {
   bytesRqDecode,
@@ -5,7 +6,6 @@ import {
   generateKeyPair,
   packBytes,
   params761,
-  ParamsConfig,
   PrivKey,
   PubKey,
   R3,
@@ -18,6 +18,7 @@ import {
   rqDecrypt,
   unpackBytes,
 } from "@hicaru/ntrup.js";
+
 import { randomBytes } from "../crypto/random";
 
 export const NTRU_CONFIG = params761;

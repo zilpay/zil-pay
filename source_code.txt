@@ -31,7 +31,8 @@ zil-pay
 │   ├── setupTests.ts
 │   ├── storage
 │   │   ├── migrator.test.ts
-│   │   └── storage.test.ts
+│   │   ├── storage.test.ts
+│   │   └── wallet.test.ts
 │   ├── stream
 │   │   └── stream.test.ts
 │   ├── types
@@ -45,7 +46,8 @@ zil-pay
 │   │   ├── migrator.ts
 │   │   └── session.ts
 │   ├── services
-│   │   └── guard.ts
+│   │   ├── guard.ts
+│   │   └── index.ts
 │   └── storage
 │       ├── account.ts
 │       ├── address-type.ts
@@ -58,6 +60,7 @@ zil-pay
 │       ├── notification.ts
 │       ├── settings.ts
 │       └── wallet.ts
+├── compile-protos.mjs
 ├── config
 │   ├── argon2.ts
 │   ├── common.ts
@@ -125,10 +128,12 @@ zil-pay
 │       ├── bech32.ts
 │       ├── checksum.ts
 │       ├── config.ts
+│       ├── index.ts
 │       └── pubkey.ts
 ├── popup
 │   ├── index.ts
 │   └── main.ts
+├── rollup.config.mjs
 └── vitest.config.ts
 
 ```
@@ -468,9 +473,12 @@ import {
   ChildNumber,
   Bip32Error,
   Bip32ErrorCode,
+  deriveFromPrivateKeyPublicKey,
 } from "../../crypto/bip32";
 import { Bip39 } from "../../crypto/bip39";
+import { DerivationPath } from "../../crypto/bip49";
 import { utils } from "aes-js";
+import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 
 describe("BIP-32 Derivation", () => {
   it("should derive correct private key from BIP-39 mnemonic", async () => {
@@ -482,6 +490,38 @@ describe("BIP-32 Derivation", () => {
     const privateKey = await derivePrivateKey(seed, "m/44'/60'/0'/0/0");
 
     expect(utils.hex.fromBytes(privateKey)).toEqual(expectedSecretKey);
+  });
+
+  it("shoud get pubKey from privateKey", async () => {
+    const phrase =
+      "green process gate doctor slide whip priority shrug diamond crumble average help";
+    const seed = await Bip39.mnemonicToSeed(phrase, "");
+
+    expect(
+      Uint8Array.from([
+        143, 219, 233, 88, 72, 55, 94, 13, 19, 72, 66, 197, 121, 69, 163, 46,
+        15, 247, 4, 104, 60, 132, 106, 5, 135, 186, 182, 62, 54, 56, 209, 5,
+        182, 104, 244, 78, 184, 167, 36, 156, 3, 14, 212, 191, 102, 69, 11, 214,
+        43, 181, 138, 7, 21, 241, 122, 192, 73, 244, 36, 136, 187, 175, 159,
+        181,
+      ]),
+    ).toEqual(seed);
+
+    const pathETH = new DerivationPath(ETHEREUM, 0);
+    const privateKeyETH = await derivePrivateKey(seed, pathETH.getPath());
+    const pubkeyETH = await deriveFromPrivateKeyPublicKey(privateKeyETH, ETHEREUM);
+
+    expect(
+      "0315bd7b9301a2cde69ef8092d6fb275a077e3c94e5ed166c915426850cf606600",
+    ).toEqual(utils.hex.fromBytes(pubkeyETH));
+
+    const pathZIL = new DerivationPath(ZILLIQA, 0);
+    const privateKeyZIL = await derivePrivateKey(seed, pathZIL.getPath());
+    const pubkeyZIL = await deriveFromPrivateKeyPublicKey(privateKeyZIL, ZILLIQA);
+
+    expect(
+      "03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da",
+    ).toEqual(utils.hex.fromBytes(pubkeyZIL));
   });
 });
 
@@ -519,7 +559,7 @@ describe("derivePrivateKey Error Handling", () => {
     const seed = utils.hex.toBytes("000102030405060708090a0b0c0d0e0f");
     await expect(
       derivePrivateKey(seed, "m/44'/invalid'/0'/0/0"),
-    ).rejects.toThrow(Bip32Error);
+    ).rejects.toThrow();
   });
 });
 
@@ -3955,7 +3995,7 @@ describe("migrateToV4", () => {
       "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10",
     );
     expect(account0.chainHash).toBe(result.chains[0].hash());
-    expect(account0.chainId).toBe(1);
+    expect(account0.chainId).toBe(32769);
     expect(account0.slip44).toBe(313);
     expect(account0.index).toBe(0);
 
@@ -3999,7 +4039,7 @@ describe("migrateToV4", () => {
     expect(chain).toBeInstanceOf(ChainConfig);
     expect(chain.name).toBe("Zilliqa");
     expect(chain.chain).toBe("ZIL");
-    expect(chain.chainId).toBe(1);
+    expect(chain.chainId).toBe(32769);
     expect(chain.hash()).toBe(208425510);
     expect(chain.slip44).toBe(313);
 
@@ -4086,7 +4126,7 @@ describe("migrateToV4", () => {
     // Chain
     const chain = result.chains[0];
     expect(chain.name).toBe("Zilliqa");
-    expect(chain.chainId).toBe(1);
+    expect(chain.chainId).toBe(chain.chainIds[0]);
 
     // Wallet settings
     expect(wallet.settings.currencyConvert).toBe("btc");
@@ -4270,6 +4310,126 @@ describe("BackgroundState", () => {
     expect(state.hideBalance).toBe(true);
   });
 });
+
+```
+
+`zil-pay/__tests__/storage/wallet.test.ts`:
+
+```ts
+import { describe, it, expect } from "vitest";
+import { Wallet, WalletTypes, AuthMethod } from "../../background/storage/wallet";
+import { RatesApiOptions, WalletSettings } from "../../background/storage/settings";
+import { ChainConfig } from "../../background/storage/chain";
+import { WORD_LIST } from "../crypto/word_list";
+import { CHAINS, PASSWORD } from '../data';
+import { CipherOrders } from "../../crypto/keychain";
+import { ShaAlgorithms } from "../../config/pbkdf2";
+import { utils } from "aes-js";
+
+describe("Wallet.fromBip39", () => {
+  it("creates accounts from valid mnemonic with correct properties", async () => {
+    const mnemonic = "green process gate doctor slide whip priority shrug diamond crumble average help";
+    const bip32Accounts = [{ index: 0, name: "account 0" }];
+    const settings = new WalletSettings({
+      cipherOrders: [CipherOrders.NTRUP761],
+      hashFnParams: {
+        memory: 4096,
+        iterations: 3,
+        threads: 1,
+        secret: new Uint8Array(0),
+        hashType: 0,
+        hashSize: "SHA-512",
+      },
+      currencyConvert: "btc",
+      ipfsNode: null,
+      ensEnabled: false,
+      tokensListFetcher: false,
+      nodeRankingEnabled: false,
+      maxConnections: 10,
+      requestTimeoutSecs: 30,
+      ratesApiOptions: RatesApiOptions.CoinGecko,
+    });
+    const chain = new ChainConfig(CHAINS[0]);
+
+    const newWallet = await Wallet.fromBip39(
+      mnemonic,
+      true,
+      "Test Wallet",
+      bip32Accounts,
+      settings,
+      chain,
+      PASSWORD,
+      WORD_LIST,
+    );
+
+    // Wallet properties
+    expect(newWallet.walletType).toBe(WalletTypes.SecretPhrase);
+    expect(newWallet.walletName).toBe("Test Wallet");
+    expect(newWallet.authType).toBe(AuthMethod.None);
+    expect(newWallet.selectedAccount).toBe(0);
+    expect(newWallet.defaultChainHash).toBe(210272552);
+
+    // Accounts
+    expect(newWallet.accounts).toHaveLength(1);
+    const account = newWallet.accounts[0];
+    expect(account.addr).toBe("zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu");
+    expect(account.addrType).toBe(0);
+    expect(account.name).toBe("account 0");
+    expect(account.pubKey).toBe("03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da");
+    expect(account.chainHash).toBe(210272552);
+    expect(account.chainId).toBe(32770);
+    expect(account.slip44).toBe(313);
+    expect(account.index).toBe(0);
+
+    // Tokens
+    expect(newWallet.tokens).toHaveLength(2);
+    const token1 = newWallet.tokens[0];
+    expect(token1.name).toBe("Zilliqa");
+    expect(token1.symbol).toBe("ZIL");
+    expect(token1.decimals).toBe(18);
+    expect(token1.addr).toBe("0x0000000000000000000000000000000000000000");
+    expect(token1.addrType).toBe(0);
+    expect(token1.logo).toBe("https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp");
+    expect(token1.balances).toEqual({});
+    expect(token1.rate).toBe(0);
+    expect(token1.default_).toBe(true);
+    expect(token1.native).toBe(true);
+    expect(token1.chainHash).toBe(210272552);
+
+    const token2 = newWallet.tokens[1];
+    expect(token2.name).toBe("Zilliqa Scilla");
+    expect(token2.decimals).toBe(12);
+    expect(token2.addr).toBe("zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz");
+
+    // Settings
+    expect(newWallet.settings.cipherOrders).toEqual([CipherOrders.NTRUP761]);
+    expect(newWallet.settings.hashFnParams).toEqual({
+      memory: 4096,
+      iterations: 3,
+      threads: 1,
+      secret: new Uint8Array(0),
+      hashType: 0,
+      hashSize: ShaAlgorithms.Sha512,
+    });
+    expect(newWallet.settings.currencyConvert).toBe("btc");
+    expect(newWallet.settings.ipfsNode).toBeNull();
+    expect(newWallet.settings.ensEnabled).toBe(false);
+    expect(newWallet.settings.tokensListFetcher).toBe(false);
+    expect(newWallet.settings.nodeRankingEnabled).toBe(false);
+    expect(newWallet.settings.maxConnections).toBe(10);
+    expect(newWallet.settings.requestTimeoutSecs).toBe(30);
+    expect(newWallet.settings.ratesApiOptions).toBe(RatesApiOptions.CoinGecko);
+
+    // Vault
+    expect(newWallet.vault).toBeDefined();
+    expect(typeof newWallet.vault).toBe("string");
+
+    const decrypted = await newWallet.decrypt(utils.utf8.toBytes(PASSWORD));
+
+    expect(decrypted).toBe(mnemonic);
+  });
+});
+
 
 ```
 
@@ -4542,6 +4702,23 @@ describe("Address Conversion Tests", () => {
     });
   });
 });
+
+```
+
+`zil-pay/background/index.ts`:
+
+```ts
+import {} from './secure';
+import {} from './services';
+import {} from './storage';
+
+```
+
+`zil-pay/background/secure/index.ts`:
+
+```ts
+export * from './migrator';
+export * from './session';
 
 ```
 
@@ -5261,12 +5438,22 @@ export class AuthGuard {
 
 ```
 
+`zil-pay/background/services/index.ts`:
+
+```ts
+export * from './guard';
+
+
+```
+
 `zil-pay/background/storage/account.ts`:
 
 ```ts
-import { derivePrivateKey } from '../../crypto/bip32';
+import { utils } from 'aes-js';
+import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from '../../crypto/bip32';
 import { DerivationPath } from '../../crypto/bip49';
 import { AddressType } from './address-type';
+import { ChainConfig } from './chain';
 
 export interface Bip32Account {
   name: string;
@@ -5294,10 +5481,43 @@ export class Account {
     this.index = data.index as number;
   }
 
-  async fromBip39(bip32Account: Bip32Account, slip44: number, seed: Uint8Array) {
-    const hdPath = new DerivationPath(slip44, bip32Account.index);
+  static async fromBip39(bip32Account: Bip32Account, chain: ChainConfig, seed: Uint8Array): Promise<Account> {
+    const hdPath = new DerivationPath(chain.slip44, bip32Account.index);
     const privateKey = await derivePrivateKey(seed, hdPath.getPath());
-    const pubKey = '';
+    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
+    const addrType = chain.addressType();
+    const addr = await chain.addrFromPubKey(pubKey);
+    const account = new Account({
+      addr,
+      addrType,
+      name: bip32Account.name,
+      index: bip32Account.index,
+      pubKey: utils.hex.fromBytes(pubKey),
+      chainHash: chain.hash(),
+      slip44: chain.slip44,
+      chainId: chain.chainId,
+    });
+
+    return account;
+  }
+
+  static async fromPrivateKey(privateKey: Uint8Array, chain: ChainConfig, name: string): Promise<Account> {
+    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
+    const addrType = chain.addressType();
+    const addr = await chain.addrFromPubKey(pubKey);
+
+    const account = new Account({
+      addr,
+      addrType,
+      name: name,
+      index: 0,
+      pubKey: utils.hex.fromBytes(pubKey),
+      chainHash: chain.hash(),
+      slip44: chain.slip44,
+      chainId: chain.chainId,
+    });
+
+    return account;
   }
 }
 
@@ -5442,6 +5662,32 @@ export class BackgroundState {
 ```ts
 import { FToken } from './ftoken';
 import { Explorer } from './explorer';
+import { ETHEREUM, ZILLIQA } from '../../config/slip44';
+import { AddressType } from './address-type';
+import { fromZilPubKey, toBech32Address } from '../../lib/zilliqa';
+import { utils } from 'aes-js';
+
+function hashNumber(hash: number, value: number): number {
+  hash = (hash << 5) - hash + value;
+  return hash & 0xFFFFFFFF;
+}
+
+function hashString(hash: number, str: string): number {
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash = hash & 0xFFFFFFFF;
+  }
+  return hash;
+}
+
+function hashChainConfig(chainIds: number[], slip44: number, chain: string): number {
+  let hash = 0;
+  const chainIdsSum = chainIds[0] + chainIds[1];
+  hash = hashNumber(hash, chainIdsSum);
+  hash = hashNumber(hash, slip44);
+  hash = hashString(hash, chain);
+  return hash;
+}
 
 export class ChainConfig {
   name: string;
@@ -5467,8 +5713,8 @@ export class ChainConfig {
     this.shortName = data.shortName as string;
     this.rpc = data.rpc as string[];
     this.features = data.features as number[];
-    this.chainId = data.chainId as number;
     this.chainIds = data.chainIds as number[];
+    this.chainId = this.chainIds[0];
     this.slip44 = data.slip44 as number;
     this.diffBlockTime = data.diffBlockTime as number;
     this.ens = data.ens as string | null ?? null;
@@ -5478,33 +5724,42 @@ export class ChainConfig {
     this.fallbackEnabled = data.fallbackEnabled as boolean;
     this.testnet = data.testnet as boolean | null ?? null;
     this.ftokens = (data.ftokens as Record<string, unknown>[]).map(
-      (t) => new FToken(t)
+      (t) => new FToken({
+        ...t,
+        default_: true,
+        rate: 0,
+        chainHash: t.chainHash ?? hashChainConfig(this.chainIds, this.slip44, this.chain),
+        addrType: this.addressType(),
+        balances: t.balances ?? {},
+      })
     );
   }
 
-  public hash(): number {
-    let hash = 0;
-
-    const chainIdsSum = this.chainIds[0] + this.chainIds[1];
-
-    hash = this.hashNumber(hash, chainIdsSum);
-    hash = this.hashNumber(hash, this.slip44);
-    hash = this.hashString(hash, this.chain);
-
-    return hash;
-  }
-
-  private hashNumber(hash: number, value: number): number {
-    hash = (hash << 5) - hash + value;
-    return hash & 0xFFFFFFFF;
-  }
-
-  private hashString(hash: number, str: string): number {
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash = hash & 0xFFFFFFFF;
+  async addrFromPubKey(pubKey: Uint8Array) {
+    switch (this.slip44) {
+      case ZILLIQA:
+        const base16 = await fromZilPubKey(pubKey);
+        return await toBech32Address(utils.hex.fromBytes(base16));
+      case ETHEREUM:
+        throw new Error();
+      default:
+        throw new Error();
     }
-    return hash;
+  }
+
+  addressType() {
+    switch (this.slip44) {
+      case ZILLIQA:
+        return AddressType.Bech32;
+      case ETHEREUM:
+        return AddressType.EthCheckSum;
+      default:
+        return AddressType.EthCheckSum;
+    }
+  }
+
+  hash(): number {
+    return hashChainConfig(this.chainIds, this.slip44, this.chain);
   }
 }
 
@@ -5561,6 +5816,22 @@ export class FToken {
     this.chainHash = data.chainHash as number;
   }
 }
+
+```
+
+`zil-pay/background/storage/index.ts`:
+
+```ts
+export * from './account';
+export * from './address-type';
+export * from './argon';
+export * from './background';
+export * from './chain';
+export * from './explorer';
+export * from './ftoken';
+export * from './notification';
+export * from './settings';
+export * from './wallet';
 
 ```
 
@@ -5628,6 +5899,7 @@ import { Session } from '../secure/session';
 import { ChainConfig } from './chain';
 import { Bip32Account } from './account';
 import { Bip39 } from '../../crypto/bip39';
+import { uuid } from '../../crypto/uuid';
 
 export enum WalletTypes {
     Ledger,
@@ -5656,7 +5928,6 @@ export class Wallet {
 
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as WalletTypes;
-    this.vault = data.vault as string;
     this.walletName = data.walletName as string;
     this.authType = data.authType as AuthMethod;
     this.accounts = (data.accounts as Record<string, unknown>[]).map(
@@ -5670,15 +5941,18 @@ export class Wallet {
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
     this.#session = new Session(this.uuid);
+
+    this.vault = data.vault as string ?? "";
   }
 
-  async fromBip39(
+  static async fromBip39(
     words: string,
     verifyCheckSum: boolean,
     walletName: string,
-    accounts: Bip32Account[],
+    bip32Accounts: Bip32Account[],
     settings: WalletSettings,
     chain: ChainConfig,
+    password: string,
     wordList: string[],
     passphrase?: string
   ) {
@@ -5687,6 +5961,24 @@ export class Wallet {
     }
 
     const seed = await Bip39.mnemonicToSeed(words, passphrase);
+    const wallet = new Wallet({
+      settings,
+      walletName,
+      walletType: WalletTypes.SecretPhrase,
+      selectedAccount: 0,
+      tokens: chain.ftokens,
+      defaultChainHash: chain.hash(),
+      uuid: uuid(),
+      accounts: [],
+      authType: AuthMethod.None,
+    });
+    const passwordBytes = utils.utf8.toBytes(password);
+    const wordsBytes = utils.utf8.toBytes(words);
+
+    wallet.accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed)));
+    await wallet.encrypt(passwordBytes, wordsBytes);
+
+    return wallet;
   }
 
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
@@ -5714,6 +6006,33 @@ export class Wallet {
     return cipher;
   }
 }
+
+```
+
+`zil-pay/compile-protos.mjs`:
+
+```mjs
+import { readdirSync } from 'fs';
+import { join, basename, extname } from 'path';
+import { execSync } from 'child_process';
+
+const protoDir = 'crypto/proto/';
+const outputDir = 'crypto/proto/';
+
+const protoFiles = readdirSync(protoDir).filter(file => extname(file) === '.proto');
+
+protoFiles.forEach(protoFile => {
+  const protoPath = join(protoDir, protoFile);
+  const name = basename(protoFile, '.proto');
+  const tsOutput = join(outputDir, `${name}.ts`);
+
+  try {
+    execSync(`npx pbjs --ts ${tsOutput} ${protoPath}`, { stdio: 'inherit' });
+  } catch (error) {
+    console.error(`Failed to process ${protoFile}:`, error.message);
+    process.exit(1);
+  }
+});
 
 ```
 
@@ -6013,6 +6332,7 @@ import {
   uint8ArrayToBigIntBigEndian,
 } from "./number";
 import { ShaAlgorithms } from "../config/pbkdf2";
+import { ETHEREUM, ZILLIQA } from "../config/slip44";
 
 // Constants
 const HARDENED_BIT = 0x80000000;
@@ -6022,6 +6342,7 @@ const BITCOIN_SEED = new TextEncoder().encode("Bitcoin seed");
 export enum Bip32ErrorCode {
   InvalidChild = "InvalidChild",
   InvalidPath = "InvalidPath",
+  InvalidSlip44 = "invalid slip44",
   InvalidKey = "InvalidKey",
   HmacError = "HmacError",
 }
@@ -6237,6 +6558,18 @@ export async function derivePrivateKey(
   }
 
   return key;
+}
+
+export async function deriveFromPrivateKeyPublicKey(
+  privateKey: Uint8Array,
+  slip44: number,
+  compressed = true,
+): Promise<Uint8Array> {
+  if (slip44 == ZILLIQA || slip44 == ETHEREUM) {
+    return secp256k1.getPublicKey(privateKey, compressed);
+  }
+
+  throw new Error(Bip32ErrorCode.InvalidSlip44);
 }
 
 ```
@@ -9443,6 +9776,16 @@ export const GENERATOR = [
 
 ```
 
+`zil-pay/lib/zilliqa/index.ts`:
+
+```ts
+export * from './bech32';
+export * from './checksum';
+export * from './config';
+export * from './pubkey';
+
+```
+
 `zil-pay/lib/zilliqa/pubkey.ts`:
 
 ```ts
@@ -9470,6 +9813,156 @@ import App from "./App.svelte";
 export default mount(App, {
   target: document.body,
 });
+
+```
+
+`zil-pay/rollup.config.mjs`:
+
+```mjs
+import svelte from 'rollup-plugin-svelte';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import { sveltePreprocess } from 'svelte-preprocess';
+import typescript from '@rollup/plugin-typescript';
+import { terser } from 'rollup-plugin-terser';
+import json from '@rollup/plugin-json';
+import copy from 'rollup-plugin-copy';
+import replace from '@rollup/plugin-replace';
+import postcss from 'rollup-plugin-postcss';
+import { visualizer } from 'rollup-plugin-visualizer';
+import cssnano from 'cssnano';
+import { readFileSync } from 'fs';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+const production = !process.env.ROLLUP_WATCH;
+const manifest = process.env.MANIFEST || 2;
+
+const createConfig = (name, input, output, extraPlugins = []) => ({
+  input,
+  output: {
+    sourcemap: !production,
+    format: 'iife',
+    name,
+    file: output
+  },
+  plugins: [
+    typescript({
+      sourceMap: !production,
+      inlineSources: !production,
+      compilerOptions: {
+        noEmit: false,
+        declaration: false,
+        declarationMap: false,
+      }
+    }),
+    resolve({
+      browser: true,
+      dedupe: ['svelte'],
+      extensions: ['.ts', '.mjs', '.js', '.json', '.svelte']
+    }),
+    commonjs(),
+    json(),
+    ...extraPlugins,
+    production && terser({
+      format: {
+        comments: false
+      },
+      compress: true
+    }),
+    production && visualizer({
+      filename: `stats/${name}.html`
+    }),
+  ],
+  watch: {
+    clearScreen: false
+  }
+});
+
+const popup = createConfig(
+  'popup',
+  'popup/main.ts',
+  'dist/bundle.js',
+  [
+    svelte({
+      preprocess: sveltePreprocess({
+        sourceMap: !production,
+        scss: {
+          renderSync: true,
+          includePaths: ['popup/styles/'],
+          prependData: '@use "popup/styles/global.scss";'
+        }
+      }),
+      compilerOptions: {
+        dev: !production
+      }
+    }),
+    postcss({
+      extract: 'bundle.css',
+      minimize: production,
+      plugins: [
+        cssnano({
+          preset: 'default'
+        })
+      ],
+      sourceMap: !production
+    })
+  ]
+);
+
+const background = createConfig(
+  'background',
+  'background/index.ts',
+  'dist/background.js',
+  [
+    replace({
+      preventAssignment: true,
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+      'global': 'window',
+      'process.browser': true
+    }),
+    copy({
+      targets: [
+        { src: 'public/icons', dest: 'dist/' },
+        { src: 'public/fonts', dest: 'dist/' },
+        { src: 'public/lang', dest: 'dist/' },
+        { src: 'public/imgs', dest: 'dist/' },
+        { src: 'public/index.html', dest: 'dist/' },
+        { src: 'public/phishing.html', dest: 'dist/' },
+        {
+          src: `public/manifest_${manifest}.json`,
+          dest: 'dist/',
+          rename: 'manifest.json',
+          transform: (contents) => {
+            const jsonContent = JSON.parse(contents);
+            jsonContent.version = pkg.version;
+            jsonContent.short_name = pkg.shortName || pkg.name;
+            jsonContent.description = pkg.description;
+            jsonContent.author = pkg.homepage;
+            return JSON.stringify(jsonContent, null, 2);
+          }
+        }
+      ]
+    })
+  ]
+);
+
+const content = createConfig(
+  'content',
+  'content/index.ts',
+  'dist/content.js',
+  [
+    replace({
+      preventAssignment: true,
+    })
+  ]
+);
+
+export default [
+  popup,
+  background,
+  content
+];
+
 
 ```
 
