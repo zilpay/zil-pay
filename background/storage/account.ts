@@ -32,7 +32,7 @@ export class Account {
     this.index = data.index as number;
   }
 
-  static async fromBip39(bip32Account: Bip32Account, chain: ChainConfig, seed: Uint8Array) {
+  static async fromBip39(bip32Account: Bip32Account, chain: ChainConfig, seed: Uint8Array): Promise<Account> {
     const hdPath = new DerivationPath(chain.slip44, bip32Account.index);
     const privateKey = await derivePrivateKey(seed, hdPath.getPath());
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
@@ -43,6 +43,25 @@ export class Account {
       addrType,
       name: bip32Account.name,
       index: bip32Account.index,
+      pubKey: utils.hex.fromBytes(pubKey),
+      chainHash: chain.hash(),
+      slip44: chain.slip44,
+      chainId: chain.chainId,
+    });
+
+    return account;
+  }
+
+  static async fromPrivateKey(privateKey: Uint8Array, chain: ChainConfig, name: string): Promise<Account> {
+    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
+    const addrType = chain.addressType();
+    const addr = await chain.addrFromPubKey(pubKey);
+
+    const account = new Account({
+      addr,
+      addrType,
+      name: name,
+      index: 0,
       pubKey: utils.hex.fromBytes(pubKey),
       chainHash: chain.hash(),
       slip44: chain.slip44,
