@@ -1,5 +1,9 @@
 import { FToken } from './ftoken';
 import { Explorer } from './explorer';
+import { ETHEREUM, ZILLIQA } from '../../config/slip44';
+import { AddressType } from './address-type';
+import { fromZilPubKey, toBech32Address } from '../../lib/zilliqa';
+import { utils } from 'aes-js';
 
 export class ChainConfig {
   name: string;
@@ -40,24 +44,47 @@ export class ChainConfig {
     );
   }
 
-  public hash(): number {
+  async addrFromPubKey(pubKey: Uint8Array) {
+    switch (this.slip44) {
+      case ZILLIQA:
+        const base16 = await fromZilPubKey(pubKey);
+        return await toBech32Address(utils.hex.fromBytes(base16));
+      case ETHEREUM:
+        throw new Error();
+      default:
+        throw new Error();
+    }
+  }
+
+  addressType() {
+    switch (this.slip44) {
+      case ZILLIQA:
+        return AddressType.Bech32;
+      case ETHEREUM:
+        return AddressType.EthCheckSum;
+      default:
+        return AddressType.EthCheckSum;
+    }
+  }
+
+  hash(): number {
     let hash = 0;
 
     const chainIdsSum = this.chainIds[0] + this.chainIds[1];
 
-    hash = this.hashNumber(hash, chainIdsSum);
-    hash = this.hashNumber(hash, this.slip44);
-    hash = this.hashString(hash, this.chain);
+    hash = this.#hashNumber(hash, chainIdsSum);
+    hash = this.#hashNumber(hash, this.slip44);
+    hash = this.#hashString(hash, this.chain);
 
     return hash;
   }
 
-  private hashNumber(hash: number, value: number): number {
+  #hashNumber(hash: number, value: number): number {
     hash = (hash << 5) - hash + value;
     return hash & 0xFFFFFFFF;
   }
 
-  private hashString(hash: number, str: string): number {
+  #hashString(hash: number, str: string): number {
     for (let i = 0; i < str.length; i++) {
       hash = (hash << 5) - hash + str.charCodeAt(i);
       hash = hash & 0xFFFFFFFF;

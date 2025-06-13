@@ -36,27 +36,8 @@ export class Account {
     const hdPath = new DerivationPath(chain.slip44, bip32Account.index);
     const privateKey = await derivePrivateKey(seed, hdPath.getPath());
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
-    const addrType = (() => {
-      switch (chain.slip44) {
-        case ZILLIQA:
-          return AddressType.Bech32;
-        case ETHEREUM:
-          return AddressType.EthCheckSum;
-        default:
-          return AddressType.EthCheckSum;
-      }
-    })();
-    const addr = await (async () => {
-      switch (chain.slip44) {
-        case ZILLIQA:
-          const base16 = await fromZilPubKey(pubKey);
-          return await toBech32Address(utils.hex.fromBytes(base16));
-        case ETHEREUM:
-          throw new Error();
-        default:
-          throw new Error();
-      }
-    })();
+    const addrType = chain.addressType();
+    const addr = await chain.addrFromPubKey(pubKey);
     const account = new Account({
       addr,
       addrType,
