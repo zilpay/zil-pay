@@ -1,3 +1,5 @@
+import type { TypedData } from "micro-eth-signer/typed-data.js";
+
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
@@ -5,7 +7,11 @@ import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
 import { utils } from "aes-js";
 import { addr } from "micro-eth-signer";
 import { sign, verify } from "./zilliqa/schnorr";
-import { personal } from 'micro-eth-signer/typed-data.js';
+import {
+  personal,
+  signTyped,
+  verifyTyped,
+} from "micro-eth-signer/typed-data.js";
 import { stripHexPrefix } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 
@@ -84,6 +90,30 @@ export class KeyPair {
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
         return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(sigEth)));
+    }
+  }
+
+  signDataEIP712(typedData: TypedData<any, any>): Uint8Array {
+    switch (this.addressType()) {
+      case AddressType.EthCheckSum:
+        const signature = signTyped(typedData, this.privateKey);
+        return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(signature)));
+      default:
+        throw new Error("Unsupported");
+    }
+  }
+
+  async verifyTypedEIP712(
+    signature: Uint8Array,
+    typedData: TypedData<any, any>,
+    address: string,
+  ): Promise<boolean> {
+    switch (this.addressType()) {
+      case AddressType.EthCheckSum:
+        const sigHex = `0x${utils.hex.fromBytes(signature)}`;
+        return verifyTyped(sigHex, typedData, address);
+      default:
+        throw new Error("Unsupported");
     }
   }
 

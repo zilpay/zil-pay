@@ -125,6 +125,8 @@ zil-pay
 │   ├── types
 │   │   ├── checker.ts
 │   │   └── index.ts
+│   ├── utils
+│   │   └── hex.ts
 │   └── zilliqa
 │       ├── bech32.ts
 │       ├── checksum.ts
@@ -1114,6 +1116,189 @@ describe("KeyChain", () => {
     const decryptedStr = new TextDecoder().decode(decrypted);
 
     expect(decryptedStr).toEqual(WORDS);
+  });
+});
+
+```
+
+`zil-pay/__tests__/crypto/keypair.test.ts`:
+
+```ts
+import { describe, it, expect } from "vitest";
+import { Signature } from '@noble/secp256k1';
+import { KeyPair, AddressType } from "../../crypto/keypair";
+import { Bip39 } from "../../crypto/bip39";
+import { ETHEREUM, ZILLIQA } from "../../config/slip44";
+import { utils } from "aes-js";
+import { WORDS, KEY, IMPORTED_KEY } from "../data";
+import { verify } from "../../crypto/zilliqa/schnorr";
+
+describe("KeyPair", () => {
+  describe("fromPrivateKey", () => {
+    it("should create KeyPair for Zilliqa with correct address", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+
+      expect(keyPair.slip44).toBe(ZILLIQA);
+      expect(keyPair.addressType()).toBe(AddressType.Bech32);
+      expect(keyPair.privateKey).toEqual(privateKey);
+      expect(await keyPair.addrFromPubKey()).toBe(
+        "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
+      );
+    });
+
+    it("should create KeyPair for Ethereum with correct address", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+
+      expect(keyPair.slip44).toBe(ETHEREUM);
+      expect(keyPair.addressType()).toBe(AddressType.EthCheckSum);
+      expect(keyPair.privateKey).toEqual(privateKey);
+      expect(await keyPair.addrFromPubKey()).toBe(
+        "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825",
+      );
+    });
+  });
+
+  describe("fromSeed", () => {
+    it("should create KeyPair for Zilliqa from seed with correct address", async () => {
+      const seed = await Bip39.mnemonicToSeed(WORDS, "");
+      const keyPair = await KeyPair.fromSeed(seed, ZILLIQA, 0);
+
+      expect(keyPair.slip44).toBe(ZILLIQA);
+      expect(keyPair.addressType()).toBe(AddressType.Bech32);
+      expect(utils.hex.fromBytes(keyPair.privateKey)).toBe(KEY);
+      expect(await keyPair.addrFromPubKey()).toBe(
+        "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y",
+      );
+    });
+
+    it("should create KeyPair for Ethereum from seed with correct address", async () => {
+      const seed = await Bip39.mnemonicToSeed(WORDS, "");
+      const keyPair = await KeyPair.fromSeed(seed, ETHEREUM, 0);
+
+      expect(keyPair.slip44).toBe(ETHEREUM);
+      expect(keyPair.addressType()).toBe(AddressType.EthCheckSum);
+      expect(await keyPair.addrFromPubKey()).toBe(
+        "0xAEC7595CA9A57be828493bb73f07fA335a85B41d",
+      );
+    });
+  });
+
+  describe("signMessage", () => {
+    it("should sign message for Zilliqa correctly", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+      const message = utils.utf8.toBytes("test message");
+      const signature = await keyPair.signMessage(message);
+
+      expect(signature).toBeInstanceOf(Uint8Array);
+      expect(signature.length).toBe(64);
+      expect(await verify(message, keyPair.pubKey, Signature.fromBytes(signature))).toBeTruthy();
+      expect(await keyPair.verifySig(message, signature)).toBeTruthy();
+    });
+
+    it("should sign message for Ethereum correctly", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+      const message = utils.utf8.toBytes("test message");
+      const signature = await keyPair.signMessage(message);
+
+      expect(signature).toBeInstanceOf(Uint8Array);
+      expect(signature.length).toBe(65); 
+      expect(await keyPair.verifySig(message, signature)).toBeTruthy();
+    });
+  });
+
+  describe("EIP-712", () => {
+    const types = {
+      Mail: [
+        { name: "from", type: "string" },
+        { name: "to", type: "string" },
+        { name: "contents", type: "string" },
+      ],
+    } as const;
+
+    const domain = {
+      name: "Ether Mail",
+      version: "1",
+      chainId: 1,
+      verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+    };
+
+    const message = {
+      from: "Alice",
+      to: "Bob",
+      contents: "Hello, Bob!",
+    };
+
+    const typedData = {
+      types,
+      primaryType: "Mail",
+      domain,
+      message,
+    };
+
+    it("should throw error for Zilliqa EIP-712 signing", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+
+
+      expect( () => keyPair.signDataEIP712(typedData)).toThrowError("Unsupported");
+    });
+
+    it("should throw error for Zilliqa EIP-712 verification", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+      const signature = new Uint8Array(65); // Dummy signature
+      const address = "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825";
+
+      await expect(
+        keyPair.verifyTypedEIP712(signature, typedData, address)
+      ).rejects.toThrowError("Unsupported");
+    });
+
+    it("should sign EIP-712 data for Ethereum correctly", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+      const signature = keyPair.signDataEIP712(typedData);
+
+      expect(signature).toBeInstanceOf(Uint8Array);
+      expect(signature.length).toBe(65); // Ethereum EIP-712 signature length
+    });
+
+    it("should verify EIP-712 signature for Ethereum correctly", async () => {
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+      const signature = keyPair.signDataEIP712(typedData);
+      const address = await keyPair.addrFromPubKey();
+
+      const isValid = await keyPair.verifyTypedEIP712(signature, typedData, address);
+      expect(isValid).toBeTruthy();
+    });
+
+    it("should fail to verify EIP-712 with invalid signature", async () => {
+  const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+  const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+  
+  // Create a valid signature for a different message to simulate an invalid signature
+  const differentMessage = {
+    from: "Alice",
+    to: "Charlie", // Changed to make the signature invalid for the original message
+    contents: "Hello, Charlie!",
+  };
+  const invalidTypedData = {
+    types,
+    primaryType: "Mail",
+    domain,
+    message: differentMessage,
+  };
+  const invalidSignature = keyPair.signDataEIP712(invalidTypedData); // Sign different data
+  const address = await keyPair.addrFromPubKey();
+
+  const isValid = await keyPair.verifyTypedEIP712(invalidSignature, typedData, address);
+  expect(isValid).toBeFalsy();
+});
   });
 });
 
@@ -6698,14 +6883,18 @@ export class KeyChain {
 `zil-pay/crypto/keypair.ts`:
 
 ```ts
+import type { TypedData } from 'micro-eth-signer/typed-data.js';
+
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
 import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
 import { utils } from "aes-js";
 import { addr } from "micro-eth-signer";
-import { sign } from "./zilliqa/schnorr";
-import { personal } from 'micro-eth-signer/typed-data.js';
+import { sign, verify } from "./zilliqa/schnorr";
+import { personal, signTyped, verifyTyped } from 'micro-eth-signer/typed-data.js';
+import { stripHexPrefix } from "lib/utils/hex";
+import { Signature } from "@noble/secp256k1";
 
 export enum AddressType {
   Bech32,
@@ -6781,7 +6970,41 @@ export class KeyPair {
         return Uint8Array.from(sigZil.toBytes());
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
-        return utils.hex.toBytes(sigEth);
+        return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(sigEth)));
+    }
+  }
+
+  signDataEIP712(typedData: TypedData<any, any>): Uint8Array {
+    switch (this.addressType()) {
+      case AddressType.EthCheckSum:
+        const signature = signTyped(typedData, this.privateKey);
+        return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(signature)));
+      default:
+        throw new Error('Unsupported');
+    }
+  }
+
+  async verifyTypedEIP712(
+    signature: Uint8Array,
+    typedData: TypedData<any, any>,
+    address: string
+  ): Promise<boolean> {
+    switch (this.addressType()) {
+      case AddressType.EthCheckSum:
+        const sigHex = `0x${utils.hex.fromBytes(signature)}`;
+        return verifyTyped(sigHex, typedData, address);
+      default:
+        throw new Error('Unsupported');
+    }
+  }
+
+  async verifySig(msg: Uint8Array, sig: Uint8Array): Promise<boolean> {
+    switch (this.addressType()) {
+      case AddressType.Bech32:
+        return await verify(msg, this.pubKey, Signature.fromBytes(sig));
+      case AddressType.EthCheckSum:
+        const address = await this.addrFromPubKey();
+        return personal.verify(utils.hex.fromBytes(sig), msg, address);
     }
   }
 }
@@ -9139,6 +9362,16 @@ export const TypeOf = Object.freeze({
 
 ```ts
 export * from './checker';
+
+
+```
+
+`zil-pay/lib/utils/hex.ts`:
+
+```ts
+export function stripHexPrefix(hex: string): string {
+  return hex.toLowerCase().startsWith('0x') ? hex.slice(2) : hex;
+}
 
 
 ```
