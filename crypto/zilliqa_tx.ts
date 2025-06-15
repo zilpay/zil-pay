@@ -10,6 +10,9 @@ import {
   type ProtoTransactionCoreInfo,
 } from "./proto/zq1";
 import { verify } from "./zilliqa/schnorr";
+import { utils } from "aes-js";
+
+const U128LEN = 16;
 
 export function bigintToLong(value: bigint): Long {
   const low = Number(value & 0xffffffffn);
@@ -43,8 +46,8 @@ export class ZILTransactionRequest {
       nonce: bigintToLong(this.nonce),
       toaddr: this.toAddr,
       senderpubkey: { data: pubKey },
-      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, 16) },
-      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, 16) },
+      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, U128LEN) },
+      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, U128LEN) },
       gaslimit: bigintToLong(this.gasLimit),
       code: this.code.length > 0 ? this.code : undefined,
       data: this.data.length > 0 ? this.data : undefined,
@@ -64,10 +67,10 @@ export class ZILTransactionRequest {
     return new ZILTransactionReceipt(
       proto.version ?? versionFromChainId(this.chainId),
       this.nonce,
-      bigIntToUint8ArrayBigEndian(this.gasPrice, 16),
+      bigIntToUint8ArrayBigEndian(this.gasPrice, U128LEN),
       this.gasLimit,
       this.toAddr,
-      bigIntToUint8ArrayBigEndian(this.amount, 16),
+      bigIntToUint8ArrayBigEndian(this.amount, U128LEN),
       keypair.pubKey,
       this.code,
       this.data,
@@ -112,5 +115,21 @@ export class ZILTransactionReceipt {
     const signature = Signature.fromBytes(this.signature);
 
     return verify(bytes, this.pubKey, signature);
+  }
+
+  toJSON() {
+    return {
+      version: this.version,
+      nonce: this.nonce.toString(),
+      toAddr: utils.hex.fromBytes(this.toAddr),
+      amount: uint8ArrayToBigIntBigEndian(this.amount).toString(),
+      pubKey: utils.hex.fromBytes(this.pubKey),
+      gasPrice: uint8ArrayToBigIntBigEndian(this.gasPrice).toString(),
+      gasLimit: this.gasLimit.toString(),
+      code: this.code.length > 0 ? utils.utf8.fromBytes(this.code) : "",
+      data: this.data.length > 0 ? utils.utf8.fromBytes(this.data) : "",
+      signature: utils.hex.fromBytes(this.signature),
+      priority: this.priority,
+    };
   }
 }

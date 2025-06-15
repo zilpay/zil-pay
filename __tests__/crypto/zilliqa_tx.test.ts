@@ -91,15 +91,16 @@ describe("ZILTransactionReceipt verify", () => {
     const txReq = new ZILTransactionRequest(
       CHAIN_ID,
       BigInt(1),
-      BigInt(2000) / BigInt(10 ** 6),
+      BigInt(2000) * BigInt(10 ** 6),
       BigInt(100000),
       toAddr,
-      BigInt(1) / BigInt(10 ** 6),
+      BigInt(1) * BigInt(10 ** 12),
       new Uint8Array(),
       new Uint8Array(),
     );
 
     const txReceipt = await txReq.sign(keypair);
+
     // Create an invalid signature by modifying the original
     const invalidSignature = new Uint8Array(txReceipt.signature);
     invalidSignature[0] ^= 0xff; // Flip first byte

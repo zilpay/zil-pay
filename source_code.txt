@@ -1828,6 +1828,86 @@ test('sha512 hashes "test" correctly', async () => {
 
 ```
 
+`zil-pay/__tests__/crypto/tx.test.ts`:
+
+```ts
+import { describe, it, expect } from "vitest";
+import {
+  TransactionRequest,
+  TransactionReceipt,
+  TransactionMetadata,
+} from "../../crypto/tx";
+import { KeyPair } from "../../crypto/keypair";
+import { ZILLIQA, ETHEREUM } from "../../config/slip44";
+import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
+import { Transaction, weieth, weigwei } from "micro-eth-signer";
+import { utils } from "aes-js";
+
+describe("TransactionRequest and TransactionReceipt", () => {
+  const metadata: TransactionMetadata = {
+    chainHash: 123,
+    info: "Test Transaction",
+  };
+
+  it("should correctly sign and verify a Scilla transaction", async () => {
+    const keypair = await KeyPair.generate(ZILLIQA);
+    const toAddr = utils.hex.toBytes(
+      "0x1234567890123456789012345678901234567890",
+    );
+    const scillaTxReq = new ZILTransactionRequest(
+      333,
+      1n,
+      2000000000n,
+      100n,
+      toAddr,
+      1000000000000n,
+    );
+    const request = new TransactionRequest(metadata, scillaTxReq);
+    const receipt = await request.sign(keypair);
+
+    expect(receipt).toBeInstanceOf(TransactionReceipt);
+    expect(receipt.scilla).toBeDefined();
+    expect(receipt.evm).toBeUndefined();
+
+    const isValid = await receipt.verify();
+    expect(isValid).toBe(true);
+  });
+
+  it("should correctly sign and verify an EVM transaction", async () => {
+    const keypair = await KeyPair.generate(ETHEREUM);
+    const evmTx = Transaction.prepare({
+      to: "0xAEC7595CA9A57be828493bb73f07fA335a85B41d",
+      value: weieth.decode("1.1"),
+      maxFeePerGas: weigwei.decode("100"),
+      nonce: 0n,
+    });
+    const request = new TransactionRequest(metadata, undefined, evmTx);
+    const receipt = await request.sign(keypair);
+
+    expect(receipt).toBeInstanceOf(TransactionReceipt);
+    expect(receipt.evm).toBeDefined();
+    expect(receipt.scilla).toBeUndefined();
+
+    const isValid = await receipt.verify();
+    expect(isValid).toBe(true);
+  });
+
+  it("should throw an error when signing with an invalid transaction type", async () => {
+    const keypair = await KeyPair.generate(ETHEREUM);
+    const request = new TransactionRequest(metadata, undefined, undefined);
+
+    await expect(request.sign(keypair)).rejects.toThrow("Invlid tx type");
+  });
+
+  it("should throw an error when verifying an invalid transaction type", async () => {
+    const receipt = new TransactionReceipt(metadata, undefined, undefined);
+
+    await expect(receipt.verify()).rejects.toThrow("Invlid tx type");
+  });
+});
+
+```
+
 `zil-pay/__tests__/crypto/word_list.ts`:
 
 ```ts
@@ -3887,31 +3967,41 @@ export const WORD_LIST = [
 `zil-pay/__tests__/crypto/zilliqa_tx.test.ts`:
 
 ```ts
-import { describe, it, expect } from 'vitest';
-import { ZILTransactionRequest, ZILTransactionReceipt } from '../../crypto/zilliqa_tx';
-import { utils } from 'aes-js';
-import { KeyPair } from '../../crypto/keypair';
-import { ZILLIQA } from '../../config/slip44';
-import { encodeProtoTransactionCoreInfo } from '../../crypto/proto/zq1';
+import { describe, it, expect } from "vitest";
+import {
+  ZILTransactionRequest,
+  ZILTransactionReceipt,
+} from "../../crypto/zilliqa_tx";
+import { utils } from "aes-js";
+import { KeyPair } from "../../crypto/keypair";
+import { ZILLIQA } from "../../config/slip44";
+import { encodeProtoTransactionCoreInfo } from "../../crypto/proto/zq1";
 
 const CHAIN_ID = 42;
-const SHOULD_BE_BYTES = '088180a80110011a14ebd8b370dddb636faf641040d2181c55190840fb22230a2103150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da2a120a100000000000000000000000000000000032120a100000000000000000000000000000000038a08d06';
+const SHOULD_BE_BYTES =
+  "088180a80110011a14ebd8b370dddb636faf641040d2181c55190840fb22230a2103150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da2a120a100000000000000000000000000000000032120a100000000000000000000000000000000038a08d06";
 
-describe('ZILTransaction encoding', () => {
-  it('should encode Zilliqa transaction correctly', async () => {
-    const SK = Uint8Array.from(utils.hex.toBytes("e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04"));
+describe("ZILTransaction encoding", () => {
+  it("should encode Zilliqa transaction correctly", async () => {
+    const SK = Uint8Array.from(
+      utils.hex.toBytes(
+        "e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04",
+      ),
+    );
     const keypair = await KeyPair.fromPrivateKey(SK, ZILLIQA);
-    const toAddr = Uint8Array.from(utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"));
+    const toAddr = Uint8Array.from(
+      utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"),
+    );
 
     const txReq = new ZILTransactionRequest(
       CHAIN_ID,
       BigInt(1),
-      BigInt(2000) / BigInt(10 ** 6), 
-      BigInt(100000), 
+      BigInt(2000) / BigInt(10 ** 6),
+      BigInt(100000),
       toAddr,
-      BigInt(1) / BigInt(10 ** 6), 
+      BigInt(1) / BigInt(10 ** 6),
       new Uint8Array(),
-      new Uint8Array()
+      new Uint8Array(),
     );
 
     const txBytes = txReq.encode(keypair.pubKey);
@@ -3927,11 +4017,17 @@ describe('ZILTransaction encoding', () => {
   });
 });
 
-describe('ZILTransactionReceipt verify', () => {
-  it('should verify a valid signature', async () => {
-    const SK = Uint8Array.from(utils.hex.toBytes("e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04"));
+describe("ZILTransactionReceipt verify", () => {
+  it("should verify a valid signature", async () => {
+    const SK = Uint8Array.from(
+      utils.hex.toBytes(
+        "e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04",
+      ),
+    );
     const keypair = await KeyPair.fromPrivateKey(SK, ZILLIQA);
-    const toAddr = Uint8Array.from(utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"));
+    const toAddr = Uint8Array.from(
+      utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"),
+    );
 
     const txReq = new ZILTransactionRequest(
       CHAIN_ID,
@@ -3941,7 +4037,7 @@ describe('ZILTransactionReceipt verify', () => {
       toAddr,
       BigInt(1) / BigInt(10 ** 6),
       new Uint8Array(),
-      new Uint8Array()
+      new Uint8Array(),
     );
 
     const txReceipt = await txReq.sign(keypair);
@@ -3950,10 +4046,16 @@ describe('ZILTransactionReceipt verify', () => {
     expect(isValid).toBe(true);
   });
 
-  it('should fail verification with an invalid signature', async () => {
-    const SK = Uint8Array.from(utils.hex.toBytes("e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04"));
+  it("should fail verification with an invalid signature", async () => {
+    const SK = Uint8Array.from(
+      utils.hex.toBytes(
+        "e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04",
+      ),
+    );
     const keypair = await KeyPair.fromPrivateKey(SK, ZILLIQA);
-    const toAddr = Uint8Array.from(utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"));
+    const toAddr = Uint8Array.from(
+      utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"),
+    );
 
     const txReq = new ZILTransactionRequest(
       CHAIN_ID,
@@ -3963,7 +4065,7 @@ describe('ZILTransactionReceipt verify', () => {
       toAddr,
       BigInt(1) / BigInt(10 ** 6),
       new Uint8Array(),
-      new Uint8Array()
+      new Uint8Array(),
     );
 
     const txReceipt = await txReq.sign(keypair);
@@ -3982,7 +4084,7 @@ describe('ZILTransactionReceipt verify', () => {
       txReceipt.code,
       txReceipt.data,
       invalidSignature,
-      txReceipt.priority
+      txReceipt.priority,
     );
 
     const isValid = await invalidReceipt.verify();
@@ -8204,11 +8306,11 @@ export async function sha512(value: Uint8Array): Promise<Uint8Array> {
 `zil-pay/crypto/tx.ts`:
 
 ```ts
-import type { TxType } from 'micro-eth-signer/esm/tx';
-import { ZILTransactionRequest, ZILTransactionReceipt } from './zilliqa_tx';
-import { Transaction } from 'micro-eth-signer';
-import { KeyPair } from './keypair';
-import { randomBytes } from './random';
+import type { TxType } from "micro-eth-signer/esm/tx";
+import { ZILTransactionRequest, ZILTransactionReceipt } from "./zilliqa_tx";
+import { Transaction } from "micro-eth-signer";
+import { KeyPair } from "./keypair";
+import { randomBytes } from "./random";
 
 export interface TransactionMetadata {
   chainHash: number;
@@ -8216,8 +8318,8 @@ export interface TransactionMetadata {
   info?: string;
   icon?: string;
   title?: string;
-  signer?: string; 
-  tokenInfo?: [string, number, string]; 
+  signer?: string;
+  tokenInfo?: [string, number, string];
 }
 
 export class TransactionRequest {
@@ -8231,19 +8333,12 @@ export class TransactionRequest {
     if (this.scilla) {
       const receipt = await this.scilla.sign(keypair);
 
-      return new TransactionReceipt(
-        this.metadata,
-        receipt,
-      );
+      return new TransactionReceipt(this.metadata, receipt);
     } else if (this.evm) {
       const entropy = randomBytes(128);
       const receipt = this.evm.signBy(keypair.privateKey, entropy);
 
-      return new TransactionReceipt(
-        this.metadata,
-        undefined,
-        receipt,
-      );
+      return new TransactionReceipt(this.metadata, undefined, receipt);
     }
 
     throw new Error("Invlid tx type");
@@ -8401,13 +8496,20 @@ export async function verify(
 ```ts
 import { Signature } from "@noble/secp256k1";
 import type { KeyPair } from "./keypair";
-import { bigIntToUint8ArrayBigEndian, uint8ArrayToBigIntBigEndian } from "./number";
-import { encodeProtoTransactionCoreInfo, type Long, type ProtoTransactionCoreInfo } from "./proto/zq1";
+import {
+  bigIntToUint8ArrayBigEndian,
+  uint8ArrayToBigIntBigEndian,
+} from "./number";
+import {
+  encodeProtoTransactionCoreInfo,
+  type Long,
+  type ProtoTransactionCoreInfo,
+} from "./proto/zq1";
 import { verify } from "./zilliqa/schnorr";
 
 export function bigintToLong(value: bigint): Long {
-  const low = Number(value & 0xFFFFFFFFn);
-  const high = Number((value >> 32n) & 0xFFFFFFFFn);
+  const low = Number(value & 0xffffffffn);
+  const high = Number((value >> 32n) & 0xffffffffn);
   return { low, high, unsigned: true };
 }
 
@@ -8416,7 +8518,7 @@ export function versionFromChainId(chainId: number): number {
 }
 
 export function chainIdFromVersion(version: number): number {
-  return (version >> 16) & 0xFFFF;
+  return (version >> 16) & 0xffff;
 }
 
 export class ZILTransactionRequest {
@@ -8428,7 +8530,7 @@ export class ZILTransactionRequest {
     public toAddr: Uint8Array,
     public amount: bigint,
     public code: Uint8Array = new Uint8Array(),
-    public data: Uint8Array = new Uint8Array()
+    public data: Uint8Array = new Uint8Array(),
   ) {}
 
   toProto(pubKey: Uint8Array): ProtoTransactionCoreInfo {
@@ -8437,8 +8539,8 @@ export class ZILTransactionRequest {
       nonce: bigintToLong(this.nonce),
       toaddr: this.toAddr,
       senderpubkey: { data: pubKey },
-      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, 16) }, 
-      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, 16) }, 
+      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, 16) },
+      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, 16) },
       gaslimit: bigintToLong(this.gasLimit),
       code: this.code.length > 0 ? this.code : undefined,
       data: this.data.length > 0 ? this.data : undefined,
@@ -8483,7 +8585,7 @@ export class ZILTransactionReceipt {
     public code: Uint8Array,
     public data: Uint8Array,
     public signature: Uint8Array,
-    public priority: boolean
+    public priority: boolean,
   ) {}
 
   toProto(): ProtoTransactionCoreInfo {
@@ -8503,7 +8605,7 @@ export class ZILTransactionReceipt {
   async verify(): Promise<boolean> {
     const proto = this.toProto();
     const bytes = encodeProtoTransactionCoreInfo(proto);
-    const signature = Signature.fromBytes(this.signature); 
+    const signature = Signature.fromBytes(this.signature);
 
     return verify(bytes, this.pubKey, signature);
   }
