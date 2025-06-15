@@ -1,11 +1,8 @@
 import type { TxType } from 'micro-eth-signer/esm/tx';
 import { ZILTransactionRequest, ZILTransactionReceipt } from './zilliqa_tx';
 import { Transaction } from 'micro-eth-signer';
-
-export enum TransactionType {
-  Scilla,
-  EVM
-}
+import { KeyPair } from './keypair';
+import { randomBytes } from './random';
 
 export interface TransactionMetadata {
   chainHash: number;
@@ -19,17 +16,38 @@ export interface TransactionMetadata {
 
 export class TransactionRequest {
   constructor(
-    public type: TransactionType,
     public metadata: TransactionMetadata,
-    public data: ZILTransactionRequest | Transaction<TxType>,
+    public scilla?: ZILTransactionRequest,
+    public evm?: Transaction<TxType>,
   ) {}
+
+  async sign(keypair: KeyPair) {
+    if (this.scilla) {
+      const receipt = await this.scilla.sign(keypair);
+
+      return new TransactionReceipt(
+        this.metadata,
+        receipt,
+      );
+    } else if (this.evm) {
+      const entropy = randomBytes(128);
+      const receipt = this.evm.signBy(keypair.privateKey, entropy);
+
+      return new TransactionReceipt(
+        this.metadata,
+        undefined,
+        receipt,
+      );
+    }
+
+    throw new Error("Invlid tx type");
+  }
 }
 
 export class TransactionReceipt {
   constructor(
-    public type: TransactionType,
     public metadata: TransactionMetadata,
-    public data: ZILTransactionReceipt | Transaction<TxType>,
+    public scilla?: ZILTransactionReceipt,
+    public evm?: Transaction<TxType>,
   ) {}
 }
-
