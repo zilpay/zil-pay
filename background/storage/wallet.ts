@@ -10,8 +10,7 @@ import { ChainConfig } from './chain';
 import { Bip39 } from '../../crypto/bip39';
 import { uuid } from '../../crypto/uuid';
 import { TypeOf } from 'lib/types';
-import { DerivationPath } from 'crypto/bip49';
-import { deriveFromPrivateKeyPublicKey, derivePrivateKey, type KeyPair } from 'crypto/bip32';
+import { KeyPair } from 'crypto/keypair';
 
 export enum WalletTypes {
     Ledger,
@@ -138,21 +137,30 @@ export class Wallet {
       throw new Error("invlid chain");
     }
 
-    if (this.walletType == WalletTypes.SecretKey) {
-      const vault = await this.#session.getVault();
-      const hdPath = new DerivationPath(chain.slip44, accountIndex);
-      const privateKey = await derivePrivateKey(vault, hdPath.getPath());
-      const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
-
-      return { privateKey, pubKey };
+    switch (this.walletType) {
+      case WalletTypes.SecretPhrase:
+        const seed = await this.#session.getVault();
+        return KeyPair.fromSeed(seed, chain.slip44, accountIndex);
+      case WalletTypes.SecretKey:
+        const privateKey = await this.#session.getVault();
+        return KeyPair.fromPrivateKey(privateKey, chain.slip44);
+      default:
+        throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
     }
-
-    if (this.walletType == WalletTypes.SecretKey) {
-      const vault = await this.#session.getVault();
-    } 
-
-    throw new Error(`invalid Wallet type ${WalletTypes[this.walletType]}`);
   }
 
-  async revealMnemonic(password: Uint8Array) {}
+  async revealMnemonic(password: Uint8Array, chain: ChainConfig): Promise<string> {
+    if (chain.hash() !== this.defaultChainHash) {
+      throw new Error("invlid chain");
+    }
+
+    switch (this.walletType) {
+      case WalletTypes.SecretPhrase:
+        const words = await this.decrypt(password);
+
+        return String(words);
+      default:
+        throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
+    }
+  }
 }

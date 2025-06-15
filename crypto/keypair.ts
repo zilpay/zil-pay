@@ -1,4 +1,3 @@
-import { getPublicKey } from "@noble/secp256k1";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
 
