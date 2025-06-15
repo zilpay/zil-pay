@@ -173,7 +173,7 @@ describe("KeyPair", () => {
         domain,
         message: differentMessage,
       };
-      const invalidSignature = keyPair.signDataEIP712(invalidTypedData); 
+      const invalidSignature = keyPair.signDataEIP712(invalidTypedData);
       const address = await keyPair.addrFromPubKey();
 
       const isValid = await keyPair.verifyTypedEIP712(
@@ -185,7 +185,7 @@ describe("KeyPair", () => {
     });
   });
 
-    it("should sign typed data EIP-712 successfully for Ethereum", async () => {
+  it("should sign typed data EIP-712 successfully for Ethereum", async () => {
     const keyPair = await KeyPair.generate(ETHEREUM);
     const address = await keyPair.addrFromPubKey();
 
@@ -218,8 +218,12 @@ describe("KeyPair", () => {
     const signature = keyPair.signDataEIP712(typedData);
 
     expect(signature).toBeInstanceOf(Uint8Array);
-    expect(signature.length).toBe(65); 
-    const isValid = await keyPair.verifyTypedEIP712(signature, typedData, address);
+    expect(signature.length).toBe(65);
+    const isValid = await keyPair.verifyTypedEIP712(
+      signature,
+      typedData,
+      address,
+    );
     expect(isValid).toBeTruthy();
   });
 
@@ -254,4 +258,3 @@ describe("KeyPair", () => {
     expect(() => keyPair.signDataEIP712(typedData)).toThrowError("Unsupported");
   });
 });
-
