@@ -630,7 +630,6 @@ function writeVarint64(bb: ByteBuffer, value: Long): void {
   let part1 = ((value.low >>> 28) | (value.high << 4)) >>> 0;
   let part2 = value.high >>> 24;
 
-  // ref: src/google/protobuf/io/coded_stream.cc
   let size =
     part2 === 0 ?
       part1 === 0 ?
@@ -646,16 +645,15 @@ function writeVarint64(bb: ByteBuffer, value: Long): void {
   let bytes = bb.bytes;
 
   switch (size) {
-    case 10: bytes[offset + 9] = (part2 >>> 7) & 0x01; break;
-    case 9: bytes[offset + 8] = size !== 9 ? part2 | 0x80 : part2 & 0x7F; break;
-    case 8: bytes[offset + 7] = size !== 8 ? (part1 >>> 21) | 0x80 : (part1 >>> 21) & 0x7F; break;
-    case 7: bytes[offset + 6] = size !== 7 ? (part1 >>> 14) | 0x80 : (part1 >>> 14) & 0x7F; break;
-    case 6: bytes[offset + 5] = size !== 6 ? (part1 >>> 7) | 0x80 : (part1 >>> 7) & 0x7F; break;
-    case 5: bytes[offset + 4] = size !== 5 ? part1 | 0x80 : part1 & 0x7F; break;
-    case 4: bytes[offset + 3] = size !== 4 ? (part0 >>> 21) | 0x80 : (part0 >>> 21) & 0x7F; break;
-    case 3: bytes[offset + 2] = size !== 3 ? (part0 >>> 14) | 0x80 : (part0 >>> 14) & 0x7F; break;
-    case 2: bytes[offset + 1] = size !== 2 ? (part0 >>> 7) | 0x80 : (part0 >>> 7) & 0x7F; break;
-    case 1: bytes[offset] = size !== 1 ? part0 | 0x80 : part0 & 0x7F; break;
-    default: break;
+    case 10: bytes[offset + 9] = (part2 >>> 7) & 0x01;
+    case 9: bytes[offset + 8] = size !== 9 ? part2 | 0x80 : part2 & 0x7F;
+    case 8: bytes[offset + 7] = size !== 8 ? (part1 >>> 21) | 0x80 : (part1 >>> 21) & 0x7F;
+    case 7: bytes[offset + 6] = size !== 7 ? (part1 >>> 14) | 0x80 : (part1 >>> 14) & 0x7F;
+    case 6: bytes[offset + 5] = size !== 6 ? (part1 >>> 7) | 0x80 : (part1 >>> 7) & 0x7F;
+    case 5: bytes[offset + 4] = size !== 5 ? part1 | 0x80 : part1 & 0x7F;
+    case 4: bytes[offset + 3] = size !== 4 ? (part0 >>> 21) | 0x80 : (part0 >>> 21) & 0x7F;
+    case 3: bytes[offset + 2] = size !== 3 ? (part0 >>> 14) | 0x80 : (part0 >>> 14) & 0x7F;
+    case 2: bytes[offset + 1] = size !== 2 ? (part0 >>> 7) | 0x80 : (part0 >>> 7) & 0x7F;
+    case 1: bytes[offset] = size !== 1 ? part0 | 0x80 : part0 & 0x7F;
   }
 }
