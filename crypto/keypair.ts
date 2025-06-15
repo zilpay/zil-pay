@@ -1,14 +1,36 @@
+import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
+import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
+import { utils } from "aes-js";
+import { addr } from "micro-eth-signer";
+
+export enum AddressType {
+  Bech32,
+  EthCheckSum
+}
 
 export class KeyPair {
   #privateKey: Uint8Array;
   #pubKey: Uint8Array;
+  #slip44: number;
+
+  static addressType(slip44: number): AddressType {
+    switch (slip44) {
+      case ZILLIQA:
+        return AddressType.Bech32;
+      case ETHEREUM:
+        return AddressType.EthCheckSum;
+      default:
+        return AddressType.EthCheckSum;
+    }
+  }
+
 
   static async fromPrivateKey(privateKey: Uint8Array, slip44: number) {
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
 
-    return new KeyPair(privateKey, pubKey);
+    return new KeyPair(privateKey, pubKey, slip44);
   }
 
   static async fromSeed(seed: Uint8Array, slip44: number, index: number) {
@@ -16,7 +38,7 @@ export class KeyPair {
     const privateKey = await derivePrivateKey(seed, hdPath.getPath());
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
 
-    return new KeyPair(privateKey, pubKey);
+    return new KeyPair(privateKey, pubKey, slip44);
   }
 
   get privateKey() {
@@ -27,8 +49,30 @@ export class KeyPair {
     return this.#pubKey;
   }
 
-  constructor(privateKey: Uint8Array, pubKey: Uint8Array) {
+  get slip44() {
+    return this.#slip44;
+  }
+
+  constructor(privateKey: Uint8Array, pubKey: Uint8Array, slip44: number) {
     this.#privateKey = privateKey;
     this.#pubKey = pubKey;
+    this.#slip44 = slip44;
+  }
+
+  addressType(): AddressType {
+    return KeyPair.addressType(this.#slip44);
+  }
+
+  async addrFromPubKey(): Promise<string> {
+    const addressType = KeyPair.addressType(this.#slip44);
+
+    switch (addressType) {
+      case AddressType.Bech32:
+        const base16 = await fromZilPubKey(this.pubKey);
+        return await toBech32Address(utils.hex.fromBytes(base16));
+      case AddressType.EthCheckSum:
+        return addr.fromPublicKey(this.pubKey);
+    }
   }
 }
+

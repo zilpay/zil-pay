@@ -3,11 +3,11 @@ import { ChainConfig } from '../storage/chain';
 import { FToken } from '../storage/ftoken';
 import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
 import { Account } from '../storage/account';
-import { AddressType } from '../storage/address-type';
 import { WalletSettings, RatesApiOptions } from '../storage/settings';
 import { HashTypes, WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
+import { AddressType } from 'crypto/keypair';
 
 interface WalletIdentities {
   selectedAddress: number;

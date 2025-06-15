@@ -1,10 +1,6 @@
 import { FToken } from './ftoken';
 import { Explorer } from './explorer';
-import { ETHEREUM, ZILLIQA } from '../../config/slip44';
-import { AddressType } from './address-type';
-import { fromZilPubKey, toBech32Address } from '../../lib/zilliqa';
-import { utils } from 'aes-js';
-import { addr } from 'micro-eth-signer';
+import { KeyPair } from 'crypto/keypair';
 
 function hashNumber(hash: number, value: number): number {
   hash = (hash << 5) - hash + value;
@@ -68,33 +64,10 @@ export class ChainConfig {
         default_: true,
         rate: 0,
         chainHash: t.chainHash ?? hashChainConfig(this.chainIds, this.slip44, this.chain),
-        addrType: this.addressType(),
+        addrType: KeyPair.addressType(this.slip44),
         balances: t.balances ?? {},
       })
     );
-  }
-
-  async addrFromPubKey(pubKey: Uint8Array): Promise<string> {
-    switch (this.slip44) {
-      case ZILLIQA:
-        const base16 = await fromZilPubKey(pubKey);
-        return await toBech32Address(utils.hex.fromBytes(base16));
-      case ETHEREUM:
-        return addr.fromPublicKey(pubKey);
-      default:
-        throw new Error("invlid slip44");
-    }
-  }
-
-  addressType(): AddressType {
-    switch (this.slip44) {
-      case ZILLIQA:
-        return AddressType.Bech32;
-      case ETHEREUM:
-        return AddressType.EthCheckSum;
-      default:
-        return AddressType.EthCheckSum;
-    }
   }
 
   hash(): number {

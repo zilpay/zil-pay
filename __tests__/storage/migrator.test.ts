@@ -1,6 +1,7 @@
 import "../setupTests";
 import { describe, it, expect } from "vitest";
 import { migrateToV4 } from "../../background/secure/migrator";
+import { AddressType } from '../../crypto/keypair';
 import {
   BackgroundState,
   AppearancesTheme,
@@ -13,7 +14,6 @@ import {
   WalletTypes,
 } from "../../background/storage/wallet";
 import { Account } from "../../background/storage/account";
-import { AddressType } from "../../background/storage/address-type";
 import { HashTypes, WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";

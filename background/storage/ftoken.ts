@@ -1,5 +1,5 @@
-import { AddressType } from './address-type';
- 
+import type { AddressType } from "crypto/keypair";
+
 export class FToken {
   name: string;
   symbol: string;

@@ -1,5 +1,4 @@
 export * from './account';
-export * from './address-type';
 export * from './argon';
 export * from './background';
 export * from './chain';

@@ -8,12 +8,9 @@ import {
   AuthMethod,
   WalletTypes,
 } from "../../background/storage/wallet";
-import { FToken } from "../../background/storage/ftoken";
-import { Account } from "../../background/storage/account";
-import { WalletSettings } from "../../background/storage/settings";
-import { WalletHashParams, HashTypes } from "../../background/storage/argon";
-import { AddressType } from "../../background/storage/address-type";
+import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
+import { AddressType } from "../../crypto/keypair";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";
