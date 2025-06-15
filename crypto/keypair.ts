@@ -6,6 +6,7 @@ import { utils } from "aes-js";
 import { addr } from "micro-eth-signer";
 import { sign } from "./zilliqa/schnorr";
 import { personal } from 'micro-eth-signer/typed-data.js';
+import { stripHexPrefix } from "lib/utils/hex";
 
 export enum AddressType {
   Bech32,
@@ -81,7 +82,7 @@ export class KeyPair {
         return Uint8Array.from(sigZil.toBytes());
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
-        return utils.hex.toBytes(sigEth);
+        return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(sigEth)));
     }
   }
 }
