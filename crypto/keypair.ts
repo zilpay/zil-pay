@@ -4,9 +4,10 @@ import { DerivationPath } from "./bip49";
 import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
 import { utils } from "aes-js";
 import { addr } from "micro-eth-signer";
-import { sign } from "./zilliqa/schnorr";
+import { sign, verify } from "./zilliqa/schnorr";
 import { personal } from 'micro-eth-signer/typed-data.js';
 import { stripHexPrefix } from "lib/utils/hex";
+import { Signature } from "@noble/secp256k1";
 
 export enum AddressType {
   Bech32,
@@ -83,6 +84,16 @@ export class KeyPair {
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
         return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(sigEth)));
+    }
+  }
+
+  async verifySig(msg: Uint8Array, sig: Uint8Array): Promise<boolean> {
+    switch (this.addressType()) {
+      case AddressType.Bech32:
+        return await verify(msg, this.pubKey, Signature.fromBytes(sig));
+      case AddressType.EthCheckSum:
+        const address = await this.addrFromPubKey();
+        return personal.verify(utils.hex.fromBytes(sig), msg, address);
     }
   }
 }

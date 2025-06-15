@@ -68,6 +68,8 @@ describe("KeyPair", () => {
 
       expect(signature).toBeInstanceOf(Uint8Array);
       expect(signature.length).toBe(64);
+      expect(await verify(message, keyPair.pubKey, Signature.fromBytes(signature))).toBeTruthy();
+      expect(await keyPair.verifySig(message, signature)).toBeTruthy();
     });
 
     it("should sign message for Ethereum correctly", async () => {
@@ -78,6 +80,7 @@ describe("KeyPair", () => {
 
       expect(signature).toBeInstanceOf(Uint8Array);
       expect(signature.length).toBe(65); 
+      expect(await keyPair.verifySig(message, signature)).toBeTruthy();
     });
   });
 });
