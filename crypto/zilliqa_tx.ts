@@ -1,6 +1,8 @@
+import { Signature } from "@noble/secp256k1";
 import type { KeyPair } from "./keypair";
 import { bigIntToUint8ArrayBigEndian, uint8ArrayToBigIntBigEndian } from "./number";
 import { encodeProtoTransactionCoreInfo, type Long, type ProtoTransactionCoreInfo } from "./proto/zq1";
+import { verify } from "./zilliqa/schnorr";
 
 export function bigintToLong(value: bigint): Long {
   const low = Number(value & 0xFFFFFFFFn);
@@ -83,16 +85,25 @@ export class ZILTransactionReceipt {
     public priority: boolean
   ) {}
 
-  toRequest(): ZILTransactionRequest {
-    return new ZILTransactionRequest(
-      chainIdFromVersion(this.version),
-      this.nonce,
-      uint8ArrayToBigIntBigEndian(this.gasPrice), 
-      this.gasLimit,
-      this.toAddr,
-      uint8ArrayToBigIntBigEndian(this.amount), 
-      this.code,
-      this.data
-    );
+  toProto(): ProtoTransactionCoreInfo {
+    return {
+      version: this.version,
+      nonce: bigintToLong(this.nonce),
+      toaddr: this.toAddr,
+      senderpubkey: { data: this.pubKey },
+      amount: { data: this.amount },
+      gasprice: { data: this.gasPrice },
+      gaslimit: bigintToLong(this.gasLimit),
+      code: this.code.length > 0 ? this.code : undefined,
+      data: this.data.length > 0 ? this.data : undefined,
+    };
+  }
+
+  async verify(): Promise<boolean> {
+    const proto = this.toProto();
+    const bytes = encodeProtoTransactionCoreInfo(proto);
+    const signature = Signature.fromBytes(this.signature); 
+
+    return verify(bytes, this.pubKey, signature);
   }
 }

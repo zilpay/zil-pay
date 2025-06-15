@@ -25,7 +25,8 @@ zil-pay
 │   │   ├── schnorr.test.ts
 │   │   ├── sha256.test.ts
 │   │   ├── sha512.test.ts
-│   │   └── word_list.ts
+│   │   ├── word_list.ts
+│   │   └── zilliqa_tx.test.ts
 │   ├── data.ts
 │   ├── session
 │   │   └── session.test.ts
@@ -91,10 +92,12 @@ zil-pay
 │   ├── random.ts
 │   ├── sha256.ts
 │   ├── sha512.ts
+│   ├── tx.ts
 │   ├── uuid.ts
-│   └── zilliqa
-│       ├── pubkey.ts
-│       └── schnorr.ts
+│   ├── zilliqa
+│   │   ├── pubkey.ts
+│   │   └── schnorr.ts
+│   └── zilliqa_tx.ts
 ├── lib
 │   ├── array
 │   │   ├── chunk.ts
@@ -1125,7 +1128,7 @@ describe("KeyChain", () => {
 
 ```ts
 import { describe, it, expect } from "vitest";
-import { Signature } from '@noble/secp256k1';
+import { Signature } from "@noble/secp256k1";
 import { KeyPair, AddressType } from "../../crypto/keypair";
 import { Bip39 } from "../../crypto/bip39";
 import { ETHEREUM, ZILLIQA } from "../../config/slip44";
@@ -1194,7 +1197,9 @@ describe("KeyPair", () => {
 
       expect(signature).toBeInstanceOf(Uint8Array);
       expect(signature.length).toBe(64);
-      expect(await verify(message, keyPair.pubKey, Signature.fromBytes(signature))).toBeTruthy();
+      expect(
+        await verify(message, keyPair.pubKey, Signature.fromBytes(signature)),
+      ).toBeTruthy();
       expect(await keyPair.verifySig(message, signature)).toBeTruthy();
     });
 
@@ -1205,7 +1210,7 @@ describe("KeyPair", () => {
       const signature = await keyPair.signMessage(message);
 
       expect(signature).toBeInstanceOf(Uint8Array);
-      expect(signature.length).toBe(65); 
+      expect(signature.length).toBe(65);
       expect(await keyPair.verifySig(message, signature)).toBeTruthy();
     });
   });
@@ -1243,8 +1248,9 @@ describe("KeyPair", () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
 
-
-      expect( () => keyPair.signDataEIP712(typedData)).toThrowError("Unsupported");
+      expect(() => keyPair.signDataEIP712(typedData)).toThrowError(
+        "Unsupported",
+      );
     });
 
     it("should throw error for Zilliqa EIP-712 verification", async () => {
@@ -1254,7 +1260,7 @@ describe("KeyPair", () => {
       const address = "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825";
 
       await expect(
-        keyPair.verifyTypedEIP712(signature, typedData, address)
+        keyPair.verifyTypedEIP712(signature, typedData, address),
       ).rejects.toThrowError("Unsupported");
     });
 
@@ -1273,32 +1279,112 @@ describe("KeyPair", () => {
       const signature = keyPair.signDataEIP712(typedData);
       const address = await keyPair.addrFromPubKey();
 
-      const isValid = await keyPair.verifyTypedEIP712(signature, typedData, address);
+      const isValid = await keyPair.verifyTypedEIP712(
+        signature,
+        typedData,
+        address,
+      );
       expect(isValid).toBeTruthy();
     });
 
     it("should fail to verify EIP-712 with invalid signature", async () => {
-  const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
-  const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
-  
-  // Create a valid signature for a different message to simulate an invalid signature
-  const differentMessage = {
-    from: "Alice",
-    to: "Charlie", // Changed to make the signature invalid for the original message
-    contents: "Hello, Charlie!",
-  };
-  const invalidTypedData = {
-    types,
-    primaryType: "Mail",
-    domain,
-    message: differentMessage,
-  };
-  const invalidSignature = keyPair.signDataEIP712(invalidTypedData); // Sign different data
-  const address = await keyPair.addrFromPubKey();
+      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
+      const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
 
-  const isValid = await keyPair.verifyTypedEIP712(invalidSignature, typedData, address);
-  expect(isValid).toBeFalsy();
-});
+      const differentMessage = {
+        from: "Alice",
+        to: "Charlie",
+        contents: "Hello, Charlie!",
+      };
+      const invalidTypedData = {
+        types,
+        primaryType: "Mail",
+        domain,
+        message: differentMessage,
+      };
+      const invalidSignature = keyPair.signDataEIP712(invalidTypedData);
+      const address = await keyPair.addrFromPubKey();
+
+      const isValid = await keyPair.verifyTypedEIP712(
+        invalidSignature,
+        typedData,
+        address,
+      );
+      expect(isValid).toBeFalsy();
+    });
+  });
+
+  it("should sign typed data EIP-712 successfully for Ethereum", async () => {
+    const keyPair = await KeyPair.generate(ETHEREUM);
+    const address = await keyPair.addrFromPubKey();
+
+    const typedData = {
+      types: {
+        EIP712Domain: [
+          { name: "name", type: "string" },
+          { name: "version", type: "string" },
+          { name: "chainId", type: "uint256" },
+          { name: "verifyingContract", type: "address" },
+        ],
+        Person: [
+          { name: "name", type: "string" },
+          { name: "wallet", type: "address" },
+        ],
+      },
+      primaryType: "Person",
+      domain: {
+        name: "Ether Mail",
+        version: "1",
+        chainId: 1,
+        verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+      },
+      message: {
+        name: "Bob",
+        wallet: address,
+      },
+    };
+
+    const signature = keyPair.signDataEIP712(typedData);
+
+    expect(signature).toBeInstanceOf(Uint8Array);
+    expect(signature.length).toBe(65);
+    const isValid = await keyPair.verifyTypedEIP712(
+      signature,
+      typedData,
+      address,
+    );
+    expect(isValid).toBeTruthy();
+  });
+
+  it("should throw error for EIP-712 signing with Zilliqa (unsupported type)", async () => {
+    const keyPair = await KeyPair.generate(ZILLIQA);
+    const typedData = {
+      types: {
+        EIP712Domain: [
+          { name: "name", type: "string" },
+          { name: "version", type: "string" },
+          { name: "chainId", type: "uint256" },
+          { name: "verifyingContract", type: "address" },
+        ],
+        Person: [
+          { name: "name", type: "string" },
+          { name: "wallet", type: "address" },
+        ],
+      },
+      primaryType: "Person",
+      domain: {
+        name: "Ether Mail",
+        version: "1",
+        chainId: 1,
+        verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+      },
+      message: {
+        name: "Bob",
+        wallet: "0xbBbBBBBbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+      },
+    };
+
+    expect(() => keyPair.signDataEIP712(typedData)).toThrowError("Unsupported");
   });
 });
 
@@ -3794,6 +3880,66 @@ export const WORD_LIST = [
     "zone",
     "zoo"
 ];
+
+```
+
+`zil-pay/__tests__/crypto/zilliqa_tx.test.ts`:
+
+```ts
+import { describe, it, expect } from 'vitest';
+import { ZILTransactionRequest, ZILTransactionReceipt, versionFromChainId } from '../../crypto/zilliqa_tx';
+import { utils } from 'aes-js';
+import { KeyPair } from '../../crypto/keypair';
+import { ZILLIQA } from '../../config/slip44';
+
+const CHAIN_ID = 42;
+const SHOULD_BE_BYTES = '088180a80110011a14ebd8b370dddb636faf641040d2181c55190840fb22230a2103150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da2a120a100000000000000000000000000000000032120a100000000000000000000000000000000038a08d06';
+const SHA512_SIZE = 64; 
+
+describe('ZILTransaction encoding', () => {
+  it('should encode Zilliqa transaction correctly', async () => {
+    const SK = Uint8Array.from(utils.hex.toBytes("e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04"));
+    const keypair = await KeyPair.fromPrivateKey(SK, ZILLIQA);
+    const toAddr = Uint8Array.from(utils.hex.toBytes("EBd8b370Dddb636FAF641040D2181c55190840fb"));
+
+    const txReq = new ZILTransactionRequest(
+      CHAIN_ID,
+      BigInt(1),
+      BigInt(2000) / BigInt(10 ** 6), 
+      BigInt(100000), 
+      toAddr,
+      BigInt(1) / BigInt(10 ** 6), 
+      new Uint8Array(),
+      new Uint8Array()
+    );
+
+    const txBytes = txReq.encode(keypair.pubKey);
+    const encodedHex = utils.hex.fromBytes(txBytes);
+    expect(encodedHex).toBe(SHOULD_BE_BYTES);
+
+    const signature = txBytes.slice(0, SHA512_SIZE); 
+    const txReceipt = new ZILTransactionReceipt(
+      versionFromChainId(CHAIN_ID),
+      BigInt(1),
+      txReq.toProto(keypair.pubKey).gasprice!.data, 
+      BigInt(100000),
+      toAddr,
+      txReq.toProto(keypair.pubKey).amount!.data, 
+      keypair.pubKey,
+      new Uint8Array(),
+      new Uint8Array(),
+      signature,
+      false
+    );
+
+    const restoredReq = txReceipt.toRequest();
+    const restoredBytes = restoredReq.encode(keypair.pubKey);
+    const restoredHex = utils.hex.fromBytes(restoredBytes);
+
+    expect(restoredHex).toBe(SHOULD_BE_BYTES);
+    expect(restoredReq).toEqual(txReq);
+  });
+});
 
 ```
 
@@ -6883,7 +7029,7 @@ export class KeyChain {
 `zil-pay/crypto/keypair.ts`:
 
 ```ts
-import type { TypedData } from 'micro-eth-signer/typed-data.js';
+import type { TypedData } from "micro-eth-signer/typed-data.js";
 
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
@@ -6892,9 +7038,14 @@ import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
 import { utils } from "aes-js";
 import { addr } from "micro-eth-signer";
 import { sign, verify } from "./zilliqa/schnorr";
-import { personal, signTyped, verifyTyped } from 'micro-eth-signer/typed-data.js';
+import {
+  personal,
+  signTyped,
+  verifyTyped,
+} from "micro-eth-signer/typed-data.js";
 import { stripHexPrefix } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
+import { randomBytes } from "./random";
 
 export enum AddressType {
   Bech32,
@@ -6918,6 +7069,13 @@ export class KeyPair {
   }
 
   static async fromPrivateKey(privateKey: Uint8Array, slip44: number) {
+    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
+
+    return new KeyPair(privateKey, pubKey, slip44);
+  }
+
+  static async generate(slip44: number) {
+    const privateKey = randomBytes(32);
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
 
     return new KeyPair(privateKey, pubKey, slip44);
@@ -6980,21 +7138,21 @@ export class KeyPair {
         const signature = signTyped(typedData, this.privateKey);
         return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(signature)));
       default:
-        throw new Error('Unsupported');
+        throw new Error("Unsupported");
     }
   }
 
   async verifyTypedEIP712(
     signature: Uint8Array,
     typedData: TypedData<any, any>,
-    address: string
+    address: string,
   ): Promise<boolean> {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
         const sigHex = `0x${utils.hex.fromBytes(signature)}`;
         return verifyTyped(sigHex, typedData, address);
       default:
-        throw new Error('Unsupported');
+        throw new Error("Unsupported");
     }
   }
 
@@ -7758,41 +7916,8 @@ function skipUnknownField(bb: ByteBuffer, type: number): void {
   }
 }
 
-function stringToLong(value: string): Long {
-  return {
-    low: value.charCodeAt(0) | (value.charCodeAt(1) << 16),
-    high: value.charCodeAt(2) | (value.charCodeAt(3) << 16),
-    unsigned: false,
-  };
-}
-
-function longToString(value: Long): string {
-  let low = value.low;
-  let high = value.high;
-  return String.fromCharCode(
-    low & 0xFFFF,
-    low >>> 16,
-    high & 0xFFFF,
-    high >>> 16);
-}
-
 // The code below was modified from https://github.com/protobufjs/bytebuffer.js
 // which is under the Apache License 2.0.
-
-let f32 = new Float32Array(1);
-let f32_u8 = new Uint8Array(f32.buffer);
-
-let f64 = new Float64Array(1);
-let f64_u8 = new Uint8Array(f64.buffer);
-
-function intToLong(value: number): Long {
-  value |= 0;
-  return {
-    low: value,
-    high: value >> 31,
-    unsigned: value >= 0,
-  };
-}
 
 let bbStack: ByteBuffer[] = [];
 
@@ -7864,125 +7989,7 @@ function writeBytes(bb: ByteBuffer, buffer: Uint8Array): void {
   bb.bytes.set(buffer, offset);
 }
 
-function readString(bb: ByteBuffer, count: number): string {
-  // Sadly a hand-coded UTF8 decoder is much faster than subarray+TextDecoder in V8
-  let offset = advance(bb, count);
-  let fromCharCode = String.fromCharCode;
-  let bytes = bb.bytes;
-  let invalid = '\uFFFD';
-  let text = '';
 
-  for (let i = 0; i < count; i++) {
-    let c1 = bytes[i + offset], c2: number, c3: number, c4: number, c: number;
-
-    // 1 byte
-    if ((c1 & 0x80) === 0) {
-      text += fromCharCode(c1);
-    }
-
-    // 2 bytes
-    else if ((c1 & 0xE0) === 0xC0) {
-      if (i + 1 >= count) text += invalid;
-      else {
-        c2 = bytes[i + offset + 1];
-        if ((c2 & 0xC0) !== 0x80) text += invalid;
-        else {
-          c = ((c1 & 0x1F) << 6) | (c2 & 0x3F);
-          if (c < 0x80) text += invalid;
-          else {
-            text += fromCharCode(c);
-            i++;
-          }
-        }
-      }
-    }
-
-    // 3 bytes
-    else if ((c1 & 0xF0) == 0xE0) {
-      if (i + 2 >= count) text += invalid;
-      else {
-        c2 = bytes[i + offset + 1];
-        c3 = bytes[i + offset + 2];
-        if (((c2 | (c3 << 8)) & 0xC0C0) !== 0x8080) text += invalid;
-        else {
-          c = ((c1 & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F);
-          if (c < 0x0800 || (c >= 0xD800 && c <= 0xDFFF)) text += invalid;
-          else {
-            text += fromCharCode(c);
-            i += 2;
-          }
-        }
-      }
-    }
-
-    // 4 bytes
-    else if ((c1 & 0xF8) == 0xF0) {
-      if (i + 3 >= count) text += invalid;
-      else {
-        c2 = bytes[i + offset + 1];
-        c3 = bytes[i + offset + 2];
-        c4 = bytes[i + offset + 3];
-        if (((c2 | (c3 << 8) | (c4 << 16)) & 0xC0C0C0) !== 0x808080) text += invalid;
-        else {
-          c = ((c1 & 0x07) << 0x12) | ((c2 & 0x3F) << 0x0C) | ((c3 & 0x3F) << 0x06) | (c4 & 0x3F);
-          if (c < 0x10000 || c > 0x10FFFF) text += invalid;
-          else {
-            c -= 0x10000;
-            text += fromCharCode((c >> 10) + 0xD800, (c & 0x3FF) + 0xDC00);
-            i += 3;
-          }
-        }
-      }
-    }
-
-    else text += invalid;
-  }
-
-  return text;
-}
-
-function writeString(bb: ByteBuffer, text: string): void {
-  // Sadly a hand-coded UTF8 encoder is much faster than TextEncoder+set in V8
-  let n = text.length;
-  let byteCount = 0;
-
-  // Write the byte count first
-  for (let i = 0; i < n; i++) {
-    let c = text.charCodeAt(i);
-    if (c >= 0xD800 && c <= 0xDBFF && i + 1 < n) {
-      c = (c << 10) + text.charCodeAt(++i) - 0x35FDC00;
-    }
-    byteCount += c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4;
-  }
-  writeVarint32(bb, byteCount);
-
-  let offset = grow(bb, byteCount);
-  let bytes = bb.bytes;
-
-  // Then write the bytes
-  for (let i = 0; i < n; i++) {
-    let c = text.charCodeAt(i);
-    if (c >= 0xD800 && c <= 0xDBFF && i + 1 < n) {
-      c = (c << 10) + text.charCodeAt(++i) - 0x35FDC00;
-    }
-    if (c < 0x80) {
-      bytes[offset++] = c;
-    } else {
-      if (c < 0x800) {
-        bytes[offset++] = ((c >> 6) & 0x1F) | 0xC0;
-      } else {
-        if (c < 0x10000) {
-          bytes[offset++] = ((c >> 12) & 0x0F) | 0xE0;
-        } else {
-          bytes[offset++] = ((c >> 18) & 0x07) | 0xF0;
-          bytes[offset++] = ((c >> 12) & 0x3F) | 0x80;
-        }
-        bytes[offset++] = ((c >> 6) & 0x3F) | 0x80;
-      }
-      bytes[offset++] = (c & 0x3F) | 0x80;
-    }
-  }
-}
 
 function writeByteBuffer(bb: ByteBuffer, buffer: ByteBuffer): void {
   let offset = grow(bb, buffer.limit);
@@ -8003,96 +8010,6 @@ function writeByte(bb: ByteBuffer, value: number): void {
   let offset = grow(bb, 1);
   bb.bytes[offset] = value;
 }
-
-function readFloat(bb: ByteBuffer): number {
-  let offset = advance(bb, 4);
-  let bytes = bb.bytes;
-
-  // Manual copying is much faster than subarray+set in V8
-  f32_u8[0] = bytes[offset++];
-  f32_u8[1] = bytes[offset++];
-  f32_u8[2] = bytes[offset++];
-  f32_u8[3] = bytes[offset++];
-  return f32[0];
-}
-
-function writeFloat(bb: ByteBuffer, value: number): void {
-  let offset = grow(bb, 4);
-  let bytes = bb.bytes;
-  f32[0] = value;
-
-  // Manual copying is much faster than subarray+set in V8
-  bytes[offset++] = f32_u8[0];
-  bytes[offset++] = f32_u8[1];
-  bytes[offset++] = f32_u8[2];
-  bytes[offset++] = f32_u8[3];
-}
-
-function readDouble(bb: ByteBuffer): number {
-  let offset = advance(bb, 8);
-  let bytes = bb.bytes;
-
-  // Manual copying is much faster than subarray+set in V8
-  f64_u8[0] = bytes[offset++];
-  f64_u8[1] = bytes[offset++];
-  f64_u8[2] = bytes[offset++];
-  f64_u8[3] = bytes[offset++];
-  f64_u8[4] = bytes[offset++];
-  f64_u8[5] = bytes[offset++];
-  f64_u8[6] = bytes[offset++];
-  f64_u8[7] = bytes[offset++];
-  return f64[0];
-}
-
-function writeDouble(bb: ByteBuffer, value: number): void {
-  let offset = grow(bb, 8);
-  let bytes = bb.bytes;
-  f64[0] = value;
-
-  // Manual copying is much faster than subarray+set in V8
-  bytes[offset++] = f64_u8[0];
-  bytes[offset++] = f64_u8[1];
-  bytes[offset++] = f64_u8[2];
-  bytes[offset++] = f64_u8[3];
-  bytes[offset++] = f64_u8[4];
-  bytes[offset++] = f64_u8[5];
-  bytes[offset++] = f64_u8[6];
-  bytes[offset++] = f64_u8[7];
-}
-
-function readInt32(bb: ByteBuffer): number {
-  let offset = advance(bb, 4);
-  let bytes = bb.bytes;
-  return (
-    bytes[offset] |
-    (bytes[offset + 1] << 8) |
-    (bytes[offset + 2] << 16) |
-    (bytes[offset + 3] << 24)
-  );
-}
-
-function writeInt32(bb: ByteBuffer, value: number): void {
-  let offset = grow(bb, 4);
-  let bytes = bb.bytes;
-  bytes[offset] = value;
-  bytes[offset + 1] = value >> 8;
-  bytes[offset + 2] = value >> 16;
-  bytes[offset + 3] = value >> 24;
-}
-
-function readInt64(bb: ByteBuffer, unsigned: boolean): Long {
-  return {
-    low: readInt32(bb),
-    high: readInt32(bb),
-    unsigned,
-  };
-}
-
-function writeInt64(bb: ByteBuffer, value: Long): void {
-  writeInt32(bb, value.low);
-  writeInt32(bb, value.high);
-}
-
 function readVarint32(bb: ByteBuffer): number {
   let c = 0;
   let value = 0;
@@ -8154,7 +8071,6 @@ function writeVarint64(bb: ByteBuffer, value: Long): void {
   let part1 = ((value.low >>> 28) | (value.high << 4)) >>> 0;
   let part2 = value.high >>> 24;
 
-  // ref: src/google/protobuf/io/coded_stream.cc
   let size =
     part2 === 0 ?
       part1 === 0 ?
@@ -8180,7 +8096,6 @@ function writeVarint64(bb: ByteBuffer, value: Long): void {
     case 3: bytes[offset + 2] = size !== 3 ? (part0 >>> 14) | 0x80 : (part0 >>> 14) & 0x7F;
     case 2: bytes[offset + 1] = size !== 2 ? (part0 >>> 7) | 0x80 : (part0 >>> 7) & 0x7F;
     case 1: bytes[offset] = size !== 1 ? part0 | 0x80 : part0 & 0x7F;
-    default: break;
   }
 }
 
@@ -8233,6 +8148,65 @@ export async function sha512(value: Uint8Array): Promise<Uint8Array> {
   const hash = await crypto.subtle.digest(ShaAlgorithms.Sha512, value);
 
   return new Uint8Array(hash);
+}
+
+```
+
+`zil-pay/crypto/tx.ts`:
+
+```ts
+import type { TxType } from 'micro-eth-signer/esm/tx';
+import { ZILTransactionRequest, ZILTransactionReceipt } from './zilliqa_tx';
+import { Transaction } from 'micro-eth-signer';
+import { KeyPair } from './keypair';
+import { randomBytes } from './random';
+
+export interface TransactionMetadata {
+  chainHash: number;
+  hash?: string;
+  info?: string;
+  icon?: string;
+  title?: string;
+  signer?: string; 
+  tokenInfo?: [string, number, string]; 
+}
+
+export class TransactionRequest {
+  constructor(
+    public metadata: TransactionMetadata,
+    public scilla?: ZILTransactionRequest,
+    public evm?: Transaction<TxType>,
+  ) {}
+
+  async sign(keypair: KeyPair) {
+    if (this.scilla) {
+      const receipt = await this.scilla.sign(keypair);
+
+      return new TransactionReceipt(
+        this.metadata,
+        receipt,
+      );
+    } else if (this.evm) {
+      const entropy = randomBytes(128);
+      const receipt = this.evm.signBy(keypair.privateKey, entropy);
+
+      return new TransactionReceipt(
+        this.metadata,
+        undefined,
+        receipt,
+      );
+    }
+
+    throw new Error("Invlid tx type");
+  }
+}
+
+export class TransactionReceipt {
+  constructor(
+    public metadata: TransactionMetadata,
+    public scilla?: ZILTransactionReceipt,
+    public evm?: Transaction<TxType>,
+  ) {}
 }
 
 ```
@@ -8360,6 +8334,110 @@ export async function verify(
   return rDash === r;
 }
 
+
+```
+
+`zil-pay/crypto/zilliqa_tx.ts`:
+
+```ts
+import type { KeyPair } from "./keypair";
+import { bigIntToUint8ArrayBigEndian, uint8ArrayToBigIntBigEndian } from "./number";
+import { encodeProtoTransactionCoreInfo, type Long, type ProtoTransactionCoreInfo } from "./proto/zq1";
+
+export function bigintToLong(value: bigint): Long {
+  const low = Number(value & 0xFFFFFFFFn);
+  const high = Number((value >> 32n) & 0xFFFFFFFFn);
+  return { low, high, unsigned: true };
+}
+
+export function versionFromChainId(chainId: number): number {
+  return (chainId << 16) | 1;
+}
+
+export function chainIdFromVersion(version: number): number {
+  return (version >> 16) & 0xFFFF;
+}
+
+export class ZILTransactionRequest {
+  constructor(
+    public chainId: number,
+    public nonce: bigint,
+    public gasPrice: bigint,
+    public gasLimit: bigint,
+    public toAddr: Uint8Array,
+    public amount: bigint,
+    public code: Uint8Array = new Uint8Array(),
+    public data: Uint8Array = new Uint8Array()
+  ) {}
+
+  toProto(pubKey: Uint8Array): ProtoTransactionCoreInfo {
+    return {
+      version: versionFromChainId(this.chainId),
+      nonce: bigintToLong(this.nonce),
+      toaddr: this.toAddr,
+      senderpubkey: { data: pubKey },
+      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, 16) }, 
+      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, 16) }, 
+      gaslimit: bigintToLong(this.gasLimit),
+      code: this.code.length > 0 ? this.code : undefined,
+      data: this.data.length > 0 ? this.data : undefined,
+    };
+  }
+
+  encode(pubKey: Uint8Array): Uint8Array {
+    const proto = this.toProto(pubKey);
+    return encodeProtoTransactionCoreInfo(proto);
+  }
+
+  async sign(keypair: KeyPair) {
+    const proto = this.toProto(keypair.pubKey);
+    const bytes = encodeProtoTransactionCoreInfo(proto);
+    const sig = await keypair.signMessage(bytes);
+
+    return new ZILTransactionReceipt(
+      proto.version ?? versionFromChainId(this.chainId),
+      this.nonce,
+      bigIntToUint8ArrayBigEndian(this.gasPrice, 16),
+      this.gasLimit,
+      this.toAddr,
+      bigIntToUint8ArrayBigEndian(this.amount, 16),
+      keypair.pubKey,
+      this.code,
+      this.data,
+      sig,
+      false,
+    );
+  }
+}
+
+export class ZILTransactionReceipt {
+  constructor(
+    public version: number,
+    public nonce: bigint,
+    public gasPrice: Uint8Array,
+    public gasLimit: bigint,
+    public toAddr: Uint8Array,
+    public amount: Uint8Array,
+    public pubKey: Uint8Array,
+    public code: Uint8Array,
+    public data: Uint8Array,
+    public signature: Uint8Array,
+    public priority: boolean
+  ) {}
+
+  toRequest(): ZILTransactionRequest {
+    return new ZILTransactionRequest(
+      chainIdFromVersion(this.version),
+      this.nonce,
+      uint8ArrayToBigIntBigEndian(this.gasPrice), 
+      this.gasLimit,
+      this.toAddr,
+      uint8ArrayToBigIntBigEndian(this.amount), 
+      this.code,
+      this.data
+    );
+  }
+}
 
 ```
 
