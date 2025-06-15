@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest";
+import { Signature } from '@noble/secp256k1';
 import { KeyPair, AddressType } from "../../crypto/keypair";
 import { Bip39 } from "../../crypto/bip39";
 import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 import { utils } from "aes-js";
 import { WORDS, KEY, IMPORTED_KEY } from "../data";
+import { verify } from "../../crypto/zilliqa/schnorr";
 
 describe("KeyPair", () => {
   describe("fromPrivateKey", () => {
@@ -65,7 +67,8 @@ describe("KeyPair", () => {
       const signature = await keyPair.signMessage(message);
 
       expect(signature).toBeInstanceOf(Uint8Array);
-      expect(signature.length).toBe(64); // Zilliqa schnorr signature length
+      expect(signature.length).toBe(64);
+      expect(await verify(message, keyPair.pubKey, Signature.fromBytes(signature))).toBeTruthy();
     });
 
     it("should sign message for Ethereum correctly", async () => {
@@ -73,8 +76,6 @@ describe("KeyPair", () => {
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
       const message = utils.utf8.toBytes("test message");
       const signature = await keyPair.signMessage(message);
-
-      console.log(signature);
 
       expect(signature).toBeInstanceOf(Uint8Array);
       expect(signature.length).toBe(65); // Ethereum signature length (r,s,v)
