@@ -1,8 +1,8 @@
-import type { TxType } from 'micro-eth-signer/esm/tx';
-import { ZILTransactionRequest, ZILTransactionReceipt } from './zilliqa_tx';
-import { Transaction } from 'micro-eth-signer';
-import { KeyPair } from './keypair';
-import { randomBytes } from './random';
+import type { TxType } from "micro-eth-signer/esm/tx";
+import { ZILTransactionRequest, ZILTransactionReceipt } from "./zilliqa_tx";
+import { Transaction } from "micro-eth-signer";
+import { KeyPair } from "./keypair";
+import { randomBytes } from "./random";
 
 export interface TransactionMetadata {
   chainHash: number;
@@ -10,8 +10,8 @@ export interface TransactionMetadata {
   info?: string;
   icon?: string;
   title?: string;
-  signer?: string; 
-  tokenInfo?: [string, number, string]; 
+  signer?: string;
+  tokenInfo?: [string, number, string];
 }
 
 export class TransactionRequest {
@@ -25,19 +25,12 @@ export class TransactionRequest {
     if (this.scilla) {
       const receipt = await this.scilla.sign(keypair);
 
-      return new TransactionReceipt(
-        this.metadata,
-        receipt,
-      );
+      return new TransactionReceipt(this.metadata, receipt);
     } else if (this.evm) {
       const entropy = randomBytes(128);
       const receipt = this.evm.signBy(keypair.privateKey, entropy);
 
-      return new TransactionReceipt(
-        this.metadata,
-        undefined,
-        receipt,
-      );
+      return new TransactionReceipt(this.metadata, undefined, receipt);
     }
 
     throw new Error("Invlid tx type");
@@ -50,4 +43,14 @@ export class TransactionReceipt {
     public scilla?: ZILTransactionReceipt,
     public evm?: Transaction<TxType>,
   ) {}
+
+  async verify() {
+    if (this.scilla) {
+      return this.scilla.verify();
+    } else if (this.evm) {
+      return this.evm.verifySignature();
+    }
+
+    throw new Error("Invlid tx type");
+  }
 }

@@ -1,12 +1,19 @@
 import { Signature } from "@noble/secp256k1";
 import type { KeyPair } from "./keypair";
-import { bigIntToUint8ArrayBigEndian, uint8ArrayToBigIntBigEndian } from "./number";
-import { encodeProtoTransactionCoreInfo, type Long, type ProtoTransactionCoreInfo } from "./proto/zq1";
+import {
+  bigIntToUint8ArrayBigEndian,
+  uint8ArrayToBigIntBigEndian,
+} from "./number";
+import {
+  encodeProtoTransactionCoreInfo,
+  type Long,
+  type ProtoTransactionCoreInfo,
+} from "./proto/zq1";
 import { verify } from "./zilliqa/schnorr";
 
 export function bigintToLong(value: bigint): Long {
-  const low = Number(value & 0xFFFFFFFFn);
-  const high = Number((value >> 32n) & 0xFFFFFFFFn);
+  const low = Number(value & 0xffffffffn);
+  const high = Number((value >> 32n) & 0xffffffffn);
   return { low, high, unsigned: true };
 }
 
@@ -15,7 +22,7 @@ export function versionFromChainId(chainId: number): number {
 }
 
 export function chainIdFromVersion(version: number): number {
-  return (version >> 16) & 0xFFFF;
+  return (version >> 16) & 0xffff;
 }
 
 export class ZILTransactionRequest {
@@ -27,7 +34,7 @@ export class ZILTransactionRequest {
     public toAddr: Uint8Array,
     public amount: bigint,
     public code: Uint8Array = new Uint8Array(),
-    public data: Uint8Array = new Uint8Array()
+    public data: Uint8Array = new Uint8Array(),
   ) {}
 
   toProto(pubKey: Uint8Array): ProtoTransactionCoreInfo {
@@ -36,8 +43,8 @@ export class ZILTransactionRequest {
       nonce: bigintToLong(this.nonce),
       toaddr: this.toAddr,
       senderpubkey: { data: pubKey },
-      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, 16) }, 
-      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, 16) }, 
+      amount: { data: bigIntToUint8ArrayBigEndian(this.amount, 16) },
+      gasprice: { data: bigIntToUint8ArrayBigEndian(this.gasPrice, 16) },
       gaslimit: bigintToLong(this.gasLimit),
       code: this.code.length > 0 ? this.code : undefined,
       data: this.data.length > 0 ? this.data : undefined,
@@ -82,7 +89,7 @@ export class ZILTransactionReceipt {
     public code: Uint8Array,
     public data: Uint8Array,
     public signature: Uint8Array,
-    public priority: boolean
+    public priority: boolean,
   ) {}
 
   toProto(): ProtoTransactionCoreInfo {
@@ -102,7 +109,7 @@ export class ZILTransactionReceipt {
   async verify(): Promise<boolean> {
     const proto = this.toProto();
     const bytes = encodeProtoTransactionCoreInfo(proto);
-    const signature = Signature.fromBytes(this.signature); 
+    const signature = Signature.fromBytes(this.signature);
 
     return verify(bytes, this.pubKey, signature);
   }
