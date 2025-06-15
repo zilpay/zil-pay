@@ -1,5 +1,5 @@
-import { getPublicKey } from '@noble/secp256k1';
-import { utils } from '@noble/secp256k1';
+import { getPublicKey } from "@noble/secp256k1";
+import { utils } from "@noble/secp256k1";
 import {
   bigIntToUint8ArrayBigEndian,
   uint8ArrayToBigIntBigEndian,
@@ -193,4 +193,3 @@ export async function deriveFromPrivateKeyPublicKey(
 
   throw new Error(Bip32ErrorCode.InvalidSlip44);
 }
-

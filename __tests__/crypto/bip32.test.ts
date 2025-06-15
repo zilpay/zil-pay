@@ -41,7 +41,10 @@ describe("BIP-32 Derivation", () => {
 
     const pathETH = new DerivationPath(ETHEREUM, 0);
     const privateKeyETH = await derivePrivateKey(seed, pathETH.getPath());
-    const pubkeyETH = await deriveFromPrivateKeyPublicKey(privateKeyETH, ETHEREUM);
+    const pubkeyETH = await deriveFromPrivateKeyPublicKey(
+      privateKeyETH,
+      ETHEREUM,
+    );
 
     expect(
       "0315bd7b9301a2cde69ef8092d6fb275a077e3c94e5ed166c915426850cf606600",
@@ -49,7 +52,10 @@ describe("BIP-32 Derivation", () => {
 
     const pathZIL = new DerivationPath(ZILLIQA, 0);
     const privateKeyZIL = await derivePrivateKey(seed, pathZIL.getPath());
-    const pubkeyZIL = await deriveFromPrivateKeyPublicKey(privateKeyZIL, ZILLIQA);
+    const pubkeyZIL = await deriveFromPrivateKeyPublicKey(
+      privateKeyZIL,
+      ZILLIQA,
+    );
 
     expect(
       "03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da",

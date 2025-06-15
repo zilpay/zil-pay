@@ -1,9 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { Wallet, WalletTypes, AuthMethod } from "../../background/storage/wallet";
-import { RatesApiOptions, WalletSettings } from "../../background/storage/settings";
+import {
+  Wallet,
+  WalletTypes,
+  AuthMethod,
+} from "../../background/storage/wallet";
+import {
+  RatesApiOptions,
+  WalletSettings,
+} from "../../background/storage/settings";
 import { ChainConfig } from "../../background/storage/chain";
 import { WORD_LIST } from "../crypto/word_list";
-import { CHAINS, PASSWORD } from '../data';
+import { CHAINS, PASSWORD } from "../data";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { utils } from "aes-js";
@@ -11,7 +18,8 @@ import { uint8ArrayToBase64 } from "../../crypto/b64";
 import { randomBytes } from "../../crypto/random";
 
 describe("Wallet", () => {
-  const MNEMONIC = "green process gate doctor slide whip priority shrug diamond crumble average help";
+  const MNEMONIC =
+    "green process gate doctor slide whip priority shrug diamond crumble average help";
   const settings = new WalletSettings({
     cipherOrders: [CipherOrders.NTRUP761],
     hashFnParams: {
@@ -34,8 +42,16 @@ describe("Wallet", () => {
   });
   const chain = new ChainConfig(CHAINS[0]);
   const bip32Accounts = [{ index: 0, name: "account 0" }];
-  const SK_KEY = new Uint8Array(utils.hex.toBytes("e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04"));
-  const PK_KEY = new Uint8Array(utils.hex.toBytes("03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da"));
+  const SK_KEY = new Uint8Array(
+    utils.hex.toBytes(
+      "e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04",
+    ),
+  );
+  const PK_KEY = new Uint8Array(
+    utils.hex.toBytes(
+      "03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da",
+    ),
+  );
 
   describe("revealMnemonic", () => {
     it("reveals mnemonic for SecretPhrase wallet with correct password", async () => {
@@ -50,7 +66,10 @@ describe("Wallet", () => {
         WORD_LIST,
       );
 
-      const mnemonic = await wallet.revealMnemonic(utils.utf8.toBytes(PASSWORD), chain);
+      const mnemonic = await wallet.revealMnemonic(
+        utils.utf8.toBytes(PASSWORD),
+        chain,
+      );
       expect(mnemonic).toBe(MNEMONIC);
     });
 
@@ -68,7 +87,7 @@ describe("Wallet", () => {
       const wrongChain = new ChainConfig(CHAINS[2]);
 
       await expect(
-        wallet.revealMnemonic(utils.utf8.toBytes(PASSWORD), wrongChain)
+        wallet.revealMnemonic(utils.utf8.toBytes(PASSWORD), wrongChain),
       ).rejects.toThrow("invlid chain");
     });
 
@@ -87,8 +106,10 @@ describe("Wallet", () => {
       });
 
       await expect(
-        wallet.revealMnemonic(utils.utf8.toBytes(PASSWORD), chain)
-      ).rejects.toThrow(`Invalid wallet type ${WalletTypes[WalletTypes.SecretKey]}`);
+        wallet.revealMnemonic(utils.utf8.toBytes(PASSWORD), chain),
+      ).rejects.toThrow(
+        `Invalid wallet type ${WalletTypes[WalletTypes.SecretKey]}`,
+      );
     });
   });
 
@@ -125,9 +146,9 @@ describe("Wallet", () => {
       );
       const wrongChain = new ChainConfig(CHAINS[2]);
 
-      await expect(
-        wallet.revealKeypair(0, wrongChain)
-      ).rejects.toThrow("invlid chain");
+      await expect(wallet.revealKeypair(0, wrongChain)).rejects.toThrow(
+        "invlid chain",
+      );
     });
 
     it("throws error for invalid wallet type", async () => {
@@ -144,9 +165,9 @@ describe("Wallet", () => {
         vault: "",
       });
 
-      await expect(
-        wallet.revealKeypair(0, chain)
-      ).rejects.toThrow(`Invalid wallet type ${WalletTypes[WalletTypes.Ledger]}`);
+      await expect(wallet.revealKeypair(0, chain)).rejects.toThrow(
+        `Invalid wallet type ${WalletTypes[WalletTypes.Ledger]}`,
+      );
     });
   });
 
@@ -185,7 +206,7 @@ describe("Wallet", () => {
       });
 
       await expect(
-        wallet.unlock(utils.utf8.toBytes(PASSWORD))
+        wallet.unlock(utils.utf8.toBytes(PASSWORD)),
       ).rejects.toThrow();
     });
   });
