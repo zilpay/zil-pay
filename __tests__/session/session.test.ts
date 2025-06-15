@@ -21,16 +21,14 @@ describe("Session", () => {
     const session = new Session(testUuid);
     await session.setSession(sessionTime, vaultContent);
     await session.clearSession();
-    const result = await session.getVault();
-    expect(result).toBeNull();
+    await expect(session.getVault()).rejects.toThrow("Session does not exist");
   });
 
-  it("getVault returns null after session expires", async () => {
+  it("getVault throws error after session expires", async () => {
     const session = new Session(testUuid);
     await session.setSession(1, vaultContent); // 1 second
     await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
-    const result = await session.getVault();
-    expect(result).toBeNull();
+    await expect(session.getVault()).rejects.toThrow("Session has expired");
     const data = await Runtime.storage.session.get([
       `${SessionStorageKeys.EndSession}:${testUuid}`,
       `${SessionStorageKeys.SessionKey}:${testUuid}`,

@@ -38,7 +38,7 @@ export class Session {
     await Runtime.storage.session.clear();
   }
 
-  async getVault(): Promise<Uint8Array | null> {
+  async getVault(): Promise<Uint8Array> {
     const data = await Runtime.storage.session.get([
       this.getKey(SessionStorageKeys.EndSession),
       this.getKey(SessionStorageKeys.SessionKey),
@@ -46,16 +46,19 @@ export class Session {
     ]);
 
     const endSession = data[this.getKey(SessionStorageKeys.EndSession)];
-    if (!endSession || Date.now() > endSession) {
+    if (!endSession) {
+      throw new Error('Session does not exist');
+    }
+    if (Date.now() > endSession) {
       await this.clearSession();
-      return null;
+      throw new Error('Session has expired');
     }
 
     const sessionKeyBase64 = data[this.getKey(SessionStorageKeys.SessionKey)];
     const vaultCipherBase64 = data[this.getKey(SessionStorageKeys.VaultCipher)];
 
     if (!sessionKeyBase64 || !vaultCipherBase64) {
-      return null;
+      throw new Error('Session data is incomplete');
     }
 
     const sessionKey = base64ToUint8Array(sessionKeyBase64);

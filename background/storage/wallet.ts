@@ -9,6 +9,9 @@ import { Session } from '../secure/session';
 import { ChainConfig } from './chain';
 import { Bip39 } from '../../crypto/bip39';
 import { uuid } from '../../crypto/uuid';
+import { TypeOf } from 'lib/types';
+import { DerivationPath } from 'crypto/bip49';
+import { deriveFromPrivateKeyPublicKey, derivePrivateKey, type KeyPair } from 'crypto/bip32';
 
 export enum WalletTypes {
     Ledger,
@@ -114,4 +117,42 @@ export class Wallet {
 
     return cipher;
   }
+
+  async unlock(password: Uint8Array) {
+    const wordsOrKey = await this.decrypt(password);
+    const sessionTime = this.settings.sessionTime;
+
+    if (TypeOf.isString(wordsOrKey)) {
+      const seed = await Bip39.mnemonicToSeed(String(wordsOrKey));
+
+      await this.#session.setSession(sessionTime, seed);
+    } else if (wordsOrKey instanceof Uint8Array) {
+      await this.#session.setSession(sessionTime, wordsOrKey);
+    } else {
+      throw new Error("unk vault");
+    }
+  }
+
+  async revealKeypair(accountIndex: number, chain: ChainConfig): Promise<KeyPair> {
+    if (chain.hash() !== this.defaultChainHash) {
+      throw new Error("invlid chain");
+    }
+
+    if (this.walletType == WalletTypes.SecretKey) {
+      const vault = await this.#session.getVault();
+      const hdPath = new DerivationPath(chain.slip44, accountIndex);
+      const privateKey = await derivePrivateKey(vault, hdPath.getPath());
+      const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
+
+      return { privateKey, pubKey };
+    }
+
+    if (this.walletType == WalletTypes.SecretKey) {
+      const vault = await this.#session.getVault();
+    } 
+
+    throw new Error(`invalid Wallet type ${WalletTypes[this.walletType]}`);
+  }
+
+  async revealMnemonic(password: Uint8Array) {}
 }

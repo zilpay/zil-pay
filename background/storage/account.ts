@@ -1,8 +1,7 @@
 import { utils } from 'aes-js';
-import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from '../../crypto/bip32';
-import { DerivationPath } from '../../crypto/bip49';
 import { AddressType } from './address-type';
 import { ChainConfig } from './chain';
+import { KeyPair } from 'crypto/keypair';
 
 export interface Bip32Account {
   name: string;
@@ -31,17 +30,15 @@ export class Account {
   }
 
   static async fromBip39(bip32Account: Bip32Account, chain: ChainConfig, seed: Uint8Array): Promise<Account> {
-    const hdPath = new DerivationPath(chain.slip44, bip32Account.index);
-    const privateKey = await derivePrivateKey(seed, hdPath.getPath());
-    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
+    const keyPair = await KeyPair.fromSeed(seed, chain.slip44, bip32Account.index);
     const addrType = chain.addressType();
-    const addr = await chain.addrFromPubKey(pubKey);
+    const addr = await chain.addrFromPubKey(keyPair.pubKey);
     const account = new Account({
       addr,
       addrType,
       name: bip32Account.name,
       index: bip32Account.index,
-      pubKey: utils.hex.fromBytes(pubKey),
+      pubKey: utils.hex.fromBytes(keyPair.pubKey),
       chainHash: chain.hash(),
       slip44: chain.slip44,
       chainId: chain.chainId,
@@ -51,16 +48,16 @@ export class Account {
   }
 
   static async fromPrivateKey(privateKey: Uint8Array, chain: ChainConfig, name: string): Promise<Account> {
-    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, chain.slip44);
+    const keyPair = await KeyPair.fromPrivateKey(privateKey, chain.slip44);
     const addrType = chain.addressType();
-    const addr = await chain.addrFromPubKey(pubKey);
+    const addr = await chain.addrFromPubKey(keyPair.pubKey);
 
     const account = new Account({
       addr,
       addrType,
       name: name,
       index: 0,
-      pubKey: utils.hex.fromBytes(pubKey),
+      pubKey: utils.hex.fromBytes(keyPair.pubKey),
       chainHash: chain.hash(),
       slip44: chain.slip44,
       chainId: chain.chainId,

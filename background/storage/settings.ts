@@ -16,6 +16,7 @@ export class WalletSettings {
   maxConnections: number;
   requestTimeoutSecs: number;
   ratesApiOptions: RatesApiOptions;
+  sessionTime: number;
 
   constructor(data: Record<string, unknown>) {
     this.cipherOrders = data.cipherOrders as CipherOrders[];
@@ -28,5 +29,6 @@ export class WalletSettings {
     this.maxConnections = data.maxConnections as number;
     this.requestTimeoutSecs = data.requestTimeoutSecs as number;
     this.ratesApiOptions = data.ratesApiOptions as RatesApiOptions;
+    this.sessionTime = data.sessionTime as number ?? 3600;
   }
 }
