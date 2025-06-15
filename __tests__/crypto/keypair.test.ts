@@ -6,7 +6,6 @@ import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 import { utils } from "aes-js";
 import { WORDS, KEY, IMPORTED_KEY } from "../data";
 import { verify } from "../../crypto/zilliqa/schnorr";
-import { randomBytes } from "../../crypto/random";
 
 describe("KeyPair", () => {
   describe("fromPrivateKey", () => {
@@ -187,9 +186,7 @@ describe("KeyPair", () => {
   });
 
     it("should sign typed data EIP-712 successfully for Ethereum", async () => {
-    const privateKey = randomBytes(32);
-    const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
-
+    const keyPair = await KeyPair.generate(ETHEREUM);
     const address = await keyPair.addrFromPubKey();
 
     const typedData = {
@@ -227,8 +224,7 @@ describe("KeyPair", () => {
   });
 
   it("should throw error for EIP-712 signing with Zilliqa (unsupported type)", async () => {
-    const privateKey = randomBytes(32);
-    const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+    const keyPair = await KeyPair.generate(ZILLIQA);
     const typedData = {
       types: {
         EIP712Domain: [

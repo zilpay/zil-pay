@@ -14,6 +14,7 @@ import {
 } from "micro-eth-signer/typed-data.js";
 import { stripHexPrefix } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
+import { randomBytes } from "./random";
 
 export enum AddressType {
   Bech32,
@@ -37,6 +38,13 @@ export class KeyPair {
   }
 
   static async fromPrivateKey(privateKey: Uint8Array, slip44: number) {
+    const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
+
+    return new KeyPair(privateKey, pubKey, slip44);
+  }
+
+  static async generate(slip44: number) {
+    const privateKey = randomBytes(32);
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
 
     return new KeyPair(privateKey, pubKey, slip44);
