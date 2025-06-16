@@ -1,4 +1,4 @@
-import { ChainConfig } from '../../background/storage/chain';
+import type { ChainConfig } from "background/storage";
 
 export interface JsonRPCRequest {
   id: number;
