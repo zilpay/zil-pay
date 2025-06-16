@@ -1,5 +1,4 @@
 import type { Bip32Account } from './account';
-import { utils } from 'aes-js';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
 import { generateSalt } from '../../lib/runtime';
 import { Account } from './account';
@@ -11,6 +10,7 @@ import { Bip39 } from '../../crypto/bip39';
 import { uuid } from '../../crypto/uuid';
 import { TypeOf } from 'lib/types';
 import { KeyPair } from 'crypto/keypair';
+import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
 
 export enum WalletTypes {
     Ledger,
@@ -83,8 +83,8 @@ export class Wallet {
       accounts: [],
       authType: AuthMethod.None,
     });
-    const passwordBytes = utils.utf8.toBytes(password);
-    const wordsBytes = utils.utf8.toBytes(words);
+    const passwordBytes = utf8ToUint8Array(password);
+    const wordsBytes = utf8ToUint8Array(words);
 
     wallet.accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed)));
     await wallet.encrypt(passwordBytes, wordsBytes);
@@ -101,7 +101,7 @@ export class Wallet {
     if (this.walletType == WalletTypes.SecretKey) {      
       return decrypted;
     } else if (this.walletType == WalletTypes.SecretPhrase) {
-      return utils.utf8.fromBytes(decrypted);
+      return uint8ArrayToUtf8(decrypted);
     } else {
       throw new Error("unknown wallet type");
     }

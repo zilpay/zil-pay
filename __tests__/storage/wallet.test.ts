@@ -26,7 +26,7 @@ describe("Wallet", () => {
       memory: 4096,
       iterations: 3,
       threads: 1,
-      secret: new Uint8Array(0),
+      secret: "",
       hashType: 0,
       hashSize: ShaAlgorithms.Sha512,
     },

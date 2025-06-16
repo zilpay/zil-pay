@@ -50,6 +50,10 @@ export function uint8ArrayToHex(uint8Array: Uint8Array, prefix: boolean = false)
  * @throws {Error} if the string has an odd number of characters or contains invalid hex characters.
  */
 export function hexToUint8Array(hexString: string): Uint8Array {
+    if (hexString == '' || hexString == HEX_PREFIX) {
+        return new Uint8Array();
+    }
+
     const str = stripHexPrefix(hexString);
 
     if (str.length % 2 !== 0) {
