@@ -84,12 +84,8 @@ export async function buildBatchGasRequest(
     requests.push(await buildNonceRequest(sender.type, ethAddress));
     requests.push(RpcProvider.buildPayload(EvmMethods.GasPrice, []));
     
-    try {
-        const requestEstimateGas = RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.evm]);
-        requests.push(requestEstimateGas);
-    } catch (e: any) {
-         throw new TransactionError(`Failed to serialize transaction: ${e.message}`);
-    }
+    const requestEstimateGas = RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.evm]);
+    requests.push(requestEstimateGas);
 
     if (features.includes(EIP1559)) {
         requests.push(RpcProvider.buildPayload(EvmMethods.MaxPriorityFeePerGas, []));
@@ -116,7 +112,6 @@ export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult)
     }
 
     const priorityFee = BigInt(lastRewardArr[1]);
-
     const maxFee = baseFee * 2n + priorityFee;
 
     return {
