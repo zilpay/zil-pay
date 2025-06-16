@@ -9,17 +9,18 @@ import {
   WORDS,
   EXTENSION_ID,
 } from "../data";
-import { utils } from "aes-js";
 import { pbkdf2 } from "../../crypto/pbkdf2";
 import { base64ToUint8Array } from "../../crypto/b64";
 import { ShaAlgorithms } from "../../config/pbkdf2";
+import { uint8ArrayToUtf8, utf8ToUint8Array } from "../../lib/utils/utf8";
+import { uint8ArrayToHex } from "../../lib/utils/hex";
 
 test("decrypt Storage v3 AES-v3", async () => {
-  const salt = utils.utf8.toBytes(EXTENSION_ID);
+  const salt = utf8ToUint8Array(EXTENSION_ID);
   const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(":");
   const vaultBase64 = STORAGE_V3.vault;
   const vaultBytes = base64ToUint8Array(vaultBase64);
-  const passwordBytes = utils.utf8.toBytes(PASSWORD);
+  const passwordBytes = utf8ToUint8Array(PASSWORD);
   const key = await pbkdf2(
     passwordBytes,
     salt,
@@ -28,15 +29,15 @@ test("decrypt Storage v3 AES-v3", async () => {
   );
   const key32 = await sha256(key);
   const decryptedBytes = AESCipherV3.decrypt(vaultBytes, key32);
-  const decrypted = utils.utf8.fromBytes(decryptedBytes);
+  const decrypted = uint8ArrayToUtf8(decryptedBytes);
 
   expect(decrypted).toEqual(WORDS);
 });
 
 test("decrypt accounts Storage v3 AES-v3", async () => {
-  const salt = utils.utf8.toBytes(EXTENSION_ID);
+  const salt = utf8ToUint8Array(EXTENSION_ID);
   const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(":");
-  const passwordBytes = utils.utf8.toBytes(PASSWORD);
+  const passwordBytes = utf8ToUint8Array(PASSWORD);
   const key = await pbkdf2(
     passwordBytes,
     salt,
@@ -49,7 +50,7 @@ test("decrypt accounts Storage v3 AES-v3", async () => {
   const privKeyBase64 = importedAccount.privKey;
   const privKeyBytes = base64ToUint8Array(privKeyBase64);
   const decryptedBytes = AESCipherV3.decrypt(privKeyBytes, key32);
-  const decryptedPrivKey = utils.hex.fromBytes(decryptedBytes);
+  const decryptedPrivKey = uint8ArrayToHex(decryptedBytes);
   expect(decryptedPrivKey).toEqual(IMPORTED_KEY);
 });
 
@@ -103,11 +104,11 @@ test("test AES-v2", async () => {
 
 test("decrypt Storage v2 AES-v2", async () => {
   const vault = STORAGE_V2.vault;
-  const passwordBytes = utils.utf8.toBytes(PASSWORD);
+  const passwordBytes = utf8ToUint8Array(PASSWORD);
   const keyHashBytes = await sha256(passwordBytes);
 
-  const keyHashHex = utils.hex.fromBytes(keyHashBytes);
-  const keyForEvpKDF = utils.utf8.toBytes(keyHashHex);
+  const keyHashHex = uint8ArrayToHex(keyHashBytes);
+  const keyForEvpKDF = utf8ToUint8Array(keyHashHex);
 
   const vaultBytes = base64ToUint8Array(vault);
   const decrypted = await AESCipherV2.decrypt(vaultBytes, keyForEvpKDF);
@@ -121,11 +122,11 @@ test("decrypt accounts Storage v2 AES-v2", async () => {
   const importedAccount = identities[1];
   const privKey = importedAccount.privKey;
 
-  const passwordBytes = utils.utf8.toBytes(PASSWORD);
+  const passwordBytes = utf8ToUint8Array(PASSWORD);
   const keyHashBytes = await sha256(passwordBytes);
 
-  const keyHashHex = utils.hex.fromBytes(keyHashBytes);
-  const keyForEvpKDF = utils.utf8.toBytes(keyHashHex);
+  const keyHashHex = uint8ArrayToHex(keyHashBytes);
+  const keyForEvpKDF = utf8ToUint8Array(keyHashHex);
 
   const privKeyBytes = base64ToUint8Array(privKey);
   const decrypted = await AESCipherV2.decrypt(privKeyBytes, keyForEvpKDF);
