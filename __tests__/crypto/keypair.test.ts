@@ -1,22 +1,24 @@
 import { describe, it, expect } from "vitest";
 import { Signature } from "@noble/secp256k1";
-import { KeyPair, AddressType } from "../../crypto/keypair";
+import { KeyPair } from "../../crypto/keypair";
 import { Bip39 } from "../../crypto/bip39";
 import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 import { utils } from "aes-js";
 import { WORDS, KEY, IMPORTED_KEY } from "../data";
 import { verify } from "../../crypto/zilliqa/schnorr";
+import { Address, AddressType } from "../../crypto/address";
 
 describe("KeyPair", () => {
   describe("fromPrivateKey", () => {
     it("should create KeyPair for Zilliqa with correct address", async () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ZILLIQA);
       expect(keyPair.addressType()).toBe(AddressType.Bech32);
       expect(keyPair.privateKey).toEqual(privateKey);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toZilBech32()).toBe(
         "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
       );
     });
@@ -24,11 +26,12 @@ describe("KeyPair", () => {
     it("should create KeyPair for Ethereum with correct address", async () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ETHEREUM);
       expect(keyPair.addressType()).toBe(AddressType.EthCheckSum);
       expect(keyPair.privateKey).toEqual(privateKey);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toEthChecksum()).toBe(
         "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825",
       );
     });
@@ -38,11 +41,12 @@ describe("KeyPair", () => {
     it("should create KeyPair for Zilliqa from seed with correct address", async () => {
       const seed = await Bip39.mnemonicToSeed(WORDS, "");
       const keyPair = await KeyPair.fromSeed(seed, ZILLIQA, 0);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ZILLIQA);
       expect(keyPair.addressType()).toBe(AddressType.Bech32);
       expect(utils.hex.fromBytes(keyPair.privateKey)).toBe(KEY);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toZilBech32()).toBe(
         "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y",
       );
     });
@@ -50,10 +54,11 @@ describe("KeyPair", () => {
     it("should create KeyPair for Ethereum from seed with correct address", async () => {
       const seed = await Bip39.mnemonicToSeed(WORDS, "");
       const keyPair = await KeyPair.fromSeed(seed, ETHEREUM, 0);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ETHEREUM);
       expect(keyPair.addressType()).toBe(AddressType.EthCheckSum);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toEthChecksum()).toBe(
         "0xAEC7595CA9A57be828493bb73f07fA335a85B41d",
       );
     });
@@ -128,7 +133,7 @@ describe("KeyPair", () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
       const signature = new Uint8Array(65); // Dummy signature
-      const address = "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825";
+      const address = await Address.fromStr("0x709678c07cfCAFB4bb49a6b1d57b1db378e27825");
 
       await expect(
         keyPair.verifyTypedEIP712(signature, typedData, address),
@@ -148,7 +153,7 @@ describe("KeyPair", () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
       const signature = keyPair.signDataEIP712(typedData);
-      const address = await keyPair.addrFromPubKey();
+      const address = await keyPair.address();
 
       const isValid = await keyPair.verifyTypedEIP712(
         signature,
@@ -174,7 +179,7 @@ describe("KeyPair", () => {
         message: differentMessage,
       };
       const invalidSignature = keyPair.signDataEIP712(invalidTypedData);
-      const address = await keyPair.addrFromPubKey();
+      const address = await keyPair.address();
 
       const isValid = await keyPair.verifyTypedEIP712(
         invalidSignature,
@@ -187,7 +192,7 @@ describe("KeyPair", () => {
 
   it("should sign typed data EIP-712 successfully for Ethereum", async () => {
     const keyPair = await KeyPair.generate(ETHEREUM);
-    const address = await keyPair.addrFromPubKey();
+    const address = await keyPair.address();
 
     const typedData = {
       types: {
@@ -211,7 +216,7 @@ describe("KeyPair", () => {
       },
       message: {
         name: "Bob",
-        wallet: address,
+        wallet: await address.toEthChecksum(),
       },
     };
 

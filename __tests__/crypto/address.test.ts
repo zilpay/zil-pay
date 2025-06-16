@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { Address } from '../../crypto/address';
-import { AddressType, KeyPair } from '../../crypto/keypair';
+import { Address, AddressType } from '../../crypto/address';
+import { KeyPair } from '../../crypto/keypair';
 import { ZILLIQA, ETHEREUM } from '../../config/slip44';
 import { utils } from 'aes-js';
 import { toBech32Address } from '../../lib/zilliqa';

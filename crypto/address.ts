@@ -1,8 +1,13 @@
 import { addr as ethAddr } from 'micro-eth-signer';
 import { fromBech32Address, fromZilPubKey, hasHexPrefix, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
-import { AddressType, KeyPair } from "./keypair";
+import { KeyPair } from "./keypair";
 import { HRP } from 'lib/zilliqa/config';
 import { utils } from "aes-js";
+
+export enum AddressType {
+  Bech32,
+  EthCheckSum,
+}
 
 export class Address {
   readonly #bytes: Uint8Array;

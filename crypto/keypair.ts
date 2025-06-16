@@ -3,9 +3,7 @@ import type { TypedData } from "micro-eth-signer/typed-data.js";
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
-import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
 import { utils } from "aes-js";
-import { addr } from "micro-eth-signer";
 import { sign, verify } from "./zilliqa/schnorr";
 import {
   personal,
@@ -15,11 +13,7 @@ import {
 import { stripHexPrefix } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";
-
-export enum AddressType {
-  Bech32,
-  EthCheckSum,
-}
+import { Address, AddressType } from "./address";
 
 export class KeyPair {
   #privateKey: Uint8Array;
@@ -80,14 +74,8 @@ export class KeyPair {
     return KeyPair.addressType(this.#slip44);
   }
 
-  async addrFromPubKey(): Promise<string> {
-    switch (this.addressType()) {
-      case AddressType.Bech32:
-        const base16 = await fromZilPubKey(this.pubKey);
-        return await toBech32Address(utils.hex.fromBytes(base16));
-      case AddressType.EthCheckSum:
-        return addr.fromPublicKey(this.pubKey);
-    }
+  async address(): Promise<Address> {
+    return await Address.fromPubKey(this.pubKey, this.slip44);
   }
 
   async signMessage(msg: Uint8Array) {
@@ -114,12 +102,14 @@ export class KeyPair {
   async verifyTypedEIP712(
     signature: Uint8Array,
     typedData: TypedData<any, any>,
-    address: string,
+    address: Address,
   ): Promise<boolean> {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
         const sigHex = `0x${utils.hex.fromBytes(signature)}`;
-        return verifyTyped(sigHex, typedData, address);
+        const ethChecsumAddr = await address.toEthChecksum();
+
+        return verifyTyped(sigHex, typedData, ethChecsumAddr);
       default:
         throw new Error("Unsupported");
     }
@@ -130,8 +120,9 @@ export class KeyPair {
       case AddressType.Bech32:
         return await verify(msg, this.pubKey, Signature.fromBytes(sig));
       case AddressType.EthCheckSum:
-        const address = await this.addrFromPubKey();
-        return personal.verify(utils.hex.fromBytes(sig), msg, address);
+        const address = await this.address();
+        const ethChecsum = await address.toEthChecksum();
+        return personal.verify(utils.hex.fromBytes(sig), msg, ethChecsum);
     }
   }
 }

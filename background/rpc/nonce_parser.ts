@@ -1,6 +1,6 @@
 import { RpcProvider, type JsonRPCRequest } from './provider';
 import { EvmMethods, ZilMethods } from '../../config/jsonrpc';
-import { AddressType } from '../../crypto/keypair';
+import { AddressType } from '../../crypto/address';
 import { addr } from 'micro-eth-signer';
 import { fromBech32Address } from '../../lib/zilliqa';
 import { TypeOf } from 'lib/types';

@@ -10,7 +10,7 @@ import {
 } from "../../background/storage/wallet";
 import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
-import { AddressType } from "../../crypto/keypair";
+import { AddressType } from "../../crypto/address";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";

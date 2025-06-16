@@ -1,7 +1,7 @@
 import "../setupTests";
 import { describe, it, expect } from "vitest";
 import { migrateToV4 } from "../../background/secure/migrator";
-import { AddressType } from "../../crypto/keypair";
+import { AddressType } from "../../crypto/address";
 import {
   BackgroundState,
   AppearancesTheme,
