@@ -2,6 +2,7 @@ import { assert } from 'lib/runtime/assert';
 import { CHARSET, HRP, GENERATOR } from 'lib/zilliqa/config';
 import { toChecksumHexAddress } from 'lib/zilliqa/checksum';
 import { utils } from 'aes-js';
+import { TypeOf } from 'lib/types';
 
 
 /**
@@ -193,7 +194,7 @@ function hasHexPrefix(str: string): boolean {
  * @returns True if the string is a valid hexadecimal address, false otherwise.
  */
 function isValidHexAddress(address: string): boolean {
-    return !address || typeof address !== 'string' || (!hasHexPrefix(address) ? address.length !== 40 : address.length !== 42) || !/^[0-9a-fA-F]+$/.test(hasHexPrefix(address) ? address.slice(2) : address);
+    return !address || !TypeOf.isString(address) || (!hasHexPrefix(address) ? address.length !== 40 : address.length !== 42) || !/^[0-9a-fA-F]+$/.test(hasHexPrefix(address) ? address.slice(2) : address);
 }
 
 /**
