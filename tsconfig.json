@@ -35,7 +35,8 @@
     "config/**/*",
     "background/**/*",
     "popup/**/*",
-    "content/**/*"
+    "content/**/*",
+    "types/**/*.d.ts"
   ],
   "extends": "@tsconfig/svelte/tsconfig.json"
 }

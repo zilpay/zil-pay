@@ -1,6 +1,6 @@
 import { RpcProvider, type JsonRPCRequest } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
-import { createContract } from 'micro-eth-signer/abi';
+import { createContract } from 'micro-eth-signer/abi.js';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address, AddressType } from 'crypto/address';
 import { TypeOf } from 'lib/types';
