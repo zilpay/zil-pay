@@ -1,9 +1,9 @@
 import { addr as ethAddr } from 'micro-eth-signer';
-import { fromBech32Address, fromZilPubKey, hasHexPrefix, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
+import { fromBech32Address, fromZilPubKey, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
 import { KeyPair } from "./keypair";
 import { HRP } from 'lib/zilliqa/config';
 import { utils } from "aes-js";
-import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
+import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 
 export enum AddressType {
   Bech32,

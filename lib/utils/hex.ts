@@ -1,7 +1,18 @@
 export const HEX_PREFIX = "0x";
 
+/**
+ * Checks if a string starts with the '0x' prefix (case-insensitive).
+ *
+ * @param str The string to check.
+ * @returns True if the string starts with '0x', false otherwise.
+ */
+export function hasHexPrefix(str: string): boolean {
+  return str.toLowerCase().startsWith(HEX_PREFIX);
+}
+
+
 export function stripHexPrefix(hex: string): string {
-  return hex.toLowerCase().startsWith(HEX_PREFIX) ? hex.slice(2) : hex;
+  return hasHexPrefix(hex) ? hex.slice(2) : hex;
 }
 
 /**
