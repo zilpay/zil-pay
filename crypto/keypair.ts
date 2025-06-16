@@ -3,14 +3,13 @@ import type { TypedData } from "micro-eth-signer/typed-data.js";
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
-import { utils } from "aes-js";
 import { sign, verify } from "./zilliqa/schnorr";
 import {
   personal,
   signTyped,
   verifyTyped,
 } from "micro-eth-signer/typed-data.js";
-import { stripHexPrefix } from "lib/utils/hex";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";
 import { Address, AddressType } from "./address";
@@ -85,7 +84,7 @@ export class KeyPair {
         return Uint8Array.from(sigZil.toBytes());
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
-        return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(sigEth)));
+        return hexToUint8Array(sigEth); 
     }
   }
 
@@ -93,7 +92,7 @@ export class KeyPair {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
         const signature = signTyped(typedData, this.privateKey);
-        return Uint8Array.from(utils.hex.toBytes(stripHexPrefix(signature)));
+        return hexToUint8Array(signature); 
       default:
         throw new Error("Unsupported");
     }
@@ -106,7 +105,7 @@ export class KeyPair {
   ): Promise<boolean> {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
-        const sigHex = `0x${utils.hex.fromBytes(signature)}`;
+        const sigHex = uint8ArrayToHex(signature, true);
         const ethChecsumAddr = await address.toEthChecksum();
 
         return verifyTyped(sigHex, typedData, ethChecsumAddr);
@@ -122,7 +121,9 @@ export class KeyPair {
       case AddressType.EthCheckSum:
         const address = await this.address();
         const ethChecsum = await address.toEthChecksum();
-        return personal.verify(utils.hex.fromBytes(sig), msg, ethChecsum);
+        const sigHex = uint8ArrayToHex(sig);
+
+        return personal.verify(sigHex, msg, ethChecsum);
     }
   }
 }
