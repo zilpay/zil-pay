@@ -94,7 +94,10 @@ describe("RpcProvider", () => {
     const netConf = createBscConfig();
     const bsc = new RpcProvider(netConf);
     const payloads = [
-      RpcProvider.buildPayload(EvmMethods.GetBalance, [ZERO_ADDR_HEX, "latest"]),
+      RpcProvider.buildPayload(EvmMethods.GetBalance, [
+        ZERO_ADDR_HEX,
+        "latest",
+      ]),
       RpcProvider.buildPayload(EvmMethods.BlockNumber, []),
     ];
 

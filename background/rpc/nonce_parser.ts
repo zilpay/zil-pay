@@ -13,13 +13,12 @@ export interface ZilBalance {
 export type NonceResponse = string | ZilBalance;
 
 export async function buildNonceRequest(addressType: AddressType, address: string): Promise<JsonRPCRequest> {
-
   switch (addressType) {
     case AddressType.Bech32:
       const base16 = await fromBech32Address(address);
       return RpcProvider.buildPayload(
         ZilMethods.GetBalance,
-        [base16]
+        [base16.replace("0x", "").toLowerCase()]
       );
     case AddressType.EthCheckSum:
       const ethAddress = addr.addChecksum(address);
