@@ -37,7 +37,7 @@ export class RpcProvider {
     this.network = network;
   }
 
-  public buildPayload(method: string, params: unknown[]): JsonRPCRequest {
+  static buildPayload(method: string, params: unknown[]): JsonRPCRequest {
     return {
       id: 1,
       jsonrpc: '2.0',

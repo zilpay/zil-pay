@@ -29,6 +29,8 @@ zil-pay
 │   │   ├── word_list.ts
 │   │   └── zilliqa_tx.test.ts
 │   ├── data.ts
+│   ├── rpc
+│   │   └── provider.test.ts
 │   ├── session
 │   │   └── session.test.ts
 │   ├── setupTests.ts
@@ -44,6 +46,10 @@ zil-pay
 │       └── address.test.ts
 ├── background
 │   ├── index.ts
+│   ├── rpc
+│   │   ├── index.ts
+│   │   ├── provider.ts
+│   │   └── rpc.ts
 │   ├── secure
 │   │   ├── index.ts
 │   │   ├── migrator.ts
@@ -68,6 +74,7 @@ zil-pay
 │   ├── common.ts
 │   ├── errors.ts
 │   ├── fields.ts
+│   ├── jsonrpc.ts
 │   ├── manifest.ts
 │   ├── pbkdf2.ts
 │   ├── sha.ts
@@ -4098,6 +4105,8 @@ describe("ZILTransactionReceipt verify", () => {
 `zil-pay/__tests__/data.ts`:
 
 ```ts
+import { ChainConfig } from "../background/storage/chain";
+
 export const WORDS =
   "rule hard brush glare magic east glimpse tank junk will media submit";
 export const PASSWORD = "iA3J&UKNRSp7Y3&yhzo68gjib9L&Vh*W1mT1zS6T";
@@ -4278,6 +4287,226 @@ export const CHAINS = JSON.parse(`[
     ]
   }
 ]`);
+
+export const ZERO_ADDR_BECH32 = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz";
+export const ZERO_ADDR_HEX = "0x0000000000000000000000000000000000000000";
+
+export const createZilliqaConfig = (): ChainConfig =>
+  new ChainConfig({
+    name: "Zilliqa",
+    chain: "ZIL",
+    logo: "",
+    rpc: [
+      "https://ssn.zilpay.io/api",
+      "https://ssn-api-mainnet.viewblock.io",
+      "https://zilliqa.avely.fi/api",
+      "https://ssn.zillet.io",
+      "https://api.zilliqa.com",
+    ],
+    features: [],
+    chainIds: [1, 0],
+    slip44: 313,
+    explorers: [],
+    fallbackEnabled: true,
+    testnet: false,
+    ftokens: [],
+  });
+
+export const createBscConfig = (): ChainConfig =>
+  new ChainConfig({
+    name: "Binance Smart Chain",
+    chain: "BSC",
+    logo: "",
+    rpc: [
+      "https://bsc-dataseed.bnbchain.org",
+      "https://bsc-dataseed.nariox.org",
+      "https://bsc-dataseed.defibit.io",
+      "https://bsc-dataseed.ninicoin.io",
+      "https://bsc.nodereal.io",
+      "https://bsc-dataseed-public.bnbchain.org",
+      "https://bnb.rpc.subquery.network/public",
+    ],
+    features: [155, 1559],
+    chainIds: [56, 0],
+    slip44: 60,
+    explorers: [],
+    fallbackEnabled: true,
+    testnet: false,
+    ftokens: [],
+  });
+
+export const createEthConfig = (): ChainConfig =>
+  new ChainConfig({
+    name: "Ethereum Mainnet",
+    chain: "ETH",
+    logo: "",
+    rpc: [
+      "https://eth.llamarpc.com",
+      "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
+      "https://eth.rpc.blxrbdn.com",
+      "https://mainnet.gateway.tenderly.co",
+      "https://1rpc.io/eth",
+    ],
+    features: [155, 1559],
+    chainIds: [1, 0],
+    slip44: 60,
+    explorers: [],
+    fallbackEnabled: true,
+    testnet: true,
+    ftokens: [],
+  });
+
+```
+
+`zil-pay/__tests__/rpc/provider.test.ts`:
+
+```ts
+import { describe, it, expect } from "vitest";
+import { RpcProvider } from "../../background/rpc/provider";
+import { fromBech32Address } from "../../lib/zilliqa";
+import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
+import {
+  createBscConfig,
+  createEthConfig,
+  createZilliqaConfig,
+  ZERO_ADDR_BECH32,
+  ZERO_ADDR_HEX,
+} from "../data";
+
+interface GetBalanceRes {
+  balance: string;
+  nonce: number;
+}
+
+interface ZilResultRes<T> {
+  id: string;
+  jsonrpc: string;
+  result: T;
+  error?: unknown;
+}
+
+interface EthResultRes<T> {
+  id: number;
+  jsonrpc: string;
+  result: T;
+  error?: unknown;
+}
+
+describe("RpcProvider", () => {
+  it("test_build_payload", () => {
+    const provider = new RpcProvider(createBscConfig());
+    const payload = provider.buildPayload(EvmMethods.GetBalance, [
+      "param1",
+      "param2",
+    ]);
+
+    expect(payload.jsonrpc).toBe("2.0");
+    expect(payload.id).toBe(1);
+    expect(payload.method).toBe(EvmMethods.GetBalance);
+    expect(Array.isArray(payload.params)).toBe(true);
+    expect(payload.params[0]).toBe("param1");
+    expect(payload.params[1]).toBe("param2");
+  });
+
+  it("test_get_balance_scilla", async () => {
+    const address = await fromBech32Address(ZERO_ADDR_BECH32);
+    const netConf = createZilliqaConfig();
+    const zil = new RpcProvider(netConf);
+    const payload = zil.buildPayload(ZilMethods.GetBalance, [
+      address.replace("0x", "").toLowerCase(),
+    ]);
+
+    const res = await zil.req<ZilResultRes<GetBalanceRes>>(payload);
+
+    expect(res.result).toBeDefined();
+    expect(res.error).toBeUndefined();
+    expect(res.result.balance).toBeDefined();
+    expect(res.result.nonce).toBeDefined();
+  }, 10000);
+
+  it("test_get_balance_bsc", async () => {
+    const netConf = createBscConfig();
+    const bsc = new RpcProvider(netConf);
+    const payload = bsc.buildPayload(EvmMethods.GetBalance, [
+      ZERO_ADDR_HEX,
+      "latest",
+    ]);
+
+    const res = await bsc.req<EthResultRes<string>>(payload);
+
+    expect(res.result).toBeDefined();
+    expect(res.error).toBeUndefined();
+    expect(typeof res.result).toBe("string");
+  }, 10000);
+
+  it("test_network_much_req", async () => {
+    const config = createEthConfig();
+    const provider = new RpcProvider(config);
+    const payload = provider.buildPayload(EvmMethods.GetBalance, [
+      "0x246C5881E3F109B2aF170F5C773EF969d3da581B",
+      "latest",
+    ]);
+
+    const result = await provider.req<EthResultRes<string>>(payload);
+
+    expect(result.result).toBeDefined();
+    expect(typeof result.result).toBe("string");
+  }, 20000);
+
+  it("test_batch_request", async () => {
+    const netConf = createBscConfig();
+    const bsc = new RpcProvider(netConf);
+    const payloads = [
+      bsc.buildPayload(EvmMethods.GetBalance, [ZERO_ADDR_HEX, "latest"]),
+      bsc.buildPayload(EvmMethods.BlockNumber, []),
+    ];
+
+    const res =
+      await bsc.req<[EthResultRes<string>, EthResultRes<string>]>(payloads);
+
+    expect(res).toBeInstanceOf(Array);
+    expect(res.length).toBe(2);
+
+    const balanceRes = res[0];
+    expect(balanceRes.result).toBeDefined();
+    expect(typeof balanceRes.result).toBe("string");
+
+    const blockNumRes = res[1];
+    expect(blockNumRes.result).toBeDefined();
+    expect(typeof blockNumRes.result).toBe("string");
+  }, 10000);
+
+  it("should rotate nodes on failure and succeed on retry", async () => {
+    const failingEthConfig = createEthConfig();
+    const originalRpcOrder = [
+      "https://invalid-rpc.io/1",
+      "https://invalid-rpc.io/2",
+      "https://invalid-rpc.io/3",
+      ...failingEthConfig.rpc,
+    ];
+    failingEthConfig.rpc = [...originalRpcOrder];
+
+    const provider = new RpcProvider(failingEthConfig);
+    const payload = provider.buildPayload(EvmMethods.GetBalance, [
+      ZERO_ADDR_HEX,
+      "latest",
+    ]);
+
+    await expect(provider.req(payload)).rejects.toThrow();
+
+    const expectedOrderAfterFailure = [
+      ...originalRpcOrder.slice(3),
+      ...originalRpcOrder.slice(0, 3),
+    ];
+
+    expect(provider.network.rpc).toEqual(expectedOrderAfterFailure);
+
+    const result = await provider.req<EthResultRes<string>>(payload);
+
+    expect(result.result).toBeDefined();
+    expect(typeof result.result).toBe("string");
+  }, 20000);
+});
 
 ```
 
@@ -5313,6 +5542,171 @@ console.log(
 
 ```
 
+`zil-pay/background/rpc/index.ts`:
+
+```ts
+export * from './provider';
+export * from './rpc';
+
+```
+
+`zil-pay/background/rpc/provider.ts`:
+
+```ts
+import type { ChainConfig } from "background/storage";
+
+export interface JsonRPCRequest {
+  id: number;
+  jsonrpc: string;
+  method: string;
+  params: unknown[];
+}
+
+export interface JsonRPCResponse<T> {
+  id: number;
+  jsonrpc: string;
+  result?: T;
+  error?: {
+    code: number;
+    message: string;
+    data?: unknown;
+  };
+}
+
+export class RpcError extends Error {
+  public code: number;
+  public data?: unknown;
+
+  constructor(message: string, code: number, data?: unknown) {
+    super(message);
+    this.name = 'RpcError';
+    this.code = code;
+    this.data = data;
+  }
+}
+
+export class RpcProvider {
+  public network: ChainConfig;
+
+  constructor(network: ChainConfig) {
+    this.network = network;
+  }
+
+  public buildPayload(method: string, params: unknown[]): JsonRPCRequest {
+    return {
+      id: 1,
+      jsonrpc: '2.0',
+      method,
+      params,
+    };
+  }
+
+  public async req<T>(payload: JsonRPCRequest | JsonRPCRequest[]): Promise<T> {
+    const client = {
+      timeout: 5000,
+    };
+
+    let lastError: RpcError | null = null;
+    const allNodes = this.network.rpc;
+
+    if (allNodes.length === 0) {
+      throw new RpcError('No RPC nodes available in the network configuration.', -32000);
+    }
+
+    const batchSize = 3;
+    const currentBatch = allNodes.slice(0, batchSize);
+    const failedNodesInBatch: string[] = [];
+
+    for (const url of currentBatch) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), client.timeout);
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          lastError = new RpcError(
+            `Request failed with status ${response.status}`,
+            response.status,
+          );
+          failedNodesInBatch.push(url);
+          continue;
+        }
+
+        const text = await response.text();
+        try {
+          const json: JsonRPCResponse<T> | JsonRPCResponse<T>[] = JSON.parse(text);
+
+          if (Array.isArray(json)) {
+            const errors = json
+              .map((res) => res.error)
+              .filter((err): err is NonNullable<typeof err> => !!err);
+            if (errors.length > 0) {
+              const firstError = errors[0];
+              lastError = new RpcError(
+                firstError.message,
+                firstError.code,
+                firstError.data,
+              );
+              failedNodesInBatch.push(url);
+              continue;
+            }
+          } else if (json.error) {
+            lastError = new RpcError(
+              json.error.message,
+              json.error.code,
+              json.error.data,
+            );
+            failedNodesInBatch.push(url);
+            continue;
+          }
+
+          return json as T;
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            lastError = new RpcError(`Failed to parse JSON: ${e.message}`, -32700, text);
+          } else {
+            lastError = new RpcError('Failed to parse JSON: An unknown error occurred', -32700, text);
+          }
+          failedNodesInBatch.push(url);
+          continue;
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+            if (e.name === 'AbortError') {
+              lastError = new RpcError(`Request timed out to ${url}`, -32603);
+            } else {
+              lastError = new RpcError(`Request to ${url} failed: ${e.message}`, -32603);
+            }
+        } else {
+             lastError = new RpcError(`An unknown error occurred during the request to ${url}`, -32603);
+        }
+        failedNodesInBatch.push(url);
+        continue;
+      }
+    }
+
+    if (this.network.fallbackEnabled && failedNodesInBatch.length === currentBatch.length && currentBatch.length > 0) {
+        const remainingNodes = allNodes.slice(currentBatch.length);
+        this.network.rpc = [...remainingNodes, ...failedNodesInBatch];
+    }
+    
+    throw lastError || new RpcError('Network is down or all nodes in batch failed', -32000);
+  }
+}
+
+
+```
+
 `zil-pay/background/secure/index.ts`:
 
 ```ts
@@ -6284,6 +6678,83 @@ export enum OldFields {
   PHISHING = "phishing-detection",
   DEX = "dex-proto",
   BADGE_COUNTER = "badge-counter",
+}
+
+```
+
+`zil-pay/config/jsonrpc.ts`:
+
+```ts
+/**
+ * Enum for Zilliqa JSON-RPC methods.
+ */
+export enum ZilMethods {
+  GetSmartContractInit = "GetSmartContractInit",
+  GetBalance = "GetBalance",
+  GetSmartContractSubState = "GetSmartContractSubState",
+  GetNetworkId = "GetNetworkId",
+  GetPendingTxn = "GetPendingTxn",
+  GetTransaction = "GetTransaction",
+  CreateTransaction = "CreateTransaction",
+  GetTransactionStatus = "GetTransactionStatus",
+  GetLatestTxBlock = "GetLatestTxBlock",
+  GetTxBlock = "GetTxBlock",
+  GetRecentTransactions = "GetRecentTransactions",
+  GetMinimumGasPrice = "GetMinimumGasPrice",
+}
+
+/**
+ * Enum for EVM-compatible JSON-RPC methods.
+ */
+export enum EvmMethods {
+  // State Methods
+  GetBalance = "eth_getBalance",
+  GetStorageAt = "eth_getStorageAt",
+  GetTransactionCount = "eth_getTransactionCount",
+  GetBlockTransactionCountByHash = "eth_getBlockTransactionCountByHash",
+  GetBlockTransactionCountByNumber = "eth_getBlockTransactionCountByNumber",
+  GetCode = "eth_getCode",
+  Call = "eth_call",
+  EstimateGas = "eth_estimateGas",
+
+  // Block Methods
+  BlockNumber = "eth_blockNumber",
+  GetBlockByHash = "eth_getBlockByHash",
+  GetBlockByNumber = "eth_getBlockByNumber",
+  GetBlockReceipts = "eth_getBlockReceipts",
+
+  // Transaction Methods
+  SendRawTransaction = "eth_sendRawTransaction",
+  GetTransactionByHash = "eth_getTransactionByHash",
+  GetTransactionByBlockHashAndIndex = "eth_getTransactionByBlockHashAndIndex",
+  GetTransactionByBlockNumberAndIndex = "eth_getTransactionByBlockNumberAndIndex",
+  GetTransactionReceipt = "eth_getTransactionReceipt",
+
+  // Account Methods
+  Accounts = "eth_accounts",
+  GetProof = "eth_getProof",
+
+  // Chain State
+  ChainId = "eth_chainId",
+  NetworkVersion = "net_version",
+  Syncing = "eth_syncing",
+  GasPrice = "eth_gasPrice",
+  MaxPriorityFeePerGas = "eth_maxPriorityFeePerGas",
+  FeeHistory = "eth_feeHistory",
+  BlobBaseFee = "eth_blobBaseFee",
+
+  // Filter Methods
+  NewFilter = "eth_newFilter",
+  NewBlockFilter = "eth_newBlockFilter",
+  NewPendingTransactionFilter = "eth_newPendingTransactionFilter",
+  UninstallFilter = "eth_uninstallFilter",
+  GetFilterChanges = "eth_getFilterChanges",
+  GetFilterLogs = "eth_getFilterLogs",
+  GetLogs = "eth_getLogs",
+
+  // Contract Methods
+  Sign = "eth_sign",
+  SignTransaction = "eth_signTransaction",
 }
 
 ```

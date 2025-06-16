@@ -32,7 +32,7 @@ interface EthResultRes<T> {
 describe("RpcProvider", () => {
   it("test_build_payload", () => {
     const provider = new RpcProvider(createBscConfig());
-    const payload = provider.buildPayload(EvmMethods.GetBalance, [
+    const payload = RpcProvider.buildPayload(EvmMethods.GetBalance, [
       "param1",
       "param2",
     ]);
@@ -49,7 +49,7 @@ describe("RpcProvider", () => {
     const address = await fromBech32Address(ZERO_ADDR_BECH32);
     const netConf = createZilliqaConfig();
     const zil = new RpcProvider(netConf);
-    const payload = zil.buildPayload(ZilMethods.GetBalance, [
+    const payload = RpcProvider.buildPayload(ZilMethods.GetBalance, [
       address.replace("0x", "").toLowerCase(),
     ]);
 
@@ -64,7 +64,7 @@ describe("RpcProvider", () => {
   it("test_get_balance_bsc", async () => {
     const netConf = createBscConfig();
     const bsc = new RpcProvider(netConf);
-    const payload = bsc.buildPayload(EvmMethods.GetBalance, [
+    const payload = RpcProvider.buildPayload(EvmMethods.GetBalance, [
       ZERO_ADDR_HEX,
       "latest",
     ]);
@@ -79,7 +79,7 @@ describe("RpcProvider", () => {
   it("test_network_much_req", async () => {
     const config = createEthConfig();
     const provider = new RpcProvider(config);
-    const payload = provider.buildPayload(EvmMethods.GetBalance, [
+    const payload = RpcProvider.buildPayload(EvmMethods.GetBalance, [
       "0x246C5881E3F109B2aF170F5C773EF969d3da581B",
       "latest",
     ]);
@@ -94,8 +94,8 @@ describe("RpcProvider", () => {
     const netConf = createBscConfig();
     const bsc = new RpcProvider(netConf);
     const payloads = [
-      bsc.buildPayload(EvmMethods.GetBalance, [ZERO_ADDR_HEX, "latest"]),
-      bsc.buildPayload(EvmMethods.BlockNumber, []),
+      RpcProvider.buildPayload(EvmMethods.GetBalance, [ZERO_ADDR_HEX, "latest"]),
+      RpcProvider.buildPayload(EvmMethods.BlockNumber, []),
     ];
 
     const res =
@@ -124,7 +124,7 @@ describe("RpcProvider", () => {
     failingEthConfig.rpc = [...originalRpcOrder];
 
     const provider = new RpcProvider(failingEthConfig);
-    const payload = provider.buildPayload(EvmMethods.GetBalance, [
+    const payload = RpcProvider.buildPayload(EvmMethods.GetBalance, [
       ZERO_ADDR_HEX,
       "latest",
     ]);
