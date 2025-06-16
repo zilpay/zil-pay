@@ -3,6 +3,7 @@ import { fromBech32Address, fromZilPubKey, hasHexPrefix, toBech32Address, toChec
 import { KeyPair } from "./keypair";
 import { HRP } from 'lib/zilliqa/config';
 import { utils } from "aes-js";
+import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 
 export enum AddressType {
   Bech32,
@@ -24,12 +25,12 @@ export class Address {
   static async fromStr(address: string) {
     if (hasHexPrefix(address)) {
       const ethCheckSumAddress = ethAddr.parse(address);
-      const bytes = utils.hex.toBytes(ethCheckSumAddress.data.replace("0x", ""));
+      const bytes = hexToUint8Array(ethCheckSumAddress.data);
 
       return new Address(bytes, AddressType.EthCheckSum);
     } else if (address.startsWith(HRP)) {
       const checkSumZil = await fromBech32Address(address);
-      const bytes = utils.hex.toBytes(checkSumZil.replace("0x", ""));
+      const bytes = hexToUint8Array(checkSumZil);
 
       return new Address(bytes, AddressType.Bech32);
     }
@@ -47,7 +48,7 @@ export class Address {
         return new Address(zilBytes, addressType);
       case AddressType.EthCheckSum:
         const ethChecsumAddress = ethAddr.fromPublicKey(pubKey);
-        const ethBytes = utils.hex.toBytes(ethChecsumAddress.replace("0x", ""));
+        const ethBytes = hexToUint8Array(ethChecsumAddress);
 
         return new Address(ethBytes, addressType);
     }
@@ -64,7 +65,7 @@ export class Address {
 
       case AddressType.EthCheckSum:
         const ethChecsumAddress = ethAddr.fromPublicKey(keypair.pubKey);
-        const ethBytes = utils.hex.toBytes(ethChecsumAddress.replace("0x", ""));
+        const ethBytes = hexToUint8Array(ethChecsumAddress);
 
         return new Address(ethBytes, addressType);
 
@@ -81,7 +82,7 @@ export class Address {
   }
 
   async toEthChecksum(): Promise<string> {
-    const nonChecksummedAddress = `0x${this.toBase16()}`; 
+    const nonChecksummedAddress = uint8ArrayToHex(this.bytes); 
     return ethAddr.addChecksum(nonChecksummedAddress);
   }
 

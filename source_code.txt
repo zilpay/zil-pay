@@ -256,103 +256,106 @@ describe("chunk", () => {
 
 ```ts
 import { describe, it, expect } from 'vitest';
-import { Address } from '../../crypto/address';
-import { AddressType } from '../../crypto/keypair';
+import { Address, AddressType } from '../../crypto/address';
 import { KeyPair } from '../../crypto/keypair';
 import { ZILLIQA, ETHEREUM } from '../../config/slip44';
+import { utils } from 'aes-js';
+import { toBech32Address } from '../../lib/zilliqa';
 
-describe('Address Class', () => {
+describe('Address', () => {
+    const zilData = new Uint8Array(20).fill(1);
+    const ethData = new Uint8Array(20).fill(2);
 
-    describe('Static Methods', () => {
-        it('should create an ETH address from a valid hex string', async () => {
-            const hexEthAddr = '0xf06686B5Eb5cAe38c09f12412B729045647E74e3';
-            const addr = await Address.fromStr(hexEthAddr);
-            expect(addr.type).toBe(AddressType.EthCheckSum);
-            expect(await addr.toEthChecksum()).toBe(hexEthAddr);
-        });
+    const zilAddr = new Address(zilData, AddressType.Bech32);
+    const ethAddr = new Address(ethData, AddressType.EthCheckSum);
 
-        it('should create a ZIL address from a valid bech32 string', async () => {
-            const bech32Addr = 'zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu';
-            const addr = await Address.fromStr(bech32Addr);
-            expect(addr.type).toBe(AddressType.Bech32);
-            expect(await addr.toZilBech32()).toBe(bech32Addr);
-        });
+    const knownPrivateKeyHex = 'e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04';
+    const privateKeyBytes = Uint8Array.from(utils.hex.toBytes(knownPrivateKeyHex));
 
-        it('should throw an error for invalid string formats', async () => {
-            await expect(Address.fromStr('invalid-address')).rejects.toThrow('Unsupported address format');
-            await expect(Address.fromStr('0x1234')).rejects.toThrow('Invalid Ethereum address: 0x1234');
-        });
-
-        it('should create an address from a public key for ETH', async () => {
-            const keypair = await KeyPair.generate(ETHEREUM);
-            const addr = await Address.fromPubKey(keypair.pubKey, ETHEREUM);
-            const expectedAddr = await keypair.addrFromPubKey();
-            
-            expect(addr.type).toBe(AddressType.EthCheckSum);
-            expect(await addr.toEthChecksum()).toBe(expectedAddr);
-        });
-
-        it('should create an address from a public key for ZIL', async () => {
-            const keypair = await KeyPair.generate(ZILLIQA);
-            const addr = await Address.fromPubKey(keypair.pubKey, ZILLIQA);
-            const expectedAddr = await keypair.addrFromPubKey();
-
-            expect(addr.type).toBe(AddressType.Bech32);
-            expect(await addr.toZilBech32()).toBe(expectedAddr);
-        });
+    it('should create addresses and hold correct bytes', () => {
+        expect(zilAddr.bytes).toEqual(zilData);
+        expect(ethAddr.bytes).toEqual(ethData);
     });
 
-    describe('Instance Methods', () => {
-        const zilBytes = new Uint8Array(20).fill(1);
-        const ethBytes = new Uint8Array(20).fill(2);
+    it('should format ZIL address to bech32 string correctly', async () => {
+        const expected = await toBech32Address(utils.hex.fromBytes(zilData));
+        expect(await zilAddr.toZilBech32()).toBe(expected);
+    });
 
-        const zilAddr = new Address(zilBytes, AddressType.Bech32);
-        const ethAddr = new Address(ethBytes, AddressType.EthCheckSum);
+    it('should format ETH address to checksummed string correctly', async () => {
+        const anotherValidAddress = '0x7793A8E8c09d189d4D421Ce5bC5B3674656c5Ac1';
+        const ethAddrFromHex = await Address.fromStr(anotherValidAddress);
+        expect(await ethAddrFromHex.toEthChecksum()).toBe(anotherValidAddress);
+    });
 
-        it('should return correct bytes', () => {
-            expect(zilAddr.bytes).toEqual(zilBytes);
-            expect(ethAddr.bytes).toEqual(ethBytes);
-        });
+    it('should derive a ZIL address from a public key', async () => {
+        const keyPair = await KeyPair.fromPrivateKey(privateKeyBytes, ZILLIQA);
+        const derivedAddr = await Address.fromPubKey(keyPair.pubKey, ZILLIQA);
+        const expectedAddr = 'zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu';
 
-        it('should return correct base16 representation', () => {
-            expect(zilAddr.toBase16()).toBe('0101010101010101010101010101010101010101');
-            expect(ethAddr.toBase16()).toBe('0202020202020202020202020202020202020202');
-        });
+        expect(await derivedAddr.toZilBech32()).toBe(expectedAddr);
+        expect(derivedAddr.type).toBe(AddressType.Bech32);
+    });
 
-        it('should convert to correct checksum address for ETH', async () => {
-            const checksummed = await ethAddr.toEthChecksum();
-            // This is a known value for the given bytes
-            expect(checksummed).toBe('0x0202020202020202020202020202020202020202');
-        });
+    it('should derive an ETH address from a public key', async () => {
+        const keyPair = await KeyPair.fromPrivateKey(privateKeyBytes, ETHEREUM);
+        const derivedAddr = await Address.fromPubKey(keyPair.pubKey, ETHEREUM);
+        const expectedAddr = '0xC315295101461753b838E0BE8688E744cf52Dd6b';
 
-        it('should convert to correct bech32 address for ZIL', async () => {
-            const bech32 = await zilAddr.toZilBech32();
-            // This is a known value for the given bytes
-            expect(bech32).toBe('zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz');
-        });
-        
-        it('should return correct string representation via toString()', async () => {
-            const zilString = zilAddr.toString();
-            const ethString = ethAddr.toString();
+        expect(await derivedAddr.toEthChecksum()).toBe(expectedAddr);
+        expect(derivedAddr.type).toBe(AddressType.EthCheckSum);
+    });
 
-            expect(zilString).toBe('zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz');
-            expect(ethString).toBe('0x0202020202020202020202020202020202020202');
-        });
+    it('should create an ETH address from a valid hex string', async () => {
+        const hexEthAddr = '0xf06686B5Eb5cAe38c09f12412B729045647E74e3';
+        const addr = await Address.fromStr(hexEthAddr);
+        expect(addr.type).toBe(AddressType.EthCheckSum);
+        expect(await addr.toEthChecksum()).toBe(hexEthAddr);
+    });
 
-        it('should not throw an error when converting ZIL address to ETH checksum', async () => {
-            // In the modified class, toEthChecksum doesn't check the type, let's adjust the test.
-            // This tests that it can produce a checksummed hex string, even if it's not a valid ETH address conceptually.
-            const nonChecksummedAddress = `0x${zilAddr.toBase16()}`;
-            const { addr } = await import('micro-eth-signer');
-            const checksum = addr.addChecksum(nonChecksummedAddress);
-            await expect(zilAddr.toEthChecksum()).resolves.toBe(checksum);
-        });
+    it('should create a ZIL address from a valid bech32 string', async () => {
+        const bech32Addr = 'zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu';
+        const addr = await Address.fromStr(bech32Addr);
+        expect(addr.type).toBe(AddressType.Bech32);
+        expect(await addr.toZilBech32()).toBe(bech32Addr);
+    });
 
-        it('should throw error when converting ETH address to ZIL bech32', async () => {
-            await expect(ethAddr.toZilBech32()).rejects.toThrow('Address is not a Zilliqa address type.');
-        });
+    it('should throw an error for invalid address string formats', async () => {
+        await expect(Address.fromStr('invalid-address-string')).rejects.toThrow('Unsupported address format');
+        await expect(Address.fromStr('0x12345')).rejects.toThrow('address must be 40-char hex, got 7-char 0x12345');
+    });
+
+    it('should perform a roundtrip for ZIL address', async () => {
+        const originalAddr = 'zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu';
+        const addrObject = await Address.fromStr(originalAddr);
+        const finalAddr = await addrObject.toZilBech32();
+        expect(finalAddr).toBe(originalAddr);
+    });
+
+    it('should perform a roundtrip for ETH address', async () => {
+        const originalAddr = '0xf06686b5eb5cae38c09f12412b729045647e74e3';
+        const expectedChecksumAddr = '0xf06686B5Eb5cAe38c09f12412B729045647E74e3';
+        const addrObject = await Address.fromStr(originalAddr);
+        const finalAddr = await addrObject.toEthChecksum();
+        expect(finalAddr).toBe(expectedChecksumAddr);
+    });
+
+    it('should derive correct addresses from specific public keys (Rust equivalent)', async () => {
+        const pubKeyHex = '03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da';
+        const pubKeyBytes = Uint8Array.from(utils.hex.toBytes(pubKeyHex));
+
+        // Test for Zilliqa
+        const addrZil = await Address.fromPubKey(pubKeyBytes, ZILLIQA);
+        const expectedAddrZil = 'zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu';
+        expect(await addrZil.toZilBech32()).toBe(expectedAddrZil);
+
+        // Test for Ethereum
+        const addrEth = await Address.fromPubKey(pubKeyBytes, ETHEREUM);
+        const expectedAddrEth = '0xC315295101461753b838E0BE8688E744cf52Dd6b';
+        expect(await addrEth.toEthChecksum()).toBe(expectedAddrEth);
     });
 });
+
 
 ```
 
@@ -1246,23 +1249,25 @@ describe("KeyChain", () => {
 ```ts
 import { describe, it, expect } from "vitest";
 import { Signature } from "@noble/secp256k1";
-import { KeyPair, AddressType } from "../../crypto/keypair";
+import { KeyPair } from "../../crypto/keypair";
 import { Bip39 } from "../../crypto/bip39";
 import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 import { utils } from "aes-js";
 import { WORDS, KEY, IMPORTED_KEY } from "../data";
 import { verify } from "../../crypto/zilliqa/schnorr";
+import { Address, AddressType } from "../../crypto/address";
 
 describe("KeyPair", () => {
   describe("fromPrivateKey", () => {
     it("should create KeyPair for Zilliqa with correct address", async () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ZILLIQA);
       expect(keyPair.addressType()).toBe(AddressType.Bech32);
       expect(keyPair.privateKey).toEqual(privateKey);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toZilBech32()).toBe(
         "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
       );
     });
@@ -1270,11 +1275,12 @@ describe("KeyPair", () => {
     it("should create KeyPair for Ethereum with correct address", async () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ETHEREUM);
       expect(keyPair.addressType()).toBe(AddressType.EthCheckSum);
       expect(keyPair.privateKey).toEqual(privateKey);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toEthChecksum()).toBe(
         "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825",
       );
     });
@@ -1284,11 +1290,12 @@ describe("KeyPair", () => {
     it("should create KeyPair for Zilliqa from seed with correct address", async () => {
       const seed = await Bip39.mnemonicToSeed(WORDS, "");
       const keyPair = await KeyPair.fromSeed(seed, ZILLIQA, 0);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ZILLIQA);
       expect(keyPair.addressType()).toBe(AddressType.Bech32);
       expect(utils.hex.fromBytes(keyPair.privateKey)).toBe(KEY);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toZilBech32()).toBe(
         "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y",
       );
     });
@@ -1296,10 +1303,11 @@ describe("KeyPair", () => {
     it("should create KeyPair for Ethereum from seed with correct address", async () => {
       const seed = await Bip39.mnemonicToSeed(WORDS, "");
       const keyPair = await KeyPair.fromSeed(seed, ETHEREUM, 0);
+      const address = await keyPair.address();
 
       expect(keyPair.slip44).toBe(ETHEREUM);
       expect(keyPair.addressType()).toBe(AddressType.EthCheckSum);
-      expect(await keyPair.addrFromPubKey()).toBe(
+      expect(await address.toEthChecksum()).toBe(
         "0xAEC7595CA9A57be828493bb73f07fA335a85B41d",
       );
     });
@@ -1374,7 +1382,7 @@ describe("KeyPair", () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
       const signature = new Uint8Array(65); // Dummy signature
-      const address = "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825";
+      const address = await Address.fromStr("0x709678c07cfCAFB4bb49a6b1d57b1db378e27825");
 
       await expect(
         keyPair.verifyTypedEIP712(signature, typedData, address),
@@ -1394,7 +1402,7 @@ describe("KeyPair", () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
       const signature = keyPair.signDataEIP712(typedData);
-      const address = await keyPair.addrFromPubKey();
+      const address = await keyPair.address();
 
       const isValid = await keyPair.verifyTypedEIP712(
         signature,
@@ -1420,7 +1428,7 @@ describe("KeyPair", () => {
         message: differentMessage,
       };
       const invalidSignature = keyPair.signDataEIP712(invalidTypedData);
-      const address = await keyPair.addrFromPubKey();
+      const address = await keyPair.address();
 
       const isValid = await keyPair.verifyTypedEIP712(
         invalidSignature,
@@ -1433,7 +1441,7 @@ describe("KeyPair", () => {
 
   it("should sign typed data EIP-712 successfully for Ethereum", async () => {
     const keyPair = await KeyPair.generate(ETHEREUM);
-    const address = await keyPair.addrFromPubKey();
+    const address = await keyPair.address();
 
     const typedData = {
       types: {
@@ -1457,7 +1465,7 @@ describe("KeyPair", () => {
       },
       message: {
         name: "Bob",
-        wallet: address,
+        wallet: await address.toEthChecksum(),
       },
     };
 
@@ -4476,7 +4484,7 @@ import {
   processNonceResponse,
   type ZilBalance,
 } from "../../background/rpc/nonce_parser";
-import { AddressType } from "../../crypto/keypair";
+import { AddressType } from "../../crypto/address";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
 
 describe("Nonce Handling Logic", () => {
@@ -4832,7 +4840,7 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
 import "../setupTests";
 import { describe, it, expect } from "vitest";
 import { migrateToV4 } from "../../background/secure/migrator";
-import { AddressType } from "../../crypto/keypair";
+import { AddressType } from "../../crypto/address";
 import {
   BackgroundState,
   AppearancesTheme,
@@ -5123,7 +5131,7 @@ import {
 } from "../../background/storage/wallet";
 import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
-import { AddressType } from "../../crypto/keypair";
+import { AddressType } from "../../crypto/address";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";
@@ -6065,7 +6073,7 @@ export * from './rpc';
 ```ts
 import { RpcProvider, type JsonRPCRequest } from './provider';
 import { EvmMethods, ZilMethods } from '../../config/jsonrpc';
-import { AddressType } from '../../crypto/keypair';
+import { AddressType } from '../../crypto/address';
 import { addr } from 'micro-eth-signer';
 import { fromBech32Address } from '../../lib/zilliqa';
 import { TypeOf } from 'lib/types';
@@ -6286,7 +6294,7 @@ import { WalletSettings, RatesApiOptions } from '../storage/settings';
 import { HashTypes, WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
-import { AddressType } from 'crypto/keypair';
+import { AddressType } from 'crypto/address';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -6576,9 +6584,10 @@ export * from './guard';
 `zil-pay/background/storage/account.ts`:
 
 ```ts
+import type { AddressType } from 'crypto/address';
 import { utils } from 'aes-js';
 import { ChainConfig } from './chain';
-import { AddressType, KeyPair } from 'crypto/keypair';
+import { KeyPair } from 'crypto/keypair';
 
 export interface Bip32Account {
   name: string;
@@ -6609,7 +6618,7 @@ export class Account {
   static async fromBip39(bip32Account: Bip32Account, chain: ChainConfig, seed: Uint8Array): Promise<Account> {
     const keyPair = await KeyPair.fromSeed(seed, chain.slip44, bip32Account.index);
     const addrType = keyPair.addressType();
-    const addr = await keyPair.addrFromPubKey();
+    const addr = await keyPair.address();
     const account = new Account({
       addr,
       addrType,
@@ -6627,7 +6636,7 @@ export class Account {
   static async fromPrivateKey(privateKey: Uint8Array, chain: ChainConfig, name: string): Promise<Account> {
     const keyPair = await KeyPair.fromPrivateKey(privateKey, chain.slip44);
     const addrType = keyPair.addressType();
-    const addr = await keyPair.addrFromPubKey();
+    const addr = await keyPair.address();
 
     const account = new Account({
       addr,
@@ -7361,9 +7370,14 @@ export const ZILLIQA = 313;
 ```ts
 import { addr as ethAddr } from 'micro-eth-signer';
 import { fromBech32Address, fromZilPubKey, hasHexPrefix, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
-import { AddressType, KeyPair } from "./keypair";
+import { KeyPair } from "./keypair";
 import { HRP } from 'lib/zilliqa/config';
 import { utils } from "aes-js";
+
+export enum AddressType {
+  Bech32,
+  EthCheckSum,
+}
 
 export class Address {
   readonly #bytes: Uint8Array;
@@ -8314,9 +8328,7 @@ import type { TypedData } from "micro-eth-signer/typed-data.js";
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
-import { fromZilPubKey, toBech32Address } from "lib/zilliqa";
 import { utils } from "aes-js";
-import { addr } from "micro-eth-signer";
 import { sign, verify } from "./zilliqa/schnorr";
 import {
   personal,
@@ -8326,11 +8338,7 @@ import {
 import { stripHexPrefix } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";
-
-export enum AddressType {
-  Bech32,
-  EthCheckSum,
-}
+import { Address, AddressType } from "./address";
 
 export class KeyPair {
   #privateKey: Uint8Array;
@@ -8391,14 +8399,8 @@ export class KeyPair {
     return KeyPair.addressType(this.#slip44);
   }
 
-  async addrFromPubKey(): Promise<string> {
-    switch (this.addressType()) {
-      case AddressType.Bech32:
-        const base16 = await fromZilPubKey(this.pubKey);
-        return await toBech32Address(utils.hex.fromBytes(base16));
-      case AddressType.EthCheckSum:
-        return addr.fromPublicKey(this.pubKey);
-    }
+  async address(): Promise<Address> {
+    return await Address.fromPubKey(this.pubKey, this.slip44);
   }
 
   async signMessage(msg: Uint8Array) {
@@ -8425,12 +8427,14 @@ export class KeyPair {
   async verifyTypedEIP712(
     signature: Uint8Array,
     typedData: TypedData<any, any>,
-    address: string,
+    address: Address,
   ): Promise<boolean> {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
         const sigHex = `0x${utils.hex.fromBytes(signature)}`;
-        return verifyTyped(sigHex, typedData, address);
+        const ethChecsumAddr = await address.toEthChecksum();
+
+        return verifyTyped(sigHex, typedData, ethChecsumAddr);
       default:
         throw new Error("Unsupported");
     }
@@ -8441,8 +8445,9 @@ export class KeyPair {
       case AddressType.Bech32:
         return await verify(msg, this.pubKey, Signature.fromBytes(sig));
       case AddressType.EthCheckSum:
-        const address = await this.addrFromPubKey();
-        return personal.verify(utils.hex.fromBytes(sig), msg, address);
+        const address = await this.address();
+        const ethChecsum = await address.toEthChecksum();
+        return personal.verify(utils.hex.fromBytes(sig), msg, ethChecsum);
     }
   }
 }
@@ -10769,6 +10774,63 @@ export * from './checker';
 ```ts
 export function stripHexPrefix(hex: string): string {
   return hex.toLowerCase().startsWith('0x') ? hex.slice(2) : hex;
+}
+
+/**
+ * A lookup table for fast number-to-hex conversion.
+ */
+const HEX_CHAR_TABLE: string[] = Array.from({ length: 256 }, (_, i) =>
+    i.toString(16).padStart(2, '0')
+);
+
+/**
+ * Efficiently converts a Uint8Array to a hexadecimal string.
+ * This function uses a pre-computed lookup table for maximum performance.
+ *
+ * @param {Uint8Array} uint8Array The byte array (numbers 0-255) to convert.
+ * @param {boolean} [prefix=false] Whether to include the '0x' prefix in the output.
+ * @returns {string} The resulting hexadecimal string.
+ */
+export function uint8ArrayToHex(uint8Array: Uint8Array, prefix: boolean = false): string {
+    const hexParts = new Array(uint8Array.length);
+    for (let i = 0; i < uint8Array.length; i++) {
+        hexParts[i] = HEX_CHAR_TABLE[uint8Array[i]];
+    }
+    const hexString = hexParts.join('');
+
+    return prefix ? '0x' + hexString : hexString;
+}
+
+/**
+ * Efficiently converts a hexadecimal string to a Uint8Array.
+ * This function is optimized to minimize memory allocation and avoid
+ * unnecessary intermediate conversions.
+ *
+ * @param {string} hexString The hexadecimal string (may start with '0x').
+ * @returns {Uint8Array} A Uint8Array representing the hexadecimal data.
+ * @throws {Error} if the string has an odd number of characters or contains invalid hex characters.
+ */
+export function hexToUint8Array(hexString: string): Uint8Array {
+    const str = stripHexPrefix(hexString);
+
+    if (str.length % 2 !== 0) {
+        throw new Error('Invalid hex string: must have an even number of characters.');
+    }
+
+    const arrayBuffer = new Uint8Array(str.length / 2);
+
+    for (let i = 0; i < str.length; i += 2) {
+        const byteString = str.substring(i, i + 2);
+        const byteValue = parseInt(byteString, 16);
+
+        if (isNaN(byteValue)) {
+            throw new Error(`Invalid hex character "${byteString}" at position ${i}.`);
+        }
+        
+        arrayBuffer[i / 2] = byteValue;
+    }
+
+    return arrayBuffer;
 }
 
 
