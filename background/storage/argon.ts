@@ -2,9 +2,9 @@ import type { Argon2Config } from '../../crypto/argon2';
 import { Variant, Version, Config } from '@hicaru/argon2-pure.js';
 import { APP_ID } from '../../config/argon2';
 import { deriveArgon2Key } from '../../crypto/argon2';
-import { utils } from 'aes-js';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { KeyChain } from '../../crypto/keychain';
+import { hexToUint8Array } from 'lib/utils/hex';
 
 export enum HashTypes {
   Argon2,
@@ -25,7 +25,7 @@ export class WalletHashParams {
       64,
       this.threads,
       this.memory,
-      utils.hex.toBytes(this.secret),
+      hexToUint8Array(this.secret),
       this.iterations,
       Variant.Argon2id,
       Version.Version13,
