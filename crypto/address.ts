@@ -1,5 +1,5 @@
 import { addr as ethAddr } from 'micro-eth-signer';
-import { fromBech32Address, fromZilPubKey, hasHexPrefix, toChecksumBytesAddress } from "lib/zilliqa";
+import { fromBech32Address, fromZilPubKey, hasHexPrefix, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
 import { AddressType, KeyPair } from "./keypair";
 import { HRP } from 'lib/zilliqa/config';
 import { utils } from "aes-js";
@@ -82,5 +82,11 @@ export class Address {
 
   async toZilChecksum(): Promise<string> {
     return toChecksumBytesAddress(this.bytes);
+  }
+
+  async toZilBech32(): Promise<string> {
+    const zilChecSum = await this.toZilChecksum();
+
+    return toBech32Address(zilChecSum);
   }
 }
