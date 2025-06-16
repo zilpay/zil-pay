@@ -29,15 +29,16 @@ describe("UTF-8 Conversion", () => {
   it("should correctly handle special UTF-8 characters", () => {
     const str = "ZilPay ❤️ криптография";
     const expected = new Uint8Array([
-      90, 105, 108, 80, 97, 121, 32, 226, 157, 164, 239, 184, 143, 32, 208,
-      186, 209, 128, 208, 184, 208, 191, 209, 130, 208, 190, 208, 179, 209,
-      128, 208, 176, 209, 132, 208, 184, 209, 143,
+      90, 105, 108, 80, 97, 121, 32, 226, 157, 164, 239, 184, 143, 32, 208, 186,
+      209, 128, 208, 184, 208, 191, 209, 130, 208, 190, 208, 179, 209, 128, 208,
+      176, 209, 132, 208, 184, 209, 143,
     ]);
     expect(utf8ToUint8Array(str)).toEqual(expected);
   });
 
   it("should perform a round-trip conversion correctly", () => {
-    const originalStr = "This is a test string with various characters: !@#$%^&*()_+";
+    const originalStr =
+      "This is a test string with various characters: !@#$%^&*()_+";
     const uint8Array = utf8ToUint8Array(originalStr);
     const finalStr = uint8ArrayToUtf8(uint8Array);
     expect(finalStr).toBe(originalStr);

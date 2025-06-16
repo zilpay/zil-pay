@@ -84,7 +84,7 @@ export class KeyPair {
         return Uint8Array.from(sigZil.toBytes());
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
-        return hexToUint8Array(sigEth); 
+        return hexToUint8Array(sigEth);
     }
   }
 
@@ -92,7 +92,7 @@ export class KeyPair {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
         const signature = signTyped(typedData, this.privateKey);
-        return hexToUint8Array(signature); 
+        return hexToUint8Array(signature);
       default:
         throw new Error("Unsupported");
     }

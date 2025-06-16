@@ -83,7 +83,7 @@ describe("Hex Utility Functions", () => {
       const expected = new Uint8Array([72, 101, 108, 108, 111]);
       expect(hexToUint8Array(hex)).toEqual(expected);
     });
-    
+
     it("should handle mixed-case hex strings", () => {
       const hex = "0x48eLLO"; // Invalid, but tests parser logic
       const hexMixed = "0x48656C6c6F";
@@ -94,7 +94,7 @@ describe("Hex Utility Functions", () => {
     it("should return an empty Uint8Array for an empty string", () => {
       expect(hexToUint8Array("")).toEqual(new Uint8Array());
     });
-    
+
     it("should return an empty Uint8Array for '0x'", () => {
       expect(hexToUint8Array("0x")).toEqual(new Uint8Array());
     });
@@ -102,7 +102,7 @@ describe("Hex Utility Functions", () => {
     it("should throw an error for an odd number of characters", () => {
       const hex = "0x123";
       expect(() => hexToUint8Array(hex)).toThrow(
-        "Invalid hex string: must have an even number of characters."
+        "Invalid hex string: must have an even number of characters.",
       );
     });
   });

@@ -1,4 +1,4 @@
-import { RpcProvider, type JsonRPCRequest } from './provider';
+import { RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
 import { createContract } from 'micro-eth-signer/abi.js';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
@@ -45,17 +45,6 @@ export type RequestType =
   | { type: 'Metadata'; field: MetadataField }
   | { type: 'Balance'; address: string };
 
-export interface RpcResult<T> {
-  id: number | string;
-  jsonrpc: string;
-  result?: T;
-  error?: {
-    code: number;
-    message: string;
-    data?: unknown;
-  };
-}
-
 export interface GetTokenInitItem {
   vname: string;
   type: string;
@@ -73,7 +62,7 @@ export interface ZilSmartContractSubStateResponse {
   };
 }
 
-function validateResponse<T>(response: RpcResult<T>): T {
+function validateResponse<T>(response: JsonRPCResponse<T>): T {
   if (response.error) {
     throw new Error(
       `RPC Error (code: ${response.error.code}): ${response.error.message}`,
@@ -229,7 +218,6 @@ async function buildEthRequests(
   ];
 
   for (const field of metadataFields) {
-    // `encodeFunctionCall` теперь ожидает пустой массив для этих вызовов.
     const data = erc20.encodeFunctionCall(field, []);
     requests.push({
       payload: buildEthCall(data),
@@ -246,7 +234,6 @@ async function buildEthRequests(
         'latest',
       ]);
     } else {
-      // `encodeFunctionCall` ожидает массив с одним элементом.
       const callData = erc20.encodeFunctionCall('balanceOf', [
         ethAddress,
       ]);
@@ -260,7 +247,7 @@ async function buildEthRequests(
 }
 
 export function processEthMetadataResponse(
-  response: RpcResult<string>,
+  response: JsonRPCResponse<string>,
   field: MetadataField,
 ): string {
   const resultHex = validateResponse(response);
@@ -270,12 +257,11 @@ export function processEthMetadataResponse(
     field as FunctionName,
     resultHex,
   );
-  // `decodeOutput` возвращает значение напрямую для функций с одним выходом.
   return String(decoded);
 }
 
 export function processZilMetadataResponse(
-  response: RpcResult<GetTokenInitItem[]>,
+  response: JsonRPCResponse<GetTokenInitItem[]>,
 ): { name: string; symbol: string; decimals: number } {
   const initData = validateResponse(response);
 
@@ -297,13 +283,13 @@ export function processZilMetadataResponse(
   return { name, symbol, decimals };
 }
 
-export function processEthBalanceResponse(response: RpcResult<string>): bigint {
+export function processEthBalanceResponse(response: JsonRPCResponse<string>): bigint {
   const resultHex = validateResponse(response);
   return hexToBigInt(resultHex);
 }
 
 export async function processZilBalanceResponse(
-  response: RpcResult<ZilBalanceResponse | ZilSmartContractSubStateResponse>,
+  response: JsonRPCResponse<ZilBalanceResponse | ZilSmartContractSubStateResponse>,
   account: Address,
   isNative: boolean,
 ): Promise<bigint> {

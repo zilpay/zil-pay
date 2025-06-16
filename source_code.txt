@@ -8,6 +8,7 @@ zil-pay
 │   ├── index.ts
 │   ├── rpc
 │   │   ├── ft_parser.ts
+│   │   ├── gas_parse.ts
 │   │   ├── index.ts
 │   │   ├── nonce_parser.ts
 │   │   ├── provider.ts
@@ -112,6 +113,8 @@ zil-pay
 │   ├── index.ts
 │   └── main.ts
 ├── rollup.config.mjs
+├── types
+│   └── micro-eth-signer.d.ts
 └── vitest.config.ts
 
 ```
@@ -143,9 +146,9 @@ console.log(
 `zil-pay/background/rpc/ft_parser.ts`:
 
 ```ts
-import { RpcProvider, type JsonRPCRequest } from './provider';
+import { RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
-import { createContract } from 'micro-eth-signer/abi';
+import { createContract } from 'micro-eth-signer/abi.js';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address, AddressType } from 'crypto/address';
 import { TypeOf } from 'lib/types';
@@ -190,17 +193,6 @@ export type RequestType =
   | { type: 'Metadata'; field: MetadataField }
   | { type: 'Balance'; address: string };
 
-export interface RpcResult<T> {
-  id: number | string;
-  jsonrpc: string;
-  result?: T;
-  error?: {
-    code: number;
-    message: string;
-    data?: unknown;
-  };
-}
-
 export interface GetTokenInitItem {
   vname: string;
   type: string;
@@ -218,7 +210,7 @@ export interface ZilSmartContractSubStateResponse {
   };
 }
 
-function validateResponse<T>(response: RpcResult<T>): T {
+function validateResponse<T>(response: JsonRPCResponse<T>): T {
   if (response.error) {
     throw new Error(
       `RPC Error (code: ${response.error.code}): ${response.error.message}`,
@@ -374,7 +366,6 @@ async function buildEthRequests(
   ];
 
   for (const field of metadataFields) {
-    // `encodeFunctionCall` теперь ожидает пустой массив для этих вызовов.
     const data = erc20.encodeFunctionCall(field, []);
     requests.push({
       payload: buildEthCall(data),
@@ -391,7 +382,6 @@ async function buildEthRequests(
         'latest',
       ]);
     } else {
-      // `encodeFunctionCall` ожидает массив с одним элементом.
       const callData = erc20.encodeFunctionCall('balanceOf', [
         ethAddress,
       ]);
@@ -405,7 +395,7 @@ async function buildEthRequests(
 }
 
 export function processEthMetadataResponse(
-  response: RpcResult<string>,
+  response: JsonRPCResponse<string>,
   field: MetadataField,
 ): string {
   const resultHex = validateResponse(response);
@@ -415,12 +405,11 @@ export function processEthMetadataResponse(
     field as FunctionName,
     resultHex,
   );
-  // `decodeOutput` возвращает значение напрямую для функций с одним выходом.
   return String(decoded);
 }
 
 export function processZilMetadataResponse(
-  response: RpcResult<GetTokenInitItem[]>,
+  response: JsonRPCResponse<GetTokenInitItem[]>,
 ): { name: string; symbol: string; decimals: number } {
   const initData = validateResponse(response);
 
@@ -442,13 +431,13 @@ export function processZilMetadataResponse(
   return { name, symbol, decimals };
 }
 
-export function processEthBalanceResponse(response: RpcResult<string>): bigint {
+export function processEthBalanceResponse(response: JsonRPCResponse<string>): bigint {
   const resultHex = validateResponse(response);
   return hexToBigInt(resultHex);
 }
 
 export async function processZilBalanceResponse(
-  response: RpcResult<ZilBalanceResponse | ZilSmartContractSubStateResponse>,
+  response: JsonRPCResponse<ZilBalanceResponse | ZilSmartContractSubStateResponse>,
   account: Address,
   isNative: boolean,
 ): Promise<bigint> {
@@ -464,6 +453,140 @@ export async function processZilBalanceResponse(
   } catch (error) {
     return 0n;
   }
+}
+
+
+```
+
+`zil-pay/background/rpc/gas_parse.ts`:
+
+```ts
+import { TransactionRequest } from 'crypto/tx';
+import { EvmMethods, ZilMethods } from 'config/jsonrpc';
+import { Address } from 'crypto/address';
+import { buildNonceRequest } from 'background/rpc/nonce_parser';
+import { RpcProvider, type JsonRPCRequest } from 'background/rpc/provider';
+import { TypeOf } from 'lib/types';
+
+export interface GasFeeHistory {
+  maxFee: bigint;
+  priorityFee: bigint;
+  baseFee: bigint;
+}
+
+export interface RequiredTxParams {
+  gasPrice: bigint;
+  maxPriorityFee: bigint;
+  feeHistory: GasFeeHistory;
+  txEstimateGas: bigint;
+  blobBaseFee: bigint;
+  nonce: number;
+}
+
+export interface FeeHistoryResult {
+  baseFeePerGas: string[];
+  reward: string[][];
+  oldestBlock: string;
+  gasUsedRatio: number[];
+}
+
+export const EIP1559 = 1559;
+export const EIP4844 = 4844;
+
+class NetworkError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'NetworkError';
+    }
+}
+
+class TransactionError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'TransactionError';
+    }
+}
+
+export function buildFeeHistoryRequest(blockCount: number, percentiles: number[]): JsonRPCRequest {
+    return RpcProvider.buildPayload(EvmMethods.FeeHistory, [`0x${blockCount.toString(16)}`, 'latest', percentiles]);
+}
+
+export function buildEvmEstimateGasRequest(tx: TransactionRequest): JsonRPCRequest {
+    if (tx.scilla || !tx.evm) {
+        throw new NetworkError("Zilliqa network doesn't support gas estimation or EVM transaction is missing");
+    }
+    
+    try {
+        return RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.evm]);
+    } catch (e: any) {
+        throw new TransactionError(`Failed to serialize transaction: ${e.message}`);
+    }
+}
+
+export async function buildBatchGasRequest(
+  tx: TransactionRequest,
+  blockCount: number,
+  percentiles: number[],
+  features: number[],
+  sender: Address,
+): Promise<JsonRPCRequest[]> {
+    const requests: JsonRPCRequest[] = [];
+
+    if (tx.scilla) {
+        const zilAddress = await sender.toZilBech32();
+        requests.push(await buildNonceRequest(sender.type, zilAddress));
+        requests.push(RpcProvider.buildPayload(ZilMethods.GetMinimumGasPrice, []));
+        return requests;
+    }
+    
+    if (!tx.evm) {
+        throw new TransactionError('EVM transaction is required for gas estimation.');
+    }
+
+    const ethAddress = await sender.toEthChecksum();
+    requests.push(await buildNonceRequest(sender.type, ethAddress));
+    requests.push(RpcProvider.buildPayload(EvmMethods.GasPrice, []));
+    
+    try {
+        const requestEstimateGas = RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.evm]);
+        requests.push(requestEstimateGas);
+    } catch (e: any) {
+         throw new TransactionError(`Failed to serialize transaction: ${e.message}`);
+    }
+
+    if (features.includes(EIP1559)) {
+        requests.push(RpcProvider.buildPayload(EvmMethods.MaxPriorityFeePerGas, []));
+        requests.push(buildFeeHistoryRequest(blockCount, percentiles));
+    }
+
+    if (features.includes(EIP4844)) {
+        requests.push(RpcProvider.buildPayload(EvmMethods.BlobBaseFee, []));
+    }
+
+    return requests;
+}
+
+export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult): GasFeeHistory {
+    const lastBaseFeeStr = feeHistoryValue.baseFeePerGas.at(-1);
+    if (!lastBaseFeeStr) {
+        throw new Error('baseFeePerGas not found or empty in fee history');
+    }
+    const baseFee = BigInt(lastBaseFeeStr);
+    const lastRewardArr = feeHistoryValue.reward.at(-1);
+
+    if (!lastRewardArr || !TypeOf.isArray(lastRewardArr) || !TypeOf.isString(lastRewardArr[1])) {
+        throw new Error('reward not found or has invalid format in fee history');
+    }
+
+    const priorityFee = BigInt(lastRewardArr[1]);
+
+    const maxFee = baseFee * 2n + priorityFee;
+
+    return {
+        maxFee,
+        priorityFee,
+        baseFee,
+    };
 }
 
 
@@ -1779,11 +1902,16 @@ export const ZILLIQA = 313;
 `zil-pay/crypto/address.ts`:
 
 ```ts
-import { addr as ethAddr } from 'micro-eth-signer';
-import { fromBech32Address, fromZilPubKey, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
+import { addr as ethAddr } from "micro-eth-signer";
+import {
+  fromBech32Address,
+  fromZilPubKey,
+  toBech32Address,
+  toChecksumBytesAddress,
+} from "lib/zilliqa";
 import { KeyPair } from "./keypair";
-import { HRP } from 'lib/zilliqa/config';
-import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
+import { HRP } from "lib/zilliqa/config";
+import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 
 export enum AddressType {
   Bech32,
@@ -1815,7 +1943,7 @@ export class Address {
       return new Address(bytes, AddressType.Bech32);
     }
 
-    throw new Error('Unsupported address format');
+    throw new Error("Unsupported address format");
   }
 
   static async fromPubKey(pubKey: Uint8Array, slip44: number) {
@@ -1848,7 +1976,6 @@ export class Address {
         const ethBytes = hexToUint8Array(ethChecsumAddress);
 
         return new Address(ethBytes, addressType);
-
     }
   }
 
@@ -1862,7 +1989,7 @@ export class Address {
   }
 
   async toEthChecksum(): Promise<string> {
-    const nonChecksummedAddress = uint8ArrayToHex(this.bytes); 
+    const nonChecksummedAddress = uint8ArrayToHex(this.bytes);
     return ethAddr.addChecksum(nonChecksummedAddress);
   }
 
@@ -2823,7 +2950,7 @@ export class KeyPair {
         return Uint8Array.from(sigZil.toBytes());
       case AddressType.EthCheckSum:
         const sigEth = personal.sign(msg, this.privateKey);
-        return hexToUint8Array(sigEth); 
+        return hexToUint8Array(sigEth);
     }
   }
 
@@ -2831,7 +2958,7 @@ export class KeyPair {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
         const signature = signTyped(typedData, this.privateKey);
-        return hexToUint8Array(signature); 
+        return hexToUint8Array(signature);
       default:
         throw new Error("Unsupported");
     }
@@ -5738,6 +5865,15 @@ export default [
   content
 ];
 
+
+```
+
+`zil-pay/types/micro-eth-signer.d.ts`:
+
+```ts
+declare module "micro-eth-signer/abi.js" {
+  export * from "micro-eth-signer/abi";
+}
 
 ```
 

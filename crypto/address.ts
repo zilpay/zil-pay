@@ -1,8 +1,13 @@
-import { addr as ethAddr } from 'micro-eth-signer';
-import { fromBech32Address, fromZilPubKey, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
+import { addr as ethAddr } from "micro-eth-signer";
+import {
+  fromBech32Address,
+  fromZilPubKey,
+  toBech32Address,
+  toChecksumBytesAddress,
+} from "lib/zilliqa";
 import { KeyPair } from "./keypair";
-import { HRP } from 'lib/zilliqa/config';
-import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
+import { HRP } from "lib/zilliqa/config";
+import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 
 export enum AddressType {
   Bech32,
@@ -34,7 +39,7 @@ export class Address {
       return new Address(bytes, AddressType.Bech32);
     }
 
-    throw new Error('Unsupported address format');
+    throw new Error("Unsupported address format");
   }
 
   static async fromPubKey(pubKey: Uint8Array, slip44: number) {
@@ -67,7 +72,6 @@ export class Address {
         const ethBytes = hexToUint8Array(ethChecsumAddress);
 
         return new Address(ethBytes, addressType);
-
     }
   }
 
@@ -81,7 +85,7 @@ export class Address {
   }
 
   async toEthChecksum(): Promise<string> {
-    const nonChecksummedAddress = uint8ArrayToHex(this.bytes); 
+    const nonChecksummedAddress = uint8ArrayToHex(this.bytes);
     return ethAddr.addChecksum(nonChecksummedAddress);
   }
 
