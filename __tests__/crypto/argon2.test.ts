@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import { deriveArgon2Key } from "../../crypto/argon2";
 import { Config, Variant, Version } from "@hicaru/argon2-pure.js";
 import { APP_ID } from "../../config/argon2";
-import { utils } from "aes-js";
+import { utf8ToUint8Array } from "../../lib/utils/utf8";
 
 describe("argon2", () => {
   it("should derive the correct key", () => {
-    const password = new TextEncoder().encode("test_password");
-    const salt = utils.utf8.toBytes("some_salt");
+    const password = utf8ToUint8Array("test_password");
+    const salt = utf8ToUint8Array("some_salt");
     const config = new Config(
       APP_ID,
       64,
