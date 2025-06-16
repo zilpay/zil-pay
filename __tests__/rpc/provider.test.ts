@@ -1,76 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { RpcProvider } from "../../background/rpc/provider";
-import { ChainConfig } from "../../background/storage/chain";
 import { fromBech32Address } from "../../lib/zilliqa";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
-
-const ZERO_ADDR_BECH32 = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz";
-const ZERO_ADDR_HEX = "0x0000000000000000000000000000000000000000";
-
-const createZilliqaConfig = (): ChainConfig =>
-  new ChainConfig({
-    name: "Zilliqa",
-    chain: "ZIL",
-    logo: "",
-    rpc: [
-      "https://ssn.zilpay.io/api",
-      "https://ssn-api-mainnet.viewblock.io",
-      "https://zilliqa.avely.fi/api",
-      "https://ssn.zillet.io",
-      "https://api.zilliqa.com",
-    ],
-    features: [],
-    chainIds: [1, 0],
-    slip44: 313,
-    explorers: [],
-    fallbackEnabled: true,
-    testnet: false,
-    ftokens: [],
-  });
-
-const createBscConfig = (): ChainConfig =>
-  new ChainConfig({
-    name: "Binance Smart Chain",
-    chain: "BSC",
-    logo: "",
-    rpc: [
-      "https://bsc-dataseed.bnbchain.org",
-      "https://bsc-dataseed.nariox.org",
-      "https://bsc-dataseed.defibit.io",
-      "https://bsc-dataseed.ninicoin.io",
-      "https://bsc.nodereal.io",
-      "https://bsc-dataseed-public.bnbchain.org",
-      "https://bnb.rpc.subquery.network/public",
-    ],
-    features: [155, 1559],
-    chainIds: [56, 0],
-    slip44: 60,
-    explorers: [],
-    fallbackEnabled: true,
-    testnet: false,
-    ftokens: [],
-  });
-
-const createEthConfig = (): ChainConfig =>
-  new ChainConfig({
-    name: "Ethereum Mainnet",
-    chain: "ETH",
-    logo: "",
-    rpc: [
-      "https://eth.llamarpc.com",
-      "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
-      "https://eth.rpc.blxrbdn.com",
-      "https://mainnet.gateway.tenderly.co",
-      "https://1rpc.io/eth",
-    ],
-    features: [155, 1559],
-    chainIds: [1, 0],
-    slip44: 60,
-    explorers: [],
-    fallbackEnabled: true,
-    testnet: true,
-    ftokens: [],
-  });
+import {
+  createBscConfig,
+  createEthConfig,
+  createZilliqaConfig,
+  ZERO_ADDR_BECH32,
+  ZERO_ADDR_HEX,
+} from "../data";
 
 interface GetBalanceRes {
   balance: string;
