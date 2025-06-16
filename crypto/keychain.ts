@@ -18,6 +18,7 @@ import { AESCipherV3, AESCipherV2 } from "./aes256";
 import { pbkdf2 } from "./pbkdf2";
 import { utils } from "aes-js";
 import { ShaAlgorithms } from "../config/pbkdf2";
+import { uint8ArrayToHex } from "lib/utils/hex";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
 export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
@@ -66,7 +67,7 @@ export class KeyChain {
   static async fromAesV2(password: Uint8Array): Promise<KeyChain> {
     const keyHashBytes = await sha256(password);
 
-    const keyHashHex = utils.hex.fromBytes(keyHashBytes);
+    const keyHashHex = uint8ArrayToHex(keyHashBytes);
     const aesKeyForV2 = utils.utf8.toBytes(keyHashHex);
 
     const ntrupKeys = ntruKeysFromSeed(

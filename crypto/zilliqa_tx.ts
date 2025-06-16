@@ -11,6 +11,7 @@ import {
 } from "./proto/zq1";
 import { verify } from "./zilliqa/schnorr";
 import { utils } from "aes-js";
+import { uint8ArrayToHex } from "lib/utils/hex";
 
 const U128LEN = 16;
 
@@ -121,14 +122,14 @@ export class ZILTransactionReceipt {
     return {
       version: this.version,
       nonce: this.nonce.toString(),
-      toAddr: utils.hex.fromBytes(this.toAddr),
+      toAddr: uint8ArrayToHex(this.toAddr),
       amount: uint8ArrayToBigIntBigEndian(this.amount).toString(),
-      pubKey: utils.hex.fromBytes(this.pubKey),
+      pubKey: uint8ArrayToHex(this.pubKey),
       gasPrice: uint8ArrayToBigIntBigEndian(this.gasPrice).toString(),
       gasLimit: this.gasLimit.toString(),
       code: this.code.length > 0 ? utils.utf8.fromBytes(this.code) : "",
       data: this.data.length > 0 ? utils.utf8.fromBytes(this.data) : "",
-      signature: utils.hex.fromBytes(this.signature),
+      signature: uint8ArrayToHex(this.signature),
       priority: this.priority,
     };
   }

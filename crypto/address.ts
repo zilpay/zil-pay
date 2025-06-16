@@ -2,7 +2,6 @@ import { addr as ethAddr } from 'micro-eth-signer';
 import { fromBech32Address, fromZilPubKey, toBech32Address, toChecksumBytesAddress } from "lib/zilliqa";
 import { KeyPair } from "./keypair";
 import { HRP } from 'lib/zilliqa/config';
-import { utils } from "aes-js";
 import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 
 export enum AddressType {
@@ -78,7 +77,7 @@ export class Address {
   }
 
   toBase16(): string {
-    return utils.hex.fromBytes(this.bytes);
+    return uint8ArrayToHex(this.bytes);
   }
 
   async toEthChecksum(): Promise<string> {
