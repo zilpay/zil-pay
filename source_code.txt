@@ -575,7 +575,6 @@ export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult)
     }
 
     const priorityFee = BigInt(lastRewardArr[1]);
-
     const maxFee = baseFee * 2n + priorityFee;
 
     return {
@@ -593,6 +592,9 @@ export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult)
 ```ts
 export * from './provider';
 export * from './rpc';
+export * from './ft_parser';
+export * from './gas_parse';
+export * from './nonce_parser';
 
 ```
 
