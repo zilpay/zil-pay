@@ -1,5 +1,7 @@
+export const HEX_PREFIX = "0x";
+
 export function stripHexPrefix(hex: string): string {
-  return hex.toLowerCase().startsWith('0x') ? hex.slice(2) : hex;
+  return hex.toLowerCase().startsWith(HEX_PREFIX) ? hex.slice(2) : hex;
 }
 
 /**
@@ -24,7 +26,7 @@ export function uint8ArrayToHex(uint8Array: Uint8Array, prefix: boolean = false)
     }
     const hexString = hexParts.join('');
 
-    return prefix ? '0x' + hexString : hexString;
+    return prefix ? HEX_PREFIX + hexString : hexString;
 }
 
 /**
@@ -59,3 +61,16 @@ export function hexToUint8Array(hexString: string): Uint8Array {
     return Uint8Array.from(arrayBuffer);
 }
 
+
+/**
+ * Converts a hexadecimal string to a BigInt.
+ * This is the most direct and performant way to perform the conversion.
+ *
+ * @param {string} hexString The hexadecimal string (may start with '0x').
+ * @returns {bigint} The BigInt representation of the hexadecimal string.
+ * @throws {SyntaxError} if the string is not a valid hexadecimal number.
+ */
+export function hexToBigInt(hexString: string): bigint {
+    const cleanHex = hexString.startsWith(HEX_PREFIX) ? hexString : `${HEX_PREFIX}${hexString}`;
+    return BigInt(cleanHex);
+}

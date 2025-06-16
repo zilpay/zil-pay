@@ -4,6 +4,7 @@ import { AddressType } from '../../crypto/address';
 import { addr } from 'micro-eth-signer';
 import { fromBech32Address } from '../../lib/zilliqa';
 import { TypeOf } from 'lib/types';
+import { hexToBigInt, stripHexPrefix } from 'lib/utils/hex';
 
 export interface ZilBalance {
   balance: string;
@@ -18,7 +19,7 @@ export async function buildNonceRequest(addressType: AddressType, address: strin
       const base16 = await fromBech32Address(address);
       return RpcProvider.buildPayload(
         ZilMethods.GetBalance,
-        [base16.replace("0x", "").toLowerCase()]
+        [stripHexPrefix(base16).toLowerCase()]
       );
     case AddressType.EthCheckSum:
       const ethAddress = addr.addChecksum(address);
@@ -36,8 +37,9 @@ export function processNonceResponse(response: NonceResponse): number {
     const res = response as ZilBalance;
     return res.nonce || 0;
   } else if (TypeOf.isString(response)) {
-    return parseInt(String(response).replace('0x', ''), 16) || 0;
+    return Number(hexToBigInt(String(response)));
   }
+
   return 0;
 }
 
