@@ -1,6 +1,8 @@
-import { Counter, ModeOfOperation, utils } from "aes-js";
+import { Counter, ModeOfOperation } from "aes-js";
 import { randomBytes } from "../crypto/random";
 import { md5 } from "js-md5";
+import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 
 export enum ErrorMessages {
   InvalidKeyLength = "Invalid key length provided. Key must be 16, 24, or 32 bytes.",
@@ -17,8 +19,8 @@ export const AESCipherV3 = Object.freeze({
     const iv = new Counter(entropy);
     const aesCtr = new ModeOfOperation.ctr(key, iv);
     const encrypted = aesCtr.encrypt(content);
-    const bytes = utils.utf8.toBytes(
-      `${utils.hex.fromBytes(encrypted)}/${utils.hex.fromBytes(entropy)}`,
+    const bytes = utf8ToUint8Array(
+      `${uint8ArrayToHex(encrypted)}/${uint8ArrayToHex(entropy)}`,
     );
     return bytes;
   },
@@ -27,10 +29,10 @@ export const AESCipherV3 = Object.freeze({
       throw new Error(ErrorMessages.InvalidKeyLength);
     }
 
-    const [encrypted, iv] = utils.utf8.fromBytes(bytes).split("/");
-    const counter = new Counter(utils.hex.toBytes(iv));
+    const [encrypted, iv] = uint8ArrayToUtf8(bytes).split("/");
+    const counter = new Counter(hexToUint8Array(iv));
     const aesCtr = new ModeOfOperation.ctr(key, counter);
-    return aesCtr.decrypt(utils.hex.toBytes(encrypted));
+    return aesCtr.decrypt(hexToUint8Array(encrypted));
   },
 });
 

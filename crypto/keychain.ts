@@ -16,9 +16,9 @@ import {
 } from "./kuznechik";
 import { AESCipherV3, AESCipherV2 } from "./aes256";
 import { pbkdf2 } from "./pbkdf2";
-import { utils } from "aes-js";
 import { ShaAlgorithms } from "../config/pbkdf2";
 import { uint8ArrayToHex } from "lib/utils/hex";
+import { utf8ToUint8Array } from "lib/utils/utf8";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
 export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
@@ -68,7 +68,7 @@ export class KeyChain {
     const keyHashBytes = await sha256(password);
 
     const keyHashHex = uint8ArrayToHex(keyHashBytes);
-    const aesKeyForV2 = utils.utf8.toBytes(keyHashHex);
+    const aesKeyForV2 = utf8ToUint8Array(keyHashHex);
 
     const ntrupKeys = ntruKeysFromSeed(
       Uint8Array.from([...keyHashBytes, ...keyHashBytes]),
@@ -82,7 +82,7 @@ export class KeyChain {
     algorithm: ShaAlgorithms,
     iteractions: number,
   ): Promise<KeyChain> {
-    const salt = utils.utf8.toBytes(EXTENSION_ID);
+    const salt = utf8ToUint8Array(EXTENSION_ID);
     const key = await pbkdf2(password, salt, iteractions, algorithm);
     const keyBytes = await sha256(key);
     const ntrupKeys = ntruKeysFromSeed(
