@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { Address, AddressType } from '../../crypto/address';
 import { KeyPair } from '../../crypto/keypair';
 import { ZILLIQA, ETHEREUM } from '../../config/slip44';
-import { utils } from 'aes-js';
 import { toBech32Address } from '../../lib/zilliqa';
+import { hexToUint8Array, uint8ArrayToHex } from '../../lib/utils/hex';
 
 describe('Address', () => {
     const zilData = new Uint8Array(20).fill(1);
@@ -13,7 +13,7 @@ describe('Address', () => {
     const ethAddr = new Address(ethData, AddressType.EthCheckSum);
 
     const knownPrivateKeyHex = 'e93c035175b08613c4b0251ca92cd007026ca032ba53bafa3c839838f8b52d04';
-    const privateKeyBytes = Uint8Array.from(utils.hex.toBytes(knownPrivateKeyHex));
+    const privateKeyBytes = hexToUint8Array(knownPrivateKeyHex);
 
     it('should create addresses and hold correct bytes', () => {
         expect(zilAddr.bytes).toEqual(zilData);
@@ -21,7 +21,7 @@ describe('Address', () => {
     });
 
     it('should format ZIL address to bech32 string correctly', async () => {
-        const expected = await toBech32Address(utils.hex.fromBytes(zilData));
+        const expected = await toBech32Address(uint8ArrayToHex(zilData));
         expect(await zilAddr.toZilBech32()).toBe(expected);
     });
 
@@ -85,7 +85,7 @@ describe('Address', () => {
 
     it('should derive correct addresses from specific public keys (Rust equivalent)', async () => {
         const pubKeyHex = '03150a7f37063b134cde30070431a69148d60b252f4c7b38de33d813d329a7b7da';
-        const pubKeyBytes = Uint8Array.from(utils.hex.toBytes(pubKeyHex));
+        const pubKeyBytes = Uint8Array.from(hexToUint8Array(pubKeyHex));
 
         // Test for Zilliqa
         const addrZil = await Address.fromPubKey(pubKeyBytes, ZILLIQA);
