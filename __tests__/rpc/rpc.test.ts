@@ -18,13 +18,16 @@ describe("JsonRPC provder tests", () => {
     ];
     const result = await rpc.ftoken_meta(zlpContract, accounts);
 
-    // console.log(result);
-
     expect(result.addr).toBe(await zlpContract.toZilBech32());
     expect(result.addrType).toBe(AddressType.Bech32);
     expect(result.decimals).toBe(18);
     expect(result.symbol).toBe("ZLP");
     expect(result.name).toBe("ZilPay wallet");
+
+    accounts.forEach((_account, index) => {
+      expect(result.balances[index]).toBeDefined();
+      expect(BigInt(result.balances[index])).toBeGreaterThan(0);
+    });
   });
 
   it("should get scilla ftoken metadata", async () => {

@@ -37,15 +37,14 @@ export class NetworkProvider {
         const reqWithType = requestsWithTypes[i];
 
         if (reqWithType.requestType.type === 'Balance') {
-          const balance = await processZilBalanceResponse(responses[i], contract, false);
+          const addresss = reqWithType.requestType.address;
+          const balance = await processZilBalanceResponse(responses[i], addresss, false);
+          const accountIndex = accounts.findIndex(
+            acc => acc === reqWithType.requestType.address
+          );
 
-          if (reqWithType.requestType.type === 'Balance') {
-            const accountIndex = accounts.findIndex(
-              acc => acc === reqWithType.requestType.address
-            );
-            if (accountIndex !== -1) {
-              balances[accountIndex] = balance.toString();
-            }
+          if (accountIndex !== -1) {
+            balances[accountIndex] = balance.toString();
           }
         }
       }
