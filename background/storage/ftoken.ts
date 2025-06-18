@@ -1,10 +1,10 @@
-import type { AddressType } from "crypto/address";
+import { Address, type AddressType } from "crypto/address";
 
 export class FToken {
   name: string;
   symbol: string;
   decimals: number;
-  addr: string;
+  addr: Address;
   addrType: AddressType;
   logo: string | null;
   balances: Record<number, string>;
@@ -17,7 +17,7 @@ export class FToken {
     this.name = data.name as string;
     this.symbol = data.symbol as string;
     this.decimals = data.decimals as number;
-    this.addr = data.addr as string;
+    this.addr = Address.fromStr(data.addr as string);
     this.addrType = data.addrType as AddressType;
     this.logo = data.logo as string | null ?? null;
     this.balances = data.balances as Record<number, string>;

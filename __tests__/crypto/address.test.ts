@@ -28,7 +28,7 @@ describe("Address", () => {
 
   it("should format ETH address to checksummed string correctly", async () => {
     const anotherValidAddress = "0x7793A8E8c09d189d4D421Ce5bC5B3674656c5Ac1";
-    const ethAddrFromHex = await Address.fromStr(anotherValidAddress);
+    const ethAddrFromHex = Address.fromStr(anotherValidAddress);
     expect(await ethAddrFromHex.toEthChecksum()).toBe(anotherValidAddress);
   });
 
@@ -52,30 +52,30 @@ describe("Address", () => {
 
   it("should create an ETH address from a valid hex string", async () => {
     const hexEthAddr = "0xf06686B5Eb5cAe38c09f12412B729045647E74e3";
-    const addr = await Address.fromStr(hexEthAddr);
+    const addr = Address.fromStr(hexEthAddr);
     expect(addr.type).toBe(AddressType.EthCheckSum);
     expect(await addr.toEthChecksum()).toBe(hexEthAddr);
   });
 
   it("should create a ZIL address from a valid bech32 string", async () => {
     const bech32Addr = "zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu";
-    const addr = await Address.fromStr(bech32Addr);
+    const addr = Address.fromStr(bech32Addr);
     expect(addr.type).toBe(AddressType.Bech32);
     expect(await addr.toZilBech32()).toBe(bech32Addr);
   });
 
   it("should throw an error for invalid address string formats", async () => {
-    await expect(Address.fromStr("invalid-address-string")).rejects.toThrow(
+    expect(() => Address.fromStr("invalid-address-string")).toThrow(
       "Unsupported address format",
     );
-    await expect(Address.fromStr("0x12345")).rejects.toThrow(
+    expect(() => Address.fromStr("0x12345")).toThrow(
       "address must be 40-char hex, got 7-char 0x12345",
     );
   });
 
   it("should perform a roundtrip for ZIL address", async () => {
     const originalAddr = "zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu";
-    const addrObject = await Address.fromStr(originalAddr);
+    const addrObject = Address.fromStr(originalAddr);
     const finalAddr = await addrObject.toZilBech32();
     expect(finalAddr).toBe(originalAddr);
   });
@@ -83,7 +83,7 @@ describe("Address", () => {
   it("should perform a roundtrip for ETH address", async () => {
     const originalAddr = "0xf06686b5eb5cae38c09f12412b729045647e74e3";
     const expectedChecksumAddr = "0xf06686B5Eb5cAe38c09f12412B729045647E74e3";
-    const addrObject = await Address.fromStr(originalAddr);
+    const addrObject = Address.fromStr(originalAddr);
     const finalAddr = await addrObject.toEthChecksum();
     expect(finalAddr).toBe(expectedChecksumAddr);
   });

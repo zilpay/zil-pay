@@ -26,14 +26,14 @@ export class Address {
     return this.#type;
   }
 
-  static async fromStr(address: string) {
+  static fromStr(address: string) {
     if (hasHexPrefix(address)) {
       const ethCheckSumAddress = ethAddr.parse(address);
       const bytes = hexToUint8Array(ethCheckSumAddress.data);
 
       return new Address(bytes, AddressType.EthCheckSum);
     } else if (address.startsWith(HRP)) {
-      const checkSumZil = await fromBech32Address(address);
+      const checkSumZil = fromBech32Address(address);
       const bytes = hexToUint8Array(checkSumZil);
 
       return new Address(bytes, AddressType.Bech32);

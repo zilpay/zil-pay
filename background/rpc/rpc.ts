@@ -38,11 +38,14 @@ export class NetworkProvider {
         const reqWithType = requestsWithTypes[i];
         if (reqWithType.requestType.type === 'Balance') {
           const balance = await processZilBalanceResponse(responses[i], contract, false);
-          const accountIndex = accounts.findIndex(
-            acc => acc.toBase16() === new Address(reqWithType.requestType.addressBytes, contract.type).toBase16()
-          );
-          if (accountIndex !== -1) {
-            balances[accountIndex] = balance.toString();
+
+          if (reqWithType.requestType.type === 'Balance') {
+            const accountIndex = accounts.findIndex(
+              acc => acc === reqWithType.requestType.address
+            );
+            if (accountIndex !== -1) {
+              balances[accountIndex] = balance.toString();
+            }
           }
         }
       }
@@ -60,7 +63,6 @@ export class NetworkProvider {
         logo: null,
         rate: 0
       });
-
     } else {
       let responseIterator = 0;
       const name = processEthMetadataResponse(responses[responseIterator++], MetadataField.Name);
@@ -72,11 +74,13 @@ export class NetworkProvider {
         if (reqWithType.requestType.type === 'Balance') {
           const response = responses[responseIterator + index];
           const balance = processEthBalanceResponse(response);
-          const accountIndex = accounts.findIndex(
-            acc => acc.toBase16() === new Address(reqWithType.requestType.addressBytes, contract.type).toBase16()
-          );
-          if (accountIndex !== -1) {
-            balances[accountIndex] = balance.toString();
+          if (reqWithType.requestType.type == 'Balance') {
+            const accountIndex = accounts.findIndex(
+              acc => acc === reqWithType.requestType.address,
+            );
+            if (accountIndex !== -1) {
+              balances[accountIndex] = balance.toString();
+            }
           }
         }
       });

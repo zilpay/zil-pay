@@ -135,7 +135,7 @@ export const toBech32Address = async (address: string): Promise<string> => {
     return encode(HRP, addrBz as Uint8Array);
 };
 
-export const fromBech32Address = async (address: string): Promise<string> => {
+export const fromBech32Address = (address: string): string => {
     const res = decode(address);
     assert(res !== null, 'Invalid Bech32 address.');
 
@@ -145,8 +145,8 @@ export const fromBech32Address = async (address: string): Promise<string> => {
     const buf = convertBits(data, 5, 8, false);
     assert(buf !== null, 'Cannot convert Bech32 bits to bytes.');
 
-    const hexAddress = uint8ArrayToHex(buf as Uint8Array);
+    const hexAddress = uint8ArrayToHex(buf as Uint8Array, true);
 
-    return toChecksumHexAddress(hexAddress);
+    return hexAddress;
 };
 

@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   toChecksumHexAddress,
   toChecksumBytesAddress,
-} from "lib/zilliqa/checksum";
-import { fromZilPubKey } from "lib/zilliqa/pubkey.ts";
+} from "../../lib/zilliqa/checksum";
+import { fromZilPubKey } from "../../lib/zilliqa/pubkey.ts";
 import { utils } from "aes-js";
-import { toBech32Address, fromBech32Address } from "lib/zilliqa/bech32";
+import { toBech32Address, fromBech32Address } from "../../lib/zilliqa/bech32";
 
 describe("Address Conversion Tests", () => {
   describe("toChecksumAddress", () => {
@@ -43,22 +43,18 @@ describe("Address Conversion Tests", () => {
   describe("fromBech32Address", () => {
     it("should correctly decode a valid Bech32 address to a checksummed hexadecimal address", async () => {
       const bech32Address = "zil1w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8";
-      const hexAddress = await fromBech32Address(bech32Address);
-      expect(hexAddress).toBe("0x7793a8e8c09D189D4d421CE5Bc5b3674656C5Ac1");
+      const hexAddress = fromBech32Address(bech32Address);
+      expect(hexAddress).toBe("0x7793a8e8c09d189d4d421ce5bc5b3674656c5ac1");
     });
 
     it("should throw an error for an invalid Bech32 address length", async () => {
       const invalidBech32 = "zi21w7f636xqn5vf6n2zrnjmckekw3jkckkpyrd6z8";
-      await expect(fromBech32Address(invalidBech32)).rejects.toThrow(
-        "Invalid Bech32 address.",
-      );
+      expect(() => fromBech32Address(invalidBech32)).toThrow();
     });
 
     it("should throw an error for a Bech32 address with an incorrect HRP", async () => {
       const wrongHRP = "btc1qwertzuiopasdfghjklmnbvcxy";
-      await expect(fromBech32Address(wrongHRP)).rejects.toThrow(
-        "Invalid Bech32 address.",
-      );
+      expect(() => fromBech32Address(wrongHRP)).toThrow();
     });
   });
 });

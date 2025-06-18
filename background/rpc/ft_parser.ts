@@ -42,8 +42,8 @@ type FunctionArgs = {
 };
 
 export type RequestType =
-  | { type: 'Metadata'; field: MetadataField }
-  | { type: 'Balance'; address: string };
+  | { type: 'Metadata'; field: MetadataField; address?: Address }
+  | { type: 'Balance'; address: Address };
 
 export interface GetTokenInitItem {
   vname: string;
@@ -187,7 +187,7 @@ async function buildZilRequests(
     }
     requests.push({
       payload,
-      requestType: { type: 'Balance', address: (await account.toZilBech32()) },
+      requestType: { type: 'Balance', address: account },
     });
   }
 }
@@ -241,7 +241,7 @@ async function buildEthRequests(
     }
     requests.push({
       payload,
-      requestType: { type: 'Balance', address: ethAddress },
+      requestType: { type: 'Balance', address: account },
     });
   }
 }
