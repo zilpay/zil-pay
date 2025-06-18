@@ -28,7 +28,6 @@ export class NetworkProvider {
 
     const payloads = requestsWithTypes.map(r => r.payload);
     const responses = await provider.req<JsonRPCResponse<any>[]>(payloads);
-
     const balances: Record<number, string> = {};
 
     if (contract.type === AddressType.Bech32) {
@@ -36,6 +35,7 @@ export class NetworkProvider {
       
       for (let i = 1; i < responses.length; i++) {
         const reqWithType = requestsWithTypes[i];
+
         if (reqWithType.requestType.type === 'Balance') {
           const balance = await processZilBalanceResponse(responses[i], contract, false);
 
