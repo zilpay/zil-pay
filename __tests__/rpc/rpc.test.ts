@@ -33,13 +33,22 @@ describe("JsonRPC provder tests", () => {
   it("should get scilla ftoken metadata", async () => {
     const rpc = new NetworkProvider(ethConfig);
     const usdtContract = Address.fromStr("0xdAC17F958D2ee523a2206206994597C13D831ec7");
-    const result = await rpc.ftoken_meta(usdtContract, []);
+    const accounts = [
+      Address.fromStr("0xA9D1e08C7793af67e9d92fe308d5697FB81d3E43"),
+      Address.fromStr("0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE"),
+    ];
+    const result = await rpc.ftoken_meta(usdtContract, accounts);
 
     expect(result.addr).toBe(await usdtContract.toEthChecksum());
     expect(result.addrType).toBe(AddressType.EthCheckSum);
     expect(result.decimals).toBe(6);
     expect(result.name).toBe("Tether USD");
     expect(result.symbol).toBe("USDT");
+
+    accounts.forEach((_account, index) => {
+      expect(result.balances[index]).toBeDefined();
+      expect(BigInt(result.balances[index])).toBeGreaterThan(0);
+    });
   });
 });
 
