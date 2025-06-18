@@ -38,6 +38,15 @@ export const TypeOf = Object.freeze({
     },
 
     /**
+     * Checks if the given argument is a BigInt.
+     * @param arg The argument to check.
+     * @returns True if the argument is a BigInt, false otherwise.
+     */
+    isBigInt(arg: Arg): boolean {
+        return typeof arg === 'bigint';
+    },
+
+    /**
      * Checks if the given argument is an error object.
      * @param arg The argument to check.
      * @returns True if the argument is an error object, false otherwise.

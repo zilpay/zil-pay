@@ -3,6 +3,8 @@ import { ZILTransactionRequest, ZILTransactionReceipt } from "./zilliqa_tx";
 import { Transaction } from "micro-eth-signer";
 import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
+import { convertBigIntsToHex } from "lib/utils/hex";
+
 
 export interface TransactionMetadata {
   chainHash: number;
@@ -31,6 +33,16 @@ export class TransactionRequest {
       const receipt = this.evm.signBy(keypair.privateKey, entropy);
 
       return new TransactionReceipt(this.metadata, undefined, receipt);
+    }
+
+    throw new Error("Invlid tx type");
+  }
+
+  toJSON() {
+    if (this.scilla) {
+      return this.scilla.toJSON();
+    } else if (this.evm) {
+      return convertBigIntsToHex(this.evm.raw);
     }
 
     throw new Error("Invlid tx type");

@@ -4,6 +4,8 @@ import { Address } from 'crypto/address';
 import { buildNonceRequest } from 'background/rpc/nonce_parser';
 import { RpcProvider, type JsonRPCRequest } from 'background/rpc/provider';
 import { TypeOf } from 'lib/types';
+import { decodeTx } from 'micro-eth-signer/abi.js';
+import { uint8ArrayToHex } from 'lib/utils/hex';
 
 export interface GasFeeHistory {
   maxFee: bigint;
@@ -74,29 +76,27 @@ export async function buildBatchGasRequest(
         requests.push(await buildNonceRequest(sender.type, zilAddress));
         requests.push(RpcProvider.buildPayload(ZilMethods.GetMinimumGasPrice, []));
         return requests;
+    } else if (tx.evm) {
+        const ethAddress = await sender.toEthChecksum();
+        requests.push(await buildNonceRequest(sender.type, ethAddress));
+        requests.push(RpcProvider.buildPayload(EvmMethods.GasPrice, []));
+
+        const requestEstimateGas = RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.toJSON()]);
+        requests.push(requestEstimateGas);
+
+        if (features.includes(EIP1559)) {
+            requests.push(RpcProvider.buildPayload(EvmMethods.MaxPriorityFeePerGas, []));
+            requests.push(buildFeeHistoryRequest(blockCount, percentiles));
+        }
+
+        if (features.includes(EIP4844)) {
+            requests.push(RpcProvider.buildPayload(EvmMethods.BlobBaseFee, []));
+        }
+
+        return requests;
     }
     
-    if (!tx.evm) {
-        throw new TransactionError('EVM transaction is required for gas estimation.');
-    }
-
-    const ethAddress = await sender.toEthChecksum();
-    requests.push(await buildNonceRequest(sender.type, ethAddress));
-    requests.push(RpcProvider.buildPayload(EvmMethods.GasPrice, []));
-    
-    const requestEstimateGas = RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.evm]);
-    requests.push(requestEstimateGas);
-
-    if (features.includes(EIP1559)) {
-        requests.push(RpcProvider.buildPayload(EvmMethods.MaxPriorityFeePerGas, []));
-        requests.push(buildFeeHistoryRequest(blockCount, percentiles));
-    }
-
-    if (features.includes(EIP4844)) {
-        requests.push(RpcProvider.buildPayload(EvmMethods.BlobBaseFee, []));
-    }
-
-    return requests;
+    throw new TransactionError('unsupported transaction.');
 }
 
 export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult): GasFeeHistory {

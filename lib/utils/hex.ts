@@ -1,3 +1,5 @@
+import { TypeOf } from "lib/types";
+
 export const HEX_PREFIX = "0x";
 
 /**
@@ -88,4 +90,27 @@ export function hexToUint8Array(hexString: string): Uint8Array {
 export function hexToBigInt(hexString: string): bigint {
     const cleanHex = hexString.startsWith(HEX_PREFIX) ? hexString : `${HEX_PREFIX}${hexString}`;
     return BigInt(cleanHex);
+}
+
+export function bigintToHex(value: bigint): string {
+    return HEX_PREFIX + value.toString(16);
+}
+
+
+export function convertBigIntsToHex(obj: { [key: string]: unknown }): { [key: string]: unknown } {
+  const newObj: { [key: string]: unknown } = {};
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = obj[key];
+      
+      if (TypeOf.isBigInt(value)) {
+        newObj[key] = HEX_PREFIX + (value as bigint).toString(16);
+      } else {
+        newObj[key] = value;
+      }
+    }
+  }
+
+  return newObj;
 }

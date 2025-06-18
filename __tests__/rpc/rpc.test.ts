@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createBscConfig, createEthConfig, createZilliqaConfig } from '../data';
 import { generateErc20TransferData, NetworkProvider } from '../../background/rpc';
 import { Address, AddressType } from "../../crypto/address";
-import { Transaction } from "micro-eth-signer";
+import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { TransactionRequest } from '../../crypto/tx';
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 
@@ -55,79 +55,87 @@ describe("JsonRPC provder tests", () => {
     });
   });
 
-  // it("test_calc_fee_eth_batch", async () => {
-  //   const provider = new NetworkProvider(ethConfig);
-  //   const tokenAddress = Address.fromStr("0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc");
-  //   const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
-  //   const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
-  //   const amount = 100n;
-  //   const transferData = generateErc20TransferData(await recipient.toEthChecksum(), amount);
-  //   const ethTx = Transaction.prepare({
-  //     to: await tokenAddress.toEthChecksum(),
-  //     value: 0n,
-  //     maxFeePerGas: 2000000000n,
-  //     maxPriorityFeePerGas: 1000000000n,
-  //     nonce: 0n,
-  //     chainId: BigInt(ethConfig.chainId),
-  //     data: transferData
-  //   });
-  //   const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
+  it("test_calc_fee_eth_batch", async () => {
+    const provider = new NetworkProvider(ethConfig);
+    const tokenAddress = Address.fromStr("0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc");
+    const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
+    const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+    const amount = 100n;
+    const transferData = generateErc20TransferData(await recipient.toEthChecksum(), amount);
+    const ethTx = Transaction.prepare({
+      to: await tokenAddress.toEthChecksum(),
+      value: 0n,
+      maxFeePerGas: weigwei.decode('1'), 
+      nonce: 0n,
+      chainId: BigInt(ethConfig.chainId),
+      data: transferData
+    });
+    const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
 
-  //   const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
 
-  //   expect(fee.gasPrice).toBeGreaterThan(0n);
-  //   expect(fee.maxPriorityFee).toBeGreaterThan(0n);
-  //   expect(fee.txEstimateGas).toBeGreaterThan(0n);
-  //   expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
-  //   expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
-  // }, 20000);
+    expect(fee.gasPrice).toBeGreaterThan(0n);
+    expect(fee.nonce).toBeGreaterThan(0);
+    expect(fee.maxPriorityFee).toBeGreaterThan(0n);
+    expect(fee.txEstimateGas).toBe(22765n);
+    expect(fee.blobBaseFee).toBe(0n);
+    expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
+    expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
+    expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
+  }, 20000);
 
-  // it("test_get_tx_params_payment", async () => {
-  //   const provider = new NetworkProvider(ethConfig);
-  //   const recipient = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
-  //   const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
-  //   const amount = 100n;
+  it("test_get_tx_params_payment", async () => {
+    const provider = new NetworkProvider(ethConfig);
+    const recipient = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+    const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+    const amount = 100n;
     
-  //   const ethTx = Transaction.prepare({
-  //     from: await from.toEthChecksum(),
-  //     to: await recipient.toEthChecksum(),
-  //     value: amount,
-  //     type: 2,
-  //     chainId: BigInt(ethConfig.chainId),
-  //   });
-  //   const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
+    const ethTx = Transaction.prepare({
+      to: await recipient.toEthChecksum(),
+      nonce: 0n,
+      value: amount,
+      chainId: BigInt(ethConfig.chainId),
+      maxFeePerGas: weigwei.decode('1'), 
+    });
+    const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
 
-  //   const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
-    
-  //   expect(fee.gasPrice).toBeGreaterThan(0n);
-  //   expect(fee.maxPriorityFee).toBeGreaterThan(0n);
-  //   expect(fee.txEstimateGas).toBe(21000n);
-  //   expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
-  //   expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
-  // }, 20000);
+    const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
 
-  // it("test_calc_fee_bsc_batch", async () => {
-  //   const provider = new NetworkProvider(bscConfig);
-  //   const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
-  //   const from = Address.fromStr("0x7b501c7944185130DD4aD73293e8Aa84eFfDcee7");
-    
-  //   const bscTx = Transaction.prepare({
-  //     from: await from.toEthChecksum(),
-  //     to: await recipient.toEthChecksum(),
-  //     value: 0n,
-  //     maxFeePerGas: 2000000000n,
-  //     maxPriorityFeePerGas: 1000000000n,
-  //     nonce: 0n,
-  //   });
+    expect(fee.gasPrice).toBeGreaterThan(0n);
+    expect(fee.nonce).toBeGreaterThan(0);
+    expect(fee.maxPriorityFee).toBeGreaterThan(0n);
+    expect(fee.txEstimateGas).toBe(21000n);
+    expect(fee.blobBaseFee).toBe(0n);
+    expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
+    expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
+    expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
+  }, 20000);
 
-  //   const txRequest = new TransactionRequest({ chainHash: bscConfig.hash() }, undefined, bscTx);
-  //   const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+  it("test_calc_fee_bsc_batch", async () => {
+    const provider = new NetworkProvider(bscConfig);
+    const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
+    const from = Address.fromStr("0x7b501c7944185130DD4aD73293e8Aa84eFfDcee7");
     
-  //   expect(fee.gasPrice).toBeGreaterThan(0n);
-  //   expect(fee.nonce).toBe(0);
-  //   expect(fee.maxPriorityFee).toBeGreaterThan(0n);
-  //   expect(fee.txEstimateGas).toBeGreaterThan(0n);
-  // }, 20000);
+    const bscTx = Transaction.prepare({
+      to: await recipient.toEthChecksum(),
+      value: weieth.decode('1.1'), 
+      maxFeePerGas: weigwei.decode('1'), 
+      nonce: 0n,
+      chainId: BigInt(bscConfig.chainId),
+    });
+
+    const txRequest = new TransactionRequest({ chainHash: bscConfig.hash() }, undefined, bscTx);
+    const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    
+    expect(fee.gasPrice).toBe(100000000n);
+    expect(fee.nonce).toBeGreaterThan(0);
+    expect(fee.maxPriorityFee).toBe(100000000n);
+    expect(fee.txEstimateGas).toBe(21000n);
+    expect(fee.blobBaseFee).toBe(0n);
+    expect(fee.feeHistory.baseFee).toBe(0n);
+    expect(fee.feeHistory.maxFee).toBe(110000000n);
+    expect(fee.feeHistory.priorityFee).toBe(110000000n);
+  }, 20000);
 
   it("test_get_tx_prams_scilla", async () => {
     const provider = new NetworkProvider(zilConfig);
@@ -145,7 +153,7 @@ describe("JsonRPC provder tests", () => {
     const txRequest = new TransactionRequest({ chainHash: zilConfig.hash() }, zilTx, undefined);
     const params = await provider.estimate_params_batch(txRequest, from, 4, null);
 
-    expect(params.gasPrice).toBeGreaterThan(0n);
+    expect(params.gasPrice).toBe(2000000000n);
     expect(params.nonce).toBeGreaterThan(0);
   }, 20000);
 });
