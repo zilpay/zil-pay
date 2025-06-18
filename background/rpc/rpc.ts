@@ -63,7 +63,7 @@ export class NetworkProvider {
         logo: null,
         rate: 0
       });
-    } else {
+    } else if (contract.type === AddressType.EthCheckSum) {
       let responseIterator = 0;
       const name = processEthMetadataResponse(responses[responseIterator++], MetadataField.Name);
       const symbol = processEthMetadataResponse(responses[responseIterator++], MetadataField.Symbol);
@@ -99,5 +99,7 @@ export class NetworkProvider {
         rate: 0
       });
     }
+
+    throw new Error("unsupported contract");
   }
 }
