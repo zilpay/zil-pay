@@ -1,11 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { createEthConfig, createZilliqaConfig } from '../data';
-import { NetworkProvider } from '../../background/rpc';
+import { createBscConfig, createEthConfig, createZilliqaConfig } from '../data';
+import { generateErc20TransferData, NetworkProvider } from '../../background/rpc';
 import { Address, AddressType } from "../../crypto/address";
+import { Transaction } from "micro-eth-signer";
+import { TransactionRequest } from '../../crypto/tx';
+import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 
 describe("JsonRPC provder tests", () => {
   const zilConfig = createZilliqaConfig();
   const ethConfig = createEthConfig();
+  const bscConfig = createBscConfig();
 
   it("should get scilla ftoken metadata", async () => {
     const rpc = new NetworkProvider(zilConfig);
@@ -50,5 +54,99 @@ describe("JsonRPC provder tests", () => {
       expect(BigInt(result.balances[index])).toBeGreaterThan(0);
     });
   });
+
+  // it("test_calc_fee_eth_batch", async () => {
+  //   const provider = new NetworkProvider(ethConfig);
+  //   const tokenAddress = Address.fromStr("0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc");
+  //   const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
+  //   const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+  //   const amount = 100n;
+  //   const transferData = generateErc20TransferData(await recipient.toEthChecksum(), amount);
+  //   const ethTx = Transaction.prepare({
+  //     to: await tokenAddress.toEthChecksum(),
+  //     value: 0n,
+  //     maxFeePerGas: 2000000000n,
+  //     maxPriorityFeePerGas: 1000000000n,
+  //     nonce: 0n,
+  //     chainId: BigInt(ethConfig.chainId),
+  //     data: transferData
+  //   });
+  //   const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
+
+  //   const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+
+  //   expect(fee.gasPrice).toBeGreaterThan(0n);
+  //   expect(fee.maxPriorityFee).toBeGreaterThan(0n);
+  //   expect(fee.txEstimateGas).toBeGreaterThan(0n);
+  //   expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
+  //   expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
+  // }, 20000);
+
+  // it("test_get_tx_params_payment", async () => {
+  //   const provider = new NetworkProvider(ethConfig);
+  //   const recipient = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+  //   const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+  //   const amount = 100n;
+    
+  //   const ethTx = Transaction.prepare({
+  //     from: await from.toEthChecksum(),
+  //     to: await recipient.toEthChecksum(),
+  //     value: amount,
+  //     type: 2,
+  //     chainId: BigInt(ethConfig.chainId),
+  //   });
+  //   const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
+
+  //   const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    
+  //   expect(fee.gasPrice).toBeGreaterThan(0n);
+  //   expect(fee.maxPriorityFee).toBeGreaterThan(0n);
+  //   expect(fee.txEstimateGas).toBe(21000n);
+  //   expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
+  //   expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
+  // }, 20000);
+
+  // it("test_calc_fee_bsc_batch", async () => {
+  //   const provider = new NetworkProvider(bscConfig);
+  //   const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
+  //   const from = Address.fromStr("0x7b501c7944185130DD4aD73293e8Aa84eFfDcee7");
+    
+  //   const bscTx = Transaction.prepare({
+  //     from: await from.toEthChecksum(),
+  //     to: await recipient.toEthChecksum(),
+  //     value: 0n,
+  //     maxFeePerGas: 2000000000n,
+  //     maxPriorityFeePerGas: 1000000000n,
+  //     nonce: 0n,
+  //   });
+
+  //   const txRequest = new TransactionRequest({ chainHash: bscConfig.hash() }, undefined, bscTx);
+  //   const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    
+  //   expect(fee.gasPrice).toBeGreaterThan(0n);
+  //   expect(fee.nonce).toBe(0);
+  //   expect(fee.maxPriorityFee).toBeGreaterThan(0n);
+  //   expect(fee.txEstimateGas).toBeGreaterThan(0n);
+  // }, 20000);
+
+  it("test_get_tx_prams_scilla", async () => {
+    const provider = new NetworkProvider(zilConfig);
+    const to = Address.fromStr("zil1xjj35ymsvf9ajqhprwh6pkvejm2lm2e9y4q4ev");
+    const from = Address.fromStr("zil170u0aar9fjgu3hfma00wgk6axjl29l6hhnm2ua");
+    
+    const zilTx = new ZILTransactionRequest(
+        zilConfig.chainId,
+        1n,
+        2000n * (10n ** 12n),
+        100000n,
+        to.bytes,
+        10n ** 12n
+    );
+    const txRequest = new TransactionRequest({ chainHash: zilConfig.hash() }, zilTx, undefined);
+    const params = await provider.estimate_params_batch(txRequest, from, 4, null);
+
+    expect(params.gasPrice).toBeGreaterThan(0n);
+    expect(params.nonce).toBeGreaterThan(0);
+  }, 20000);
 });
 

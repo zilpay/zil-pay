@@ -57,7 +57,14 @@ export class NetworkProvider {
       nonce = processNonceResponse(responses[0].result);
     }
     
-    const gasPrice = responses[1]?.result ? hexToBigInt(responses[1].result) : 0n;
+    let gasPrice = 0n;
+
+    if (tx.evm) {
+      gasPrice = responses[1]?.result ? hexToBigInt(responses[1].result) : 0n;
+    } else if (tx.scilla) {
+      gasPrice = BigInt(responses[1]?.result ?? 0);
+    }
+
     const txEstimateGas = responses[2]?.result ? hexToBigInt(responses[2].result) : 0n;
 
     let maxPriorityFee = 0n;
