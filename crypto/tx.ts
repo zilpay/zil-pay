@@ -5,7 +5,6 @@ import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
 import { convertBigIntsToHex } from "lib/utils/hex";
 
-
 export interface TransactionMetadata {
   chainHash: number;
   hash?: string;

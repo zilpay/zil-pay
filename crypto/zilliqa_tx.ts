@@ -80,18 +80,18 @@ export class ZILTransactionRequest {
     );
   }
 
-    toJSON() {
-      return {
-        chainId: this.chainId,
-        nonce: this.nonce.toString(),
-        toAddr: uint8ArrayToHex(this.toAddr),
-        amount: this.amount.toString(),
-        gasPrice: this.gasPrice.toString(),
-        gasLimit: this.gasLimit.toString(),
-        code: this.code.length > 0 ? uint8ArrayToUtf8(this.code) : "",
-        data: this.data.length > 0 ? uint8ArrayToUtf8(this.data) : "",
-      };
-    }
+  toJSON() {
+    return {
+      chainId: this.chainId,
+      nonce: this.nonce.toString(),
+      toAddr: uint8ArrayToHex(this.toAddr),
+      amount: this.amount.toString(),
+      gasPrice: this.gasPrice.toString(),
+      gasLimit: this.gasLimit.toString(),
+      code: this.code.length > 0 ? uint8ArrayToUtf8(this.code) : "",
+      data: this.data.length > 0 ? uint8ArrayToUtf8(this.data) : "",
+    };
+  }
 }
 
 export class ZILTransactionReceipt {

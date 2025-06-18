@@ -1,9 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { createBscConfig, createEthConfig, createZilliqaConfig } from '../data';
-import { generateErc20TransferData, NetworkProvider } from '../../background/rpc';
+import { createBscConfig, createEthConfig, createZilliqaConfig } from "../data";
+import {
+  generateErc20TransferData,
+  NetworkProvider,
+} from "../../background/rpc";
 import { Address, AddressType } from "../../crypto/address";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
-import { TransactionRequest } from '../../crypto/tx';
+import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 
 describe("JsonRPC provder tests", () => {
@@ -13,7 +16,9 @@ describe("JsonRPC provder tests", () => {
 
   it("should get scilla ftoken metadata", async () => {
     const rpc = new NetworkProvider(zilConfig);
-    const zlpContract = Address.fromStr("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
+    const zlpContract = Address.fromStr(
+      "zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4",
+    );
     const accounts = [
       Address.fromStr("zil1q9j4duzmxewzapj7j56ljfc6gggv3a9er8h766"),
       Address.fromStr("zil1q9l6zd560sdd4y9772k07fxee05wmj8hmg5lfz"),
@@ -36,7 +41,9 @@ describe("JsonRPC provder tests", () => {
 
   it("should get scilla ftoken metadata", async () => {
     const rpc = new NetworkProvider(ethConfig);
-    const usdtContract = Address.fromStr("0xdAC17F958D2ee523a2206206994597C13D831ec7");
+    const usdtContract = Address.fromStr(
+      "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    );
     const accounts = [
       Address.fromStr("0xA9D1e08C7793af67e9d92fe308d5697FB81d3E43"),
       Address.fromStr("0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE"),
@@ -57,20 +64,31 @@ describe("JsonRPC provder tests", () => {
 
   it("test_calc_fee_eth_batch", async () => {
     const provider = new NetworkProvider(ethConfig);
-    const tokenAddress = Address.fromStr("0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc");
-    const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
+    const tokenAddress = Address.fromStr(
+      "0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc",
+    );
+    const recipient = Address.fromStr(
+      "0x246C5881E3F109B2aF170F5C773EF969d3da581B",
+    );
     const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
     const amount = 100n;
-    const transferData = generateErc20TransferData(await recipient.toEthChecksum(), amount);
+    const transferData = generateErc20TransferData(
+      await recipient.toEthChecksum(),
+      amount,
+    );
     const ethTx = Transaction.prepare({
       to: await tokenAddress.toEthChecksum(),
       value: 0n,
-      maxFeePerGas: weigwei.decode('1'), 
+      maxFeePerGas: weigwei.decode("1"),
       nonce: 0n,
       chainId: BigInt(ethConfig.chainId),
-      data: transferData
+      data: transferData,
     });
-    const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
+    const txRequest = new TransactionRequest(
+      { chainHash: ethConfig.hash() },
+      undefined,
+      ethTx,
+    );
 
     const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
 
@@ -86,18 +104,24 @@ describe("JsonRPC provder tests", () => {
 
   it("test_get_tx_params_payment", async () => {
     const provider = new NetworkProvider(ethConfig);
-    const recipient = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
+    const recipient = Address.fromStr(
+      "0x451806FE45D9231eb1db3584494366edF05CB4AB",
+    );
     const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
     const amount = 100n;
-    
+
     const ethTx = Transaction.prepare({
       to: await recipient.toEthChecksum(),
       nonce: 0n,
       value: amount,
       chainId: BigInt(ethConfig.chainId),
-      maxFeePerGas: weigwei.decode('1'), 
+      maxFeePerGas: weigwei.decode("1"),
     });
-    const txRequest = new TransactionRequest({ chainHash: ethConfig.hash() }, undefined, ethTx);
+    const txRequest = new TransactionRequest(
+      { chainHash: ethConfig.hash() },
+      undefined,
+      ethTx,
+    );
 
     const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
 
@@ -113,20 +137,26 @@ describe("JsonRPC provder tests", () => {
 
   it("test_calc_fee_bsc_batch", async () => {
     const provider = new NetworkProvider(bscConfig);
-    const recipient = Address.fromStr("0x246C5881E3F109B2aF170F5C773EF969d3da581B");
+    const recipient = Address.fromStr(
+      "0x246C5881E3F109B2aF170F5C773EF969d3da581B",
+    );
     const from = Address.fromStr("0x7b501c7944185130DD4aD73293e8Aa84eFfDcee7");
-    
+
     const bscTx = Transaction.prepare({
       to: await recipient.toEthChecksum(),
-      value: weieth.decode('1.1'), 
-      maxFeePerGas: weigwei.decode('1'), 
+      value: weieth.decode("1.1"),
+      maxFeePerGas: weigwei.decode("1"),
       nonce: 0n,
       chainId: BigInt(bscConfig.chainId),
     });
 
-    const txRequest = new TransactionRequest({ chainHash: bscConfig.hash() }, undefined, bscTx);
+    const txRequest = new TransactionRequest(
+      { chainHash: bscConfig.hash() },
+      undefined,
+      bscTx,
+    );
     const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
-    
+
     expect(fee.gasPrice).toBe(100000000n);
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBe(100000000n);
@@ -141,20 +171,28 @@ describe("JsonRPC provder tests", () => {
     const provider = new NetworkProvider(zilConfig);
     const to = Address.fromStr("zil1xjj35ymsvf9ajqhprwh6pkvejm2lm2e9y4q4ev");
     const from = Address.fromStr("zil170u0aar9fjgu3hfma00wgk6axjl29l6hhnm2ua");
-    
+
     const zilTx = new ZILTransactionRequest(
-        zilConfig.chainId,
-        1n,
-        2000n * (10n ** 12n),
-        100000n,
-        to.bytes,
-        10n ** 12n
+      zilConfig.chainId,
+      1n,
+      2000n * 10n ** 12n,
+      100000n,
+      to.bytes,
+      10n ** 12n,
     );
-    const txRequest = new TransactionRequest({ chainHash: zilConfig.hash() }, zilTx, undefined);
-    const params = await provider.estimate_params_batch(txRequest, from, 4, null);
+    const txRequest = new TransactionRequest(
+      { chainHash: zilConfig.hash() },
+      zilTx,
+      undefined,
+    );
+    const params = await provider.estimate_params_batch(
+      txRequest,
+      from,
+      4,
+      null,
+    );
 
     expect(params.gasPrice).toBe(2000000000n);
     expect(params.nonce).toBeGreaterThan(0);
   }, 20000);
 });
-

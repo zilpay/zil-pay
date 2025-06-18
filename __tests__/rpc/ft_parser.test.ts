@@ -51,7 +51,10 @@ describe("ft_parser", () => {
     });
 
     it('should correctly encode "transfer" function call', () => {
-      const encoded = helper.encodeFunctionCall("transfer", [toAddress, amount]);
+      const encoded = helper.encodeFunctionCall("transfer", [
+        toAddress,
+        amount,
+      ]);
       const expected = `0xa9059cbb000000000000000000000000${toAddress.slice(2)}00000000000000000000000000000000000000000000000000000000000003e8`;
       expect(encoded).toBe(expected);
     });
@@ -75,10 +78,10 @@ describe("ft_parser", () => {
       expect(requests).toHaveLength(4);
 
       const metadataReqs = requests.filter(
-        (r) => r.requestType.type === "Metadata"
+        (r) => r.requestType.type === "Metadata",
       );
       const balanceReqs = requests.filter(
-        (r) => r.requestType.type === "Balance"
+        (r) => r.requestType.type === "Balance",
       );
 
       expect(metadataReqs).toHaveLength(3);
@@ -105,7 +108,7 @@ describe("ft_parser", () => {
       expect(requests).toHaveLength(2);
       expect(requests[0].payload.method).toBe(ZilMethods.GetSmartContractInit);
       expect(requests[1].payload.method).toBe(
-        ZilMethods.GetSmartContractSubState
+        ZilMethods.GetSmartContractSubState,
       );
     });
 
@@ -131,7 +134,7 @@ describe("ft_parser", () => {
         };
         const name = processEthMetadataResponse(
           mockResponse,
-          MetadataField.Name
+          MetadataField.Name,
         );
         expect(name).toBe("test");
       });
@@ -145,7 +148,7 @@ describe("ft_parser", () => {
         };
         const decimals = processEthMetadataResponse(
           mockResponse,
-          MetadataField.Decimals
+          MetadataField.Decimals,
         );
         expect(decimals).toBe("18");
       });
@@ -177,7 +180,7 @@ describe("ft_parser", () => {
           error: { code: -32000, message: "Invalid request" },
         };
         expect(() =>
-          processEthMetadataResponse(mockResponse, MetadataField.Name)
+          processEthMetadataResponse(mockResponse, MetadataField.Name),
         ).toThrow("RPC Error (code: -32000): Invalid request");
       });
     });
@@ -213,7 +216,7 @@ describe("ft_parser", () => {
           result: mockInitData,
         };
         expect(() => processZilMetadataResponse(mockResponse)).toThrow(
-          "Invalid contract init: missing symbol"
+          "Invalid contract init: missing symbol",
         );
       });
 
@@ -231,7 +234,7 @@ describe("ft_parser", () => {
         const balance = await processZilBalanceResponse(
           mockResponse,
           mockAccount,
-          true
+          true,
         );
         expect(balance).toBe(12345n);
       });
@@ -243,42 +246,45 @@ describe("ft_parser", () => {
           await mockAccount.toZilChecksum()
         ).toLowerCase();
 
-        const mockResponse: JsonRPCResponse<ZilSmartContractSubStateResponse> = {
-          id: 1,
-          jsonrpc: "2.0",
-          result: {
-            balances: {
-              [checksumAddress]: "54321",
+        const mockResponse: JsonRPCResponse<ZilSmartContractSubStateResponse> =
+          {
+            id: 1,
+            jsonrpc: "2.0",
+            result: {
+              balances: {
+                [checksumAddress]: "54321",
+              },
             },
-          },
-        };
+          };
 
         const balance = await processZilBalanceResponse(
           mockResponse,
           mockAccount,
-          false
+          false,
         );
         expect(balance).toBe(54321n);
       });
 
       it("should return 0 for ZRC2 balance if account not in response", async () => {
         const mockAccount = createZilAddress();
-        const someOtherChecksumAddress = "0x01a6a0332f64285c73ea9fca4dca701e1e5ddf96";
+        const someOtherChecksumAddress =
+          "0x01a6a0332f64285c73ea9fca4dca701e1e5ddf96";
 
-        const mockResponse: JsonRPCResponse<ZilSmartContractSubStateResponse> = {
-          id: 1,
-          jsonrpc: "2.0",
-          result: {
-            balances: {
-              [someOtherChecksumAddress]: "199636063226083796",
+        const mockResponse: JsonRPCResponse<ZilSmartContractSubStateResponse> =
+          {
+            id: 1,
+            jsonrpc: "2.0",
+            result: {
+              balances: {
+                [someOtherChecksumAddress]: "199636063226083796",
+              },
             },
-          },
-        };
+          };
 
         const balance = await processZilBalanceResponse(
           mockResponse,
           mockAccount,
-          false
+          false,
         );
         expect(balance).toBe(0n);
       });
@@ -293,11 +299,10 @@ describe("ft_parser", () => {
         const balance = await processZilBalanceResponse(
           mockResponse,
           mockAccount,
-          true
+          true,
         );
         expect(balance).toBe(0n);
       });
     });
   });
 });
-
