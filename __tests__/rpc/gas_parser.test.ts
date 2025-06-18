@@ -127,7 +127,7 @@ describe('Gas Parser Utilities', () => {
       const tx = new TransactionRequest({ chainHash: 2 }, undefined, undefined);
       await expect(buildBatchGasRequest(tx, 10, [], [], mockEvmSender))
         .rejects
-        .toThrow('EVM transaction is required for gas estimation.');
+        .toThrow('unsupported transaction.');
     });
   });
 });

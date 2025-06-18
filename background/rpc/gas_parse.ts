@@ -4,8 +4,6 @@ import { Address } from 'crypto/address';
 import { buildNonceRequest } from 'background/rpc/nonce_parser';
 import { RpcProvider, type JsonRPCRequest } from 'background/rpc/provider';
 import { TypeOf } from 'lib/types';
-import { decodeTx } from 'micro-eth-signer/abi.js';
-import { uint8ArrayToHex } from 'lib/utils/hex';
 
 export interface GasFeeHistory {
   maxFee: bigint;
