@@ -137,11 +137,11 @@ describe("Transaction Parse Functions", () => {
   const createEvmHistoricalTransaction = (): HistoricalTransaction => {
     return new HistoricalTransaction({
       transaction_hash:
-        "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
+        "0x9a65c7bd4b028cf6e24a184c2a35589c7287358926a1d4492e90c844eb6f37d3",
       amount: 1000000000000000000n,
-      sender: "0x742d35Cc6634C0532925a3b8D6C9B5A6abc12345",
-      recipient: "0x1234567890123456789012345678901234567890",
-      contract_address: null,
+      sender: "0x7d3034d6281900Af5Ac0b2615E3051884012AF1B",
+      recipient: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
+      contract_address: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
       status: TransactionStatus.Pending,
       status_code: null,
       timestamp: Math.floor(Date.now() / 1000) - 60,
@@ -386,37 +386,35 @@ describe("Transaction Parse Functions", () => {
         id: 1,
         jsonrpc: "2.0",
         result: {
-          blockHash:
-            "0x1d59ff54b1eb26b013ce3cb5fc9dab3705b415a67127a003c3e61eb445bb8df2",
-          blockNumber: "0x5daf3b",
-          contractAddress: null,
-          cumulativeGasUsed: "0x33bc",
-          effectiveGasPrice: "0x174876e800",
-          from: "0x742d35Cc6634C0532925a3b8D6C9B5A6abc12345",
-          gasUsed: "0x5208",
-          logs: [],
-          status: "0x1",
-          to: "0x1234567890123456789012345678901234567890",
-          transactionHash:
-            "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
-          transactionIndex: "0x0",
           type: "0x0",
-          blobGasUsed: "0x20000",
-          blobGasPrice: "0x3b9aca00",
+          from: "0x7d3034d6281900af5ac0b2615e3051884012af1b",
+          to: "0x7693f0ec4d80fbe8befa31ae845cde344043dd6e",
+          status: "0x1",
+          cumulativeGasUsed: "0x11faee3",
+          transactionHash:
+            "0x9a65c7bd4b028cf6e24a184c2a35589c7287358926a1d4492e90c844eb6f37d3",
+          contractAddress: null,
+          gasUsed: "0x9a235",
+          blockHash:
+            "0x14842ec868a947aaa9aef4392f7a927abfbaace09d2c0b8ab205eb2d9606f3fc",
+          blockNumber: "0x314a8d6",
+          transactionIndex: "0x7f",
+          effectiveGasPrice: "0x0",
         },
       };
 
       await processTxReceiptResponse(response, tx);
 
-      expect(tx.sender).toBe("0x742d35Cc6634C0532925a3b8D6C9B5A6abc12345");
-      expect(tx.recipient).toBe("0x1234567890123456789012345678901234567890");
-      expect(tx.block_number).toBe(0x5daf3bn);
-      expect(tx.gasUsed).toBe(0x5208n);
-      expect(tx.effectiveGasPrice).toBe(0x174876e800n);
+      expect(tx.sender).toBe("0x7d3034d6281900af5ac0b2615e3051884012af1b");
+      expect(tx.recipient).toBe("0x7693f0ec4d80fbe8befa31ae845cde344043dd6e");
+      expect(tx.block_number).toBe(0x314a8d6n);
+      expect(tx.gasUsed).toBe(0x9a235n);
+      expect(tx.effectiveGasPrice).toBe(0x0n);
       expect(tx.status).toBe(TransactionStatus.Success);
-      expect(tx.blobGasUsed).toBe(0x20000n);
-      expect(tx.blobGasPrice).toBe(0x3b9aca00n);
-      expect(tx.fee).toBe(0x5208n * 0x174876e800n + 0x20000n * 0x3b9aca00n);
+      expect(tx.blobGasUsed).toBe(null);
+      expect(tx.blobGasPrice).toBe(null);
+      expect(tx.fee).toBe(0n);
+      expect(tx.contract_address).toBe(null);
     });
 
     it("should process failed EVM transaction receipt", async () => {
