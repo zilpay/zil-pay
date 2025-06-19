@@ -1,7 +1,11 @@
 import { TransactionReceipt } from 'crypto/tx';
 import { uint8ArrayToBigIntBigEndian } from 'crypto/number';
-import { bigintToHex, HEX_PREFIX, uint8ArrayToHex } from 'lib/utils/hex';
+import { HEX_PREFIX, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address, AddressType } from 'crypto/address';
+import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
+import { ETHEREUM } from 'config/slip44';
+import { initSig } from "micro-eth-signer/utils.js";
+
 
 export enum TransactionStatus {
   Pending,
@@ -27,12 +31,12 @@ export class HistoricalTransaction {
   public status_code: number | null;
   public timestamp: number;
   public block_number: bigint | null;
-  public gas_used: bigint | null;
-  public gas_limit: bigint | null;
-  public gas_price: bigint | null;
-  public blob_gas_used: bigint | null;
-  public blob_gas_price: bigint | null;
-  public effective_gas_price: bigint | null;
+  public gasUsed: bigint | null;
+  public gasLimit: bigint | null;
+  public gasPrice: bigint | null;
+  public blobGasUsed: bigint | null;
+  public blobGasPrice: bigint | null;
+  public effectiveGasPrice: bigint | null;
   public fee: bigint;
   public icon: string | null;
   public title: string | null;
@@ -42,6 +46,8 @@ export class HistoricalTransaction {
   public token_info: TokenInfo | null;
   public chain_type: ChainType;
   public chain_hash: number;
+  public data?: string;
+  public code?: string;
 
   constructor(data: Omit<HistoricalTransaction, "constructor" | 'fromReceipt'>) {
     this.transaction_hash = data.transaction_hash;
@@ -53,12 +59,12 @@ export class HistoricalTransaction {
     this.status_code = data.status_code;
     this.timestamp = data.timestamp;
     this.block_number = data.block_number;
-    this.gas_used = data.gas_used;
-    this.gas_limit = data.gas_limit;
-    this.gas_price = data.gas_price;
-    this.blob_gas_used = data.blob_gas_used;
-    this.blob_gas_price = data.blob_gas_price;
-    this.effective_gas_price = data.effective_gas_price;
+    this.gasUsed = data.gasUsed;
+    this.gasLimit = data.gasLimit;
+    this.gasPrice = data.gasPrice;
+    this.blobGasUsed = data.blobGasUsed;
+    this.blobGasPrice = data.blobGasPrice;
+    this.effectiveGasPrice = data.effectiveGasPrice;
     this.fee = data.fee;
     this.icon = data.icon;
     this.title = data.title;
@@ -68,6 +74,8 @@ export class HistoricalTransaction {
     this.token_info = data.token_info;
     this.chain_type = data.chain_type;
     this.chain_hash = data.chain_hash;
+    this.data= data.data;
+    this.code = data.code;
   }
 
   public static async fromReceipt(
@@ -84,23 +92,27 @@ export class HistoricalTransaction {
       const gas_price = uint8ArrayToBigIntBigEndian(zil_receipt.gasPrice);
       const fee = gas_price * zil_receipt.gasLimit;
       const contract_address = zil_receipt.data.length > 0 ? await new Address(zil_receipt.toAddr, AddressType.Bech32).toZilBech32() : null;
+      const data = zil_receipt.data.length > 0 ? uint8ArrayToUtf8(zil_receipt.data) : '';
+      const code = zil_receipt.code.length > 0 ? uint8ArrayToUtf8(zil_receipt.code) : '';
 
       return new HistoricalTransaction({
+        data,
+        code,
         contract_address,
         sig: uint8ArrayToHex(zil_receipt.signature, true),
         error: null,
         status_code: null,
-        gas_price: gas_price,
-        gas_limit: zil_receipt.gasLimit,
+        gasPrice: gas_price,
+        gasLimit: zil_receipt.gasLimit,
         chain_hash: metadata.chainHash,
         chain_type: "Scilla",
         block_number: null,
-        transaction_hash: HEX_PREFIX + metadata.hash,
+        transaction_hash: metadata.hash,
         amount: uint8ArrayToBigIntBigEndian(zil_receipt.amount),
         sender: uint8ArrayToHex(zil_receipt.pubKey),
         recipient: await new Address(zil_receipt.toAddr, AddressType.Bech32).toZilBech32(), // TODO: if token transfer need replace with recipient 
         status: TransactionStatus.Pending,
-        timestamp: Math.floor(Date.now() / 1000),
+        timestamp: new Date().getTime(),
         fee: fee,
         icon: metadata.icon || null,
         title: metadata.title || null,
@@ -112,62 +124,64 @@ export class HistoricalTransaction {
               symbol: metadata.tokenInfo[2],
             }
           : null,
-        gas_used: null,
-        blob_gas_used: null,
-        blob_gas_price: null,
-        effective_gas_price: null,
+        gasUsed: null,
+        blobGasUsed: null,
+        blobGasPrice: null,
+        effectiveGasPrice: null,
       });
     }
-    
     else if (receipt.evm) {
-      const evm_tx = receipt.evm;
-      const txData = evm_tx.raw;
+      const evm_tx = receipt.evm; 
+      const txData = evm_tx.raw as any; // TODO: this is bad
+      const data = txData.data;
       const txType = evm_tx.type;
-      let effective_gas_price: bigint;
+      const sig = initSig({ r: txData.r!, s: txData.s!, }, txData.yParity!);
+      let effectiveGasPrice: bigint;
+      let gasPrice = null;
 
       if (
         txType === "legacy" ||
         txType === "eip2930" ||
-        txData.gasPrice !== undefined
+        txData.gasPrice
       ) {
-        effective_gas_price = txData.gasPrice ?? 0n;
+        effectiveGasPrice = txData.gasPrice ?? 0n;
       } else if (
         (txType === "eip1559" || txType === "eip4844") &&
         txData.maxFeePerGas !== undefined
       ) {
-        const max_fee = txData.maxFeePerGas;
+        const max_fee = txData.maxFeePerGas ?? 0n;
         const priority_fee = txData.maxPriorityFeePerGas ?? 0n;
-        effective_gas_price = max_fee < priority_fee ? max_fee : priority_fee;
+        effectiveGasPrice = max_fee < priority_fee ? max_fee : priority_fee;
       } else {
-        effective_gas_price = 0n;
+        effectiveGasPrice = 0n;
       }
 
-      const fee = effective_gas_price * (txData.gasLimit ?? 0n);
-      const recipient = txData.to ?? "0x0000000000000000000000000000000000000000";
+      const recipient = txData.to ?? await Address.empty(ETHEREUM).toEthChecksum();
       
       return new HistoricalTransaction({
+        gasPrice,
+        data,
         error: null,
-        sig: '',
+        sig: HEX_PREFIX + sig.toCompactHex(),
         block_number: null,
         status_code: null,
         contract_address: (txData.to && txData.data && txData.data.length > 2) ? txData.to : null,
-        gas_limit: txData.gasLimit ?? null,
-        gas_price: txData.gasPrice ?? null,
+        gasLimit: txData.gasLimit ?? null,
         chain_hash: metadata.chainHash,
         chain_type: "EVM",
         transaction_hash: metadata.hash,
         amount: txData.value ?? 0n,
         sender: evm_tx.sender,
         recipient,
-        fee: fee,
+        fee: receipt.evm.fee,
         status: TransactionStatus.Pending,
-        timestamp: Math.floor(Date.now() / 1000),
+        timestamp: new Date().getTime(),
         icon: metadata.icon || null,
         title: metadata.title || null,
-        gas_used: null,
-        blob_gas_used: null,
-        blob_gas_price: null,
-        effective_gas_price: effective_gas_price,
+        gasUsed: null,
+        blobGasUsed: null,
+        blobGasPrice: null,
+        effectiveGasPrice: effectiveGasPrice,
         nonce: BigInt(txData.nonce ?? 0),
         token_info: metadata.tokenInfo
           ? {

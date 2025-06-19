@@ -26,6 +26,11 @@ export class Address {
     return this.#type;
   }
 
+  static empty(slip44: number) {
+    const addressType = KeyPair.addressType(slip44);
+    return new Address(new Uint8Array(20), addressType);
+  }
+
   static fromStr(address: string) {
     if (hasHexPrefix(address)) {
       const ethCheckSumAddress = ethAddr.parse(address);

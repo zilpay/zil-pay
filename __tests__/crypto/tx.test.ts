@@ -8,7 +8,7 @@ import { KeyPair } from "../../crypto/keypair";
 import { ZILLIQA, ETHEREUM } from "../../config/slip44";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
-import { utils } from "aes-js";
+import { hexToUint8Array } from "../../lib/utils/hex";
 
 describe("TransactionRequest and TransactionReceipt", () => {
   const metadata: TransactionMetadata = {
@@ -18,7 +18,7 @@ describe("TransactionRequest and TransactionReceipt", () => {
 
   it("should correctly sign and verify a Scilla transaction", async () => {
     const keypair = await KeyPair.generate(ZILLIQA);
-    const toAddr = utils.hex.toBytes(
+    const toAddr = hexToUint8Array(
       "0x1234567890123456789012345678901234567890",
     );
     const scillaTxReq = new ZILTransactionRequest(
