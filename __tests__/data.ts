@@ -190,10 +190,6 @@ export const createZilliqaConfig = (): ChainConfig =>
     chain: "ZIL",
     logo: "",
     rpc: [
-      "https://ssn.zilpay.io/api",
-      "https://ssn-api-mainnet.viewblock.io",
-      "https://zilliqa.avely.fi/api",
-      "https://ssn.zillet.io",
       "https://api.zilliqa.com",
     ],
     features: [],

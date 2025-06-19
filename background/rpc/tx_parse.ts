@@ -4,6 +4,7 @@ import { HistoricalTransaction, TransactionStatus } from './history_tx';
 import { TransactionReceipt } from 'crypto/tx';
 import { Address } from 'crypto/address';
 import { ZILLIQA } from 'config/slip44';
+import { stripHexPrefix } from 'lib/utils/hex';
 
 const MINUTES_IN_SECONDS = 10 * 60;
 
@@ -20,7 +21,7 @@ export function buildSendSignedTxRequest(tx: TransactionReceipt): JsonRPCRequest
 
 export function buildPayloadTxReceipt(tx: HistoricalTransaction): JsonRPCRequest {
   if (tx.chain_type === 'Scilla') {
-    return RpcProvider.buildPayload(ZilMethods.GetTransactionStatus, [tx.transaction_hash]);
+    return RpcProvider.buildPayload(ZilMethods.GetTransactionStatus, [stripHexPrefix(tx.transaction_hash)]);
   } else if (tx.chain_type === 'EVM') {
     return RpcProvider.buildPayload(EvmMethods.GetTransactionReceipt, [tx.transaction_hash]);
   }

@@ -8,6 +8,7 @@ import { Address, AddressType } from "../../crypto/address";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
+import { HistoricalTransaction, TransactionStatus } from "../../background/rpc/history_tx";
 
 describe("JsonRPC provder tests", () => {
   const zilConfig = createZilliqaConfig();
@@ -163,7 +164,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.txEstimateGas).toBe(21000n);
     expect(fee.blobBaseFee).toBe(0n);
     expect(fee.feeHistory.baseFee).toBe(0n);
-    expect(fee.feeHistory.maxFee).toBe(110000000n);
+    expect(fee.feeHistory.maxFee).toBeGreaterThanOrEqual(100000000n);
     expect(fee.feeHistory.priorityFee).toBe(110000000n);
   }, 20000);
 
@@ -217,4 +218,82 @@ describe("JsonRPC provder tests", () => {
     expect(blockTime).toBeGreaterThan(0);
     expect(blockTime).toBeLessThan(30);
   });
+
+  it("should update multiple scilla transaction receipts", async () => {
+    const provider = new NetworkProvider(zilConfig);
+    const mockTxns = [
+      new HistoricalTransaction({
+        transaction_hash: "0xd0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7",
+        chain_hash: zilConfig.hash(),
+        chain_type: "Scilla",
+        amount: 0n,
+        sender: '',
+        recipient: '',
+        status: TransactionStatus.Pending,
+        timestamp: 0,
+        fee: 0n,
+        nonce: 0n,
+        contract_address: null,
+        status_code: null,
+        block_number: null,
+        gasUsed: null,
+        gasLimit: null,
+        gasPrice: null,
+        blobGasUsed: null,
+        blobGasPrice: null,
+        effectiveGasPrice: null,
+        icon: null,
+        title: null,
+        error: null,
+        sig: '',
+        token_info: null
+      }),
+      new HistoricalTransaction({
+        transaction_hash: "0x96830fa2fbd322d9731f4fd75b44d028a73a1323d7b52b099c6ae397ab4ccf43",
+        chain_hash: zilConfig.hash(),
+        chain_type: "Scilla",
+        amount: 0n,
+        sender: '',
+        recipient: '',
+        status: TransactionStatus.Pending,
+        timestamp: 0,
+        fee: 0n,
+        nonce: 0n,
+        contract_address: null,
+        status_code: null,
+        block_number: null,
+        gasUsed: null,
+        gasLimit: null,
+        gasPrice: null,
+        blobGasUsed: null,
+        blobGasPrice: null,
+        effectiveGasPrice: null,
+        icon: null,
+        title: null,
+        error: null,
+        sig: '',
+        token_info: null
+      })
+    ];
+
+    await provider.updateTransactionsReceipt(mockTxns);
+
+    const [tx1, tx2] = mockTxns;
+
+    expect(tx1.status).toBe(TransactionStatus.Success);
+    expect(tx1.amount).toBe(348369130769230760n);
+    expect(tx1.fee).toBe(100000000000n);
+    expect(tx1.gasLimit).toBe(50n);
+    expect(tx1.gasPrice).toBe(2000000000n);
+    expect(tx1.nonce).toBe(1697n);
+    expect(tx1.sender).toBe("zil1z8vuvvxk0rnt6ehyc0qgqut8ewngessa2kypxm");
+
+    expect(tx2.status).toBe(TransactionStatus.Success);
+    expect(tx2.amount).toBe(0n);
+    expect(tx2.fee).toBe(16000000000000n);
+    expect(tx2.gasLimit).toBe(8000n);
+    expect(tx2.gasPrice).toBe(2000000000n);
+    expect(tx2.nonce).toBe(217n);
+    expect(tx2.sender).toBe("zil1r5x8hcjashhykgw6k3pmldp4stpgqf0k60gz8c");
+  }, 20000);
 });

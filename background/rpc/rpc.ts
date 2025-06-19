@@ -15,6 +15,8 @@ import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
 import { EvmMethods } from 'config/jsonrpc';
 import type { EVMBlock } from './block';
+import { TransactionStatus, type HistoricalTransaction } from './history_tx';
+import { buildPayloadTxReceipt, processTxReceiptResponse } from './tx_parse';
 
 export class NetworkProvider {
   public config: ChainConfig;
@@ -220,5 +222,20 @@ export class NetworkProvider {
     }
 
     throw new Error("unsupported contract");
+  }
+
+  async updateTransactionsReceipt(txns: HistoricalTransaction[]): Promise<void> {
+    if (txns.length === 0) {
+      return;
+    }
+
+    const requests = txns.map(tx => buildPayloadTxReceipt(tx));
+    const provider = new RpcProvider(this.config);
+    const responses = await provider.req<JsonRPCResponse<unknown>[]>(requests);
+
+    await Promise.all(responses.map((res, index) => {
+      const tx = txns[index];
+      return processTxReceiptResponse(res, tx);
+    }));
   }
 }
