@@ -199,21 +199,21 @@ describe("JsonRPC provder tests", () => {
   it("should get current block number for EVM", async () => {
     const provider = new NetworkProvider(bscConfig);
     const blockNumber = await provider.getCurrentBlockNumber();
-    expect(typeof blockNumber).toBe('bigint');
+    expect(typeof blockNumber).toBe("bigint");
     expect(blockNumber).toBeGreaterThan(0n);
   });
 
   it("should get current block number for Scilla", async () => {
     const provider = new NetworkProvider(zilConfig);
     const blockNumber = await provider.getCurrentBlockNumber();
-    expect(typeof blockNumber).toBe('bigint');
+    expect(typeof blockNumber).toBe("bigint");
     expect(blockNumber).toBeGreaterThan(0n);
   });
 
   it("should estimate block time for EVM", async () => {
     const provider = new NetworkProvider(bscConfig);
     const blockTime = await provider.estimateBlockTime();
-    expect(typeof blockTime).toBe('number');
+    expect(typeof blockTime).toBe("number");
     expect(blockTime).toBeGreaterThan(0);
     expect(blockTime).toBeLessThan(30);
   });
