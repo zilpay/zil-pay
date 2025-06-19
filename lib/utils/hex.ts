@@ -92,8 +92,8 @@ export function hexToBigInt(hexString: string): bigint {
     return BigInt(cleanHex);
 }
 
-export function bigintToHex(value: bigint): string {
-    return HEX_PREFIX + value.toString(16);
+export function bigintToHex(value: bigint, prefix = true): string {
+    return (prefix ? HEX_PREFIX : '') + value.toString(16);
 }
 
 

@@ -12,7 +12,9 @@ import {
 import type { TransactionRequest } from 'crypto/tx';
 import { buildBatchGasRequest, EIP1559, EIP4844, processParseFeeHistoryRequest, type GasFeeHistory, type RequiredTxParams } from './gas_parse';
 import { processNonceResponse } from './nonce_parser';
-import { hexToBigInt } from 'lib/utils/hex';
+import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
+import { EvmMethods } from 'config/jsonrpc';
+import type { EVMBlock } from './block';
 
 export class NetworkProvider {
   public config: ChainConfig;
@@ -24,6 +26,46 @@ export class NetworkProvider {
   public async proxyReq(payload: JsonRPCRequest | JsonRPCRequest[]): Promise<any> {
     const provider = new RpcProvider(this.config);
     return provider.req<any>(payload);
+  }
+
+  public async getCurrentBlockNumber(): Promise<bigint> {
+    const provider = new RpcProvider(this.config);
+    const payload = RpcProvider.buildPayload(EvmMethods.BlockNumber, []);
+    const response = await provider.req<JsonRPCResponse<string>>(payload);
+
+    if (response.error || !response.result) {
+      throw new Error(response.error?.message);
+    }
+
+    return hexToBigInt(response.result);
+  }
+
+  public async estimateBlockTime(): Promise<number> {
+    const provider = new RpcProvider(this.config);
+
+    const latestBlockPayload = RpcProvider.buildPayload(EvmMethods.GetBlockByNumber, ['latest', false]);
+    const latestBlockResponse = await provider.req<JsonRPCResponse<EVMBlock>>(latestBlockPayload);
+
+    if (latestBlockResponse.error || !latestBlockResponse.result) {
+      throw new Error(latestBlockResponse.error?.message);
+    }
+
+    const latestBlock = latestBlockResponse.result;
+    const latestTimestamp = hexToBigInt(latestBlock.timestamp);
+    const latestBlockNumber = hexToBigInt(latestBlock.number);
+
+    const previousBlockNumber = bigintToHex(latestBlockNumber - 1n, true);
+    const previousBlockPayload = RpcProvider.buildPayload(EvmMethods.GetBlockByNumber, [previousBlockNumber, false]);
+    const previousBlockResponse = await provider.req<JsonRPCResponse<EVMBlock>>(previousBlockPayload);
+
+    if (previousBlockResponse.error || !previousBlockResponse.result) {
+      throw new Error(previousBlockResponse.error?.message);
+    }
+
+    const previousBlock = previousBlockResponse.result;
+    const previousTimestamp = hexToBigInt(previousBlock.timestamp);
+
+    return Number(latestTimestamp - previousTimestamp);
   }
 
   public async estimate_params_batch(
