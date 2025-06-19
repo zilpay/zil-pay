@@ -79,7 +79,7 @@ describe("JsonRPC provder tests", () => {
     const ethTx = Transaction.prepare({
       to: await tokenAddress.toEthChecksum(),
       value: 0n,
-      maxFeePerGas: weigwei.decode("1"),
+      maxFeePerGas: weigwei.decode("100"),
       nonce: 0n,
       chainId: BigInt(ethConfig.chainId),
       data: transferData,
@@ -102,7 +102,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
   }, 20000);
 
-  it("test_get_tx_params_payment", async () => {
+  it("test_get_tx_params_payment_eth", async () => {
     const provider = new NetworkProvider(ethConfig);
     const recipient = Address.fromStr(
       "0x451806FE45D9231eb1db3584494366edF05CB4AB",
@@ -115,7 +115,7 @@ describe("JsonRPC provder tests", () => {
       nonce: 0n,
       value: amount,
       chainId: BigInt(ethConfig.chainId),
-      maxFeePerGas: weigwei.decode("1"),
+      maxFeePerGas: weigwei.decode("100"),
     });
     const txRequest = new TransactionRequest(
       { chainHash: ethConfig.hash() },
