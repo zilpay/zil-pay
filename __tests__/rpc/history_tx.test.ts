@@ -4,9 +4,7 @@ import {
   TransactionStatus,
   ChainType,
 } from "../../background/rpc/history_tx";
-import {
-  generateErc20TransferData,
-} from "../../background/rpc";
+import { generateErc20TransferData } from "../../background/rpc";
 import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { uint8ArrayToHex } from "../../lib/utils/hex";
@@ -64,7 +62,7 @@ describe("HistoricalTransaction", () => {
         const historicalTx = await HistoricalTransaction.fromReceipt(receipt);
 
         expect(historicalTx.data).toBe(data);
-        expect(historicalTx.code).toBe('');
+        expect(historicalTx.code).toBe("");
         expect(historicalTx).toBeInstanceOf(HistoricalTransaction);
         expect(historicalTx.transaction_hash).toBeDefined();
         expect(historicalTx.amount).toBe(1000000000000n);
@@ -104,7 +102,7 @@ describe("HistoricalTransaction", () => {
         const recipient = Address.fromStr(
           "0x246C5881E3F109B2aF170F5C773EF969d3da581B",
         );
-        const amount = weieth.decode('69');
+        const amount = weieth.decode("69");
         const transferData = generateErc20TransferData(
           await recipient.toEthChecksum(),
           amount,
@@ -118,7 +116,7 @@ describe("HistoricalTransaction", () => {
           nonce: 0n,
           chainId: BigInt(BSC_CONFIG.chainId),
           data: transferData,
-        } );
+        });
         const metadata = {
           chainHash: BSC_CONFIG.hash(),
         };
@@ -130,9 +128,13 @@ describe("HistoricalTransaction", () => {
         const historicalTx = await HistoricalTransaction.fromReceipt(receipt);
         expect(historicalTx.transaction_hash).toEqual(expect.any(String));
         expect(historicalTx.amount).toBe(0n);
-        expect(historicalTx.sender).toBe(await keypair.address().then(a => a.toEthChecksum()));
+        expect(historicalTx.sender).toBe(
+          await keypair.address().then((a) => a.toEthChecksum()),
+        );
         expect(historicalTx.recipient).toBe(await tokenAddress.toEthChecksum());
-        expect(historicalTx.contract_address).toBe(await tokenAddress.toEthChecksum());
+        expect(historicalTx.contract_address).toBe(
+          await tokenAddress.toEthChecksum(),
+        );
         expect(historicalTx.status).toBe(TransactionStatus.Pending);
         expect(historicalTx.status_code).toBeNull();
         expect(historicalTx.timestamp).toBeDefined();
@@ -149,7 +151,7 @@ describe("HistoricalTransaction", () => {
         expect(historicalTx.sig).toEqual(expect.any(String));
         expect(historicalTx.nonce).toBe(0n);
         expect(historicalTx.token_info).toBeNull();
-        expect(historicalTx.chain_type).toBe('EVM' as ChainType);
+        expect(historicalTx.chain_type).toBe("EVM" as ChainType);
         expect(historicalTx.chain_hash).toBe(BSC_CONFIG.hash());
       });
     });

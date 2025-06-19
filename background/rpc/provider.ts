@@ -8,7 +8,7 @@ export interface JsonRPCRequest {
 }
 
 export interface JsonRPCResponse<T> {
-  id: number;
+  id: number | string;
   jsonrpc: string;
   result?: T;
   error?: {
