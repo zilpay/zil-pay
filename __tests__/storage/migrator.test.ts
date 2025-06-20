@@ -74,6 +74,7 @@ describe("migrateToV4", () => {
     expect(wallet.selectedAccount).toBe(1); // From STORAGE_V2.selectedAddress
     expect(wallet.vault).toBe(STORAGE_V2.vault);
     expect(wallet.defaultChainHash).toBe(208425510);
+    expect(wallet.uuid).toBeDefined();
 
     // Accounts
     expect(wallet.accounts).toHaveLength(2);
@@ -169,6 +170,7 @@ describe("migrateToV4", () => {
     expect(wallet.selectedAccount).toBe(1);
     expect(wallet.vault).toBe(STORAGE_V3.vault);
     expect(wallet.defaultChainHash).toBe(result.chains[0].hash());
+    expect(wallet.uuid).toBeDefined();
 
     // Accounts
     expect(wallet.accounts).toHaveLength(2);

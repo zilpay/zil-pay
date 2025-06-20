@@ -8,6 +8,7 @@ import { HashTypes, WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { AddressType } from 'crypto/address';
+import { uuid } from 'crypto/uuid';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -168,6 +169,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         walletType: WalletTypes.SecretPhrase,
         walletName: 'Zilliqa Wallet',
         authType: AuthMethod.None,
+        uuid: uuid(),
         walletAddress: accounts[0].addr,
         accounts,
         selectedAccount: walletIdentities.selectedAddress,
