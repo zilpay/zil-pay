@@ -1,8 +1,18 @@
 import "./setupTests";
 import { describe, it, expect, beforeAll } from "vitest";
 import { GlobalState } from "../background/state";
-import { AppearancesTheme, BackgroundState } from "../background/storage/background";
-import { createBscConfig, createEthConfig, PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "./data";
+import {
+  AppearancesTheme,
+  BackgroundState,
+} from "../background/storage/background";
+import {
+  createBscConfig,
+  createEthConfig,
+  PASSWORD,
+  STORAGE_V2,
+  STORAGE_V3,
+  WORDS,
+} from "./data";
 import { BrowserStorage } from "../lib/storage";
 import { AuthMethod, Wallet, WalletTypes } from "../background/storage/wallet";
 import { AddressType } from "../crypto/address";
@@ -10,8 +20,13 @@ import { CipherOrders } from "../crypto/keychain";
 import { HashTypes } from "../background/storage/argon";
 import { ShaAlgorithms } from "../config/pbkdf2";
 import { FToken } from "../background/storage/ftoken";
-import { utf8ToUint8Array } from '../lib/utils/utf8';
+import { utf8ToUint8Array } from "../lib/utils/utf8";
 import { ChainConfig } from "../background/storage/chain";
+import {
+  RatesApiOptions,
+  WalletSettings,
+} from "../background/storage/settings";
+import { WORD_LIST } from "./crypto/word_list";
 
 describe("test bg state with empty storage", () => {
   beforeAll(async () => {
@@ -38,6 +53,59 @@ describe("test bg state with empty storage", () => {
     const restoredGlobalState = await GlobalState.fromStorage();
 
     expect(restoredGlobalState).toStrictEqual(globalState);
+  });
+
+  it("should save storage", async () => {
+    await BrowserStorage.clear();
+    const globalState = await GlobalState.fromStorage();
+
+    expect(globalState.state).toStrictEqual(BackgroundState.default());
+
+    globalState.state.chains.push(createBscConfig());
+
+    const bip32Accounts = [
+      { index: 0, name: "account 0" },
+      { index: 1, name: "account 1" },
+      { index: 2, name: "account 2" },
+      { index: 3, name: "account 3" },
+      { index: 4, name: "account 4" },
+    ];
+    const settings = new WalletSettings({
+      cipherOrders: [
+        CipherOrders.KUZNECHIK,
+        CipherOrders.NTRUP761,
+        CipherOrders.AESGCM256,
+      ],
+      hashFnParams: {
+        memory: 4096,
+        iterations: 3,
+        threads: 1,
+        secret: "",
+        hashType: 0,
+        hashSize: ShaAlgorithms.Sha512,
+      },
+      currencyConvert: "btc",
+      ipfsNode: null,
+      ensEnabled: false,
+      tokensListFetcher: false,
+      nodeRankingEnabled: false,
+      maxConnections: 10,
+      requestTimeoutSecs: 30,
+      ratesApiOptions: RatesApiOptions.None,
+      sessionTime: 3600,
+    });
+    const bip39Wallet = await Wallet.fromBip39(
+      WORDS,
+      true,
+      "Test Wallet",
+      bip32Accounts,
+      settings,
+      globalState.state.chains[0],
+      PASSWORD,
+      WORD_LIST,
+    );
+
+    globalState.state.wallets.push(bip39Wallet);
   });
 });
 
@@ -146,7 +214,9 @@ describe("test bg state with storagev3", () => {
     expect(wallet.authType).toBe(AuthMethod.None);
     expect(wallet.selectedAccount).toBe(1);
     expect(wallet.defaultChainHash).toBe(208425510);
-    expect(wallet.vault).toBe("ZGM1ODdhZGI0YWVhY2E3Njk4MDJlYTEyMzMxOGY5OGZlMjMxMzNhYzY1ZDc4ZTUzYjFiZmI0YTYxNDY5OTAzZGQ2NDAzNWFjZmQzNGVkODZjYzc3NTc0NWE4NjI4N2Y3NWI0OTdiYzk4OGFjMzg0MDM5MWY5MGJjY2FmMjllNmU4NmEyMjJkMy8zODIzZWMwNmEyMDA4ZDZhODcyMTY3MzAwMzlmZTBlYw==");
+    expect(wallet.vault).toBe(
+      "ZGM1ODdhZGI0YWVhY2E3Njk4MDJlYTEyMzMxOGY5OGZlMjMxMzNhYzY1ZDc4ZTUzYjFiZmI0YTYxNDY5OTAzZGQ2NDAzNWFjZmQzNGVkODZjYzc3NTc0NWE4NjI4N2Y3NWI0OTdiYzk4OGFjMzg0MDM5MWY5MGJjY2FmMjllNmU4NmEyMjJkMy8zODIzZWMwNmEyMDA4ZDZhODcyMTY3MzAwMzlmZTBlYw==",
+    );
 
     expect(wallet.accounts.length).toBe(2);
     const [account0, account1] = wallet.accounts;

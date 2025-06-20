@@ -51,12 +51,13 @@ export class Account {
     const keyPair = await KeyPair.fromPrivateKey(privateKey, chain.slip44);
     const addrType = keyPair.addressType();
     const addr = await keyPair.address();
+    const formated = await addr.autoFormat();
 
     const account = new Account({
-      addr,
       addrType,
       name: name,
       index: 0,
+      addr: formated,
       pubKey: utils.hex.fromBytes(keyPair.pubKey),
       chainHash: chain.hash(),
       slip44: chain.slip44,

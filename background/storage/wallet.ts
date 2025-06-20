@@ -56,6 +56,33 @@ export class Wallet {
     this.vault = data.vault as string ?? "";
   }
 
+  static async fromPrivateKey(
+    keyPair: KeyPair,
+    walletName: string,
+    accountName: string,
+    settings: WalletSettings,
+    chain: ChainConfig,
+    password: string,
+  ) {
+    const passwordBytes = utf8ToUint8Array(password);
+    const account = await Account.fromPrivateKey(keyPair.privateKey, chain, accountName);
+    const wallet = new Wallet({
+      settings,
+      walletName,
+      walletType: WalletTypes.SecretKey,
+      selectedAccount: 0,
+      tokens: chain.ftokens,
+      defaultChainHash: chain.hash(),
+      uuid: uuid(),
+      accounts: [account],
+      authType: AuthMethod.None,
+    });
+
+    await wallet.encrypt(passwordBytes, keyPair.privateKey);
+
+    return wallet;
+  }
+
   static async fromBip39(
     words: string,
     verifyCheckSum: boolean,

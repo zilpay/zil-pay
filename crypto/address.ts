@@ -89,6 +89,15 @@ export class Address {
     return uint8ArrayToHex(this.bytes);
   }
 
+  async autoFormat() {
+    switch (this.#type) {
+      case AddressType.Bech32:
+        return this.toZilBech32();
+      case AddressType.EthCheckSum:
+        return this.toEthChecksum();
+    }
+  }
+
   async toEthChecksum(): Promise<string> {
     const nonChecksummedAddress = uint8ArrayToHex(this.bytes);
     return ethAddr.addChecksum(nonChecksummedAddress);

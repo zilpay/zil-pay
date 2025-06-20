@@ -38,6 +38,8 @@ export class GlobalState {
   }
 
   async sync() {
-    await BrowserStorage.set(buildObject(Fields.STORAGE_V4, JSON.stringify(this.state)))
+    await BrowserStorage.set(
+      buildObject(Fields.STORAGE_V4, JSON.stringify(this.state)),
+    );
   }
 }
