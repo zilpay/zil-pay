@@ -252,7 +252,7 @@ export class NetworkProvider {
   
     const provider = new RpcProvider(this.config);
     const responses = await provider.req<JsonRPCResponse<any>[]>(allRequests);
-  
+ 
     responses.forEach((response, index) => {
       const tx = txns[index];
       processTxSendResponse(response, tx);
