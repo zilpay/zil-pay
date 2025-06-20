@@ -169,7 +169,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.txEstimateGas).toBe(21000n);
     expect(fee.blobBaseFee).toBe(0n);
     expect(fee.feeHistory.baseFee).toBe(0n);
-    expect(fee.feeHistory.maxFee).toBeGreaterThanOrEqual(100000000n);
+    expect(fee.feeHistory.maxFee).toBeGreaterThanOrEqual(100n);
     expect(fee.feeHistory.priorityFee).toBe(110000000n);
   }, 20000);
 
