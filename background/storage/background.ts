@@ -17,8 +17,20 @@ export class BackgroundState {
   hideBalance: boolean;
   chains: ChainConfig[];
 
+  static default() {
+    return new BackgroundState({
+      wallets: [],
+      notificationsGlobalEnabled: true,
+      locale: 'auto',
+      appearances: AppearancesTheme.System,
+      abbreviatedNumber: true,
+      hideBalance: false,
+      chains: [], 
+    });
+  }
+
   constructor(data: Record<string, unknown>) {
-    this.wallets = (data.wallets as Record<string, unknown>[]).map(
+    this.wallets = (data.wallets as Record<string, unknown>[] ?? []).map(
       (w) => new Wallet(w)
     );
     this.notificationsGlobalEnabled = data.notificationsGlobalEnabled as boolean;

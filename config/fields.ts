@@ -32,3 +32,8 @@ export enum OldFields {
   DEX = "dex-proto",
   BADGE_COUNTER = "badge-counter",
 }
+
+export enum Fields {
+  STORAGE_V4 = 'storage-v4',
+}
+

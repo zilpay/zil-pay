@@ -28,70 +28,31 @@ export const BrowserStorage = Object.freeze({
 
         const data: StorageKeyValue = {};
         for (const item of items) {
-            Object.assign(data, item); 
+            Object.assign(data, item);
         }
 
-        return new Promise((resolve, reject) => {
-            Runtime.storage.local.set(data, () => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError); 
-                } else {
-                    resolve();
-                }
-            });
-        });
+        await Runtime.storage.local.set(data);
     },
 
-    async get(...keys: (OldFields | string)[]): Promise<StorageKeyValue> {
-        return new Promise((resolve, reject) => {
-            Runtime.storage.local.get(keys, (result) => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                } else {
-                  if (keys.length === 1) {
-                    resolve(result[keys[0]]);
-                  } else {
-                    resolve(result);
-                  }
-                }
-            });
-        });
+    async get(...keys: (OldFields | string)[]): Promise<Record<string, unknown>> { 
+        const result = await Runtime.storage.local.get(keys);
+
+        if (keys.length === 1 && result) {
+            return result[keys[0]];
+        }
+        
+        return result as Record<string, unknown>;
     },
 
     async getAll(): Promise<StorageKeyValue> {
-        return new Promise((resolve, reject) => {
-            Runtime.storage.local.get(null, (items) => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                } else {
-                    resolve(items);
-                }
-            });
-        });
+        return Runtime.storage.local.get(null);
     },
 
     async rm(...keys: (OldFields | string)[]): Promise<void> {
-        return new Promise((resolve, reject) => {
-            Runtime.storage.local.remove(keys, () => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                } else {
-                    resolve();
-                }
-            });
-        });
+        await Runtime.storage.local.remove(keys);
     },
 
     async clear(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            Runtime.storage.local.clear(() => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                } else {
-                    resolve();
-                }
-            });
-        });
+        await Runtime.storage.local.clear();
     },
 });
-

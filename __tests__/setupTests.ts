@@ -40,12 +40,47 @@ const sessionStorageMock = (() => {
   };
 })();
 
+const createLocalStorageMock = () => {
+  let store = {}; // The in-memory store for our mock
+
+  return {
+    get: vi.fn(async (keys) => {
+      if (!keys) {
+        return Promise.resolve(store);
+      }
+      
+      const result = {};
+      const keyList = Array.isArray(keys) ? keys : [keys];
+
+      for (const key of keyList) {
+        if (store.hasOwnProperty(key)) {
+          result[key] = store[key];
+        }
+      }
+      
+      return Promise.resolve(result);
+    }),
+
+    set: vi.fn(async (items) => {
+      store = { ...store, ...items };
+      return Promise.resolve(); 
+    }),
+
+    clear: vi.fn(async () => {
+      store = {};
+      return Promise.resolve(); 
+    }),
+  };
+};
+
 const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
   for (let i = 0; i < array.length; i++) {
     array[i] = Math.floor(Math.random() * 256);
   }
   return array;
 };
+
+const localStorageMock = createLocalStorageMock();
 
 (global as any).window = {
   crypto: {
@@ -54,3 +89,7 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
 };
 
 (globalThis as any).chrome.storage.session = sessionStorageMock;
+Object.defineProperty(global.chrome.storage, 'local', {
+  value: localStorageMock,
+  writable: true, 
+});
