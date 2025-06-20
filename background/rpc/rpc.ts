@@ -247,12 +247,12 @@ export class NetworkProvider {
       if (!(await tx.verify())) {
         throw new Error('Invalid signature');
       }
-      allRequests.push(buildSendSignedTxRequest(tx));
+      allRequests.push(await buildSendSignedTxRequest(tx));
     }
   
     const provider = new RpcProvider(this.config);
-    const responses = await provider.req<JsonRPCResponse<any>[]>(allRequests);
- 
+    const responses = await provider.req<JsonRPCResponse<unknown>[]>(allRequests);
+
     responses.forEach((response, index) => {
       const tx = txns[index];
       processTxSendResponse(response, tx);

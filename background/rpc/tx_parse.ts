@@ -8,9 +8,9 @@ import { stripHexPrefix } from 'lib/utils/hex';
 
 const MINUTES_IN_SECONDS = 10 * 60;
 
-export function buildSendSignedTxRequest(tx: TransactionReceipt): JsonRPCRequest {
+export async function buildSendSignedTxRequest(tx: TransactionReceipt): Promise<JsonRPCRequest> {
   if (tx.scilla) {
-    return RpcProvider.buildPayload(ZilMethods.CreateTransaction, [tx.scilla.toJSON()]);
+    return RpcProvider.buildPayload(ZilMethods.CreateTransaction, [await tx.scilla.toJSON()]);
   } else if (tx.evm) {
     const encodedTx = tx.evm.toHex(true);
     return RpcProvider.buildPayload(EvmMethods.SendRawTransaction, [encodedTx]);

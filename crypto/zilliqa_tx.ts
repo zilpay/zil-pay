@@ -12,6 +12,7 @@ import {
 import { verify } from "./zilliqa/schnorr";
 import { uint8ArrayToHex } from "lib/utils/hex";
 import { uint8ArrayToUtf8 } from "lib/utils/utf8";
+import { Address, AddressType } from "./address";
 
 const U128LEN = 16;
 
@@ -131,11 +132,11 @@ export class ZILTransactionReceipt {
     return verify(bytes, this.pubKey, signature);
   }
 
-  toJSON() {
+  async toJSON() {
     return {
       version: this.version,
-      nonce: this.nonce.toString(),
-      toAddr: uint8ArrayToHex(this.toAddr),
+      nonce: Number(this.nonce),
+      toAddr: await new Address(this.toAddr, AddressType.Bech32).toZilChecksum(),
       amount: uint8ArrayToBigIntBigEndian(this.amount).toString(),
       pubKey: uint8ArrayToHex(this.pubKey),
       gasPrice: uint8ArrayToBigIntBigEndian(this.gasPrice).toString(),

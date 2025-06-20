@@ -167,7 +167,7 @@ describe("Transaction Parse Functions", () => {
   describe("buildSendSignedTxRequest", () => {
     it("should build request for Zilliqa transaction", async () => {
       const tx = await createZilTransactionReceipt();
-      const request = buildSendSignedTxRequest(tx);
+      const request = await buildSendSignedTxRequest(tx);
 
       expect(request.method).toBe(ZilMethods.CreateTransaction);
       expect(request.params).toHaveLength(1);
@@ -178,7 +178,7 @@ describe("Transaction Parse Functions", () => {
 
     it("should build request for EVM transaction", async () => {
       const tx = await createEvmTransactionReceipt();
-      const request = buildSendSignedTxRequest(tx);
+      const request = await buildSendSignedTxRequest(tx);
 
       expect(request.method).toBe(EvmMethods.SendRawTransaction);
       expect(request.params).toHaveLength(1);
@@ -186,9 +186,9 @@ describe("Transaction Parse Functions", () => {
       expect(request.params[0]).toMatch(/^0x[0-9a-fA-F]+$/);
     });
 
-    it("should throw error for invalid transaction type", () => {
+    it("should throw error for invalid transaction type", async () => {
       const invalidTx = new TransactionReceipt({ chainHash: 1 });
-      expect(() => buildSendSignedTxRequest(invalidTx)).toThrow(
+      await expect(() => buildSendSignedTxRequest(invalidTx)).rejects.toThrow(
         "Invalid transaction type",
       );
     });
