@@ -1,5 +1,5 @@
-import type { GlobalState } from './state';
-import { Runtime } from 'lib/runtime';
+import type { GlobalState } from "./state";
+import { Runtime } from "lib/runtime";
 
 export function startBackground(core: GlobalState) {
   Runtime.runtime.onMessage.addListener((msg, sender, sendResponse) => {

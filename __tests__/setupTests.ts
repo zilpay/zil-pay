@@ -48,7 +48,7 @@ const createLocalStorageMock = () => {
       if (!keys) {
         return Promise.resolve(store);
       }
-      
+
       const result = {};
       const keyList = Array.isArray(keys) ? keys : [keys];
 
@@ -57,18 +57,18 @@ const createLocalStorageMock = () => {
           result[key] = store[key];
         }
       }
-      
+
       return Promise.resolve(result);
     }),
 
     set: vi.fn(async (items) => {
       store = { ...store, ...items };
-      return Promise.resolve(); 
+      return Promise.resolve();
     }),
 
     clear: vi.fn(async () => {
       store = {};
-      return Promise.resolve(); 
+      return Promise.resolve();
     }),
   };
 };
@@ -89,7 +89,7 @@ const localStorageMock = createLocalStorageMock();
 };
 
 (globalThis as any).chrome.storage.session = sessionStorageMock;
-Object.defineProperty(global.chrome.storage, 'local', {
+Object.defineProperty(global.chrome.storage, "local", {
   value: localStorageMock,
-  writable: true, 
+  writable: true,
 });

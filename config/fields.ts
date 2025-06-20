@@ -34,6 +34,5 @@ export enum OldFields {
 }
 
 export enum Fields {
-  STORAGE_V4 = 'storage-v4',
+  STORAGE_V4 = "storage-v4",
 }
-

@@ -1,7 +1,7 @@
-import { BackgroundState } from 'background/storage';
-import { Fields } from 'config/fields';
-import { BrowserStorage } from 'lib/storage';
-import { migrateToV4 } from './secure';
+import { BackgroundState } from "background/storage";
+import { Fields } from "config/fields";
+import { BrowserStorage } from "lib/storage";
+import { migrateToV4 } from "./secure";
 
 export class GlobalState {
   state: BackgroundState;
@@ -34,9 +34,8 @@ export class GlobalState {
   }
 
   constructor(initialState: BackgroundState) {
-      this.state = initialState;
+    this.state = initialState;
   }
 
-  async save() {
-  }
+  async save() {}
 }

@@ -1,8 +1,8 @@
-import { startBackground } from 'background/background';
-import { GlobalState } from 'background/state';
+import { startBackground } from "background/background";
+import { GlobalState } from "background/state";
 
-(async function() {
+(async function () {
   const state = await GlobalState.fromStorage();
 
   startBackground(state);
-}());
+})();
