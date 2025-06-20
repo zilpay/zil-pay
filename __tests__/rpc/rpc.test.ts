@@ -361,4 +361,48 @@ describe("JsonRPC provder tests", () => {
     expect(BigInt(tokens[2].balances[1])).toBeDefined();
     expect(BigInt(tokens[2].balances[2])).toBeDefined();
   }, 20000);
+
+  it("should update balances for multiple EVM tokens and accounts", async () => {
+    const provider = new NetworkProvider(ethConfig);
+    const accounts = [
+      Address.fromStr("0x81014f44b0a345033bb2b3b21c7a1a308b35feea"),
+      Address.fromStr("0x3ee18b2214aff97000d974cf647e7c347e8fa585"),
+    ];
+    const tokens = [
+      new FToken({
+        native: true,
+        addr: "0x0000000000000000000000000000000000000000",
+        name: "Ethereum",
+        symbol: "ETH",
+        decimals: 18,
+        addrType: AddressType.EthCheckSum,
+        balances: {},
+        chainHash: ethConfig.hash(),
+        default_: true,
+        logo: null,
+        rate: 0,
+      }),
+      new FToken({
+        native: false,
+        addr: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        name: "Wrapped BTC",
+        symbol: "WBTC",
+        decimals: 8,
+        addrType: AddressType.EthCheckSum,
+        balances: {},
+        chainHash: ethConfig.hash(),
+        default_: false,
+        logo: null,
+        rate: 0,
+      }),
+    ];
+
+    await provider.update_balances(tokens, accounts);
+
+    expect(BigInt(tokens[0].balances[0])).toBeDefined();
+    expect(BigInt(tokens[0].balances[1])).toBeDefined();
+
+    expect(BigInt(tokens[1].balances[0])).toBeDefined();
+    expect(BigInt(tokens[1].balances[1])).toBeDefined();
+  }, 20000);
 });
