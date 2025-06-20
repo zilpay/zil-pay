@@ -9,6 +9,7 @@ import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { HistoricalTransaction, TransactionStatus } from "../../background/rpc/history_tx";
+import { FToken } from "../../background/storage";
 
 describe("JsonRPC provder tests", () => {
   const zilConfig = createZilliqaConfig();
@@ -295,5 +296,69 @@ describe("JsonRPC provder tests", () => {
     expect(tx2.gasPrice).toBe(2000000000n);
     expect(tx2.nonce).toBe(217n);
     expect(tx2.sender).toBe("zil1r5x8hcjashhykgw6k3pmldp4stpgqf0k60gz8c");
+  }, 20000);
+
+  it("should update balances for multiple scilla tokens and accounts", async () => {
+    const provider = new NetworkProvider(zilConfig);
+    const accounts = [
+      Address.fromStr("zil1xr07v36qa4zeagg4k5tm6ummht0jrwpcu0n55d"),
+      Address.fromStr("zil163dwl9rs82gtq0h5gukrhhvefzqmn3d06vwsmr"),
+      Address.fromStr("zil13gt2mjm2cq83mq3e30nwhdt9wl7elcwue094dz"),
+    ];
+    const tokens = [
+      new FToken({
+        native: true,
+        addr: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
+        name: "Zilliqa",
+        symbol: "ZIL",
+        decimals: 12,
+        addrType: AddressType.Bech32,
+        balances: {},
+        chainHash: zilConfig.hash(),
+        default_: true,
+        logo: null,
+        rate: 0,
+      }),
+      new FToken({
+        native: false,
+        addr: "zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy",
+        name: "Zilliqa-bridged USDT token",
+        symbol: "zUSDT",
+        decimals: 6,
+        addrType: AddressType.Bech32,
+        balances: {},
+        chainHash: zilConfig.hash(),
+        default_: false,
+        logo: null,
+        rate: 0,
+      }),
+      new FToken({
+        native: false,
+        addr: "zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4",
+        name: "ZilPay Wallet",
+        symbol: "ZLP",
+        decimals: 18,
+        addrType: AddressType.Bech32,
+        balances: {},
+        chainHash: zilConfig.hash(),
+        default_: false,
+        logo: null,
+        rate: 0,
+      }),
+    ];
+
+    await provider.update_balances(tokens, accounts);
+
+    expect(BigInt(tokens[0].balances[0])).toBeDefined();
+    expect(BigInt(tokens[0].balances[1])).toBeDefined();
+    expect(BigInt(tokens[0].balances[2])).toBeDefined();
+
+    expect(BigInt(tokens[1].balances[0])).toBeDefined();
+    expect(BigInt(tokens[1].balances[1])).toBeDefined();
+    expect(BigInt(tokens[1].balances[2])).toBeDefined();
+
+    expect(BigInt(tokens[2].balances[0])).toBeDefined();
+    expect(BigInt(tokens[2].balances[1])).toBeDefined();
+    expect(BigInt(tokens[2].balances[2])).toBeDefined();
   }, 20000);
 });

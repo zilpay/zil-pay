@@ -1092,6 +1092,8 @@ import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
 import { EvmMethods } from 'config/jsonrpc';
 import type { EVMBlock } from './block';
+import { type HistoricalTransaction } from './history_tx';
+import { buildPayloadTxReceipt, processTxReceiptResponse } from './tx_parse';
 
 export class NetworkProvider {
   public config: ChainConfig;
@@ -1298,6 +1300,21 @@ export class NetworkProvider {
 
     throw new Error("unsupported contract");
   }
+
+  async updateTransactionsReceipt(txns: HistoricalTransaction[]): Promise<void> {
+    if (txns.length === 0) {
+      return;
+    }
+
+    const requests = txns.map(tx => buildPayloadTxReceipt(tx));
+    const provider = new RpcProvider(this.config);
+    const responses = await provider.req<JsonRPCResponse<unknown>[]>(requests);
+
+    await Promise.all(responses.map((res, index) => {
+      const tx = txns[index];
+      return processTxReceiptResponse(res, tx);
+    }));
+  }
 }
 
 ```
@@ -1311,6 +1328,7 @@ import { HistoricalTransaction, TransactionStatus } from './history_tx';
 import { TransactionReceipt } from 'crypto/tx';
 import { Address } from 'crypto/address';
 import { ZILLIQA } from 'config/slip44';
+import { stripHexPrefix } from 'lib/utils/hex';
 
 const MINUTES_IN_SECONDS = 10 * 60;
 
@@ -1327,7 +1345,7 @@ export function buildSendSignedTxRequest(tx: TransactionReceipt): JsonRPCRequest
 
 export function buildPayloadTxReceipt(tx: HistoricalTransaction): JsonRPCRequest {
   if (tx.chain_type === 'Scilla') {
-    return RpcProvider.buildPayload(ZilMethods.GetTransactionStatus, [tx.transaction_hash]);
+    return RpcProvider.buildPayload(ZilMethods.GetTransactionStatus, [stripHexPrefix(tx.transaction_hash)]);
   } else if (tx.chain_type === 'EVM') {
     return RpcProvider.buildPayload(EvmMethods.GetTransactionReceipt, [tx.transaction_hash]);
   }

@@ -7,30 +7,31 @@ import {
   processEthMetadataResponse,
   processZilBalanceResponse,
   processEthBalanceResponse,
-  MetadataField
+  MetadataField,
+  type RequestType
 } from './ft_parser';
-import type { TransactionRequest } from 'crypto/tx';
+import type { TransactionReceipt, TransactionRequest } from 'crypto/tx';
 import { buildBatchGasRequest, EIP1559, EIP4844, processParseFeeHistoryRequest, type GasFeeHistory, type RequiredTxParams } from './gas_parse';
 import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
 import { EvmMethods } from 'config/jsonrpc';
 import type { EVMBlock } from './block';
-import { TransactionStatus, type HistoricalTransaction } from './history_tx';
-import { buildPayloadTxReceipt, processTxReceiptResponse } from './tx_parse';
+import { type HistoricalTransaction } from './history_tx';
+import { buildPayloadTxReceipt, buildSendSignedTxRequest, processTxReceiptResponse, processTxSendResponse } from './tx_parse';
 
 export class NetworkProvider {
-  public config: ChainConfig;
+  config: ChainConfig;
 
   constructor(config: ChainConfig) {
     this.config = config;
   }
 
-  public async proxyReq(payload: JsonRPCRequest | JsonRPCRequest[]): Promise<any> {
+  async proxyReq<T>(payload: JsonRPCRequest | JsonRPCRequest[]): Promise<JsonRPCResponse<unknown|T>> {
     const provider = new RpcProvider(this.config);
-    return provider.req<any>(payload);
+    return provider.req<JsonRPCResponse<unknown|T>>(payload);
   }
 
-  public async getCurrentBlockNumber(): Promise<bigint> {
+  async getCurrentBlockNumber(): Promise<bigint> {
     const provider = new RpcProvider(this.config);
     const payload = RpcProvider.buildPayload(EvmMethods.BlockNumber, []);
     const response = await provider.req<JsonRPCResponse<string>>(payload);
@@ -42,7 +43,7 @@ export class NetworkProvider {
     return hexToBigInt(response.result);
   }
 
-  public async estimateBlockTime(): Promise<number> {
+  async estimateBlockTime(): Promise<number> {
     const provider = new RpcProvider(this.config);
 
     const latestBlockPayload = RpcProvider.buildPayload(EvmMethods.GetBlockByNumber, ['latest', false]);
@@ -70,7 +71,7 @@ export class NetworkProvider {
     return Number(latestTimestamp - previousTimestamp);
   }
 
-  public async estimate_params_batch(
+  async estimate_params_batch(
     tx: TransactionRequest,
     sender: Address,
     blockCount: number,
@@ -144,7 +145,7 @@ export class NetworkProvider {
     };
   }
 
-  public async ftoken_meta(contract: Address, accounts: Address[]): Promise<FToken> {
+  async ftoken_meta(contract: Address, accounts: Address[]): Promise<FToken> {
     const requestsWithTypes = await buildTokenRequests(contract, accounts, false);
     const provider = new RpcProvider(this.config);
 
@@ -237,5 +238,74 @@ export class NetworkProvider {
       const tx = txns[index];
       return processTxReceiptResponse(res, tx);
     }));
+  }
+
+  async broadcast_signed_transactions(txns: TransactionReceipt[]): Promise<TransactionReceipt[]> {
+    const allRequests: JsonRPCRequest[] = [];
+
+    for (const tx of txns) {
+      if (!(await tx.verify())) {
+        throw new Error('Invalid signature');
+      }
+      allRequests.push(buildSendSignedTxRequest(tx));
+    }
+  
+    const provider = new RpcProvider(this.config);
+    const responses = await provider.req<JsonRPCResponse<any>[]>(allRequests);
+  
+    responses.forEach((response, index) => {
+      const tx = txns[index];
+      processTxSendResponse(response, tx);
+    });
+  
+    return txns;
+  }
+
+  async update_balances(tokens: FToken[], accounts: Address[]): Promise<void> {
+    const allRequests: { payload: JsonRPCRequest; requestType: RequestType; tokenIndex: number; }[] = [];
+  
+    for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
+      const token = tokens[tokenIndex];
+      const tokenAddress = Address.fromStr(token.addr);
+      const requests = await buildTokenRequests(tokenAddress, accounts, token.native);
+  
+      for (const req of requests) {
+        if (req.requestType.type === 'Balance') {
+          allRequests.push({ ...req, tokenIndex });
+        }
+      }
+    }
+  
+    if (allRequests.length === 0) {
+      return;
+    }
+  
+    const provider = new RpcProvider(this.config);
+    const payloads = allRequests.map(r => r.payload);
+    const responses = await provider.req<JsonRPCResponse<any>[]>(payloads);
+  
+    for (let i = 0; i < allRequests.length; i++) {
+      const requestInfo = allRequests[i];
+      const response = responses[i];
+      const token = tokens[requestInfo.tokenIndex];
+      const tokenAddress = Address.fromStr(token.addr);
+      
+      if (requestInfo.requestType.type !== 'Balance') continue;
+
+      const account = requestInfo.requestType.address;
+      const accountIndex = accounts.findIndex(
+        (acc) => acc.toBase16() === account.toBase16()
+      );
+      
+      if (accountIndex === -1) continue;
+  
+      if (tokenAddress.type === AddressType.Bech32) {
+        const balance = await processZilBalanceResponse(response, account, token.native);
+        token.balances[accountIndex] = balance.toString();
+      } else if (tokenAddress.type === AddressType.EthCheckSum) {
+        const balance = processEthBalanceResponse(response);
+        token.balances[accountIndex] = balance.toString();
+      }
+    }
   }
 }
