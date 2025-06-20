@@ -136,7 +136,10 @@ export class ZILTransactionReceipt {
     return {
       version: this.version,
       nonce: Number(this.nonce),
-      toAddr: await new Address(this.toAddr, AddressType.Bech32).toZilChecksum(),
+      toAddr: await new Address(
+        this.toAddr,
+        AddressType.Bech32,
+      ).toZilChecksum(),
       amount: uint8ArrayToBigIntBigEndian(this.amount).toString(),
       pubKey: uint8ArrayToHex(this.pubKey),
       gasPrice: uint8ArrayToBigIntBigEndian(this.gasPrice).toString(),

@@ -189,9 +189,7 @@ export const createZilliqaConfig = (): ChainConfig =>
     name: "Zilliqa",
     chain: "ZIL",
     logo: "",
-    rpc: [
-      "https://api.zilliqa.com",
-    ],
+    rpc: ["https://api.zilliqa.com"],
     features: [],
     chainIds: [1, 0],
     slip44: 313,

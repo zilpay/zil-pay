@@ -8,7 +8,10 @@ import { Address, AddressType } from "../../crypto/address";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
-import { HistoricalTransaction, TransactionStatus } from "../../background/rpc/history_tx";
+import {
+  HistoricalTransaction,
+  TransactionStatus,
+} from "../../background/rpc/history_tx";
 import { FToken } from "../../background/storage";
 import { KeyPair } from "../../crypto/keypair";
 
@@ -225,12 +228,13 @@ describe("JsonRPC provder tests", () => {
     const provider = new NetworkProvider(zilConfig);
     const mockTxns = [
       new HistoricalTransaction({
-        transaction_hash: "0xd0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7",
+        transaction_hash:
+          "0xd0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7",
         chain_hash: zilConfig.hash(),
         chain_type: "Scilla",
         amount: 0n,
-        sender: '',
-        recipient: '',
+        sender: "",
+        recipient: "",
         status: TransactionStatus.Pending,
         timestamp: 0,
         fee: 0n,
@@ -247,16 +251,17 @@ describe("JsonRPC provder tests", () => {
         icon: null,
         title: null,
         error: null,
-        sig: '',
-        token_info: null
+        sig: "",
+        token_info: null,
       }),
       new HistoricalTransaction({
-        transaction_hash: "0x96830fa2fbd322d9731f4fd75b44d028a73a1323d7b52b099c6ae397ab4ccf43",
+        transaction_hash:
+          "0x96830fa2fbd322d9731f4fd75b44d028a73a1323d7b52b099c6ae397ab4ccf43",
         chain_hash: zilConfig.hash(),
         chain_type: "Scilla",
         amount: 0n,
-        sender: '',
-        recipient: '',
+        sender: "",
+        recipient: "",
         status: TransactionStatus.Pending,
         timestamp: 0,
         fee: 0n,
@@ -273,9 +278,9 @@ describe("JsonRPC provder tests", () => {
         icon: null,
         title: null,
         error: null,
-        sig: '',
-        token_info: null
-      })
+        sig: "",
+        token_info: null,
+      }),
     ];
 
     await provider.updateTransactionsReceipt(mockTxns);
@@ -407,7 +412,7 @@ describe("JsonRPC provder tests", () => {
     expect(BigInt(tokens[1].balances[1])).toBeDefined();
   }, 20000);
 
-   it("should broadcast a signed EVM transaction and fail", async () => {
+  it("should broadcast a signed EVM transaction and fail", async () => {
     const provider = new NetworkProvider(ethConfig);
     const keypair = await KeyPair.generate(ethConfig.slip44);
     const recipient = Address.fromStr(
@@ -438,7 +443,9 @@ describe("JsonRPC provder tests", () => {
   it("should broadcast a signed Scilla transaction", async () => {
     const provider = new NetworkProvider(zilConfig);
     const keypair = await KeyPair.generate(zilConfig.slip44);
-    const recipient = Address.fromStr("zil1xjj35ymsvf9ajqhprwh6pkvejm2lm2e9y4q4ev");
+    const recipient = Address.fromStr(
+      "zil1xjj35ymsvf9ajqhprwh6pkvejm2lm2e9y4q4ev",
+    );
 
     const zilTx = new ZILTransactionRequest(
       zilConfig.chainId,
@@ -449,8 +456,8 @@ describe("JsonRPC provder tests", () => {
       1000000n,
     );
     const txRequest = new TransactionRequest(
-        { chainHash: zilConfig.hash() },
-        zilTx,
+      { chainHash: zilConfig.hash() },
+      zilTx,
     );
     const signedTx = await txRequest.sign(keypair);
 

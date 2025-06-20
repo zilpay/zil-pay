@@ -4,18 +4,7 @@ import { Runtime } from 'lib/runtime/extensionizer';
 
 type StorageChangesCallback = { [key: string]: chrome.storage.StorageChange; };
 
-/**
- * Default class for working with browser Storage.
- * @example
- * import { BrowserStorage } from 'lib/storage'
- * BrowserStorage.get('KEY').then(data => { ... });
- */
 export const BrowserStorage = Object.freeze({
-    /**
-     * Subscribes to storage changes.
-     * @param callback - The callback function to be called when storage changes.
-     * @returns An object with an unsubscribe method.
-     */
     subscribe(callback: (changes: StorageChangesCallback) => void) {
         const listener = (changes: StorageChangesCallback) => {
             try {
@@ -34,23 +23,18 @@ export const BrowserStorage = Object.freeze({
         };
     },
 
-    /**
-     * Sets multiple key-value pairs in storage.
-     * @param items - An array of key-value objects to be stored.
-     * @returns A promise that resolves when all items are set.
-     */
     async set(...items: StorageKeyValue[]): Promise<void> {
         if (items.length === 0) return;
 
         const data: StorageKeyValue = {};
         for (const item of items) {
-            Object.assign(data, item); // Merge all items into a single object.  Handles duplicate keys.
+            Object.assign(data, item); 
         }
 
         return new Promise((resolve, reject) => {
             Runtime.storage.local.set(data, () => {
                 if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError); // Reject on error
+                    reject(chrome.runtime.lastError); 
                 } else {
                     resolve();
                 }
@@ -58,12 +42,7 @@ export const BrowserStorage = Object.freeze({
         });
     },
 
-    /**
-     * Gets values from storage for the given keys.
-     * @param keys - An array of keys to retrieve from storage.
-     * @returns A promise that resolves with the retrieved data.  If one key is provided, the value is returned.  If multiple, an object is returned.
-     */
-    async get(...keys: (OldFields | string)[]): Promise<StorageKeyValue | any> { // Use 'any' for more flexibility
+    async get(...keys: (OldFields | string)[]): Promise<StorageKeyValue> {
         return new Promise((resolve, reject) => {
             Runtime.storage.local.get(keys, (result) => {
                 if (chrome.runtime.lastError) {
@@ -79,10 +58,6 @@ export const BrowserStorage = Object.freeze({
         });
     },
 
-    /**
-     * Gets all items from storage.
-     * @returns A promise that resolves with an object containing all stored items.
-     */
     async getAll(): Promise<StorageKeyValue> {
         return new Promise((resolve, reject) => {
             Runtime.storage.local.get(null, (items) => {
@@ -95,11 +70,6 @@ export const BrowserStorage = Object.freeze({
         });
     },
 
-    /**
-     * Removes items from storage for the given keys.
-     * @param keys - An array of keys to remove from storage.
-     * @returns A promise that resolves when the items are removed.
-     */
     async rm(...keys: (OldFields | string)[]): Promise<void> {
         return new Promise((resolve, reject) => {
             Runtime.storage.local.remove(keys, () => {
@@ -112,10 +82,6 @@ export const BrowserStorage = Object.freeze({
         });
     },
 
-    /**
-     * Clears all items from storage.
-     * @returns A promise that resolves when the storage is cleared.
-     */
     async clear(): Promise<void> {
         return new Promise((resolve, reject) => {
             Runtime.storage.local.clear(() => {
