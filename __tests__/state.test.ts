@@ -1,8 +1,8 @@
 import "./setupTests";
 import { describe, it, expect, beforeAll } from "vitest";
 import { GlobalState } from "../background/state";
-import { BackgroundState } from "../background/storage/background";
-import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "./data";
+import { AppearancesTheme, BackgroundState } from "../background/storage/background";
+import { createBscConfig, createEthConfig, PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "./data";
 import { BrowserStorage } from "../lib/storage";
 import { AuthMethod, Wallet, WalletTypes } from "../background/storage/wallet";
 import { AddressType } from "../crypto/address";
@@ -18,9 +18,26 @@ describe("test bg state with empty storage", () => {
     await BrowserStorage.clear();
   });
 
-  it("should sync emtpy storage", async () => {
+  it("should init from emtpy storage", async () => {
     const globalState = await GlobalState.fromStorage();
     expect(globalState.state).toStrictEqual(BackgroundState.default());
+  });
+
+  it("should save storage", async () => {
+    const globalState = await GlobalState.fromStorage();
+
+    expect(globalState.state).toStrictEqual(BackgroundState.default());
+
+    globalState.state.appearances = AppearancesTheme.Light;
+    globalState.state.abbreviatedNumber = false;
+    globalState.state.chains.push(createBscConfig());
+    globalState.state.chains.push(createEthConfig());
+
+    await globalState.sync();
+
+    const restoredGlobalState = await GlobalState.fromStorage();
+
+    expect(restoredGlobalState).toStrictEqual(globalState);
   });
 });
 
@@ -174,4 +191,3 @@ describe("test bg state with storagev3", () => {
     expect(words).toBe(WORDS);
   });
 });
-

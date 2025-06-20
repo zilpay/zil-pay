@@ -1,13 +1,13 @@
 import { BackgroundState } from "background/storage";
 import { Fields } from "config/fields";
-import { BrowserStorage } from "lib/storage";
+import { BrowserStorage, buildObject } from "lib/storage";
 import { migrateToV4 } from "./secure";
 
 export class GlobalState {
   state: BackgroundState;
 
   static async fromStorage() {
-    const recordsv4 = await BrowserStorage.get(Fields.STORAGE_V4);
+    const recordsv4 = await BrowserStorage.get<string>(Fields.STORAGE_V4);
     let state: BackgroundState;
 
     if (!recordsv4) {
@@ -24,7 +24,7 @@ export class GlobalState {
       }
     } else {
       try {
-        state = new BackgroundState(recordsv4);
+        state = new BackgroundState(JSON.parse(recordsv4));
       } catch {
         state = BackgroundState.default();
       }
@@ -37,5 +37,7 @@ export class GlobalState {
     this.state = initialState;
   }
 
-  async save() {}
+  async sync() {
+    await BrowserStorage.set(buildObject(Fields.STORAGE_V4, JSON.stringify(this.state)))
+  }
 }

@@ -34,14 +34,14 @@ export const BrowserStorage = Object.freeze({
         await Runtime.storage.local.set(data);
     },
 
-    async get(...keys: (OldFields | string)[]): Promise<Record<string, unknown>> { 
+    async get<T>(...keys: (OldFields | string)[]): Promise<T> { 
         const result = await Runtime.storage.local.get(keys);
 
         if (keys.length === 1 && result) {
             return result[keys[0]];
         }
         
-        return result as Record<string, unknown>;
+        return result as T;
     },
 
     async getAll(): Promise<StorageKeyValue> {
