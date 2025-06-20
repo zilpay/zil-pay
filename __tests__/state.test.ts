@@ -2,13 +2,16 @@ import "./setupTests";
 import { describe, it, expect, beforeAll } from "vitest";
 import { GlobalState } from "../background/state";
 import { BackgroundState } from "../background/storage/background";
-import { STORAGE_V2 } from "./data";
+import { PASSWORD, STORAGE_V2, WORDS } from "./data";
 import { BrowserStorage } from "../lib/storage";
-import { AuthMethod, WalletTypes } from "../background/storage/wallet";
+import { AuthMethod, Wallet, WalletTypes } from "../background/storage/wallet";
 import { AddressType } from "../crypto/address";
 import { CipherOrders } from "../crypto/keychain";
 import { HashTypes } from "../background/storage/argon";
 import { ShaAlgorithms } from "../config/pbkdf2";
+import { FToken } from "../background/storage/ftoken";
+import { utf8ToUint8Array } from '../lib/utils/utf8';
+import { ChainConfig } from "../background/storage/chain";
 
 describe("test bg state with empty storage", () => {
   beforeAll(async () => {
@@ -33,7 +36,7 @@ describe("test bg state with storagev2", () => {
     expect(globalState.state.chains.length).toBe(1);
     expect(globalState.state.wallets.length).toBe(1);
 
-    const wallet = globalState.state.wallets[0];
+    const wallet: Wallet = globalState.state.wallets[0];
 
     expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
     expect(wallet.walletName).toBe("Zilliqa Wallet");
@@ -64,8 +67,8 @@ describe("test bg state with storagev2", () => {
     expect(account1.index).toBe(0);
 
     expect(wallet.tokens.length).toBe(2);
-    const zilToken = wallet.tokens.find((t) => t.symbol === "ZIL");
-    const zlpToken = wallet.tokens.find((t) => t.symbol === "ZLP");
+    const zilToken = wallet.tokens.find((t: FToken) => t.symbol === "ZIL");
+    const zlpToken = wallet.tokens.find((t: FToken) => t.symbol === "ZLP");
 
     expect(zilToken).toBeDefined();
     expect(zilToken?.name).toBe("Zilliqa");
@@ -97,5 +100,12 @@ describe("test bg state with storagev2", () => {
     expect(hashFnParams.iterations).toBe(0);
     expect(hashFnParams.memory).toBe(1024);
     expect(hashFnParams.threads).toBe(1);
+
+    const chain: ChainConfig = globalState.state.chains[0];
+    const passowrd = utf8ToUint8Array(PASSWORD);
+    await wallet.unlock(passowrd);
+    const words = await wallet.revealMnemonic(passowrd, chain);
+
+    expect(words).toBe(WORDS);
   });
 });
