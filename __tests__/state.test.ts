@@ -2,7 +2,7 @@ import "./setupTests";
 import { describe, it, expect, beforeAll } from "vitest";
 import { GlobalState } from "../background/state";
 import { BackgroundState } from "../background/storage/background";
-import { PASSWORD, STORAGE_V2, WORDS } from "./data";
+import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "./data";
 import { BrowserStorage } from "../lib/storage";
 import { AuthMethod, Wallet, WalletTypes } from "../background/storage/wallet";
 import { AddressType } from "../crypto/address";
@@ -109,3 +109,69 @@ describe("test bg state with storagev2", () => {
     expect(words).toBe(WORDS);
   });
 });
+
+describe("test bg state with storagev3", () => {
+  beforeAll(async () => {
+    await BrowserStorage.clear();
+    await BrowserStorage.set(STORAGE_V3);
+  });
+
+  it("should init from storage v3", async () => {
+    const globalState = await GlobalState.fromStorage();
+
+    expect(globalState.state.chains.length).toBe(1);
+    expect(globalState.state.wallets.length).toBe(1);
+
+    const wallet: Wallet = globalState.state.wallets[0];
+
+    expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
+    expect(wallet.walletName).toBe("Zilliqa Wallet");
+    expect(wallet.authType).toBe(AuthMethod.None);
+    expect(wallet.selectedAccount).toBe(1);
+    expect(wallet.defaultChainHash).toBe(208425510);
+    expect(wallet.vault).toBe("ZGM1ODdhZGI0YWVhY2E3Njk4MDJlYTEyMzMxOGY5OGZlMjMxMzNhYzY1ZDc4ZTUzYjFiZmI0YTYxNDY5OTAzZGQ2NDAzNWFjZmQzNGVkODZjYzc3NTc0NWE4NjI4N2Y3NWI0OTdiYzk4OGFjMzg0MDM5MWY5MGJjY2FmMjllNmU4NmEyMjJkMy8zODIzZWMwNmEyMDA4ZDZhODcyMTY3MzAwMzlmZTBlYw==");
+
+    expect(wallet.accounts.length).toBe(2);
+    const [account0, account1] = wallet.accounts;
+
+    expect(account0.name).toBe("Account 0");
+    expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y");
+    expect(account1.name).toBe("Imported 0");
+    expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43");
+
+    expect(wallet.tokens.length).toBe(3);
+    const zilToken = wallet.tokens.find((t: FToken) => t.symbol === "ZIL");
+    const zlpToken = wallet.tokens.find((t: FToken) => t.symbol === "ZLP");
+    const stZilToken = wallet.tokens.find((t: FToken) => t.symbol === "stZIL");
+
+    expect(zilToken).toBeDefined();
+    expect(zilToken?.rate).toBe(1);
+
+    expect(zlpToken).toBeDefined();
+    expect(zlpToken?.rate).toBe(2.7915277475);
+
+    expect(stZilToken).toBeDefined();
+    expect(stZilToken?.name).toBe("StZIL");
+    expect(stZilToken?.addr).toBe("zil1umc54ly88xjw4599gtq860le0qvsuwuj72s246");
+    expect(stZilToken?.rate).toBe(1.2063766095);
+
+    const { settings } = wallet;
+    expect(settings.cipherOrders).toEqual([CipherOrders.AESGCM256]);
+    expect(settings.currencyConvert).toBe("btc");
+
+    const { hashFnParams } = settings;
+    expect(hashFnParams.hashType).toBe(HashTypes.Pbkdf2);
+    expect(hashFnParams.hashSize).toBe(ShaAlgorithms.Sha512);
+    expect(hashFnParams.iterations).toBe(442368);
+    expect(hashFnParams.memory).toBe(1024);
+    expect(hashFnParams.threads).toBe(1);
+
+    const chain: ChainConfig = globalState.state.chains[0];
+    const password = utf8ToUint8Array(PASSWORD);
+    await wallet.unlock(password);
+    const words = await wallet.revealMnemonic(password, chain);
+
+    expect(words).toBe(WORDS);
+  });
+});
+
