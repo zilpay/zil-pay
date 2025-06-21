@@ -11,6 +11,7 @@ import { uuid } from '../../crypto/uuid';
 import { TypeOf } from 'lib/types';
 import { KeyPair } from 'crypto/keypair';
 import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
+import type { HistoricalTransaction } from 'background/rpc/history_tx';
 
 export enum WalletTypes {
     Ledger,
@@ -33,6 +34,7 @@ export class Wallet {
   accounts: Account[];
   selectedAccount: number;
   tokens: FToken[];
+  history: HistoricalTransaction[];
   settings: WalletSettings;
   defaultChainHash: number;
   vault: string;
@@ -51,6 +53,7 @@ export class Wallet {
     this.settings = new WalletSettings(data.settings as Record<string, unknown>);
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
+    this.history = TypeOf.isArray(data.history) ? data.history as HistoricalTransaction[] : [];
     this.#session = new Session(this.uuid);
 
     this.vault = data.vault as string ?? "";

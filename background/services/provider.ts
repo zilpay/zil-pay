@@ -3,7 +3,7 @@ import type { BackgroundState } from "background/storage";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
 
-export class Provider {
+export class ProviderService {
   #state: BackgroundState;
 
   constructor(state: BackgroundState) {
