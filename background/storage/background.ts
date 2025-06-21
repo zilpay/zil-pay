@@ -1,5 +1,8 @@
+import { BrowserStorage, buildObject } from 'lib/storage';
 import { ChainConfig } from './chain';
 import { Wallet } from './wallet';
+import { Fields } from 'config/fields';
+import { migrateToV4 } from 'background/secure';
 
 export enum AppearancesTheme {
   System,
@@ -29,6 +32,35 @@ export class BackgroundState {
     });
   }
 
+  static async fromStorage() {
+    const recordsv4 = await BrowserStorage.get<string>(Fields.STORAGE_V4);
+    let state: BackgroundState;
+
+    if (!recordsv4) {
+      const oldRecords = await BrowserStorage.getAll();
+
+      if (oldRecords) {
+        try {
+          state = migrateToV4(oldRecords);
+          await BrowserStorage.clear();
+          await state.sync();
+        } catch {
+          state = BackgroundState.default();
+        }
+      } else {
+        state = BackgroundState.default();
+      }
+    } else {
+      try {
+        state = new BackgroundState(JSON.parse(recordsv4));
+      } catch {
+        state = BackgroundState.default();
+      }
+    }
+
+    return state;
+  }
+
   constructor(data: Record<string, unknown>) {
     this.wallets = (data.wallets as Record<string, unknown>[] ?? []).map(
       (w) => new Wallet(w)
@@ -40,6 +72,12 @@ export class BackgroundState {
     this.hideBalance= data.hideBalance as boolean;
     this.chains = (data.chains as Record<string, unknown>[]).map(
       (c) => new ChainConfig(c)
+    );
+  }
+
+  async sync() {
+    await BrowserStorage.set(
+      buildObject(Fields.STORAGE_V4, JSON.stringify(this)),
     );
   }
 }
