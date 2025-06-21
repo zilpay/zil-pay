@@ -31,7 +31,7 @@ describe("JsonRPC provder tests", () => {
       Address.fromStr("zil1qxja2utwtn0e3qdj8keauak7a3m5lugj9gryyw"),
       Address.fromStr("zil1qxn2qve0vs59cul2nl9ymjnsrc09mhuk8hzz3w"),
     ];
-    const result = await rpc.ftoken_meta(zlpContract, accounts);
+    const result = await rpc.ftokenMeta(zlpContract, accounts);
 
     expect(result.addr).toBe(await zlpContract.toZilBech32());
     expect(result.addrType).toBe(AddressType.Bech32);
@@ -54,7 +54,7 @@ describe("JsonRPC provder tests", () => {
       Address.fromStr("0xA9D1e08C7793af67e9d92fe308d5697FB81d3E43"),
       Address.fromStr("0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE"),
     ];
-    const result = await rpc.ftoken_meta(usdtContract, accounts);
+    const result = await rpc.ftokenMeta(usdtContract, accounts);
 
     expect(result.addr).toBe(await usdtContract.toEthChecksum());
     expect(result.addrType).toBe(AddressType.EthCheckSum);
@@ -96,7 +96,7 @@ describe("JsonRPC provder tests", () => {
       ethTx,
     );
 
-    const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
 
     expect(fee.gasPrice).toBeGreaterThan(0n);
     expect(fee.nonce).toBeGreaterThan(0);
@@ -129,7 +129,7 @@ describe("JsonRPC provder tests", () => {
       ethTx,
     );
 
-    const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
 
     expect(fee.gasPrice).toBeGreaterThan(0n);
     expect(fee.nonce).toBeGreaterThan(0);
@@ -161,7 +161,7 @@ describe("JsonRPC provder tests", () => {
       undefined,
       bscTx,
     );
-    const fee = await provider.estimate_params_batch(txRequest, from, 4, null);
+    const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
 
     expect(fee.gasPrice).toBe(100000000n);
     expect(fee.nonce).toBeGreaterThan(0);
@@ -191,7 +191,7 @@ describe("JsonRPC provder tests", () => {
       zilTx,
       undefined,
     );
-    const params = await provider.estimate_params_batch(
+    const params = await provider.estimateParamsBatch(
       txRequest,
       from,
       4,
@@ -353,7 +353,7 @@ describe("JsonRPC provder tests", () => {
       }),
     ];
 
-    await provider.update_balances(tokens, accounts);
+    await provider.updateBalances(tokens, accounts);
 
     expect(BigInt(tokens[0].balances[0])).toBeDefined();
     expect(BigInt(tokens[0].balances[1])).toBeDefined();
@@ -403,7 +403,7 @@ describe("JsonRPC provder tests", () => {
       }),
     ];
 
-    await provider.update_balances(tokens, accounts);
+    await provider.updateBalances(tokens, accounts);
 
     expect(BigInt(tokens[0].balances[0])).toBeDefined();
     expect(BigInt(tokens[0].balances[1])).toBeDefined();
@@ -436,7 +436,7 @@ describe("JsonRPC provder tests", () => {
     const signedTx = await txRequest.sign(keypair);
 
     await expect(
-      provider.broadcast_signed_transactions([signedTx]),
+      provider.broadcastSignedTransactions([signedTx]),
     ).rejects.toThrow(/insufficient funds|nonce too low/);
   }, 20000);
 
@@ -462,7 +462,7 @@ describe("JsonRPC provder tests", () => {
     const signedTx = await txRequest.sign(keypair);
 
     await expect(
-      provider.broadcast_signed_transactions([signedTx]),
+      provider.broadcastSignedTransactions([signedTx]),
     ).rejects.toThrow(/The sender of the txn has no balance/);
   }, 20000);
 });

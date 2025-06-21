@@ -204,6 +204,7 @@ export class WalletService {
       const account = wallet.accounts[wallet.selectedAccount];
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
+      // TODO: potcial need to filter adresses for hash only.
       const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
 
       await provider.updateBalances(wallet.tokens, addresses);
