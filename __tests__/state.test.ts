@@ -106,6 +106,8 @@ describe("test bg state with empty storage", () => {
     );
 
     globalState.state.wallets.push(bip39Wallet);
+
+    await globalState.sync();
   });
 });
 

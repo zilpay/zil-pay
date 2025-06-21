@@ -1,6 +1,6 @@
 import { BackgroundState } from "background/storage";
-import { WalletService } from 'background/services';
-import { ProviderService } from 'background/services';
+import { WalletService } from "background/services";
+import { ProviderService } from "background/services";
 
 export class GlobalState {
   state: BackgroundState;

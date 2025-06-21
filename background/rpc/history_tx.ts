@@ -49,7 +49,7 @@ export class HistoricalTransaction {
   public data?: string;
   public code?: string;
 
-  constructor(data: Omit<HistoricalTransaction, "constructor" | 'fromReceipt'>) {
+  constructor(data: Omit<HistoricalTransaction, "constructor" | 'fromReceipt' | 'toJSON'>) {
     this.transaction_hash = data.transaction_hash;
     this.amount = data.amount;
     this.sender = data.sender;
@@ -194,6 +194,41 @@ export class HistoricalTransaction {
     }
 
     throw new Error("Unknown transaction receipt type");
+  }
+
+  toJSON(): Record<string, unknown> {
+    return {
+      transaction_hash: this.transaction_hash,
+      amount: this.amount.toString(),
+      sender: this.sender,
+      recipient: this.recipient,
+      contract_address: this.contract_address,
+      status: TransactionStatus[this.status],
+      status_code: this.status_code,
+      timestamp: this.timestamp,
+      block_number: this.block_number?.toString() ?? null,
+      gasUsed: this.gasUsed?.toString() ?? null,
+      gasLimit: this.gasLimit?.toString() ?? null,
+      gasPrice: this.gasPrice?.toString() ?? null,
+      blobGasUsed: this.blobGasUsed?.toString() ?? null,
+      blobGasPrice: this.blobGasPrice?.toString() ?? null,
+      effectiveGasPrice: this.effectiveGasPrice?.toString() ?? null,
+      fee: this.fee.toString(),
+      icon: this.icon,
+      title: this.title,
+      error: this.error,
+      sig: this.sig,
+      nonce: this.nonce.toString(),
+      token_info: this.token_info ? {
+        value: this.token_info.value.toString(),
+        symbol: this.token_info.symbol,
+        decimals: this.token_info.decimals
+      } : null,
+      chain_type: this.chain_type,
+      chain_hash: this.chain_hash,
+      data: this.data,
+      code: this.code
+    };
   }
 }
 

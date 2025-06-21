@@ -15,10 +15,10 @@ import { createBscConfig, createZilliqaConfig } from "../data";
 import { randomBytes } from "../../crypto/random";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 
-describe("HistoricalTransaction", () => {
-  const ZIL_CONFIG = createZilliqaConfig();
-  const BSC_CONFIG = createBscConfig();
+const ZIL_CONFIG = createZilliqaConfig();
+const BSC_CONFIG = createBscConfig();
 
+describe("HistoricalTransaction", () => {
   describe("fromReceipt", () => {
     describe("Scilla Transactions", () => {
       it("should be props a Scilla contract call", async () => {
@@ -154,6 +154,153 @@ describe("HistoricalTransaction", () => {
         expect(historicalTx.chain_type).toBe("EVM" as ChainType);
         expect(historicalTx.chain_hash).toBe(BSC_CONFIG.hash());
       });
+    });
+  });
+});
+
+describe("toJSON", () => {
+  it("should convert Scilla transaction to JSON correctly", async () => {
+    const keypair = await KeyPair.generate(ZIL_CONFIG.slip44);
+    const toAddr = Address.fromStr(
+      "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
+    );
+    const data = JSON.stringify({
+      _tag: "Transfer",
+      params: [
+        {
+          vname: "to",
+          type: "ByStr20",
+          value: "0x066b88d3411c68cb56219e748ae895e1734c0f51",
+        },
+        {
+          vname: "amount",
+          type: "Uint128",
+          value: "355940000000000000000",
+        },
+      ],
+    });
+    const txZilReq = new ZILTransactionRequest(
+      42,
+      BigInt(1),
+      BigInt(2000) * BigInt(10 ** 6),
+      BigInt(100000),
+      toAddr.bytes,
+      BigInt(1) * BigInt(10 ** 12),
+      new Uint8Array(),
+      utf8ToUint8Array(data),
+    );
+    const metadata = {
+      chainHash: ZIL_CONFIG.hash(),
+      tokenInfo: ["1000000000000", 12, "ZIL"] as [string, number, string],
+    };
+    const txReq = new TransactionRequest(metadata, txZilReq);
+    const receipt = await txReq.sign(keypair);
+
+    receipt.metadata.hash = uint8ArrayToHex(randomBytes(64), true);
+
+    const historicalTx = await HistoricalTransaction.fromReceipt(receipt);
+    const json = historicalTx.toJSON();
+
+    expect(json).toEqual({
+      transaction_hash: historicalTx.transaction_hash,
+      amount: "1000000000000",
+      sender: uint8ArrayToHex(keypair.pubKey),
+      recipient: "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
+      contract_address: "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
+      status: "Pending",
+      status_code: null,
+      timestamp: expect.any(Number),
+      block_number: null,
+      gasUsed: null,
+      gasLimit: "100000",
+      gasPrice: "2000000000",
+      blobGasUsed: null,
+      blobGasPrice: null,
+      effectiveGasPrice: null,
+      fee: "200000000000000",
+      icon: null,
+      title: null,
+      error: null,
+      sig: expect.any(String),
+      nonce: "1",
+      token_info: {
+        value: "1000000000000",
+        decimals: 12,
+        symbol: "ZIL",
+      },
+      chain_type: "Scilla",
+      chain_hash: ZIL_CONFIG.hash(),
+      data: data,
+      code: "",
+    });
+  });
+
+  it("should convert EVM transaction to JSON correctly", async () => {
+    const keypair = await KeyPair.generate(BSC_CONFIG.slip44);
+    const tokenAddress = Address.fromStr(
+      "0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc",
+    );
+    const recipient = Address.fromStr(
+      "0x246C5881E3F109B2aF170F5C773EF969d3da581B",
+    );
+    const amount = weieth.decode("69");
+    const transferData = generateErc20TransferData(
+      await recipient.toEthChecksum(),
+      amount,
+    );
+    const ethTx = Transaction.prepare({
+      to: await tokenAddress.toEthChecksum(),
+      value: 0n,
+      maxFeePerGas: weigwei.decode("1"),
+      gasLimit: 24000n,
+      maxPriorityFeePerGas: 10n,
+      nonce: 0n,
+      chainId: BigInt(BSC_CONFIG.chainId),
+      data: transferData,
+    });
+    const metadata = {
+      chainHash: BSC_CONFIG.hash(),
+      tokenInfo: ["69000000000000000000", 18, "USDT"] as [string, number, string],
+    };
+    const txReq = new TransactionRequest(metadata, undefined, ethTx);
+    const receipt = await txReq.sign(keypair);
+
+    receipt.metadata.hash = uint8ArrayToHex(randomBytes(64), true);
+
+    const historicalTx = await HistoricalTransaction.fromReceipt(receipt);
+    const json = historicalTx.toJSON();
+
+    expect(json).toEqual({
+      transaction_hash: historicalTx.transaction_hash,
+      amount: "0",
+      sender: await keypair.address().then((a) => a.toEthChecksum()),
+      recipient: await tokenAddress.toEthChecksum(),
+      contract_address: await tokenAddress.toEthChecksum(),
+      status: "Pending",
+      status_code: null,
+      timestamp: expect.any(Number),
+      block_number: null,
+      gasUsed: null,
+      gasLimit: "24000",
+      gasPrice: null,
+      blobGasUsed: null,
+      blobGasPrice: null,
+      effectiveGasPrice: "10",
+      fee: "24000000000000",
+      icon: null,
+      title: null,
+      error: null,
+      sig: expect.any(String),
+      nonce: "0",
+      token_info: {
+        value: "69000000000000000000",
+        decimals: 18,
+        symbol: "USDT",
+      },
+      chain_type: "EVM",
+      chain_hash: BSC_CONFIG.hash(),
+      data: transferData,
+      code: undefined,
     });
   });
 });
