@@ -12,6 +12,7 @@ import { TypeOf } from 'lib/types';
 import { KeyPair } from 'crypto/keypair';
 import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
 import type { HistoricalTransaction } from 'background/rpc/history_tx';
+import type { ConfirmState } from './confirm';
 
 export enum WalletTypes {
     Ledger,
@@ -35,6 +36,7 @@ export class Wallet {
   selectedAccount: number;
   tokens: FToken[];
   history: HistoricalTransaction[];
+  confirm: ConfirmState[];
   settings: WalletSettings;
   defaultChainHash: number;
   vault: string;
@@ -54,6 +56,7 @@ export class Wallet {
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
     this.history = TypeOf.isArray(data.history) ? data.history as HistoricalTransaction[] : [];
+    this.confirm = TypeOf.isArray(data.confirm) ? data.confirm as ConfirmState[] : [];
     this.#session = new Session(this.uuid);
 
     this.vault = data.vault as string ?? "";
