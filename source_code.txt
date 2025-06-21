@@ -22,14 +22,17 @@ zil-pay
 │   │   ├── migrator.ts
 │   │   └── session.ts
 │   ├── services
-│   │   ├── guard.ts
-│   │   └── index.ts
+│   │   ├── index.ts
+│   │   ├── provider.ts
+│   │   ├── tx.ts
+│   │   └── wallet.ts
 │   ├── state.ts
 │   └── storage
 │       ├── account.ts
 │       ├── argon.ts
 │       ├── background.ts
 │       ├── chain.ts
+│       ├── confirm.ts
 │       ├── explorer.ts
 │       ├── ftoken.ts
 │       ├── index.ts
@@ -96,7 +99,7 @@ zil-pay
 │   │   ├── index.ts
 │   │   └── storage.ts
 │   ├── streem
-│   │   ├── TabsMessage.ts
+│   │   ├── index.ts
 │   │   ├── keys.ts
 │   │   ├── message.ts
 │   │   ├── secure-message.ts
@@ -119,7 +122,8 @@ zil-pay
 │   └── main.ts
 ├── rollup.config.mjs
 ├── types
-│   └── micro-eth-signer.d.ts
+│   ├── micro-eth-signer.d.ts
+│   └── wallet.d.ts
 └── vitest.config.ts
 
 ```
@@ -127,8 +131,8 @@ zil-pay
 `zil-pay/background/background.ts`:
 
 ```ts
-import type { GlobalState } from './state';
-import { Runtime } from 'lib/runtime';
+import type { GlobalState } from "./state";
+import { Runtime } from "lib/runtime";
 
 export function startBackground(core: GlobalState) {
   Runtime.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -150,14 +154,14 @@ export function startBackground(core: GlobalState) {
 `zil-pay/background/index.ts`:
 
 ```ts
-import { startBackground } from 'background/background';
-import { GlobalState } from 'background/state';
+import { startBackground } from "background/background";
+import { GlobalState } from "background/state";
 
-(async function() {
+(async function () {
   const state = await GlobalState.fromStorage();
 
   startBackground(state);
-}());
+})();
 
 ```
 
@@ -717,7 +721,7 @@ export class HistoricalTransaction {
   public data?: string;
   public code?: string;
 
-  constructor(data: Omit<HistoricalTransaction, "constructor" | 'fromReceipt'>) {
+  constructor(data: Omit<HistoricalTransaction, "constructor" | 'fromReceipt' | 'toJSON'>) {
     this.transaction_hash = data.transaction_hash;
     this.amount = data.amount;
     this.sender = data.sender;
@@ -862,6 +866,41 @@ export class HistoricalTransaction {
     }
 
     throw new Error("Unknown transaction receipt type");
+  }
+
+  toJSON(): Record<string, unknown> {
+    return {
+      transaction_hash: this.transaction_hash,
+      amount: this.amount.toString(),
+      sender: this.sender,
+      recipient: this.recipient,
+      contract_address: this.contract_address,
+      status: TransactionStatus[this.status],
+      status_code: this.status_code,
+      timestamp: this.timestamp,
+      block_number: this.block_number?.toString() ?? null,
+      gasUsed: this.gasUsed?.toString() ?? null,
+      gasLimit: this.gasLimit?.toString() ?? null,
+      gasPrice: this.gasPrice?.toString() ?? null,
+      blobGasUsed: this.blobGasUsed?.toString() ?? null,
+      blobGasPrice: this.blobGasPrice?.toString() ?? null,
+      effectiveGasPrice: this.effectiveGasPrice?.toString() ?? null,
+      fee: this.fee.toString(),
+      icon: this.icon,
+      title: this.title,
+      error: this.error,
+      sig: this.sig,
+      nonce: this.nonce.toString(),
+      token_info: this.token_info ? {
+        value: this.token_info.value.toString(),
+        symbol: this.token_info.symbol,
+        decimals: this.token_info.decimals
+      } : null,
+      chain_type: this.chain_type,
+      chain_hash: this.chain_hash,
+      data: this.data,
+      code: this.code
+    };
   }
 }
 
@@ -1163,7 +1202,7 @@ export class NetworkProvider {
     return Number(latestTimestamp - previousTimestamp);
   }
 
-  async estimate_params_batch(
+  async estimateParamsBatch(
     tx: TransactionRequest,
     sender: Address,
     blockCount: number,
@@ -1237,7 +1276,7 @@ export class NetworkProvider {
     };
   }
 
-  async ftoken_meta(contract: Address, accounts: Address[]): Promise<FToken> {
+  async ftokenMeta(contract: Address, accounts: Address[]): Promise<FToken> {
     const requestsWithTypes = await buildTokenRequests(contract, accounts, false);
     const provider = new RpcProvider(this.config);
 
@@ -1332,7 +1371,7 @@ export class NetworkProvider {
     }));
   }
 
-  async broadcast_signed_transactions(txns: TransactionReceipt[]): Promise<TransactionReceipt[]> {
+  async broadcastSignedTransactions(txns: TransactionReceipt[]): Promise<TransactionReceipt[]> {
     const allRequests: JsonRPCRequest[] = [];
 
     for (const tx of txns) {
@@ -1353,7 +1392,7 @@ export class NetworkProvider {
     return txns;
   }
 
-  async update_balances(tokens: FToken[], accounts: Address[]): Promise<void> {
+  async updateBalances(tokens: FToken[], accounts: Address[]): Promise<void> {
     const allRequests: { payload: JsonRPCRequest; requestType: RequestType; tokenIndex: number; }[] = [];
   
     for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
@@ -1588,6 +1627,7 @@ import { HashTypes, WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { AddressType } from 'crypto/address';
+import { uuid } from 'crypto/uuid';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -1748,6 +1788,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         walletType: WalletTypes.SecretPhrase,
         walletName: 'Zilliqa Wallet',
         authType: AuthMethod.None,
+        uuid: uuid(),
         walletAddress: accounts[0].addr,
         accounts,
         selectedAccount: walletIdentities.selectedAddress,
@@ -1869,48 +1910,301 @@ export class Session {
 `zil-pay/background/services/index.ts`:
 
 ```ts
-export * from './guard';
+export * from './wallet';
+export * from './provider';
+export * from './tx';
 
+
+
+```
+
+`zil-pay/background/services/provider.ts`:
+
+```ts
+import { NetworkProvider } from "background/rpc";
+import type { BackgroundState } from "background/storage";
+import { Address } from "crypto/address";
+import type { StreamResponse } from "lib/streem";
+
+export class ProviderService {
+  #state: BackgroundState;
+
+  constructor(state: BackgroundState) {
+    this.#state = state;
+  }
+
+  async balanceUpdate(walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      // TODO: potcial need to filter adresses for hash only.
+      const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
+
+      await provider.updateBalances(wallet.tokens, addresses);
+      this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async sendSignedTransaction(sendResponse: StreamResponse) {}
+
+  async getCurrentBlock(sendResponse: StreamResponse) {}
+
+  async proxyChannel(sendResponse: StreamResponse) {}
+
+  async estimateBlockTime(sendResponse: StreamResponse) {}
+
+  async estimateGasParamsBatch(sendResponse: StreamResponse) {}
+
+  async fetchFtokenMeta(sendResponse: StreamResponse) {}
+
+  async updateTransactionsHistory(sendResponse: StreamResponse) {}
+}
+
+
+```
+
+`zil-pay/background/services/wallet.ts`:
+
+```ts
+import { Wallet, WalletSettings, type BackgroundState } from "background/storage";
+import type { StreamResponse } from "lib/streem";
+import { utf8ToUint8Array } from "lib/utils/utf8";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
+import { TypeOf } from "lib/types";
+import { KeyPair } from "crypto/keypair";
+import { NetworkProvider } from "background/rpc";
+import { Address } from "crypto/address";
+
+export class WalletService {
+  #state: BackgroundState;
+
+  constructor(state: BackgroundState) {
+    this.#state = state;
+  }
+
+  async addLedgerWallet() {}
+
+  async walletFromPrivateKey(payload: WalletFromPrivateKeyParams, sendResponse: StreamResponse) {
+    try {
+      const chain = this.#state.getChain(payload.chainHash)!;
+      const keyBytes = hexToUint8Array(payload.key);
+      const kyepair = await KeyPair.fromPrivateKey(keyBytes, chain.slip44);
+      const settings = new WalletSettings({ ...payload.settings });
+      const wallet = await Wallet.fromPrivateKey(
+        kyepair,
+        payload.walletName,
+        payload.accountName,
+        settings,
+        chain,
+        payload.password,
+      );
+
+      this.#state.wallets.push(wallet);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async exportbip39Words(password: string, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const passwordBytes = utf8ToUint8Array(password);
+      const wallet = this.#state.wallets[walletIndex];
+
+      const chain = this.#state.getChain(wallet.defaultChainHash)!;
+      const mnemonic = await wallet.revealMnemonic(passwordBytes, chain);
+
+      sendResponse({
+        resolve: mnemonic
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async exportKeyPair(password: string, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const passwordBytes = utf8ToUint8Array(password);
+      const wallet = this.#state.wallets[walletIndex];
+
+      await wallet.unlock(passwordBytes);
+
+      const chain = this.#state.getChain(wallet.defaultChainHash)!;
+      const keyPair = await wallet.revealKeypair(accountIndex, chain);
+
+      sendResponse({
+        resolve: {
+          privKey: uint8ArrayToHex(keyPair.privateKey),
+          pubKey: uint8ArrayToHex(keyPair.pubKey),
+        }
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err)
+      });
+    }
+  }
+
+  async changePassword(payload: SetPasswordPayload, sendResponse: StreamResponse) {
+     try {
+      const passwordBytes = utf8ToUint8Array(payload.currentPassword);
+      const wallet = this.#state.wallets[payload.walletIndex];
+
+      await wallet.clearSession();
+
+      const vault = await wallet.decrypt(passwordBytes);
+      const newPasswordBytes = utf8ToUint8Array(payload.newPassword);
+
+      wallet.settings.cipherOrders = payload.cipherOrders;
+      wallet.settings.hashFnParams.memory = payload.hashSettings.memory;
+      wallet.settings.hashFnParams.iterations = payload.hashSettings.iterations;
+      wallet.settings.hashFnParams.threads = payload.hashSettings.threads;
+      wallet.settings.hashFnParams.secret = payload.hashSettings.secret;
+      wallet.settings.hashFnParams.hashType = payload.hashSettings.hashType;
+      wallet.settings.hashFnParams.hashSize = payload.hashSettings.hashSize;
+
+      if (TypeOf.isString(vault)) {
+        await wallet.encrypt(newPasswordBytes, utf8ToUint8Array(vault as string));
+      } else if (vault instanceof Uint8Array) {
+        await wallet.encrypt(newPasswordBytes, vault);
+      }
+
+      await wallet.unlock(newPasswordBytes);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err)
+      });
+    } 
+  }
+
+  async removeAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      if (accountIndex == 0) {
+        throw new Error(`invalid account index: ${accountIndex}`);
+      }
+
+      const wallet = this.#state.wallets[walletIndex];
+
+      wallet.accounts.splice(accountIndex, 1);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async removeWallet(walletIndex: number, password: string, sendResponse: StreamResponse) {
+    try {
+      const passwordBytes = utf8ToUint8Array(password);
+      const wallet = this.#state.wallets[walletIndex];
+
+      await wallet.unlock(passwordBytes);
+      this.#state.wallets.splice(walletIndex);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async setAccountName(walletIndex: number, accountIndex: number, name: string, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+
+      account.name = name;
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async selectAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (accountIndex <= wallet.accounts.length - 1 && accountIndex >= 0) {
+        wallet.selectedAccount = accountIndex;
+      }
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+}
 
 ```
 
 `zil-pay/background/state.ts`:
 
 ```ts
-import { BackgroundState } from 'background/storage';
-import { Fields } from 'config/fields';
-import { BrowserStorage } from 'lib/storage';
-import { migrateToV4 } from './secure';
+import { BackgroundState } from "background/storage";
+import { WalletService } from "background/services";
+import { ProviderService } from "background/services";
 
 export class GlobalState {
-  readonly #state: BackgroundState;
+  state: BackgroundState;
+  readonly wallet: WalletService;
+  readonly provider: ProviderService;
 
   static async fromStorage() {
-    const recordsv4 = await BrowserStorage.get(Fields.STORAGE_V4);
-    let state: BackgroundState;
-
-    if (!recordsv4) {
-      const oldRecords = await BrowserStorage.getAll();
-
-      if (oldRecords) {
-        try {
-          state = migrateToV4(oldRecords);
-        } catch {
-          //          
-        }
-      }
-    } else {
-      state = new BackgroundState(recordsv4);
-    }
+    const state = await BackgroundState.fromStorage();
 
     return new GlobalState(state);
   }
 
   constructor(initialState: BackgroundState) {
-      this.#state = initialState;
+    this.state = initialState;
+    this.wallet = new WalletService(this.state);
+    this.provider = new ProviderService(this.state);
   }
 
-  async save() {
+  async sync() {
+    await this.state.sync();
   }
 }
 
@@ -1972,12 +2266,13 @@ export class Account {
     const keyPair = await KeyPair.fromPrivateKey(privateKey, chain.slip44);
     const addrType = keyPair.addressType();
     const addr = await keyPair.address();
+    const formated = await addr.autoFormat();
 
     const account = new Account({
-      addr,
       addrType,
       name: name,
       index: 0,
+      addr: formated,
       pubKey: utils.hex.fromBytes(keyPair.pubKey),
       chainHash: chain.hash(),
       slip44: chain.slip44,
@@ -2078,8 +2373,11 @@ export class WalletHashParams {
 `zil-pay/background/storage/background.ts`:
 
 ```ts
+import { BrowserStorage, buildObject } from 'lib/storage';
 import { ChainConfig } from './chain';
 import { Wallet } from './wallet';
+import { Fields } from 'config/fields';
+import { migrateToV4 } from 'background/secure';
 
 export enum AppearancesTheme {
   System,
@@ -2097,6 +2395,47 @@ export class BackgroundState {
   hideBalance: boolean;
   chains: ChainConfig[];
 
+  static default() {
+    return new BackgroundState({
+      wallets: [],
+      notificationsGlobalEnabled: true,
+      locale: 'auto',
+      appearances: AppearancesTheme.System,
+      abbreviatedNumber: true,
+      hideBalance: false,
+      chains: [], 
+    });
+  }
+
+  static async fromStorage() {
+    const recordsv4 = await BrowserStorage.get<string>(Fields.STORAGE_V4);
+    let state: BackgroundState;
+
+    if (!recordsv4) {
+      const oldRecords = await BrowserStorage.getAll();
+
+      if (oldRecords) {
+        try {
+          state = migrateToV4(oldRecords);
+          await BrowserStorage.clear();
+          await state.sync();
+        } catch {
+          state = BackgroundState.default();
+        }
+      } else {
+        state = BackgroundState.default();
+      }
+    } else {
+      try {
+        state = new BackgroundState(JSON.parse(recordsv4));
+      } catch {
+        state = BackgroundState.default();
+      }
+    }
+
+    return state;
+  }
+
   constructor(data: Record<string, unknown>) {
     this.wallets = (data.wallets as Record<string, unknown>[] ?? []).map(
       (w) => new Wallet(w)
@@ -2108,6 +2447,16 @@ export class BackgroundState {
     this.hideBalance= data.hideBalance as boolean;
     this.chains = (data.chains as Record<string, unknown>[]).map(
       (c) => new ChainConfig(c)
+    );
+  }
+
+  getChain(hash: number) {
+    return this.chains.find((c) => c.hash() == hash);
+  }
+
+  async sync() {
+    await BrowserStorage.set(
+      buildObject(Fields.STORAGE_V4, JSON.stringify(this)),
     );
   }
 }
@@ -2193,6 +2542,13 @@ export class ChainConfig {
     return hashChainConfig(this.chainIds, this.slip44, this.chain);
   }
 }
+
+```
+
+`zil-pay/background/storage/confirm.ts`:
+
+```ts
+export class ConfirmState {}
 
 ```
 
@@ -2285,7 +2641,8 @@ import { WalletHashParams } from './argon';
 import { CipherOrders } from '../../crypto/keychain';
 
 export enum RatesApiOptions {
-  CoinGecko
+  CoinGecko,
+  None
 } 
 
 export class WalletSettings {
@@ -2334,6 +2691,8 @@ import { uuid } from '../../crypto/uuid';
 import { TypeOf } from 'lib/types';
 import { KeyPair } from 'crypto/keypair';
 import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
+import type { HistoricalTransaction } from 'background/rpc/history_tx';
+import type { ConfirmState } from './confirm';
 
 export enum WalletTypes {
     Ledger,
@@ -2356,6 +2715,8 @@ export class Wallet {
   accounts: Account[];
   selectedAccount: number;
   tokens: FToken[];
+  history: HistoricalTransaction[];
+  confirm: ConfirmState[];
   settings: WalletSettings;
   defaultChainHash: number;
   vault: string;
@@ -2374,9 +2735,38 @@ export class Wallet {
     this.settings = new WalletSettings(data.settings as Record<string, unknown>);
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
+    this.history = TypeOf.isArray(data.history) ? data.history as HistoricalTransaction[] : [];
+    this.confirm = TypeOf.isArray(data.confirm) ? data.confirm as ConfirmState[] : [];
     this.#session = new Session(this.uuid);
 
     this.vault = data.vault as string ?? "";
+  }
+
+  static async fromPrivateKey(
+    keyPair: KeyPair,
+    walletName: string,
+    accountName: string,
+    settings: WalletSettings,
+    chain: ChainConfig,
+    password: string,
+  ) {
+    const passwordBytes = utf8ToUint8Array(password);
+    const account = await Account.fromPrivateKey(keyPair.privateKey, chain, accountName);
+    const wallet = new Wallet({
+      settings,
+      walletName,
+      walletType: WalletTypes.SecretKey,
+      selectedAccount: 0,
+      tokens: chain.ftokens,
+      defaultChainHash: chain.hash(),
+      uuid: uuid(),
+      accounts: [account],
+      authType: AuthMethod.None,
+    });
+
+    await wallet.encrypt(passwordBytes, keyPair.privateKey);
+
+    return wallet;
   }
 
   static async fromBip39(
@@ -2486,6 +2876,10 @@ export class Wallet {
         throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
     }
   }
+
+  async clearSession() {
+    await this.#session.clearSession();
+  }
 }
 
 ```
@@ -2584,9 +2978,8 @@ export enum OldFields {
 }
 
 export enum Fields {
-  STORAGE_V4 = 'storage-v4',
+  STORAGE_V4 = "storage-v4",
 }
-
 
 ```
 
@@ -2797,6 +3190,15 @@ export class Address {
 
   toBase16(): string {
     return uint8ArrayToHex(this.bytes);
+  }
+
+  async autoFormat() {
+    switch (this.#type) {
+      case AddressType.Bech32:
+        return this.toZilBech32();
+      case AddressType.EthCheckSum:
+        return this.toEthChecksum();
+    }
   }
 
   async toEthChecksum(): Promise<string> {
@@ -5570,14 +5972,14 @@ export const BrowserStorage = Object.freeze({
         await Runtime.storage.local.set(data);
     },
 
-    async get(...keys: (OldFields | string)[]): Promise<Record<string, unknown>> { 
+    async get<T>(...keys: (OldFields | string)[]): Promise<T> { 
         const result = await Runtime.storage.local.get(keys);
 
         if (keys.length === 1 && result) {
             return result[keys[0]];
         }
         
-        return result as Record<string, unknown>;
+        return result as T;
     },
 
     async getAll(): Promise<StorageKeyValue> {
@@ -5592,6 +5994,20 @@ export const BrowserStorage = Object.freeze({
         await Runtime.storage.local.clear();
     },
 });
+
+```
+
+`zil-pay/lib/streem/index.ts`:
+
+```ts
+export * from './keys';
+export * from './secure-message';
+
+export interface SendResponseParams {
+  resolve?: unknown;
+  reject?: unknown;
+}
+export type StreamResponse = (params: SendResponseParams) => void;
 
 ```
 
@@ -6657,6 +7073,51 @@ export default [
 ```ts
 declare module "micro-eth-signer/abi.js" {
   export * from "micro-eth-signer/abi";
+}
+
+```
+
+`zil-pay/types/wallet.d.ts`:
+
+```ts
+export interface RequiredSettings {
+  cipherOrders: CipherOrders[];
+  currencyConvert: string;
+  ipfsNode: string | null;
+  ensEnabled: boolean;
+  tokensListFetcher: boolean;
+  nodeRankingEnabled: boolean;
+  maxConnections: number;
+  requestTimeoutSecs: number;
+  ratesApiOptions: RatesApiOptions;
+  sessionTime: number;
+}
+
+export interface RequiredHashSettings {
+  memory: number;
+  iterations: number;
+  threads: number;
+  secret: string;
+  hashType: HashTypes;
+  hashSize: ShaAlgorithms;
+}
+
+export interface SetPasswordPayload {
+  cipherOrders: CipherOrders[];
+  walletIndex: number;
+  hashSettings: RequiredHashSettings;
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface WalletFromPrivateKeyParams {
+  key: string;
+  walletName: string;
+  accountName: string;
+  hashSettings: RequiredHashSettings;
+  chainHash: number;
+  password: string;
+  settings: RequiredSettings;
 }
 
 ```
