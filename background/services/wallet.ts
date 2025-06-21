@@ -13,7 +13,7 @@ export class WalletService {
     this.#state = state;
   }
 
-  async addLedgerAccount() {}
+  async addLedgerWallet() {}
 
   async walletFromPrivateKey(payload: WalletFromPrivateKeyParams, sendResponse: StreamResponse) {
     try {
@@ -84,7 +84,7 @@ export class WalletService {
     }
   }
 
-   async changePassword(payload: SetPasswordPayload, sendResponse: StreamResponse) {
+  async changePassword(payload: SetPasswordPayload, sendResponse: StreamResponse) {
      try {
       const passwordBytes = utf8ToUint8Array(payload.currentPassword);
       const wallet = this.#state.wallets[payload.walletIndex];
@@ -119,5 +119,26 @@ export class WalletService {
         reject: String(err)
       });
     } 
-   }
+  }
+
+  async removeAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      if (accountIndex == 0) {
+        throw new Error(`invalid account index: ${accountIndex}`);
+      }
+
+      const wallet = this.#state.wallets[walletIndex];
+
+      wallet.accounts.splice(accountIndex, 1);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 }

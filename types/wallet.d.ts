@@ -29,11 +29,11 @@ export interface SetPasswordPayload {
 }
 
 export interface WalletFromPrivateKeyParams {
-  key: string,
-  walletName: string,
-  accountName: string,
-  hashSettings: RequiredHashSettings,
-  chainHash: number,
-  password: string,
+  key: string;
+  walletName: string;
+  accountName: string;
+  hashSettings: RequiredHashSettings;
+  chainHash: number;
+  password: string;
   settings: RequiredSettings;
 }
