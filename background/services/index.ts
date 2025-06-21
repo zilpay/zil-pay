@@ -1,2 +1,2 @@
-export * from './guard';
+export * from './wallet';
 

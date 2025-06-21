@@ -75,6 +75,10 @@ export class BackgroundState {
     );
   }
 
+  getChain(hash: number) {
+    return this.chains.find((c) => c.hash() == hash);
+  }
+
   async sync() {
     await BrowserStorage.set(
       buildObject(Fields.STORAGE_V4, JSON.stringify(this)),

@@ -37,6 +37,10 @@ export class Wallet {
   defaultChainHash: number;
   vault: string;
 
+  get session() {
+    return this.#session;
+  }
+
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as WalletTypes;
     this.walletName = data.walletName as string;
