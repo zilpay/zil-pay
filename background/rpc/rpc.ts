@@ -71,7 +71,7 @@ export class NetworkProvider {
     return Number(latestTimestamp - previousTimestamp);
   }
 
-  async estimate_params_batch(
+  async estimateParamsBatch(
     tx: TransactionRequest,
     sender: Address,
     blockCount: number,
@@ -145,7 +145,7 @@ export class NetworkProvider {
     };
   }
 
-  async ftoken_meta(contract: Address, accounts: Address[]): Promise<FToken> {
+  async ftokenMeta(contract: Address, accounts: Address[]): Promise<FToken> {
     const requestsWithTypes = await buildTokenRequests(contract, accounts, false);
     const provider = new RpcProvider(this.config);
 
@@ -240,7 +240,7 @@ export class NetworkProvider {
     }));
   }
 
-  async broadcast_signed_transactions(txns: TransactionReceipt[]): Promise<TransactionReceipt[]> {
+  async broadcastSignedTransactions(txns: TransactionReceipt[]): Promise<TransactionReceipt[]> {
     const allRequests: JsonRPCRequest[] = [];
 
     for (const tx of txns) {
@@ -261,7 +261,7 @@ export class NetworkProvider {
     return txns;
   }
 
-  async update_balances(tokens: FToken[], accounts: Address[]): Promise<void> {
+  async updateBalances(tokens: FToken[], accounts: Address[]): Promise<void> {
     const allRequests: { payload: JsonRPCRequest; requestType: RequestType; tokenIndex: number; }[] = [];
   
     for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {

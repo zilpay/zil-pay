@@ -5,6 +5,8 @@ import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
+import { NetworkProvider } from "background/rpc";
+import { Address } from "crypto/address";
 
 export class WalletService {
   #state: BackgroundState;
@@ -89,7 +91,7 @@ export class WalletService {
       const passwordBytes = utf8ToUint8Array(payload.currentPassword);
       const wallet = this.#state.wallets[payload.walletIndex];
 
-      await wallet.session.clearSession();
+      await wallet.clearSession();
 
       const vault = await wallet.decrypt(passwordBytes);
       const newPasswordBytes = utf8ToUint8Array(payload.newPassword);
@@ -150,6 +152,62 @@ export class WalletService {
       await wallet.unlock(passwordBytes);
       this.#state.wallets.splice(walletIndex);
       await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async setAccountName(walletIndex: number, accountIndex: number, name: string, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+
+      account.name = name;
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async selectAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (accountIndex <= wallet.accounts.length - 1 && accountIndex >= 0) {
+        wallet.selectedAccount = accountIndex;
+      }
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async balanceUpdate(walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
+
+      await provider.updateBalances(wallet.tokens, addresses);
+      this.#state.sync();
 
       sendResponse({
         resolve: true,

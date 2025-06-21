@@ -37,10 +37,6 @@ export class Wallet {
   defaultChainHash: number;
   vault: string;
 
-  get session() {
-    return this.#session;
-  }
-
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as WalletTypes;
     this.walletName = data.walletName as string;
@@ -193,5 +189,9 @@ export class Wallet {
       default:
         throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
     }
+  }
+
+  async clearSession() {
+    await this.#session.clearSession();
   }
 }
