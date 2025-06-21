@@ -141,4 +141,23 @@ export class WalletService {
       });
     }
   }
+
+  async removeWallet(walletIndex: number, password: string, sendResponse: StreamResponse) {
+    try {
+      const passwordBytes = utf8ToUint8Array(password);
+      const wallet = this.#state.wallets[walletIndex];
+
+      await wallet.unlock(passwordBytes);
+      this.#state.wallets.splice(walletIndex);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 }
