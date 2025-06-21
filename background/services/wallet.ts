@@ -12,6 +12,24 @@ export class WalletService {
     this.#state = state;
   }
 
+  async exportbip39Words(password: string, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const passwordBytes = utf8ToUint8Array(password);
+      const wallet = this.#state.wallets[walletIndex];
+
+      const chain = this.#state.getChain(wallet.defaultChainHash)!;
+      const mnemonic = await wallet.revealMnemonic(passwordBytes, chain);
+
+      sendResponse({
+        resolve: mnemonic
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async exportKeyPair(password: string, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const passwordBytes = utf8ToUint8Array(password);
