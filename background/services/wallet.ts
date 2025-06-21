@@ -1,15 +1,46 @@
-import type { BackgroundState } from "background/storage";
+import { Wallet, WalletSettings, type BackgroundState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
-import { uint8ArrayToHex } from "lib/utils/hex";
-import type { SetPasswordPayload } from "types/wallet";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
+import { KeyPair } from "crypto/keypair";
 
 export class WalletService {
   #state: BackgroundState;
 
   constructor(state: BackgroundState) {
     this.#state = state;
+  }
+
+  async addLedgerAccount() {}
+
+  async walletFromPrivateKey(payload: WalletFromPrivateKeyParams, sendResponse: StreamResponse) {
+    try {
+      const chain = this.#state.getChain(payload.chainHash)!;
+      const keyBytes = hexToUint8Array(payload.key);
+      const kyepair = await KeyPair.fromPrivateKey(keyBytes, chain.slip44);
+      const settings = new WalletSettings({ ...payload.settings });
+      const wallet = await Wallet.fromPrivateKey(
+        kyepair,
+        payload.walletName,
+        payload.accountName,
+        settings,
+        chain,
+        payload.password,
+      );
+
+      this.#state.wallets.push(wallet);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
   }
 
   async exportbip39Words(password: string, walletIndex: number, sendResponse: StreamResponse) {
@@ -64,12 +95,12 @@ export class WalletService {
       const newPasswordBytes = utf8ToUint8Array(payload.newPassword);
 
       wallet.settings.cipherOrders = payload.cipherOrders;
-      wallet.settings.hashFnParams.memory = payload.memory;
-      wallet.settings.hashFnParams.iterations = payload.iterations;
-      wallet.settings.hashFnParams.threads = payload.threads;
-      wallet.settings.hashFnParams.secret = payload.secret;
-      wallet.settings.hashFnParams.hashType = payload.hashType;
-      wallet.settings.hashFnParams.hashSize = payload.hashSize;
+      wallet.settings.hashFnParams.memory = payload.hashSettings.memory;
+      wallet.settings.hashFnParams.iterations = payload.hashSettings.iterations;
+      wallet.settings.hashFnParams.threads = payload.hashSettings.threads;
+      wallet.settings.hashFnParams.secret = payload.hashSettings.secret;
+      wallet.settings.hashFnParams.hashType = payload.hashSettings.hashType;
+      wallet.settings.hashFnParams.hashSize = payload.hashSettings.hashSize;
 
       if (TypeOf.isString(vault)) {
         await wallet.encrypt(newPasswordBytes, utf8ToUint8Array(vault as string));
