@@ -33,16 +33,64 @@ export class ProviderService {
 
   async sendSignedTransaction(sendResponse: StreamResponse) {}
 
-  async getCurrentBlock(sendResponse: StreamResponse) {}
+  async getCurrentBlock(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const blockNumber = await provider.getCurrentBlockNumber();
+
+      sendResponse({
+        resolve: blockNumber.toString(),
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 
   async proxyChannel(sendResponse: StreamResponse) {}
 
-  async estimateBlockTime(sendResponse: StreamResponse) {}
+  async estimateBlockTime(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const blockTime = await provider.estimateBlockTime();
+
+      sendResponse({
+        resolve: blockTime,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 
   async estimateGasParamsBatch(sendResponse: StreamResponse) {}
 
-  async fetchFtokenMeta(sendResponse: StreamResponse) {}
+  async fetchFtokenMeta(contract: string, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const contractAddr = Address.fromStr(contract);
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
+      const metadata = await provider.ftokenMeta(contractAddr, addresses);
 
-  async updateTransactionsHistory(sendResponse: StreamResponse) {}
+      sendResponse({
+        resolve: metadata,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 }
 
