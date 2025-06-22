@@ -1,6 +1,6 @@
 import type { BackgroundState } from "background/storage";
-import { ConfirmState } from "background/storage/confirm";
 import type { StreamResponse } from "lib/streem";
+import { ConfirmState } from "background/storage/confirm";
 
 export class TransactionService {
   #state: BackgroundState;

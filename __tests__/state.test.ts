@@ -27,7 +27,10 @@ import {
   WalletSettings,
 } from "../background/storage/settings";
 import { WORD_LIST } from "./crypto/word_list";
-import { HistoricalTransaction, TransactionStatus } from '../background/rpc/history_tx';
+import {
+  HistoricalTransaction,
+  TransactionStatus,
+} from "../background/rpc/history_tx";
 
 describe("test bg state with empty storage", () => {
   beforeAll(async () => {
@@ -109,39 +112,42 @@ describe("test bg state with empty storage", () => {
     globalState.state.wallets.push(bip39Wallet);
 
     const historicalTx = new HistoricalTransaction({
-        transaction_hash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-        amount: 1000n,
-        sender: 'zil1senderaddress',
-        recipient: 'zil1recipientaddress',
-        contract_address: null,
-        status: TransactionStatus.Success,
-        status_code: 3,
-        timestamp: 1672531200000,
-        block_number: 12345n,
-        gasUsed: 21000n,
-        gasLimit: 21000n,
-        gasPrice: 1000000000n,
-        blobGasUsed: null,
-        blobGasPrice: null,
-        effectiveGasPrice: 1000000000n,
-        fee: 21000000000000n,
-        icon: null,
-        title: 'Test Transaction',
-        error: null,
-        sig: '0xabcdef123456',
-        nonce: 1n,
-        token_info: null,
-        chain_type: 'Scilla',
-        chain_hash: globalState.state.chains[0].hash(),
-        data: 'some data',
-        code: 'some code'
+      transaction_hash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      amount: 1000n,
+      sender: "zil1senderaddress",
+      recipient: "zil1recipientaddress",
+      contract_address: null,
+      status: TransactionStatus.Success,
+      status_code: 3,
+      timestamp: 1672531200000,
+      block_number: 12345n,
+      gasUsed: 21000n,
+      gasLimit: 21000n,
+      gasPrice: 1000000000n,
+      blobGasUsed: null,
+      blobGasPrice: null,
+      effectiveGasPrice: 1000000000n,
+      fee: 21000000000000n,
+      icon: null,
+      title: "Test Transaction",
+      error: null,
+      sig: "0xabcdef123456",
+      nonce: 1n,
+      token_info: null,
+      chain_type: "Scilla",
+      chain_hash: globalState.state.chains[0].hash(),
+      data: "some data",
+      code: "some code",
     });
 
     globalState.state.wallets[0].history.push(historicalTx);
 
     await globalState.sync();
     const restoredGlobalState = await GlobalState.fromStorage();
-    expect(JSON.stringify(restoredGlobalState.state)).toEqual(JSON.stringify(globalState.state));
+    expect(JSON.stringify(restoredGlobalState.state)).toEqual(
+      JSON.stringify(globalState.state),
+    );
   });
 });
 

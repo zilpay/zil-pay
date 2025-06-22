@@ -17,7 +17,6 @@ export interface TokenTransferMetadata {
   to: string;
 }
 
-
 export interface TransactionRequestEVM {
   nonce?: number;
   from?: string;
