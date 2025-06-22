@@ -13,7 +13,7 @@ describe("shuffle", () => {
   });
 
   it("should shuffle an array of strings", () => {
-    const array = ["a", "b", "c", "d", "e"];
+    const array = ["a", "b", "c", "d", "e", "1", "3", "4", "5", "7", "u", "g"];
     const shuffledArray = shuffle([...array]);
 
     expect(shuffledArray).toHaveLength(array.length);

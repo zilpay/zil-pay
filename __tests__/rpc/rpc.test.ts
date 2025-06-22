@@ -355,17 +355,21 @@ describe("JsonRPC provder tests", () => {
 
     await provider.updateBalances(tokens, accounts);
 
-    expect(BigInt(tokens[0].balances[0])).toBeDefined();
-    expect(BigInt(tokens[0].balances[1])).toBeDefined();
-    expect(BigInt(tokens[0].balances[2])).toBeDefined();
+    const addr0 = await accounts[0].autoFormat();
+    const addr1 = await accounts[1].autoFormat();
+    const addr2= await accounts[2].autoFormat();
 
-    expect(BigInt(tokens[1].balances[0])).toBeDefined();
-    expect(BigInt(tokens[1].balances[1])).toBeDefined();
-    expect(BigInt(tokens[1].balances[2])).toBeDefined();
+    expect(BigInt(tokens[0].balances[addr0])).toBeDefined();
+    expect(BigInt(tokens[0].balances[addr1])).toBeDefined();
+    expect(BigInt(tokens[0].balances[addr2])).toBeDefined();
 
-    expect(BigInt(tokens[2].balances[0])).toBeDefined();
-    expect(BigInt(tokens[2].balances[1])).toBeDefined();
-    expect(BigInt(tokens[2].balances[2])).toBeDefined();
+    expect(BigInt(tokens[1].balances[addr0])).toBeDefined();
+    expect(BigInt(tokens[1].balances[addr1])).toBeDefined();
+    expect(BigInt(tokens[1].balances[addr2])).toBeDefined();
+
+    expect(BigInt(tokens[2].balances[addr0])).toBeDefined();
+    expect(BigInt(tokens[2].balances[addr1])).toBeDefined();
+    expect(BigInt(tokens[2].balances[addr2])).toBeDefined();
   }, 20000);
 
   it("should update balances for multiple EVM tokens and accounts", async () => {
@@ -405,11 +409,14 @@ describe("JsonRPC provder tests", () => {
 
     await provider.updateBalances(tokens, accounts);
 
-    expect(BigInt(tokens[0].balances[0])).toBeDefined();
-    expect(BigInt(tokens[0].balances[1])).toBeDefined();
+    const addr0 = await accounts[0].autoFormat();
+    const addr1 = await accounts[1].autoFormat();
 
-    expect(BigInt(tokens[1].balances[0])).toBeDefined();
-    expect(BigInt(tokens[1].balances[1])).toBeDefined();
+    expect(BigInt(tokens[0].balances[addr0])).toBeDefined();
+    expect(BigInt(tokens[0].balances[addr1])).toBeDefined();
+
+    expect(BigInt(tokens[1].balances[addr0])).toBeDefined();
+    expect(BigInt(tokens[1].balances[addr1])).toBeDefined();
   }, 20000);
 
   it("should broadcast a signed EVM transaction and fail", async () => {

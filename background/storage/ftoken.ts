@@ -7,7 +7,7 @@ export class FToken {
   addr: string;
   addrType: AddressType;
   logo: string | null;
-  balances: Record<number, string>;
+  balances: Record<string, string>;
   rate: number;
   default_: boolean;
   native: boolean;

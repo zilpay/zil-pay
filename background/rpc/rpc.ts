@@ -263,48 +263,43 @@ export class NetworkProvider {
 
   async updateBalances(tokens: FToken[], accounts: Address[]): Promise<void> {
     const allRequests: { payload: JsonRPCRequest; requestType: RequestType; tokenIndex: number; }[] = [];
-  
+
     for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
       const token = tokens[tokenIndex];
       const tokenAddress = Address.fromStr(token.addr);
       const requests = await buildTokenRequests(tokenAddress, accounts, token.native);
-  
+
       for (const req of requests) {
         if (req.requestType.type === 'Balance') {
           allRequests.push({ ...req, tokenIndex });
         }
       }
     }
-  
+
     if (allRequests.length === 0) {
       return;
     }
-  
+
     const provider = new RpcProvider(this.config);
     const payloads = allRequests.map(r => r.payload);
     const responses = await provider.req<JsonRPCResponse<any>[]>(payloads);
-  
+
     for (let i = 0; i < allRequests.length; i++) {
       const requestInfo = allRequests[i];
       const response = responses[i];
       const token = tokens[requestInfo.tokenIndex];
       const tokenAddress = Address.fromStr(token.addr);
-      
+    
       if (requestInfo.requestType.type !== 'Balance') continue;
 
       const account = requestInfo.requestType.address;
-      const accountIndex = accounts.findIndex(
-        (acc) => acc.toBase16() === account.toBase16()
-      );
-      
-      if (accountIndex === -1) continue;
-  
+    
       if (tokenAddress.type === AddressType.Bech32) {
         const balance = await processZilBalanceResponse(response, account, token.native);
-        token.balances[accountIndex] = balance.toString();
+        token.balances[await account.autoFormat()] = balance.toString();
       } else if (tokenAddress.type === AddressType.EthCheckSum) {
         const balance = processEthBalanceResponse(response);
-        token.balances[accountIndex] = balance.toString();
+        token.balances[await account.autoFormat()] = balance.toString();
       }
     }
   }
