@@ -1,11 +1,12 @@
 import { BackgroundState } from "background/storage";
-import { WalletService } from "background/services";
+import { TransactionService, WalletService } from "background/services";
 import { ProviderService } from "background/services";
 
 export class GlobalState {
   state: BackgroundState;
   readonly wallet: WalletService;
   readonly provider: ProviderService;
+  readonly transaction: TransactionService;
 
   static async fromStorage() {
     const state = await BackgroundState.fromStorage();
@@ -17,6 +18,7 @@ export class GlobalState {
     this.state = initialState;
     this.wallet = new WalletService(this.state);
     this.provider = new ProviderService(this.state);
+    this.transaction = new TransactionService(this.state);
   }
 
   async sync() {

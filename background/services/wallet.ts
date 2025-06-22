@@ -5,8 +5,6 @@ import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
-import { NetworkProvider } from "background/rpc";
-import { Address } from "crypto/address";
 
 export class WalletService {
   #state: BackgroundState;

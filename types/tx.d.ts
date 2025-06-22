@@ -24,7 +24,7 @@ export interface TransactionRequestEVM {
   to?: string;
   value?: string;
   gasLimit?: number;
-  data?: Uint8Array;
+  data?: string;
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
   gasPrice?: string;
