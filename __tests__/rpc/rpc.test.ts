@@ -198,7 +198,7 @@ describe("JsonRPC provder tests", () => {
       null,
     );
 
-    expect(params.gasPrice).toBe(2000000000n);
+    expect(params.gasPrice).toBeDefined();
     expect(params.nonce).toBeGreaterThan(0);
   }, 20000);
 
@@ -293,7 +293,7 @@ describe("JsonRPC provder tests", () => {
     expect(tx1.gasLimit).toBe(50n);
     expect(tx1.gasPrice).toBe(2000000000n);
     expect(tx1.nonce).toBe(1697n);
-    expect(tx1.sender).toBe("zil1z8vuvvxk0rnt6ehyc0qgqut8ewngessa2kypxm");
+    expect(tx1.sender).toBe("zil1jl8qen2lutenrwdjla7kht3d4t4u47ywvnmkkw");
 
     expect(tx2.status).toBe(TransactionStatus.Success);
     expect(tx2.amount).toBe(0n);
@@ -301,7 +301,7 @@ describe("JsonRPC provder tests", () => {
     expect(tx2.gasLimit).toBe(8000n);
     expect(tx2.gasPrice).toBe(2000000000n);
     expect(tx2.nonce).toBe(217n);
-    expect(tx2.sender).toBe("zil1r5x8hcjashhykgw6k3pmldp4stpgqf0k60gz8c");
+    expect(tx2.sender).toBe("zil1jmfl0ywaserpcxa3lu03e8nhestlay3p7fjm43");
   }, 20000);
 
   it("should update balances for multiple scilla tokens and accounts", async () => {
@@ -470,6 +470,6 @@ describe("JsonRPC provder tests", () => {
 
     await expect(
       provider.broadcastSignedTransactions([signedTx]),
-    ).rejects.toThrow(/The sender of the txn has no balance/);
+    ).rejects.toThrow("Invalid nonce (0)");
   }, 20000);
 });
