@@ -98,12 +98,12 @@ export async function buildBatchGasRequest(
 }
 
 export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult): GasFeeHistory {
-    const lastBaseFeeStr = feeHistoryValue.baseFeePerGas.at(-1);
+    const lastBaseFeeStr = feeHistoryValue.baseFeePerGas[feeHistoryValue.baseFeePerGas.length - 1];
     if (!lastBaseFeeStr) {
         throw new Error('baseFeePerGas not found or empty in fee history');
     }
     const baseFee = BigInt(lastBaseFeeStr);
-    const lastRewardArr = feeHistoryValue.reward.at(-1);
+    const lastRewardArr = feeHistoryValue.reward[feeHistoryValue.reward.length - 1];
 
     if (!lastRewardArr || !TypeOf.isArray(lastRewardArr) || !TypeOf.isString(lastRewardArr[1])) {
         throw new Error('reward not found or has invalid format in fee history');
