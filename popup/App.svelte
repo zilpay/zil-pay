@@ -1,64 +1,39 @@
 <script lang="ts">
-  let output = "Ожидание…";
+  import { onMount } from "svelte";
+  import { get } from "svelte/store";
 
-  function startParallelWork() {
-    const numWorkers = 8;
-    const data = Array.from({ length: 1000000 }, (_, i) => i);
-    const chunkSize = Math.ceil(data.length / numWorkers);
-    const results: number[][] = [];
-    let completed = 0;
+  import { setupI18n } from "popup/i18n";
+  import globlSettingsStore from "popup/store/settings";
+  import { Locales } from "config/locale";
+  import Router from './Router.svelte';
 
-    for (let i = 0; i < numWorkers; i++) {
-      const chunk = data.slice(i * chunkSize, (i + 1) * chunkSize);
-      const worker = new Worker(chrome.runtime.getURL('background.js'));
+  let loading = $state(true);;
 
-      worker.onmessage = (e) => {
-        results[i] = e.data.result;
-        completed++;
-        if (completed === numWorkers) {
-          const combined = results.flat();
-          output = `Готово! Всего элементов: ${combined.length}`;
-          console.log("Первые 20 значений:", combined.slice(0, 20));
-        }
-      };
-
-      worker.postMessage({ chunk });
+  onMount(async () => {
+    const { locale } = get(globlSettingsStore);
+    try {
+      if (locale === Locales.Auto) {
+        await setupI18n();
+      } else {
+        await setupI18n({
+          withLocale: locale,
+        });
+      }
+      loading = false;
+    } catch (err) {
+      console.error(err);
+      await setupI18n({
+        withLocale: Locales.EN,
+      });
     }
-  }
+  });
 </script>
 
-<div>
-  <h1>Parallel Workers</h1>
-  <button on:click={startParallelWork}>Старт</button>
-  <pre>{output}</pre>
-</div>
+{#if !loading}
+  <Router />
+{/if}
 
 <style lang="scss">
-  div {
-    font-family: sans-serif;
-    padding: 1rem;
-
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background: #0070f3;
-      color: white;
-      border: none;
-      border-radius: 0.4rem;
-      cursor: pointer;
-
-      &:hover {
-        background: #0059c1;
-      }
-    }
-
-    pre {
-      margin-top: 1rem;
-      background: #f4f4f4;
-      padding: 0.5rem;
-      border-radius: 0.3rem;
-    }
-  }
+  @use "./styles/global.scss" as globalStyles;
 </style>
 
