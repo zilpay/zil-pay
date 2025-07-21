@@ -82,15 +82,12 @@ const popup = createConfig(
   'dist/bundle.js',
   [
     svelte({
+      compilerOptions: { runes: true },
+      extensions: ['.svelte'],
       preprocess: sveltePreprocess({
         sourceMap: !production,
         typescript: {
-          tsconfigFile: './tsconfig.json',
-          compilerOptions: {
-            target: 'ES2020',
-            module: 'esnext',
-            verbatimModuleSyntax: false
-          }
+          tsconfigFile: './tsconfig.json'
         },
         scss: {
           renderSync: true,

@@ -7,8 +7,6 @@
 
 	let loading = $state(true);
 
-	[Router];
-
 	$effect(() => {
 		const initialize = async () => {
 			const { locale } = get<any>(globlSettingsStore);
