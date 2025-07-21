@@ -1,39 +1,43 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { get } from "svelte/store";
+	import { get } from 'svelte/store';
+	import { setupI18n } from 'popup/i18n';
+	import globlSettingsStore from 'popup/store/settings';
+	import { Locales } from 'config/locale';
+	import Router from './Router.svelte';
 
-  import { setupI18n } from "popup/i18n";
-  import globlSettingsStore from "popup/store/settings";
-  import { Locales } from "config/locale";
-  import Router from './Router.svelte';
+	let loading = $state(true);
 
-  let loading = $state(true);;
+	[Router];
 
-  onMount(async () => {
-    const { locale } = get(globlSettingsStore);
-    try {
-      if (locale === Locales.Auto) {
-        await setupI18n();
-      } else {
-        await setupI18n({
-          withLocale: locale,
-        });
-      }
-      loading = false;
-    } catch (err) {
-      console.error(err);
-      await setupI18n({
-        withLocale: Locales.EN,
-      });
-    }
-  });
+	$effect(() => {
+		const initialize = async () => {
+			const { locale } = get<any>(globlSettingsStore);
+			try {
+				if (locale === Locales.Auto) {
+					await setupI18n();
+				} else {
+					await setupI18n({
+						withLocale: locale,
+					});
+				}
+			} catch (err) {
+				console.error(err);
+				await setupI18n({
+					withLocale: Locales.EN,
+				});
+			} finally {
+				loading = false;
+			}
+		};
+
+		initialize();
+	});
 </script>
 
 {#if !loading}
-  <Router />
+	<Router />
 {/if}
 
 <style lang="scss">
-  @use "./styles/global.scss" as globalStyles;
+	@use './styles/global.scss' as globalStyles;
 </style>
-

@@ -1,46 +1,45 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
-    import { matchRoute, notFoundRoute, parseUrlParams, routes  } from './router';
-    import { RouteGuard } from './router/guard';
-    import { currentParams, currentRoute } from './store/route';
+	import { matchRoute, notFoundRoute, parseUrlParams, routes } from './router';
+	import { RouteGuard } from './router/guard';
+	import { currentParams, currentRoute } from './store/route';
 
-    export function findRouteByHash(hash: string) {
-        const path = hash.replace('#', '').replace(/^\//, '/');
-        const found = matchRoute(path, routes);
+	export function findRouteByHash(hash: string) {
+		const path = hash.replace('#', '').replace(/^\//, '/');
+		const found = matchRoute(path, routes);
 
-        if (found) {
-            return found;
-        }
+		if (found) {
+			return found;
+		}
 
-        return notFoundRoute;
-    }
+		return notFoundRoute;
+	}
 
-    function handleRouteChange() {
-        const path = window.location.hash.slice(1) || '/';
-        const route = findRouteByHash(path);
-        const params = parseUrlParams(route.path, path);
+	function handleRouteChange() {
+		const path = window.location.hash.slice(1) || '/';
+		const route = findRouteByHash(path);
+		const params = parseUrlParams(route.path, path);
 
-        currentParams.set(params);
+		currentParams.set(params);
 
-        if (route) {
-            const guardedRoute = RouteGuard.checkRoute(route);
-            currentRoute.set(guardedRoute);
-        } else {
-            currentRoute.set(notFoundRoute);
-        }
-    }
+		if (route) {
+			const guardedRoute = RouteGuard.checkRoute(route);
+			currentRoute.set(guardedRoute);
+		} else {
+			currentRoute.set(notFoundRoute);
+		}
+	}
 
-    onMount(() => {
-        window.addEventListener('hashchange', handleRouteChange);
-        handleRouteChange();
-    });
-    
-    onDestroy(() => {
-        window.removeEventListener('hashchange', handleRouteChange);
-    });
+	$effect(() => {
+		handleRouteChange();
+		window.addEventListener('hashchange', handleRouteChange);
+		return () => {
+			window.removeEventListener('hashchange', handleRouteChange);
+		};
+	});
+
+	const Component = $derived($currentRoute?.component);
 </script>
 
-{#if $currentRoute}
-    <svelte:component this={$currentRoute.component} {...$currentParams}/>
+{#if Component}
+	<Component {...$currentParams} />
 {/if}
-
