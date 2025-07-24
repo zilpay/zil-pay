@@ -1,3 +1,4 @@
+import { MTypePopup } from "config/stream";
 import type { GlobalState } from "./state";
 import { Runtime } from "lib/runtime";
 
@@ -9,6 +10,9 @@ export function startBackground(core: GlobalState) {
     }
 
     switch (msg.type) {
+      case MTypePopup.GET_GLOBAL_STATE:
+        core.wallet.getGlobalState(sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;
