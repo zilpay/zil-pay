@@ -2,9 +2,9 @@ import "./setupTests";
 import { describe, it, expect, beforeAll } from "vitest";
 import { GlobalState } from "../background/state";
 import {
-  AppearancesTheme,
   BackgroundState,
 } from "../background/storage/background";
+import { Themes } from "../config/theme";
 import {
   createBscConfig,
   createEthConfig,
@@ -47,7 +47,7 @@ describe("test bg state with empty storage", () => {
 
     expect(globalState.state).toStrictEqual(BackgroundState.default());
 
-    globalState.state.appearances = AppearancesTheme.Light;
+    globalState.state.appearances = Themes.Light;
     globalState.state.abbreviatedNumber = false;
     globalState.state.chains.push(createBscConfig());
     globalState.state.chains.push(createEthConfig());

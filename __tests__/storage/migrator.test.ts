@@ -2,9 +2,9 @@ import "../setupTests";
 import { describe, it, expect } from "vitest";
 import { migrateToV4 } from "../../background/secure/migrator";
 import { AddressType } from "../../crypto/address";
+import { Themes } from "../../config/theme";
 import {
   BackgroundState,
-  AppearancesTheme,
 } from "../../background/storage/background";
 import { ChainConfig } from "../../background/storage/chain";
 import { FToken } from "../../background/storage/ftoken";
@@ -60,7 +60,7 @@ describe("migrateToV4", () => {
     expect(result.wallets).toHaveLength(1);
     expect(result.notificationsGlobalEnabled).toBe(true);
     expect(result.locale).toBe("auto");
-    expect(result.appearances).toBe(AppearancesTheme.System);
+    expect(result.appearances).toBe(Themes.System);
     expect(result.abbreviatedNumber).toBe(true);
     expect(result.hideBalance).toBe(false);
     expect(result.chains).toHaveLength(1);
@@ -157,7 +157,7 @@ describe("migrateToV4", () => {
     expect(result.wallets).toHaveLength(1);
     expect(result.notificationsGlobalEnabled).toBe(true);
     expect(result.locale).toBe("auto");
-    expect(result.appearances).toBe(AppearancesTheme.System);
+    expect(result.appearances).toBe(Themes.System);
     expect(result.abbreviatedNumber).toBe(true);
     expect(result.hideBalance).toBe(false);
     expect(result.chains).toHaveLength(1);

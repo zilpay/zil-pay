@@ -1,7 +1,7 @@
 import {
   BackgroundState,
-  AppearancesTheme,
 } from "../../background/storage/background";
+import { Themes } from "../../config/theme";
 import { ChainConfig } from "../../background/storage/chain";
 import {
   Wallet,
@@ -77,7 +77,7 @@ describe("BackgroundState", () => {
       ],
       notificationsGlobalEnabled: true,
       locale: "en",
-      appearances: AppearancesTheme.System,
+      appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
       chains: CHAINS,
@@ -90,7 +90,7 @@ describe("BackgroundState", () => {
     expect(state.wallets[0]).toBeInstanceOf(Wallet);
     expect(state.notificationsGlobalEnabled).toBe(true);
     expect(state.locale).toBe("en");
-    expect(state.appearances).toBe(AppearancesTheme.System);
+    expect(state.appearances).toBe(Themes.System);
     expect(state.abbreviatedNumber).toBe(true);
     expect(state.hideBalance).toBe(false);
     expect(state.chains).toHaveLength(3);
@@ -102,7 +102,7 @@ describe("BackgroundState", () => {
       wallets: [],
       notificationsGlobalEnabled: false,
       locale: null,
-      appearances: AppearancesTheme.Dark,
+      appearances: Themes.Dark,
       abbreviatedNumber: false,
       hideBalance: true,
       chains: [],
@@ -111,7 +111,7 @@ describe("BackgroundState", () => {
     const state = new BackgroundState(mockData);
 
     expect(state.locale).toBeNull();
-    expect(state.appearances).toBe(AppearancesTheme.Dark);
+    expect(state.appearances).toBe(Themes.Dark);
     expect(state.abbreviatedNumber).toBe(false);
     expect(state.hideBalance).toBe(true);
   });

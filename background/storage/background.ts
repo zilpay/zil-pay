@@ -3,19 +3,14 @@ import { ChainConfig } from './chain';
 import { Wallet } from './wallet';
 import { Fields } from 'config/fields';
 import { migrateToV4 } from 'background/secure';
-
-export enum AppearancesTheme {
-  System,
-  Dark,
-  Light
-}
+import { Themes } from 'config/theme';
 
 export class BackgroundState {
   readonly storageVersion  = 4;
   wallets: Wallet[];
   notificationsGlobalEnabled: boolean;
   locale: string | null;
-  appearances: AppearancesTheme;
+  appearances: Themes;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
   chains: ChainConfig[];
@@ -25,7 +20,7 @@ export class BackgroundState {
       wallets: [],
       notificationsGlobalEnabled: true,
       locale: 'auto',
-      appearances: AppearancesTheme.System,
+      appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
       chains: [], 
@@ -67,7 +62,7 @@ export class BackgroundState {
     );
     this.notificationsGlobalEnabled = data.notificationsGlobalEnabled as boolean;
     this.locale = data.locale as string | null ?? null;
-    this.appearances = data.appearances as AppearancesTheme;
+    this.appearances = data.appearances as Themes;
     this.abbreviatedNumber = data.abbreviatedNumber as boolean;
     this.hideBalance= data.hideBalance as boolean;
     this.chains = (data.chains as Record<string, unknown>[]).map(

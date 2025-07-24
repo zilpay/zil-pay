@@ -1,4 +1,4 @@
-import { BackgroundState, AppearancesTheme } from '../storage/background';
+import { BackgroundState } from '../storage/background';
 import { ChainConfig } from '../storage/chain';
 import { FToken } from '../storage/ftoken';
 import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
@@ -9,6 +9,7 @@ import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { AddressType } from 'crypto/address';
 import { uuid } from 'crypto/uuid';
+import { Themes } from 'config/theme';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -201,7 +202,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         wallets: [wallet],
         notificationsGlobalEnabled: true,
         locale: 'auto',
-        appearances: AppearancesTheme.System,
+        appearances: Themes.System,
         abbreviatedNumber: true,
         hideBalance: false,
         chains: [mainChain], 
