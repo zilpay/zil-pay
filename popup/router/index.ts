@@ -2,6 +2,7 @@ import type { Component } from "svelte";
 import NotFoundPage from "../pages/NotFoundPage.svelte";
 import HomePage from "../pages/Home.svelte";
 import LockPage from "../pages/Lock.svelte";
+import StartPage from "../pages/Start.svelte";
 
 export type ParamsRecord = Record<string, string | null>;
 export interface Route {
@@ -17,11 +18,11 @@ export const notFoundRoute: Route = {
 
 export const protectedRoutes: Route[] = [
   { path: "/", component: HomePage, isProtected: true },
-  // { path: "/add-track", component: AddTrackAccountPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [
   { path: "/lock", component: LockPage },
+  { path: "/start", component: StartPage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];

@@ -1,7 +1,7 @@
 import { Themes } from "config/theme";
 import { mount } from "svelte";
 import App from "./App.svelte";
-import { BrowserStorage, buildObject } from "lib/storage";
+import { BrowserStorage } from "lib/storage";
 import globalStore from "popup/store/global";
 import { Locales } from "config/locale";
 import { themeDetect } from "./mixins/theme";
