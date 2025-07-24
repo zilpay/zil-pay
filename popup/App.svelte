@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
 	import { setupI18n } from 'popup/i18n';
-	import globlSettingsStore from 'popup/store/settings';
+	import globlSettingsStore from 'popup/store/global';
 	import { Locales } from 'config/locale';
 	import Router from './Router.svelte';
 

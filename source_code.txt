@@ -39,17 +39,18 @@ zil-pay
 │       ├── notification.ts
 │       ├── settings.ts
 │       └── wallet.ts
-├── compile-protos.mjs
 ├── config
 │   ├── argon2.ts
 │   ├── common.ts
 │   ├── errors.ts
 │   ├── fields.ts
 │   ├── jsonrpc.ts
+│   ├── locale.ts
 │   ├── manifest.ts
 │   ├── pbkdf2.ts
 │   ├── sha.ts
-│   └── slip44.ts
+│   ├── slip44.ts
+│   └── theme.ts
 ├── content
 │   └── index.ts
 ├── crypto
@@ -118,11 +119,19 @@ zil-pay
 │       ├── index.ts
 │       └── pubkey.ts
 ├── popup
+│   ├── i18n.ts
 │   ├── index.ts
-│   └── main.ts
-├── rollup.config.mjs
+│   ├── main.ts
+│   ├── router
+│   │   ├── guard.ts
+│   │   ├── index.ts
+│   │   └── navigation.ts
+│   └── store
+│       ├── global.ts
+│       └── route.ts
 ├── types
 │   ├── micro-eth-signer.d.ts
+│   ├── tx.d.ts
 │   └── wallet.d.ts
 └── vitest.config.ts
 
@@ -643,12 +652,12 @@ export async function buildBatchGasRequest(
 }
 
 export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult): GasFeeHistory {
-    const lastBaseFeeStr = feeHistoryValue.baseFeePerGas.at(-1);
+    const lastBaseFeeStr = feeHistoryValue.baseFeePerGas[feeHistoryValue.baseFeePerGas.length - 1];
     if (!lastBaseFeeStr) {
         throw new Error('baseFeePerGas not found or empty in fee history');
     }
     const baseFee = BigInt(lastBaseFeeStr);
-    const lastRewardArr = feeHistoryValue.reward.at(-1);
+    const lastRewardArr = feeHistoryValue.reward[feeHistoryValue.reward.length - 1];
 
     if (!lastRewardArr || !TypeOf.isArray(lastRewardArr) || !TypeOf.isString(lastRewardArr[1])) {
         throw new Error('reward not found or has invalid format in fee history');
@@ -1394,48 +1403,43 @@ export class NetworkProvider {
 
   async updateBalances(tokens: FToken[], accounts: Address[]): Promise<void> {
     const allRequests: { payload: JsonRPCRequest; requestType: RequestType; tokenIndex: number; }[] = [];
-  
+
     for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
       const token = tokens[tokenIndex];
       const tokenAddress = Address.fromStr(token.addr);
       const requests = await buildTokenRequests(tokenAddress, accounts, token.native);
-  
+
       for (const req of requests) {
         if (req.requestType.type === 'Balance') {
           allRequests.push({ ...req, tokenIndex });
         }
       }
     }
-  
+
     if (allRequests.length === 0) {
       return;
     }
-  
+
     const provider = new RpcProvider(this.config);
     const payloads = allRequests.map(r => r.payload);
     const responses = await provider.req<JsonRPCResponse<any>[]>(payloads);
-  
+
     for (let i = 0; i < allRequests.length; i++) {
       const requestInfo = allRequests[i];
       const response = responses[i];
       const token = tokens[requestInfo.tokenIndex];
       const tokenAddress = Address.fromStr(token.addr);
-      
+    
       if (requestInfo.requestType.type !== 'Balance') continue;
 
       const account = requestInfo.requestType.address;
-      const accountIndex = accounts.findIndex(
-        (acc) => acc.toBase16() === account.toBase16()
-      );
-      
-      if (accountIndex === -1) continue;
-  
+    
       if (tokenAddress.type === AddressType.Bech32) {
         const balance = await processZilBalanceResponse(response, account, token.native);
-        token.balances[accountIndex] = balance.toString();
+        token.balances[await account.autoFormat()] = balance.toString();
       } else if (tokenAddress.type === AddressType.EthCheckSum) {
         const balance = processEthBalanceResponse(response);
-        token.balances[accountIndex] = balance.toString();
+        token.balances[await account.autoFormat()] = balance.toString();
       }
     }
   }
@@ -1939,7 +1943,6 @@ export class ProviderService {
       const account = wallet.accounts[wallet.selectedAccount];
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
-      // TODO: potcial need to filter adresses for hash only.
       const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
 
       await provider.updateBalances(wallet.tokens, addresses);
@@ -1957,19 +1960,120 @@ export class ProviderService {
 
   async sendSignedTransaction(sendResponse: StreamResponse) {}
 
-  async getCurrentBlock(sendResponse: StreamResponse) {}
+  async getCurrentBlock(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const blockNumber = await provider.getCurrentBlockNumber();
+
+      sendResponse({
+        resolve: blockNumber.toString(),
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 
   async proxyChannel(sendResponse: StreamResponse) {}
 
-  async estimateBlockTime(sendResponse: StreamResponse) {}
+  async estimateBlockTime(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const blockTime = await provider.estimateBlockTime();
+
+      sendResponse({
+        resolve: blockTime,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 
   async estimateGasParamsBatch(sendResponse: StreamResponse) {}
 
-  async fetchFtokenMeta(sendResponse: StreamResponse) {}
+  async fetchFtokenMeta(contract: string, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const contractAddr = Address.fromStr(contract);
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
+      const metadata = await provider.ftokenMeta(contractAddr, addresses);
 
-  async updateTransactionsHistory(sendResponse: StreamResponse) {}
+      sendResponse({
+        resolve: metadata,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
 }
 
+
+```
+
+`zil-pay/background/services/tx.ts`:
+
+```ts
+import type { BackgroundState } from "background/storage";
+import type { StreamResponse } from "lib/streem";
+import { ConfirmState } from "background/storage/confirm";
+
+export class TransactionService {
+  #state: BackgroundState;
+
+  constructor(state: BackgroundState) {
+    this.#state = state;
+  }
+
+  async add(payload: Record<string, unknown>, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const scillaTx = new ConfirmState(payload);
+
+      wallet.confirm.push(scillaTx);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async reject(index: number, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      wallet.confirm.splice(index, 1);
+      await this.#state.sync();
+      // TODO: sending response to Tab with uuid.
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+}
 
 ```
 
@@ -1983,8 +2087,6 @@ import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
-import { NetworkProvider } from "background/rpc";
-import { Address } from "crypto/address";
 
 export class WalletService {
   #state: BackgroundState;
@@ -2183,13 +2285,14 @@ export class WalletService {
 
 ```ts
 import { BackgroundState } from "background/storage";
-import { WalletService } from "background/services";
+import { TransactionService, WalletService } from "background/services";
 import { ProviderService } from "background/services";
 
 export class GlobalState {
   state: BackgroundState;
   readonly wallet: WalletService;
   readonly provider: ProviderService;
+  readonly transaction: TransactionService;
 
   static async fromStorage() {
     const state = await BackgroundState.fromStorage();
@@ -2201,6 +2304,7 @@ export class GlobalState {
     this.state = initialState;
     this.wallet = new WalletService(this.state);
     this.provider = new ProviderService(this.state);
+    this.transaction = new TransactionService(this.state);
   }
 
   async sync() {
@@ -2548,7 +2652,49 @@ export class ChainConfig {
 `zil-pay/background/storage/confirm.ts`:
 
 ```ts
-export class ConfirmState {}
+import type { MinScillaParams, TokenTransferMetadata, TransactionRequestEVM } from "types/tx";
+
+export class ConfirmState {
+  uuid: string;
+  title: string;
+  icon: string;
+  token?: TokenTransferMetadata;
+  scilla?: MinScillaParams;
+  signMessageScilla?: string;
+  evm?: TransactionRequestEVM;
+  signPersonalMessageEVM?: string;
+  signTypedDataJsonEVM?: string;
+
+  constructor(data: Record<string, unknown>) {
+    this.uuid = data.uuid as string;
+    this.title = data.title as string;
+    this.icon = data.icon as string;
+
+    if (data.token) {
+      this.token = data.token as TokenTransferMetadata;
+    }
+
+    if (data.scilla) {
+      this.scilla = data.scilla as MinScillaParams;
+    }
+
+    if (data.evm) {
+      this.evm = data.evm as TransactionRequestEVM;
+    }
+
+    if (data.signPersonalMessageEVM) {
+      this.signPersonalMessageEVM = data.signPersonalMessageEVM as string;
+    }
+
+    if (data.signPersonalMessageEVM) {
+      this.signPersonalMessageEVM = data.signPersonalMessageEVM as string;
+    }
+
+    if (data.signTypedDataJsonEVM) {
+      this.signTypedDataJsonEVM = data.signTypedDataJsonEVM as string;
+    }
+  }
+}
 
 ```
 
@@ -2583,7 +2729,7 @@ export class FToken {
   addr: string;
   addrType: AddressType;
   logo: string | null;
-  balances: Record<number, string>;
+  balances: Record<string, string>;
   rate: number;
   default_: boolean;
   native: boolean;
@@ -2884,33 +3030,6 @@ export class Wallet {
 
 ```
 
-`zil-pay/compile-protos.mjs`:
-
-```mjs
-import { readdirSync } from 'fs';
-import { join, basename, extname } from 'path';
-import { execSync } from 'child_process';
-
-const protoDir = 'crypto/proto/';
-const outputDir = 'crypto/proto/';
-
-const protoFiles = readdirSync(protoDir).filter(file => extname(file) === '.proto');
-
-protoFiles.forEach(protoFile => {
-  const protoPath = join(protoDir, protoFile);
-  const name = basename(protoFile, '.proto');
-  const tsOutput = join(outputDir, `${name}.ts`);
-
-  try {
-    execSync(`npx pbjs --ts ${tsOutput} ${protoPath}`, { stdio: 'inherit' });
-  } catch (error) {
-    console.error(`Failed to process ${protoFile}:`, error.message);
-    process.exit(1);
-  }
-});
-
-```
-
 `zil-pay/config/argon2.ts`:
 
 ```ts
@@ -3060,6 +3179,16 @@ export enum EvmMethods {
 
 ```
 
+`zil-pay/config/locale.ts`:
+
+```ts
+export enum Locales {
+  Auto = "auto",
+  EN = "en",
+}
+
+```
+
 `zil-pay/config/manifest.ts`:
 
 ```ts
@@ -3095,6 +3224,17 @@ export enum ShaAlgorithms {
 ```ts
 export const ETHEREUM = 60;
 export const ZILLIQA = 313;
+
+```
+
+`zil-pay/config/theme.ts`:
+
+```ts
+export enum Themes {
+  System = "system",
+  Light = "light",
+  Dark = "dark",
+}
 
 ```
 
@@ -6874,197 +7014,334 @@ export async function fromZilPubKey(pubKey: Uint8Array): Promise<Uint8Array> {
 
 ```
 
+`zil-pay/popup/i18n.ts`:
+
+```ts
+import { derived } from "svelte/store";
+import { dictionary, locale, _, date, time, number } from "svelte-i18n";
+
+const MESSAGE_FILE_URL_TEMPLATE = "/lang/{locale}.json";
+
+let cachedLocale: string | string[];
+
+async function setupI18n({ withLocale: _locale } = { withLocale: "en" }) {
+  const messsagesFileUrl = MESSAGE_FILE_URL_TEMPLATE.replace(
+    "{locale}",
+    _locale,
+  );
+  const response = await fetch(messsagesFileUrl);
+  const messages = await response.json();
+  dictionary.set({ [_locale]: messages });
+  cachedLocale = _locale;
+  locale.set(_locale);
+}
+
+function formatDate(
+  date: string | number | Date,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  return new Intl.DateTimeFormat(cachedLocale, options).format(new Date(date));
+}
+
+const isLocaleLoaded = derived(
+  locale,
+  ($locale) => typeof $locale === "string",
+);
+const dir = derived(locale, ($locale) => ($locale === "en" ? "rtl" : "ltr"));
+
+export {
+  _,
+  locale,
+  dir,
+  setupI18n,
+  formatDate,
+  isLocaleLoaded,
+  date,
+  time,
+  number,
+};
+
+```
+
 `zil-pay/popup/main.ts`:
 
 ```ts
+import { Themes } from "config/theme";
 import { mount } from "svelte";
 import App from "./App.svelte";
+import { BrowserStorage } from "lib/storage";
+import globalStore from "popup/store/global";
 
-export default mount(App, {
-  target: document.body,
+let app = {};
+
+const STORAGE_FILED_THEME = "zilpay_theme";
+const STORAGE_FILED_LOCALE = "zilpay_locale";
+
+async function getGlobalSettings() {
+  await BrowserStorage.set();
+  let data = await BrowserStorage.get<object>(STORAGE_FILED_THEME, STORAGE_FILED_LOCALE);
+
+  // globalStore.set({
+  //   theme: data
+  // });
+
+  
+
+  return { theme: Themes.System };
+}
+
+getGlobalSettings().finally(() => {
+  app = mount(App, {
+    target: document.body,
+  });
+});
+
+export default app;
+
+
+```
+
+`zil-pay/popup/router/guard.ts`:
+
+```ts
+import { get } from "svelte/store";
+
+import { type Route } from "./index";
+
+export class RouteGuard {
+  private static navigate(path: string) {
+    window.location.hash = path;
+  }
+
+  static checkRoute(route: Route): Route {
+    if (!route.isProtected) {
+      return route;
+    }
+
+    // if (!guard.isReady) {
+    //   this.navigate("/start");
+
+    //   return { path: "/start", component: StartPage };
+    // }
+
+    // if (guard.isReady && !guard.isEnable) {
+    //   this.navigate("lock");
+    //   return {
+    //     path: "/lock",
+    //     component: LockPage,
+    //   };
+    // }
+
+    // if (appsConnect.length > 0) {
+    //   this.navigate("connect");
+    //   return {
+    //     path: "/connect",
+    //     component: ConnectPage,
+    //   };
+    // }
+
+    // if (confirm.length > 0) {
+    //   this.navigate("confirm");
+    //   return {
+    //     path: "/confirm",
+    //     component: PopupPage,
+    //   };
+    // }
+
+    // if (message) {
+    //   this.navigate("sign-message");
+    //   return {
+    //     path: "/sign-message",
+    //     component: SignMessagePage,
+    //   };
+    // }
+
+    return route;
+  }
+}
+
+```
+
+`zil-pay/popup/router/index.ts`:
+
+```ts
+import type { Component } from "svelte";
+import NotFoundPage from "../pages/NotFoundPage.svelte";
+import HomePage from "../pages/Home.svelte";
+import LockPage from "../pages/Lock.svelte";
+
+export type ParamsRecord = Record<string, string | null>;
+export interface Route {
+  path: string;
+  component: Component;
+  isProtected?: boolean;
+}
+
+export const notFoundRoute: Route = {
+  path: "*",
+  component: NotFoundPage,
+};
+
+export const protectedRoutes: Route[] = [
+  { path: "/", component: HomePage, isProtected: true },
+  // { path: "/add-track", component: AddTrackAccountPage, isProtected: true },
+];
+
+export const publicRoutes: Route[] = [
+  { path: "/lock", component: LockPage },
+];
+
+export const routes = [...protectedRoutes, ...publicRoutes];
+
+export function matchRoute(url: string, routes: Route[]): Route | null {
+  const urlParts = url.split("/").filter(Boolean);
+
+  for (const route of routes) {
+    const routeParts = route.path.split("/").filter(Boolean);
+
+    if (!isMatchingLength(routeParts, urlParts)) {
+      continue;
+    }
+
+    let isMatch = true;
+
+    for (let i = 0; i < routeParts.length; i++) {
+      const routePart = routeParts[i];
+      const urlPart = urlParts[i];
+
+      if (routePart.startsWith(":")) {
+        const isOptional = routePart.endsWith("?");
+        if (!urlPart && !isOptional) {
+          isMatch = false;
+          break;
+        }
+        continue;
+      }
+
+      if (routePart !== urlPart) {
+        isMatch = false;
+        break;
+      }
+    }
+
+    if (isMatch) {
+      return route;
+    }
+  }
+
+  return null;
+}
+
+export function parseUrlParams(pattern: string, url: string): ParamsRecord {
+  const params: ParamsRecord = {};
+  const patternParts: string[] = pattern.split("/").filter(Boolean);
+  const urlParts: string[] = url.split("/").filter(Boolean);
+
+  for (let i = 0; i < patternParts.length; i++) {
+    const patternPart = patternParts[i];
+
+    if (!patternPart.startsWith(":")) {
+      continue;
+    }
+
+    let paramName = patternPart.slice(1);
+    const isOptional = paramName.endsWith("?");
+
+    if (isOptional) {
+      paramName = paramName.slice(0, -1);
+    }
+
+    const value = urlParts[i];
+    params[paramName] = value || null;
+  }
+
+  return params;
+}
+
+function isMatchingLength(routeParts: string[], urlParts: string[]): boolean {
+  const optionalParams = routeParts.filter((part) => part.endsWith("?")).length;
+  return (
+    urlParts.length >= routeParts.length - optionalParams &&
+    urlParts.length <= routeParts.length
+  );
+}
+
+```
+
+`zil-pay/popup/router/navigation.ts`:
+
+```ts
+import { get } from "svelte/store";
+import { currentRoute } from "popup/store/route";
+
+export function getCurrentRoute(): string {
+  let rote = get(currentRoute);
+
+  return rote?.path || "";
+}
+
+export function push(path: string) {
+  window.location.hash = path;
+}
+
+export function replace(path: string) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const targetHash = `#${normalizedPath}`;
+
+  if (window.location.hash !== targetHash) {
+    window.location.replace(targetHash);
+  }
+}
+
+export function pop() {
+  window.history.back();
+}
+
+export function route(node: HTMLAnchorElement) {
+  const handleClick = (event: Event) => {
+    event.preventDefault();
+    const path = new URL(node.href).pathname;
+    push(path);
+
+    const navigationEvent = new CustomEvent("navigation", {
+      detail: { href: path },
+    });
+    window.dispatchEvent(navigationEvent);
+  };
+
+  node.addEventListener("click", handleClick);
+
+  return {
+    destroy() {
+      node.removeEventListener("click", handleClick);
+    },
+  };
+}
+
+```
+
+`zil-pay/popup/store/global.ts`:
+
+```ts
+import { Locales } from "config/locale";
+import { Themes } from "config/theme";
+import { writable } from "svelte/store";
+
+export default writable({
+  locale: Locales.Auto,
+  theme: Themes.System,
 });
 
 ```
 
-`zil-pay/rollup.config.mjs`:
+`zil-pay/popup/store/route.ts`:
 
-```mjs
-import svelte from 'rollup-plugin-svelte';
-import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import { sveltePreprocess } from 'svelte-preprocess';
-import typescript from '@rollup/plugin-typescript';
-import { terser } from 'rollup-plugin-terser';
-import json from '@rollup/plugin-json';
-import copy from 'rollup-plugin-copy';
-import replace from '@rollup/plugin-replace';
-import postcss from 'rollup-plugin-postcss';
-import { visualizer } from 'rollup-plugin-visualizer';
-import cssnano from 'cssnano';
-import { readFileSync } from 'fs';
+```ts
+import type { ParamsRecord, Route } from "popup/router";
+import { writable } from "svelte/store";
 
-const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
-const production = !process.env.ROLLUP_WATCH;
-const manifest = process.env.MANIFEST || 2;
-
-const createConfig = (name, input, output, extraPlugins = []) => ({
-  input,
-  output: {
-    sourcemap: !production,
-    format: 'iife',
-    name,
-    file: output
-  },
-  plugins: [
-    typescript({
-      sourceMap: !production,
-      inlineSources: !production,
-      compilerOptions: {
-        target: 'ES2020',
-        module: 'esnext',
-        moduleResolution: 'node',
-        lib: ['ES2020', 'DOM'],
-        allowSyntheticDefaultImports: true,
-        esModuleInterop: true,
-        skipLibCheck: true,
-        strict: false,
-        noFallthroughCasesInSwitch: false,
-        noEmit: false,
-        declaration: false,
-        declarationMap: false,
-        resolveJsonModule: true,
-      },
-      include: ['**/*.ts', '**/*.tsx'],
-      exclude: ['node_modules/**', '__tests__/**']
-    }),
-    resolve({
-      browser: true,
-      dedupe: ['svelte'],
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.json', '.svelte'],
-      preferBuiltins: false
-    }),
-    commonjs(),
-    json(),
-    ...extraPlugins,
-    production && terser({
-      format: {
-        comments: false
-      },
-      compress: true
-    }),
-    production && visualizer({
-      filename: `stats/${name}.html`
-    }),
-  ].filter(Boolean),
-  watch: {
-    clearScreen: false
-  },
-  external: [],
-  onwarn(warning, warn) {
-    if (warning.code === 'CIRCULAR_DEPENDENCY') return;
-    if (warning.code === 'TS7029' && warning.loc?.file?.includes('proto/zq1.ts')) return;
-    warn(warning);
-  }
-});
-
-const popup = createConfig(
-  'popup',
-  'popup/main.ts',
-  'dist/bundle.js',
-  [
-    svelte({
-      preprocess: sveltePreprocess({
-        sourceMap: !production,
-        typescript: {
-          tsconfigFile: './tsconfig.json',
-          compilerOptions: {
-            target: 'ES2020',
-            module: 'esnext',
-            verbatimModuleSyntax: false
-          }
-        },
-        scss: {
-          renderSync: true,
-          includePaths: ['popup/styles/'],
-          prependData: '@use "popup/styles/global.scss";'
-        }
-      }),
-      compilerOptions: {
-        dev: !production
-      }
-    }),
-    postcss({
-      extract: 'bundle.css',
-      minimize: production,
-      plugins: [
-        cssnano({
-          preset: 'default'
-        })
-      ],
-      sourceMap: !production
-    })
-  ]
-);
-
-const background = createConfig(
-  'background',
-  'background/index.ts',
-  'dist/background.js',
-  [
-    replace({
-      preventAssignment: true,
-      delimiters: ['', ''],
-      values: {
-        'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
-        'global.': 'globalThis.',
-        'process.browser': 'true'
-      }
-    }),
-    copy({
-      targets: [
-        { src: 'public/icons', dest: 'dist/' },
-        { src: 'public/fonts', dest: 'dist/' },
-        { src: 'public/lang', dest: 'dist/' },
-        { src: 'public/imgs', dest: 'dist/' },
-        { src: 'public/index.html', dest: 'dist/' },
-        { src: 'public/phishing.html', dest: 'dist/' },
-        {
-          src: `public/manifest_${manifest}.json`,
-          dest: 'dist/',
-          rename: 'manifest.json',
-          transform: (contents) => {
-            const jsonContent = JSON.parse(contents);
-            jsonContent.version = pkg.version;
-            jsonContent.short_name = pkg.shortName || pkg.name;
-            jsonContent.description = pkg.description;
-            jsonContent.author = pkg.homepage;
-            return JSON.stringify(jsonContent, null, 2);
-          }
-        }
-      ]
-    })
-  ]
-);
-
-const content = createConfig(
-  'content',
-  'content/index.ts',
-  'dist/content.js',
-  [
-    replace({
-      preventAssignment: true,
-      delimiters: ['', ''],
-      values: {}
-    })
-  ]
-);
-
-export default [
-  popup,
-  background,
-  content
-];
-
+export const currentRoute = writable<Route | null>(null);
+export const currentParams = writable<ParamsRecord>({});
 
 ```
 
@@ -7073,6 +7350,51 @@ export default [
 ```ts
 declare module "micro-eth-signer/abi.js" {
   export * from "micro-eth-signer/abi";
+}
+
+```
+
+`zil-pay/types/tx.d.ts`:
+
+```ts
+export interface MinScillaParams {
+  chainId?: number;
+  nonce?: string | number;
+  gasPrice?: string | number;
+  gasLimit?: string | number;
+  priority?: boolean;
+  code?: string;
+  data?: string;
+  toAddr: string;
+  amount: string;
+}
+
+export interface TokenTransferMetadata {
+  decimals: number;
+  symbol: string;
+  name: string;
+  to: string;
+}
+
+export interface TransactionRequestEVM {
+  nonce?: number;
+  from?: string;
+  to?: string;
+  value?: string;
+  gasLimit?: number;
+  data?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+  gasPrice?: string;
+  chainId?: number;
+  accessList?: AccessListItem[];
+  blobVersionedHashes?: string[];
+  maxFeePerBlobGas?: string;
+}
+
+export interface AccessListItem {
+  address: string;
+  storageKeys: string[];
 }
 
 ```
@@ -7119,6 +7441,8 @@ export interface WalletFromPrivateKeyParams {
   password: string;
   settings: RequiredSettings;
 }
+
+
 
 ```
 
