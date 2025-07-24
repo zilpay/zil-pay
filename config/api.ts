@@ -1,4 +1,4 @@
 export enum RatesApiOptions {
   CoinGecko,
-  None
-} 
+  None,
+}

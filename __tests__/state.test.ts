@@ -1,9 +1,7 @@
 import "./setupTests";
 import { describe, it, expect, beforeAll } from "vitest";
 import { GlobalState } from "../background/state";
-import {
-  BackgroundState,
-} from "../background/storage/background";
+import { BackgroundState } from "../background/storage/background";
 import { Themes } from "../config/theme";
 import { RatesApiOptions } from "../config/api";
 import {
@@ -23,9 +21,7 @@ import { ShaAlgorithms } from "../config/pbkdf2";
 import { FToken } from "../background/storage/ftoken";
 import { utf8ToUint8Array } from "../lib/utils/utf8";
 import { ChainConfig } from "../background/storage/chain";
-import {
-  WalletSettings,
-} from "../background/storage/settings";
+import { WalletSettings } from "../background/storage/settings";
 import { WORD_LIST } from "./crypto/word_list";
 import {
   HistoricalTransaction,

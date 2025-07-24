@@ -37,5 +37,3 @@ export interface WalletFromPrivateKeyParams {
   password: string;
   settings: RequiredSettings;
 }
-
-
