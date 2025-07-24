@@ -8,6 +8,7 @@ import { Themes } from 'config/theme';
 export class BackgroundState {
   readonly storageVersion  = 4;
   wallets: Wallet[];
+  selected_wallet: number;
   notificationsGlobalEnabled: boolean;
   locale: string | null;
   appearances: Themes;
@@ -18,6 +19,7 @@ export class BackgroundState {
   static default() {
     return new BackgroundState({
       wallets: [],
+      selected_wallet: 0,
       notificationsGlobalEnabled: true,
       locale: 'auto',
       appearances: Themes.System,
@@ -64,7 +66,8 @@ export class BackgroundState {
     this.locale = data.locale as string | null ?? null;
     this.appearances = data.appearances as Themes;
     this.abbreviatedNumber = data.abbreviatedNumber as boolean;
-    this.hideBalance= data.hideBalance as boolean;
+    this.hideBalance = data.hideBalance as boolean;
+    this.selected_wallet = Number(data.selected_wallet);
     this.chains = (data.chains as Record<string, unknown>[]).map(
       (c) => new ChainConfig(c)
     );
