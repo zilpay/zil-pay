@@ -1,9 +1,9 @@
-import type { Bip32Account } from './account';
+import type { Bip32Account, IAccountState } from './account';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
 import { generateSalt } from '../../lib/runtime';
 import { Account } from './account';
-import { FToken } from './ftoken';
-import { WalletSettings } from './settings';
+import { FToken, type IFTokenState } from './ftoken';
+import { WalletSettings, type IWalletSettingsState } from './settings';
 import { Session } from '../secure/session';
 import { ChainConfig } from './chain';
 import { Bip39 } from '../../crypto/bip39';
@@ -11,11 +11,26 @@ import { uuid } from '../../crypto/uuid';
 import { TypeOf } from 'lib/types';
 import { KeyPair } from 'crypto/keypair';
 import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
-import type { HistoricalTransaction } from 'background/rpc/history_tx';
-import type { ConfirmState } from './confirm';
+import { HistoricalTransaction, type IHistoricalTransactionState } from 'background/rpc/history_tx';
+import { ConfirmState, type IConfirmState } from './confirm';
 import { AuthMethod, WalletTypes } from 'config/wallet';
 
-export class Wallet {
+export interface IWalletState {
+  uuid: string;
+  walletType: WalletTypes;
+  walletName: string;
+  authType: AuthMethod;
+  accounts: IAccountState[];
+  selectedAccount: number;
+  tokens: IFTokenState[];
+  history: IHistoricalTransactionState[];
+  confirm: IConfirmState[];
+  settings: IWalletSettingsState;
+  defaultChainHash: number;
+  vault?: string;
+}
+
+export class Wallet implements IWalletState {
   #session: Session;
   #vault: string;
 
@@ -31,22 +46,22 @@ export class Wallet {
   settings: WalletSettings;
   defaultChainHash: number;
 
-  constructor(data: Record<string, unknown>) {
+  constructor(data: IWalletState) {
     this.walletType = data.walletType as WalletTypes;
     this.walletName = data.walletName as string;
     this.authType = data.authType as AuthMethod;
-    this.accounts = (data.accounts as Record<string, unknown>[]).map(
+    this.accounts = (data.accounts).map(
       (a) => new Account(a)
     );
     this.selectedAccount = data.selectedAccount as number;
-    this.tokens = (data.tokens as Record<string, unknown>[]).map(
+    this.tokens = (data.tokens).map(
       (t) => new FToken(t)
     );
-    this.settings = new WalletSettings(data.settings as Record<string, unknown>);
+    this.settings = new WalletSettings(data.settings);
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
-    this.history = TypeOf.isArray(data.history) ? data.history as HistoricalTransaction[] : [];
-    this.confirm = TypeOf.isArray(data.confirm) ? data.confirm as ConfirmState[] : [];
+    this.history = TypeOf.isArray(data.history) ? data.history.map((h) => new HistoricalTransaction(h)) : [];
+    this.confirm = TypeOf.isArray(data.confirm) ? data.confirm.map((c) => new ConfirmState(c)) : [];
     this.#session = new Session(this.uuid);
 
     this.#vault = data.vault as string ?? "";
@@ -72,6 +87,8 @@ export class Wallet {
       uuid: uuid(),
       accounts: [account],
       authType: AuthMethod.None,
+      history: [],
+      confirm: [],
     });
 
     await wallet.encrypt(passwordBytes, keyPair.privateKey);
@@ -105,6 +122,8 @@ export class Wallet {
       uuid: uuid(),
       accounts: [],
       authType: AuthMethod.None,
+      history: [],
+      confirm: [],
     });
     const passwordBytes = utf8ToUint8Array(password);
     const wordsBytes = utf8ToUint8Array(words);

@@ -1,6 +1,24 @@
-import { FToken } from './ftoken';
-import { Explorer } from './explorer';
+import { FToken, type IFTokenState } from './ftoken';
+import { Explorer, type IExplorerState } from './explorer';
 import { KeyPair } from 'crypto/keypair';
+
+export interface IChainConfigState {
+  name: string;
+  logo: string;
+  chain: string;
+  shortName: string;
+  rpc: string[];
+  features: number[];
+  chainId: number;
+  chainIds: number[];
+  slip44: number;
+  diffBlockTime: number;
+  ens: string | null;
+  explorers: IExplorerState[];
+  fallbackEnabled: boolean;
+  testnet: boolean | null;
+  ftokens: IFTokenState[];
+}
 
 function hashNumber(hash: number, value: number): number {
   hash = (hash << 5) - hash + value;
@@ -24,7 +42,7 @@ function hashChainConfig(chainIds: number[], slip44: number, chain: string): num
   return hash >>> 0;
 }
 
-export class ChainConfig {
+export class ChainConfig implements IChainConfigState {
   name: string;
   logo: string;
   chain: string;
@@ -41,24 +59,24 @@ export class ChainConfig {
   testnet: boolean | null;
   ftokens: FToken[];
 
-  constructor(data: Record<string, unknown>) {
-    this.name = data.name as string;
-    this.logo = data.logo as string;
-    this.chain = data.chain as string;
-    this.shortName = data.shortName as string;
-    this.rpc = data.rpc as string[];
-    this.features = data.features as number[];
-    this.chainIds = data.chainIds as number[];
+  constructor(data: IChainConfigState) {
+    this.name = data.name;
+    this.logo = data.logo;
+    this.chain = data.chain;
+    this.shortName = data.shortName;
+    this.rpc = data.rpc;
+    this.features = data.features;
+    this.chainIds = data.chainIds;
     this.chainId = this.chainIds[0];
-    this.slip44 = data.slip44 as number;
-    this.diffBlockTime = data.diffBlockTime as number;
-    this.ens = data.ens as string | null ?? null;
-    this.explorers = (data.explorers as Record<string, unknown>[]).map(
+    this.slip44 = data.slip44;
+    this.diffBlockTime = data.diffBlockTime;
+    this.ens = data.ens ?? null;
+    this.explorers = (data.explorers).map(
       (e) => new Explorer(e)
     );
-    this.fallbackEnabled = data.fallbackEnabled as boolean;
-    this.testnet = data.testnet as boolean | null ?? null;
-    this.ftokens = (data.ftokens as Record<string, unknown>[]).map(
+    this.fallbackEnabled = data.fallbackEnabled;
+    this.testnet = data.testnet ?? null;
+    this.ftokens = (data.ftokens).map(
       (t) => new FToken({
         ...t,
         default_: true,

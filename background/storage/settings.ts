@@ -1,8 +1,22 @@
-import { WalletHashParams } from './argon';
+import { WalletHashParams, type IWalletHashParams } from './argon';
 import { CipherOrders } from '../../crypto/keychain';
 import type { RatesApiOptions } from 'config/api';
 
-export class WalletSettings {
+export interface IWalletSettingsState {
+  cipherOrders: CipherOrders[];
+  hashFnParams: IWalletHashParams;
+  currencyConvert: string;
+  ipfsNode: string | null;
+  ensEnabled: boolean;
+  tokensListFetcher: boolean;
+  nodeRankingEnabled: boolean;
+  maxConnections: number;
+  requestTimeoutSecs: number;
+  ratesApiOptions: RatesApiOptions;
+  sessionTime: number;
+}
+
+export class WalletSettings implements IWalletSettingsState {
   cipherOrders: CipherOrders[];
   hashFnParams: WalletHashParams;
   currencyConvert: string;
@@ -15,17 +29,17 @@ export class WalletSettings {
   ratesApiOptions: RatesApiOptions;
   sessionTime: number;
 
-  constructor(data: Record<string, unknown>) {
-    this.cipherOrders = data.cipherOrders as CipherOrders[];
-    this.hashFnParams = new WalletHashParams(data.hashFnParams as Record<string, unknown>);
-    this.currencyConvert = data.currencyConvert as string;
-    this.ipfsNode = data.ipfsNode as string || null;
-    this.ensEnabled = data.ensEnabled as boolean;
-    this.tokensListFetcher = data.tokensListFetcher as boolean;
-    this.nodeRankingEnabled = data.nodeRankingEnabled as boolean;
-    this.maxConnections = data.maxConnections as number;
-    this.requestTimeoutSecs = data.requestTimeoutSecs as number;
-    this.ratesApiOptions = data.ratesApiOptions as RatesApiOptions;
-    this.sessionTime = data.sessionTime as number ?? 3600;
+  constructor(data: IWalletSettingsState) {
+    this.cipherOrders = data.cipherOrders;
+    this.hashFnParams = new WalletHashParams(data.hashFnParams);
+    this.currencyConvert = data.currencyConvert;
+    this.ipfsNode = data.ipfsNode;
+    this.ensEnabled = data.ensEnabled;
+    this.tokensListFetcher = data.tokensListFetcher;
+    this.nodeRankingEnabled = data.nodeRankingEnabled;
+    this.maxConnections = data.maxConnections;
+    this.requestTimeoutSecs = data.requestTimeoutSecs;
+    this.ratesApiOptions = data.ratesApiOptions;
+    this.sessionTime = data.sessionTime ?? 3600;
   }
 }

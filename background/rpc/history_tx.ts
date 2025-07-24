@@ -15,13 +15,42 @@ export enum TransactionStatus {
 
 export type ChainType = "EVM" | "Scilla";
 
+export interface IHistoricalTransactionState {
+  transaction_hash: string;
+  amount: bigint;
+  sender: string;
+  recipient: string;
+  contract_address: string | null;
+  status: TransactionStatus;
+  status_code: number | null;
+  timestamp: number;
+  block_number: bigint | null;
+  gasUsed: bigint | null;
+  gasLimit: bigint | null;
+  gasPrice: bigint | null;
+  blobGasUsed: bigint | null;
+  blobGasPrice: bigint | null;
+  effectiveGasPrice: bigint | null;
+  fee: bigint;
+  icon: string | null;
+  title: string | null;
+  error: string | null;
+  sig: string;
+  nonce: bigint;
+  token_info: TokenInfo | null;
+  chain_type: ChainType;
+  chain_hash: number;
+  data?: string;
+  code?: string;
+}
+
 export interface TokenInfo {
   value: bigint;
   symbol: string;
   decimals: number;
 }
 
-export class HistoricalTransaction {
+export class HistoricalTransaction implements IHistoricalTransactionState {
   public transaction_hash: string;
   public amount: bigint;
   public sender: string;
@@ -49,7 +78,7 @@ export class HistoricalTransaction {
   public data?: string;
   public code?: string;
 
-  constructor(data: Omit<HistoricalTransaction, "constructor" | 'fromReceipt' | 'toJSON'>) {
+  constructor(data: IHistoricalTransactionState) {
     this.transaction_hash = data.transaction_hash;
     this.amount = data.amount;
     this.sender = data.sender;
@@ -162,7 +191,7 @@ export class HistoricalTransaction {
         gasPrice,
         data,
         error: null,
-        sig: HEX_PREFIX + sig.toCompactHex(),
+        sig: HEX_PREFIX + sig.toCompactHex(), // TODO: fix it.
         block_number: null,
         status_code: null,
         contract_address: (txData.to && txData.data && txData.data.length > 2) ? txData.to : null,

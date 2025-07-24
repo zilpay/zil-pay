@@ -4,14 +4,23 @@ import { APP_ID } from '../../config/argon2';
 import { deriveArgon2Key } from '../../crypto/argon2';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { KeyChain } from '../../crypto/keychain';
-import { hexToUint8Array } from 'lib/utils/hex';
+import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 
 export enum HashTypes {
   Argon2,
   Pbkdf2,
 }
 
-export class WalletHashParams {
+export interface IWalletHashParams {
+  memory: number;
+  iterations: number;
+  threads: number;
+  secret: string;
+  hashType: HashTypes;
+  hashSize: ShaAlgorithms;
+}
+
+export class WalletHashParams implements IWalletHashParams {
   memory: number;
   iterations: number;
   threads: number;
@@ -38,7 +47,7 @@ export class WalletHashParams {
     return new WalletHashParams({
       memory: original.memCost, 
       threads: original.lanes,
-      secret: original.secret,
+      secret: uint8ArrayToHex(original.secret),
       iterations: original.timeCost,
       hashType: HashTypes.Argon2,
       hashSize: ShaAlgorithms.Sha512,
@@ -49,7 +58,7 @@ export class WalletHashParams {
     return new WalletHashParams({
       memory: 2097152, 
       threads: 2,
-      secret: new Uint8Array(),
+      secret: uint8ArrayToHex(new Uint8Array()),
       iterations: 1,
       hashType: HashTypes.Argon2,
       hashSize: ShaAlgorithms.Sha512,
@@ -57,13 +66,13 @@ export class WalletHashParams {
   }
 
 
-  constructor(data: Record<string, unknown>) {
-    this.memory = data.memory as number;
-    this.iterations = data.iterations as number;
-    this.threads = data.threads as number;
-    this.secret = data.secret as string;
-    this.hashType = data.hashType as HashTypes;
-    this.hashSize = data.hashSize as ShaAlgorithms;
+  constructor(data: IWalletHashParams) {
+    this.memory = data.memory;
+    this.iterations = data.iterations;
+    this.threads = data.threads;
+    this.secret = data.secret;
+    this.hashType = data.hashType;
+    this.hashSize = data.hashSize;
   }
 
   async deriveKey(password: Uint8Array, salt: Uint8Array): Promise<KeyChain> {

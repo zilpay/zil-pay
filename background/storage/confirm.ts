@@ -1,6 +1,18 @@
 import type { MinScillaParams, TokenTransferMetadata, TransactionRequestEVM } from "types/tx";
 
-export class ConfirmState {
+export interface IConfirmState {
+  uuid: string;
+  title: string;
+  icon: string;
+  token?: TokenTransferMetadata;
+  scilla?: MinScillaParams;
+  signMessageScilla?: string;
+  evm?: TransactionRequestEVM;
+  signPersonalMessageEVM?: string;
+  signTypedDataJsonEVM?: string;
+}
+
+export class ConfirmState implements IConfirmState {
   uuid: string;
   title: string;
   icon: string;
@@ -11,33 +23,33 @@ export class ConfirmState {
   signPersonalMessageEVM?: string;
   signTypedDataJsonEVM?: string;
 
-  constructor(data: Record<string, unknown>) {
-    this.uuid = data.uuid as string;
-    this.title = data.title as string;
-    this.icon = data.icon as string;
+  constructor(data: IConfirmState) {
+    this.uuid = data.uuid;
+    this.title = data.title;
+    this.icon = data.icon;
 
     if (data.token) {
-      this.token = data.token as TokenTransferMetadata;
+      this.token = data.token;
     }
 
     if (data.scilla) {
-      this.scilla = data.scilla as MinScillaParams;
+      this.scilla = data.scilla;
     }
 
     if (data.evm) {
-      this.evm = data.evm as TransactionRequestEVM;
+      this.evm = data.evm;
     }
 
     if (data.signPersonalMessageEVM) {
-      this.signPersonalMessageEVM = data.signPersonalMessageEVM as string;
+      this.signPersonalMessageEVM = data.signPersonalMessageEVM;
     }
 
     if (data.signPersonalMessageEVM) {
-      this.signPersonalMessageEVM = data.signPersonalMessageEVM as string;
+      this.signPersonalMessageEVM = data.signPersonalMessageEVM;
     }
 
     if (data.signTypedDataJsonEVM) {
-      this.signTypedDataJsonEVM = data.signTypedDataJsonEVM as string;
+      this.signTypedDataJsonEVM = data.signTypedDataJsonEVM;
     }
   }
 }
