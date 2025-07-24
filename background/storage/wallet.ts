@@ -17,6 +17,7 @@ import { AuthMethod, WalletTypes } from 'config/wallet';
 
 export class Wallet {
   #session: Session;
+  #vault: string;
 
   uuid: string;
   walletType: WalletTypes;
@@ -29,7 +30,6 @@ export class Wallet {
   confirm: ConfirmState[];
   settings: WalletSettings;
   defaultChainHash: number;
-  vault: string;
 
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as WalletTypes;
@@ -49,7 +49,7 @@ export class Wallet {
     this.confirm = TypeOf.isArray(data.confirm) ? data.confirm as ConfirmState[] : [];
     this.#session = new Session(this.uuid);
 
-    this.vault = data.vault as string ?? "";
+    this.#vault = data.vault as string ?? "";
   }
 
   static async fromPrivateKey(
@@ -118,7 +118,7 @@ export class Wallet {
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
     const salt = await generateSalt();
     const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
-    const ciphertext = base64ToUint8Array(this.vault);
+    const ciphertext = base64ToUint8Array(this.#vault);
     const decrypted = await keychain.decrypt(ciphertext, this.settings.cipherOrders);
 
     if (this.walletType == WalletTypes.SecretKey) {      
@@ -135,7 +135,7 @@ export class Wallet {
     const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
     const cipher = await keychain.encrypt(plaintext, this.settings.cipherOrders);
 
-    this.vault = uint8ArrayToBase64(cipher);
+    this.#vault = uint8ArrayToBase64(cipher);
 
     return cipher;
   }
@@ -189,5 +189,9 @@ export class Wallet {
 
   async clearSession() {
     await this.#session.clearSession();
+  }
+
+  get vault() {
+    return this.#vault;
   }
 }

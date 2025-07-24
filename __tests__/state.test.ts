@@ -253,7 +253,7 @@ describe("test bg state with storagev3", () => {
     expect(wallet.authType).toBe(AuthMethod.None);
     expect(wallet.selectedAccount).toBe(1);
     expect(wallet.defaultChainHash).toBe(208425510);
-    expect(wallet.vault).toBe(
+    expect(wallet.vault).toEqual(
       "ZGM1ODdhZGI0YWVhY2E3Njk4MDJlYTEyMzMxOGY5OGZlMjMxMzNhYzY1ZDc4ZTUzYjFiZmI0YTYxNDY5OTAzZGQ2NDAzNWFjZmQzNGVkODZjYzc3NTc0NWE4NjI4N2Y3NWI0OTdiYzk4OGFjMzg0MDM5MWY5MGJjY2FmMjllNmU4NmEyMjJkMy8zODIzZWMwNmEyMDA4ZDZhODcyMTY3MzAwMzlmZTBlYw==",
     );
 

@@ -51,7 +51,8 @@ zil-pay
 │   ├── pbkdf2.ts
 │   ├── sha.ts
 │   ├── slip44.ts
-│   └── theme.ts
+│   ├── theme.ts
+│   └── wallet.ts
 ├── content
 │   └── index.ts
 ├── crypto
@@ -1627,7 +1628,7 @@ export * from './session';
 import { BackgroundState } from '../storage/background';
 import { ChainConfig } from '../storage/chain';
 import { FToken } from '../storage/ftoken';
-import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
+import { Wallet } from '../storage/wallet';
 import { Account } from '../storage/account';
 import { WalletSettings } from '../storage/settings';
 import { HashTypes, WalletHashParams } from '../storage/argon';
@@ -1637,6 +1638,7 @@ import { AddressType } from 'crypto/address';
 import { uuid } from 'crypto/uuid';
 import { Themes } from 'config/theme';
 import { RatesApiOptions } from 'config/api';
+import { AuthMethod, WalletTypes } from 'config/wallet';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -2839,20 +2841,11 @@ import { KeyPair } from 'crypto/keypair';
 import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
 import type { HistoricalTransaction } from 'background/rpc/history_tx';
 import type { ConfirmState } from './confirm';
-
-export enum WalletTypes {
-    Ledger,
-    SecretPhrase,
-    SecretKey,
-}
-
-export enum AuthMethod {
-    Biometric,
-    None,
-}
+import { AuthMethod, WalletTypes } from 'config/wallet';
 
 export class Wallet {
   #session: Session;
+  #vault: string;
 
   uuid: string;
   walletType: WalletTypes;
@@ -2865,7 +2858,6 @@ export class Wallet {
   confirm: ConfirmState[];
   settings: WalletSettings;
   defaultChainHash: number;
-  vault: string;
 
   constructor(data: Record<string, unknown>) {
     this.walletType = data.walletType as WalletTypes;
@@ -2885,7 +2877,7 @@ export class Wallet {
     this.confirm = TypeOf.isArray(data.confirm) ? data.confirm as ConfirmState[] : [];
     this.#session = new Session(this.uuid);
 
-    this.vault = data.vault as string ?? "";
+    this.#vault = data.vault as string ?? "";
   }
 
   static async fromPrivateKey(
@@ -2954,7 +2946,7 @@ export class Wallet {
   async decrypt(password: Uint8Array): Promise<Uint8Array | string> {
     const salt = await generateSalt();
     const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
-    const ciphertext = base64ToUint8Array(this.vault);
+    const ciphertext = base64ToUint8Array(this.#vault);
     const decrypted = await keychain.decrypt(ciphertext, this.settings.cipherOrders);
 
     if (this.walletType == WalletTypes.SecretKey) {      
@@ -2971,7 +2963,7 @@ export class Wallet {
     const keychain = await this.settings.hashFnParams.deriveKey(password, salt);
     const cipher = await keychain.encrypt(plaintext, this.settings.cipherOrders);
 
-    this.vault = uint8ArrayToBase64(cipher);
+    this.#vault = uint8ArrayToBase64(cipher);
 
     return cipher;
   }
@@ -3025,6 +3017,10 @@ export class Wallet {
 
   async clearSession() {
     await this.#session.clearSession();
+  }
+
+  vault() {
+    return this.#vault;
   }
 }
 
@@ -3244,6 +3240,22 @@ export enum Themes {
   System = "system",
   Light = "light",
   Dark = "dark",
+}
+
+```
+
+`zil-pay/config/wallet.ts`:
+
+```ts
+export enum WalletTypes {
+    Ledger,
+    SecretPhrase,
+    SecretKey,
+}
+
+export enum AuthMethod {
+    Biometric,
+    None,
 }
 
 ```
