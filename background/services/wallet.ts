@@ -26,7 +26,7 @@ export class WalletService {
       const chain = this.#state.getChain(payload.chainHash)!;
       const keyBytes = hexToUint8Array(payload.key);
       const kyepair = await KeyPair.fromPrivateKey(keyBytes, chain.slip44);
-      const settings = new WalletSettings({ ...payload.settings });
+      const settings = new WalletSettings(payload.settings);
       const wallet = await Wallet.fromPrivateKey(
         kyepair,
         payload.walletName,

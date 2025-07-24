@@ -1,25 +1,3 @@
-export interface RequiredSettings {
-  cipherOrders: CipherOrders[];
-  currencyConvert: string;
-  ipfsNode: string | null;
-  ensEnabled: boolean;
-  tokensListFetcher: boolean;
-  nodeRankingEnabled: boolean;
-  maxConnections: number;
-  requestTimeoutSecs: number;
-  ratesApiOptions: RatesApiOptions;
-  sessionTime: number;
-}
-
-export interface RequiredHashSettings {
-  memory: number;
-  iterations: number;
-  threads: number;
-  secret: string;
-  hashType: HashTypes;
-  hashSize: ShaAlgorithms;
-}
-
 export interface SetPasswordPayload {
   cipherOrders: CipherOrders[];
   walletIndex: number;
@@ -35,5 +13,5 @@ export interface WalletFromPrivateKeyParams {
   hashSettings: RequiredHashSettings;
   chainHash: number;
   password: string;
-  settings: RequiredSettings;
+  settings: IWalletSettingsState;
 }

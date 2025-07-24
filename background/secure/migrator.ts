@@ -1,4 +1,4 @@
-import { BackgroundState } from '../storage/background';
+import { BackgroundState, type IBackgroundState } from '../storage/background';
 import { ChainConfig } from '../storage/chain';
 import { FToken } from '../storage/ftoken';
 import { Wallet } from '../storage/wallet';
@@ -12,6 +12,7 @@ import { uuid } from 'crypto/uuid';
 import { Themes } from 'config/theme';
 import { RatesApiOptions } from 'config/api';
 import { AuthMethod, WalletTypes } from 'config/wallet';
+import { Locales } from 'config/locale';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -80,7 +81,6 @@ const ZILLIQA_MAINNET_CHAIN = new ChainConfig({
       }),
     ],
     chainIds: [32769, 1],
-    infoURL: 'https://www.zilliqa.com/',
     shortName: 'zilliqa',
     slip44: 313,
     explorers: [
@@ -88,28 +88,27 @@ const ZILLIQA_MAINNET_CHAIN = new ChainConfig({
         name: 'Viewblock',
         url: 'https://viewblock.io/zilliqa',
         icon: 'https://viewblock.io/apple-touch-icon.png',
-        standard: 'EIP3091',
+        standard: 3091,
       },
       {
         name: 'Otterscan',
         icon: 'https://otterscan.zilliqa.com/assets/otter-DYFeLtFi.png',
         url: 'https://otterscan.zilliqa.com/',
-        standard: 'EIP3091',
+        standard: 3091,
       },
     ],
     chainId: 1,
-    chainHash: 1,
     diffBlockTime: 30,
     ens: null,
     fallbackEnabled: false,
     testnet: false
 });
 
-export function migrateToV4(storage: Record<string, unknown>): BackgroundState {
-  if (storage['storageVersion'] == 4) {
+export function migrateToV4(storage: IBackgroundState): BackgroundState {
+  if (storage.storageVersion == 4) {
     return new BackgroundState(storage);
   } else {
-      return migrateFromV2orV3(storage);
+      return migrateFromV2orV3(storage as any);
   }
 }
 
@@ -169,11 +168,12 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
     });
 
     const wallet = new Wallet({
+        history: [],
+        confirm: [],
         walletType: WalletTypes.SecretPhrase,
         walletName: 'Zilliqa Wallet',
         authType: AuthMethod.None,
         uuid: uuid(),
-        walletAddress: accounts[0].addr,
         accounts,
         selectedAccount: walletIdentities.selectedAddress,
         tokens: walletTokens, 
@@ -185,9 +185,9 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
                 threads: 1,
                 secret: '',
                 hashType: HashTypes.Pbkdf2, 
-                hashSize: algorithm ?? ShaAlgorithms.sha256,
+                hashSize: algorithm as ShaAlgorithms ?? ShaAlgorithms.sha256,
             }),
-            currencyConvert: storage['selected-currency'],
+            currencyConvert: String(storage['selected-currency']),
             ipfsNode: null,
             ensEnabled: false,
             tokensListFetcher: false,
@@ -195,15 +195,18 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
             maxConnections: 10,
             requestTimeoutSecs: 30,
             ratesApiOptions: RatesApiOptions.CoinGecko,
+                sessionTime: Number(storage['time_before_lock']) || 3600,
         }),
         defaultChainHash: mainChain.hash(),
-        vault: storage.vault,
+        vault: String(storage.vault),
     });
 
     const backgroundState = new BackgroundState({
+        storageVersion: 4,
         wallets: [wallet],
+        selected_wallet: 0,
         notificationsGlobalEnabled: true,
-        locale: 'auto',
+        locale: Locales.Auto,
         appearances: Themes.System,
         abbreviatedNumber: true,
         hideBalance: false,

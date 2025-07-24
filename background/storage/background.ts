@@ -1,12 +1,24 @@
 import { BrowserStorage, buildObject } from 'lib/storage';
-import { ChainConfig } from './chain';
-import { Wallet } from './wallet';
+import { ChainConfig, type IChainConfigState } from './chain';
+import { Wallet, type IWalletState } from './wallet';
 import { Fields } from 'config/fields';
 import { migrateToV4 } from 'background/secure';
 import { Themes } from 'config/theme';
 import { Locales } from 'config/locale';
 
-export class BackgroundState {
+export interface IBackgroundState {
+  storageVersion: number;
+  wallets: IWalletState[];
+  selected_wallet: number;
+  notificationsGlobalEnabled: boolean;
+  locale: Locales;
+  appearances: Themes;
+  abbreviatedNumber: boolean;
+  hideBalance: boolean;
+  chains: IChainConfigState[];
+}
+
+export class BackgroundState implements IBackgroundState {
   readonly storageVersion  = 4;
   wallets: Wallet[];
   selected_wallet: number;
@@ -26,7 +38,8 @@ export class BackgroundState {
       appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
-      chains: [], 
+      chains: [],
+      storageVersion: 4,
     });
   }
 
@@ -35,7 +48,7 @@ export class BackgroundState {
     let state: BackgroundState;
 
     if (!recordsv4) {
-      const oldRecords = await BrowserStorage.getAll();
+      const oldRecords = await BrowserStorage.getAll<IBackgroundState>();
 
       if (oldRecords) {
         try {
@@ -59,17 +72,17 @@ export class BackgroundState {
     return state;
   }
 
-  constructor(data: Record<string, unknown>) {
-    this.wallets = (data.wallets as Record<string, unknown>[] ?? []).map(
+  constructor(data: IBackgroundState) {
+    this.wallets = (data.wallets ?? []).map(
       (w) => new Wallet(w)
     );
-    this.notificationsGlobalEnabled = data.notificationsGlobalEnabled as boolean;
-    this.locale = data.locale as Locales ?? Locales.Auto;
-    this.appearances = data.appearances as Themes;
-    this.abbreviatedNumber = data.abbreviatedNumber as boolean;
-    this.hideBalance = data.hideBalance as boolean;
+    this.notificationsGlobalEnabled = data.notificationsGlobalEnabled;
+    this.locale = data.locale ?? Locales.Auto;
+    this.appearances = data.appearances;
+    this.abbreviatedNumber = data.abbreviatedNumber;
+    this.hideBalance = data.hideBalance;
     this.selected_wallet = Number(data.selected_wallet);
-    this.chains = (data.chains as Record<string, unknown>[]).map(
+    this.chains = (data.chains).map(
       (c) => new ChainConfig(c)
     );
   }

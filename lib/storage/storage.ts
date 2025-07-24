@@ -44,7 +44,7 @@ export const BrowserStorage = Object.freeze({
         return result as T;
     },
 
-    async getAll(): Promise<StorageKeyValue> {
+    async getAll<T>(): Promise<T> {
         return Runtime.storage.local.get(null);
     },
 
