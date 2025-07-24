@@ -1,10 +1,6 @@
 import { WalletHashParams } from './argon';
 import { CipherOrders } from '../../crypto/keychain';
-
-export enum RatesApiOptions {
-  CoinGecko,
-  None
-} 
+import type { RatesApiOptions } from 'config/api';
 
 export class WalletSettings {
   cipherOrders: CipherOrders[];

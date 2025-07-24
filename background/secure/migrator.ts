@@ -3,13 +3,14 @@ import { ChainConfig } from '../storage/chain';
 import { FToken } from '../storage/ftoken';
 import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
 import { Account } from '../storage/account';
-import { WalletSettings, RatesApiOptions } from '../storage/settings';
+import { WalletSettings } from '../storage/settings';
 import { HashTypes, WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { AddressType } from 'crypto/address';
 import { uuid } from 'crypto/uuid';
 import { Themes } from 'config/theme';
+import { RatesApiOptions } from 'config/api';
 
 interface WalletIdentities {
   selectedAddress: number;

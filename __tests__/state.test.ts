@@ -5,6 +5,7 @@ import {
   BackgroundState,
 } from "../background/storage/background";
 import { Themes } from "../config/theme";
+import { RatesApiOptions } from "../config/api";
 import {
   createBscConfig,
   createEthConfig,
@@ -23,7 +24,6 @@ import { FToken } from "../background/storage/ftoken";
 import { utf8ToUint8Array } from "../lib/utils/utf8";
 import { ChainConfig } from "../background/storage/chain";
 import {
-  RatesApiOptions,
   WalletSettings,
 } from "../background/storage/settings";
 import { WORD_LIST } from "./crypto/word_list";
