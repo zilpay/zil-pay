@@ -13,17 +13,7 @@ import { KeyPair } from 'crypto/keypair';
 import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
 import type { HistoricalTransaction } from 'background/rpc/history_tx';
 import type { ConfirmState } from './confirm';
-
-export enum WalletTypes {
-    Ledger,
-    SecretPhrase,
-    SecretKey,
-}
-
-export enum AuthMethod {
-    Biometric,
-    None,
-}
+import { AuthMethod, WalletTypes } from 'config/wallet';
 
 export class Wallet {
   #session: Session;

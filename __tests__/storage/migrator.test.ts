@@ -9,10 +9,9 @@ import {
 import { ChainConfig } from "../../background/storage/chain";
 import { FToken } from "../../background/storage/ftoken";
 import {
-  AuthMethod,
   Wallet,
-  WalletTypes,
 } from "../../background/storage/wallet";
+import { WalletTypes, AuthMethod } from "../../config/wallet";
 import { Account } from "../../background/storage/account";
 import { HashTypes, WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";

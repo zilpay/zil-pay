@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
   Wallet,
-  WalletTypes,
-  AuthMethod,
 } from "../../background/storage/wallet";
 import {
   WalletSettings,
 } from "../../background/storage/settings";
+import { AuthMethod, WalletTypes } from "../../config/wallet";
 import { RatesApiOptions } from "../../config/api";
 import { ChainConfig } from "../../background/storage/chain";
 import { WORD_LIST } from "../crypto/word_list";

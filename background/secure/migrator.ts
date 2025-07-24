@@ -1,7 +1,7 @@
 import { BackgroundState } from '../storage/background';
 import { ChainConfig } from '../storage/chain';
 import { FToken } from '../storage/ftoken';
-import { AuthMethod, Wallet, WalletTypes } from '../storage/wallet';
+import { Wallet } from '../storage/wallet';
 import { Account } from '../storage/account';
 import { WalletSettings } from '../storage/settings';
 import { HashTypes, WalletHashParams } from '../storage/argon';
@@ -11,6 +11,7 @@ import { AddressType } from 'crypto/address';
 import { uuid } from 'crypto/uuid';
 import { Themes } from 'config/theme';
 import { RatesApiOptions } from 'config/api';
+import { AuthMethod, WalletTypes } from 'config/wallet';
 
 interface WalletIdentities {
   selectedAddress: number;

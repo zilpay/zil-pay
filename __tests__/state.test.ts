@@ -13,7 +13,8 @@ import {
   WORDS,
 } from "./data";
 import { BrowserStorage } from "../lib/storage";
-import { AuthMethod, Wallet, WalletTypes } from "../background/storage/wallet";
+import { Wallet } from "../background/storage/wallet";
+import { WalletTypes, AuthMethod } from "../config/wallet";
 import { AddressType } from "../crypto/address";
 import { CipherOrders } from "../crypto/keychain";
 import { HashTypes } from "../background/storage/argon";

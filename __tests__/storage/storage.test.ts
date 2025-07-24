@@ -6,9 +6,8 @@ import { Locales } from "../../config/locale";
 import { ChainConfig } from "../../background/storage/chain";
 import {
   Wallet,
-  AuthMethod,
-  WalletTypes,
 } from "../../background/storage/wallet";
+import { WalletTypes, AuthMethod } from "../../config/wallet";
 import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { AddressType } from "../../crypto/address";
