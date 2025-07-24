@@ -15,6 +15,12 @@ export class WalletService {
 
   async addLedgerWallet() {}
 
+  async getGlobalState(sendResponse: StreamResponse) {
+    sendResponse({
+      resolve: this.#state
+    });
+  }
+
   async walletFromPrivateKey(payload: WalletFromPrivateKeyParams, sendResponse: StreamResponse) {
     try {
       const chain = this.#state.getChain(payload.chainHash)!;
