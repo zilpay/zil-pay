@@ -4,13 +4,14 @@ import { Wallet } from './wallet';
 import { Fields } from 'config/fields';
 import { migrateToV4 } from 'background/secure';
 import { Themes } from 'config/theme';
+import { Locales } from 'config/locale';
 
 export class BackgroundState {
   readonly storageVersion  = 4;
   wallets: Wallet[];
   selected_wallet: number;
   notificationsGlobalEnabled: boolean;
-  locale: string | null;
+  locale: Locales;
   appearances: Themes;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
@@ -21,7 +22,7 @@ export class BackgroundState {
       wallets: [],
       selected_wallet: 0,
       notificationsGlobalEnabled: true,
-      locale: 'auto',
+      locale: Locales.Auto,
       appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
@@ -63,7 +64,7 @@ export class BackgroundState {
       (w) => new Wallet(w)
     );
     this.notificationsGlobalEnabled = data.notificationsGlobalEnabled as boolean;
-    this.locale = data.locale as string | null ?? null;
+    this.locale = data.locale as Locales ?? Locales.Auto;
     this.appearances = data.appearances as Themes;
     this.abbreviatedNumber = data.abbreviatedNumber as boolean;
     this.hideBalance = data.hideBalance as boolean;

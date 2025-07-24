@@ -2,6 +2,7 @@ import {
   BackgroundState,
 } from "../../background/storage/background";
 import { Themes } from "../../config/theme";
+import { Locales } from "../../config/locale";
 import { ChainConfig } from "../../background/storage/chain";
 import {
   Wallet,
@@ -110,7 +111,7 @@ describe("BackgroundState", () => {
 
     const state = new BackgroundState(mockData);
 
-    expect(state.locale).toBeNull();
+    expect(state.locale).toBe(Locales.Auto);
     expect(state.appearances).toBe(Themes.Dark);
     expect(state.abbreviatedNumber).toBe(false);
     expect(state.hideBalance).toBe(true);
