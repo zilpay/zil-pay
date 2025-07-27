@@ -140,6 +140,7 @@ describe("test bg state with empty storage", () => {
 
     globalState.state.wallets[0].history.push(historicalTx);
 
+
     await globalState.sync();
     const restoredGlobalState = await GlobalState.fromStorage();
     expect(JSON.stringify(restoredGlobalState.state)).toEqual(

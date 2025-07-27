@@ -232,7 +232,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
       sender: this.sender,
       recipient: this.recipient,
       contract_address: this.contract_address,
-      status: TransactionStatus[this.status],
+      status: this.status,
       status_code: this.status_code,
       timestamp: this.timestamp,
       block_number: this.block_number?.toString() ?? null,
