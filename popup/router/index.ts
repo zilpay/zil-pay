@@ -3,6 +3,9 @@ import NotFoundPage from "../pages/NotFoundPage.svelte";
 import HomePage from "../pages/Home.svelte";
 import LockPage from "../pages/Lock.svelte";
 import StartPage from "../pages/Start.svelte";
+import ConnectPage from "../pages/Connect.svelte";
+import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
+import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
 
 export type ParamsRecord = Record<string, string | null>;
 export interface Route {
@@ -18,6 +21,9 @@ export const notFoundRoute: Route = {
 
 export const protectedRoutes: Route[] = [
   { path: "/", component: HomePage, isProtected: true },
+  { path: "/connect", component: ConnectPage, isProtected: true },
+  { path: "/confirm", component: ConfirmPopupPage, isProtected: true },
+  { path: "/sign-message", component: SignMessagePopupPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [
