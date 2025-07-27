@@ -4,7 +4,8 @@ import { Themes } from "config/theme";
 import { warpMessage } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import { themeDetect } from "popup/mixins/theme";
-
+import globalStore from "popup/store/global";
+ 
 export async function getGlobalState() {
   const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
   let resolve = warpMessage(data) as BackgroundState;
@@ -14,6 +15,7 @@ export async function getGlobalState() {
   }
 
   document.body.setAttribute("theme", resolve.appearances);
+  globalStore.set(resolve);
 
   return resolve;
 }

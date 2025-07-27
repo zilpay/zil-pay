@@ -1,6 +1,7 @@
 import { get } from "svelte/store";
-
+import globalStore from "popup/store/global";
 import { type Route } from "./index";
+import StartPage from "../pages/Start.svelte";
 
 export class RouteGuard {
   private static navigate(path: string) {
@@ -12,11 +13,13 @@ export class RouteGuard {
       return route;
     }
 
-    // if (!guard.isReady) {
-    //   this.navigate("/start");
+    const globalState = get(globalStore);
 
-    //   return { path: "/start", component: StartPage };
-    // }
+    if (globalState.wallets.length == 0) {
+      this.navigate("/start");
+
+      return { path: "/start", component: StartPage };
+    }
 
     // if (guard.isReady && !guard.isEnable) {
     //   this.navigate("lock");

@@ -1,4 +1,4 @@
-import type { ChainConfig, IBackgroundState } from "background/storage";
+import type { IBackgroundState } from "background/storage";
 import { Locales } from "config/locale";
 import { Themes } from "config/theme";
 import { writable } from "svelte/store";
