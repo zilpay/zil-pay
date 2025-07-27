@@ -32,7 +32,7 @@ export class BackgroundState implements IBackgroundState {
   static default() {
     return new BackgroundState({
       wallets: [],
-      selected_wallet: 0,
+      selected_wallet: -1,
       notificationsGlobalEnabled: true,
       locale: Locales.Auto,
       appearances: Themes.System,
