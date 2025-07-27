@@ -6,20 +6,14 @@
 <div class="start-page">
     <div class="header">
         <div class="theme-toggle">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12C15.866 12 19 9.866 19 7C19 4.134 15.866 2 12 2C8.134 2 5 4.134 5 7C5 9.866 8.134 12 12 12Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12 12C8.134 12 5 9.866 5 7C5 4.134 8.134 2 12 2C15.866 2 19 4.134 19 7C19 9.866 15.866 12 12 12Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <img src="/icons/appearance.svg" alt="">
         </div>
         <div class="language-selector">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 13H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M15 11a3 3 0 10-6 0 3 3 0 006 0Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <img src="/icons/language.svg" alt="">
         </div>
     </div>
     <div class="content">
-        <img src="/images/dragons.svg" alt="Dragons" class="dragon-image" />
+        <img src="/icons/little_dragons.svg" alt="Dragons" class="dragon-image" />
     </div>
     <button class="get-started-button" on:click={handleGetStarted}>
         Get Started
