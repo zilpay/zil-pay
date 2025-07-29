@@ -1,4 +1,6 @@
 <script lang="ts">
+    import SvgLoad from '../components/SvgLoad.svelte';
+
     function handleGetStarted() {
     }
 </script>
@@ -6,14 +8,14 @@
 <div class="start-page">
     <div class="header">
         <div class="theme-toggle">
-            <img src="/icons/appearance.svg" alt="">
+            <SvgLoad src="/icons/appearance.svg" width="30" height="30" />
         </div>
         <div class="language-selector">
-            <img src="/icons/language.svg" alt="">
+            <SvgLoad src="/icons/language.svg" width="30" height="30" />
         </div>
     </div>
     <div class="content">
-        <img src="/icons/little_dragons.svg" alt="Dragons" class="dragon-image" />
+        <SvgLoad src="/icons/little_dragons.svg" class="dragon-image" />
     </div>
     <button class="get-started-button" on:click={handleGetStarted}>
         Get Started
@@ -43,11 +45,6 @@
     .language-selector {
         display: flex;
         align-items: center;
-    }
-
-    .dragon-image {
-        max-width: 80%;
-        height: auto;
     }
 
     .get-started-button {
