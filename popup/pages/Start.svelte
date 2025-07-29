@@ -1,5 +1,6 @@
 <script lang="ts">
     import SvgLoad from '../components/SvgLoad.svelte';
+    import LanguageIcon from '../components/icons/Language.svelte';
 
     function handleGetStarted() {
     }
@@ -11,7 +12,7 @@
             <SvgLoad src="/icons/appearance.svg" width="30" height="30" />
         </div>
         <div class="language-selector">
-            <SvgLoad src="/icons/language.svg" width="30" height="30" />
+            <LanguageIcon width={36} height={36} />
         </div>
     </div>
     <div class="content">
