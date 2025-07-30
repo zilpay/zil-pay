@@ -36,6 +36,3 @@
 	<Router />
 {/if}
 
-<style lang="scss">
-	@use './styles/global.scss' as globalStyles;
-</style>

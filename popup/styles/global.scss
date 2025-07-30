@@ -13,7 +13,7 @@
   font-family: var(--font-family, system-ui, sans-serif);
   font-size: 16px;
   line-height: 1.5;
-  color: var(--text-color);
+  color: var(--text-primary);
   
   /* Smooth scrolling for supported browsers */
   scroll-behavior: smooth;
@@ -27,7 +27,6 @@
 
 /* Specifically handle focus outlines for accessibility */
 :global(*:focus) {
-  outline: 2px solid var(--primary-color, #3498db);
   outline-offset: 2px;
 }
 
@@ -54,16 +53,6 @@
   overscroll-behavior: none;
 }
 
-/* Links */
-:global(a) {
-  text-decoration: none;
-  color: var(--link-color, var(--primary-color));
-  transition: color 0.2s ease;
-  
-  &:hover {
-    color: var(--link-hover-color, var(--primary-color-dark));
-  }
-}
 
 /* Images */
 :global(img) {
@@ -75,24 +64,4 @@
 /* Hide scrollbars but allow scrolling */
 :global(::-webkit-scrollbar) {
   display: none;
-}
-
-/* Media query for dark mode preferences */
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme])) {
-    /* Fallback dark mode styles if no theme is explicitly set */
-    /* You can use your theme variables here */
-  }
-}
-
-/* Print styles */
-@media print {
-  :global(body) {
-    background-color: white;
-    color: black;
-  }
-  
-  :global(*) {
-    user-select: text;
-  }
 }
