@@ -13,6 +13,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.GET_GLOBAL_STATE:
         core.wallet.getGlobalState(sendResponse);
         return true;
+      case MTypePopup.SET_GLOBAL_STATE:
+        core.wallet.setGlobalState(msg.payload, sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;

@@ -1,10 +1,11 @@
-import { Wallet, WalletSettings, type BackgroundState } from "background/storage";
+import { Wallet, WalletSettings, type BackgroundState, type IBackgroundState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
+import { HistoricalTransaction } from "background/rpc/history_tx";
 
 export class WalletService {
   #state: BackgroundState;
@@ -16,6 +17,35 @@ export class WalletService {
   async addLedgerWallet() {}
 
   async getGlobalState(sendResponse: StreamResponse) {
+    sendResponse({
+      resolve: this.#state
+    });
+  }
+
+  async setGlobalState(payload: IBackgroundState, sendResponse: StreamResponse) {
+    this.#state.abbreviatedNumber = payload.abbreviatedNumber;
+    this.#state.appearances = payload.appearances;
+    this.#state.hideBalance = payload.hideBalance;
+    this.#state.selected_wallet = payload.selected_wallet;
+    this.#state.locale = payload.locale;
+    this.#state.notificationsGlobalEnabled = payload.notificationsGlobalEnabled;
+
+    payload.wallets.forEach((wallet, index) => {
+      const currentWallet = this.#state.wallets[index];
+
+      if (currentWallet) {
+          currentWallet.accounts = wallet.accounts;
+          currentWallet.confirm = wallet.confirm;
+          currentWallet.history = wallet.history.map((h) =>  new HistoricalTransaction(h));
+          currentWallet.selectedAccount = wallet.selectedAccount;
+          currentWallet.settings = new WalletSettings(wallet.settings);
+          currentWallet.tokens = wallet.tokens;
+          currentWallet.walletName = wallet.walletName;
+      }
+    });
+
+    await this.#state.sync();
+
     sendResponse({
       resolve: this.#state
     });
