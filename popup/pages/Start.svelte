@@ -20,7 +20,7 @@
     <div class="content">
         <SvgLoad src="/icons/little_dragons.svg" class="dragon-image" />
     </div>
-    <Button on:click={handleGetStarted}>
+    <Button on:click={handleGetStarted} class="secondary">
         Get Started
     </Button>
 </div>

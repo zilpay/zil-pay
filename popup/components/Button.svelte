@@ -1,12 +1,10 @@
 <script lang="ts">
   export let width: string = '100%';
   export let height: number = 56;
-  export let disabled: boolean = false;
 </script>
 
 <button
-  {disabled}
-  class="button"
+  {...$$restProps}
   style:width={width}
   style:height={`${height}px`}
 >
@@ -16,7 +14,7 @@
 </button>
 
 <style lang="scss">
-  .button {
+  button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,11 +28,11 @@
     transform: scale(1);
   }
 
-  .button:active:not(:disabled) {
+  button:active:not(:disabled) {
     transform: scale(0.9);
   }
 
-  .button:disabled {
+  button:disabled {
     cursor: not-allowed;
     background-color: color-mix(in srgb, var(--button-background) 50%, transparent);
   }
@@ -48,7 +46,11 @@
     color: var(--button-text);
   }
 
-  .button:disabled .text {
+  button:disabled .text {
     color: color-mix(in srgb, var(--button-text) 50%, transparent);
+  }
+
+  .secondary {
+      background-color: var(--secondary-purple);
   }
 </style>
