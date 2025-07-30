@@ -1,7 +1,9 @@
 import type { BackgroundState } from "background/storage";
+
+import { get } from "svelte/store";
 import { MTypePopup } from "config/stream";
 import { Themes } from "config/theme";
-import { warpMessage } from "lib/popup/warp-message";
+import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import { themeDetect } from "popup/mixins/theme";
 import globalStore from "popup/store/global";
@@ -19,3 +21,13 @@ export async function getGlobalState() {
 
   return resolve;
 }
+
+export async function setGlobalState() {
+  const globalState = get(globalStore);
+
+   await new Message({
+    type: MTypePopup.SET_GLOBAL_STATE,
+    payload: globalState,
+  }).send();
+}
+

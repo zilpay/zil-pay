@@ -27,13 +27,8 @@ export class Message<T = unknown> {
 
     #trySend(): Promise<T> {
         return new Promise((resolve) => {
-          try {
             let data = JSON.parse(JSON.stringify(this.body));
             Runtime.runtime.sendMessage(data, resolve);
-          } catch (err) {
-            console.error(this, err);
-            window.location.reload();
-          }
         });
     }
 }

@@ -10,12 +10,13 @@
 
     import { Themes } from 'config/theme';
     import { themeDetect } from 'popup/mixins/theme';
+    import { setGlobalState } from 'popup/background/wallet';
 
 
     function handleGetStarted() {
     }
 
-    function handleThemeToggle() {
+    async function handleThemeToggle() {
         if ($globalStore.appearances == Themes.System) {
             const theme = themeDetect();
 
@@ -43,6 +44,8 @@
         }
 
         document.body.setAttribute("theme", $globalStore.appearances);
+
+        await setGlobalState();
     }
 
     function handleLanguageSelect() {
