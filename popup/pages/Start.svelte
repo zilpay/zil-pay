@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { _ }	 from 'popup/i18n';
+
     import SvgLoad from '../components/SvgLoad.svelte';
     import LanguageIcon from '../components/icons/Language.svelte';
     import AppearanceIcon from '../components/icons/Appearance.svelte';
@@ -6,34 +8,51 @@
 
     function handleGetStarted() {
     }
+
+    function handleThemeToggle() {
+    }
+
+    function handleLanguageSelect() {
+    }
 </script>
 
 <div class="start-page">
     <div class="header">
-        <div class="theme-toggle">
+        <button class="theme-toggle" on:click={handleThemeToggle}>
             <AppearanceIcon width={28} height={28} />
-        </div>
-        <div class="language-selector">
+        </button>
+        <button class="language-selector" on:click={handleLanguageSelect}>
             <LanguageIcon width={36} height={36} />
-        </div>
+        </button>
     </div>
     <div class="content">
-        <SvgLoad src="/icons/little_dragons.svg" class="dragon-image" />
+        <SvgLoad
+            src="/icons/little_dragons.svg"
+            class="dragon-image"
+            width="90%"
+            height="90%"
+            viewBox="0 0 460 460"
+        />
     </div>
     <Button on:click={handleGetStarted} class="secondary">
-        Get Started
+        {$_('start.btn')}
     </Button>
 </div>
 
-<style>
+<style lang="scss">
     .start-page {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
         height: 100vh;
+        max-width: 400px;
+        margin: 0 auto;
         background-color: #000;
         color: #fff;
+        padding: 0 20px;
+        box-sizing: border-box;
+        padding-bottom: 16px;
     }
 
     .header {
@@ -41,12 +60,41 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        padding: 20px;
+        padding: 20px 0;
+    }
+
+    .theme-toggle {
+        padding: 4px;
     }
 
     .theme-toggle,
     .language-selector {
         display: flex;
         align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover,
+    .language-selector:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-toggle:active,
+    .language-selector:active {
+        transform: translateY(0);
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
 </style>
