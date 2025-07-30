@@ -1,48 +1,37 @@
 :global(:root) {
-  --background-gradient: linear-gradient(
-    180deg,
-    rgb(234, 240, 253) 12.15%,
-    rgb(238, 222, 222) 100%
-  );
-  --background-color: rgb(255, 255, 255);
-  --text-color: rgb(50, 51, 90);
-  --text-negative: rgb(255, 255, 255);
-  --muted-color: rgba(94, 104, 135, 0.467);
-  --card-color: rgb(236, 250, 255);
-  --hover-color: rgb(237, 238, 242);
-  --modal-color: rgb(255, 255, 255);
-
-  --secondary-color: rgb(172, 89, 255);
-  --primary-color: rgb(232, 0, 111);
-  --primary-light-color: rgba(251, 17, 142, 0.24);
-
-  --danger-color: rgb(255, 44, 46);
-
-  --success-color: rgb(0, 255, 43);
-  --warning-color: rgb(255, 208, 0);
-  --loading-color: rgba(255, 235, 164, 0.529);
+  --primary-purple: #fc72ff;
+  --secondary-purple: #b0b0b0;
+  --background-color: #ffffff;
+  --card-background: #f7f7f7;
+  --text-primary: #000000;
+  --text-secondary: #6c6c6c;
+  --button-background: #ff007a;
+  --button-text: #ffffff;
+  --danger-color: #ff4d4d;
+  --success-color: #00d395;
+  --warning-color: #ffa500;
+  --gradient-start: #ff007a;
+  --gradient-middle: #d500f9;
+  --gradient-end: #ff007a;
+  --modal-border: #e0e0e0;
+  --background-gradient: linear-gradient(180deg, #ff007a 0%, #d500f9 50%, #ff007a 100%);
 }
 
 :global(body[theme="dark"]) {
-  --background-gradient: linear-gradient(
-    rgb(32, 39, 56) 0%,
-    rgb(7, 8, 22) 100%
-  );
-  --background-color: rgb(0, 0, 0);
-  --text-color: rgb(239, 235, 255);
-  --text-negative: rgb(0, 0, 0);
-  --muted-color: rgb(94, 103, 130);
-  --card-color: rgb(14, 17, 26);
-  --hover-color: rgb(64, 73, 99);
-  --modal-color: rgb(20, 27, 43);
-
-  --secondary-color: rgb(149, 78, 221);
-  --primary-color: rgb(76, 130, 251);
-  --primary-light-color: rgba(76, 130, 251, 0.24);
-
-  --danger-color: rgb(255, 44, 46);
-
-  --success-color: rgb(39, 174, 96);
-  --warning-color: rgb(255, 208, 0);
-  --loading-color: rgba(255, 235, 164, 0.277);
+  --primary-purple: #8a2be2;
+  --secondary-purple: #b23aee;
+  --background-color: #000000;
+  --card-background: #0d1117;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --button-background: #3a3a3a;
+  --button-text: #e0e0e0;
+  --danger-color: #e94560;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --gradient-start: #4a0e4e;
+  --gradient-middle: #220a23;
+  --gradient-end: #000000;
+  --modal-border: rgba(128, 128, 128, 0.2);
+  --background-gradient: linear-gradient(180deg, #4a0e4e 0%, #220a23 50%, #000000 100%);
 }

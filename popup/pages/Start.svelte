@@ -2,6 +2,7 @@
     import SvgLoad from '../components/SvgLoad.svelte';
     import LanguageIcon from '../components/icons/Language.svelte';
     import AppearanceIcon from '../components/icons/Appearance.svelte';
+    import Button from '../components/Button.svelte';
 
     function handleGetStarted() {
     }
@@ -19,9 +20,9 @@
     <div class="content">
         <SvgLoad src="/icons/little_dragons.svg" class="dragon-image" />
     </div>
-    <button class="get-started-button" on:click={handleGetStarted}>
+    <Button on:click={handleGetStarted}>
         Get Started
-    </button>
+    </Button>
 </div>
 
 <style>
@@ -47,22 +48,5 @@
     .language-selector {
         display: flex;
         align-items: center;
-    }
-
-    .get-started-button {
-        background-color: #8b00ff;
-        color: #fff;
-        font-size: 1.5rem;
-        font-weight: bold;
-        padding: 16px 0;
-        width: 100%;
-        border: none;
-        border-radius: 0;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-
-        &:hover {
-            background-color: #7b00e0;
-        }
     }
 </style>
