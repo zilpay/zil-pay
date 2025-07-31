@@ -104,14 +104,12 @@
         min-height: 72px;
         
         &:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
         }
 
         &:focus {
             outline: none;
             border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 20%, transparent);
         }
 
         &.selected {
