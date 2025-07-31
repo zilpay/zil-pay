@@ -1,5 +1,6 @@
 <script lang="ts">
     import { _ }	 from 'popup/i18n';
+    import { push } from 'popup/router/navigation';
 
     import globalStore from "popup/store/global";
 
@@ -49,6 +50,7 @@
     }
 
     function handleLanguageSelect() {
+        return push('/locale');
     }
 </script>
 
@@ -120,11 +122,6 @@
     .language-selector:hover {
         background: rgba(255, 255, 255, 0.2);
         box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-    }
-
-    .theme-toggle:active,
-    .language-selector:active {
-        transform: translateY(0);
     }
 
     .content {

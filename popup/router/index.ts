@@ -6,6 +6,7 @@ import StartPage from "../pages/Start.svelte";
 import ConnectPage from "../pages/Connect.svelte";
 import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
 import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
+import LocalePage from "../pages/Locale.svelte";
 
 export type ParamsRecord = Record<string, string | null>;
 export interface Route {
@@ -29,6 +30,7 @@ export const protectedRoutes: Route[] = [
 export const publicRoutes: Route[] = [
   { path: "/lock", component: LockPage },
   { path: "/start", component: StartPage },
+  { path: "/locale", component: LocalePage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];
