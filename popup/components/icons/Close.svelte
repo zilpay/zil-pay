@@ -4,8 +4,8 @@
   fill="none"
 >
   <rect
-    width={width}
-    height={height}
+    width={$$restProps.width}
+    height={$$restProps.height}
     rx="13"
   />
   <line
