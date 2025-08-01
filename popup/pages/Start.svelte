@@ -15,6 +15,8 @@
 
 
     function handleGetStarted() {
+    console.log("dadasdsad");
+        return push('/new-wallet-options');
     }
 
     async function handleThemeToggle() {
@@ -72,7 +74,7 @@
             viewBox="0 0 460 460"
         />
     </div>
-    <Button on:click={handleGetStarted}>
+    <Button onclick={handleGetStarted}>
         {$_('start.btn')}
     </Button>
 </div>

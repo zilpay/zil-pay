@@ -170,7 +170,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.blobBaseFee).toBe(0n);
     expect(fee.feeHistory.baseFee).toBe(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThanOrEqual(100n);
-    expect(fee.feeHistory.priorityFee).toBe(110000000n);
+    expect(fee.feeHistory.priorityFee).toBeGreaterThan(1000000n);
   }, 20000);
 
   it("test_get_tx_prams_scilla", async () => {

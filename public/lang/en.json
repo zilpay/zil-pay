@@ -4,5 +4,25 @@
   },
   "locale": {
     "title": "Language"
+  },
+  "newWalletOptions": {
+    "title": "Add Wallet",
+    "newWallet": {
+      "title": "New Wallet",
+      "description": "Create new wallet"
+    },
+    "existingWallet": {
+      "title": "Existing Wallet", 
+      "description": "Import wallet with a 24 secret recovery words"
+    },
+    "pairWithLedger": {
+      "title": "Pair with Ledger",
+      "description": "Hardware module, Bluetooth"
+    },
+    "otherOptions": "Other options",
+    "watchAccount": {
+      "title": "Watch Account",
+      "description": "For monitor wallet activity without recovery phrase"
+    }
   }
 }
