@@ -15,7 +15,6 @@
 
 
     function handleGetStarted() {
-    console.log("dadasdsad");
         return push('/new-wallet-options');
     }
 

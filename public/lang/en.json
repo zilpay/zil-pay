@@ -24,5 +24,20 @@
       "title": "Watch Account",
       "description": "For monitor wallet activity without recovery phrase"
     }
+  },
+  "generateWallet": {
+    "title": "Generate Wallet",
+    "bip39": {
+      "title": "BIP39",
+      "description": "Generate Mnemonic phrase"
+    },
+    "slip0039": {
+      "title": "SLIP-0039", 
+      "description": "Generate Mnemonic phrase with share"
+    },
+    "privateKey": {
+      "title": "Private Key",
+      "description": "Generate just one private key"
+    }
   }
 }

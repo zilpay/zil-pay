@@ -46,7 +46,7 @@
   ];
 
   function handleNewWallet() {
-    push('/new-wallet/create');
+    push('/generate-wallet');
   }
 
   function handleExistingWallet() {
