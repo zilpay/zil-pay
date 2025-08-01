@@ -39,5 +39,28 @@
       "title": "Private Key",
       "description": "Generate just one private key"
     }
+  },
+  "restoreWallet": {
+    "title": "Restore Wallet",
+    "bip39": {
+      "title": "BIP39",
+      "description": "Restore with Mnemonic phrase"
+    },
+    "slip0039": {
+      "title": "SLIP-0039", 
+      "description": "Restore with Shared Mnemonic phrase"
+    },
+    "privateKey": {
+      "title": "Private Key",
+      "description": "Restore with private key"
+    },
+    "keystoreFile": {
+      "title": "Keystore File",
+      "description": "Restore wallet using password-encrypted backup file"
+    },
+    "qrcode": {
+      "title": "QRcode",
+      "description": "Restore wallet by QRcode scanning"
+    }
   }
 }

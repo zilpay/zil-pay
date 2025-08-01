@@ -50,7 +50,7 @@
   }
 
   function handleExistingWallet() {
-    push('/new-wallet/import');
+    push('/restore-wallet');
   }
 
   function handlePairLedger() {
