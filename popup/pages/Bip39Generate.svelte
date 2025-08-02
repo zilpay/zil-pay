@@ -15,7 +15,6 @@
   let wordList = $state([]);
   let phrase: string[] = $state([]);
   let hasBackup = $state(false);
-  let isLoading = $state(false);
 
   const languageOptions = [
     { code: 'en', label: 'English' },
@@ -49,14 +48,11 @@
     if (!wordList.length) return;
     
     try {
-      isLoading = true;
       const raw = await generateBip39Words(wordCount, wordList);
       phrase = raw.split(' ');
       hasBackup = false;
     } catch (error) {
       console.error('Error generating words:', error);
-    } finally {
-      isLoading = false;
     }
   }
 
@@ -117,7 +113,7 @@
           <WordCountSelector bind:selected={wordCount} onSelect={handleCountChange} />
         </div>
         
-        <div class="control-group">
+        <div class="control-group centered">
           <Dropdown 
             options={languageOptions}
             bind:selected={selectedLang} 
@@ -131,12 +127,7 @@
       <div class="phrase-section">
         <h3 class="section-title">{$_('generateWallet.bip39.phrase')}</h3>
         <div class="phrase-container">
-          {#if isLoading}
-            <div class="loading-state">
-              <span class="loading-spinner"></span>
-              <span>{$_('generateWallet.bip39.generating')}</span>
-            </div>
-          {:else if phrase.length > 0}
+          {#if phrase.length > 0}
             <div class="phrase-grid">
               {#each phrase as word, i}
                 <MnemonicWord index={i + 1} {word} />
@@ -165,7 +156,7 @@
 
       <Button 
         onclick={handleNext} 
-        disabled={!hasBackup || phrase.length === 0 || isLoading}
+        disabled={!hasBackup || phrase.length === 0}
         width="100%"
       >
         {$_('generateWallet.bip39.next')}
@@ -212,13 +203,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
 
-  .control-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
+    &.centered {
+      align-items: center;
+    }
   }
 
   .phrase-section,
@@ -253,7 +241,6 @@
     max-width: 100%;
   }
 
-  .loading-state,
   .empty-state {
     display: flex;
     flex-direction: column;
@@ -261,20 +248,6 @@
     gap: 12px;
     color: var(--text-secondary);
     font-size: 14px;
-  }
-
-  .loading-spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid color-mix(in srgb, var(--primary-purple) 30%, transparent);
-    border-top: 2px solid var(--primary-purple);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
   }
 
   .checkbox-label {
