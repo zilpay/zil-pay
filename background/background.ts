@@ -16,6 +16,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.SET_GLOBAL_STATE:
         core.wallet.setGlobalState(msg.payload, sendResponse);
         return true;
+      case MTypePopup.GEN_BIP39:
+        core.wallet.genBip39Words(msg.payload.count, msg.payload.wordList, sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;

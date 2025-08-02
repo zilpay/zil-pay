@@ -186,7 +186,6 @@ describe("bip39", () => {
       const generatedSeed = await Bip39.mnemonicToSeed(
         mnemonic,
         "TREZOR",
-        WORD_LIST,
       );
       expect(generatedSeed).toEqual(seedBytes);
 
@@ -245,8 +244,8 @@ describe("bip39_checksum", () => {
     );
     const mnemonic = await Bip39.entropyToMnemonic(entropy, WORD_LIST);
 
-    const ENT = entropy.length * 8; // Длина энтропии в битах
-    const CS = ENT / 32; // Длина контрольной суммы
+    const ENT = entropy.length * 8; 
+    const CS = ENT / 32; 
 
     const hash = await sha256(entropy);
     const computedChecksum = hash[0] >> (8 - CS);

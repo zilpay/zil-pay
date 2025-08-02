@@ -4,18 +4,35 @@
 	import Button from '../components/Button.svelte';
 	import { _ } from 'popup/i18n';
 	import { push, pop } from '../router/navigation';
-	import CopyIcon from '../components/icons/BincodeIcon.svelte';
-	import CheckIcon from '../components/icons/QRCodeIcon.svelte';
 	import ReloadButton from '../components/ReloadButton.svelte';
+	import { generateBip39Words } from 'popup/background/wallet';
+	import { locale } from 'popup/i18n';
 
 	let wordCount = 12;
+	let wordList: string[] = [];
 	let phrase: string[] = [];
 	let hasBackup = false;
 	let copied = false;
 
+	async function loadWordlist() {
+		let lang = ($locale ?? 'en').toLowerCase().split('-')[0];
+		let url = `/bip39/${lang}.json`;
+		let res = await fetch(url);
+		if (!res.ok) {
+			url = `/bip39/en.json`;
+			res = await fetch(url);
+		}
+		if (!res.ok) {
+			console.error('Failed to load wordlist');
+			wordList = [];
+			return;
+		}
+		wordList = await res.json();
+	}
+
 	async function generateWords() {
-		const raw = await genMnemonic(wordCount);
-		phrase = raw.trim().split(/\s+/);
+		const raw = await generateBip39Words(wordCount, wordList);
+		phrase = raw.split(" ");
 		hasBackup = false;
 		copied = false;
 	}
@@ -43,14 +60,8 @@
 		}
 	}
 
-	function genMnemonic(count: number): Promise<string> {
-		// Replace this with actual WASM or native API
-		const mnemonics = Array.from({ length: count }, (_, i) => `word${i + 1}`);
-		return Promise.resolve(mnemonics.join(' '));
-	}
-
 	$effect(() => {
-		generateWords();
+		loadWordlist().then(() => generateWords());
 	});
 </script>
 
@@ -79,13 +90,6 @@
 				<input type="checkbox" bind:checked={hasBackup} />
 				<span>{$_('generateWallet.bip39.checkbox')}</span>
 			</label>
-			<button class="copy-btn" on:click={handleCopy}>
-				{#if copied}
-					<CheckIcon width="20" height="20" />
-				{:else}
-					<CopyIcon width="20" height="20" />
-				{/if}
-			</button>
 		</div>
 
 		<Button on:click={handleNext} disabled={!hasBackup}>

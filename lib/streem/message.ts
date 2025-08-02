@@ -9,7 +9,7 @@ export interface ReqBody<T = unknown> {
 }
 
 export class Message<T = unknown> {
-    constructor(public readonly body: ReqBody<T>) {}
+    constructor(public readonly body: ReqBody<unknown>) {}
 
     static signal(type: string): Message<object> {
         return new Message({ type });

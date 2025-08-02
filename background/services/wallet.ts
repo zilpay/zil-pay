@@ -6,6 +6,8 @@ import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/walle
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";
+import { randomBytes } from "crypto/random";
+import { Bip39 } from "crypto/bip39";
 
 export class WalletService {
   #state: BackgroundState;
@@ -15,6 +17,23 @@ export class WalletService {
   }
 
   async addLedgerWallet() {}
+
+  async genBip39Words(count: number, wordList: string[], sendResponse: StreamResponse) {
+    try {
+      const entropyBits = (count * 11) - Math.floor(count / 3);
+      const entropyBytes = entropyBits / 8;
+      const entropy = randomBytes(entropyBytes);
+      const mnemonic = await Bip39.entropyToMnemonic(entropy, wordList);
+
+      sendResponse({
+        resolve: mnemonic.phrase
+      });
+    } catch(err) {
+      sendResponse({
+        reject: String(err)
+      });
+    }
+  }
 
   async getGlobalState(sendResponse: StreamResponse) {
     sendResponse({

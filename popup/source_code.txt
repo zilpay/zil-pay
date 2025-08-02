@@ -1,0 +1,2336 @@
+Project Path: popup
+
+Source Tree:
+
+```txt
+popup
+├── App.svelte
+├── Router.svelte
+├── background
+│   └── wallet.ts
+├── components
+│   ├── Button.svelte
+│   ├── LanguageSelectorButton.svelte
+│   ├── NavBar.svelte
+│   ├── ReloadButton.svelte
+│   ├── SvgLoad.svelte
+│   ├── WalletOption.svelte
+│   ├── WordCountSelector.svelte
+│   └── icons
+│       ├── Appearance.svelte
+│       ├── BincodeIcon.svelte
+│       ├── Bip39Icon.svelte
+│       ├── Close.svelte
+│       ├── GridIcon.svelte
+│       ├── Language.svelte
+│       ├── LockIcon.svelte
+│       ├── PuzzleIcon.svelte
+│       ├── QRCodeIcon.svelte
+│       └── ReloadIcon.svelte
+├── i18n.ts
+├── index.ts
+├── main.ts
+├── mixins
+│   └── theme.ts
+├── pages
+│   ├── Bip39Generate.svelte
+│   ├── ConfirmPopup.svelte
+│   ├── Connect.svelte
+│   ├── GenerateWallet.svelte
+│   ├── Home.svelte
+│   ├── Locale.svelte
+│   ├── Lock.svelte
+│   ├── NewWalletOptions.svelte
+│   ├── NotFoundPage.svelte
+│   ├── RestoreWallet.svelte
+│   ├── SignMessagePopup.svelte
+│   └── Start.svelte
+├── router
+│   ├── guard.ts
+│   ├── index.ts
+│   └── navigation.ts
+├── store
+│   ├── global.ts
+│   └── route.ts
+└── styles
+    ├── global.scss
+    ├── mixins.scss
+    └── theme.scss
+
+```
+
+`popup/App.svelte`:
+
+```svelte
+<script lang="ts">
+	import { get } from 'svelte/store';
+	import { setupI18n } from 'popup/i18n';
+	import globlSettingsStore from 'popup/store/global';
+	import { Locales } from 'config/locale';
+	import Router from './Router.svelte';
+
+	let loading = $state(true);
+
+	$effect(() => {
+		const initialize = async () => {
+			const { locale } = get<any>(globlSettingsStore);
+			try {
+				if (locale === Locales.Auto) {
+					await setupI18n();
+				} else {
+					await setupI18n({
+						withLocale: locale,
+					});
+				}
+			} catch (err) {
+				console.error(err);
+				await setupI18n({
+					withLocale: Locales.EN,
+				});
+			} finally {
+				loading = false;
+			}
+		};
+
+		initialize();
+	});
+</script>
+
+{#if !loading}
+	<Router />
+{/if}
+
+
+```
+
+`popup/Router.svelte`:
+
+```svelte
+<script lang="ts">
+	import { matchRoute, notFoundRoute, parseUrlParams, routes } from './router';
+	import { RouteGuard } from './router/guard';
+	import { currentParams, currentRoute } from './store/route';
+
+	export function findRouteByHash(hash: string) {
+		const path = hash.replace('#', '').replace(/^\//, '/');
+		const found = matchRoute(path, routes);
+
+		if (found) {
+			return found;
+		}
+
+		return notFoundRoute;
+	}
+
+	function handleRouteChange() {
+		const path = window.location.hash.slice(1) || '/';
+		const route = findRouteByHash(path);
+		const params = parseUrlParams(route.path, path);
+
+		currentParams.set(params);
+
+		if (route) {
+			const guardedRoute = RouteGuard.checkRoute(route);
+			currentRoute.set(guardedRoute);
+		} else {
+			currentRoute.set(notFoundRoute);
+		}
+	}
+
+	$effect(() => {
+		handleRouteChange();
+		window.addEventListener('hashchange', handleRouteChange);
+		return () => {
+			window.removeEventListener('hashchange', handleRouteChange);
+		};
+	});
+
+	const Component = $derived($currentRoute?.component);
+</script>
+
+{#if Component}
+	<Component {...$currentParams} />
+{/if}
+
+```
+
+`popup/background/wallet.ts`:
+
+```ts
+import type { BackgroundState } from "background/storage";
+
+import { get } from "svelte/store";
+import { MTypePopup } from "config/stream";
+import { Themes } from "config/theme";
+import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
+import { Message } from "lib/streem/message";
+import { themeDetect } from "popup/mixins/theme";
+import globalStore from "popup/store/global";
+ 
+export async function getGlobalState() {
+  const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  if (resolve.appearances == Themes.System) {
+    resolve.appearances = themeDetect();
+  }
+
+  document.body.setAttribute("theme", resolve.appearances);
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
+export async function setGlobalState() {
+  const globalState = get(globalStore);
+
+   await new Message({
+    type: MTypePopup.SET_GLOBAL_STATE,
+    payload: globalState,
+  }).send();
+}
+
+
+```
+
+`popup/components/Button.svelte`:
+
+```svelte
+<script lang="ts">
+  export let width: string = '100%';
+  export let height: number = 56;
+</script>
+
+<button
+  {...$$restProps}
+  style:width={width}
+  style:height={`${height}px`}
+>
+  <span class="text">
+    <slot />
+  </span>
+</button>
+
+<style lang="scss">
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 30px;
+    padding: 0 16px;
+    background-color: var(--button-background);
+    transform-origin: center;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: scale(1);
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.9);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    background-color: color-mix(in srgb, var(--button-background) 50%, transparent);
+  }
+
+  .text {
+    font-weight: bold;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--button-text);
+  }
+
+  button:disabled .text {
+    color: color-mix(in srgb, var(--button-text) 50%, transparent);
+  }
+
+  .secondary {
+      background-color: var(--secondary-purple);
+  }
+</style>
+
+```
+
+`popup/components/LanguageSelectorButton.svelte`:
+
+```svelte
+<script lang="ts">
+	import { push } from '../router/navigation';
+	import LanguageIcon from '../components/icons/Language.svelte';
+
+	function openLocalePage() {
+		push('/locale');
+	}
+</script>
+
+<button class="language-selector" on:click={openLocalePage}>
+	<LanguageIcon width={28} height={28} />
+</button>
+
+<style lang="scss">
+	.language-selector {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		border: 2px solid var(--modal-border);
+		background: rgba(255, 255, 255, 0.05);
+		backdrop-filter: blur(10px);
+		cursor: pointer;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.2);
+			box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+		}
+	}
+</style>
+
+```
+
+`popup/components/NavBar.svelte`:
+
+```svelte
+<script lang="ts">
+	let {
+		title = '',
+		onBack = () => window.history.back(),
+		onRight = null,
+		rightIcon = null,
+		left = null
+	} = $props();
+</script>
+
+<nav class="nav-bar">
+	<button
+		class="nav-left-button"
+		type="button"
+		onclick={() => onBack()}
+		aria-label="Back"
+	>
+		{#if left}
+			{@render left()}
+		{:else}
+			<span class="arrow">←</span>
+		{/if}
+	</button>
+	<h1 class="nav-title">{title}</h1>
+	{#if rightIcon}
+		<button
+			class="nav-right-button"
+			type="button"
+			onclick={() => onRight()}
+			aria-label="Action"
+		>
+			{#if typeof rightIcon === 'string'}
+				<img src={rightIcon} alt="" />
+			{:else}
+				{@const Icon = rightIcon}
+				<Icon />
+			{/if}
+		</button>
+	{:else}
+		<div class="nav-right-placeholder"></div>
+	{/if}
+</nav>
+
+<style lang="scss">
+	.nav-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 20px 0;
+		box-sizing: border-box;
+	}
+
+	.nav-title {
+		font-size: 18px;
+		font-weight: bold;
+		flex: 1;
+		text-align: center;
+		color: var(--text-primary);
+		margin: 0;
+	}
+
+	.nav-left-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: var(--text-primary);
+		font-weight: bold;
+		font-size: 20px;
+		padding: 0;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.arrow {
+		font-size: 20px;
+	}
+
+	.nav-right-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		color: var(--text-primary);
+	}
+
+	.nav-right-placeholder {
+		width: 36px;
+		height: 36px;
+	}
+</style>
+
+```
+
+`popup/components/ReloadButton.svelte`:
+
+```svelte
+<script lang="ts">
+  import RefreshIcon from './icons/ReloadIcon.svelte';
+
+  export let onClick: () => void = () => {};
+  export let ariaLabel = 'Reload';
+  export let size: number = 24;
+</script>
+
+<button class="reload-button" on:click={onClick} aria-label={ariaLabel}>
+  <RefreshIcon class="hover-icon" width={size} height={size} />
+</button>
+
+<style lang="scss">
+  .reload-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reload-button:hover :global(.hover-icon path) {
+    fill: var(--secondary-purple);
+  }
+</style>
+
+```
+
+`popup/components/SvgLoad.svelte`:
+
+```svelte
+<script>
+  import { onMount } from 'svelte';
+
+  let { src, ...rest } = $props();
+  let content = $state('');
+
+  onMount(async () => {
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error('Failed to fetch svg');
+      content = await response.text();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+</script>
+
+{@html content ? `<svg ${Object.entries(rest).map(([k, v]) => `${k}="${v}"`).join(' ')}>${content.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '')}</svg>` : ''}
+
+```
+
+`popup/components/WalletOption.svelte`:
+
+```svelte
+<script lang="ts">
+  let {
+    title,
+    description,
+    icon,
+    onclick = () => {}
+  } = $props();
+</script>
+
+<button class="wallet-option" onclick={() => onclick()}>
+  <div class="option-icon">
+    {#if typeof icon === 'string'}
+      <span class="icon-symbol">{icon}</span>
+    {:else}
+      {@const Component = icon}
+      <Component />
+    {/if}
+  </div>
+  <div class="option-content">
+    <h3 class="option-title">{title}</h3>
+    <p class="option-description">{description}</p>
+  </div>
+  <div class="option-arrow">
+    <span>›</span>
+  </div>
+</button>
+
+<style lang="scss">
+  .wallet-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    background-color: var(--card-background);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    text-align: left;
+    min-height: 80px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
+      background-color: color-mix(in srgb, var(--card-background) 95%, var(--primary-purple));
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-purple);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .option-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-right: 16px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
+    border-radius: 12px;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-purple) 25%, transparent);
+  }
+
+  .icon-symbol {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-right: 12px;
+  }
+
+  .option-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .option-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+
+  .option-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+
+    span {
+      font-size: 20px;
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+  }
+
+  .wallet-option:hover .option-arrow span {
+    color: var(--primary-purple);
+    opacity: 1;
+  }
+</style>
+
+```
+
+`popup/components/WordCountSelector.svelte`:
+
+```svelte
+<script lang="ts">
+  type Props = {
+    wordCounts?: number[];
+    selected?: number;
+    onSelect?: (val: number) => void;
+  };
+
+  let {
+    wordCounts = [12, 15, 18, 21, 24],
+    selected,
+    onSelect = () => {}
+  }: Props = $props();
+  selected = selected ?? wordCounts[0];
+
+  const countIndex = $derived(wordCounts.indexOf(selected));
+</script>
+
+<div class="selector-wrapper">
+  <div
+    class="background-highlight"
+    style="--index: {countIndex}; --count: {wordCounts.length};"
+  ></div>
+
+  <div class="options">
+    {#each wordCounts as count}
+      <button
+        class:selected={count === selected}
+        onclick={() => onSelect(count)}
+      >
+        {count}
+      </button>
+    {/each}
+  </div>
+</div>
+
+<style lang="scss">
+  .selector-wrapper {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    padding: 0 4px;
+    background-color: var(--card-background);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .background-highlight {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc(100% / var(--count));
+    left: calc((100% / var(--count)) * var(--index));
+    background-color: var(--primary-purple);
+    border-radius: 8px;
+    transition: left 0.3s ease-in-out;
+    z-index: 0;
+  }
+
+  .options {
+    position: relative;
+    display: flex;
+    height: 100%;
+    z-index: 1;
+
+    button {
+      flex: 1;
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 1;
+      font-weight: normal;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+
+      &.selected {
+        color: white;
+        font-weight: bold;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+</style>
+
+```
+
+`popup/components/icons/Appearance.svelte`:
+
+```svelte
+<svg {...$$restProps} viewBox="0 0 800 800" fill="none">
+  <g clip-path="url(#clip0_75_500)">
+    <path
+      d="M400 0C620.915 0 800 179.086 800 400C800 407.979 799.765 415.904 799.305 423.767C796.64 469.298 755.475 500.195 709.87 500.195H550.53C461.438 500.195 416.821 607.91 479.817 670.905C524.115 715.2 509.9 789.795 447.694 797.185C432.055 799.045 416.139 800 400 800C179.086 800 0 620.915 0 400C0 179.086 179.086 0 400 0ZM400 100C234.315 100 100 234.315 100 400C100 557.69 221.665 686.965 376.246 699.075C302.95 572.53 391.161 400.196 550.53 400.196H700C700 234.315 565.685 100 400 100ZM250 400C277.614 400 300 422.385 300 450C300 477.614 277.614 500 250 500C222.386 500 200 477.614 200 450C200 422.385 222.386 400 250 400ZM300 250C327.614 250 350 272.386 350 300C350 327.614 327.614 350 300 350C272.386 350 250 327.614 250 300C250 272.386 272.386 250 300 250ZM450 200C477.614 200 500 222.386 500 250C500 277.614 477.614 300 450 300C422.385 300 400 277.614 400 250C400 222.386 422.385 200 450 200Z"
+      fill="var(--text-primary)"
+    />
+  </g>
+  <defs>
+    <clipPath id="clip0_75_500">
+    <rect width="800" height="800" fill="var(--background-color)"/>
+    </clipPath>
+  </defs>
+</svg>
+
+```
+
+`popup/components/icons/BincodeIcon.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  width="1024"
+  height="1024"
+  viewBox="0 0 1024 1024"
+>
+  <path fill="var(--text-primary)" d="M688 312v-48c0-4.4-3.6-8-8-8H296c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h384c4.4 0 8-3.6 8-8m-392 88c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm376 116c-119.3 0-216 96.7-216 216s96.7 216 216 216s216-96.7 216-216s-96.7-216-216-216m107.5 323.5C750.8 868.2 712.6 884 672 884s-78.8-15.8-107.5-44.5C535.8 810.8 520 772.6 520 732s15.8-78.8 44.5-107.5C593.2 595.8 631.4 580 672 580s78.8 15.8 107.5 44.5C808.2 653.2 824 691.4 824 732s-15.8 78.8-44.5 107.5M761 656h-44.3c-2.6 0-5 1.2-6.5 3.3l-63.5 87.8l-23.1-31.9a7.92 7.92 0 0 0-6.5-3.3H573c-6.5 0-10.3 7.4-6.5 12.7l73.8 102.1c3.2 4.4 9.7 4.4 12.9 0l114.2-158c3.9-5.3.1-12.7-6.4-12.7M440 852H208V148h560v344c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V108c0-17.7-14.3-32-32-32H168c-17.7 0-32 14.3-32 32v784c0 17.7 14.3 32 32 32h272c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8"/>
+</svg>
+
+
+```
+
+`popup/components/icons/Bip39Icon.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  width="36"
+  height="36"
+  viewBox="0 0 800 800"
+  fill="none"
+>
+  <path d="M606 267.978L621.45 252.53C647.043 226.935 688.543 226.935 714.137 252.53C739.733 278.125 739.733 319.623 714.137 345.217L698.69 360.667M606 267.978C606 267.978 607.933 300.805 636.897 329.77C665.863 358.733 698.69 360.667 698.69 360.667M606 267.978L463.98 409.997C454.36 419.617 449.55 424.427 445.413 429.73C440.537 435.987 436.353 442.757 432.94 449.917C430.047 455.99 427.893 462.44 423.593 475.347L409.82 516.667L405.363 530.033M698.69 360.667L556.67 502.687C547.05 512.307 542.24 517.117 536.937 521.253C530.68 526.13 523.91 530.313 516.75 533.727C510.677 536.62 504.227 538.773 491.32 543.073L450 556.847L436.633 561.303M405.363 530.033L400.907 543.403C398.79 549.753 400.443 556.757 405.177 561.49C409.91 566.223 416.913 567.877 423.263 565.76L436.633 561.303M405.363 530.033L436.633 561.303" stroke="var(--text-primary)" stroke-width="50"/>
+  <path d="M266.667 433.333H350" stroke="var(--text-primary)" stroke-width="50" stroke-linecap="round"/>
+  <path d="M266.667 300H483.333" stroke="var(--text-primary)" stroke-width="50" stroke-linecap="round"/>
+  <path d="M266.667 566.667H316.667" stroke="var(--text-primary)" stroke-width="50" stroke-linecap="round"/>
+  <path d="M100 466.667V333.333C100 207.625 100 144.772 139.052 105.719C178.105 66.6667 240.959 66.6667 366.667 66.6667H433.333C559.04 66.6667 621.897 66.6667 660.947 105.719M700 466.667C700 592.373 700 655.23 660.947 694.28M660.947 694.28C621.897 733.333 559.04 733.333 433.333 733.333H366.667C240.959 733.333 178.105 733.333 139.052 694.28M660.947 694.28C692.383 662.843 698.513 615.987 699.71 533.333" stroke="var(--text-primary)" stroke-width="50" stroke-linecap="round"/>
+</svg>
+
+
+```
+
+`popup/components/icons/Close.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  viewBox="0 0 36 36"
+  fill="none"
+>
+  <rect
+    width={$$restProps.width}
+    height={$$restProps.height}
+    rx="13"
+  />
+  <line
+    x1="11.8195"
+    y1="11.6689"
+    x2="24.5096"
+    y2="24.3591"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <line
+    x1="1"
+    y1="-1"
+    x2="18.9466"
+    y2="-1"
+    transform="matrix(-0.707107 0.707107 0.707107 0.707107 25.5274 11.5508)"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+</svg>
+
+<style lang="scss">
+  svg {
+    cursor: pointer;
+    rect {
+      fill: var(--card-background);
+      transition: fill 200ms linear;
+    }
+    line {
+      stroke: var(--primary-purple);
+    }
+
+    &:hover {
+      rect {
+        fill: var(--primary-purple);
+      }
+      line {
+        stroke: var(--card-background);
+      }
+    }
+  }
+</style>
+
+```
+
+`popup/components/icons/GridIcon.svelte`:
+
+```svelte
+<svg {...$$restProps} viewBox="0 0 24 24" fill="none">
+  <path
+    d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"
+    fill="white"
+  />
+</svg>
+
+```
+
+`popup/components/icons/Language.svelte`:
+
+```svelte
+<svg {...$$restProps} viewBox="0 0 800 800" fill="none">
+  <path
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    d="M489.737 166.667H310.269C271.972 166.878 235.327 182.295 208.397 209.525C181.466 236.756 166.456 273.569 166.669 311.866V488.133C166.456 526.43 181.466 563.243 208.397 590.473C235.327 617.703 271.972 633.123 310.269 633.333H489.737C528.034 633.123 564.677 617.703 591.607 590.473C618.54 563.243 633.547 526.43 633.337 488.133V311.866C633.547 273.569 618.54 236.756 591.607 209.525C564.677 182.295 528.034 166.878 489.737 166.667Z"
+    stroke="var(--text-primary)"
+    stroke-width="50"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M266.671 300C252.864 300 241.671 311.193 241.671 325C241.671 338.807 252.864 350 266.671 350V300ZM400.004 350C413.81 350 425.004 338.807 425.004 325C425.004 311.193 413.81 300 400.004 300V350ZM375.004 325C375.004 338.807 386.197 350 400.004 350C413.81 350 425.004 338.807 425.004 325H375.004ZM425.004 266.667C425.004 252.86 413.81 241.667 400.004 241.667C386.197 241.667 375.004 252.86 375.004 266.667H425.004ZM400.004 300C386.197 300 375.004 311.193 375.004 325C375.004 338.807 386.197 350 400.004 350V300ZM516.67 350C530.477 350 541.67 338.807 541.67 325C541.67 311.193 530.477 300 516.67 300V350ZM516.67 300C502.864 300 491.67 311.193 491.67 325C491.67 338.807 502.864 350 516.67 350V300ZM533.337 350C547.144 350 558.337 338.807 558.337 325C558.337 311.193 547.144 300 533.337 300V350ZM537.127 339.37C545.064 328.074 542.34 312.481 531.044 304.543C519.744 296.606 504.154 299.33 496.214 310.628L537.127 339.37ZM375.79 442.61C365.264 451.547 363.977 467.323 372.914 477.846C381.85 488.373 397.627 489.66 408.15 480.723L375.79 442.61ZM309.991 496.676C298.951 504.966 296.723 520.64 305.014 531.68C313.306 542.72 328.977 544.95 340.017 536.657L309.991 496.676ZM408.564 480.233C418.89 471.07 419.834 455.27 410.67 444.943C401.51 434.613 385.707 433.67 375.38 442.833L408.564 480.233ZM372.304 476.97C380.83 487.83 396.544 489.723 407.407 481.2C418.267 472.673 420.16 456.96 411.637 446.097L372.304 476.97ZM372.867 381.557C367.284 368.927 352.52 363.22 339.894 368.803C327.266 374.387 321.556 389.15 327.14 401.776L372.867 381.557ZM412.03 446.746C403.79 435.666 388.13 433.367 377.05 441.607C365.974 449.847 363.67 465.506 371.91 476.586L412.03 446.746ZM463.177 555.36C475.34 561.89 490.497 557.326 497.03 545.16C503.56 532.996 498.997 517.84 486.834 511.306L463.177 555.36ZM266.671 350H400.004V300H266.671V350ZM425.004 325V266.667H375.004V325H425.004ZM400.004 350H516.67V300H400.004V350ZM516.67 350H533.337V300H516.67V350ZM496.214 310.628C461.84 359.556 421.374 403.907 375.79 442.61L408.15 480.723C456.97 439.273 500.31 391.773 537.127 339.37L496.214 310.628ZM340.017 536.657C357.044 523.87 381.77 504.003 408.564 480.233L375.38 442.833C349.57 465.73 325.898 484.73 309.991 496.676L340.017 536.657ZM411.637 446.097C396.08 426.28 383.057 404.597 372.867 381.557L327.14 401.776C339.01 428.62 354.184 453.88 372.304 476.97L411.637 446.097ZM371.91 476.586C396.184 509.223 427.344 536.117 463.177 555.36L486.834 511.306C457.464 495.536 431.927 473.493 412.03 446.746L371.91 476.586Z"
+    fill="var(--text-primary)"
+  />
+</svg>
+
+```
+
+`popup/components/icons/LockIcon.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  width="35"
+  height="35"
+  viewBox="0 0 800 800"
+  fill="none"
+>
+  <path d="M389.733 334.6C383.533 331.967 376.333 333.433 371.566 338.2L338.233 371.533C331.733 378.033 331.733 388.6 338.233 395.1C344.733 401.6 355.3 401.6 361.8 395.1L366.667 390.233V450C366.667 459.2 374.134 466.667 383.334 466.667C392.534 466.667 400 459.2 400.033 450V350C400.033 343.267 395.967 337.167 389.733 334.6Z" fill="var(--text-primary)"/>
+  <path d="M489.733 334.6C483.566 331.967 476.333 333.433 471.566 338.2L438.233 371.533C431.733 378.033 431.733 388.6 438.233 395.1C444.733 401.6 455.3 401.6 461.8 395.1L466.667 390.233V450C466.667 459.2 474.134 466.667 483.334 466.667C492.534 466.667 500 459.2 500.033 450V350C500.033 343.267 495.967 337.167 489.733 334.6Z" fill="var(--text-primary)"/>
+  <path d="M589.733 334.6C583.533 331.967 576.366 333.433 571.566 338.2L538.233 371.533C531.733 378.033 531.733 388.6 538.233 395.1C544.733 401.6 555.3 401.6 561.8 395.1L566.667 390.233V450C566.667 459.2 574.134 466.667 583.334 466.667C592.534 466.667 600.002 459.2 600.034 450V350C600.033 343.267 595.967 337.167 589.733 334.6Z" fill="var(--text-primary)"/>
+  <path d="M283.333 333.333H216.666C207.466 333.333 199.998 340.8 199.998 350V450C199.998 459.2 207.466 466.667 216.666 466.667H283.333C292.533 466.667 300 459.2 300 450V350C300 340.8 292.533 333.333 283.333 333.333ZM266.667 433.333H233.334V366.666H266.667V433.333Z" fill="var(--text-primary)"/>
+  <path d="M489.733 534.6C483.566 532 476.333 533.433 471.566 538.2L438.233 571.533C431.733 578.033 431.733 588.6 438.233 595.1C444.733 601.6 455.3 601.6 461.8 595.1L466.667 590.233V650C466.667 659.2 474.134 666.667 483.334 666.667C492.534 666.667 500 659.2 500.033 650V550C500.033 543.267 495.967 537.167 489.733 534.6Z" fill="var(--text-primary)"/>
+  <path d="M589.733 534.6C583.533 532 576.366 533.433 571.566 538.2L538.233 571.533C531.733 578.033 531.733 588.6 538.233 595.1C544.733 601.6 555.3 601.6 561.8 595.1L566.667 590.233V650C566.667 659.2 574.134 666.667 583.334 666.667C592.534 666.667 600.002 659.2 600.034 650V550C600.033 543.267 595.967 537.167 589.733 534.6Z" fill="var(--text-primary)"/>
+  <path d="M256.4 534.6C250.2 532 243 533.433 238.233 538.2L204.9 571.533C198.4 578.033 198.4 588.6 204.9 595.1C211.4 601.6 221.967 601.6 228.467 595.1L233.334 590.233V650C233.334 659.2 240.802 666.667 250.002 666.667C259.202 666.667 266.669 659.2 266.702 650V550C266.7 543.267 262.633 537.167 256.4 534.6Z" fill="var(--text-primary)"/>
+  <path d="M383.333 533.333H316.666C307.466 533.333 299.998 540.8 299.998 550V650C299.998 659.2 307.466 666.667 316.666 666.667H383.333C392.533 666.667 400 659.2 400 650V550C400 540.8 392.533 533.333 383.333 533.333ZM366.667 633.333H333.334V566.666H366.667V633.333Z" fill="var(--text-primary)"/>
+  <path d="M683.333 0H316.667C314.434 0 312.234 0.467188 310.2 1.3C309.567 1.56719 309.1 2.06719 308.533 2.43281C307.266 3.16563 305.933 3.83281 304.866 4.86563L104.866 204.866C104.098 205.633 103.666 206.666 103.066 207.566C102.466 208.466 101.698 209.233 101.298 210.233C100.466 212.266 99.9984 214.433 99.9984 216.666V783.333C100 792.533 107.467 800 116.667 800H683.334C692.534 800 700.002 792.533 700.002 783.333V16.6672C700 7.46719 692.533 0 683.333 0ZM300 56.9V200H156.9L300 56.9ZM666.667 766.667H133.333V233.333H316.666C325.866 233.333 333.333 225.866 333.333 216.666V33.3328H666.666V766.667H666.667Z" fill="var(--text-primary)"/>
+</svg>
+
+
+```
+
+`popup/components/icons/PuzzleIcon.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  width="36"
+  height="36"
+  viewBox="0 0 800 800"
+  fill="none"
+>
+  <g clip-path="url(#clip0_5_61)">
+    <path d="M800 30.078C800 14.2968 787.195 1.51709 771.427 1.51709H482.603V116.598C489.769 112.601 498.017 110.336 506.792 110.336C534.328 110.336 556.666 132.659 556.666 160.216C556.666 187.745 534.341 210.081 506.792 210.081C498.017 210.081 489.769 207.803 482.603 203.833V318.901H597.684C593.702 326.067 591.422 334.314 591.422 343.083C591.422 370.637 613.747 392.962 641.302 392.962C668.844 392.962 691.167 370.637 691.167 343.083C691.167 334.314 688.889 326.067 684.919 318.901H800V30.078Z" fill="var(--text-primary)"/>
+    <path d="M671.275 430.265H526.284C521.206 430.265 516.509 432.95 513.939 437.303L514.08 437.062L513.914 437.33C512.603 439.558 511.941 442.076 511.941 444.584C511.941 446.976 512.552 449.394 513.748 451.559L522.888 468.015C524.936 471.719 525.941 475.614 525.955 479.864C525.942 486.431 523.422 492.489 518.789 497.148C514.131 501.781 508.061 504.301 501.505 504.326C494.938 504.3 488.867 501.781 484.195 497.148L484.214 497.175C479.567 492.49 477.055 486.42 477.042 479.866C477.055 475.626 478.059 471.72 480.102 468.005L489.247 451.561C490.45 449.395 491.055 446.992 491.055 444.586C491.055 442.078 490.392 439.559 489.061 437.305C486.484 432.94 481.787 430.267 476.717 430.267H368.23V372.167C387.836 371.861 406.355 364.136 420.227 350.237C434.43 336.072 442.297 317.07 442.283 297C442.295 276.903 434.423 257.901 420.227 243.748C406.366 229.848 387.842 222.136 368.23 221.831V127.212C368.223 119.297 361.808 112.881 353.892 112.881H53.9813C39.6 112.87 25.95 118.508 15.8063 128.676C5.73283 138.758 0.0125207 152.592 2.06969e-05 166.872V744.506C-0.0124793 758.875 5.63752 772.519 15.8063 782.675C25.8875 792.742 39.7016 798.469 53.9813 798.483H631.678C645.92 798.47 659.742 792.742 669.809 782.675C679.98 772.519 685.617 758.887 685.605 744.506V444.597C685.606 436.681 679.191 430.265 671.275 430.265ZM44.3281 166.872C44.3281 163.562 45.8688 161.311 47.1281 160.05C48.4328 158.751 50.6781 157.198 53.9813 157.198H323.898V272.203C323.898 274.978 325.369 277.536 327.755 278.948C328.977 279.661 330.344 280.019 331.719 280.019C333.03 280.019 334.334 279.7 335.519 279.039L351.969 269.9C356.608 267.328 361.661 266.017 366.981 266.017C375.247 266.017 383.03 269.237 388.878 275.08C394.733 280.947 397.953 288.736 397.953 296.997C397.953 305.256 394.733 313.034 388.891 318.887C383.03 324.742 375.247 327.962 366.981 327.962C361.655 327.962 356.608 326.651 351.975 324.08L335.513 314.94C334.336 314.28 333.025 313.961 331.72 313.961C330.345 313.961 328.977 314.317 327.756 315.044C325.37 316.444 323.9 319.001 323.9 321.776V436.781H252.689C252.83 435.011 252.898 433.244 252.898 431.5C252.898 413.109 245.739 395.837 232.752 382.869C219.777 369.873 202.505 362.722 184.114 362.722C165.73 362.722 148.459 369.875 135.489 382.856C122.489 395.825 115.33 413.109 115.336 431.487C115.336 433.244 115.405 435.001 115.545 436.783H44.3281V166.872ZM323.9 754.165H53.9813C50.6781 754.165 48.4328 752.612 47.1594 751.353C45.8688 750.055 44.3281 747.801 44.3281 744.506V474.57H159.327C162.095 474.57 164.659 473.106 166.066 470.726C167.472 468.333 167.511 465.38 166.163 462.962L157.031 446.506C154.453 441.859 153.148 436.808 153.142 431.5C153.148 423.239 156.377 415.451 162.205 409.595C168.077 403.755 175.861 400.52 184.114 400.52C192.367 400.52 200.152 403.755 206.005 409.583C211.853 415.45 215.08 423.239 215.086 431.486C215.08 436.819 213.767 441.872 211.216 446.492L202.064 462.948C200.714 465.38 200.755 468.333 202.161 470.712C203.567 473.105 206.133 474.569 208.9 474.569H323.898V545.803C322.128 545.664 320.367 545.6 318.623 545.6C300.227 545.6 282.955 552.753 269.998 565.734C256.992 578.716 249.839 595.987 249.852 614.365C249.839 632.744 256.992 650.028 269.988 662.997C282.956 675.992 300.228 683.144 318.625 683.144C320.381 683.144 322.144 683.08 323.9 682.94V754.165ZM641.288 744.506C641.288 747.801 639.736 750.042 638.462 751.328C637.164 752.614 634.923 754.167 631.628 754.167H361.713V639.162C361.713 636.387 360.25 633.83 357.856 632.43C356.634 631.703 355.266 631.348 353.892 631.348C352.588 631.348 351.277 631.667 350.098 632.328L333.623 641.467C328.997 644.037 323.95 645.348 318.623 645.348C310.37 645.348 302.586 642.117 296.733 636.286C290.884 630.431 287.658 622.642 287.652 614.381C287.658 606.109 290.886 598.333 296.727 592.478C302.577 586.636 310.358 583.403 318.625 583.39C323.914 583.39 328.966 584.701 333.625 587.272L350.094 596.423C351.278 597.086 352.581 597.405 353.894 597.405C355.267 597.405 356.636 597.047 357.858 596.336C360.244 594.923 361.714 592.364 361.714 589.589V474.572H432.93C432.791 476.341 432.72 478.111 432.72 479.866C432.714 498.231 439.867 515.503 452.855 528.484C465.836 541.492 483.114 548.645 501.498 548.645C519.883 548.645 537.155 541.492 550.138 528.498C563.131 515.53 570.272 498.258 570.272 479.867C570.272 478.111 570.208 476.355 570.069 474.573H641.291V744.506H641.288Z" fill="var(--text-primary)"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_5_61">
+      <rect width="800" height="800" fill="var(--text-primary)"/>
+    </clipPath>
+  </defs>
+</svg>
+
+
+```
+
+`popup/components/icons/QRCodeIcon.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+>
+  <g fill="none">
+    <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/>
+    <path fill="var(--text-primary)" d="M11 3a2 2 0 0 1 1.995 1.85L13 5v6a2 2 0 0 1-1.85 1.995L11 13H5a2 2 0 0 1-1.995-1.85L3 11V5a2 2 0 0 1 1.85-1.995L5 3zm0 2H5v6h6zM8.5 7a.5.5 0 0 1 .492.41L9 7.5v1a.5.5 0 0 1-.41.492L8.5 9h-1a.5.5 0 0 1-.492-.41L7 8.5v-1a.5.5 0 0 1 .41-.492L7.5 7zM21 5a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm-4 0h2v2h-2zM7 15a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2zm0 2H5v2h2zm14 0a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm-4 0h2v2h-2zm-2-5a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2h-4a1 1 0 0 1-1-1m-2 4a1 1 0 1 0-2 0v4a1 1 0 1 0 2 0z"/>
+  </g>
+</svg>
+
+```
+
+`popup/components/icons/ReloadIcon.svelte`:
+
+```svelte
+<svg
+  {...$$restProps}
+  viewBox="0 0 800 800"
+  fill="none"
+>
+  <path
+    d="M150.729 233.333H233.333C251.743 233.333 266.667 248.257 266.667 266.667C266.667 285.076 251.743 300 233.333 300H100C63.181 300 33.3334 270.152 33.3334 233.333V100C33.3334 81.5903 48.2574 66.6667 66.6667 66.6667C85.076 66.6667 100 81.5903 100 100V189.18C138.07 135.006 190.286 91.903 251.327 64.827C326.248 31.5947 410.143 24.4218 489.617 44.4533C569.09 64.4847 639.56 110.566 689.78 175.339C733.163 231.3 759.27 298.425 765.313 368.507C766.893 386.847 751.59 401.727 733.18 401.637C714.773 401.547 699.967 386.503 698.013 368.197C692.133 313.112 671.067 260.494 636.857 216.368C595.81 163.424 538.21 125.759 473.25 109.385C408.29 93.012 339.717 98.875 278.479 126.038C227.441 148.677 183.951 185.024 152.665 230.743C152.052 231.638 151.406 232.502 150.729 233.333Z"
+    fill="var(--text-primary)"
+  />
+  <path
+    d="M700 610.82C661.93 664.993 609.713 708.097 548.673 735.173C473.753 768.407 389.857 775.577 310.384 755.547C230.91 735.513 160.439 689.433 110.221 624.66C66.8354 568.7 40.7287 501.573 34.6881 431.493C33.107 413.153 48.4097 398.273 66.8187 398.363C85.2281 398.453 100.034 413.497 101.988 431.8C107.866 486.887 128.932 539.507 163.142 583.633C204.189 636.577 261.79 674.24 326.75 690.613C391.71 706.987 460.283 701.123 521.52 673.96C572.56 651.323 616.05 614.977 647.337 569.257C647.947 568.363 648.593 567.497 649.27 566.667H566.667C548.257 566.667 533.333 551.743 533.333 533.333C533.333 514.923 548.257 500 566.667 500H700C736.82 500 766.667 529.847 766.667 566.667V700C766.667 718.41 751.743 733.333 733.333 733.333C714.923 733.333 700 718.41 700 700V610.82Z"
+    fill="var(--text-primary)"
+  />
+</svg>
+
+
+```
+
+`popup/i18n.ts`:
+
+```ts
+import { derived } from "svelte/store";
+import { dictionary, locale, _, date, time, number } from "svelte-i18n";
+
+const MESSAGE_FILE_URL_TEMPLATE = "/lang/{locale}.json";
+
+let cachedLocale: string | string[];
+
+async function setupI18n({ withLocale: _locale } = { withLocale: "en" }) {
+  const messsagesFileUrl = MESSAGE_FILE_URL_TEMPLATE.replace(
+    "{locale}",
+    _locale,
+  );
+  const response = await fetch(messsagesFileUrl);
+  const messages = await response.json();
+  dictionary.set({ [_locale]: messages });
+  cachedLocale = _locale;
+  locale.set(_locale);
+}
+
+function formatDate(
+  date: string | number | Date,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  return new Intl.DateTimeFormat(cachedLocale, options).format(new Date(date));
+}
+
+const isLocaleLoaded = derived(
+  locale,
+  ($locale) => typeof $locale === "string",
+);
+const dir = derived(locale, ($locale) => ($locale === "en" ? "rtl" : "ltr"));
+
+export {
+  _,
+  locale,
+  dir,
+  setupI18n,
+  formatDate,
+  isLocaleLoaded,
+  date,
+  time,
+  number,
+};
+
+```
+
+`popup/main.ts`:
+
+```ts
+import { mount } from "svelte";
+import App from "./App.svelte";
+import { getGlobalState } from "./background/wallet";
+
+let app = {};
+
+getGlobalState().finally(() => {
+  app = mount(App, {
+    target: document.body,
+  });
+});
+
+export default app;
+
+```
+
+`popup/mixins/theme.ts`:
+
+```ts
+import { Themes } from "config/theme";
+
+export function themeDetect() {
+  const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+  const isDark = Boolean(darkThemeMq.matches);
+
+  return isDark ? Themes.Dark : Themes.Light;
+}
+
+```
+
+`popup/pages/Bip39Generate.svelte`:
+
+```svelte
+<script lang="ts">
+	import NavBar from '../components/NavBar.svelte';
+	import WordCountSelector from '../components/WordCountSelector.svelte';
+	import Button from '../components/Button.svelte';
+	import { _ } from 'popup/i18n';
+	import { push, pop } from '../router/navigation';
+	import CopyIcon from '../components/icons/BincodeIcon.svelte';
+	import CheckIcon from '../components/icons/QRCodeIcon.svelte';
+	import ReloadButton from '../components/ReloadButton.svelte';
+
+	let wordCount = 12;
+	let phrase: string[] = [];
+	let hasBackup = false;
+	let copied = false;
+
+	async function generateWords() {
+		const raw = await genMnemonic(wordCount);
+		phrase = raw.trim().split(/\s+/);
+		hasBackup = false;
+		copied = false;
+	}
+
+	async function handleCopy() {
+		await navigator.clipboard.writeText(phrase.join(' '));
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 2000);
+	}
+
+	function handleCountChange(count: number) {
+		wordCount = count;
+		generateWords();
+	}
+
+	function toggleCheckbox() {
+		hasBackup = !hasBackup;
+	}
+
+	function handleNext() {
+		if (hasBackup) {
+			push('/verify_bip39');
+		}
+	}
+
+	function genMnemonic(count: number): Promise<string> {
+		// Replace this with actual WASM or native API
+		const mnemonics = Array.from({ length: count }, (_, i) => `word${i + 1}`);
+		return Promise.resolve(mnemonics.join(' '));
+	}
+
+	$effect(() => {
+		generateWords();
+	});
+</script>
+
+<div class="bip39-page">
+	<NavBar
+		title={$_('generateWallet.bip39.title')}
+		onBack={pop}
+		rightIcon={ReloadButton}
+		onRight={generateWords}
+	/>
+
+	<div class="content">
+		<WordCountSelector selected={wordCount} onSelect={handleCountChange} />
+
+		<div class="phrase-list">
+			{#each phrase as word, i}
+				<div class="mnemonic-word">
+					<span class="index">{i + 1}.</span>
+					<span class="word">{word}</span>
+				</div>
+			{/each}
+		</div>
+
+		<div class="row">
+			<label class="checkbox-wrapper">
+				<input type="checkbox" bind:checked={hasBackup} />
+				<span>{$_('generateWallet.bip39.checkbox')}</span>
+			</label>
+			<button class="copy-btn" on:click={handleCopy}>
+				{#if copied}
+					<CheckIcon width="20" height="20" />
+				{:else}
+					<CopyIcon width="20" height="20" />
+				{/if}
+			</button>
+		</div>
+
+		<Button on:click={handleNext} disabled={!hasBackup}>
+			{$_('generateWallet.bip39.next')}
+		</Button>
+	</div>
+</div>
+
+<style lang="scss">
+	.bip39-page {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		background: var(--background-color);
+		padding: 0 20px;
+		box-sizing: border-box;
+		color: var(--text-primary);
+	}
+
+	.content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		overflow-y: auto;
+		padding-bottom: 20px;
+	}
+
+	.phrase-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 0;
+	}
+
+	.mnemonic-word {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 16px;
+		color: var(--text-secondary);
+		background: var(--card-background);
+		border-radius: 8px;
+		padding: 10px 12px;
+		opacity: 0.6;
+	}
+
+	.index {
+		font-weight: 500;
+		color: var(--text-secondary);
+	}
+
+	.word {
+		font-weight: bold;
+	}
+
+	.row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+
+	.checkbox-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		color: var(--text-secondary);
+
+		input[type='checkbox'] {
+			accent-color: var(--primary-purple);
+		}
+	}
+
+	.copy-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 8px;
+		border: none;
+		background: var(--card-background);
+		border-radius: 8px;
+		cursor: pointer;
+	}
+</style>
+
+```
+
+`popup/pages/GenerateWallet.svelte`:
+
+```svelte
+<script lang="ts">
+  import { _ } from '../i18n';
+  import { pop, push } from '../router/navigation';
+  import NavBar from '../components/NavBar.svelte';
+  import WalletOption from '../components/WalletOption.svelte';
+  import Bip39Icon from '../components/icons/Bip39Icon.svelte';
+  import GridIcon from '../components/icons/GridIcon.svelte';
+  import LockIcon from '../components/icons/LockIcon.svelte';
+
+  type GenerateOption = {
+    id: string;
+    titleKey: string;
+    descriptionKey: string;
+    icon: any;
+    action: () => void;
+  };
+
+  const generateOptions: GenerateOption[] = [
+    {
+      id: 'bip39',
+      titleKey: 'generateWallet.bip39.title',
+      descriptionKey: 'generateWallet.bip39.description',
+      icon: Bip39Icon,
+      action: () => handleBip39()
+    },
+    {
+      id: 'slip0039',
+      titleKey: 'generateWallet.slip0039.title',
+      descriptionKey: 'generateWallet.slip0039.description',
+      icon: GridIcon,
+      action: () => handleSlip0039()
+    },
+    {
+      id: 'private-key',
+      titleKey: 'generateWallet.privateKey.title',
+      descriptionKey: 'generateWallet.privateKey.description',
+      icon: LockIcon,
+      action: () => handlePrivateKey()
+    }
+  ];
+
+  function handleBip39() {
+    push('/generate-bip39');
+  }
+
+  function handleSlip0039() {
+    push('/generate-wallet/slip0039');
+  }
+
+  function handlePrivateKey() {
+    push('/generate-wallet/private-key');
+  }
+</script>
+
+<div class="generate-wallet">
+  <NavBar title={$_('generateWallet.title')} onBack={() => pop()} />
+  
+  <div class="options-container">
+    <div class="generate-options">
+      {#each generateOptions as option}
+        <WalletOption
+          title={$_(option.titleKey)}
+          description={$_(option.descriptionKey)}
+          icon={option.icon}
+          onclick={() => option.action()}
+        />
+      {/each}
+    </div>
+  </div>
+</div>
+
+<style lang="scss">
+  .generate-wallet {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--background-color);
+    padding: 0 20px 20px;
+    box-sizing: border-box;
+  }
+
+  .options-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .generate-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+</style>
+
+```
+
+`popup/pages/Home.svelte`:
+
+```svelte
+<script lang="ts">
+</script>
+
+<div class="home-container">
+  <h1>Welcome to the Wallet</h1>
+</div>
+
+<style lang="scss">
+</style>
+
+```
+
+`popup/pages/Locale.svelte`:
+
+```svelte
+<script lang="ts">
+    import { _ } from 'popup/i18n';
+    import { pop } from 'popup/router/navigation';
+    import globalStore from 'popup/store/global';
+    import { setGlobalState } from 'popup/background/wallet';
+    import { setupI18n } from 'popup/i18n';
+    import { Locales } from 'config/locale';
+    
+    import NavBar from '../components/NavBar.svelte';
+
+    type Language = {
+        code: Locales;
+        primaryName: string;
+        secondaryName: string;
+    };
+
+    const languages: Language[] = [
+        { code: Locales.Auto, primaryName: 'System', secondaryName: 'Auto-detect' },
+        { code: Locales.RU, primaryName: 'Russian', secondaryName: 'Русский' },
+        { code: Locales.EN, primaryName: 'English', secondaryName: 'English' },
+        { code: Locales.JA, primaryName: 'Japanese', secondaryName: '日本語' },
+        { code: Locales.ZH, primaryName: 'Chinese', secondaryName: '中文' }
+    ];
+
+    async function handleLanguageSelect(localeCode: Locales) {
+        if ($globalStore.locale === localeCode) return;
+        
+        globalStore.update(store => ({ ...store, locale: localeCode }));
+        await setGlobalState();
+
+        if (localeCode === Locales.Auto) {
+            await setupI18n();
+        } else {
+            await setupI18n({ withLocale: localeCode });
+        }
+        
+        globalStore.set({
+            ...$globalStore,
+            locale: localeCode,
+        });
+
+        await setGlobalState();
+    }
+</script>
+
+<div class="locale-page">
+    <NavBar title={$_('locale.title')} onClose={pop} />
+    <div class="language-container">
+        <div class="language-grid">
+            {#each languages as lang}
+                <button 
+                    class="language-card" 
+                    class:selected={$globalStore.locale === lang.code}
+                    onclick={() => handleLanguageSelect(lang.code)}
+                    aria-pressed={$globalStore.locale === lang.code}
+                >
+                    <div class="language-content">
+                        <div class="primary-name">{lang.primaryName}</div>
+                        <div class="secondary-name">{lang.secondaryName}</div>
+                    </div>
+                    <div class="selection-indicator"></div>
+                </button>
+            {/each}
+        </div>
+    </div>
+</div>
+
+<style lang="scss">
+    .locale-page {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: var(--background-color);
+        padding: 0 20px 20px;
+        box-sizing: border-box;
+    }
+
+    .language-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .language-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 8px 0;
+    }
+
+    .language-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 20px 24px;
+        background-color: var(--card-background);
+        border: 2px solid transparent;
+        border-radius: 16px;
+        cursor: pointer;
+        text-align: left;
+        min-height: 72px;
+        
+        &:hover {
+            border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+        }
+
+        &.selected {
+            background: linear-gradient(135deg, 
+                color-mix(in srgb, var(--primary-purple) 15%, transparent),
+                color-mix(in srgb, var(--primary-purple) 8%, transparent)
+            );
+            border-color: var(--primary-purple);
+
+            .selection-indicator {
+                opacity: 1;
+            }
+
+            .primary-name {
+                color: var(--primary-purple);
+            }
+        }
+    }
+
+    .language-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .primary-name {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .secondary-name {
+        font-size: 14px;
+        color: var(--text-secondary);
+        opacity: 0.8;
+    }
+
+    .selection-indicator {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
+        opacity: 0;
+        position: relative;
+        flex-shrink: 0;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 10px;
+            border: 2px solid white;
+            border-top: none;
+            border-left: none;
+            transform: translate(-50%, -60%) rotate(45deg);
+        }
+    }
+</style>
+
+```
+
+`popup/pages/Lock.svelte`:
+
+```svelte
+<script lang="ts">
+</script>
+
+<div class="home-container">
+  <h1>Welcome to the Wallet</h1>
+</div>
+
+<style lang="scss">
+</style>
+
+```
+
+`popup/pages/NewWalletOptions.svelte`:
+
+```svelte
+<script lang="ts">
+  import { _ } from 'popup/i18n';
+  import { pop, push } from 'popup/router/navigation';
+  import NavBar from '../components/NavBar.svelte';
+  import WalletOption from '../components/WalletOption.svelte';
+
+  type WalletOptionType = {
+    id: string;
+    titleKey: string;
+    descriptionKey: string;
+    icon: string;
+    action: () => void;
+  };
+
+  const mainOptions: WalletOptionType[] = [
+    {
+      id: 'new-wallet',
+      titleKey: 'newWalletOptions.newWallet.title',
+      descriptionKey: 'newWalletOptions.newWallet.description',
+      icon: '+',
+      action: () => handleNewWallet()
+    },
+    {
+      id: 'existing-wallet',
+      titleKey: 'newWalletOptions.existingWallet.title',
+      descriptionKey: 'newWalletOptions.existingWallet.description',
+      icon: '↑',
+      action: () => handleExistingWallet()
+    },
+    {
+      id: 'pair-ledger',
+      titleKey: 'newWalletOptions.pairWithLedger.title',
+      descriptionKey: 'newWalletOptions.pairWithLedger.description',
+      icon: '⊞',
+      action: () => handlePairLedger()
+    }
+  ];
+
+  const otherOptions: WalletOptionType[] = [
+    {
+      id: 'watch-account',
+      titleKey: 'newWalletOptions.watchAccount.title',
+      descriptionKey: 'newWalletOptions.watchAccount.description',
+      icon: '👁',
+      action: () => handleWatchAccount()
+    }
+  ];
+
+  function handleNewWallet() {
+    push('/generate-wallet');
+  }
+
+  function handleExistingWallet() {
+    push('/restore-wallet');
+  }
+
+  function handlePairLedger() {
+    push('/new-wallet/ledger');
+  }
+
+  function handleWatchAccount() {
+    push('/new-wallet/watch');
+  }
+</script>
+
+<div class="new-wallet-options">
+  <NavBar title={$_('newWalletOptions.title')} onBack={pop} />
+
+  <div class="options-container">
+    <div class="main-options">
+      {#each mainOptions as option}
+        <WalletOption
+          title={$_(option.titleKey)}
+          description={$_(option.descriptionKey)}
+          icon={option.icon}
+          onclick={option.action}
+        />
+      {/each}
+    </div>
+
+    <div class="other-section">
+      <h4 class="section-title">{$_('newWalletOptions.otherOptions')}</h4>
+      <div class="other-options">
+        {#each otherOptions as option}
+          <WalletOption
+            title={$_(option.titleKey)}
+            description={$_(option.descriptionKey)}
+            icon={option.icon}
+            onclick={option.action}
+          />
+        {/each}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style lang="scss">
+  .new-wallet-options {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--background-color);
+    padding: 0 20px 20px;
+    box-sizing: border-box;
+  }
+
+  .options-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .main-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .other-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.8;
+  }
+
+  .other-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+</style>
+
+```
+
+`popup/pages/NotFoundPage.svelte`:
+
+```svelte
+<script lang="ts">
+</script>
+
+<style>
+    .not-found-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        background-color: #f8f9fa;
+        color: #343a40;
+        font-family: Arial, sans-serif;
+    }
+
+    .not-found-container h1 {
+        font-size: 6rem;
+        margin: 0;
+    }
+
+    .not-found-container p {
+        font-size: 1.25rem;
+    }
+</style>
+
+<div class="not-found-container">
+    <h1>404</h1>
+    <p>Oops! The page you are looking for doesn't exist.</p>
+</div>
+
+```
+
+`popup/pages/RestoreWallet.svelte`:
+
+```svelte
+<script lang="ts">
+  import { _ } from 'popup/i18n';
+  import { pop, push } from 'popup/router/navigation';
+  import NavBar from '../components/NavBar.svelte';
+  import WalletOption from '../components/WalletOption.svelte';
+  import PuzzleIcon from '../components/icons/PuzzleIcon.svelte';
+  import BincodeIcon from '../components/icons/BincodeIcon.svelte';
+  import QRCodeIcon from '../components/icons/QRCodeIcon.svelte';
+  import Bip39Icon from '../components/icons/Bip39Icon.svelte';
+  import LockIcon from '../components/icons/LockIcon.svelte';
+
+
+  type RestoreOption = {
+    id: string;
+    titleKey: string;
+    descriptionKey: string;
+    icon: any;
+    action: () => void;
+  };
+
+  const restoreOptions: RestoreOption[] = [
+    {
+      id: 'bip39',
+      titleKey: 'restoreWallet.bip39.title',
+      descriptionKey: 'restoreWallet.bip39.description',
+      icon: Bip39Icon,
+      action: () => handleBip39()
+    },
+    {
+      id: 'slip0039',
+      titleKey: 'restoreWallet.slip0039.title',
+      descriptionKey: 'restoreWallet.slip0039.description',
+      icon: PuzzleIcon,
+      action: () => handleSlip0039()
+    },
+    {
+      id: 'private-key',
+      titleKey: 'restoreWallet.privateKey.title',
+      descriptionKey: 'restoreWallet.privateKey.description',
+      icon: LockIcon,
+      action: () => handlePrivateKey()
+    },
+    {
+      id: 'keystore-file',
+      titleKey: 'restoreWallet.keystoreFile.title',
+      descriptionKey: 'restoreWallet.keystoreFile.description',
+      icon: BincodeIcon,
+      action: () => handleKeystoreFile()
+    },
+    {
+      id: 'qrcode',
+      titleKey: 'restoreWallet.qrcode.title',
+      descriptionKey: 'restoreWallet.qrcode.description',
+      icon: QRCodeIcon,
+      action: () => handleQRCode()
+    }
+  ];
+
+  function handleBip39() {
+    push('/restore-wallet/bip39');
+  }
+
+  function handleSlip0039() {
+    push('/restore-wallet/slip0039');
+  }
+
+  function handlePrivateKey() {
+    push('/restore-wallet/private-key');
+  }
+
+  function handleKeystoreFile() {
+    push('/restore-wallet/keystore');
+  }
+
+  function handleQRCode() {
+    push('/restore-wallet/qrcode');
+  }
+</script>
+
+<div class="restore-wallet">
+  <NavBar title={$_('restoreWallet.title')} onClose={pop} />
+  
+  <div class="options-container">
+    <div class="restore-options">
+      {#each restoreOptions as option}
+        <WalletOption
+          title={$_(option.titleKey)}
+          description={$_(option.descriptionKey)}
+          icon={option.icon}
+          onclick={() => option.action()}
+        />
+      {/each}
+    </div>
+  </div>
+</div>
+
+<style lang="scss">
+  .restore-wallet {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--background-color);
+    padding: 0 20px 20px;
+    box-sizing: border-box;
+  }
+
+  .options-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .restore-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+</style>
+
+```
+
+`popup/pages/Start.svelte`:
+
+```svelte
+<script lang="ts">
+    import { _ }	 from 'popup/i18n';
+    import { push } from 'popup/router/navigation';
+
+    import globalStore from "popup/store/global";
+
+    import SvgLoad from '../components/SvgLoad.svelte';
+    import LanguageIcon from '../components/icons/Language.svelte';
+    import AppearanceIcon from '../components/icons/Appearance.svelte';
+    import Button from '../components/Button.svelte';
+
+    import { Themes } from 'config/theme';
+    import { themeDetect } from 'popup/mixins/theme';
+    import { setGlobalState } from 'popup/background/wallet';
+
+
+    function handleGetStarted() {
+        return push('/new-wallet-options');
+    }
+
+    async function handleThemeToggle() {
+        if ($globalStore.appearances == Themes.System) {
+            const theme = themeDetect();
+
+            if (theme == Themes.Light) {
+                globalStore.set({
+                    ...$globalStore,
+                    appearances: Themes.Dark,
+                });
+            } else if (theme == Themes.Dark) {
+                globalStore.set({
+                    ...$globalStore,
+                    appearances: Themes.Light,
+                });
+            }
+        } else if ($globalStore.appearances == Themes.Light) {
+            globalStore.set({
+                ...$globalStore,
+                appearances: Themes.Dark,
+            });
+        } else if ($globalStore.appearances == Themes.Dark) {
+            globalStore.set({
+                ...$globalStore,
+                appearances: Themes.Light,
+            });
+        }
+
+        document.body.setAttribute("theme", $globalStore.appearances);
+
+        await setGlobalState();
+    }
+
+    function handleLanguageSelect() {
+        return push('/locale');
+    }
+</script>
+
+<div class="start-page">
+    <div class="header">
+        <button class="theme-toggle" on:click={handleThemeToggle}>
+            <AppearanceIcon width={28} height={28} />
+        </button>
+        <button class="language-selector" on:click={handleLanguageSelect}>
+            <LanguageIcon width={36} height={36} />
+        </button>
+    </div>
+    <div class="content">
+        <SvgLoad
+            src="/icons/little_dragons.svg"
+            class="dragon-image"
+            width="90%"
+            height="90%"
+            viewBox="0 0 460 460"
+        />
+    </div>
+    <Button onclick={handleGetStarted}>
+        {$_('start.btn')}
+    </Button>
+</div>
+
+<style lang="scss">
+    .start-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        height: 100vh;
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        padding: 0 20px;
+        box-sizing: border-box;
+        padding-bottom: 16px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 20px 0;
+    }
+
+    .theme-toggle {
+        padding: 4px;
+    }
+
+    .theme-toggle,
+    .language-selector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid var(--modal-border);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover,
+    .language-selector:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+</style>
+
+```
+
+`popup/router/guard.ts`:
+
+```ts
+import { get } from "svelte/store";
+import globalStore from "popup/store/global";
+import { type Route } from "./index";
+import StartPage from "../pages/Start.svelte";
+import LockPage from "../pages/Lock.svelte";
+import ConnectPage from "../pages/Connect.svelte";
+import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
+import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
+
+export class RouteGuard {
+  private static navigate(path: string) {
+    window.location.hash = path;
+  }
+
+  static checkRoute(route: Route): Route {
+    if (!route.isProtected) {
+      return route;
+    }
+
+    const globalState = get(globalStore);
+
+    if (globalState.wallets.length == 0) {
+      this.navigate("/start");
+
+      return { path: "/start", component: StartPage };
+    }
+
+    const wallet = globalState.wallets[globalState.selected_wallet]; 
+
+    if (globalState.selected_wallet == -1 || !wallet) {
+      this.navigate("lock");
+      return {
+        path: "/lock",
+        component: LockPage,
+      };
+    }
+
+
+    if (wallet.confirm.length != 0) {
+      // detect if really conect
+      this.navigate("connect");
+      return {
+        path: "/connect",
+        component: ConnectPage,
+      };
+    }
+
+    if (wallet.confirm.length != 0) {
+      // detect if really confirm
+      this.navigate("confirm");
+      return {
+        path: "/confirm",
+        component: ConfirmPopupPage,
+      };
+    }
+
+    if (wallet.confirm.length != 0) {
+      // detect if really sign-message
+      this.navigate("sign-message");
+      return {
+        path: "/sign-message",
+        component: SignMessagePopupPage,
+      };
+    }
+
+    return route;
+  }
+}
+
+```
+
+`popup/router/index.ts`:
+
+```ts
+import type { Component } from "svelte";
+import NotFoundPage from "../pages/NotFoundPage.svelte";
+import HomePage from "../pages/Home.svelte";
+import LockPage from "../pages/Lock.svelte";
+import StartPage from "../pages/Start.svelte";
+import ConnectPage from "../pages/Connect.svelte";
+import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
+import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
+import LocalePage from "../pages/Locale.svelte";
+import NewWalletOptionsPage from "../pages/NewWalletOptions.svelte";
+import GenerateWalletPage from "../pages/GenerateWallet.svelte";
+import RestoreWalletPage from "../pages/RestoreWallet.svelte";
+import Bip39GeneratePage from "../pages/Bip39Generate.svelte";
+
+export type ParamsRecord = Record<string, string | null>;
+export interface Route {
+  path: string;
+  component: Component;
+  isProtected?: boolean;
+}
+
+export const notFoundRoute: Route = {
+  path: "*",
+  component: NotFoundPage,
+};
+
+export const protectedRoutes: Route[] = [
+  { path: "/", component: HomePage, isProtected: true },
+  { path: "/connect", component: ConnectPage, isProtected: true },
+  { path: "/confirm", component: ConfirmPopupPage, isProtected: true },
+  { path: "/sign-message", component: SignMessagePopupPage, isProtected: true },
+];
+
+export const publicRoutes: Route[] = [
+  { path: "/lock", component: LockPage },
+  { path: "/start", component: StartPage },
+  { path: "/locale", component: LocalePage },
+  { path: "/new-wallet-options", component: NewWalletOptionsPage },
+  { path: "/generate-wallet", component: GenerateWalletPage },
+  { path: "/restore-wallet", component: RestoreWalletPage },
+  { path: "/generate-bip39", component: Bip39GeneratePage },
+];
+
+export const routes = [...protectedRoutes, ...publicRoutes];
+
+export function matchRoute(url: string, routes: Route[]): Route | null {
+  const urlParts = url.split("/").filter(Boolean);
+
+  for (const route of routes) {
+    const routeParts = route.path.split("/").filter(Boolean);
+
+    if (!isMatchingLength(routeParts, urlParts)) {
+      continue;
+    }
+
+    let isMatch = true;
+
+    for (let i = 0; i < routeParts.length; i++) {
+      const routePart = routeParts[i];
+      const urlPart = urlParts[i];
+
+      if (routePart.startsWith(":")) {
+        const isOptional = routePart.endsWith("?");
+        if (!urlPart && !isOptional) {
+          isMatch = false;
+          break;
+        }
+        continue;
+      }
+
+      if (routePart !== urlPart) {
+        isMatch = false;
+        break;
+      }
+    }
+
+    if (isMatch) {
+      return route;
+    }
+  }
+
+  return null;
+}
+
+export function parseUrlParams(pattern: string, url: string): ParamsRecord {
+  const params: ParamsRecord = {};
+  const patternParts: string[] = pattern.split("/").filter(Boolean);
+  const urlParts: string[] = url.split("/").filter(Boolean);
+
+  for (let i = 0; i < patternParts.length; i++) {
+    const patternPart = patternParts[i];
+
+    if (!patternPart.startsWith(":")) {
+      continue;
+    }
+
+    let paramName = patternPart.slice(1);
+    const isOptional = paramName.endsWith("?");
+
+    if (isOptional) {
+      paramName = paramName.slice(0, -1);
+    }
+
+    const value = urlParts[i];
+    params[paramName] = value || null;
+  }
+
+  return params;
+}
+
+function isMatchingLength(routeParts: string[], urlParts: string[]): boolean {
+  const optionalParams = routeParts.filter((part) => part.endsWith("?")).length;
+  return (
+    urlParts.length >= routeParts.length - optionalParams &&
+    urlParts.length <= routeParts.length
+  );
+}
+
+```
+
+`popup/router/navigation.ts`:
+
+```ts
+import { get } from "svelte/store";
+import { currentRoute } from "popup/store/route";
+
+export function getCurrentRoute(): string {
+  let rote = get(currentRoute);
+
+  return rote?.path || "";
+}
+
+export function push(path: string) {
+  window.location.hash = path;
+}
+
+export function replace(path: string) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const targetHash = `#${normalizedPath}`;
+
+  if (window.location.hash !== targetHash) {
+    window.location.replace(targetHash);
+  }
+}
+
+export function pop() {
+  window.history.back();
+}
+
+export function route(node: HTMLAnchorElement) {
+  const handleClick = (event: Event) => {
+    event.preventDefault();
+    const path = new URL(node.href).pathname;
+    push(path);
+
+    const navigationEvent = new CustomEvent("navigation", {
+      detail: { href: path },
+    });
+    window.dispatchEvent(navigationEvent);
+  };
+
+  node.addEventListener("click", handleClick);
+
+  return {
+    destroy() {
+      node.removeEventListener("click", handleClick);
+    },
+  };
+}
+
+```
+
+`popup/store/global.ts`:
+
+```ts
+import type { IBackgroundState } from "background/storage";
+import { Locales } from "config/locale";
+import { Themes } from "config/theme";
+import { writable } from "svelte/store";
+
+
+export default writable<IBackgroundState>({
+  storageVersion: 4,
+  wallets: [],
+  selected_wallet: -1,
+  notificationsGlobalEnabled: true,
+  locale: Locales.Auto,
+  appearances: Themes.System,
+  abbreviatedNumber: true,
+  hideBalance: false,
+  chains: [] 
+});
+
+
+```
+
+`popup/store/route.ts`:
+
+```ts
+import type { ParamsRecord, Route } from "popup/router";
+import { writable } from "svelte/store";
+
+export const currentRoute = writable<Route | null>(null);
+export const currentParams = writable<ParamsRecord>({});
+
+```
+
+`popup/styles/global.scss`:
+
+```scss
+@use "./mixins";
+@use "./theme.scss";
+
+:global(*),
+:global(*::after),
+:global(*::before) {
+  @include mixins.box-sizing(border-box);
+  margin: 0;
+  padding: 0;
+}
+
+:global(:root) {
+  font-family: var(--font-family, system-ui, sans-serif);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  
+  /* Smooth scrolling for supported browsers */
+  scroll-behavior: smooth;
+}
+
+:global(*) {
+  user-select: none;
+  scrollbar-width: none;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+/* Specifically handle focus outlines for accessibility */
+:global(*:focus) {
+  outline-offset: 2px;
+}
+
+:global(*:focus:not(:focus-visible)) {
+  outline: none; /* Remove outline for mouse users but keep for keyboard */
+}
+
+/* Document body */
+:global(body),
+:global(html) {
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  min-width: 320px;
+  min-height: 600px;
+  
+  background-color: var(--background-color);
+  
+  /* Prevent overscrolling on iOS */
+  overscroll-behavior: none;
+}
+
+
+/* Images */
+:global(img) {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Hide scrollbars but allow scrolling */
+:global(::-webkit-scrollbar) {
+  display: none;
+}
+
+```
+
+`popup/styles/mixins.scss`:
+
+```scss
+@mixin box-sizing($box-model) {
+  box-sizing: $box-model;
+}
+
+```
+
+`popup/styles/theme.scss`:
+
+```scss
+:global(:root) {
+  --primary-purple: #fc72ff;
+  --secondary-purple: #b0b0b0;
+  --background-color: #ffffff;
+  --card-background: #f7f7f7;
+  --text-primary: #000000;
+  --text-secondary: #6c6c6c;
+  --button-background: #ff007a;
+  --button-text: #ffffff;
+  --danger-color: #ff4d4d;
+  --success-color: #00d395;
+  --warning-color: #ffa500;
+  --gradient-start: #ff007a;
+  --gradient-middle: #d500f9;
+  --gradient-end: #ff007a;
+  --modal-border: #e0e0e0;
+  --background-gradient: linear-gradient(180deg, #ff007a 0%, #d500f9 50%, #ff007a 100%);
+}
+
+:global(body[theme="dark"]) {
+  --primary-purple: #8a2be2;
+  --secondary-purple: #b23aee;
+  --background-color: #000000;
+  --card-background: #0d1117;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --button-background: #ff37c7;
+  --button-text: #fff;
+  --danger-color: #e94560;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --gradient-start: #4a0e4e;
+  --gradient-middle: #220a23;
+  --gradient-end: #000000;
+  --modal-border: rgba(158, 158, 158, 0.2);
+  --background-gradient: linear-gradient(180deg, #4a0e4e 0%, #220a23 50%, #000000 100%);
+}
+
+```

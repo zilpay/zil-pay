@@ -22,6 +22,20 @@ export async function getGlobalState() {
   return resolve;
 }
 
+export async function generateBip39Words(count: number, wordList: string[]) {
+  const data =    await new Message<SendResponseParams>({
+    type: MTypePopup.GEN_BIP39,
+    payload: {
+      count,
+      wordList
+    },
+  }).send();
+  let resolve = warpMessage(data) as string;
+
+  return resolve;
+}
+
+
 export async function setGlobalState() {
   const globalState = get(globalStore);
 
@@ -30,4 +44,5 @@ export async function setGlobalState() {
     payload: globalState,
   }).send();
 }
+
 
