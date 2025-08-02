@@ -9,6 +9,7 @@
   import { locale } from 'popup/i18n';
   import { pop, push } from '../router/navigation';
   import { generateBip39Words } from 'popup/background/wallet';
+  import cacheStore from 'popup/store/cache';
 
   let wordCount = $state(12);
   let selectedLang = $state('en');
@@ -72,7 +73,8 @@
 
   function handleNext() {
     if (hasBackup && phrase.length > 0) {
-      // push('/verify-bip39', { phrase: phrase.join(' ') });
+      cacheStore.set(phrase);
+      push(`/verify-bip39`);
     }
   }
 

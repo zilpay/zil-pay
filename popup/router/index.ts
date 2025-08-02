@@ -11,6 +11,8 @@ import NewWalletOptionsPage from "../pages/NewWalletOptions.svelte";
 import GenerateWalletPage from "../pages/GenerateWallet.svelte";
 import RestoreWalletPage from "../pages/RestoreWallet.svelte";
 import Bip39GeneratePage from "../pages/Bip39Generate.svelte";
+import Bip39VerifyPage from "../pages/Bip39Verify.svelte";
+
 
 export type ParamsRecord = Record<string, string | null>;
 export interface Route {
@@ -39,6 +41,7 @@ export const publicRoutes: Route[] = [
   { path: "/generate-wallet", component: GenerateWalletPage },
   { path: "/restore-wallet", component: RestoreWalletPage },
   { path: "/generate-bip39", component: Bip39GeneratePage },
+  { path: "/verify-bip39", component: Bip39VerifyPage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];

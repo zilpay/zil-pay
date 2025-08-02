@@ -72,5 +72,14 @@
       "backupConfirm": "I have safely backed up my seed phrase",
       "next": "Continue"
     }
+  },
+  "bip39": {
+    "verify": {
+      "title": "Verify Recovery Phrase",
+      "subtitle": "Confirm Your Backup",
+      "instructions": "Enter the missing words to verify you've correctly backed up your recovery phrase",
+      "placeholder": "Enter word...",
+      "button": "Complete Verification"
+    }
   }
 }
