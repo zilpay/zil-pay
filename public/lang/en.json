@@ -62,5 +62,15 @@
       "title": "QRcode",
       "description": "Restore wallet by QRcode scanning"
     }
+  },
+  "generateWallet": {
+    "bip39": {
+      "title": "BIP39",
+      "phrase": "Seed Phrase",
+      "generating": "Generating...",
+      "noWords": "No words generated",
+      "backupConfirm": "I have safely backed up my seed phrase",
+      "next": "Continue"
+    }
   }
 }
