@@ -1,6 +1,7 @@
 <script lang="ts">
   import NavBar from '../components/NavBar.svelte';
   import WordCountSelector from '../components/WordCountSelector.svelte';
+  import Dropdown from '../components/Dropdown.svelte';
   import Button from '../components/Button.svelte';
   import ReloadButton from '../components/ReloadButton.svelte';
   import MnemonicWord from '../components/MnemonicWord.svelte';
@@ -10,14 +11,21 @@
   import { generateBip39Words } from 'popup/background/wallet';
 
   let wordCount = $state(12);
+  let selectedLang = $state('en');
   let wordList = $state([]);
   let phrase: string[] = $state([]);
   let hasBackup = $state(false);
   let isLoading = $state(false);
 
-  async function loadWordlist() {
+  const languageOptions = [
+    { code: 'en', label: 'English' },
+    { code: 'ja', label: '日本語' },
+    { code: 'ko', label: '한국어' },
+    { code: 'es', label: 'Español' }
+  ];
+
+  async function loadWordlist(lang: string = selectedLang) {
     try {
-      let lang = ($locale ?? 'en').toLowerCase().split('-')[0];
       let url = `/bip39/${lang}.json`;
       let res = await fetch(url);
       
@@ -27,12 +35,12 @@
       }
       
       if (!res.ok) {
-        throw new Error('');
+        throw new Error('Failed to load wordlist');
       }
       
       wordList = await res.json();
     } catch (error) {
-      console.error('', error);
+      console.error('Error loading wordlist:', error);
       wordList = [];
     }
   }
@@ -57,6 +65,15 @@
     generateWords();
   }
 
+  function handleLanguageChange(langCode: string) {
+    selectedLang = langCode;
+    loadWordlist(langCode).then(() => {
+      if (wordList.length > 0) {
+        generateWords();
+      }
+    });
+  }
+
   function handleNext() {
     if (hasBackup && phrase.length > 0) {
       // push('/verify-bip39', { phrase: phrase.join(' ') });
@@ -68,7 +85,16 @@
   }
 
   $effect(() => {
-    loadWordlist().then(() => {
+    let lang = ($locale ?? 'en').toLowerCase().split('-')[0];
+    
+    const supportedLangs = languageOptions.map(opt => opt.code);
+    if (!supportedLangs.includes(lang)) {
+      lang = 'en';
+    }
+    
+    selectedLang = lang;
+    
+    loadWordlist(lang).then(() => {
       if (wordList.length > 0) {
         generateWords();
       }
@@ -86,8 +112,20 @@
     />
 
     <div class="content">
-      <div class="selector-section">
-        <WordCountSelector bind:selected={wordCount} onSelect={handleCountChange} />
+      <div class="controls-section">
+        <div class="control-group">
+          <WordCountSelector bind:selected={wordCount} onSelect={handleCountChange} />
+        </div>
+        
+        <div class="control-group">
+          <Dropdown 
+            options={languageOptions}
+            bind:selected={selectedLang} 
+            onSelect={handleLanguageChange}
+            placeholder="Select language"
+            width="200px"
+          />
+        </div>
       </div>
 
       <div class="phrase-section">
@@ -132,7 +170,7 @@
       >
         {$_('generateWallet.bip39.next')}
       </Button>
-    </div>
+   </div>
   </div>
 </div>
 
@@ -164,7 +202,25 @@
     padding-bottom: 20px;
   }
 
-  .selector-section,
+  .controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .control-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
   .phrase-section,
   .backup-section {
     display: flex;
@@ -247,6 +303,10 @@
   @media (max-width: 480px) {
     .page-container {
       padding: 0 16px;
+    }
+
+    .controls-section {
+      gap: 16px;
     }
 
     .phrase-grid {
