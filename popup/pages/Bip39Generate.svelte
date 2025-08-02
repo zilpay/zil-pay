@@ -3,6 +3,7 @@
   import WordCountSelector from '../components/WordCountSelector.svelte';
   import Button from '../components/Button.svelte';
   import ReloadButton from '../components/ReloadButton.svelte';
+  import MnemonicWord from '../components/MnemonicWord.svelte';
   import { _ } from 'popup/i18n';
   import { locale } from 'popup/i18n';
   import { pop, push } from '../router/navigation';
@@ -100,10 +101,7 @@
           {:else if phrase.length > 0}
             <div class="phrase-grid">
               {#each phrase as word, i}
-                <div class="mnemonic-word">
-                  <span class="word-index">{i + 1}</span>
-                  <span class="word-text">{word}</span>
-                </div>
+                <MnemonicWord index={i + 1} {word} />
               {/each}
             </div>
           {:else}
@@ -199,34 +197,6 @@
     max-width: 100%;
   }
 
-  .mnemonic-word {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--background-color);
-    border-radius: 8px;
-    padding: 14px 16px;
-    border: 1px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
-    min-width: 0;
-  }
-
-  .word-index {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    min-width: 20px;
-    flex-shrink: 0;
-  }
-
-  .word-text {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .loading-state,
   .empty-state {
     display: flex;
@@ -283,25 +253,12 @@
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 10px;
     }
-
-    .mnemonic-word {
-      padding: 12px 14px;
-    }
   }
 
   @media (max-width: 360px) {
     .phrase-grid {
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 8px;
-    }
-
-    .mnemonic-word {
-      padding: 10px 12px;
-      gap: 8px;
-    }
-
-    .word-text {
-      font-size: 13px;
     }
   }
 </style>

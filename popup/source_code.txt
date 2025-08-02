@@ -603,20 +603,22 @@ export async function setGlobalState() {
 
 ```svelte
 <script lang="ts">
-  type Props = {
-    wordCounts?: number[];
-    selected?: number;
-    onSelect?: (val: number) => void;
-  };
-
   let {
     wordCounts = [12, 15, 18, 21, 24],
-    selected,
+    selected = $bindable(),
     onSelect = () => {}
-  }: Props = $props();
-  selected = selected ?? wordCounts[0];
+  } = $props();
+
+  if (selected === undefined) {
+    selected = wordCounts[0];
+  }
 
   const countIndex = $derived(wordCounts.indexOf(selected));
+
+  function handleSelect(count: number) {
+    selected = count;
+    onSelect(count);
+  }
 </script>
 
 <div class="selector-wrapper">
@@ -629,7 +631,7 @@ export async function setGlobalState() {
     {#each wordCounts as count}
       <button
         class:selected={count === selected}
-        onclick={() => onSelect(count)}
+        onclick={() => handleSelect(count)}
       >
         {count}
       </button>
@@ -642,18 +644,18 @@ export async function setGlobalState() {
     position: relative;
     width: 100%;
     height: 48px;
-    padding: 0 4px;
+    padding: 4px;
     background-color: var(--card-background);
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
   }
 
   .background-highlight {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    width: calc(100% / var(--count));
-    left: calc((100% / var(--count)) * var(--index));
+    top: 4px;
+    bottom: 4px;
+    width: calc((100% - 8px) / var(--count));
+    left: calc(4px + ((100% - 8px) / var(--count)) * var(--index));
     background-color: var(--primary-purple);
     border-radius: 8px;
     transition: left 0.3s ease-in-out;
@@ -670,16 +672,20 @@ export async function setGlobalState() {
       flex: 1;
       background: none;
       border: none;
-      font-size: 18px;
+      font-size: 16px;
+      font-weight: 500;
       cursor: pointer;
-      z-index: 1;
-      font-weight: normal;
       color: var(--text-secondary);
       transition: color 0.2s ease;
+      border-radius: 8px;
 
       &.selected {
         color: white;
-        font-weight: bold;
+        font-weight: 600;
+      }
+
+      &:hover:not(.selected) {
+        color: var(--text-primary);
       }
 
       &:focus {
@@ -1006,182 +1012,311 @@ export function themeDetect() {
 
 ```svelte
 <script lang="ts">
-	import NavBar from '../components/NavBar.svelte';
-	import WordCountSelector from '../components/WordCountSelector.svelte';
-	import Button from '../components/Button.svelte';
-	import { _ } from 'popup/i18n';
-	import { push, pop } from '../router/navigation';
-	import ReloadButton from '../components/ReloadButton.svelte';
-	import { generateBip39Words } from 'popup/background/wallet';
-	import { locale } from 'popup/i18n';
+  import NavBar from '../components/NavBar.svelte';
+  import WordCountSelector from '../components/WordCountSelector.svelte';
+  import Button from '../components/Button.svelte';
+  import ReloadButton from '../components/ReloadButton.svelte';
+  import { _ } from 'popup/i18n';
+  import { locale } from 'popup/i18n';
+  import { pop, push } from '../router/navigation';
+  import { generateBip39Words } from 'popup/background/wallet';
 
-	let wordCount = 12;
-	let wordList: string[] = [];
-	let phrase: string[] = [];
-	let hasBackup = false;
-	let copied = false;
+  let wordCount = $state(12);
+  let wordList = $state([]);
+  let phrase: string[] = $state([]);
+  let hasBackup = $state(false);
+  let isLoading = $state(false);
 
-	async function loadWordlist() {
-		let lang = ($locale ?? 'en').toLowerCase().split('-')[0];
-		let url = `/bip39/${lang}.json`;
-		let res = await fetch(url);
-		if (!res.ok) {
-			url = `/bip39/en.json`;
-			res = await fetch(url);
-		}
-		if (!res.ok) {
-			console.error('Failed to load wordlist');
-			wordList = [];
-			return;
-		}
-		wordList = await res.json();
-	}
+  async function loadWordlist() {
+    try {
+      let lang = ($locale ?? 'en').toLowerCase().split('-')[0];
+      let url = `/bip39/${lang}.json`;
+      let res = await fetch(url);
+      
+      if (!res.ok) {
+        url = `/bip39/en.json`;
+        res = await fetch(url);
+      }
+      
+      if (!res.ok) {
+        throw new Error('');
+      }
+      
+      wordList = await res.json();
+    } catch (error) {
+      console.error('', error);
+      wordList = [];
+    }
+  }
 
-	async function generateWords() {
-		const raw = await generateBip39Words(wordCount, wordList);
-		phrase = raw.split(" ");
-		hasBackup = false;
-		copied = false;
-	}
+  async function generateWords() {
+    if (!wordList.length) return;
+    
+    try {
+      isLoading = true;
+      const raw = await generateBip39Words(wordCount, wordList);
+      phrase = raw.split(' ');
+      hasBackup = false;
+    } catch (error) {
+      console.error('Error generating words:', error);
+    } finally {
+      isLoading = false;
+    }
+  }
 
-	async function handleCopy() {
-		await navigator.clipboard.writeText(phrase.join(' '));
-		copied = true;
-		setTimeout(() => {
-			copied = false;
-		}, 2000);
-	}
+  function handleCountChange(count: number) {
+    wordCount = count;
+    generateWords();
+  }
 
-	function handleCountChange(count: number) {
-		wordCount = count;
-		generateWords();
-	}
+  function handleNext() {
+    if (hasBackup && phrase.length > 0) {
+      // push('/verify-bip39', { phrase: phrase.join(' ') });
+    }
+  }
 
-	function toggleCheckbox() {
-		hasBackup = !hasBackup;
-	}
+  function handleReload() {
+    generateWords();
+  }
 
-	function handleNext() {
-		if (hasBackup) {
-			push('/verify_bip39');
-		}
-	}
-
-	$effect(() => {
-		loadWordlist().then(() => generateWords());
-	});
+  $effect(() => {
+    loadWordlist().then(() => {
+      if (wordList.length > 0) {
+        generateWords();
+      }
+    });
+  });
 </script>
 
 <div class="bip39-page">
-	<NavBar
-		title={$_('generateWallet.bip39.title')}
-		onBack={pop}
-		rightIcon={ReloadButton}
-		onRight={generateWords}
-	/>
+  <div class="page-container">
+    <NavBar
+      title={$_('generateWallet.bip39.title')}
+      onBack={pop}
+      rightIcon={ReloadButton}
+      onRight={handleReload}
+    />
 
-	<div class="content">
-		<WordCountSelector selected={wordCount} onSelect={handleCountChange} />
+    <div class="content">
+      <div class="selector-section">
+        <WordCountSelector bind:selected={wordCount} onSelect={handleCountChange} />
+      </div>
 
-		<div class="phrase-list">
-			{#each phrase as word, i}
-				<div class="mnemonic-word">
-					<span class="index">{i + 1}.</span>
-					<span class="word">{word}</span>
-				</div>
-			{/each}
-		</div>
+      <div class="phrase-section">
+        <h3 class="section-title">{$_('generateWallet.bip39.phrase')}</h3>
+        <div class="phrase-container">
+          {#if isLoading}
+            <div class="loading-state">
+              <span class="loading-spinner"></span>
+              <span>{$_('generateWallet.bip39.generating')}</span>
+            </div>
+          {:else if phrase.length > 0}
+            <div class="phrase-grid">
+              {#each phrase as word, i}
+                <div class="mnemonic-word">
+                  <span class="word-index">{i + 1}</span>
+                  <span class="word-text">{word}</span>
+                </div>
+              {/each}
+            </div>
+          {:else}
+            <div class="empty-state">
+              <span>{$_('generateWallet.bip39.noWords')}</span>
+            </div>
+          {/if}
+        </div>
+      </div>
 
-		<div class="row">
-			<label class="checkbox-wrapper">
-				<input type="checkbox" bind:checked={hasBackup} />
-				<span>{$_('generateWallet.bip39.checkbox')}</span>
-			</label>
-		</div>
+      <div class="backup-section">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            bind:checked={hasBackup}
+            class="checkbox-input"
+          />
+          <span class="checkbox-text">
+            {$_('generateWallet.bip39.backupConfirm')}
+          </span>
+        </label>
+      </div>
 
-		<Button on:click={handleNext} disabled={!hasBackup}>
-			{$_('generateWallet.bip39.next')}
-		</Button>
-	</div>
+      <Button 
+        onclick={handleNext} 
+        disabled={!hasBackup || phrase.length === 0 || isLoading}
+        width="100%"
+      >
+        {$_('generateWallet.bip39.next')}
+      </Button>
+    </div>
+  </div>
 </div>
 
 <style lang="scss">
-	.bip39-page {
-		display: flex;
-		flex-direction: column;
-		height: 100vh;
-		background: var(--background-color);
-		padding: 0 20px;
-		box-sizing: border-box;
-		color: var(--text-primary);
-	}
+  .bip39-page {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--background-color);
+    color: var(--text-primary);
+  }
 
-	.content {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-		overflow-y: auto;
-		padding-bottom: 20px;
-	}
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
 
-	.phrase-list {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		padding: 8px 0;
-	}
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
 
-	.mnemonic-word {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 16px;
-		color: var(--text-secondary);
-		background: var(--card-background);
-		border-radius: 8px;
-		padding: 10px 12px;
-		opacity: 0.6;
-	}
+  .selector-section,
+  .phrase-section,
+  .backup-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-	.index {
-		font-weight: 500;
-		color: var(--text-secondary);
-	}
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
 
-	.word {
-		font-weight: bold;
-	}
+  .phrase-container {
+    background: var(--card-background);
+    border-radius: 16px;
+    padding: 20px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-	.row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 8px;
-	}
+  .phrase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+  }
 
-	.checkbox-wrapper {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 14px;
-		color: var(--text-secondary);
+  .mnemonic-word {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--background-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
+    min-width: 0;
+  }
 
-		input[type='checkbox'] {
-			accent-color: var(--primary-purple);
-		}
-	}
+  .word-index {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 20px;
+    flex-shrink: 0;
+  }
 
-	.copy-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 8px;
-		border: none;
-		background: var(--card-background);
-		border-radius: 8px;
-		cursor: pointer;
-	}
+  .word-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .loading-state,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid color-mix(in srgb, var(--primary-purple) 30%, transparent);
+    border-top: 2px solid var(--primary-purple);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .checkbox-input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--primary-purple);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .checkbox-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  @media (max-width: 480px) {
+    .page-container {
+      padding: 0 16px;
+    }
+
+    .phrase-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    .mnemonic-word {
+      padding: 12px 14px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .phrase-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+    }
+
+    .mnemonic-word {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+
+    .word-text {
+      font-size: 13px;
+    }
+  }
 </style>
 
 ```
