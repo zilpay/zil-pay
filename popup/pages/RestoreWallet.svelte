@@ -3,11 +3,12 @@
   import { pop, push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
-  import RestoreIcon from '../components/icons/RestoreIcon.svelte';
-  import SharedIcon from '../components/icons/SharedIcon.svelte';
-  import PrivateKeyIcon from '../components/icons/PrivateKeyIcon.svelte';
-  import KeystoreIcon from '../components/icons/KeystoreIcon.svelte';
+  import PuzzleIcon from '../components/icons/PuzzleIcon.svelte';
+  import BincodeIcon from '../components/icons/BincodeIcon.svelte';
   import QRCodeIcon from '../components/icons/QRCodeIcon.svelte';
+  import Bip39Icon from '../components/icons/Bip39Icon.svelte';
+  import LockIcon from '../components/icons/LockIcon.svelte';
+
 
   type RestoreOption = {
     id: string;
@@ -22,28 +23,28 @@
       id: 'bip39',
       titleKey: 'restoreWallet.bip39.title',
       descriptionKey: 'restoreWallet.bip39.description',
-      icon: RestoreIcon,
+      icon: Bip39Icon,
       action: () => handleBip39()
     },
     {
       id: 'slip0039',
       titleKey: 'restoreWallet.slip0039.title',
       descriptionKey: 'restoreWallet.slip0039.description',
-      icon: SharedIcon,
+      icon: PuzzleIcon,
       action: () => handleSlip0039()
     },
     {
       id: 'private-key',
       titleKey: 'restoreWallet.privateKey.title',
       descriptionKey: 'restoreWallet.privateKey.description',
-      icon: PrivateKeyIcon,
+      icon: LockIcon,
       action: () => handlePrivateKey()
     },
     {
       id: 'keystore-file',
       titleKey: 'restoreWallet.keystoreFile.title',
       descriptionKey: 'restoreWallet.keystoreFile.description',
-      icon: KeystoreIcon,
+      icon: BincodeIcon,
       action: () => handleKeystoreFile()
     },
     {

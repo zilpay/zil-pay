@@ -3,7 +3,7 @@
   import { pop, push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
-  import KeyIcon from '../components/icons/KeyIcon.svelte';
+  import Bip39Icon from '../components/icons/Bip39Icon.svelte';
   import GridIcon from '../components/icons/GridIcon.svelte';
   import LockIcon from '../components/icons/LockIcon.svelte';
 
@@ -20,7 +20,7 @@
       id: 'bip39',
       titleKey: 'generateWallet.bip39.title',
       descriptionKey: 'generateWallet.bip39.description',
-      icon: KeyIcon,
+      icon: Bip39Icon,
       action: () => handleBip39()
     },
     {
