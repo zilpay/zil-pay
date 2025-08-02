@@ -40,7 +40,7 @@
   ];
 
   function handleBip39() {
-    push('/generate-wallet/bip39');
+    push('/generate-bip39');
   }
 
   function handleSlip0039() {
@@ -53,7 +53,7 @@
 </script>
 
 <div class="generate-wallet">
-  <NavBar title={$_('generateWallet.title')} onClose={pop} />
+  <NavBar title={$_('generateWallet.title')} onBack={() => pop()} />
   
   <div class="options-container">
     <div class="generate-options">

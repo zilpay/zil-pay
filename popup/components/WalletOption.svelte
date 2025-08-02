@@ -7,7 +7,7 @@
   } = $props();
 </script>
 
-<button class="wallet-option" onclick={() => onclick}>
+<button class="wallet-option" onclick={() => onclick()}>
   <div class="option-icon">
     {#if typeof icon === 'string'}
       <span class="icon-symbol">{icon}</span>

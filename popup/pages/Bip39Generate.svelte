@@ -1,65 +1,174 @@
 <script lang="ts">
-	import NavBar from 'popup/components/NavBar.svelte';
-	import WordLengthSelector from 'popup/components/Bip39/WordLengthSelector.svelte';
-	import WordList from 'popup/components/Bip39/WordList.svelte';
-	import BackupCheckbox from 'popup/components/Bip39/BackupCheckbox.svelte';
-	import NavigationButton from 'popup/components/Bip39/NavigationButton.svelte';
-	import RefreshIcon from 'popup/components/icons/Close.svelte';
-
+	import NavBar from '../components/NavBar.svelte';
+	import WordCountSelector from '../components/WordCountSelector.svelte';
+	import Button from '../components/Button.svelte';
 	import { _ } from 'popup/i18n';
-	import { pop } from 'popup/router/navigation';
+	import { push, pop } from '../router/navigation';
+	import CopyIcon from '../components/icons/BincodeIcon.svelte';
+	import CheckIcon from '../components/icons/QRCodeIcon.svelte';
+	import ReloadButton from '../components/ReloadButton.svelte';
 
 	let wordCount = 12;
+	let phrase: string[] = [];
 	let hasBackup = false;
+	let copied = false;
 
-	let words = Array.from({ length: wordCount }, (_, i) => `${i + 1} word`);
+	async function generateWords() {
+		const raw = await genMnemonic(wordCount);
+		phrase = raw.trim().split(/\s+/);
+		hasBackup = false;
+		copied = false;
+	}
 
-	function handleWordCountChange(count: number) {
+	async function handleCopy() {
+		await navigator.clipboard.writeText(phrase.join(' '));
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 2000);
+	}
+
+	function handleCountChange(count: number) {
 		wordCount = count;
-		words = Array.from({ length: wordCount }, (_, i) => `${i + 1} word`);
+		generateWords();
 	}
 
-	function refreshWords() {
-		words = Array.from({ length: wordCount }, (_, i) => `${i + 1} refreshed`);
+	function toggleCheckbox() {
+		hasBackup = !hasBackup;
 	}
+
+	function handleNext() {
+		if (hasBackup) {
+			push('/verify_bip39');
+		}
+	}
+
+	function genMnemonic(count: number): Promise<string> {
+		// Replace this with actual WASM or native API
+		const mnemonics = Array.from({ length: count }, (_, i) => `word${i + 1}`);
+		return Promise.resolve(mnemonics.join(' '));
+	}
+
+	$effect(() => {
+		generateWords();
+	});
 </script>
 
-<div class="bip39-generate">
+<div class="bip39-page">
 	<NavBar
 		title={$_('generateWallet.bip39.title')}
 		onBack={pop}
-		rightIcon={RefreshIcon}
-		onRight={refreshWords}
+		rightIcon={ReloadButton}
+		onRight={generateWords}
 	/>
 
 	<div class="content">
-		<WordLengthSelector selected={wordCount} onSelect={handleWordCountChange} />
+		<WordCountSelector selected={wordCount} onSelect={handleCountChange} />
 
-		<WordList {words} />
+		<div class="phrase-list">
+			{#each phrase as word, i}
+				<div class="mnemonic-word">
+					<span class="index">{i + 1}.</span>
+					<span class="word">{word}</span>
+				</div>
+			{/each}
+		</div>
 
-		<BackupCheckbox bind:checked={hasBackup} />
+		<div class="row">
+			<label class="checkbox-wrapper">
+				<input type="checkbox" bind:checked={hasBackup} />
+				<span>{$_('generateWallet.bip39.checkbox')}</span>
+			</label>
+			<button class="copy-btn" on:click={handleCopy}>
+				{#if copied}
+					<CheckIcon width="20" height="20" />
+				{:else}
+					<CopyIcon width="20" height="20" />
+				{/if}
+			</button>
+		</div>
 
-		<NavigationButton disabled={!hasBackup} />
+		<Button on:click={handleNext} disabled={!hasBackup}>
+			{$_('generateWallet.bip39.next')}
+		</Button>
 	</div>
 </div>
 
 <style lang="scss">
-	.bip39-generate {
+	.bip39-page {
 		display: flex;
 		flex-direction: column;
 		height: 100vh;
-		background-color: var(--background-color);
-		color: var(--text-primary);
+		background: var(--background-color);
 		padding: 0 20px;
 		box-sizing: border-box;
+		color: var(--text-primary);
 	}
 
 	.content {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		overflow-y: auto;
 		gap: 16px;
-		padding-bottom: 16px;
+		overflow-y: auto;
+		padding-bottom: 20px;
+	}
+
+	.phrase-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 0;
+	}
+
+	.mnemonic-word {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 16px;
+		color: var(--text-secondary);
+		background: var(--card-background);
+		border-radius: 8px;
+		padding: 10px 12px;
+		opacity: 0.6;
+	}
+
+	.index {
+		font-weight: 500;
+		color: var(--text-secondary);
+	}
+
+	.word {
+		font-weight: bold;
+	}
+
+	.row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+
+	.checkbox-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		color: var(--text-secondary);
+
+		input[type='checkbox'] {
+			accent-color: var(--primary-purple);
+		}
+	}
+
+	.copy-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 8px;
+		border: none;
+		background: var(--card-background);
+		border-radius: 8px;
+		cursor: pointer;
 	}
 </style>
