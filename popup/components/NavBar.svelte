@@ -1,52 +1,99 @@
 <script lang="ts">
-  import Close from './icons/Close.svelte';
-
-  let {
-    title = '',
-    onClose = () => window.history.back()
-  } = $props();
+	let {
+		title = '',
+		onBack = () => window.history.back(),
+		onRight = null,
+		rightIcon = null,
+		left = null
+	} = $props();
 </script>
 
-<nav class="header-nav">
-  <h1 class="header-title">{title}</h1>
-  <button class="close-button" onclick={() => onClose()} aria-label="Close">
-    <Close width={36} height={36} />
-  </button>
+<nav class="nav-bar">
+	<button
+		class="nav-left-button"
+		type="button"
+		onclick={() => onBack()}
+		aria-label="Back"
+	>
+		{#if left}
+			{@render left()}
+		{:else}
+			<span class="arrow">←</span>
+		{/if}
+	</button>
+	<h1 class="nav-title">{title}</h1>
+	{#if rightIcon}
+		<button
+			class="nav-right-button"
+			type="button"
+			onclick={() => onRight()}
+			aria-label="Action"
+		>
+			{#if typeof rightIcon === 'string'}
+				<img src={rightIcon} alt="" />
+			{:else}
+				{@const Icon = rightIcon}
+				<Icon />
+			{/if}
+		</button>
+	{:else}
+		<div class="nav-right-placeholder"></div>
+	{/if}
 </nav>
 
 <style lang="scss">
-  .header-nav {
-  	display: flex;
-  	justify-content: space-between;
-  	align-items: center;
-  	width: 100%;
-  	padding: 20px 0;
-  	box-sizing: border-box;
-  }
+	.nav-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 20px 0;
+		box-sizing: border-box;
+	}
 
-  .header-title {
-  	margin: 0;
-  	font-size: 1.5rem;
-  	font-weight: bold;
-  	color: var(--text-primary);
-  	text-align: center;
-  	flex: 1;
-  }
+	.nav-title {
+		font-size: 18px;
+		font-weight: bold;
+		flex: 1;
+		text-align: center;
+		color: var(--text-primary);
+		margin: 0;
+	}
 
-  .close-button {
-  	background: none;
-  	border: none;
-  	padding: 0;
-  	cursor: pointer;
-  	transition: opacity 0.2s ease;
-  }
+	.nav-left-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: var(--text-primary);
+		font-weight: bold;
+		font-size: 20px;
+		padding: 0;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-  .close-button:hover {
-  	opacity: 0.8;
-  }
+	.arrow {
+		font-size: 20px;
+	}
 
-  .close-button:focus {
-  	outline: 2px solid var(--primary-purple);
-  	outline-offset: 2px;
-  }
+	.nav-right-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		color: var(--text-primary);
+	}
+
+	.nav-right-placeholder {
+		width: 36px;
+		height: 36px;
+	}
 </style>
