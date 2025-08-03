@@ -22,6 +22,13 @@ export async function getGlobalState() {
   return resolve;
 }
 
+export async function generateKeyPair() {
+  const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
+  let resolve = warpMessage(data) as string[]; // TODO: replace with keypair interface
+  return resolve;
+}
+
+
 export async function generateBip39Words(count: number, wordList: string[]) {
   const data =    await new Message<SendResponseParams>({
     type: MTypePopup.GEN_BIP39,

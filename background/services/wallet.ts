@@ -35,6 +35,20 @@ export class WalletService {
     }
   }
 
+  async genKeyPair(slip44: number, sendResponse: StreamResponse) {
+    try {
+      const keyPair = await KeyPair.generate( slip44);
+
+      sendResponse({
+        resolve: await keyPair.toJSON()
+      });
+    } catch(err) {
+      sendResponse({
+        reject: String(err)
+      });
+    }
+  }
+
   async getGlobalState(sendResponse: StreamResponse) {
     sendResponse({
       resolve: this.#state

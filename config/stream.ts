@@ -5,5 +5,6 @@ export const MTypePopup = {
   SET_GLOBAL_STATE: `@/${app}/set-global-state`,
 
   GEN_BIP39: `@/${app}/gen-bip39-words`,
+  GEN_KEYPAIR: `@/${app}/gen-key-pair`,
 }
 

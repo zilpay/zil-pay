@@ -126,4 +126,13 @@ export class KeyPair {
         return personal.verify(sigHex, msg, ethChecsum);
     }
   }
+
+  async toJSON() {
+    return {
+      address: await this.address(),
+      privateKey: uint8ArrayToHex(this.#privateKey),
+      publicKey: uint8ArrayToHex(this.#pubKey),
+      slip44: this.#slip44,
+    };
+  }
 }
