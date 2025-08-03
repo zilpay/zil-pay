@@ -92,6 +92,12 @@
       "instructions": "Enter the missing words to verify you've correctly backed up your recovery phrase",
       "placeholder": "Enter word...",
       "button": "Complete Verification"
+    },
+    "restore": {
+      "title": "Restore with Secret Phrase",
+      "checksumFailed": "Checksum validation failed. Please check your words for typos.",
+      "proceedAnyway": "I understand the risks, proceed with an invalid checksum.",
+      "button": "Restore Wallet"
     }
   },
   "secretKeyGenerator": {

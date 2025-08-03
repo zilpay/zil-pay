@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { ALLOWED_COUNTS } from "config/bip39";
+
   let {
-    wordCounts = [12, 15, 18, 21, 24],
+    wordCounts = ALLOWED_COUNTS,
     selected = $bindable(),
     onSelect = () => {}
   } = $props();

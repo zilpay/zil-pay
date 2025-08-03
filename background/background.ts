@@ -19,6 +19,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.GEN_BIP39:
         core.wallet.genBip39Words(msg.payload.count, msg.payload.wordList, sendResponse);
         return true;
+      case MTypePopup.VALIDATE_BIP39_CHECK_SUM:
+        core.wallet.validateBip39CheckSum(msg.payload.phrase, msg.payload.wordList, sendResponse);
+        return true;
       case MTypePopup.GEN_KEYPAIR:
         core.wallet.genKeyPair(msg.payload.slip44, sendResponse);
         return true;

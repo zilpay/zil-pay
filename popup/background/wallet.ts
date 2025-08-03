@@ -34,6 +34,19 @@ export async function generateKeyPair(slip44: number) {
   return resolve;
 }
 
+export async function validateBip39Checksum(phrase: string, wordList: string[]) {
+  const data =    await new Message<SendResponseParams>({
+    type: MTypePopup.VALIDATE_BIP39_CHECK_SUM,
+    payload: {
+      phrase,
+      wordList,
+    },
+  }).send();
+  let resolve = warpMessage(data) as boolean;
+  return resolve;
+}
+
+
 
 export async function generateBip39Words(count: number, wordList: string[]) {
   const data =    await new Message<SendResponseParams>({

@@ -35,6 +35,21 @@ export class WalletService {
     }
   }
 
+    async validateBip39CheckSum(phrase: string, wordList: string[], sendResponse: StreamResponse) {
+      try {
+        const isValid = await Bip39.validateMnemonic(phrase, wordList);
+
+        sendResponse({
+          resolve: isValid
+        });
+      } catch(err) {
+        sendResponse({
+          reject: String(err)
+        });
+      }
+    }
+
+
   async genKeyPair(slip44: number, sendResponse: StreamResponse) {
     try {
       const keyPair = await KeyPair.generate( slip44);

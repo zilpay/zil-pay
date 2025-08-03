@@ -10,19 +10,14 @@
   import { pop, push } from '../router/navigation';
   import { generateBip39Words } from 'popup/background/wallet';
   import cacheStore from 'popup/store/cache';
+  import { LANGUAGE_OPTIONS } from 'config/bip39';
+
 
   let wordCount = $state(24);
   let selectedLang = $state('en');
   let wordList = $state([]);
   let phrase: string[] = $state([]);
   let hasBackup = $state(false);
-
-  const languageOptions = [
-    { code: 'en', label: 'English' },
-    { code: 'ja', label: '日本語' },
-    { code: 'ko', label: '한국어' },
-    { code: 'es', label: 'Español' }
-  ];
 
   async function loadWordlist(lang: string = selectedLang) {
     try {
@@ -85,7 +80,7 @@
   $effect(() => {
     let lang = ($locale ?? 'en').toLowerCase().split('-')[0];
     
-    const supportedLangs = languageOptions.map(opt => opt.code);
+    const supportedLangs = LANGUAGE_OPTIONS.map(opt => opt.code);
     if (!supportedLangs.includes(lang)) {
       lang = 'en';
     }
@@ -117,7 +112,7 @@
         
         <div class="control-group centered">
           <Dropdown 
-            options={languageOptions}
+            options={LANGUAGE_OPTIONS}
             bind:selected={selectedLang} 
             onSelect={handleLanguageChange}
             placeholder="Select language"
