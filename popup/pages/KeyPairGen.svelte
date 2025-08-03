@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { IKeyPair } from 'types/wallet';
   import NavBar from '../components/NavBar.svelte';
   import HexKey from '../components/HexKey.svelte';
   import Button from '../components/Button.svelte';
@@ -6,22 +7,22 @@
   import ReloadButton from '../components/ReloadButton.svelte';
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
+  import { generateKeyPair } from 'popup/background/wallet';
+  import { ETHEREUM } from 'config/slip44';
 
-  type KeyPair = {
-    sk: string;
-    pk: string;
-  };
 
-  let keyPair = $state<KeyPair>({ sk: '', pk: '' });
+  let keyPair = $state<IKeyPair>({
+    address: "",
+    privateKey: "",
+    publicKey: "",
+    slip44: ETHEREUM,
+  });
   let hasBackup = $state(false);
 
   async function generateKeys() {
     try {
-      const response = await fetch('/api/generate-keypair', {
-        method: 'POST'
-      });
-      const data = await response.json();
-      keyPair = data;
+      keyPair = await generateKeyPair(ETHEREUM);
+      console.log(keyPair);
       hasBackup = false;
     } catch (error) {
       console.error('Error generating keys:', error);
@@ -29,9 +30,6 @@
   }
 
   function handleNext() {
-    if (hasBackup && keyPair.sk) {
-      push('/net-setup');
-    }
   }
 
   function handleReload() {
@@ -55,13 +53,8 @@
     <div class="content">
       <div class="keys-section">
         <HexKey
-          hexKey={keyPair.sk}
+          hexKey={keyPair.privateKey}
           title={$_('secretKeyGenerator.privateKey')}
-        />
-        
-        <HexKey
-          hexKey={keyPair.pk}
-          title={$_('secretKeyGenerator.publicKey')}
         />
       </div>
 
@@ -79,15 +72,15 @@
           </label>
 
           <CopyButton
-            text={keyPair.sk}
+            text={keyPair.privateKey}
             ariaLabel="Copy private key"
             size={44}
           />
         </div>
 
         <Button
-          onclick={handleNext}
-          disabled={!hasBackup || !keyPair.sk}
+    onclick={handleNext}
+          disabled={!hasBackup || !keyPair.privateKey}
           width="100%"
         >
           {$_('secretKeyGenerator.nextButton')}

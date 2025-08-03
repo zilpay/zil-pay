@@ -129,7 +129,7 @@ export class KeyPair {
 
   async toJSON() {
     return {
-      address: await this.address(),
+      address: await (await this.address()).autoFormat(),
       privateKey: uint8ArrayToHex(this.#privateKey),
       publicKey: uint8ArrayToHex(this.#pubKey),
       slip44: this.#slip44,

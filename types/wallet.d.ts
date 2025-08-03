@@ -15,3 +15,10 @@ export interface WalletFromPrivateKeyParams {
   password: string;
   settings: IWalletSettingsState;
 }
+
+export interface IKeyPair {
+  address: string;
+  privateKey: string;
+  publicKey: string;
+  slip44: number;
+};
