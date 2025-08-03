@@ -48,7 +48,7 @@
   }
 
   function handlePrivateKey() {
-    push('/generate-wallet/private-key');
+    push('/keypair-generate');
   }
 </script>
 

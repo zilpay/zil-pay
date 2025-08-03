@@ -12,6 +12,7 @@ import GenerateWalletPage from "../pages/GenerateWallet.svelte";
 import RestoreWalletPage from "../pages/RestoreWallet.svelte";
 import Bip39GeneratePage from "../pages/Bip39Generate.svelte";
 import Bip39VerifyPage from "../pages/Bip39Verify.svelte";
+import KeyPairGenPage from "../pages/KeyPairGen.svelte";
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -42,6 +43,7 @@ export const publicRoutes: Route[] = [
   { path: "/restore-wallet", component: RestoreWalletPage },
   { path: "/generate-bip39", component: Bip39GeneratePage },
   { path: "/verify-bip39", component: Bip39VerifyPage },
+  { path: "/keypair-generate", component: KeyPairGenPage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];

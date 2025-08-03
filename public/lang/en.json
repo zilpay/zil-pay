@@ -93,5 +93,12 @@
       "placeholder": "Enter word...",
       "button": "Complete Verification"
     }
+  },
+  "secretKeyGenerator": {
+    "title": "Secret Key Generator",
+    "privateKey": "Private Key",
+    "publicKey": "Public Key", 
+    "backupCheckbox": "I have backed up my secret recovery phrase",
+    "nextButton": "Next"
   }
 }
