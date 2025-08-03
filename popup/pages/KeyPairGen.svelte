@@ -22,7 +22,6 @@
   async function generateKeys() {
     try {
       keyPair = await generateKeyPair(ETHEREUM);
-      console.log(keyPair);
       hasBackup = false;
     } catch (error) {
       console.error('Error generating keys:', error);

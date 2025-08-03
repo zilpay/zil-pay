@@ -6,6 +6,7 @@
   let currentPairs = $state<string[]>([]);
   let animationStates = $state<boolean[]>([]);
   let chunkSize = $state(12);
+  let isMounted = false;
 
   function getPairs(key: string): string[] {
     if (!key) return [];
@@ -38,22 +39,22 @@
   });
 
   function startAnimation(target: string[]) {
-    if (currentPairs.length === 0) return;
-
     const delayMs = 30;
     const acceleration = 1.0;
 
-    for (let i = 0; i < currentPairs.length; i++) {
+    for (let i = 0; i < target.length; i++) {
       let totalDelay = 0;
       for (let j = 0; j <= i; j++) {
         totalDelay += delayMs * Math.pow(acceleration, j);
       }
 
       setTimeout(() => {
+        if (!animationStates) return;
         animationStates[i] = true;
         currentPairs[i] = target[i];
 
         setTimeout(() => {
+          if (!animationStates) return;
           animationStates[i] = false;
         }, 80);
       }, totalDelay);
@@ -61,6 +62,7 @@
   }
 
   onMount(() => {
+    isMounted = true;
     updateChunkSize();
     window.addEventListener('resize', updateChunkSize);
     return () => {
@@ -69,16 +71,18 @@
   });
 
   $effect(() => {
-    const newPairs = getPairs(hexKey);
-
-    if (newPairs.length !== currentPairs.length) {
-      currentPairs = [...newPairs];
-      animationStates = new Array(newPairs.length).fill(false);
+    if (!isMounted || !hexKey) {
+      return;
     }
     
-    if (JSON.stringify(newPairs) !== JSON.stringify(currentPairs)) {
-        startAnimation(newPairs);
-    }
+    const newTargetPairs = getPairs(hexKey);
+    
+    currentPairs = new Array(newTargetPairs.length).fill('  ');
+    animationStates = new Array(newTargetPairs.length).fill(false);
+
+    setTimeout(() => {
+      startAnimation(newTargetPairs);
+    });
   });
 
 </script>
