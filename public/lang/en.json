@@ -64,13 +64,18 @@
     }
   },
   "generateWallet": {
+    "title": "Generate Wallet",
     "bip39": {
-      "title": "BIP39",
-      "phrase": "Seed Phrase",
-      "generating": "Generating...",
-      "noWords": "No words generated",
-      "backupConfirm": "I have safely backed up my seed phrase",
-      "next": "Continue"
+      "title": "BIP39 Mnemonic",
+      "description": "Generate a new wallet using BIP39 mnemonic phrase"
+    },
+    "slip0039": {
+      "title": "SLIP-0039 Shamir's Secret Sharing",
+      "description": "Generate a wallet using multi-share recovery"
+    },
+    "privateKey": {
+      "title": "Private Key",
+      "description": "Generate a wallet from a private key"
     }
   },
   "bip39": {
