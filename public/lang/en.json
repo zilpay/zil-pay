@@ -79,6 +79,13 @@
     }
   },
   "bip39": {
+    "create": {
+      "title": "Generate Recovery Phrase",
+      "phrase": "Recovery Phrase",
+      "noWords": "No words generated yet",
+      "backupConfirm": "I have backed up my recovery phrase securely",
+      "next": "Next"
+    },
     "verify": {
       "title": "Verify Recovery Phrase",
       "subtitle": "Confirm Your Backup",

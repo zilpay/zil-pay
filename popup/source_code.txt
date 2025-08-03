@@ -1975,8 +1975,8 @@ export function themeDetect() {
   const generateOptions: GenerateOption[] = [
     {
       id: 'bip39',
-      titleKey: 'generateWallet.title',
-      descriptionKey: 'generateWallet.description',
+      titleKey: 'generateWallet.bip39.title',
+      descriptionKey: 'generateWallet.bip39.description',
       icon: Bip39Icon,
       action: () => handleBip39()
     },

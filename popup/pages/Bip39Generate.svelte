@@ -103,7 +103,7 @@
 <div class="bip39-page">
   <div class="page-container">
     <NavBar
-      title={$_('generateWallet.bip39.title')}
+      title={$_('bip39.create.title')}
       onBack={pop}
       rightIcon={ReloadButton}
       onRight={handleReload}
@@ -127,7 +127,7 @@
       </div>
 
       <div class="phrase-section">
-        <h3 class="section-title">{$_('generateWallet.bip39.phrase')}</h3>
+        <h3 class="section-title">{$_('bip39.create.phrase')}</h3>
         <div class="phrase-container">
           {#if phrase.length > 0}
             <div class="phrase-grid">
@@ -137,7 +137,7 @@
             </div>
           {:else}
             <div class="empty-state">
-              <span>{$_('generateWallet.bip39.noWords')}</span>
+              <span>{$_('bip39.create.noWords')}</span>
             </div>
           {/if}
         </div>
@@ -151,7 +151,7 @@
             class="checkbox-input"
           />
           <span class="checkbox-text">
-            {$_('generateWallet.bip39.backupConfirm')}
+            {$_('bip39.create.backupConfirm')}
           </span>
         </label>
       </div>
@@ -161,7 +161,7 @@
         disabled={!hasBackup || phrase.length === 0}
         width="100%"
       >
-        {$_('generateWallet.bip39.next')}
+        {$_('bip39.create.next')}
       </Button>
    </div>
   </div>
