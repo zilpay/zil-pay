@@ -53,7 +53,7 @@
   });
 </script>
 
-<div class="verify-page">
+<div class="page-container verify-page">
   <div class="page-container">
     <NavBar title={$_('bip39.verify.title')} />
 

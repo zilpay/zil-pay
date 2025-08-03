@@ -65,3 +65,11 @@
 :global(::-webkit-scrollbar) {
   display: none;
 }
+
+:global(.page-container) {
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 var(--padding-side, 20px);
+  box-sizing: border-box;
+}

@@ -52,7 +52,7 @@
   }
 </script>
 
-<div class="generate-wallet">
+<div class="page-container generate-wallet">
   <NavBar title={$_('generateWallet.title')} onBack={() => pop()} />
   
   <div class="options-container">

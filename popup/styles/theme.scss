@@ -1,4 +1,19 @@
 :global(:root) {
+  --max-content-width: 360px;
+  --padding-side: 16px;
+
+  @media (min-width: 480px) {
+    --max-content-width: 480px;
+    --padding-side: 20px;
+  }
+
+  @media (min-width: 768px) {
+    --max-content-width: 600px;
+    --padding-side: 24px;
+  }
+}
+
+:global(:root) {
   --primary-purple: #fc72ff;
   --secondary-purple: #b0b0b0;
   --background-color: #ffffff;

@@ -63,7 +63,7 @@
   }
 </script>
 
-<div class="new-wallet-options">
+<div class="page-container new-wallet-options">
   <NavBar title={$_('newWalletOptions.title')} onBack={pop} />
 
   <div class="options-container">

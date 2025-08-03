@@ -77,8 +77,8 @@
   }
 </script>
 
-<div class="restore-wallet">
-  <NavBar title={$_('restoreWallet.title')} onClose={pop} />
+<div class="page-container restore-wallet">
+  <NavBar title={$_('restoreWallet.title')} onBack={pop} />
   
   <div class="options-container">
     <div class="restore-options">
