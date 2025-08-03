@@ -42,7 +42,7 @@ export const publicRoutes: Route[] = [
   { path: "/new-wallet-options", component: NewWalletOptionsPage },
   { path: "/generate-wallet", component: GenerateWalletPage },
   { path: "/restore-wallet", component: RestoreWalletPage },
-  { path: "/restore-wallet/bip39", component: Bip39RestorePage },
+  { path: "/restore-bip39", component: Bip39RestorePage },
   { path: "/generate-bip39", component: Bip39GeneratePage },
   { path: "/verify-bip39", component: Bip39VerifyPage },
   { path: "/keypair-generate", component: KeyPairGenPage },

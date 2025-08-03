@@ -94,10 +94,10 @@
       "button": "Complete Verification"
     },
     "restore": {
-      "title": "Restore with Secret Phrase",
-      "checksumFailed": "Checksum validation failed. Please check your words for typos.",
-      "proceedAnyway": "I understand the risks, proceed with an invalid checksum.",
-      "button": "Restore Wallet"
+      "title": "Restore Secret Phrase",
+      "checksumWarning": "Checksum validation failed",
+      "bypassCheckbox": "Proceed despite invalid checksum",
+      "restoreButton": "Restore Wallet"
     }
   },
   "secretKeyGenerator": {

@@ -57,7 +57,7 @@
   ];
 
   function handleBip39() {
-    push('/restore-wallet/bip39');
+    push('/restore-bip39');
   }
 
   function handleSlip0039() {
