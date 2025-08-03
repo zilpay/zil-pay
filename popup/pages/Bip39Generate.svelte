@@ -11,7 +11,7 @@
   import { generateBip39Words } from 'popup/background/wallet';
   import cacheStore from 'popup/store/cache';
 
-  let wordCount = $state(12);
+  let wordCount = $state(24);
   let selectedLang = $state('en');
   let wordList = $state([]);
   let phrase: string[] = $state([]);
