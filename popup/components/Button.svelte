@@ -39,7 +39,7 @@
 
   .text {
     font-weight: bold;
-    font-size: 16px;
+    font-size: var(--font-size-large);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

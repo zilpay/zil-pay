@@ -219,7 +219,7 @@
   }
 
   .section-title {
-    font-size: 16px;
+    font-size: var(--font-size-large);
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
@@ -249,7 +249,7 @@
     align-items: center;
     gap: 12px;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: var(--font-size-medium);
   }
 
   .checkbox-label {
@@ -270,7 +270,7 @@
   }
 
   .checkbox-text {
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     color: var(--text-secondary);
     line-height: 1.4;
   }

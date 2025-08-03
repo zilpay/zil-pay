@@ -68,7 +68,7 @@
       flex: 1;
       background: none;
       border: none;
-      font-size: 16px;
+      font-size: var(--font-size-large);
       font-weight: 500;
       cursor: pointer;
       color: var(--text-secondary);

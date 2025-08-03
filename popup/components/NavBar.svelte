@@ -42,58 +42,58 @@
 </nav>
 
 <style lang="scss">
-	.nav-bar {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: 20px 0;
-		box-sizing: border-box;
-	}
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 0;
+    box-sizing: border-box;
+  }
 
-	.nav-title {
-		font-size: 18px;
-		font-weight: bold;
-		flex: 1;
-		text-align: center;
-		color: var(--text-primary);
-		margin: 0;
-	}
+  .nav-title {
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    flex: 1;
+    text-align: center;
+    color: var(--text-primary);
+    margin: 0;
+  }
 
-	.nav-left-button {
-		background: none;
-		border: none;
-		cursor: pointer;
-		color: var(--text-primary);
-		font-weight: bold;
-		font-size: 20px;
-		padding: 0;
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+  .nav-left-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-weight: bold;
+    font-size: calc(var(--font-size-xl) * 1.33);
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-	.arrow {
-		font-size: 20px;
-	}
+  .arrow {
+    font-size: calc(var(--font-size-xl) * 1.33);
+  }
 
-	.nav-right-button {
-		background: none;
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		padding: 0;
-		color: var(--text-primary);
-	}
+  .nav-right-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: var(--text-primary);
+  }
 
-	.nav-right-placeholder {
-		width: 36px;
-		height: 36px;
-	}
+  .nav-right-placeholder {
+    width: 36px;
+    height: 36px;
+  }
 </style>

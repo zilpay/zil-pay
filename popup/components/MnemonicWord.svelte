@@ -24,7 +24,7 @@
   }
 
   .word-index {
-    font-size: 12px;
+    font-size: var(--font-size-small);
     font-weight: 600;
     color: var(--text-secondary);
     min-width: 20px;
@@ -32,7 +32,7 @@
   }
 
   .word-text {
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     font-weight: 500;
     color: var(--text-primary);
     overflow: hidden;

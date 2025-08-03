@@ -144,7 +144,7 @@
     border: 2px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
     border-radius: 12px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     color: var(--text-primary);
     transition: all 0.2s ease;
 
@@ -186,7 +186,7 @@
   }
 
   .option-code {
-    font-size: 12px;
+    font-size: var(--font-size-small);
     color: var(--text-secondary);
     opacity: 0.8;
     flex-shrink: 0;
@@ -199,7 +199,7 @@
   }
 
   .dropdown-arrow {
-    font-size: 12px;
+    font-size: var(--font-size-small);
     color: var(--text-secondary);
     transition: transform 0.2s ease;
     flex-shrink: 0;
@@ -233,7 +233,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     color: var(--text-primary);
     transition: background-color 0.2s ease;
     text-align: left;
@@ -272,7 +272,7 @@
   .check-mark {
     color: var(--primary-purple);
     font-weight: bold;
-    font-size: 16px;
+    font-size: var(--font-size-large);
     flex-shrink: 0;
   }
 
@@ -298,11 +298,12 @@
     .dropdown-trigger,
     .dropdown-item {
       padding: 10px 12px;
-      font-size: 13px;
+      font-size: var(--font-size-small);
     }
 
     .option-code {
-      font-size: 11px;
+      font-size: calc(var(--font-size-small) * 0.9);
     }
   }
 </style>
+

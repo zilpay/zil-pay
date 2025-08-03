@@ -103,15 +103,16 @@
     min-height: 100vh;
     background: var(--background-color);
     color: var(--text-primary);
+    padding: 0 var(--padding-side);
+    box-sizing: border-box;
   }
 
   .page-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 480px;
+    max-width: var(--max-content-width);
     min-height: 100vh;
-    padding: 0 20px;
     box-sizing: border-box;
   }
 
@@ -119,78 +120,84 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    justify-content: space-between;
+    gap: 20px;
     padding-bottom: 20px;
   }
 
   .instructions {
     text-align: center;
-    padding: 20px 0;
+    padding: 16px 0;
   }
 
   .title {
-    font-size: 24px;
+    font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0;
     line-height: 1.3;
   }
 
   .description {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
     color: var(--text-secondary);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.4;
     opacity: 0.9;
+    max-width: 320px;
+    margin: 0 auto;
   }
 
   .verification-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 0 8px;
+    gap: 16px;
+    flex: 1;
+    justify-content: center;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .input-group {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 4px 0;
+    gap: 12px;
   }
 
   .word-indicator {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
-    border-radius: 12px;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-purple) 25%, transparent);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-purple) 25%, transparent);
     flex-shrink: 0;
   }
 
   .word-number {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
     font-weight: 700;
     color: white;
   }
 
   .word-input {
     flex: 1;
-    padding: 16px 20px;
-    border-radius: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
     border: 2px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
     background: var(--card-background);
     color: var(--text-primary);
-    font-size: 16px;
+    font-size: var(--font-size-medium);
     font-weight: 500;
     transition: all 0.2s ease;
 
     &:focus {
       outline: none;
       border-color: var(--primary-purple);
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-purple) 15%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 15%, transparent);
     }
 
     &::placeholder {
@@ -200,68 +207,88 @@
   }
 
   .actions {
-    margin-top: auto;
-    padding: 20px 0;
+    padding: 16px 0;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
   }
 
   @media (max-width: 480px) {
-    .page-container {
-      padding: 0 16px;
+    .content {
+      gap: 16px;
     }
 
-    .content {
-      gap: 24px;
+    .instructions {
+      padding: 12px 0;
     }
 
     .title {
-      font-size: 20px;
+      font-size: calc(var(--font-size-xl) * 0.9);
     }
 
     .description {
-      font-size: 15px;
+      font-size: var(--font-size-small);
+      max-width: 280px;
     }
 
     .verification-section {
-      gap: 16px;
-      padding: 0 4px;
+      gap: 14px;
     }
 
-    .input-group {
-      gap: 12px;
-    }
-
-    .word-indicator {
-      width: 44px;
-      height: 44px;
-    }
-
-    .word-number {
-      font-size: 15px;
-    }
-
-    .word-input {
-      padding: 14px 16px;
-      font-size: 15px;
-    }
-  }
-
-  @media (max-width: 360px) {
     .input-group {
       gap: 10px;
     }
 
     .word-indicator {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
     }
 
     .word-number {
-      font-size: 14px;
+      font-size: var(--font-size-small);
     }
 
     .word-input {
-      padding: 12px 14px;
-      font-size: 14px;
+      padding: 10px 14px;
+      font-size: var(--font-size-small);
+    }
+
+    .actions {
+      padding: 12px 0;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .verification-section {
+      gap: 12px;
+    }
+
+    .input-group {
+      gap: 8px;
+    }
+
+    .word-indicator {
+      width: 32px;
+      height: 32px;
+    }
+
+    .word-input {
+      padding: 8px 12px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .content {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .verification-section {
+      max-width: 450px;
+    }
+
+    .actions {
+      max-width: 450px;
     }
   }
 </style>

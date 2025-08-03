@@ -68,7 +68,7 @@
   }
 
   .icon-symbol {
-    font-size: 24px;
+    font-size: calc(var(--font-size-xl) * 1.6);
     font-weight: bold;
     color: white;
     display: flex;
@@ -85,7 +85,7 @@
   }
 
   .option-title {
-    font-size: 18px;
+    font-size: var(--font-size-xl);
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
@@ -93,7 +93,7 @@
   }
 
   .option-description {
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     color: var(--text-secondary);
     margin: 0;
     opacity: 0.8;
@@ -109,7 +109,7 @@
     flex-shrink: 0;
 
     span {
-      font-size: 20px;
+      font-size: calc(var(--font-size-xl) * 1.33);
       color: var(--text-secondary);
       opacity: 0.6;
     }

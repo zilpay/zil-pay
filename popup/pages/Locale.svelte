@@ -43,8 +43,8 @@
     }
 </script>
 
-<div class="locale-page">
-    <NavBar title={$_('locale.title')} onClose={pop} />
+<div class="page-container locale-page">
+    <NavBar title={$_('locale.title')} onBack={pop} />
     <div class="language-container">
         <div class="language-grid">
             {#each languages as lang}
@@ -66,108 +66,108 @@
 </div>
 
 <style lang="scss">
-    .locale-page {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        background-color: var(--background-color);
-        padding: 0 20px 20px;
-        box-sizing: border-box;
+  .locale-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--background-color);
+    padding: 0 20px 20px;
+    box-sizing: border-box;
+  }
+
+  .language-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .language-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .language-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 24px;
+    background-color: var(--card-background);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    text-align: left;
+    min-height: 72px;
+    
+    &:hover {
+      border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
     }
 
-    .language-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
+    &:focus {
+      outline: none;
+      border-color: var(--primary-purple);
     }
 
-    .language-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 8px 0;
+    &.selected {
+      background: linear-gradient(135deg, 
+          color-mix(in srgb, var(--primary-purple) 15%, transparent),
+          color-mix(in srgb, var(--primary-purple) 8%, transparent)
+      );
+      border-color: var(--primary-purple);
+
+      .selection-indicator {
+        opacity: 1;
+      }
+
+      .primary-name {
+        color: var(--primary-purple);
+      }
     }
+  }
 
-    .language-card {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: 20px 24px;
-        background-color: var(--card-background);
-        border: 2px solid transparent;
-        border-radius: 16px;
-        cursor: pointer;
-        text-align: left;
-        min-height: 72px;
-        
-        &:hover {
-            border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
-        }
+  .language-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
 
-        &:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-        }
+  .primary-name {
+    font-size: var(--font-size-large);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
 
-        &.selected {
-            background: linear-gradient(135deg, 
-                color-mix(in srgb, var(--primary-purple) 15%, transparent),
-                color-mix(in srgb, var(--primary-purple) 8%, transparent)
-            );
-            border-color: var(--primary-purple);
+  .secondary-name {
+    font-size: var(--font-size-medium);
+    color: var(--text-secondary);
+    opacity: 0.8;
+  }
 
-            .selection-indicator {
-                opacity: 1;
-            }
-
-            .primary-name {
-                color: var(--primary-purple);
-            }
-        }
+  .selection-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
+    opacity: 0;
+    position: relative;
+    flex-shrink: 0;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 10px;
+      border: 2px solid white;
+      border-top: none;
+      border-left: none;
+      transform: translate(-50%, -60%) rotate(45deg);
     }
-
-    .language-content {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        flex: 1;
-    }
-
-    .primary-name {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--text-primary);
-    }
-
-    .secondary-name {
-        font-size: 14px;
-        color: var(--text-secondary);
-        opacity: 0.8;
-    }
-
-    .selection-indicator {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
-        opacity: 0;
-        position: relative;
-        flex-shrink: 0;
-        
-        &::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 6px;
-            height: 10px;
-            border: 2px solid white;
-            border-top: none;
-            border-left: none;
-            transform: translate(-50%, -60%) rotate(45deg);
-        }
-    }
+  }
 </style>
