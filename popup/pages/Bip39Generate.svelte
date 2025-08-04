@@ -175,16 +175,6 @@
     color: var(--text-primary);
   }
 
-  .page-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 480px;
-    min-height: 100vh;
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
-
   .content {
     flex: 1;
     display: flex;
