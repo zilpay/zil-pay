@@ -1,7 +1,7 @@
 <script lang="ts">
   let {
     text = '',
-    ariaLabel = 'Copy to clipboard',
+    ariaLabel = '',
     size = 44,
     disabled = false
   }: {

@@ -4,12 +4,12 @@
   import HexKey from '../components/HexKey.svelte';
   import Button from '../components/Button.svelte';
   import CopyButton from '../components/CopyButton.svelte';
+  import PrintButton from '../components/PrintButton.svelte';
   import ReloadButton from '../components/ReloadButton.svelte';
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { pop } from '../router/navigation';
   import { generateKeyPair } from 'popup/background/wallet';
   import { ETHEREUM } from 'config/slip44';
-
 
   let keyPair = $state<IKeyPair>({
     address: "",
@@ -55,6 +55,19 @@
           hexKey={keyPair.privateKey}
           title={$_('secretKeyGenerator.privateKey')}
         />
+        
+        <div class="key-actions">
+          <CopyButton
+            text={keyPair.privateKey}
+            ariaLabel="Copy private key"
+            size={44}
+          />
+          <PrintButton
+            keyPair={keyPair}
+            ariaLabel="Print private key"
+            size={44}
+          />
+        </div>
       </div>
 
       <div class="actions-section">
@@ -69,16 +82,10 @@
               {$_('secretKeyGenerator.backupCheckbox')}
             </span>
           </label>
-
-          <CopyButton
-            text={keyPair.privateKey}
-            ariaLabel="Copy private key"
-            size={44}
-          />
         </div>
 
         <Button
-    onclick={handleNext}
+          onclick={handleNext}
           disabled={!hasBackup || !keyPair.privateKey}
           width="100%"
         >
@@ -127,6 +134,13 @@
     overflow-y: auto;
   }
 
+  .key-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
   .actions-section {
     display: flex;
     flex-direction: column;
@@ -140,7 +154,7 @@
   .backup-confirmation {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
   }
 
   .checkbox-container {
@@ -149,7 +163,6 @@
     gap: 12px;
     cursor: pointer;
     user-select: none;
-    flex: 1;
   }
 
   .checkbox-input {
@@ -176,13 +189,13 @@
       gap: 20px;
     }
 
+    .key-actions {
+      gap: 10px;
+    }
+
     .actions-section {
       padding: 12px 0;
       gap: 14px;
-    }
-
-    .backup-confirmation {
-      gap: 10px;
     }
 
     .checkbox-text {
@@ -193,6 +206,10 @@
   @media (max-width: 360px) {
     .content {
       gap: 16px;
+    }
+
+    .key-actions {
+      gap: 8px;
     }
   }
 

@@ -5,6 +5,8 @@
   import Button from '../components/Button.svelte';
   import ReloadButton from '../components/ReloadButton.svelte';
   import MnemonicWord from '../components/MnemonicWord.svelte';
+  import CopyButton from '../components/CopyButton.svelte';
+  import PrintButton from '../components/PrintButton.svelte';
   import { _ } from 'popup/i18n';
   import { locale } from 'popup/i18n';
   import { pop, push } from '../router/navigation';
@@ -118,6 +120,8 @@
             placeholder="Select language"
             width="200px"
           />
+          <CopyButton text={phrase.join(" ")}/>
+          <PrintButton phrase={phrase}/>
         </div>
       </div>
 
@@ -202,7 +206,10 @@
     gap: 8px;
 
     &.centered {
+      flex-direction: row;
       align-items: center;
+      justify-content: center;
+      gap: 16px;
     }
   }
 

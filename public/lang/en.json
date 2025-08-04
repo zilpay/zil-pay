@@ -70,7 +70,7 @@
       "description": "Generate a new wallet using BIP39 mnemonic phrase"
     },
     "slip0039": {
-      "title": "SLIP-0039 Shamir's Secret Sharing",
+      "title": "SLIP-0039",
       "description": "Generate a wallet using multi-share recovery"
     },
     "privateKey": {
@@ -106,5 +106,72 @@
     "publicKey": "Public Key", 
     "backupCheckbox": "I have backed up my secret recovery phrase",
     "nextButton": "Next"
+  },
+  "print": {
+    "bip39": {
+      "title": "BIP39 Mnemonic Recovery Phrase",
+      "header": {
+        "title": "Cryptocurrency Recovery Phrase",
+        "subtitle": "BIP39 Mnemonic Seed Phrase",
+        "generated": "Generated"
+      },
+      "warning": {
+        "title": "SECURITY WARNING",
+        "secure": "Keep this phrase completely secure and private",
+        "access": "Anyone with access to this phrase can access your cryptocurrency",
+        "noOnline": "Never share this phrase online or store it digitally",
+        "multipleBackups": "Store multiple physical copies in secure locations",
+        "testRestore": "Verify you can restore your wallet before sending funds"
+      },
+      "phrase": {
+        "title": "Recovery Phrase",
+        "words": "words",
+        "copyTitle": "Copy this phrase (for easy backup):"
+      },
+      "instructions": {
+        "title": "Recovery Instructions:",
+        "writeDown": "Write down these words in the exact order shown",
+        "doubleCheck": "Double-check each word for accuracy",
+        "store": "Store this backup in a safe, dry place",
+        "test": "Test recovery before transferring large amounts",
+        "noPhotos": "Never take photos or make digital copies"
+      },
+      "footer": {
+        "warning": "This document contains sensitive cryptographic material. Handle with extreme care."
+      }
+    },
+    "keypair": {
+      "title": "Cryptocurrency Key Pair",
+      "header": {
+        "title": "Cryptocurrency Key Pair",
+        "subtitle": "Private & Public Keys",
+        "generated": "Generated"
+      },
+      "warning": {
+        "title": "SECURITY WARNING",
+        "secure": "Keep these keys completely secure and private",
+        "access": "Anyone with access to the private key can access your cryptocurrency",
+        "noOnline": "Never share these keys online or store them digitally",
+        "multipleBackups": "Store multiple physical copies in secure locations",
+        "testImport": "Verify you can import these keys before sending funds"
+      },
+      "keys": {
+        "title": "Key Information",
+        "privateKey": "Private Key",
+        "publicKey": "Public Key",
+        "address": "Address"
+      },
+      "instructions": {
+        "title": "Usage Instructions:",
+        "writeDown": "Write down these keys exactly as shown",
+        "doubleCheck": "Double-check each character for accuracy",
+        "store": "Store this backup in a safe, dry place",
+        "test": "Test key import before transferring large amounts",
+        "noPhotos": "Never take photos or make digital copies"
+      },
+      "footer": {
+        "warning": "This document contains sensitive cryptographic material. Handle with extreme care."
+      }
+    }
   }
 }
