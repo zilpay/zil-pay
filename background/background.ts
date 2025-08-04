@@ -25,6 +25,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.GEN_KEYPAIR:
         core.wallet.genKeyPair(msg.payload.slip44, sendResponse);
         return true;
+      case MTypePopup.FROM_PRIV_KEY:
+        core.wallet.keyPairFromPrivateKey(msg.payload.slip44, msg.payload.key, sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;

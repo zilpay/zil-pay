@@ -34,6 +34,18 @@ export async function generateKeyPair(slip44: number) {
   return resolve;
 }
 
+export async function fromRpivKey(slip44: number, key: string) {
+  const data =    await new Message<SendResponseParams>({
+    type: MTypePopup.FROM_PRIV_KEY,
+    payload: {
+      slip44,
+      key,
+    },
+  }).send();
+  let resolve = warpMessage(data) as IKeyPair;
+  return resolve;
+}
+
 export async function validateBip39Checksum(phrase: string, wordList: string[]) {
   const data =    await new Message<SendResponseParams>({
     type: MTypePopup.VALIDATE_BIP39_CHECK_SUM,

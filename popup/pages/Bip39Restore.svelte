@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from '../i18n';
-  import { pop } from '../router/navigation';
+  import { pop, push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WordCountSelector from '../components/WordCountSelector.svelte';
   import MnemonicWordInput from '../components/MnemonicWordInput.svelte';
@@ -8,6 +8,7 @@
   import { detectLanguage } from 'lib/utils/locale';
   import { ALLOWED_COUNTS, LANGUAGE_OPTIONS } from 'config/bip39';
   import { validateBip39Checksum } from 'popup/background/wallet';
+  import { cacheStore }  from 'popup/store/cache';
 
   let words = $state<string[]>(Array(12).fill(''));
   let wordErrors = $state<number[]>([]);
@@ -165,7 +166,10 @@
   }
 
   function handleRestore() {
-    console.log('Restoring wallet with phrase:', words.join(' '));
+    cacheStore.set({
+      verifyPhrase: words,
+    });
+    push("/network-setup");
   }
 
   $effect(() => {

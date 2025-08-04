@@ -10,6 +10,7 @@
   import { pop, push } from '../router/navigation';
   import { generateKeyPair } from 'popup/background/wallet';
   import { ETHEREUM } from 'config/slip44';
+  import { cacheStore }  from 'popup/store/cache';
 
   let keyPair = $state<IKeyPair>({
     address: "",
@@ -29,6 +30,9 @@
   }
 
   function handleNext() {
+    cacheStore.set({
+      keyPair: keyPair,
+    });
     push("/network-setup");
   }
 

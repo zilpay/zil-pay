@@ -1,33 +1,50 @@
 <script lang="ts">
+  import type { IKeyPair } from 'types/wallet';
   import { _ } from '../i18n';
-  import { pop } from '../router/navigation';
+  import { pop, push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import HexKey from '../components/HexKey.svelte';
+  import { cacheStore }  from 'popup/store/cache';
+  import { fromRpivKey } from 'popup/background/wallet';
+  import { ETHEREUM } from 'config/slip44';
+
 
   let input = $state('');
   let isValid = $state(false);
-  let hexKey = $state('');
+  let keyPair = $state<IKeyPair>({
+    address: "",
+    privateKey: "",
+    publicKey: "",
+    slip44: ETHEREUM,
+  });
 
-  function handleInput(event: Event) {
+  async function handleInput(event: Event) {
     const value = (event.target as HTMLInputElement).value.trim();
     input = value;
     validateKey(value);
+
+    try {
+      keyPair = await fromRpivKey(ETHEREUM, value); // TODO: change it depends of network
+    } catch {
+      isValid = false;
+    }
   }
 
   function validateKey(value: string) {
     const clean = value.replace(/^0x/, '').toLowerCase();
     if (/^[0-9a-f]{64}$/i.test(clean)) {
-      hexKey = clean;
       isValid = true;
     } else {
-      hexKey = '';
       isValid = false;
     }
   }
 
   function handleRestore() {
-    console.log('Restore key:', hexKey);
+    cacheStore.set({
+      keyPair: keyPair,
+    });
+    push("/network-setup");
   }
 </script>
 
@@ -52,8 +69,8 @@
       />
     </div>
 
-    {#if isValid}
-      <HexKey hexKey={hexKey} title={$_('restoreKeyPair.previewTitle')} />
+    {#if isValid && keyPair.privateKey}
+      <HexKey hexKey={keyPair.privateKey} title={$_('restoreKeyPair.previewTitle')} />
     {/if}
 
     <Button width="100%" disabled={!isValid} onclick={handleRestore}>

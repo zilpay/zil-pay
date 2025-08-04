@@ -64,6 +64,21 @@ export class WalletService {
     }
   }
 
+  async keyPairFromPrivateKey(slip44: number, key: string, sendResponse: StreamResponse) {
+    try {
+      const keyBuf = hexToUint8Array(key);
+      const keyPair = await KeyPair.fromPrivateKey(keyBuf, slip44);
+
+      sendResponse({
+        resolve: await keyPair.toJSON()
+      });
+    } catch(err) {
+      sendResponse({
+        reject: String(err)
+      });
+    }
+  }
+
   async getGlobalState(sendResponse: StreamResponse) {
     sendResponse({
       resolve: this.#state
