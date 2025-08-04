@@ -6,16 +6,16 @@
   import WalletOption from '../components/WalletOption.svelte';
   import Switch from '../components/Switch.svelte';
   import { _ } from '../i18n';
-  import { pop } from '../router/navigation';
+  import { pop, push } from '../router/navigation';
   import globalStore from 'popup/store/global';
   import { viewChain } from 'lib/popup/url';
   import { themeDetect } from 'popup/mixins/theme';
   import { Themes } from 'config/theme';
+  import { cacheStore }  from 'popup/store/cache';
 
   let isTestnet = $state(false);
   let mainnetChains = $state<IChainConfigState[]>([]);
   let testnetChains = $state<IChainConfigState[]>([]);
-  let loading = $state(true);
 
   let currentTheme = $state(
     $globalStore.appearances === Themes.System
@@ -40,14 +40,24 @@
   }
 
   async function loadChains() {
-    loading = true;
     const chains = await getChains();
     mainnetChains = chains.mainnet || [];
     testnetChains = chains.testnet || [];
-    loading = false;
+  }
+
+  function next(chain: IChainConfigState) {
+    cacheStore.set({
+      ...$cacheStore,
+      chain,
+    });
+    push("/password-setup");
   }
 
   $effect(() => {
+    if (!$cacheStore.keyPair && !$cacheStore.verifyPhrase) {
+      return push("/start");
+    }
+
     loadChains();
   });
 
@@ -72,21 +82,16 @@
   </div>
 
   <div class="network-list">
-    {#if loading}
-      <p class="loading-text">Loading chains...</p>
-    {:else}
-      {#each (isTestnet ? testnetChains : mainnetChains) as chain}
-        <WalletOption
-          title={chain.name}
-          description={chain.chain}
-          icon={viewChain({ network: chain, theme: currentTheme })}
-          tags={generateTags(chain, isTestnet)}
-          disabled={false}
-        />
-      {:else}
-        <p class="empty-text">No chains available.</p>
-      {/each}
-    {/if}
+    {#each (isTestnet ? testnetChains : mainnetChains) as chain}
+      <WalletOption
+        title={chain.name}
+        description={chain.chain}
+        icon={viewChain({ network: chain, theme: currentTheme })}
+        tags={generateTags(chain, isTestnet)}
+        disabled={false}
+        onclick={() => next(chain)}
+      />
+    {/each}
   </div>
 </div>
 
@@ -111,13 +116,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-  }
-
-  .loading-text,
-  .empty-text {
-    text-align: center;
-    color: var(--text-secondary);
-    margin: 40px 0;
   }
 
   @media (max-width: 480px) {
