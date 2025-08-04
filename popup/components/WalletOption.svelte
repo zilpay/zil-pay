@@ -3,11 +3,22 @@
     title,
     description,
     icon,
-    onclick = () => {}
+    onclick = () => {},
+    disabled = false
   } = $props();
+
+  function handleClick() {
+    if (!disabled) {
+      onclick();
+    }
+  }
 </script>
 
-<button class="wallet-option" onclick={() => onclick()}>
+<button 
+  class="wallet-option" 
+  onclick={handleClick}
+  {disabled}
+>
   <div class="option-icon">
     {#if typeof icon === 'string'}
       <span class="icon-symbol">{icon}</span>
@@ -39,18 +50,43 @@
     min-height: 80px;
     transition: all 0.2s ease;
 
-    &:hover {
+    &:hover:not(:disabled) {
       border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
       background-color: color-mix(in srgb, var(--card-background) 95%, var(--primary-purple));
     }
 
-    &:focus {
+    &:focus:not(:disabled) {
       outline: none;
       border-color: var(--primary-purple);
     }
 
-    &:active {
+    &:active:not(:disabled) {
       transform: scale(0.98);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      background-color: color-mix(in srgb, var(--card-background) 80%, transparent);
+      
+      .option-title {
+        color: color-mix(in srgb, var(--text-primary) 60%, transparent);
+      }
+      
+      .option-description {
+        color: color-mix(in srgb, var(--text-secondary) 50%, transparent);
+      }
+      
+      .option-icon {
+        opacity: 0.5;
+        background: color-mix(in srgb, var(--primary-purple) 50%, transparent);
+        box-shadow: none;
+      }
+      
+      .option-arrow span {
+        color: color-mix(in srgb, var(--text-secondary) 40%, transparent);
+        opacity: 0.4;
+      }
     }
   }
 
@@ -115,7 +151,7 @@
     }
   }
 
-  .wallet-option:hover .option-arrow span {
+  .wallet-option:hover:not(:disabled) .option-arrow span {
     color: var(--primary-purple);
     opacity: 1;
   }

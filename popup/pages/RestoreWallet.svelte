@@ -15,6 +15,7 @@
     titleKey: string;
     descriptionKey: string;
     icon: any;
+    disabled: boolean;
     action: () => void;
   };
 
@@ -24,27 +25,31 @@
       titleKey: 'restoreWallet.bip39.title',
       descriptionKey: 'restoreWallet.bip39.description',
       icon: Bip39Icon,
+      disabled: false,
       action: () => handleBip39()
-    },
-    {
-      id: 'slip0039',
-      titleKey: 'restoreWallet.slip0039.title',
-      descriptionKey: 'restoreWallet.slip0039.description',
-      icon: PuzzleIcon,
-      action: () => handleSlip0039()
     },
     {
       id: 'private-key',
       titleKey: 'restoreWallet.privateKey.title',
       descriptionKey: 'restoreWallet.privateKey.description',
       icon: LockIcon,
+      disabled: false,
       action: () => handlePrivateKey()
+    },
+    {
+      id: 'slip0039',
+      titleKey: 'restoreWallet.slip0039.title',
+      descriptionKey: 'restoreWallet.slip0039.description',
+      icon: PuzzleIcon,
+      disabled: true,
+      action: () => handleSlip0039()
     },
     {
       id: 'keystore-file',
       titleKey: 'restoreWallet.keystoreFile.title',
       descriptionKey: 'restoreWallet.keystoreFile.description',
       icon: BincodeIcon,
+      disabled: true,
       action: () => handleKeystoreFile()
     },
     {
@@ -52,6 +57,7 @@
       titleKey: 'restoreWallet.qrcode.title',
       descriptionKey: 'restoreWallet.qrcode.description',
       icon: QRCodeIcon,
+      disabled: true,
       action: () => handleQRCode()
     }
   ];
@@ -65,7 +71,7 @@
   }
 
   function handlePrivateKey() {
-    push('/restore-wallet/private-key');
+    push('/restore-private-key');
   }
 
   function handleKeystoreFile() {
@@ -87,6 +93,7 @@
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
           icon={option.icon}
+          disabled={option.disabled}
           onclick={() => option.action()}
         />
       {/each}

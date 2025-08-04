@@ -9,6 +9,7 @@
     titleKey: string;
     descriptionKey: string;
     icon: string;
+    disabled: boolean;
     action: () => void;
   };
 
@@ -18,6 +19,7 @@
       titleKey: 'newWalletOptions.newWallet.title',
       descriptionKey: 'newWalletOptions.newWallet.description',
       icon: '+',
+      disabled: false,
       action: () => handleNewWallet()
     },
     {
@@ -25,6 +27,7 @@
       titleKey: 'newWalletOptions.existingWallet.title',
       descriptionKey: 'newWalletOptions.existingWallet.description',
       icon: '↑',
+      disabled: false,
       action: () => handleExistingWallet()
     },
     {
@@ -32,6 +35,7 @@
       titleKey: 'newWalletOptions.pairWithLedger.title',
       descriptionKey: 'newWalletOptions.pairWithLedger.description',
       icon: '⊞',
+      disabled: true,
       action: () => handlePairLedger()
     }
   ];
@@ -42,6 +46,7 @@
       titleKey: 'newWalletOptions.watchAccount.title',
       descriptionKey: 'newWalletOptions.watchAccount.description',
       icon: '👁',
+      disabled: true,
       action: () => handleWatchAccount()
     }
   ];
@@ -73,6 +78,7 @@
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
           icon={option.icon}
+            disabled={option.disabled}
           onclick={option.action}
         />
       {/each}
@@ -86,6 +92,7 @@
             title={$_(option.titleKey)}
             description={$_(option.descriptionKey)}
             icon={option.icon}
+            disabled={option.disabled}
             onclick={option.action}
           />
         {/each}

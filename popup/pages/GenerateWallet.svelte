@@ -12,6 +12,7 @@
     titleKey: string;
     descriptionKey: string;
     icon: any;
+    disabled: boolean;
     action: () => void;
   };
 
@@ -21,22 +22,25 @@
       titleKey: 'generateWallet.bip39.title',
       descriptionKey: 'generateWallet.bip39.description',
       icon: Bip39Icon,
+      disabled: false,
       action: () => handleBip39()
-    },
-    {
-      id: 'slip0039',
-      titleKey: 'generateWallet.slip0039.title',
-      descriptionKey: 'generateWallet.slip0039.description',
-      icon: GridIcon,
-      action: () => handleSlip0039()
     },
     {
       id: 'private-key',
       titleKey: 'generateWallet.privateKey.title',
       descriptionKey: 'generateWallet.privateKey.description',
       icon: LockIcon,
+      disabled: false,
       action: () => handlePrivateKey()
-    }
+    },
+    {
+      id: 'slip0039',
+      titleKey: 'generateWallet.slip0039.title',
+      descriptionKey: 'generateWallet.slip0039.description',
+      icon: GridIcon,
+      disabled: true,
+      action: () => handleSlip0039()
+    },
   ];
 
   function handleBip39() {
@@ -62,6 +66,7 @@
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
           icon={option.icon}
+          disabled={option.disabled}
           onclick={() => option.action()}
         />
       {/each}

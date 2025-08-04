@@ -173,5 +173,12 @@
         "warning": "This document contains sensitive cryptographic material. Handle with extreme care."
       }
     }
+  },
+  "restoreKeyPair": {
+    "title": "Restore Private Key",
+    "inputLabel": "Paste your private key",
+    "placeholder": "Enter 64-character hex key",
+    "previewTitle": "Your Private Key",
+    "restoreButton": "Restore Key"
   }
 }
