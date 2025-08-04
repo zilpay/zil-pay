@@ -3,6 +3,7 @@
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
   import Button from '../components/Button.svelte';
+  import Switch from '../components/Switch.svelte';
   import { _ } from '../i18n';
   import { pop } from '../router/navigation';
 
@@ -25,30 +26,24 @@
 </script>
 
 <div class="page-container network-setup">
-  <NavBar title="Network Setup" onBack={pop} />
+  <NavBar
+    title={$_('networkSetup.title')}
+    onBack={pop}
+  />
 
   <div class="controls">
-    <div class="toggle-switch">
-      <button
-        class:selected={!isTestnet}
-        onclick={() => isTestnet = false}
-      >
-        Mainnet
-      </button>
-      <button
-        class:selected={isTestnet}
-        onclick={() => isTestnet = true}
-      >
-        Testnet
-      </button>
-    </div>
+    <Switch
+      bind:checked={isTestnet}
+      ariaLabel="Mainnet"
+      name="testnet"
+    />
   </div>
 
   <div class="network-list">
     {#if loading}
       <p class="loading-text">Loading chains...</p>
     {:else}
-      {#each isTestnet ? testnetChains : mainnetChains as chain}
+      {#each (isTestnet ? testnetChains : mainnetChains) as chain}
         <WalletOption
           title={chain.name}
           description={chain.chain}
@@ -76,43 +71,9 @@
   }
 
   .controls {
-    margin: 16px 0;
+    margin: 0 0 16px;
     display: flex;
-    justify-content: center;
-  }
-
-  .toggle-switch {
-    display: flex;
-    border-radius: 12px;
-    background: var(--card-background);
-    overflow: hidden;
-    border: 2px solid var(--primary-purple);
-  }
-
-  .toggle-switch button {
-    flex: 1;
-    padding: 10px 16px;
-    background: none;
-    border: none;
-    font-size: var(--font-size-medium);
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: background-color 0.2s;
-
-    &.selected {
-      background: var(--primary-purple);
-      color: white;
-    }
-
-    &:not(.selected):hover {
-      background: color-mix(in srgb, var(--primary-purple) 10%, transparent);
-      color: var(--text-primary);
-    }
-
-    &:focus {
-      outline: none;
-    }
+    justify-content: flex-end;
   }
 
   .network-list {

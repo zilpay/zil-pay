@@ -7,7 +7,7 @@
     size = 'medium' as Size,
     id = '',
     name = '',
-    ariaLabel = 'Toggle switch',
+    ariaLabel = '',
     onChange = (_newChecked: boolean) => {}
   }: {
     checked?: boolean;
