@@ -3,7 +3,7 @@
   import { push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
-  import cacheStore from '../store/cache';
+  import { cacheStore } from '../store/cache';
 
   const VERIFICATION_COUNT = 4;
 
@@ -24,23 +24,27 @@
   function validate() {
     isValid = userInputs.every((input, idx) => {
       const original = phrase[selectedIndices[idx]];
-      return input.trim().toLowerCase() === original?.toLowerCase();
+      const userInput = input.trim().toLowerCase();
+      const expectedWord = original?.toLowerCase();
+      return userInput === expectedWord && userInput.length > 0;
     });
   }
 
+  $effect(() => {
+    validate();
+  });
+
   function handleVerify() {
-    cacheStore.set([]);
-    push('/home');
+    push('/network-setup');
   }
 
   $effect(() => {
-    phrase = $cacheStore;
-    
-    if (phrase.length === 0) {
-      push('/generate-bip39');
-      return;
+    if (!$cacheStore.verifyPhrase || $cacheStore.verifyPhrase.length === 0) {
+      return push('/generate-bip39');
     }
-    
+
+    phrase = $cacheStore.verifyPhrase;
+        
     if (phrase.length < VERIFICATION_COUNT) {
       push('/generate-bip39');
       return;
@@ -72,7 +76,6 @@
             <input
               type="text"
               bind:value={userInputs[i]}
-              oninput={validate}
               placeholder={$_('bip39.verify.placeholder')}
               autocapitalize="off"
               autocomplete="off"

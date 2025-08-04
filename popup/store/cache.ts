@@ -1,3 +1,7 @@
 import { writable } from 'svelte/store';
 
-export default writable<string[]>([]);
+export interface ICache {
+  verifyPhrase?: string[];
+}
+
+export const cacheStore = writable<ICache>({});

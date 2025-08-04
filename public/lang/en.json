@@ -180,5 +180,8 @@
     "placeholder": "Enter 64-character hex key",
     "previewTitle": "Your Private Key",
     "restoreButton": "Restore Key"
+  },
+  "networkSetup": {
+    "title": "Setup Network"
   }
 }

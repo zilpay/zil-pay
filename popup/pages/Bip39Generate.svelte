@@ -11,7 +11,7 @@
   import { locale } from 'popup/i18n';
   import { pop, push } from '../router/navigation';
   import { generateBip39Words } from 'popup/background/wallet';
-  import cacheStore from 'popup/store/cache';
+  import { cacheStore }  from 'popup/store/cache';
   import { LANGUAGE_OPTIONS } from 'config/bip39';
 
 
@@ -70,7 +70,9 @@
 
   function handleNext() {
     if (hasBackup && phrase.length > 0) {
-      cacheStore.set(phrase);
+      cacheStore.set({
+        verifyPhrase: phrase,
+      });
       push(`/verify-bip39`);
     }
   }
