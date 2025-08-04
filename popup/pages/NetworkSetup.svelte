@@ -1,258 +1,142 @@
 <script lang="ts">
+  import { getChains, type Chain } from '../mixins/chains';
   import NavBar from '../components/NavBar.svelte';
+  import WalletOption from '../components/WalletOption.svelte';
   import Button from '../components/Button.svelte';
-  import SvgLoad from '../components/SvgLoad.svelte';
+  import { _ } from '../i18n';
+  import { pop } from '../router/navigation';
 
-  import { push } from '../router/navigation';
+  let isTestnet = $state(false);
+  let mainnetChains = $state<Chain[]>([]);
+  let testnetChains = $state<Chain[]>([]);
+  let loading = $state(true);
 
-  type Chain = {
-    name: string;
-    chain: string;
-    logo: string;
-    rpc: string[];
-    ftokens: { symbol: string; native: boolean }[];
-    chainIds: number[];
-    explorers: { name: string; url: string }[];
-  };
+  async function loadChains() {
+    loading = true;
+    const chains = await getChains();
+    mainnetChains = chains.mainnet || [];
+    testnetChains = chains.testnet || [];
+    loading = false;
+  }
 
-  let chains: Chain[] = $state([]);
-  let selectedChainIndex = $state<number | null>(null);
-  let search = $state('');
-  let showTestnet = $state(false);
-
-  const filteredChains = $derived(() => {
-    return chains.filter((c) => {
-      if (!c.name.toLowerCase().includes(search.toLowerCase())) return false;
-      if (!showTestnet && c.chainIds.some((id) => id === 0)) return false;
-      return true;
-    });
+  $effect(() => {
+    loadChains();
   });
-
-  async function fetchChains() {
-    try {
-      const res = await fetch('/chains/mainnet.json');
-      if (!res.ok) throw new Error('Failed to load chains');
-      chains = await res.json();
-    } catch (err) {
-      console.error('Error fetching chains:', err);
-    }
-  }
-
-  function handleSelect(index: number) {
-    selectedChainIndex = index;
-  }
-
-  function handleNext() {
-    if (selectedChainIndex !== null) {
-      const chain = filteredChains[selectedChainIndex];
-      console.log('Selected chain:', chain);
-      // push('/next-step') — for continuation
-    }
-  }
-
-  $effect(fetchChains);
 </script>
 
 <div class="page-container network-setup">
-  <NavBar title="Select Network" />
+  <NavBar title="Network Setup" onBack={pop} />
 
-  <div class="search-toggle">
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Search"
-      bind:value={search}
-    />
-    <label class="testnet-toggle">
-      <span>Testnet</span>
-      <input
-        type="checkbox"
-        bind:checked={showTestnet}
-      />
-      <div class="toggle-switch" />
-    </label>
-  </div>
-
-  <div class="chain-list">
-    {#each filteredChains as chain, index}
+  <div class="controls">
+    <div class="toggle-switch">
       <button
-        class="chain-option"
-        class:selected={selectedChainIndex === index}
-        on:click={() => handleSelect(index)}
+        class:selected={!isTestnet}
+        onclick={() => isTestnet = false}
       >
-        <div class="logo">
-          <SvgLoad src={chain.logo.replace('%{shortName}%', chain.shortName).replace('%{dark,light}%', 'light')} width="32" height="32" />
-        </div>
-        <div class="info">
-          <h3>{chain.name}</h3>
-          <p>Chain ID: {chain.chainIds.join(', ')}</p>
-          <p>Token: {chain.ftokens.find(t => t.native)?.symbol}</p>
-          <p>Explorer: {chain.explorers[0]?.name}</p>
-        </div>
-        <div class="option-meta">
-          <span class="tag">Mainnet</span>
-          <div class="radio">
-            {#if selectedChainIndex === index}
-              <div class="inner" />
-            {/if}
-          </div>
-        </div>
+        Mainnet
       </button>
-    {/each}
+      <button
+        class:selected={isTestnet}
+        onclick={() => isTestnet = true}
+      >
+        Testnet
+      </button>
+    </div>
   </div>
 
-  <Button disabled={selectedChainIndex === null} onclick={handleNext}>
-    Next
-  </Button>
+  <div class="network-list">
+    {#if loading}
+      <p class="loading-text">Loading chains...</p>
+    {:else}
+      {#each isTestnet ? testnetChains : mainnetChains as chain}
+        <WalletOption
+          title={chain.name}
+          description={chain.chain}
+          icon={chain.logo}
+          disabled={false}
+        />
+      {:else}
+        <p class="empty-text">No chains available.</p>
+      {/each}
+    {/if}
+  </div>
+
+  <div class="action-footer">
+    <Button width="100%" disabled>{$_('common.continue')}</Button>
+  </div>
 </div>
 
 <style lang="scss">
   .network-setup {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding-bottom: 20px;
+    height: 100vh;
     background: var(--background-color);
+    padding: 0 20px 20px;
   }
 
-  .search-toggle {
+  .controls {
+    margin: 16px 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .search-input {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: var(--font-size-medium);
-    background: var(--card-background);
-    color: var(--text-primary);
-  }
-
-  .testnet-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    font-size: var(--font-size-small);
-    color: var(--text-secondary);
-  }
-
-  .testnet-toggle input[type='checkbox'] {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    position: absolute;
+    justify-content: center;
   }
 
   .toggle-switch {
-    width: 42px;
-    height: 24px;
-    background: var(--card-background);
-    border-radius: 20px;
-    position: relative;
-    transition: background 0.3s ease;
-  }
-
-  .toggle-switch::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: var(--text-primary);
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-  }
-
-  .testnet-toggle input:checked + .toggle-switch::before {
-    transform: translateX(18px);
-  }
-
-  .chain-list {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-    padding-bottom: 20px;
-  }
-
-  .chain-option {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 16px;
-    border-radius: 14px;
+    border-radius: 12px;
     background: var(--card-background);
-    border: 2px solid transparent;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    overflow: hidden;
+    border: 2px solid var(--primary-purple);
   }
 
-  .chain-option.selected {
-    border-color: var(--primary-purple);
-  }
-
-  .logo {
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-  }
-
-  .info {
+  .toggle-switch button {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    font-size: var(--font-size-medium);
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background-color 0.2s;
 
-    h3 {
-      font-size: var(--font-size-large);
-      margin: 0;
+    &.selected {
+      background: var(--primary-purple);
+      color: white;
+    }
+
+    &:not(.selected):hover {
+      background: color-mix(in srgb, var(--primary-purple) 10%, transparent);
       color: var(--text-primary);
     }
 
-    p {
-      font-size: var(--font-size-small);
-      color: var(--text-secondary);
-      margin: 0;
+    &:focus {
+      outline: none;
     }
   }
 
-  .option-meta {
+  .network-list {
+    flex: 1;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
+    gap: 12px;
+  }
 
-    .tag {
-      font-size: var(--font-size-small);
-      background: green;
-      color: white;
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
+  .loading-text,
+  .empty-text {
+    text-align: center;
+    color: var(--text-secondary);
+    margin: 40px 0;
+  }
 
-    .radio {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid var(--primary-purple);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .action-footer {
+    padding-top: 16px;
+  }
 
-      .inner {
-        width: 10px;
-        height: 10px;
-        background: var(--primary-purple);
-        border-radius: 50%;
-      }
+  @media (max-width: 480px) {
+    .network-setup {
+      padding: 0 16px 20px;
     }
   }
 </style>
