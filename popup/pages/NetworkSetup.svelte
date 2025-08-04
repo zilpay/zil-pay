@@ -1,16 +1,43 @@
 <script lang="ts">
-  import { getChains, type Chain } from '../mixins/chains';
+  import type { IChainConfigState } from 'background/storage/chain';
+
+  import { getChains } from '../mixins/chains';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
-  import Button from '../components/Button.svelte';
   import Switch from '../components/Switch.svelte';
   import { _ } from '../i18n';
   import { pop } from '../router/navigation';
+  import globalStore from 'popup/store/global';
+  import { viewChain } from 'lib/popup/url';
+  import { themeDetect } from 'popup/mixins/theme';
+  import { Themes } from 'config/theme';
 
   let isTestnet = $state(false);
-  let mainnetChains = $state<Chain[]>([]);
-  let testnetChains = $state<Chain[]>([]);
+  let mainnetChains = $state<IChainConfigState[]>([]);
+  let testnetChains = $state<IChainConfigState[]>([]);
   let loading = $state(true);
+
+  let currentTheme = $state(
+    $globalStore.appearances === Themes.System
+      ? themeDetect()
+      : $globalStore.appearances,
+  );
+
+  function generateTags(chain: IChainConfigState, isTestnetMode: boolean): string[] {
+    const tags: string[] = [];
+
+    if (chain.chainIds) {
+      tags.push(`ID: ${chain.chainIds[0]}`);
+    }
+
+    if (isTestnetMode) {
+      tags.push('testnet');
+    } else {
+      tags.push('mainnet');
+    }
+
+    return tags;
+  }
 
   async function loadChains() {
     loading = true;
@@ -22,6 +49,11 @@
 
   $effect(() => {
     loadChains();
+  });
+
+  $effect(() => {
+    const newTheme = $globalStore.appearances;
+    currentTheme = newTheme === Themes.System ? themeDetect() : newTheme;
   });
 </script>
 
@@ -47,17 +79,14 @@
         <WalletOption
           title={chain.name}
           description={chain.chain}
-          icon={chain.logo}
+          icon={viewChain({ network: chain, theme: currentTheme })}
+          tags={generateTags(chain, isTestnet)}
           disabled={false}
         />
       {:else}
         <p class="empty-text">No chains available.</p>
       {/each}
     {/if}
-  </div>
-
-  <div class="action-footer">
-    <Button width="100%" disabled>{$_('common.continue')}</Button>
   </div>
 </div>
 
@@ -89,10 +118,6 @@
     text-align: center;
     color: var(--text-secondary);
     margin: 40px 0;
-  }
-
-  .action-footer {
-    padding-top: 16px;
   }
 
   @media (max-width: 480px) {

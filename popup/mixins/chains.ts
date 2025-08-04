@@ -1,3 +1,5 @@
+import type { IChainConfigState } from "background/storage";
+
 export interface Explorer {
   name: string;
   url: string;
@@ -14,25 +16,9 @@ export interface FToken {
   decimals: number;
 }
 
-export interface Chain {
-  name: string;
-  chain: string;
-  logo: string;
-  rpc: string[];
-  features: string[];
-  ftokens: FToken[];
-  chainIds: number[];
-  infoURL: string;
-  shortName: string;
-  slip44: number;
-  explorers: Explorer[];
-  networkId?: number;
-  ens?: string;
-}
-
 export interface ChainData {
-  mainnet: Chain[];
-  testnet: Chain[];
+  mainnet: IChainConfigState[];
+  testnet: IChainConfigState[];
 }
 
 export async function getChains(): Promise<ChainData> {
@@ -43,8 +29,8 @@ export async function getChains(): Promise<ChainData> {
       fetch(`${baseUrl}/testnet.json`) 
     ]);
   
-    const mainnet = await mainnetResponse.json() as Chain[];
-    const testnet = testnetResponse.ok ? await testnetResponse.json() as Chain[] : [];
+    const mainnet = await mainnetResponse.json() as IChainConfigState[];
+    const testnet = testnetResponse.ok ? await testnetResponse.json() as IChainConfigState[] : [];
 
     return {
       mainnet,

@@ -7,7 +7,7 @@
   import PrintButton from '../components/PrintButton.svelte';
   import ReloadButton from '../components/ReloadButton.svelte';
   import { _ } from '../i18n';
-  import { pop } from '../router/navigation';
+  import { pop, push } from '../router/navigation';
   import { generateKeyPair } from 'popup/background/wallet';
   import { ETHEREUM } from 'config/slip44';
 
@@ -29,6 +29,7 @@
   }
 
   function handleNext() {
+    push("/network-setup");
   }
 
   function handleReload() {
