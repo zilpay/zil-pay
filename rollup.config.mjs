@@ -132,6 +132,7 @@ const background = createConfig(
         { src: 'public/fonts', dest: 'dist/' },
         { src: 'public/lang', dest: 'dist/' },
         { src: 'public/bip39', dest: 'dist/' },
+        { src: 'public/chains', dest: 'dist/' },
         { src: 'public/imgs', dest: 'dist/' },
         { src: 'public/index.html', dest: 'dist/' },
         { src: 'public/phishing.html', dest: 'dist/' },
