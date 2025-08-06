@@ -3,6 +3,7 @@
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
   import LittleButton from '../components/LittleButton.svelte';
+  import Modal from '../components/Modal.svelte';
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
   import { cacheStore } from '../store/cache';
@@ -12,6 +13,7 @@
   let passwordStrength = $state(0);
   let isValid = $state(false);
   let errors = $state<string[]>([]);
+  let showAdvancedModal = $state(false);
 
   const strengthLabels = [
     'passwordSetup.strength.veryWeak',
@@ -95,7 +97,17 @@
   }
 
   function handleAdvancedSettings() {
-    
+    showAdvancedModal = true;
+  }
+
+  function handleModalClose() {
+    showAdvancedModal = false;
+    console.log('Advanced settings modal closed');
+  }
+
+  function handleSaveAdvanced() {
+    console.log('Advanced settings saved');
+    showAdvancedModal = false;
   }
 
   $effect(() => {
@@ -194,6 +206,74 @@
     </div>
   </div>
 </div>
+
+<!-- Advanced Settings Modal -->
+<Modal 
+  bind:show={showAdvancedModal}
+  title="Advanced Settings"
+  onClose={handleModalClose}
+  width="600px"
+  closeOnOverlay={true}
+>
+  {#snippet children()}
+    <div class="advanced-modal-content">
+      <div class="setting-group">
+        <h3 class="setting-title">Security Options</h3>
+        <p class="setting-description">
+          Configure additional security features for your wallet.
+        </p>
+        
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="checkbox" class="setting-checkbox" />
+            <span>Enable biometric authentication</span>
+          </label>
+          <p class="setting-help">Use fingerprint or face recognition to unlock your wallet</p>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="checkbox" class="setting-checkbox" checked />
+            <span>Auto-lock after inactivity</span>
+          </label>
+          <p class="setting-help">Automatically lock wallet after 5 minutes of inactivity</p>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3 class="setting-title">Backup Options</h3>
+        <p class="setting-description">
+          Choose how you want to backup your wallet data.
+        </p>
+        
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="radio" name="backup" class="setting-radio" checked />
+            <span>Cloud backup (encrypted)</span>
+          </label>
+          <p class="setting-help">Store encrypted backup in your cloud storage</p>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="radio" name="backup" class="setting-radio" />
+            <span>Local backup only</span>
+          </label>
+          <p class="setting-help">Keep backup files only on this device</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <Button onclick={() => showAdvancedModal = false} width="auto">
+          Cancel
+        </Button>
+        <Button onclick={handleSaveAdvanced} width="auto">
+          Save Settings
+        </Button>
+      </div>
+    </div>
+  {/snippet}
+</Modal>
 
 <style lang="scss">
   .password-setup {
@@ -346,6 +426,77 @@
     margin: 0;
   }
 
+  /* Modal Content Styles */
+  .advanced-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .setting-title {
+    font-size: var(--font-size-large);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .setting-description {
+    font-size: var(--font-size-medium);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    background: var(--background-color);
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent);
+  }
+
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: var(--font-size-medium);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .setting-checkbox,
+  .setting-radio {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-purple);
+    cursor: pointer;
+  }
+
+  .setting-help {
+    font-size: var(--font-size-small);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.3;
+    padding-left: 26px;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent);
+  }
+
   @media (max-width: 480px) {
     .content {
       padding-bottom: 12px;
@@ -381,6 +532,19 @@
     .note-text {
       font-size: calc(var(--font-size-small) * 0.85);
     }
+
+    .advanced-modal-content {
+      gap: 20px;
+    }
+
+    .setting-group {
+      gap: 12px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+      gap: 8px;
+    }
   }
 
   @media (max-width: 360px) {
@@ -390,6 +554,10 @@
 
     .actions-section {
       gap: 8px;
+    }
+
+    .advanced-modal-content {
+      gap: 16px;
     }
   }
 </style>

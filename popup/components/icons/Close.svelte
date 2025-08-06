@@ -3,11 +3,6 @@
   viewBox="0 0 36 36"
   fill="none"
 >
-  <rect
-    width={$$restProps.width}
-    height={$$restProps.height}
-    rx="13"
-  />
   <line
     x1="11.8195"
     y1="11.6689"
@@ -32,19 +27,9 @@
     cursor: pointer;
     rect {
       fill: var(--card-background);
-      transition: fill 200ms linear;
     }
     line {
       stroke: var(--primary-purple);
-    }
-
-    &:hover {
-      rect {
-        fill: var(--primary-purple);
-      }
-      line {
-        stroke: var(--card-background);
-      }
     }
   }
 </style>
