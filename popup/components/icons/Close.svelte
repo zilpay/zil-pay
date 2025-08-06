@@ -25,9 +25,6 @@
 <style lang="scss">
   svg {
     cursor: pointer;
-    rect {
-      fill: var(--card-background);
-    }
     line {
       stroke: var(--primary-purple);
     }
