@@ -183,5 +183,33 @@
   },
   "networkSetup": {
     "title": "Setup Network"
+  },
+  "passwordSetup": {
+    "title": "Set Password",
+    "subtitle": "Secure Your Wallet", 
+    "description": "Create a strong password to encrypt and protect your wallet. This password will be required every time you access your wallet.",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmLabel": "Confirm Password",
+    "confirmPlaceholder": "Confirm your password",
+    "strength": {
+      "label": "Strength",
+      "veryWeak": "Very Weak",
+      "weak": "Weak", 
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "requirements": "Password Requirements:",
+    "errors": {
+      "minLength": "At least 8 characters required",
+      "lowercase": "At least one lowercase letter required", 
+      "uppercase": "At least one uppercase letter required",
+      "number": "At least one number required",
+      "mismatch": "Passwords do not match"
+    },
+    "securityNote": "Your password encrypts your wallet locally. If you lose it, you'll need your recovery phrase to restore access.",
+    "createButton": "Create Wallet",
+    "advanced": "Advanced Settings"
   }
 }

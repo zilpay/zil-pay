@@ -16,6 +16,7 @@ import KeyPairGenPage from "../pages/KeyPairGen.svelte";
 import Bip39RestorePage from "../pages/Bip39Restore.svelte"; 
 import KeyPairRestorePage from "../pages/KeyPairRestore.svelte";
 import NetworkSetupPage from '../pages/NetworkSetup.svelte';
+import PasswordSetupPage from '../pages/PasswordSetup.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -50,6 +51,7 @@ export const publicRoutes: Route[] = [
   { path: "/keypair-generate", component: KeyPairGenPage },
   { path: "/restore-private-key", component: KeyPairRestorePage },
   { path: "/network-setup", component: NetworkSetupPage },
+  { path: "/password-setup", component: PasswordSetupPage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];

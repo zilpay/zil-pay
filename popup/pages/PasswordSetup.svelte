@@ -1,0 +1,395 @@
+<script lang="ts">
+  import NavBar from '../components/NavBar.svelte';
+  import Button from '../components/Button.svelte';
+  import SmartInput from '../components/SmartInput.svelte';
+  import LittleButton from '../components/LittleButton.svelte';
+  import { _ } from '../i18n';
+  import { pop, push } from '../router/navigation';
+  import { cacheStore } from '../store/cache';
+
+  let password = $state('');
+  let confirmPassword = $state('');
+  let passwordStrength = $state(0);
+  let isValid = $state(false);
+  let errors = $state<string[]>([]);
+
+  const strengthLabels = [
+    'passwordSetup.strength.veryWeak',
+    'passwordSetup.strength.weak', 
+    'passwordSetup.strength.fair',
+    'passwordSetup.strength.good',
+    'passwordSetup.strength.strong'
+  ];
+
+  const strengthColors = [
+    'var(--danger-color)',
+    'var(--warning-color)', 
+    'var(--warning-color)',
+    'var(--success-color)',
+    'var(--success-color)'
+  ];
+
+  function calculatePasswordStrength(pwd: string): number {
+    if (!pwd) return 0;
+    
+    let score = 0;
+    
+    if (pwd.length >= 8) score++;
+    if (pwd.length >= 12) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    
+    return Math.min(Math.floor(score / 1.2), 4);
+  }
+
+  function validatePassword(): string[] {
+    const validationErrors: string[] = [];
+    
+    if (password.length < 8) {
+      validationErrors.push($_('passwordSetup.errors.minLength'));
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      validationErrors.push($_('passwordSetup.errors.lowercase'));
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      validationErrors.push($_('passwordSetup.errors.uppercase'));
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      validationErrors.push($_('passwordSetup.errors.number'));
+    }
+    
+    if (password !== confirmPassword && confirmPassword.length > 0) {
+      validationErrors.push($_('passwordSetup.errors.mismatch'));
+    }
+    
+    return validationErrors;
+  }
+
+  function handlePasswordInput() {
+    passwordStrength = calculatePasswordStrength(password);
+    updateValidation();
+  }
+
+  function handleConfirmPasswordInput() {
+    updateValidation();
+  }
+
+  function updateValidation() {
+    errors = validatePassword();
+    isValid = errors.length === 0 && password.length > 0 && confirmPassword.length > 0;
+  }
+
+  async function handleCreateWallet() {
+    if (!isValid) return;
+    
+    try {
+      push('/');
+    } catch (error) {
+      console.error('Error creating wallet:', error);
+    }
+  }
+
+  function handleAdvancedSettings() {
+    
+  }
+
+  $effect(() => {
+    if (!$cacheStore.chain || (!$cacheStore.keyPair && !$cacheStore.verifyPhrase)) {
+      
+    }
+  });
+</script>
+
+<div class="page-container password-setup">
+  <NavBar title={$_('passwordSetup.title')} onBack={pop} />
+
+  <div class="content">
+    <div class="intro-section">
+      <h2 class="subtitle">{$_('passwordSetup.subtitle')}</h2>
+      <p class="description">{$_('passwordSetup.description')}</p>
+    </div>
+
+    <div class="form-section">
+      <SmartInput
+        id="password"
+        label={$_('passwordSetup.passwordLabel')}
+        placeholder={$_('passwordSetup.passwordPlaceholder')}
+        bind:value={password}
+        onInput={handlePasswordInput}
+        required
+        hasError={password.length > 0 && passwordStrength < 2}
+        ariaDescribedBy="password-strength"
+      />
+
+      {#if password.length > 0}
+        <div id="password-strength" class="strength-indicator">
+          <div class="strength-label">
+            {$_('passwordSetup.strength.label')}: 
+            <span 
+              class="strength-text"
+              style="color: {strengthColors[passwordStrength]}"
+            >
+              {$_(strengthLabels[passwordStrength])}
+            </span>
+          </div>
+          <div class="strength-bar">
+            {#each Array(5) as _, index}
+              <div 
+                class="strength-segment"
+                class:active={index <= passwordStrength}
+                style="background-color: {index <= passwordStrength ? strengthColors[passwordStrength] : 'var(--card-background)'}"
+              ></div>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      <SmartInput
+        id="confirm-password"
+        label={$_('passwordSetup.confirmLabel')}
+        placeholder={$_('passwordSetup.confirmPlaceholder')}
+        bind:value={confirmPassword}
+        onInput={handleConfirmPasswordInput}
+        required
+        hasError={confirmPassword.length > 0 && password !== confirmPassword}
+        errorMessage={confirmPassword.length > 0 && password !== confirmPassword ? $_('passwordSetup.errors.mismatch') : ''}
+      />
+
+      {#if errors.length > 0}
+        <div class="error-section">
+          <div class="error-title">{$_('passwordSetup.requirements')}</div>
+          <ul class="error-list">
+            {#each errors as error}
+              <li class="error-item">{error}</li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
+    </div>
+
+    <div class="actions-section">
+      <div class="advanced-section">
+        <LittleButton onclick={handleAdvancedSettings}>
+          {$_('passwordSetup.advanced')}
+        </LittleButton>
+      </div>
+
+      <div class="security-note">
+        <div class="note-icon">🔒</div>
+        <p class="note-text">{$_('passwordSetup.securityNote')}</p>
+      </div>
+
+      <Button 
+        disabled={!isValid} 
+        onclick={handleCreateWallet}
+        width="100%"
+      >
+        {$_('passwordSetup.createButton')}
+      </Button>
+    </div>
+  </div>
+</div>
+
+<style lang="scss">
+  .password-setup {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--background-color);
+    color: var(--text-primary);
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+
+  .intro-section {
+    text-align: center;
+    padding: 4px 0 12px;
+    flex-shrink: 0;
+  }
+
+  .subtitle {
+    font-size: var(--font-size-large);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+  }
+
+  .description {
+    font-size: var(--font-size-small);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.3;
+    opacity: 0.9;
+  }
+
+  .form-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+    margin-bottom: 16px;
+  }
+
+  .strength-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .strength-label {
+    font-size: var(--font-size-small);
+    color: var(--text-secondary);
+  }
+
+  .strength-text {
+    font-weight: 600;
+  }
+
+  .strength-bar {
+    display: flex;
+    gap: 3px;
+    height: 3px;
+  }
+
+  .strength-segment {
+    flex: 1;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+  }
+
+  .error-section {
+    padding: 12px;
+    background-color: color-mix(in srgb, var(--danger-color) 10%, var(--card-background));
+    border: 1px solid var(--danger-color);
+    border-radius: 10px;
+  }
+
+  .error-title {
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    color: var(--danger-color);
+    margin-bottom: 6px;
+  }
+
+  .error-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .error-item {
+    font-size: calc(var(--font-size-small) * 0.9);
+    color: var(--danger-color);
+    margin-bottom: 3px;
+    position: relative;
+    padding-left: 12px;
+
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--danger-color);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .actions-section {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .advanced-section {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+  }
+
+  .security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    background: color-mix(in srgb, var(--primary-purple) 8%, var(--card-background));
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--primary-purple) 20%, transparent);
+  }
+
+  .note-icon {
+    font-size: var(--font-size-medium);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .note-text {
+    font-size: calc(var(--font-size-small) * 0.9);
+    color: var(--text-secondary);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  @media (max-width: 480px) {
+    .content {
+      padding-bottom: 12px;
+    }
+
+    .intro-section {
+      padding: 2px 0 8px;
+    }
+
+    .subtitle {
+      font-size: var(--font-size-medium);
+      margin-bottom: 4px;
+    }
+
+    .description {
+      font-size: calc(var(--font-size-small) * 0.9);
+    }
+
+    .form-section {
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .actions-section {
+      gap: 10px;
+    }
+
+    .security-note {
+      padding: 10px;
+      gap: 8px;
+    }
+
+    .note-text {
+      font-size: calc(var(--font-size-small) * 0.85);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .form-section {
+      gap: 10px;
+    }
+
+    .actions-section {
+      gap: 8px;
+    }
+  }
+</style>
