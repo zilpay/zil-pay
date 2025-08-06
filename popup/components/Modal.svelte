@@ -50,7 +50,6 @@
 
   function checkScreenSize() {
     if (typeof window !== 'undefined') {
-      // Popup обычно имеет ширину около 360-400px
       isSmallScreen = window.innerWidth <= 480 || window.innerHeight <= 600;
     }
   }
@@ -71,7 +70,6 @@
       document.addEventListener('keydown', handleKeydown);
       document.body.style.overflow = 'hidden';
       
-      // Focus trap
       const focusableElements = modalRef?.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
@@ -313,7 +311,6 @@
     }
   }
 
-  /* Smooth scrollbar */
   .modal-body::-webkit-scrollbar {
     width: 6px;
   }
