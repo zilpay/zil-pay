@@ -15,7 +15,7 @@ test("randomBytes generates a non-zero Uint8Array of the specified length", () =
 });
 
 test("randomBytes uses window.crypto.getRandomValues to seed the ChaCha20 RNG", () => {
-  const spyGetRandomValues = vi.spyOn(window.crypto, "getRandomValues");
+  const spyGetRandomValues = vi.spyOn(globalThis.crypto, "getRandomValues");
   const length = 8;
 
   randomBytes(length);
