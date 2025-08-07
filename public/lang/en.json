@@ -211,5 +211,61 @@
     "securityNote": "Your password encrypts your wallet locally. If you lose it, you'll need your recovery phrase to restore access.",
     "createButton": "Create Wallet",
     "advanced": "Advanced Settings"
+  },
+  "modals": {
+    "cryptsetup": {
+      "encryption": {
+        "title": "Encryption Strength",
+        "description": "Determines the combination of cryptographic algorithms used to secure your wallet."
+      },
+      "hashing": {
+        "title": "Password Hashing", 
+        "description": "Controls how your password is processed to derive the encryption key. Higher values are more secure but slower.",
+        "advancedMode": "Advanced Mode"
+      },
+      "cipherPresets": {
+        "basic": {
+          "title": "Standard Encryption",
+          "subtitle": "AES-256",
+          "description": "Basic, fast, and widely-used encryption algorithm."
+        },
+        "enhanced": {
+          "title": "Hybrid Encryption",
+          "subtitle": "AES-256 + KUZNECHIK", 
+          "description": "Enhanced security combining AES-256 with the GOST standard KUZNECHIK."
+        },
+        "quantumResistant": {
+          "title": "Quantum-Resistant",
+          "subtitle": "AES-256 + KUZNECHIK + NTRUP761",
+          "description": "Highest security, designed to be resistant to attacks from quantum computers."
+        }
+      },
+      "memoryPresets": {
+        "low": {
+          "title": "Low Memory",
+          "subtitle": "64KB RAM, 3 iterations",
+          "description": "Minimal memory usage, suitable for low-end devices."
+        },
+        "medium": {
+          "title": "OWASP Default", 
+          "subtitle": "6.5MB RAM, 2 iterations",
+          "description": "Recommended by OWASP for general use."
+        },
+        "secure": {
+          "title": "Secure",
+          "subtitle": "256MB RAM, 4 iterations",
+          "description": "High security with increased memory and iterations."
+        }
+      },
+      "advanced": {
+        "memory": "Memory (KB)",
+        "iterations": "Iterations", 
+        "threads": "Threads",
+        "secret": {
+          "label": "Secret (Optional)",
+          "placeholder": "Enter an optional secret phrase"
+        }
+      }
+    }
   }
 }

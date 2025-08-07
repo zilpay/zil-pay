@@ -38,47 +38,47 @@
   let selectedCipherPreset = $state(CipherPreset.QuantumResistant);
   let selectedMemoryPreset = $state(MemoryPreset.Medium);
 
-  const cipherPresets: OptionData<CipherPreset>[] = [
+  const cipherPresets = $derived<OptionData<CipherPreset>[]>([
     {
       value: CipherPreset.Basic,
-      title: 'Standard Encryption',
-      subtitle: 'AES-256',
-      description: 'Basic, fast, and widely-used encryption algorithm.'
+      title: $_('modals.cryptsetup.cipherPresets.basic.title'),
+      subtitle: $_('modals.cryptsetup.cipherPresets.basic.subtitle'),
+      description: $_('modals.cryptsetup.cipherPresets.basic.description')
     },
     {
       value: CipherPreset.Enhanced,
-      title: 'Hybrid Encryption',
-      subtitle: 'AES-256 + KUZNECHIK',
-      description: 'Enhanced security combining AES-256 with the GOST standard KUZNECHIK.'
+      title: $_('modals.cryptsetup.cipherPresets.enhanced.title'),
+      subtitle: $_('modals.cryptsetup.cipherPresets.enhanced.subtitle'),
+      description: $_('modals.cryptsetup.cipherPresets.enhanced.description')
     },
     {
       value: CipherPreset.QuantumResistant,
-      title: 'Quantum-Resistant',
-      subtitle: 'AES-256 + KUZNECHIK + NTRUP761',
-      description: 'Highest security, designed to be resistant to attacks from quantum computers.'
+      title: $_('modals.cryptsetup.cipherPresets.quantumResistant.title'),
+      subtitle: $_('modals.cryptsetup.cipherPresets.quantumResistant.subtitle'),
+      description: $_('modals.cryptsetup.cipherPresets.quantumResistant.description')
     }
-  ];
+  ]);
 
-  const memoryPresets: OptionData<MemoryPreset>[] = [
+  const memoryPresets = $derived<OptionData<MemoryPreset>[]>([
     {
       value: MemoryPreset.Low,
-      title: 'Low Memory',
-      subtitle: '64KB RAM, 3 iterations',
-      description: 'Minimal memory usage, suitable for low-end devices.'
+      title: $_('modals.cryptsetup.memoryPresets.low.title'),
+      subtitle: $_('modals.cryptsetup.memoryPresets.low.subtitle'),
+      description: $_('modals.cryptsetup.memoryPresets.low.description')
     },
     {
       value: MemoryPreset.Medium,
-      title: 'OWASP Default',
-      subtitle: '6.5MB RAM, 2 iterations',
-      description: 'Recommended by OWASP for general use.'
+      title: $_('modals.cryptsetup.memoryPresets.medium.title'),
+      subtitle: $_('modals.cryptsetup.memoryPresets.medium.subtitle'),
+      description: $_('modals.cryptsetup.memoryPresets.medium.description')
     },
     {
       value: MemoryPreset.Secure,
-      title: 'Secure',
-      subtitle: '256MB RAM, 4 iterations',
-      description: 'High security with increased memory and iterations.'
+      title: $_('modals.cryptsetup.memoryPresets.secure.title'),
+      subtitle: $_('modals.cryptsetup.memoryPresets.secure.subtitle'),
+      description: $_('modals.cryptsetup.memoryPresets.secure.description')
     }
-  ];
+  ]);
 
   const hashTypeOptions: DropdownOption[] = [
     { code: String(HashTypes.Argon2), label: 'Argon2id' },
@@ -166,9 +166,9 @@
 <div class="crypt-setup-content">
   <div class="section">
     <div class="section-header">
-      <h3 class="section-title">Encryption Strength</h3>
+      <h3 class="section-title">{$_('modals.cryptsetup.encryption.title')}</h3>
       <p class="section-description">
-        Determines the combination of cryptographic algorithms used to secure your wallet.
+        {$_('modals.cryptsetup.encryption.description')}
       </p>
     </div>
     <RadioOption
@@ -181,17 +181,17 @@
 
   <div class="section">
     <div class="section-header">
-      <h3 class="section-title">Password Hashing</h3>
+      <h3 class="section-title">{$_('modals.cryptsetup.hashing.title')}</h3>
       <p class="section-description">
-        Controls how your password is processed to derive the encryption key. Higher values are more secure but slower.
+        {$_('modals.cryptsetup.hashing.description')}
       </p>
       <div class="advanced-toggle">
         <Switch
           bind:checked={advancedMode}
-          ariaLabel="Advanced hashing settings"
+          ariaLabel={$_('modals.cryptsetup.hashing.advancedMode')}
           size="small"
         />
-        <span class="toggle-label">Advanced Mode</span>
+        <span class="toggle-label">{$_('modals.cryptsetup.hashing.advancedMode')}</span>
       </div>
     </div>
 
@@ -221,7 +221,7 @@
 
         <div class="setting-row">
           <div class="input-group">
-            <label for="memory-input">Memory (KB)</label>
+            <label for="memory-input">{$_('modals.cryptsetup.advanced.memory')}</label>
             <input
               id="memory-input"
               type="number"
@@ -233,7 +233,7 @@
             />
           </div>
           <div class="input-group">
-            <label for="iterations-input">Iterations</label>
+            <label for="iterations-input">{$_('modals.cryptsetup.advanced.iterations')}</label>
             <input
               id="iterations-input"
               type="number"
@@ -244,7 +244,7 @@
             />
           </div>
           <div class="input-group">
-            <label for="threads-input">Threads</label>
+            <label for="threads-input">{$_('modals.cryptsetup.advanced.threads')}</label>
             <input
               id="threads-input"
               type="number"
@@ -260,8 +260,8 @@
     {/if}
 
     <SmartInput
-      label="Secret (Optional)"
-      placeholder="Enter an optional secret phrase"
+      label={$_('modals.cryptsetup.advanced.secret.label')}
+      placeholder={$_('modals.cryptsetup.advanced.secret.placeholder')}
       value={walletSettings.hashFnParams.secret}
       onInput={(e) => handleHashParamChange('secret', (e.target as HTMLInputElement).value)}
       showToggle={true}
