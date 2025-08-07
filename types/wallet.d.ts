@@ -1,4 +1,5 @@
 import type { IChainConfigState } from 'background/storage';
+import type { Bip32Account } from 'background/storage';
 
 export interface SetPasswordPayload {
   cipherOrders: CipherOrders[];
@@ -19,10 +20,13 @@ export interface WalletFromPrivateKeyParams {
 
 export interface WalletFromBip39Params {
   mnemonic: string;
+  bip39WordList: string[];
   walletName: string;
-  accountName: string;
+  accounts: Bip32Account[];
+  verifyCheckSum: boolean;
   chain: IChainConfigState;
   password: string;
+  passphrase?: string;
   settings: IWalletSettingsState;
 }
 

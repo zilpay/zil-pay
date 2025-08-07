@@ -1,8 +1,8 @@
-import { Wallet, WalletSettings, type BackgroundState, type IBackgroundState } from "background/storage";
+import { ChainConfig, Wallet, WalletSettings, type BackgroundState, type IBackgroundState, type IChainConfigState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-import type { SetPasswordPayload, WalletFromPrivateKeyParams } from "types/wallet";
+import type { SetPasswordPayload, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";
@@ -116,8 +116,8 @@ export class WalletService {
 
   async walletFromPrivateKey(payload: WalletFromPrivateKeyParams, sendResponse: StreamResponse) {
     try {
-      const chain = this.#state.getChain(payload.chainHash)!;
-      const keyBytes = hexToUint8Array(payload.key);
+      const chain = await this.addOrGetChain(payload.chain);
+      const keyBytes = hexToUint8Array(payload.key.privateKey);
       const kyepair = await KeyPair.fromPrivateKey(keyBytes, chain.slip44);
       const settings = new WalletSettings(payload.settings);
       const wallet = await Wallet.fromPrivateKey(
@@ -127,6 +127,35 @@ export class WalletService {
         settings,
         chain,
         payload.password,
+      );
+
+      this.#state.wallets.push(wallet);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: true
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async walletFromBip39(payload: WalletFromBip39Params, sendResponse: StreamResponse) {
+    try {
+      const chain = await this.addOrGetChain(payload.chain);
+      const settings = new WalletSettings(payload.settings);
+      const wallet = await Wallet.fromBip39(
+        payload.mnemonic,
+        payload.verifyCheckSum,
+        payload.walletName,
+        payload.accounts,
+        settings,
+        chain,
+        payload.password,
+        payload.bip39WordList,
+        payload.passphrase, 
       );
 
       this.#state.wallets.push(wallet);
@@ -293,5 +322,20 @@ export class WalletService {
         reject: String(err),
       });
     }
+  }
+
+  async addOrGetChain(chain: IChainConfigState) {
+    const newChain = new ChainConfig(chain);
+
+    const foundChain = this.#state.getChain(newChain.hash());
+
+    if (foundChain) {
+      return foundChain;
+    }
+
+    this.#state.chains.push(newChain);
+    await this.#state.sync();
+    
+    return newChain;
   }
 }

@@ -28,6 +28,12 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.FROM_PRIV_KEY:
         core.wallet.keyPairFromPrivateKey(msg.payload.slip44, msg.payload.key, sendResponse);
         return true;
+      case MTypePopup.WALLET_FROM_PRIVATE_KEY:
+        core.wallet.walletFromPrivateKey(msg.payload, sendResponse);
+        return true;
+      case MTypePopup.WALLET_FROM_BIP39:
+        core.wallet.walletFromBip39(msg.payload, sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;
