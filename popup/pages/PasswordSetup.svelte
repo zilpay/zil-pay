@@ -112,6 +112,8 @@
   }
 
   async function handleCreateWallet() {
+    console.log(walletSettings);
+    return;
     if (!isValid) return;
     
     try {
@@ -126,12 +128,6 @@
   }
 
   function handleModalClose() {
-    showAdvancedModal = false;
-    console.log('Advanced settings modal closed');
-  }
-
-  function handleSaveAdvanced() {
-    console.log('Advanced settings saved');
     showAdvancedModal = false;
   }
 
@@ -396,77 +392,6 @@
     margin: 0;
   }
 
-  /* Modal Content Styles */
-  .advanced-modal-content {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .setting-group {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .setting-title {
-    font-size: var(--font-size-large);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-  }
-
-  .setting-description {
-    font-size: var(--font-size-medium);
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  .setting-item {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 12px;
-    background: var(--background-color);
-    border-radius: 10px;
-    border: 1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent);
-  }
-
-  .setting-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-size: var(--font-size-medium);
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-
-  .setting-checkbox,
-  .setting-radio {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--primary-purple);
-    cursor: pointer;
-  }
-
-  .setting-help {
-    font-size: var(--font-size-small);
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.3;
-    padding-left: 26px;
-  }
-
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding-top: 16px;
-    border-top: 1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent);
-  }
-
   @media (max-width: 480px) {
     .content {
       padding-bottom: 12px;
@@ -502,19 +427,6 @@
     .note-text {
       font-size: calc(var(--font-size-small) * 0.85);
     }
-
-    .advanced-modal-content {
-      gap: 20px;
-    }
-
-    .setting-group {
-      gap: 12px;
-    }
-
-    .modal-actions {
-      flex-direction: column;
-      gap: 8px;
-    }
   }
 
   @media (max-width: 360px) {
@@ -524,10 +436,6 @@
 
     .actions-section {
       gap: 8px;
-    }
-
-    .advanced-modal-content {
-      gap: 16px;
     }
   }
 </style>
