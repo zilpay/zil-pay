@@ -30,10 +30,12 @@ import { ShaAlgorithms } from "../../config/pbkdf2";
 import '../setupTests';
 
 describe("WalletService through background messaging", () => {
+  let globalState: GlobalState;
+
   beforeEach(async () => {
     await BrowserStorage.clear();
-    const state = await GlobalState.fromStorage();
-    startBackground(state);
+    globalState = await GlobalState.fromStorage();
+    startBackground(globalState);
   });
 
   describe("Mnemonic and Key Generation", () => {
@@ -124,6 +126,7 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts).toHaveLength(1);
       expect(wallet.accounts[0].name).toBe("Imported Account");
       expect(wallet.accounts[0].addr).toBe(keyPair.address);
+      expect(state.selected_wallet).toBe(0);
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
@@ -149,6 +152,7 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts[0].addr).toBe(
         "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
       );
+      expect(state.selected_wallet).toBe(1);
     });
   });
 });

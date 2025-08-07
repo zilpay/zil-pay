@@ -130,6 +130,7 @@ export class WalletService {
       );
 
       this.#state.wallets.push(wallet);
+      this.#state.selected_wallet = this.#state.wallets.length - 1;
       await this.#state.sync();
 
       sendResponse({
@@ -159,6 +160,7 @@ export class WalletService {
       );
 
       this.#state.wallets.push(wallet);
+      this.#state.selected_wallet = this.#state.wallets.length - 1;
       await this.#state.sync();
 
       sendResponse({
