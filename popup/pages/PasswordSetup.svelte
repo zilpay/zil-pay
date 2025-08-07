@@ -10,7 +10,8 @@
   import { cacheStore } from '../store/cache';
   import { CipherOrders } from 'crypto/keychain';
   import { ShaAlgorithms } from 'config/pbkdf2';
-    import { RatesApiOptions } from 'config/api';
+  import { RatesApiOptions } from 'config/api';
+  import CryptModal from '../modals/CryptSetup.svelte';
 
   let password = $state('');
   let confirmPassword = $state('');
@@ -238,64 +239,10 @@
   width="600px"
   closeOnOverlay={true}
 >
-  {#snippet children()}
-    <div class="advanced-modal-content">
-      <div class="setting-group">
-        <h3 class="setting-title">Security Options</h3>
-        <p class="setting-description">
-          Configure additional security features for your wallet.
-        </p>
-        
-        <div class="setting-item">
-          <label class="setting-label">
-            <input type="checkbox" class="setting-checkbox" />
-            <span>Enable biometric authentication</span>
-          </label>
-          <p class="setting-help">Use fingerprint or face recognition to unlock your wallet</p>
-        </div>
-
-        <div class="setting-item">
-          <label class="setting-label">
-            <input type="checkbox" class="setting-checkbox" checked />
-            <span>Auto-lock after inactivity</span>
-          </label>
-          <p class="setting-help">Automatically lock wallet after 5 minutes of inactivity</p>
-        </div>
-      </div>
-
-      <div class="setting-group">
-        <h3 class="setting-title">Backup Options</h3>
-        <p class="setting-description">
-          Choose how you want to backup your wallet data.
-        </p>
-        
-        <div class="setting-item">
-          <label class="setting-label">
-            <input type="radio" name="backup" class="setting-radio" checked />
-            <span>Cloud backup (encrypted)</span>
-          </label>
-          <p class="setting-help">Store encrypted backup in your cloud storage</p>
-        </div>
-
-        <div class="setting-item">
-          <label class="setting-label">
-            <input type="radio" name="backup" class="setting-radio" />
-            <span>Local backup only</span>
-          </label>
-          <p class="setting-help">Keep backup files only on this device</p>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <Button onclick={() => showAdvancedModal = false} width="auto">
-          Cancel
-        </Button>
-        <Button onclick={handleSaveAdvanced} width="auto">
-          Save Settings
-        </Button>
-      </div>
-    </div>
-  {/snippet}
+  <CryptModal
+    walletSettings={walletSettings}
+    onchange={(settins) => walletSettings = settins}
+  />
 </Modal>
 
 <style lang="scss">

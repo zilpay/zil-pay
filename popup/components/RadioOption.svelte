@@ -1,18 +1,20 @@
-<script lang="ts" generics="T extends string | number">
-  type OptionData = {
+<script module lang="ts">
+  export interface OptionData<T> {
     value: T;
     title: string;
     subtitle: string;
     description: string;
-  };
+  }
+</script>
 
+<script lang="ts" generics="T">
   let {
     options = [],
     selected = $bindable(),
     name = '',
     onSelect = () => {}
   }: {
-    options: OptionData[];
+    options: OptionData<T>[];
     selected: T;
     name: string;
     onSelect?: (value: T) => void;
