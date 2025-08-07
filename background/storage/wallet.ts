@@ -92,6 +92,7 @@ export class Wallet implements IWalletState {
     });
 
     await wallet.encrypt(passwordBytes, keyPair.privateKey);
+    await wallet.setSession(keyPair.privateKey);
 
     return wallet;
   }
@@ -130,6 +131,8 @@ export class Wallet implements IWalletState {
 
     wallet.accounts = await Promise.all(bip32Accounts.map((acc) => Account.fromBip39(acc, chain, seed)));
     await wallet.encrypt(passwordBytes, wordsBytes);
+    await wallet.setSession(words);
+
 
     return wallet;
   }
@@ -161,17 +164,7 @@ export class Wallet implements IWalletState {
 
   async unlock(password: Uint8Array) {
     const wordsOrKey = await this.decrypt(password);
-    const sessionTime = this.settings.sessionTime;
-
-    if (TypeOf.isString(wordsOrKey)) {
-      const seed = await Bip39.mnemonicToSeed(String(wordsOrKey));
-
-      await this.#session.setSession(sessionTime, seed);
-    } else if (wordsOrKey instanceof Uint8Array) {
-      await this.#session.setSession(sessionTime, wordsOrKey);
-    } else {
-      throw new Error("unk vault");
-    }
+    await this.setSession(wordsOrKey);
   }
 
   async revealKeypair(accountIndex: number, chain: ChainConfig): Promise<KeyPair> {
@@ -203,6 +196,20 @@ export class Wallet implements IWalletState {
         return String(words);
       default:
         throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
+    }
+  }
+
+  async setSession(wordsOrKey: string | Uint8Array) {
+    const sessionTime = this.settings.sessionTime;
+
+    if (TypeOf.isString(wordsOrKey)) {
+      const seed = await Bip39.mnemonicToSeed(String(wordsOrKey));
+
+      await this.#session.setSession(sessionTime, seed);
+    } else if (wordsOrKey instanceof Uint8Array) {
+      await this.#session.setSession(sessionTime, wordsOrKey);
+    } else {
+      throw new Error("unk vault");
     }
   }
 
