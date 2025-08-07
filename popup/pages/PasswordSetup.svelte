@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { HashTypes, type IWalletSettingsState } from 'background/storage';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
@@ -7,6 +8,9 @@
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
   import { cacheStore } from '../store/cache';
+  import { CipherOrders } from 'crypto/keychain';
+  import { ShaAlgorithms } from 'config/pbkdf2';
+    import { RatesApiOptions } from 'config/api';
 
   let password = $state('');
   let confirmPassword = $state('');
@@ -14,6 +18,26 @@
   let isValid = $state(false);
   let errors = $state<string[]>([]);
   let showAdvancedModal = $state(false);
+  let walletSettings = $state<IWalletSettingsState>({
+    cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
+    hashFnParams: {
+      memory: 2097152, 
+      threads: 2,
+      secret: "",
+      iterations: 1,
+      hashType: HashTypes.Argon2,
+      hashSize: ShaAlgorithms.Sha512,
+    },
+    currencyConvert: "BTC",
+    ipfsNode: null,
+    ensEnabled: true,
+    tokensListFetcher: true,
+    nodeRankingEnabled: true,
+    maxConnections: 15,
+    requestTimeoutSecs: 15,
+    ratesApiOptions: RatesApiOptions.CoinGecko,
+    sessionTime: 3600,
+  });
 
   const strengthLabels = [
     'passwordSetup.strength.veryWeak',
@@ -207,7 +231,6 @@
   </div>
 </div>
 
-<!-- Advanced Settings Modal -->
 <Modal 
   bind:show={showAdvancedModal}
   title="Advanced Settings"

@@ -211,47 +211,5 @@
     "securityNote": "Your password encrypts your wallet locally. If you lose it, you'll need your recovery phrase to restore access.",
     "createButton": "Create Wallet",
     "advanced": "Advanced Settings"
-  },
-  "modals": {
-    "cipher": {
-      "encryptionTitle": "Encryption Algorithms",
-      "memoryTitle": "Memory Profile (Argon2)",
-      "secretLabel": "Secret Phrase (Optional)",
-      "secretPlaceholder": "Enter additional secret",
-      "modes": {
-        "basic": {
-          "title": "Basic Encryption",
-          "subtitle": "AES-GCM256",
-          "description": "Standard encryption using AES-GCM256 algorithm"
-        },
-        "enhanced": {
-          "title": "Enhanced Security",
-          "subtitle": "AES-GCM256 + KUZNECHIK",
-          "description": "Enhanced encryption with AES-GCM256 and KUZNECHIK-GOST algorithms"
-        },
-        "quantum-resistant": {
-          "title": "Quantum-Resistant",
-          "subtitle": "AES-GCM256 + KUZNECHIK + NTRUP761",
-          "description": "Advanced quantum-resistant encryption with post-quantum cryptography"
-        }
-      },
-      "memory": {
-        "weak": {
-          "title": "Weak Security",
-          "subtitle": "64KB RAM, 1 iteration",
-          "description": "Minimal memory usage for constrained devices"
-        },
-        "medium": {
-          "title": "Medium Security",
-          "subtitle": "8MB RAM, 2 iterations",
-          "description": "Balanced security and performance for general use"
-        },
-        "strong": {
-          "title": "Strong Security",
-          "subtitle": "256MB RAM, 4 iterations",
-          "description": "High security with increased memory and iterations"
-        }
-      }
-    }
   }
 }
