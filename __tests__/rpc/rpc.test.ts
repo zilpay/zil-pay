@@ -220,7 +220,7 @@ describe("JsonRPC provder tests", () => {
     const provider = new NetworkProvider(bscConfig);
     const blockTime = await provider.estimateBlockTime();
     expect(typeof blockTime).toBe("number");
-    expect(blockTime).toBeGreaterThan(0);
+    expect(blockTime).toBeGreaterThan(0.0);
     expect(blockTime).toBeLessThan(30);
   });
 
