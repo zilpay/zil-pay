@@ -8,13 +8,18 @@
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
   import { cacheStore } from '../store/cache';
+  import globalStore from '../store/global';
   import { CipherOrders } from 'crypto/keychain';
   import { ShaAlgorithms } from 'config/pbkdf2';
   import { RatesApiOptions } from 'config/api';
   import CryptModal from '../modals/CryptSetup.svelte';
+    import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
+    import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
 
   let password = $state('');
   let confirmPassword = $state('');
+  let walletName = $state('');
+  let accountName = $state('');
   let passwordStrength = $state(0);
   let isValid = $state(false);
   let errors = $state<string[]>([]);
@@ -55,6 +60,12 @@
     'var(--success-color)',
     'var(--success-color)'
   ];
+
+  function generateDefaultWalletName(): string {
+    const chainName = $cacheStore.chain?.name || 'Wallet';
+    const walletCount = $globalStore.wallets.length;
+    return `${chainName} ${walletCount}`;
+  }
 
   function calculatePasswordStrength(pwd: string): number {
     if (!pwd) return 0;
@@ -108,16 +119,38 @@
 
   function updateValidation() {
     errors = validatePassword();
-    isValid = errors.length === 0 && password.length > 0 && confirmPassword.length > 0;
+    isValid = errors.length === 0 && password.length > 0 && confirmPassword.length > 0 && walletName.trim().length > 0;
   }
 
   async function handleCreateWallet() {
-    console.log(walletSettings);
-    return;
     if (!isValid) return;
     
     try {
-      push('/');
+      if ($cacheStore.keyPair && $cacheStore.chain) {
+        let payload: WalletFromPrivateKeyParams = {
+          walletName,
+          accountName,
+          password,
+          key: $cacheStore.keyPair,
+          chain: $cacheStore.chain,
+          settings: walletSettings,
+        };
+
+        await walletFromPrivateKey(payload);
+      } else if ($cacheStore.verifyPhrase && $cacheStore.chain) {
+        let payload: WalletFromBip39Params = {
+          walletName,
+          accountName,
+          password,
+          mnemonic: $cacheStore.verifyPhrase.join(" "),
+          chain: $cacheStore.chain,
+          settings: walletSettings,
+        }
+
+        await walletFromBip39Mnemonic(payload);
+      } else {
+        throw new Error();
+      }
     } catch (error) {
       console.error('Error creating wallet:', error);
     }
@@ -133,7 +166,15 @@
 
   $effect(() => {
     if (!$cacheStore.chain || (!$cacheStore.keyPair && !$cacheStore.verifyPhrase)) {
-      
+      return;
+    }
+    
+    if (!walletName) {
+      walletName = generateDefaultWalletName();
+    }
+
+    if (!accountName) {
+      accountName = $_('wallet.naming.defaultChain') + ` 0`;
     }
   });
 </script>
@@ -148,6 +189,16 @@
     </div>
 
     <div class="form-section">
+      <SmartInput
+        id="wallet-name"
+        hide={false}
+        label={$_('passwordSetup.walletNameLabel')}
+        placeholder={$_('passwordSetup.walletNamePlaceholder')}
+        bind:value={walletName}
+        required
+        showToggle={false}
+      />
+
       <SmartInput
         id="password"
         label={$_('passwordSetup.passwordLabel')}
@@ -230,14 +281,14 @@
 
 <Modal 
   bind:show={showAdvancedModal}
-  title="Advanced Settings"
+  title={$_('passwordSetup.advancedTitle')}
   onClose={handleModalClose}
   width="600px"
   closeOnOverlay={true}
 >
   <CryptModal
     walletSettings={walletSettings}
-    onchange={(settins) => walletSettings = settins}
+    onchange={(settings) => walletSettings = settings}
   />
 </Modal>
 
@@ -245,36 +296,40 @@
   .password-setup {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
     background: var(--background-color);
     color: var(--text-primary);
+    padding: 0 16px;
+  }
+
+  .page-container {
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .content {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    overflow-y: auto;
-    padding-bottom: 16px;
+    gap: 16px;
+    padding: 8px 0 16px;
   }
 
   .intro-section {
     text-align: center;
-    padding: 4px 0 12px;
-    flex-shrink: 0;
+    padding: 8px 0;
   }
 
   .subtitle {
     font-size: var(--font-size-large);
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
     line-height: 1.2;
   }
 
   .description {
-    font-size: var(--font-size-small);
+    font-size: calc(var(--font-size-small) * 0.95);
     color: var(--text-secondary);
     margin: 0;
     line-height: 1.3;
@@ -282,22 +337,19 @@
   }
 
   .form-section {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    min-height: 0;
-    margin-bottom: 16px;
+    gap: 12px;
   }
 
   .strength-indicator {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
   }
 
   .strength-label {
-    font-size: var(--font-size-small);
+    font-size: calc(var(--font-size-small) * 0.9);
     color: var(--text-secondary);
   }
 
@@ -307,28 +359,28 @@
 
   .strength-bar {
     display: flex;
-    gap: 3px;
+    gap: 2px;
     height: 3px;
   }
 
   .strength-segment {
     flex: 1;
-    border-radius: 2px;
+    border-radius: 1.5px;
     transition: background-color 0.3s ease;
   }
 
   .error-section {
-    padding: 12px;
+    padding: 10px;
     background-color: color-mix(in srgb, var(--danger-color) 10%, var(--card-background));
     border: 1px solid var(--danger-color);
-    border-radius: 10px;
+    border-radius: 8px;
   }
 
   .error-title {
-    font-size: var(--font-size-small);
+    font-size: calc(var(--font-size-small) * 0.9);
     font-weight: 600;
     color: var(--danger-color);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .error-list {
@@ -338,11 +390,11 @@
   }
 
   .error-item {
-    font-size: calc(var(--font-size-small) * 0.9);
+    font-size: calc(var(--font-size-small) * 0.85);
     color: var(--danger-color);
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     position: relative;
-    padding-left: 12px;
+    padding-left: 10px;
 
     &::before {
       content: '•';
@@ -357,53 +409,61 @@
   }
 
   .actions-section {
-    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .advanced-section {
     display: flex;
     justify-content: center;
-    padding: 4px 0;
+    padding: 2px 0;
   }
 
   .security-note {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 12px;
+    gap: 8px;
+    padding: 10px;
     background: color-mix(in srgb, var(--primary-purple) 8%, var(--card-background));
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid color-mix(in srgb, var(--primary-purple) 20%, transparent);
   }
 
   .note-icon {
-    font-size: var(--font-size-medium);
+    font-size: calc(var(--font-size-small) * 1.1);
     flex-shrink: 0;
     line-height: 1;
   }
 
   .note-text {
-    font-size: calc(var(--font-size-small) * 0.9);
+    font-size: calc(var(--font-size-small) * 0.85);
     color: var(--text-secondary);
     line-height: 1.3;
     margin: 0;
   }
 
   @media (max-width: 480px) {
+    .password-setup {
+      padding: 0 12px;
+    }
+
+    .page-container {
+      max-width: 100%;
+    }
+
     .content {
-      padding-bottom: 12px;
+      gap: 14px;
+      padding: 6px 0 12px;
     }
 
     .intro-section {
-      padding: 2px 0 8px;
+      padding: 6px 0;
     }
 
     .subtitle {
       font-size: var(--font-size-medium);
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .description {
@@ -411,31 +471,34 @@
     }
 
     .form-section {
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .actions-section {
       gap: 10px;
     }
 
-    .security-note {
-      padding: 10px;
+    .actions-section {
       gap: 8px;
     }
 
+    .security-note {
+      padding: 8px;
+      gap: 6px;
+    }
+
     .note-text {
-      font-size: calc(var(--font-size-small) * 0.85);
+      font-size: calc(var(--font-size-small) * 0.8);
     }
   }
 
   @media (max-width: 360px) {
+    .password-setup {
+      padding: 0 10px;
+    }
+
     .form-section {
-      gap: 10px;
+      gap: 8px;
     }
 
     .actions-section {
-      gap: 8px;
+      gap: 6px;
     }
   }
 </style>

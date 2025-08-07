@@ -186,6 +186,9 @@
   },
   "passwordSetup": {
     "title": "Set Password",
+    "defaultAccountName": "Account",
+    "walletNameLabel": "Wallet Name",
+    "walletNamePlaceholder": "Enter wallet name",
     "subtitle": "Secure Your Wallet", 
     "description": "Create a strong password to encrypt and protect your wallet. This password will be required every time you access your wallet.",
     "passwordLabel": "Password",
