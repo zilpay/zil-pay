@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { HashTypes, type IWalletSettingsState } from 'background/storage';
+  import { HashTypes, type Bip32Account, type IWalletSettingsState } from 'background/storage';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
@@ -13,8 +13,8 @@
   import { ShaAlgorithms } from 'config/pbkdf2';
   import { RatesApiOptions } from 'config/api';
   import CryptModal from '../modals/CryptSetup.svelte';
-    import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
-    import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
+  import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
+  import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
 
   let password = $state('');
   let confirmPassword = $state('');
@@ -127,7 +127,7 @@
     
     try {
       if ($cacheStore.keyPair && $cacheStore.chain) {
-        let payload: WalletFromPrivateKeyParams = {
+        const payload: WalletFromPrivateKeyParams = {
           walletName,
           accountName,
           password,
@@ -137,11 +137,17 @@
         };
 
         await walletFromPrivateKey(payload);
-      } else if ($cacheStore.verifyPhrase && $cacheStore.chain) {
-        let payload: WalletFromBip39Params = {
+      } else if ($cacheStore.verifyPhrase && $cacheStore.chain && $cacheStore.bip39WordList) {
+        const accounts: Bip32Account[] = [{
+          index: 0,
+          name: accountName,
+        }]; // TODO: it might be better, if user select first 10 accounts.
+        const payload: WalletFromBip39Params = {
           walletName,
-          accountName,
+          accounts,
           password,
+          bip39WordList: $cacheStore.bip39WordList,
+          verifyCheckSum: Boolean($cacheStore.verifyCheckSum),
           mnemonic: $cacheStore.verifyPhrase.join(" "),
           chain: $cacheStore.chain,
           settings: walletSettings,
@@ -166,7 +172,7 @@
 
   $effect(() => {
     if (!$cacheStore.chain || (!$cacheStore.keyPair && !$cacheStore.verifyPhrase)) {
-      return;
+      return push("/start");
     }
     
     if (!walletName) {

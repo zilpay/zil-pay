@@ -7,8 +7,8 @@ import { randomBytes } from "./random";
  * @returns A UUID string.
  */
 export function uuid(): string {
-  if (window.crypto.randomUUID) {
-    return window.crypto.randomUUID();
+  if (globalThis.crypto.randomUUID) {
+    return globalThis.crypto.randomUUID();
   }
 
   const bytes = randomBytes(16);

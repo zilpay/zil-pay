@@ -168,6 +168,8 @@
   function handleRestore() {
     cacheStore.set({
       verifyPhrase: words,
+      verifyCheckSum: !bypassChecksum,
+      bip39WordList: wordlist,
     });
     push("/network-setup");
   }

@@ -72,6 +72,8 @@
     if (hasBackup && phrase.length > 0) {
       cacheStore.set({
         verifyPhrase: phrase,
+        verifyCheckSum: true,
+        bip39WordList: wordList,
       });
       push(`/verify-bip39`);
     }

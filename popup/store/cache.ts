@@ -4,6 +4,8 @@ import { writable } from 'svelte/store';
 
 export interface ICache {
   verifyPhrase?: string[];
+  bip39WordList?: string[];
+  verifyCheckSum?: boolean;
   keyPair?: IKeyPair;
   chain?: IChainConfigState;
 }

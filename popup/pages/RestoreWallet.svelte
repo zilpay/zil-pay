@@ -9,7 +9,6 @@
   import Bip39Icon from '../components/icons/Bip39Icon.svelte';
   import LockIcon from '../components/icons/LockIcon.svelte';
 
-
   type RestoreOption = {
     id: string;
     titleKey: string;
