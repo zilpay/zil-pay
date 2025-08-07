@@ -41,7 +41,7 @@ const sessionStorageMock = (() => {
 })();
 
 const createLocalStorageMock = () => {
-  let store = {}; // The in-memory store for our mock
+  let store = {}; 
 
   return {
     get: vi.fn(async (keys) => {
@@ -92,4 +92,51 @@ const localStorageMock = createLocalStorageMock();
 Object.defineProperty(global.chrome.storage, "local", {
   value: localStorageMock,
   writable: true,
+});
+
+
+type MessageListener = (
+  message: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void
+) => boolean | undefined;
+
+let listeners: MessageListener[] = [];
+
+const messageManager = {
+  sendMessage: vi.fn(async (message: any, callback?: (response: any) => void) => {
+    const sender: chrome.runtime.MessageSender = { id: EXTENSION_ID };
+    
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    for (const listener of listeners) {
+      const sendResponse = (response: any) => {
+        if (callback) {
+          callback(response);
+        }
+      };
+      
+      listener(message, sender, sendResponse);
+    }
+  }),
+  
+  onMessage: {
+    addListener: vi.fn((listener: MessageListener) => {
+      listeners.push(listener);
+    }),
+    removeListener: vi.fn((listenerToRemove: MessageListener) => {
+      listeners = listeners.filter(listener => listener !== listenerToRemove);
+    }),
+    clearListeners: () => {
+      listeners = [];
+    },
+  },
+};
+
+Object.defineProperty(global.chrome.runtime, "sendMessage", {
+  value: messageManager.sendMessage,
+});
+
+Object.defineProperty(global.chrome.runtime, "onMessage", {
+  value: messageManager.onMessage,
 });

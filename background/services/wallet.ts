@@ -42,9 +42,9 @@ export class WalletService {
         sendResponse({
           resolve: isValid
         });
-      } catch {
+      } catch (err) {
         sendResponse({
-          reject: false,
+          resolve: false,
         });
       }
     }
