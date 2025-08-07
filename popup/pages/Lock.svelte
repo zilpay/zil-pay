@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
-  import CopyButton from '../components/CopyButton.svelte';
   import Bip39Icon from '../components/icons/Bip39Icon.svelte';
   import LockIcon from '../components/icons/LockIcon.svelte';
   import PuzzleIcon from '../components/icons/PuzzleIcon.svelte';
@@ -11,7 +10,7 @@
   import { WalletTypes } from 'config/wallet';
   import { themeDetect } from 'popup/mixins/theme';
   import { Themes } from 'config/theme';
-    import { hashChainConfig } from 'lib/utils/hashing';
+  import { hashChainConfig } from 'lib/utils/hashing';
 
   let password = $state('');
   let isLoading = $state(false);
@@ -30,16 +29,16 @@
     return `${address.slice(0, 6)}...${address.slice(-6)}`;
   }
 
-  function getWalletTypeInfo(wallet: any): { type: string; icon: any } {
+  function getWalletTypeInfo(wallet: any) {
     switch (wallet.walletType) {
       case WalletTypes.SecretPhrase:
-        return { type: 'BIP39', icon: Bip39Icon };
+        return Bip39Icon;
       case WalletTypes.SecretKey:
-        return { type: 'Private Key', icon: LockIcon };
+        return LockIcon;
       case WalletTypes.Ledger:
-        return { type: 'Ledger', icon: PuzzleIcon };
+        return PuzzleIcon;
       default:
-        return { type: 'Unknown', icon: QRCodeIcon };
+        return QRCodeIcon;
     }
   }
 
@@ -118,7 +117,6 @@
             src={walletLogo} 
             alt={wallet.walletName}
             class="chain-logo"
-            onerror="this.src='/assets/icons/default_chain.svg'"
           />
         </div>
         
@@ -126,21 +124,12 @@
           <div class="wallet-header">
             <div class="wallet-name">{wallet.walletName}</div>
             <div class="wallet-type">
-              <svelte:component this={walletTypeInfo.icon} width={16} height={16} />
-              <span>{walletTypeInfo.type}</span>
+              <svelte:component this={walletTypeInfo} width={16} height={16} />
             </div>
           </div>
           <div class="wallet-address">
             {truncateAddress(wallet.accounts?.[0]?.addr || wallet.uuid || '')}
           </div>
-        </div>
-
-        <div class="wallet-actions">
-          <CopyButton 
-            text={wallet.accounts?.[0]?.addr || wallet.uuid || ''}
-            size={36}
-            ariaLabel="Copy wallet address"
-          />
         </div>
       </div>
     {/each}
