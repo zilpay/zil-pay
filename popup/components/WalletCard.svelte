@@ -4,7 +4,6 @@
   import LockIcon from './icons/LockIcon.svelte';
   import LedgerIcon from './icons/Ledger.svelte';
   import { WalletTypes } from 'config/wallet';
-  import Close from './icons/Close.svelte';
 
   let {
     wallet,
@@ -19,24 +18,10 @@
   } = $props();
 
   function truncateAddress(address: string): string {
+  // TODO: move to dif file
     if (!address || address.length < 10) return address;
     return `${address.slice(0, 6)}...${address.slice(-6)}`;
   }
-
-  const walletTypeIcon = $derived(() => {
-    switch (wallet.walletType) {
-      case WalletTypes.SecretPhrase:
-        return Bip39Icon;
-      case WalletTypes.SecretKey:
-        return LockIcon;
-      case WalletTypes.SecretKey:
-        return LockIcon;
-      case WalletTypes.Ledger:
-        return LedgerIcon;
-      default:
-        return Close;
-    }
-  });
 </script>
 
 <button 
@@ -54,15 +39,22 @@
   </div>
   
   <div class="wallet-info">
-    <div class="wallet-header">
-      <div class="wallet-name">{wallet.walletName}</div>
-      <div class="wallet-type">
-        <svelte:component this={walletTypeIcon} width={16} height={16} />
-      </div>
-    </div>
+    <div class="wallet-name">{wallet.walletName}</div>
     <div class="wallet-address">
-      {truncateAddress(wallet.accounts?.[0]?.addr || wallet.uuid || '')}
+      {truncateAddress(wallet.uuid)}
     </div>
+  </div>
+
+  <div class="wallet-type">
+    {#if wallet.walletType === WalletTypes.SecretPhrase}
+      <Bip39Icon width={16} height={16} />
+    {:else if wallet.walletType === WalletTypes.SecretKey}
+      <LockIcon width={16} height={16} />
+    {:else if wallet.walletType === WalletTypes.Ledger}
+      <LedgerIcon width={16} height={16} />
+    {:else}
+      <LockIcon width={16} height={16} />
+    {/if}
   </div>
 </button>
 
@@ -105,6 +97,14 @@
     }
   }
 
+  .wallet-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
   .chain-logo {
     width: 100%;
     height: 100%;
@@ -119,12 +119,6 @@
     min-width: 0;
   }
 
-  .wallet-header {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
   .wallet-name {
     font-size: var(--font-size-large);
     font-weight: 600;
@@ -135,15 +129,6 @@
     transition: color 0.2s ease;
   }
 
-  .wallet-type {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: var(--font-size-small);
-    font-weight: 500;
-    color: var(--primary-purple);
-  }
-
   .wallet-address {
     font-size: var(--font-size-small);
     color: var(--text-secondary);
@@ -152,6 +137,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .wallet-type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-purple);
+    flex-shrink: 0;
   }
 
   @media (max-width: 480px) {

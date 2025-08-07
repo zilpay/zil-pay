@@ -12,10 +12,10 @@
   let isLoading = $state(false);
   let error = $state<string | null>(null);
   let selectedWalletIndex = $state<number | null>(null);
-  let showPasswordInput = $state(false);
 
   const wallets = $derived($globalStore.wallets);
   const currentTheme = $derived($globalStore.appearances);
+  const isWalletSelected = $derived(selectedWalletIndex !== null);
 
   function getWalletLogo(wallet: IWalletState): string {
     const chain = $globalStore.chains.find((c) => {
@@ -37,7 +37,6 @@
     if (isLoading) return;
     
     selectedWalletIndex = index;
-    showPasswordInput = true;
     password = '';
     error = null;
   }
@@ -81,26 +80,26 @@
     </button>
   </div>
 
-  <div class="wallets-section">
-    {#each wallets as wallet, index}
-      <WalletCard
-        {wallet}
-        chainLogo={getWalletLogo(wallet)}
-        selected={selectedWalletIndex === index}
-        onclick={() => handleWalletSelect(index)}
-      />
-    {/each}
-  </div>
+  <div class="content">
+    <div class="wallets-section">
+      {#each wallets as wallet, index}
+        <WalletCard
+          {wallet}
+          chainLogo={getWalletLogo(wallet)}
+          selected={selectedWalletIndex === index}
+          onclick={() => handleWalletSelect(index)}
+        />
+      {/each}
+    </div>
 
-  {#if showPasswordInput}
-    <div class="unlock-section">
+    <div class="form-section">
       <SmartInput
         id="password"
         label=""
-        placeholder="Enter your password"
+        placeholder={isWalletSelected ? "Enter your password" : "Select a wallet first"}
         bind:value={password}
         hide={true}
-        disabled={isLoading}
+        disabled={isLoading || !isWalletSelected}
         onInput={handlePasswordInput}
         hasError={!!error}
         errorMessage={error || ""}
@@ -108,22 +107,23 @@
       />
 
       <Button
-        disabled={!password.trim() || selectedWalletIndex === null}
+        disabled={!password.trim() || !isWalletSelected}
         loading={isLoading}
         onclick={handleUnlock}
         width="100%"
+        height={52}
       >
         Unlock Wallet
       </Button>
     </div>
-  {/if}
+  </div>
 </div>
 
 <style lang="scss">
   .lock-page {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
     background-color: var(--background-color);
     padding: 20px;
     box-sizing: border-box;
@@ -139,7 +139,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+    flex-shrink: 0;
   }
 
   .title {
@@ -188,39 +189,29 @@
     color: var(--primary-purple);
   }
 
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
   .wallets-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 32px;
-    max-height: 400px;
     overflow-y: auto;
+    padding-bottom: 20px;
+    min-height: 0;
   }
 
-  .unlock-section {
+  .form-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    max-width: 400px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 20px;
-    background: var(--card-background);
-    border-radius: 16px;
-    border: 2px solid var(--primary-purple);
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    gap: 16px;
+    flex-shrink: 0;
+    padding-top: 8px;
   }
 
   @media (max-width: 480px) {
@@ -229,7 +220,7 @@
     }
 
     .header {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .title {
@@ -245,9 +236,12 @@
       font-size: 20px;
     }
 
-    .unlock-section {
-      gap: 16px;
-      padding: 16px;
+    .wallets-section {
+      padding-bottom: 16px;
+    }
+
+    .form-section {
+      gap: 14px;
     }
   }
 
@@ -256,8 +250,27 @@
       padding: 12px;
     }
 
-    .unlock-section {
-      padding: 14px;
+    .wallets-section {
+      padding-bottom: 12px;
+    }
+
+    .form-section {
+      gap: 12px;
+    }
+  }
+
+  @media (max-height: 600px) {
+    .header {
+      margin-bottom: 16px;
+    }
+
+    .wallets-section {
+      padding-bottom: 12px;
+    }
+
+    .form-section {
+      gap: 12px;
+      padding-top: 4px;
     }
   }
 </style>
