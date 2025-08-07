@@ -80,20 +80,32 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
   return array;
 };
 
+const matchMediaMock = vi.fn().mockImplementation(query => ({
+  matches: false, 
+  media: query,
+  onchange: null,
+  addListener: vi.fn(), 
+  removeListener: vi.fn(), 
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+}));
+
 const localStorageMock = createLocalStorageMock();
 
 (global as any).window = {
   crypto: {
     getRandomValues: vi.fn(mockGetRandomValues),
   },
+  matchMedia: matchMediaMock,
 };
+globalThis.matchMedia = matchMediaMock;
 
 (globalThis as any).chrome.storage.session = sessionStorageMock;
 Object.defineProperty(global.chrome.storage, "local", {
   value: localStorageMock,
   writable: true,
 });
-
 
 type MessageListener = (
   message: any,

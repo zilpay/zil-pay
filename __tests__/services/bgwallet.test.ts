@@ -57,110 +57,99 @@ describe("WalletService through background messaging", () => {
       ).toBe(false);
     });
 
-  //   it("should generate a key pair for Zilliqa", async () => {
-  //     const keyPair = await generateKeyPair(ZILLIQA);
-  //     expect(keyPair).toHaveProperty("address");
-  //     expect(keyPair.address).toMatch(/^zil1/);
-  //     expect(keyPair).toHaveProperty("privateKey");
-  //     expect(keyPair).toHaveProperty("publicKey");
-  //     expect(keyPair.slip44).toBe(ZILLIQA);
-  //   });
+    it("should generate a key pair for Zilliqa", async () => {
+      const keyPair = await generateKeyPair(ZILLIQA);
+      expect(keyPair).toHaveProperty("address");
+      expect(keyPair.address).toMatch(/^zil1/);
+      expect(keyPair).toHaveProperty("privateKey");
+      expect(keyPair).toHaveProperty("publicKey");
+      expect(keyPair.slip44).toBe(ZILLIQA);
+    });
 
-  //   it("should generate a key pair for Ethereum", async () => {
-  //     const keyPair = await generateKeyPair(ETHEREUM);
-  //     expect(keyPair).toHaveProperty("address");
-  //     expect(keyPair.address).toMatch(/^0x/);
-  //     expect(keyPair).toHaveProperty("privateKey");
-  //     expect(keyPair).toHaveProperty("publicKey");
-  //     expect(keyPair.slip44).toBe(ETHEREUM);
-  //   });
-  // });
-
-  // describe("Wallet Creation", () => {
-  //   const baseSettings = {
-  //     cipherOrders: [CipherOrders.AESGCM256],
-  //     hashFnParams: {
-  //       memory: 1024,
-  //       iterations: 1,
-  //       threads: 1,
-  //       secret: "",
-  //       hashType: HashTypes.Pbkdf2,
-  //       hashSize: ShaAlgorithms.sha256,
-  //     },
-  //     currencyConvert: "btc",
-  //     ipfsNode: null,
-  //     ensEnabled: false,
-  //     tokensListFetcher: false,
-  //     nodeRankingEnabled: false,
-  //     maxConnections: 10,
-  //     requestTimeoutSecs: 30,
-  //     ratesApiOptions: 0,
-  //     sessionTime: 60,
-  //   };
-
-  //   it("should create a new wallet from a private key", async () => {
-  //     const keyPair: IKeyPair = {
-  //       privateKey: IMPORTED_KEY,
-  //       publicKey:
-  //         "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
-  //       address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
-  //       slip44: ZILLIQA,
-  //     };
-
-  //     const params: WalletFromPrivateKeyParams = {
-  //       key: keyPair,
-  //       walletName: "My Imported Wallet",
-  //       accountName: "Imported Account",
-  //       chain: CHAINS[0],
-  //       password: PASSWORD,
-  //       settings: new WalletSettings(baseSettings),
-  //     };
-
-  //     await walletFromPrivateKey(params);
-  //     const state = await getGlobalState();
-
-  //     expect(state.wallets).toHaveLength(1);
-  //     const wallet = state.wallets[0];
-  //     expect(wallet.walletName).toBe("My Imported Wallet");
-  //     expect(wallet.walletType).toBe(WalletTypes.SecretKey);
-  //     expect(wallet.accounts).toHaveLength(1);
-  //     expect(wallet.accounts[0].name).toBe("Imported Account");
-  //     expect(wallet.accounts[0].addr).toBe(keyPair.address);
-  //   });
-
-  //   it("should create a new wallet from a BIP39 mnemonic", async () => {
-  //     const params: WalletFromBip39Params = {
-  //       mnemonic: WORDS,
-  //       bip39WordList: WORD_LIST,
-  //       walletName: "My BIP39 Wallet",
-  //       accounts: [{ index: 0, name: "Main Account" }],
-  //       verifyCheckSum: true,
-  //       chain: CHAINS[0],
-  //       password: PASSWORD,
-  //       settings: new WalletSettings(baseSettings),
-  //     };
-
-  //     await walletFromBip39Mnemonic(params);
-  //     const state = await getGlobalState();
-
-  //     expect(state.wallets).toHaveLength(1);
-  //     const wallet = state.wallets[0];
-  //     expect(wallet.walletName).toBe("My BIP39 Wallet");
-  //     expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
-  //     expect(wallet.accounts).toHaveLength(1);
-  //     expect(wallet.accounts[0].name).toBe("Main Account");
-  //     expect(wallet.accounts[0].addr).toBe(
-  //       "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
-  //     );
-  //   });
+    it("should generate a key pair for Ethereum", async () => {
+      const keyPair = await generateKeyPair(ETHEREUM);
+      expect(keyPair).toHaveProperty("address");
+      expect(keyPair.address).toMatch(/^0x/);
+      expect(keyPair).toHaveProperty("privateKey");
+      expect(keyPair).toHaveProperty("publicKey");
+      expect(keyPair.slip44).toBe(ETHEREUM);
+    });
   });
 
-  // describe("State Management", () => {
-  //   it("should return the default global state when storage is empty", async () => {
-  //     const state = await getGlobalState();
-  //     expect(state.wallets).toHaveLength(0);
-  //     expect(state.chains).toHaveLength(0);
-  //     expect(state.selected_wallet).toBe(-1);
-  //   });
-  // });
+  describe("Wallet Creation", () => {
+    const baseSettings = {
+      cipherOrders: [CipherOrders.AESGCM256],
+      hashFnParams: {
+        memory: 64,
+        iterations: 1,
+        threads: 1,
+        secret: "",
+        hashType: HashTypes.Argon2,
+        hashSize: ShaAlgorithms.sha256,
+      },
+      currencyConvert: "btc",
+      ipfsNode: null,
+      ensEnabled: false,
+      tokensListFetcher: false,
+      nodeRankingEnabled: false,
+      maxConnections: 10,
+      requestTimeoutSecs: 30,
+      ratesApiOptions: 0,
+      sessionTime: 60,
+    };
+
+    it("should create a new wallet from a private key", async () => {
+      const keyPair: IKeyPair = {
+        privateKey: IMPORTED_KEY,
+        publicKey:
+          "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
+        address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
+        slip44: ZILLIQA,
+      };
+
+      const params: WalletFromPrivateKeyParams = {
+        key: keyPair,
+        walletName: "My Imported Wallet",
+        accountName: "Imported Account",
+        chain: CHAINS[0],
+        password: PASSWORD,
+        settings: new WalletSettings(baseSettings),
+      };
+
+      const state = await walletFromPrivateKey(params);
+
+      expect(state.wallets).toHaveLength(1);
+      const wallet = state.wallets[0];
+      expect(wallet.walletName).toBe("My Imported Wallet");
+      expect(wallet.walletType).toBe(WalletTypes.SecretKey);
+      expect(wallet.accounts).toHaveLength(1);
+      expect(wallet.accounts[0].name).toBe("Imported Account");
+      expect(wallet.accounts[0].addr).toBe(keyPair.address);
+    });
+
+    it("should create a new wallet from a BIP39 mnemonic", async () => {
+      const params: WalletFromBip39Params = {
+        mnemonic: WORDS,
+        bip39WordList: WORD_LIST,
+        walletName: "My BIP39 Wallet",
+        accounts: [{ index: 0, name: "Main Account" }],
+        verifyCheckSum: true,
+        chain: CHAINS[0],
+        password: PASSWORD,
+        settings: new WalletSettings(baseSettings),
+      };
+
+      const state = await walletFromBip39Mnemonic(params);
+
+      expect(state.wallets).toHaveLength(2);
+      const wallet = state.wallets[1];
+      expect(wallet.walletName).toBe("My BIP39 Wallet");
+      expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
+      expect(wallet.accounts).toHaveLength(1);
+      expect(wallet.accounts[0].name).toBe("Main Account");
+      expect(wallet.accounts[0].addr).toBe(
+        "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
+      );
+    });
+  });
 });
