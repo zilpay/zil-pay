@@ -7,7 +7,7 @@
   import RadioOption, { type OptionData } from '../components/RadioOption.svelte';
   import SmartInput from '../components/SmartInput.svelte';
   import Switch from '../components/Switch.svelte';
-  import Dropdown from '../components/Dropdown.svelte';
+  import Dropdown, { type DropdownOption } from '../components/Dropdown.svelte';
 
   let {
     walletSettings,
@@ -28,11 +28,6 @@
     Medium,
     Secure
   }
-
-  type DropdownOption = {
-    code: string;
-    label: string;
-  };
 
   let advancedMode = $state(false);
   let selectedCipherPreset = $state(CipherPreset.QuantumResistant);
@@ -86,8 +81,8 @@
   ];
 
   const hashSizeOptions: DropdownOption[] = [
-    { code: ShaAlgorithms.sha256, label: 'SHA-256' },
-    { code: ShaAlgorithms.Sha512, label: 'SHA-512' }
+    { code: ShaAlgorithms.sha256, label: ShaAlgorithms.sha256 },
+    { code: ShaAlgorithms.Sha512, label: ShaAlgorithms.Sha512 }
   ];
 
   const presetToCipherOrders: Record<CipherPreset, CipherOrders[]> = {

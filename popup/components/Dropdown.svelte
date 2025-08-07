@@ -1,5 +1,5 @@
 <script lang="ts">
-  type DropdownOption = {
+  export type DropdownOption = {
     code: string;
     label: string;
   };
