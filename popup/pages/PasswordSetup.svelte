@@ -24,13 +24,16 @@
   let isValid = $state(false);
   let errors = $state<string[]>([]);
   let showAdvancedModal = $state(false);
+  let isLoading = $state(false);
+  let error = $state<string | null>(null);
+  
   let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
     hashFnParams: {
-      memory: 2097152, 
-      threads: 2,
+      memory: 65536, 
+      threads: 4,
       secret: "",
-      iterations: 1,
+      iterations: 3,
       hashType: HashTypes.Argon2,
       hashSize: ShaAlgorithms.Sha512,
     },
@@ -60,6 +63,8 @@
     'var(--success-color)',
     'var(--success-color)'
   ];
+
+  const isFormDisabled = $derived(isLoading);
 
   function generateDefaultWalletName(): string {
     const chainName = $cacheStore.chain?.name || 'Wallet';
@@ -109,12 +114,16 @@
   }
 
   function handlePasswordInput() {
+    if (isFormDisabled) return;
     passwordStrength = calculatePasswordStrength(password);
     updateValidation();
+    clearError();
   }
 
   function handleConfirmPasswordInput() {
+    if (isFormDisabled) return;
     updateValidation();
+    clearError();
   }
 
   function updateValidation() {
@@ -122,8 +131,15 @@
     isValid = errors.length === 0 && password.length > 0 && confirmPassword.length > 0 && walletName.trim().length > 0;
   }
 
+  function clearError() {
+    error = null;
+  }
+
   async function handleCreateWallet() {
-    if (!isValid) return;
+    if (!isValid || isLoading) return;
+    
+    isLoading = true;
+    error = null;
     
     try {
       if ($cacheStore.keyPair && $cacheStore.chain) {
@@ -141,7 +157,7 @@
         const accounts: Bip32Account[] = [{
           index: 0,
           name: accountName,
-        }]; // TODO: it might be better, if user select first 10 accounts.
+        }];
         const payload: WalletFromBip39Params = {
           walletName,
           accounts,
@@ -151,23 +167,34 @@
           mnemonic: $cacheStore.verifyPhrase.join(" "),
           chain: $cacheStore.chain,
           settings: walletSettings,
-        }
+        };
 
         await walletFromBip39Mnemonic(payload);
       } else {
-        throw new Error();
+        throw new Error('invalidData');
       }
-    } catch (error) {
-      console.error('Error creating wallet:', error);
+
+      push('/');
+    } catch (err) {
+      error = String(err);
+    } finally {
+      isLoading = false;
     }
   }
 
   function handleAdvancedSettings() {
+    if (isFormDisabled) return;
     showAdvancedModal = true;
   }
 
   function handleModalClose() {
     showAdvancedModal = false;
+  }
+
+  function handleWalletNameInput() {
+    if (isFormDisabled) return;
+    updateValidation();
+    clearError();
   }
 
   $effect(() => {
@@ -185,8 +212,8 @@
   });
 </script>
 
-<div class="page-container password-setup">
-  <NavBar title={$_('passwordSetup.title')} onBack={pop} />
+<div class="page-container password-setup" class:disabled={isFormDisabled}>
+  <NavBar title={$_('passwordSetup.title')} onBack={isFormDisabled ? undefined : pop} />
 
   <div class="content">
     <div class="intro-section">
@@ -201,8 +228,10 @@
         label={$_('passwordSetup.walletNameLabel')}
         placeholder={$_('passwordSetup.walletNamePlaceholder')}
         bind:value={walletName}
+        disabled={isFormDisabled}
         required
         showToggle={false}
+        onInput={handleWalletNameInput}
       />
 
       <SmartInput
@@ -210,6 +239,7 @@
         label={$_('passwordSetup.passwordLabel')}
         placeholder={$_('passwordSetup.passwordPlaceholder')}
         bind:value={password}
+        disabled={isFormDisabled}
         onInput={handlePasswordInput}
         required
         hasError={password.length > 0 && passwordStrength < 2}
@@ -244,6 +274,7 @@
         label={$_('passwordSetup.confirmLabel')}
         placeholder={$_('passwordSetup.confirmPlaceholder')}
         bind:value={confirmPassword}
+        disabled={isFormDisabled}
         onInput={handleConfirmPasswordInput}
         required
         hasError={confirmPassword.length > 0 && password !== confirmPassword}
@@ -254,17 +285,24 @@
         <div class="error-section">
           <div class="error-title">{$_('passwordSetup.requirements')}</div>
           <ul class="error-list">
-            {#each errors as error}
-              <li class="error-item">{error}</li>
+            {#each errors as validationError}
+              <li class="error-item">{validationError}</li>
             {/each}
           </ul>
+        </div>
+      {/if}
+
+      {#if error}
+        <div class="error-section critical">
+          <div class="error-title">{$_('passwordSetup.errors.title')}</div>
+          <p class="error-message">{error}</p>
         </div>
       {/if}
     </div>
 
     <div class="actions-section">
       <div class="advanced-section">
-        <LittleButton onclick={handleAdvancedSettings}>
+        <LittleButton onclick={handleAdvancedSettings} disabled={isFormDisabled}>
           {$_('passwordSetup.advanced')}
         </LittleButton>
       </div>
@@ -275,7 +313,8 @@
       </div>
 
       <Button 
-        disabled={!isValid} 
+        disabled={!isValid || isLoading} 
+        loading={isLoading}
         onclick={handleCreateWallet}
         width="100%"
       >
@@ -290,7 +329,7 @@
   title={$_('passwordSetup.advancedTitle')}
   onClose={handleModalClose}
   width="600px"
-  closeOnOverlay={true}
+  closeOnOverlay={!isFormDisabled}
 >
   <CryptModal
     walletSettings={walletSettings}
@@ -306,6 +345,11 @@
     background: var(--background-color);
     color: var(--text-primary);
     padding: 0 16px;
+    transition: opacity 0.2s ease;
+
+    &.disabled {
+      pointer-events: none;
+    }
   }
 
   .page-container {
@@ -380,6 +424,11 @@
     background-color: color-mix(in srgb, var(--danger-color) 10%, var(--card-background));
     border: 1px solid var(--danger-color);
     border-radius: 8px;
+
+    &.critical {
+      background-color: color-mix(in srgb, var(--danger-color) 15%, var(--card-background));
+      border-width: 2px;
+    }
   }
 
   .error-title {
@@ -412,6 +461,13 @@
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  .error-message {
+    font-size: calc(var(--font-size-small) * 0.9);
+    color: var(--danger-color);
+    margin: 0;
+    line-height: 1.3;
   }
 
   .actions-section {

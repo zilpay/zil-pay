@@ -93,8 +93,8 @@
 
   const memoryPresetValues: Record<MemoryPreset, Partial<IWalletHashParams>> = {
     [MemoryPreset.Low]: { memory: 64, iterations: 3, threads: 1 },
-    [MemoryPreset.Medium]: { memory: 6500, iterations: 2, threads: 2 },
-    [MemoryPreset.Secure]: { memory: 262144, iterations: 4, threads: 2 }
+    [MemoryPreset.Medium]: { memory: 650, iterations: 2, threads: 2 },
+    [MemoryPreset.Secure]: { memory: 65536, iterations: 3, threads: 4 }
   };
 
   function updateSettings(newSettings: Partial<IWalletSettingsState>) {

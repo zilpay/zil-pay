@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   generateBip39Words,
   generateKeyPair,
-  getGlobalState,
   validateBip39Checksum,
   walletFromBip39Mnemonic,
   walletFromPrivateKey,
