@@ -71,7 +71,6 @@
 
     {#if showToggle}
       <button
-        type="button"
         class="visibility-toggle"
         onclick={handleToggle}
         {disabled}
@@ -80,9 +79,9 @@
           {@render toggleIcon()}
         {:else}
           {#if hide}
-            <CloseEyeIcon />
+            <CloseEyeIcon primary={!disabled} />
           {:else}
-            <OpenEyeIcon />
+            <OpenEyeIcon primary={!disabled} />
           {/if}
         {/if}
       </button>
