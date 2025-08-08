@@ -1,9 +1,11 @@
-<script lang="ts">
+<script module lang="ts">
   export type DropdownOption = {
     code: string;
     label: string;
   };
+</script>
 
+<script lang="ts">
   let {
     options = [],
     selected = $bindable(''),
