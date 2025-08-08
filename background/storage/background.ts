@@ -93,7 +93,10 @@ export class BackgroundState implements IBackgroundState {
 
   async sync() {
     await BrowserStorage.set(
-      buildObject(Fields.STORAGE_V4, JSON.stringify(this)),
+      buildObject(Fields.STORAGE_V4, JSON.stringify({
+        ...this,
+        selected_wallet: -1,
+      })),
     );
   }
 
@@ -101,7 +104,7 @@ export class BackgroundState implements IBackgroundState {
     return {
       storageVersion: this.storageVersion,
       wallets: this.wallets.map(w => w.toJSON()),
-      selected_wallet: -1,
+      selected_wallet: this.selected_wallet,
       notificationsGlobalEnabled: this.notificationsGlobalEnabled,
       locale: this.locale,
       appearances: this.appearances,

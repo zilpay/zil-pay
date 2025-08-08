@@ -11,6 +11,8 @@ export class GlobalState {
   static async fromStorage() {
     const state = await BackgroundState.fromStorage();
 
+    state.selected_wallet = -1; // reset session.
+
     return new GlobalState(state);
   }
 
