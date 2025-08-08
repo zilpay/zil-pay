@@ -47,12 +47,17 @@
     return '/assets/icons/default_chain.svg';
   }
 
-  function handleWalletSelect(index: number) {
+  async function handleWalletSelect(index: number) {
     if (isLoading) return;
 
     selectedWalletIndex = index;
     password = '';
     error = null;
+
+    await tick();
+
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    passwordInput?.focus();
   }
 
   async function handleUnlock(e: SubmitEvent) {
