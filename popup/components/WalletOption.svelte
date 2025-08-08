@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { SvelteComponent } from 'svelte';
   import FastImg from './FastImg.svelte';
 
   interface TagConfig {
@@ -17,7 +18,7 @@
   }: {
     title: string;
     description: string;
-    icon: string;
+    icon: string | typeof SvelteComponent;
     onclick?: () => void;
     disabled?: boolean;
     selected?: boolean;
@@ -61,7 +62,7 @@
 >
   <div class="option-icon" class:url={isIconUrl}>
     {#if isIconUrl}
-      <FastImg src={icon} class="icon-image" />
+      <FastImg src={icon as string} class="icon-image" />
     {:else if typeof icon === 'string'}
       <span class="icon-symbol">{icon}</span>
     {:else}
@@ -234,6 +235,8 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   .tags-container {
@@ -327,6 +330,7 @@
       font-size: var(--font-size-large);
       white-space: normal;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
       display: -webkit-box;
     }
@@ -362,3 +366,4 @@
     }
   }
 </style>
+
