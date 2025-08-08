@@ -6,6 +6,8 @@
   import { WalletTypes } from 'config/wallet';
   import FastImg from './FastImg.svelte';
 
+  const ICON_SIZE = 12;
+
   let {
     wallet,
     chainLogo,
@@ -48,13 +50,13 @@
 
   <div class="wallet-type">
     {#if wallet.walletType === WalletTypes.SecretPhrase}
-      <Bip39Icon width={16} height={16} />
+      <Bip39Icon primary={selected} width={ICON_SIZE} height={ICON_SIZE} />
     {:else if wallet.walletType === WalletTypes.SecretKey}
-      <LockIcon width={16} height={16} />
+      <LockIcon primary={selected} width={ICON_SIZE} height={ICON_SIZE} />
     {:else if wallet.walletType === WalletTypes.Ledger}
-      <LedgerIcon width={16} height={16} />
+      <LedgerIcon primary={selected} width={ICON_SIZE} height={ICON_SIZE} />
     {:else}
-      <LockIcon width={16} height={16} />
+      <LockIcon width={ICON_SIZE} height={ICON_SIZE} />
     {/if}
   </div>
 </button>
