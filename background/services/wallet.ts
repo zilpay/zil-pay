@@ -1,4 +1,4 @@
-import { ChainConfig, Wallet, WalletSettings, type BackgroundState, type IBackgroundState, type IChainConfigState } from "background/storage";
+import { Account, ChainConfig, FToken, Wallet, WalletSettings, type BackgroundState, type IBackgroundState, type IChainConfigState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
@@ -8,6 +8,7 @@ import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";
 import { randomBytes } from "crypto/random";
 import { Bip39 } from "crypto/bip39";
+import { ConfirmState } from "background/storage/confirm";
 
 export class WalletService {
   #state: BackgroundState;
@@ -97,12 +98,12 @@ export class WalletService {
       const currentWallet = this.#state.wallets[index];
 
       if (currentWallet) {
-          currentWallet.accounts = wallet.accounts;
-          currentWallet.confirm = wallet.confirm;
+          currentWallet.accounts = wallet.accounts.map((a) => new Account(a));
+          currentWallet.confirm = wallet.confirm.map((c) => new ConfirmState(c));
           currentWallet.history = wallet.history.map((h) =>  new HistoricalTransaction(h));
           currentWallet.selectedAccount = wallet.selectedAccount;
           currentWallet.settings = new WalletSettings(wallet.settings);
-          currentWallet.tokens = wallet.tokens;
+          currentWallet.tokens = wallet.tokens.map((t) => new FToken(t));
           currentWallet.walletName = wallet.walletName;
       }
     });
