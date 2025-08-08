@@ -11,7 +11,7 @@
 		title?: string;
 		onBack?: () => void;
 		onRight?: (() => void) | null;
-		rightIcon?: (typeof SvelteComponent) | null;
+		rightIcon?: typeof SvelteComponent<any> | null;
 		left?: Snippet | null;
 	} = $props();
 </script>
