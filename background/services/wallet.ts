@@ -291,6 +291,43 @@ export class WalletService {
     }
   }
 
+  async unlockWallet(password: string, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const passwordBytes = utf8ToUint8Array(password);
+      const wallet = this.#state.wallets[walletIndex];
+
+      await wallet.unlock(passwordBytes);
+      this.#state.selected_wallet = walletIndex;
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: this.#state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async logoutWallet(walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      await wallet.clearSession();
+      this.#state.selected_wallet = -1;
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: this.#state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async setAccountName(walletIndex: number, accountIndex: number, name: string, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];

@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   generateBip39Words,
   generateKeyPair,
+  logout,
+  unlockWallet,
   validateBip39Checksum,
   walletFromBip39Mnemonic,
   walletFromPrivateKey,
@@ -117,7 +119,7 @@ describe("WalletService through background messaging", () => {
         settings: new WalletSettings(baseSettings),
       };
 
-      const state = await walletFromPrivateKey(params);
+      let state = await walletFromPrivateKey(params);
 
       expect(state.wallets).toHaveLength(1);
       const wallet = state.wallets[0];
@@ -126,6 +128,11 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts).toHaveLength(1);
       expect(wallet.accounts[0].name).toBe("Imported Account");
       expect(wallet.accounts[0].addr).toBe(keyPair.address);
+      expect(state.selected_wallet).toBe(0);
+
+      state = await logout(0);
+      expect(state.selected_wallet).toBe(-1);
+      state = await unlockWallet(PASSWORD, 0);
       expect(state.selected_wallet).toBe(0);
     });
 

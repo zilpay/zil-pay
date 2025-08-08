@@ -34,6 +34,12 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.WALLET_FROM_BIP39:
         core.wallet.walletFromBip39(msg.payload, sendResponse);
         return true;
+      case MTypePopup.UNLOCK_WALLET:
+        core.wallet.unlockWallet(msg.payload.password, msg.payload.walletIndex, sendResponse);
+        return true;
+      case MTypePopup.LOG_OUT:
+        core.wallet.logoutWallet(msg.payload.walletIndex, sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;

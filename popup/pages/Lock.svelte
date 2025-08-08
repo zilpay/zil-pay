@@ -8,6 +8,7 @@
   import { hashChainConfig } from 'lib/utils/hashing';
   import { viewChain } from 'lib/popup/url';
   import { _ } from '../i18n';
+    import { unlockWallet } from 'popup/background/wallet';
 
   let password = $state('');
   let isLoading = $state(false);
@@ -49,10 +50,10 @@
     error = null;
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await unlockWallet(password, selectedWalletIndex);
       push('/');
     } catch (err) {
-      error = $_('lockpage.invalidPassword');
+      error = $_('lockpage.invalidPassword') + `Error: ${err}`;
     } finally {
       isLoading = false;
     }

@@ -107,3 +107,33 @@ export async function walletFromBip39Mnemonic(payload: WalletFromBip39Params) {
   return resolve;
 }
 
+
+export async function unlockWallet(password: string, walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      password,
+    },
+    type: MTypePopup.UNLOCK_WALLET,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
+export async function logout(walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+    },
+    type: MTypePopup.LOG_OUT,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+

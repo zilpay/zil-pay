@@ -11,5 +11,8 @@ export const MTypePopup = {
 
   WALLET_FROM_PRIVATE_KEY: `@/${app}/create-wallet-from-private-key`,
   WALLET_FROM_BIP39: `@/${app}/create-wallet-from-bip39`,
+
+  UNLOCK_WALLET: `@/${app}/unlock-wallet`,
+  LOG_OUT: `@/${app}/logout`,
 }
 
