@@ -40,4 +40,20 @@ export class FToken implements IFTokenState {
     this.native = data.native;
     this.chainHash = data.chainHash;
   }
+
+  toJSON(): IFTokenState {
+    return {
+      name: this.name,
+      symbol: this.symbol,
+      decimals: this.decimals,
+      addr: this.addr,
+      addrType: this.addrType,
+      logo: this.logo,
+      balances: this.balances,
+      rate: this.rate,
+      default_: this.default_,
+      native: this.native,
+      chainHash: this.chainHash,
+    };
+  }
 }

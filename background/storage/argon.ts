@@ -85,4 +85,15 @@ export class WalletHashParams implements IWalletHashParams {
       return KeyChain.fromAesV2(password);
     }
   }
+
+  toJSON(): IWalletHashParams {
+    return {
+      memory: this.memory,
+      iterations: this.iterations,
+      threads: this.threads,
+      secret: this.secret,
+      hashType: this.hashType,
+      hashSize: this.hashSize,
+    };
+  }
 }

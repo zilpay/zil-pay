@@ -70,4 +70,24 @@ export class ChainConfig implements IChainConfigState {
   hash(): number {
     return hashChainConfig(this.chainIds, this.slip44, this.chain);
   }
+
+  toJSON(): IChainConfigState {
+    return {
+      name: this.name,
+      logo: this.logo,
+      chain: this.chain,
+      shortName: this.shortName,
+      rpc: this.rpc,
+      features: this.features,
+      chainId: this.chainId,
+      chainIds: this.chainIds,
+      slip44: this.slip44,
+      diffBlockTime: this.diffBlockTime,
+      ens: this.ens,
+      explorers: this.explorers.map(e => e.toJSON()),
+      fallbackEnabled: this.fallbackEnabled,
+      testnet: this.testnet,
+      ftokens: this.ftokens.map(t => t.toJSON())
+    };
+  }
 }

@@ -42,4 +42,20 @@ export class WalletSettings implements IWalletSettingsState {
     this.ratesApiOptions = data.ratesApiOptions;
     this.sessionTime = data.sessionTime ?? 3600;
   }
+
+  toJSON(): IWalletSettingsState {
+    return {
+      cipherOrders: this.cipherOrders,
+      hashFnParams: this.hashFnParams.toJSON(),
+      currencyConvert: this.currencyConvert,
+      ipfsNode: this.ipfsNode,
+      ensEnabled: this.ensEnabled,
+      tokensListFetcher: this.tokensListFetcher,
+      nodeRankingEnabled: this.nodeRankingEnabled,
+      maxConnections: this.maxConnections,
+      requestTimeoutSecs: this.requestTimeoutSecs,
+      ratesApiOptions: this.ratesApiOptions,
+      sessionTime: this.sessionTime
+    };
+  }
 }

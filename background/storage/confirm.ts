@@ -52,4 +52,18 @@ export class ConfirmState implements IConfirmState {
       this.signTypedDataJsonEVM = data.signTypedDataJsonEVM;
     }
   }
+
+  toJSON(): IConfirmState {
+    return {
+      uuid: this.uuid,
+      title: this.title,
+      icon: this.icon,
+      token: this.token,
+      scilla: this.scilla,
+      signMessageScilla: this.signMessageScilla,
+      evm: this.evm,
+      signPersonalMessageEVM: this.signPersonalMessageEVM,
+      signTypedDataJsonEVM: this.signTypedDataJsonEVM
+    };
+  }
 }

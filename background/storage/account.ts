@@ -77,4 +77,17 @@ export class Account implements IAccountState {
 
     return account;
   }
+
+  toJSON(): IAccountState {
+    return {
+      addr: this.addr,
+      addrType: this.addrType,
+      name: this.name,
+      pubKey: this.pubKey,
+      chainHash: this.chainHash,
+      chainId: this.chainId,
+      slip44: this.slip44,
+      index: this.index,
+    };
+  }
 }

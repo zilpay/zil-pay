@@ -220,4 +220,21 @@ export class Wallet implements IWalletState {
   get vault() {
     return this.#vault;
   }
+
+  toJSON(): IWalletState {
+    return {
+      uuid: this.uuid,
+      walletType: this.walletType,
+      walletName: this.walletName,
+      authType: this.authType,
+      accounts: this.accounts.map(a => a.toJSON()),
+      selectedAccount: this.selectedAccount,
+      tokens: this.tokens.map(t => t.toJSON()),
+      history: this.history.map(h => h.toJSON() as unknown as IHistoricalTransactionState),
+      confirm: this.confirm.map(c => c.toJSON()),
+      settings: this.settings.toJSON(),
+      defaultChainHash: this.defaultChainHash,
+      vault: this.#vault,
+    };
+  }
 }

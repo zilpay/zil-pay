@@ -96,4 +96,18 @@ export class BackgroundState implements IBackgroundState {
       buildObject(Fields.STORAGE_V4, JSON.stringify(this)),
     );
   }
+
+  toJSON(): IBackgroundState {
+    return {
+      storageVersion: this.storageVersion,
+      wallets: this.wallets.map(w => w.toJSON()),
+      selected_wallet: -1,
+      notificationsGlobalEnabled: this.notificationsGlobalEnabled,
+      locale: this.locale,
+      appearances: this.appearances,
+      abbreviatedNumber: this.abbreviatedNumber,
+      hideBalance: this.hideBalance,
+      chains: this.chains.map(c => c.toJSON()),
+    };
+  }
 }

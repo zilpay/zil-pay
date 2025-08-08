@@ -17,4 +17,13 @@ export class Explorer implements IExplorerState {
     this.icon = data.icon ?? null;
     this.standard = data.standard;
   }
+
+  toJSON(): IExplorerState {
+    return {
+      name: this.name,
+      url: this.url,
+      icon: this.icon,
+      standard: this.standard,
+    };
+  }
 }
