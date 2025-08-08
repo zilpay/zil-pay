@@ -258,7 +258,7 @@
       label={$_('modals.cryptsetup.advanced.secret.label')}
       placeholder={$_('modals.cryptsetup.advanced.secret.placeholder')}
       value={walletSettings.hashFnParams.secret}
-      onInput={(e) => handleHashParamChange('secret', (e.target as HTMLInputElement).value)}
+      oninput={(e) => handleHashParamChange('secret', (e.target as HTMLInputElement).value)}
       showToggle={true}
     />
   </div>

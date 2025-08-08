@@ -1,5 +1,13 @@
 <script lang="ts">
-  let { src, alt = '', ...rest } = $props();
+  let {
+    src,
+    alt = '',
+    ...rest
+  }: {
+    src: string;
+    alt?: string;
+    [key: string]: any;
+  } = $props();
 
   let isLoading = $state(true);
   let hasError = $state(false);
@@ -41,6 +49,14 @@
 {/if}
 
 <style lang="scss">
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  
   .loading-spinner {
     width: 24px;
     height: 24px;
@@ -49,9 +65,16 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
+  
+  .error-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--text-secondary);
+  }
 
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
 </style>
+

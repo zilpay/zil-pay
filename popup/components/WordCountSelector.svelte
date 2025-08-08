@@ -5,13 +5,13 @@
     wordCounts = ALLOWED_COUNTS,
     selected = $bindable(),
     onSelect = () => {}
+  }: {
+    wordCounts?: number[];
+    selected: number;
+    onSelect?: (count: number) => void;
   } = $props();
 
-  if (selected === undefined) {
-    selected = wordCounts[0];
-  }
-
-  const countIndex = $derived(wordCounts.indexOf(selected));
+  const countIndex = $derived(wordCounts.indexOf(selected ?? wordCounts[0]));
 
   function handleSelect(count: number) {
     selected = count;
@@ -92,3 +92,4 @@
     }
   }
 </style>
+

@@ -17,7 +17,7 @@
     errorMessage = '',
     ariaDescribedBy = '',
     toggleIcon = undefined,
-    oninput = () => null,
+    oninput = (_e: Event) => null,
   }: {
     id?: string;
     label?: string;
@@ -32,7 +32,7 @@
     errorMessage?: string;
     ariaDescribedBy?: string;
     toggleIcon?: Snippet;
-    oninput?: () => unknown;
+    oninput?: (e: Event) => unknown;
   } = $props();
 
   let inputElement: HTMLInputElement;
@@ -59,7 +59,7 @@
       bind:this={inputElement}
       bind:value={value}
       {id}
-      oninput={() => oninput()}
+      oninput={oninput}
       type={hide ? 'password' : 'text'}
       class="password-input"
       {placeholder}
