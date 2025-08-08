@@ -1,10 +1,18 @@
 <script lang="ts">
+	import type { Snippet, SvelteComponent } from 'svelte';
+
 	let {
 		title = '',
 		onBack = () => window.history.back(),
 		onRight = null,
 		rightIcon = null,
 		left = null
+	}: {
+		title?: string;
+		onBack?: () => void;
+		onRight?: (() => void) | null;
+		rightIcon?: (typeof SvelteComponent) | null;
+		left?: Snippet | null;
 	} = $props();
 </script>
 
@@ -26,7 +34,7 @@
 		<button
 			class="nav-right-button"
 			type="button"
-			onclick={() => onRight()}
+			onclick={() => onRight && onRight()}
 			aria-label="Action"
 		>
 			{#if typeof rightIcon === 'string'}
@@ -97,3 +105,4 @@
     height: 36px;
   }
 </style>
+
