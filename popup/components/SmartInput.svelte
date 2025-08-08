@@ -32,7 +32,7 @@
     errorMessage?: string;
     ariaDescribedBy?: string;
     toggleIcon?: Snippet;
-    oninput?: () => null;
+    oninput?: () => unknown;
   } = $props();
 
   let inputElement: HTMLInputElement;

@@ -26,11 +26,10 @@
   let showAdvancedModal = $state(false);
   let isLoading = $state(false);
   let error = $state<string | null>(null);
-  
   let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
     hashFnParams: {
-      memory: 65536, 
+      memory: 65536,
       threads: 4,
       secret: "",
       iterations: 3,
@@ -50,7 +49,7 @@
 
   const strengthLabels = [
     'passwordSetup.strength.veryWeak',
-    'passwordSetup.strength.weak', 
+    'passwordSetup.strength.weak',
     'passwordSetup.strength.fair',
     'passwordSetup.strength.good',
     'passwordSetup.strength.strong'
@@ -58,7 +57,7 @@
 
   const strengthColors = [
     'var(--danger-color)',
-    'var(--warning-color)', 
+    'var(--warning-color)',
     'var(--warning-color)',
     'var(--success-color)',
     'var(--success-color)'
@@ -135,7 +134,8 @@
     error = null;
   }
 
-  async function handleCreateWallet() {
+  async function handleCreateWallet(e: SubmitEvent) {
+    e.preventDefault();
     if (!isValid || isLoading) return;
     
     isLoading = true;
@@ -151,7 +151,6 @@
           chain: $cacheStore.chain,
           settings: walletSettings,
         };
-
         await walletFromPrivateKey(payload);
       } else if ($cacheStore.verifyPhrase && $cacheStore.chain && $cacheStore.bip39WordList) {
         const accounts: Bip32Account[] = [{
@@ -168,13 +167,11 @@
           chain: $cacheStore.chain,
           settings: walletSettings,
         };
-
         await walletFromBip39Mnemonic(payload);
       } else {
         throw new Error('invalidData');
       }
 
-      cacheStore.set({});
       push('/');
     } catch (err) {
       error = String(err);
@@ -222,7 +219,7 @@
       <p class="description">{$_('passwordSetup.description')}</p>
     </div>
 
-    <div class="form-section">
+    <form class="form-section" onsubmit={handleCreateWallet}>
       <SmartInput
         id="wallet-name"
         hide={false}
@@ -232,7 +229,7 @@
         disabled={isFormDisabled}
         required
         showToggle={false}
-        onInput={handleWalletNameInput}
+        oninput={() => handleWalletNameInput()}
       />
 
       <SmartInput
@@ -241,17 +238,16 @@
         placeholder={$_('passwordSetup.passwordPlaceholder')}
         bind:value={password}
         disabled={isFormDisabled}
-        onInput={handlePasswordInput}
+        oninput={() => handlePasswordInput()}
         required
         hasError={password.length > 0 && passwordStrength < 2}
-        ariaDescribedBy="password-strength"
       />
 
       {#if password.length > 0}
         <div id="password-strength" class="strength-indicator">
           <div class="strength-label">
-            {$_('passwordSetup.strength.label')}: 
-            <span 
+            {$_('passwordSetup.strength.label')}:
+            <span
               class="strength-text"
               style="color: {strengthColors[passwordStrength]}"
             >
@@ -260,7 +256,7 @@
           </div>
           <div class="strength-bar">
             {#each Array(5) as _, index}
-              <div 
+              <div
                 class="strength-segment"
                 class:active={index <= passwordStrength}
                 style="background-color: {index <= passwordStrength ? strengthColors[passwordStrength] : 'var(--card-background)'}"
@@ -276,7 +272,7 @@
         placeholder={$_('passwordSetup.confirmPlaceholder')}
         bind:value={confirmPassword}
         disabled={isFormDisabled}
-        onInput={handleConfirmPasswordInput}
+        oninput={handleConfirmPasswordInput}
         required
         hasError={confirmPassword.length > 0 && password !== confirmPassword}
         errorMessage={confirmPassword.length > 0 && password !== confirmPassword ? $_('passwordSetup.errors.mismatch') : ''}
@@ -299,33 +295,33 @@
           <p class="error-message">{error}</p>
         </div>
       {/if}
-    </div>
 
-    <div class="actions-section">
-      <div class="advanced-section">
-        <LittleButton onclick={handleAdvancedSettings} disabled={isFormDisabled}>
-          {$_('passwordSetup.advanced')}
-        </LittleButton>
+      <div class="actions-section">
+        <div class="advanced-section">
+          <LittleButton onclick={handleAdvancedSettings} disabled={isFormDisabled}>
+            {$_('passwordSetup.advanced')}
+          </LittleButton>
+        </div>
+
+        <div class="security-note">
+          <div class="note-icon">🔒</div>
+          <p class="note-text">{$_('passwordSetup.securityNote')}</p>
+        </div>
+
+        <Button
+          type="submit"
+          disabled={!isValid || isLoading}
+          loading={isLoading}
+          width="100%"
+        >
+          {$_('passwordSetup.createButton')}
+        </Button>
       </div>
-
-      <div class="security-note">
-        <div class="note-icon">🔒</div>
-        <p class="note-text">{$_('passwordSetup.securityNote')}</p>
-      </div>
-
-      <Button 
-        disabled={!isValid || isLoading} 
-        loading={isLoading}
-        onclick={handleCreateWallet}
-        width="100%"
-      >
-        {$_('passwordSetup.createButton')}
-      </Button>
-    </div>
+    </form>
   </div>
 </div>
 
-<Modal 
+<Modal
   bind:show={showAdvancedModal}
   title={$_('passwordSetup.advancedTitle')}
   onClose={handleModalClose}
@@ -347,7 +343,6 @@
     color: var(--text-primary);
     padding: 0 16px;
     transition: opacity 0.2s ease;
-
     &.disabled {
       pointer-events: none;
     }
@@ -451,7 +446,6 @@
     margin-bottom: 2px;
     position: relative;
     padding-left: 10px;
-
     &::before {
       content: '•';
       position: absolute;
@@ -475,6 +469,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 8px;
   }
 
   .advanced-section {
