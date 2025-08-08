@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import OpenEyeIcon from './icons/OpenEye.svelte';
+  import CloseEyeIcon from './icons/CloseEye.svelte';
 
   let {
     id = '',
@@ -13,12 +15,9 @@
     width = '100%',
     hasError = false,
     errorMessage = '',
-    onInput = undefined,
-    onFocus = undefined,
-    onBlur = undefined,
-    onToggle = undefined,
     ariaDescribedBy = '',
-    toggleIcon = undefined
+    toggleIcon = undefined,
+    oninput = () => null,
   }: {
     id?: string;
     label?: string;
@@ -31,49 +30,17 @@
     width?: string;
     hasError?: boolean;
     errorMessage?: string;
-    onInput?: (event: Event) => void;
-    onFocus?: (event: FocusEvent) => void;
-    onBlur?: (event: FocusEvent) => void;
-    onToggle?: () => void;
     ariaDescribedBy?: string;
     toggleIcon?: Snippet;
+    oninput?: () => null;
   } = $props();
 
   let inputElement: HTMLInputElement;
 
   function handleToggle() {
     if (disabled) return;
-    
-    if (onToggle) {
-      onToggle();
-    } else {
-      hide = !hide;
-    }
-    
-    if (inputElement) {
-      inputElement.focus();
-    }
-  }
-
-  function handleInput(event: Event) {
-    const target = event.target as HTMLInputElement;
-    value = target.value;
-    
-    if (onInput) {
-      onInput(event);
-    }
-  }
-
-  function handleFocus(event: FocusEvent) {
-    if (onFocus) {
-      onFocus(event);
-    }
-  }
-
-  function handleBlur(event: FocusEvent) {
-    if (onBlur) {
-      onBlur(event);
-    }
+    hide = !hide;
+    inputElement?.focus();
   }
 </script>
 
@@ -86,26 +53,24 @@
       {/if}
     </label>
   {/if}
-  
+
   <div class="input-wrapper" class:has-error={hasError} class:disabled={disabled}>
     <input
       bind:this={inputElement}
+      bind:value={value}
       {id}
+      oninput={() => oninput()}
       type={hide ? 'password' : 'text'}
       class="password-input"
       {placeholder}
       {disabled}
       {required}
-      bind:value={value}
-      oninput={handleInput}
-      onfocus={handleFocus}
-      onblur={handleBlur}
-      aria-invalid={hasError}
-      aria-describedby={ariaDescribedBy || (errorMessage ? `${id}-error` : undefined)}
+      aria-invalid={hasError ? 'true' : undefined}
+      aria-describedby={ariaDescribedBy || (hasError && errorMessage ? `${id}-error` : undefined)}
     />
-    
+
     {#if showToggle}
-      <button 
+      <button
         type="button"
         class="visibility-toggle"
         onclick={handleToggle}
@@ -115,22 +80,16 @@
           {@render toggleIcon()}
         {:else}
           {#if hide}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <CloseEyeIcon />
           {:else}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M14.12 14.12a3 3 0 0 1-4.24 0M9.88 9.88a3 3 0 0 1 4.24 4.24M6.18 6.18a10.94 10.94 0 0 0-3.36 5.82 10.94 10.94 0 0 0 3.36 5.82C7.71 19.36 9.81 20 12 20s4.29-.64 5.82-2.18a10.94 10.94 0 0 0 3.36-5.82 10.94 10.94 0 0 0-3.36-5.82C16.29 4.64 14.19 4 12 4s-4.29.64-5.82 2.18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="m1 1 22 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <OpenEyeIcon />
           {/if}
         {/if}
       </button>
     {/if}
   </div>
-  
-  {#if errorMessage}
+
+  {#if hasError && errorMessage}
     <div id="{id}-error" class="error-message" role="alert">
       {errorMessage}
     </div>
@@ -274,7 +233,6 @@
     .visibility-toggle {
       right: 10px;
       padding: 4px;
-
       :global(svg) {
         width: 18px;
         height: 18px;
@@ -297,7 +255,6 @@
 
     .visibility-toggle {
       right: 8px;
-
       :global(svg) {
         width: 16px;
         height: 16px;

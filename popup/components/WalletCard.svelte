@@ -106,12 +106,6 @@
     flex-shrink: 0;
   }
 
-  .chain-logo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
   .wallet-info {
     flex: 1;
     display: flex;

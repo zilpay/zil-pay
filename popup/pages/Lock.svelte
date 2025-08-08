@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { IWalletState } from 'background/storage';
+  import { tick } from 'svelte';
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
   import WalletCard from '../components/WalletCard.svelte';
@@ -13,11 +14,22 @@
   let password = $state('');
   let isLoading = $state(false);
   let error = $state<string | null>(null);
-  let selectedWalletIndex = $state<number | null>(null);
+  let selectedWalletIndex = $state<number | null>(
+    $globalStore.wallets.length === 1 ? 0 : null,
+  );
 
   const wallets = $derived($globalStore.wallets);
   const currentTheme = $derived($globalStore.appearances);
   const isWalletSelected = $derived(selectedWalletIndex !== null);
+
+  $effect(() => {
+    if (isWalletSelected) {
+      tick().then(() => {
+        const passwordInput = document.getElementById('password') as HTMLInputElement;
+        passwordInput?.focus();
+      });
+    }
+  });
 
   function getWalletLogo(wallet: IWalletState): string {
     const chain = $globalStore.chains.find((c) => {
@@ -37,15 +49,16 @@
 
   function handleWalletSelect(index: number) {
     if (isLoading) return;
-    
+
     selectedWalletIndex = index;
     password = '';
     error = null;
   }
 
-  async function handleUnlock() {
+  async function handleUnlock(e: SubmitEvent) {
+    e.preventDefault();
     if (!password.trim() || selectedWalletIndex === null || isLoading) return;
-    
+
     isLoading = true;
     error = null;
 
@@ -53,7 +66,7 @@
       await unlockWallet(password, selectedWalletIndex);
       push('/');
     } catch (err) {
-      error = $_('lockpage.invalidPassword') + ` ${err}`;
+      error = `${$_('lockpage.invalidPassword')} ${err}`;
     } finally {
       isLoading = false;
     }
@@ -63,22 +76,17 @@
     if (isLoading) return;
     push('/new-wallet-options');
   }
-
-  function handlePasswordInput() {
-    error = null;
-  }
 </script>
 
 <div class="lock-page" class:disabled={isLoading}>
   <div class="header">
     <h1 class="title">{$_('lockpage.title')}</h1>
-    <button 
-      class="add-button" 
+    <button
+      class="add-button"
       onclick={handleAddWallet}
       disabled={isLoading}
       type="button"
-      aria-label={$_('lockpage.addWalletButton')}
-    >
+      aria-label={$_('lockpage.addWalletButton')}>
       <span class="add-icon">+</span>
     </button>
   </div>
@@ -90,35 +98,34 @@
           {wallet}
           chainLogo={getWalletLogo(wallet)}
           selected={selectedWalletIndex === index}
-          onclick={() => handleWalletSelect(index)}
-        />
+          onclick={() => handleWalletSelect(index)} />
       {/each}
     </div>
 
-    <div class="form-section">
+    <form class="form-section" onsubmit={handleUnlock}>
       <SmartInput
         id="password"
         label=""
-        placeholder={isWalletSelected ? $_('lockpage.passwordPlaceholder') : $_('lockpage.selectWalletPlaceholder')}
+        placeholder={isWalletSelected
+          ? $_('lockpage.passwordPlaceholder')
+          : $_('lockpage.selectWalletPlaceholder')}
         bind:value={password}
         hide={true}
         disabled={isLoading || !isWalletSelected}
-        onInput={handlePasswordInput}
+        oninput={() => (error = null)}
         hasError={!!error}
-        errorMessage={error || ""}
-        width="100%"
-      />
+        errorMessage={error || ''}
+        width="100%" />
 
       <Button
+        type="submit"
         disabled={!password.trim() || !isWalletSelected}
         loading={isLoading}
-        onclick={handleUnlock}
         width="100%"
-        height={52}
-      >
+        height={52}>
         {$_('lockpage.unlockButton')}
       </Button>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -277,3 +284,4 @@
     }
   }
 </style>
+
