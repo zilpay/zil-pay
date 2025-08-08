@@ -75,13 +75,6 @@
       onBlur(event);
     }
   }
-
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && showToggle) {
-      event.preventDefault();
-      handleToggle();
-    }
-  }
 </script>
 
 <div class="password-input-container" style="width: {width}">
@@ -107,7 +100,6 @@
       oninput={handleInput}
       onfocus={handleFocus}
       onblur={handleBlur}
-      onkeydown={handleKeydown}
       aria-invalid={hasError}
       aria-describedby={ariaDescribedBy || (errorMessage ? `${id}-error` : undefined)}
     />
@@ -118,8 +110,6 @@
         class="visibility-toggle"
         onclick={handleToggle}
         {disabled}
-        aria-label={hide ? 'Show password' : 'Hide password'}
-        tabindex={disabled ? -1 : 0}
       >
         {#if toggleIcon}
           {@render toggleIcon()}
