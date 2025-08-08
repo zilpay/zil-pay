@@ -7,6 +7,7 @@
   import { push } from '../router/navigation';
   import { hashChainConfig } from 'lib/utils/hashing';
   import { viewChain } from 'lib/popup/url';
+  import { _ } from '../i18n';
 
   let password = $state('');
   let isLoading = $state(false);
@@ -51,7 +52,7 @@
       await new Promise(resolve => setTimeout(resolve, 1000));
       push('/');
     } catch (err) {
-      error = 'Invalid password';
+      error = $_('lockpage.invalidPassword');
     } finally {
       isLoading = false;
     }
@@ -69,12 +70,13 @@
 
 <div class="lock-page" class:disabled={isLoading}>
   <div class="header">
-    <h1 class="title">Welcome back</h1>
+    <h1 class="title">{$_('lockpage.title')}</h1>
     <button 
       class="add-button" 
       onclick={handleAddWallet}
       disabled={isLoading}
       type="button"
+      aria-label={$_('lockpage.addWalletButton')}
     >
       <span class="add-icon">+</span>
     </button>
@@ -96,7 +98,7 @@
       <SmartInput
         id="password"
         label=""
-        placeholder={isWalletSelected ? "Enter your password" : "Select a wallet first"}
+        placeholder={isWalletSelected ? $_('lockpage.passwordPlaceholder') : $_('lockpage.selectWalletPlaceholder')}
         bind:value={password}
         hide={true}
         disabled={isLoading || !isWalletSelected}
@@ -113,7 +115,7 @@
         width="100%"
         height={52}
       >
-        Unlock Wallet
+        {$_('lockpage.unlockButton')}
       </Button>
     </div>
   </div>

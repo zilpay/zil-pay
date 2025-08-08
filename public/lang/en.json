@@ -270,5 +270,13 @@
         }
       }
     }
+  },
+  "lockpage": {
+    "title": "Welcome back",
+    "passwordPlaceholder": "Enter your password",
+    "selectWalletPlaceholder": "Select a wallet first",
+    "unlockButton": "Unlock Wallet",
+    "addWalletButton": "Add new wallet",
+    "invalidPassword": "Invalid password"
   }
 }
