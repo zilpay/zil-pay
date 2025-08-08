@@ -4,6 +4,7 @@
   import LockIcon from './icons/LockIcon.svelte';
   import LedgerIcon from './icons/Ledger.svelte';
   import { WalletTypes } from 'config/wallet';
+  import FastImg from './FastImg.svelte';
 
   let {
     wallet,
@@ -31,7 +32,7 @@
   type="button"
 >
   <div class="wallet-icon">
-    <img 
+    <FastImg
       src={chainLogo} 
       alt={wallet.walletName}
       class="chain-logo"

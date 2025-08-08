@@ -1,9 +1,9 @@
 <script lang="ts">
-  type TagType = 'mainnet' | 'testnet' | 'warning' | 'success' | 'info' | 'default';
+  import FastImg from './FastImg.svelte';
 
   interface TagConfig {
     text: string;
-    type?: TagType;
+    type?: string;
   }
 
   let {
@@ -30,7 +30,7 @@
     }
   }
 
-  function getTagType(tag: string | TagConfig): TagType {
+  function getTagType(tag: string | TagConfig): string {
     if (typeof tag === 'object' && tag.type) {
       return tag.type;
     }
@@ -61,7 +61,7 @@
 >
   <div class="option-icon" class:url={isIconUrl}>
     {#if isIconUrl}
-      <img src={icon} alt="{title} icon" class="icon-image" />
+      <FastImg src={icon} class="icon-image" />
     {:else if typeof icon === 'string'}
       <span class="icon-symbol">{icon}</span>
     {:else}
@@ -231,7 +231,6 @@
     opacity: 0.8;
     line-height: 1.4;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

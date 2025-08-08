@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
   import { HashTypes, type Bip32Account, type IWalletSettingsState } from 'background/storage';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
@@ -13,7 +14,6 @@
   import { ShaAlgorithms } from 'config/pbkdf2';
   import { RatesApiOptions } from 'config/api';
   import CryptModal from '../modals/CryptSetup.svelte';
-  import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
   import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
 
   let password = $state('');
@@ -174,6 +174,7 @@
         throw new Error('invalidData');
       }
 
+      cacheStore.set({});
       push('/');
     } catch (err) {
       error = String(err);

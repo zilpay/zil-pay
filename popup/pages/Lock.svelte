@@ -8,7 +8,7 @@
   import { hashChainConfig } from 'lib/utils/hashing';
   import { viewChain } from 'lib/popup/url';
   import { _ } from '../i18n';
-    import { unlockWallet } from 'popup/background/wallet';
+  import { unlockWallet } from 'popup/background/wallet';
 
   let password = $state('');
   let isLoading = $state(false);
@@ -53,7 +53,7 @@
       await unlockWallet(password, selectedWalletIndex);
       push('/');
     } catch (err) {
-      error = $_('lockpage.invalidPassword') + `Error: ${err}`;
+      error = $_('lockpage.invalidPassword') + ` ${err}`;
     } finally {
       isLoading = false;
     }
