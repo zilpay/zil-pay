@@ -173,6 +173,7 @@
     box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-purple) 25%, transparent);
     overflow: hidden;
     transition: all 0.2s ease;
+    padding: 8px;
 
     &.url {
       background: transparent;

@@ -9,16 +9,7 @@
   import Bip39Icon from '../components/icons/Bip39Icon.svelte';
   import LockIcon from '../components/icons/LockIcon.svelte';
 
-  type RestoreOption = {
-    id: string;
-    titleKey: string;
-    descriptionKey: string;
-    icon: any;
-    disabled: boolean;
-    action: () => void;
-  };
-
-  const restoreOptions: RestoreOption[] = [
+  const restoreOptions = [
     {
       id: 'bip39',
       titleKey: 'restoreWallet.bip39.title',
@@ -91,7 +82,7 @@
         <WalletOption
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
-          icon={option.icon}
+          icon={option.icon as any}
           disabled={option.disabled}
           onclick={() => option.action()}
         />

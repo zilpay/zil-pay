@@ -3,17 +3,9 @@
   import { pop, push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
+  import LedgerIcon from '../components/icons/Ledger.svelte';
 
-  type WalletOptionType = {
-    id: string;
-    titleKey: string;
-    descriptionKey: string;
-    icon: string;
-    disabled: boolean;
-    action: () => void;
-  };
-
-  const mainOptions: WalletOptionType[] = [
+  const mainOptions = [
     {
       id: 'new-wallet',
       titleKey: 'newWalletOptions.newWallet.title',
@@ -34,13 +26,13 @@
       id: 'pair-ledger',
       titleKey: 'newWalletOptions.pairWithLedger.title',
       descriptionKey: 'newWalletOptions.pairWithLedger.description',
-      icon: '⊞',
+      icon: LedgerIcon,
       disabled: true,
       action: () => handlePairLedger()
     }
   ];
 
-  const otherOptions: WalletOptionType[] = [
+  const otherOptions = [
     {
       id: 'watch-account',
       titleKey: 'newWalletOptions.watchAccount.title',
@@ -77,8 +69,8 @@
         <WalletOption
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
-          icon={option.icon}
-            disabled={option.disabled}
+          icon={option.icon as any}
+          disabled={option.disabled}
           onclick={option.action}
         />
       {/each}

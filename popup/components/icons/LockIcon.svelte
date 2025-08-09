@@ -1,10 +1,15 @@
 <script lang="ts">
-  let { primary = false, ...rest } = $props<{ primary?: boolean, [key: string]: any }>();
+  let {
+    primary = false,
+    text = false,
+    ...rest
+    } = $props<{ primary?: boolean, [key: string]: any }>();
 </script>
 
 <svg
   {...rest}
   class:primary
+  class:text
   width="35"
   height="35"
   viewBox="0 0 800 800"
@@ -24,13 +29,19 @@
 <style lang="scss">
   svg {
     path {
-      fill: var(--text-primary);
+      fill: #fff;
     }
   }
 
   svg.primary {
     path {
       fill: var(--primary-purple);
+    }
+  }
+
+  svg.text {
+    path {
+      fill: var(--text-primary);
     }
   }
 </style>

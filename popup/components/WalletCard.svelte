@@ -50,13 +50,11 @@
 
   <div class="wallet-type">
     {#if wallet.walletType === WalletTypes.SecretPhrase}
-      <Bip39Icon primary={selected} width={ICON_SIZE} height={ICON_SIZE} />
+      <Bip39Icon primary={selected} text={!selected} width={ICON_SIZE} height={ICON_SIZE} />
     {:else if wallet.walletType === WalletTypes.SecretKey}
-      <LockIcon primary={selected} width={ICON_SIZE} height={ICON_SIZE} />
+      <LockIcon primary={selected} text={!selected} width={ICON_SIZE} height={ICON_SIZE} />
     {:else if wallet.walletType === WalletTypes.Ledger}
-      <LedgerIcon primary={selected} width={ICON_SIZE} height={ICON_SIZE} />
-    {:else}
-      <LockIcon width={ICON_SIZE} height={ICON_SIZE} />
+      <LedgerIcon primary={selected} text={!selected} width={ICON_SIZE} height={ICON_SIZE} />
     {/if}
   </div>
 </button>
