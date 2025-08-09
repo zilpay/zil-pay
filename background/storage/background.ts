@@ -95,7 +95,7 @@ export class BackgroundState implements IBackgroundState {
     await BrowserStorage.set(
       buildObject(Fields.STORAGE_V4, JSON.stringify({
         ...this,
-        selected_wallet: -1,
+        selectedWallet: -1,
       })),
     );
   }
