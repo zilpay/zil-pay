@@ -1,3 +1,4 @@
+import { TypeOf } from 'lib/types';
 import { AESCipherV3 } from '../../crypto/aes256';
 import { uint8ArrayToBase64, base64ToUint8Array } from '../../crypto/b64';
 import { randomBytes } from '../../crypto/random';
@@ -7,10 +8,24 @@ export enum SessionStorageKeys {
   EndSession = 'SESSION_END',
   SessionKey = 'SESSION_KEY',
   VaultCipher = 'VAULT_CIPHER',
+  ActiveWalletIndex = 'ACTIVE_WALLET_INDEX',
 }
 
 export class Session {
   #uuid: string;
+
+  static async setActiveWallet(walletIndex: number): Promise<void> {
+    await Runtime.storage.session.set({
+      [SessionStorageKeys.ActiveWalletIndex]: walletIndex,
+    });
+  }
+
+  static async getActiveWallet(): Promise<number> {
+    const data = await Runtime.storage.session.get(SessionStorageKeys.ActiveWalletIndex);
+    const index = Number(data[SessionStorageKeys.ActiveWalletIndex]);
+
+    return TypeOf.isNumber(index) ? index : -1;
+  }
 
   constructor(uuid: string) {
     Runtime.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
