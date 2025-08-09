@@ -128,12 +128,12 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts).toHaveLength(1);
       expect(wallet.accounts[0].name).toBe("Imported Account");
       expect(wallet.accounts[0].addr).toBe(keyPair.address);
-      expect(state.selected_wallet).toBe(0);
+      expect(state.selectedWallet).toBe(0);
 
       state = await logout(0);
-      expect(state.selected_wallet).toBe(-1);
+      expect(state.selectedWallet).toBe(-1);
       state = await unlockWallet(PASSWORD, 0);
-      expect(state.selected_wallet).toBe(0);
+      expect(state.selectedWallet).toBe(0);
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
@@ -159,7 +159,7 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts[0].addr).toBe(
         "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
       );
-      expect(state.selected_wallet).toBe(1);
+      expect(state.selectedWallet).toBe(1);
     });
   });
 });

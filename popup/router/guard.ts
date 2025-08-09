@@ -25,9 +25,9 @@ export class RouteGuard {
       return { path: "/start", component: StartPage };
     }
 
-    const wallet = globalState.wallets[globalState.selected_wallet]; 
+    const wallet = globalState.wallets[globalState.selectedWallet]; 
 
-    if (globalState.selected_wallet == -1 || !wallet) {
+    if (globalState.selectedWallet == -1 || !wallet) {
       this.navigate("lock");
       return {
         path: "/lock",

@@ -9,6 +9,7 @@ import { HistoricalTransaction } from "background/rpc/history_tx";
 import { randomBytes } from "crypto/random";
 import { Bip39 } from "crypto/bip39";
 import { ConfirmState } from "background/storage/confirm";
+import { Session } from "background/secure";
 
 export class WalletService {
   #state: BackgroundState;
@@ -90,7 +91,7 @@ export class WalletService {
     this.#state.abbreviatedNumber = payload.abbreviatedNumber;
     this.#state.appearances = payload.appearances;
     this.#state.hideBalance = payload.hideBalance;
-    this.#state.selected_wallet = payload.selected_wallet;
+    this.#state.selectedWallet = payload.selectedWallet;
     this.#state.locale = payload.locale;
     this.#state.notificationsGlobalEnabled = payload.notificationsGlobalEnabled;
 
@@ -131,7 +132,7 @@ export class WalletService {
       );
 
       this.#state.wallets.push(wallet);
-      this.#state.selected_wallet = this.#state.wallets.length - 1;
+      this.#state.selectedWallet = this.#state.wallets.length - 1;
       await this.#state.sync();
 
       sendResponse({
@@ -161,7 +162,7 @@ export class WalletService {
       );
 
       this.#state.wallets.push(wallet);
-      this.#state.selected_wallet = this.#state.wallets.length - 1;
+      this.#state.selectedWallet = this.#state.wallets.length - 1;
       await this.#state.sync();
 
       sendResponse({
@@ -298,8 +299,8 @@ export class WalletService {
       const wallet = this.#state.wallets[walletIndex];
 
       await wallet.unlock(passwordBytes);
-      this.#state.selected_wallet = walletIndex;
-      await this.#state.sync();
+      this.#state.selectedWallet = walletIndex;
+      await Session.setActiveWallet(walletIndex);
 
       sendResponse({
         resolve: this.#state
@@ -316,7 +317,7 @@ export class WalletService {
       const wallet = this.#state.wallets[walletIndex];
 
       await wallet.clearSession();
-      this.#state.selected_wallet = -1;
+      this.#state.selectedWallet = -1;
       await this.#state.sync();
 
       sendResponse({

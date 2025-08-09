@@ -204,7 +204,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
     const backgroundState = new BackgroundState({
         storageVersion: 4,
         wallets: [wallet],
-        selected_wallet: 0,
+        selectedWallet: 0,
         notificationsGlobalEnabled: true,
         locale: Locales.Auto,
         appearances: Themes.System,

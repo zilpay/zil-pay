@@ -9,7 +9,7 @@ import { Locales } from 'config/locale';
 export interface IBackgroundState {
   storageVersion: number;
   wallets: IWalletState[];
-  selected_wallet: number;
+  selectedWallet: number;
   notificationsGlobalEnabled: boolean;
   locale: Locales;
   appearances: Themes;
@@ -21,7 +21,7 @@ export interface IBackgroundState {
 export class BackgroundState implements IBackgroundState {
   readonly storageVersion  = 4;
   wallets: Wallet[];
-  selected_wallet: number;
+  selectedWallet: number;
   notificationsGlobalEnabled: boolean;
   locale: Locales;
   appearances: Themes;
@@ -32,7 +32,7 @@ export class BackgroundState implements IBackgroundState {
   static default() {
     return new BackgroundState({
       wallets: [],
-      selected_wallet: -1,
+      selectedWallet: -1,
       notificationsGlobalEnabled: true,
       locale: Locales.Auto,
       appearances: Themes.System,
@@ -81,7 +81,7 @@ export class BackgroundState implements IBackgroundState {
     this.appearances = data.appearances;
     this.abbreviatedNumber = data.abbreviatedNumber;
     this.hideBalance = data.hideBalance;
-    this.selected_wallet = Number(data.selected_wallet);
+    this.selectedWallet = Number(data.selectedWallet);
     this.chains = (data.chains).map(
       (c) => new ChainConfig(c)
     );
@@ -104,7 +104,7 @@ export class BackgroundState implements IBackgroundState {
     return {
       storageVersion: this.storageVersion,
       wallets: this.wallets.map(w => w.toJSON()),
-      selected_wallet: this.selected_wallet,
+      selectedWallet: this.selectedWallet,
       notificationsGlobalEnabled: this.notificationsGlobalEnabled,
       locale: this.locale,
       appearances: this.appearances,

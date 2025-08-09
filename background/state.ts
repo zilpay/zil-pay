@@ -1,6 +1,7 @@
 import { BackgroundState } from "background/storage";
 import { TransactionService, WalletService } from "background/services";
 import { ProviderService } from "background/services";
+import { Session } from "./secure";
 
 export class GlobalState {
   state: BackgroundState;
@@ -10,9 +11,7 @@ export class GlobalState {
 
   static async fromStorage() {
     const state = await BackgroundState.fromStorage();
-
-    state.selected_wallet = -1; // reset session.
-
+    state.selectedWallet = await Session.getActiveWallet();
     return new GlobalState(state);
   }
 
