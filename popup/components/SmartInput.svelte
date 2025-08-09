@@ -16,7 +16,6 @@
     hasError = false,
     errorMessage = '',
     ariaDescribedBy = '',
-    toggleIcon = undefined,
     oninput = (_e: Event) => null,
   }: {
     id?: string;
@@ -31,7 +30,6 @@
     hasError?: boolean;
     errorMessage?: string;
     ariaDescribedBy?: string;
-    toggleIcon?: Snippet;
     oninput?: (e: Event) => unknown;
   } = $props();
 
@@ -41,6 +39,13 @@
     if (disabled) return;
     hide = !hide;
     inputElement?.focus();
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleToggle();
+    }
   }
 </script>
 
@@ -70,21 +75,21 @@
     />
 
     {#if showToggle}
-      <button
+      <span
+        role="button"
+        tabindex={disabled ? -1 : 0}
         class="visibility-toggle"
         onclick={handleToggle}
-        {disabled}
+        onkeydown={handleKeyDown}
+        aria-pressed={!hide}
+        aria-label="a"
       >
-        {#if toggleIcon}
-          {@render toggleIcon()}
+        {#if hide}
+          <CloseEyeIcon primary={!disabled} />
         {:else}
-          {#if hide}
-            <CloseEyeIcon primary={!disabled} />
-          {:else}
-            <OpenEyeIcon primary={!disabled} />
-          {/if}
+          <OpenEyeIcon primary={!disabled} />
         {/if}
-      </button>
+      </span>
     {/if}
   </div>
 
@@ -196,23 +201,19 @@
     align-items: center;
     justify-content: center;
 
-    &:hover:not(:disabled) {
+    &:hover:not([aria-disabled='true']) {
       color: var(--primary-purple);
       background-color: color-mix(in srgb, var(--primary-purple) 10%, transparent);
     }
 
-    &:focus:not(:disabled) {
+    &:focus:not([aria-disabled='true']) {
       outline: none;
       color: var(--primary-purple);
       background-color: color-mix(in srgb, var(--primary-purple) 15%, transparent);
     }
 
-    &:active:not(:disabled) {
+    &:active:not([aria-disabled='true']) {
       transform: scale(0.95);
-    }
-
-    &:disabled {
-      cursor: not-allowed;
     }
   }
 
@@ -261,3 +262,4 @@
     }
   }
 </style>
+

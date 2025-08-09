@@ -222,13 +222,12 @@
     <form class="form-section" onsubmit={handleCreateWallet}>
       <SmartInput
         id="wallet-name"
-        hide={false}
+        hide
         label={$_('passwordSetup.walletNameLabel')}
         placeholder={$_('passwordSetup.walletNamePlaceholder')}
         bind:value={walletName}
         disabled={isFormDisabled}
         required
-        showToggle={false}
         oninput={() => handleWalletNameInput()}
       />
 
