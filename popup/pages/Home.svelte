@@ -5,6 +5,7 @@
   import AddressCopy from '../components/AddressCopy.svelte';
   import { getAccountChain } from 'popup/mixins/chains';
   import Jazzicon from "../components/Jazzicon.svelte";
+  import GearIcon from "../components/icons/Gear.svelte";
 
   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
   let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -56,6 +57,9 @@
     {#if currentAccount?.addr}
        <div class="jazzicon-wrapper">
         <Jazzicon seed={currentAccount.addr} diameter={100} />
+      </div>
+      <div>
+        <GearIcon text/>
       </div>
       <div class="address-section">
         <AddressCopy address={currentAccount.addr} title={currentAccount.name} />
