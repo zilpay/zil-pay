@@ -83,59 +83,60 @@
     onSettings={handleSettings}
   />
 
-  <div class="content">
-    {#if currentAccount?.addr}
-      <div class="account-header">
-        <div class="icon-wrapper">
-          <Jazzicon seed={currentAccount.addr} diameter={40} />
-        </div>
-        <div class="address-container">
-          <AddressCopy
-            address={currentAccount.addr}
-            title={currentAccount.name}
-            size="Medium"
-          />
-        </div>
-        <div class="icon-wrapper">
-          <button
-            class="settings-button"
-            onclick={handleSettings}
-            aria-label="Account Settings"
-          >
-            <GearIcon width="30" height="30" text />
-          </button>
-        </div>
-      </div>
-
-      <div class="actions-container">
-        <Button onclick={handleSend} height={BUTTONS_HEIGHT}>
-          {$_('home.send')}
-        </Button>
-        <Button onclick={handleReceive} height={BUTTONS_HEIGHT} class="secondary">
-          {$_('home.receive')}
-        </Button>
-      </div>
-
-      <div class="controls-toolbar">
-        <div class="icon-actions-panel">
-            <button class="icon-button" onclick={handleManage} aria-label="Manage">
-                <ManageIcon width="24" height="24" text={true} />
+  <div class="page-container">
+    <div class="content">
+      {#if currentAccount?.addr}
+        <div class="account-header">
+          <div class="icon-wrapper">
+            <Jazzicon seed={currentAccount.addr} diameter={40} />
+          </div>
+          <div class="address-container">
+            <AddressCopy
+              address={currentAccount.addr}
+              title={currentAccount.name}
+              size="Medium"
+            />
+          </div>
+          <div class="icon-wrapper">
+            <button
+              class="settings-button"
+              onclick={handleSettings}
+              aria-label="Account Settings"
+            >
+              <GearIcon width="30" height="30" text />
             </button>
+          </div>
         </div>
-      </div>
-      
-      <div class="token-list-container">
-        {#each fakeTokens as token}
-          <TokenCard
-            symbol={token.symbol}
-            balance={token.balance}
-            loading={true}
-            convertedBalance={token.convertedBalance}
-            imageUrl={token.iconSrc}
-          />
-        {/each}
-      </div>
-    {/if}
+
+        <div class="actions-container">
+          <Button onclick={handleSend} height={BUTTONS_HEIGHT}>
+            {$_('home.send')}
+          </Button>
+          <Button onclick={handleReceive} height={BUTTONS_HEIGHT} class="secondary">
+            {$_('home.receive')}
+          </Button>
+        </div>
+
+        <div class="controls-toolbar">
+          <div class="icon-actions-panel">
+              <button class="icon-button" onclick={handleManage} aria-label="Manage">
+                  <ManageIcon width="24" height="24" text={true} />
+              </button>
+          </div>
+        </div>
+        
+        <div class="token-list-container">
+          {#each fakeTokens as token}
+            <TokenCard
+              symbol={token.symbol}
+              balance={token.balance}
+              convertedBalance={token.convertedBalance}
+              imageUrl={token.iconSrc}
+            />
+          {/each}
+        </div>
+      {/if}
+    </div>
   </div>
 </div>
 
@@ -149,12 +150,12 @@
   }
 
   .content {
-    padding: 16px;
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 5px;
     min-height: 0;
+    padding-bottom: 16px;
   }
 
   .account-header {
@@ -202,13 +203,12 @@
   .actions-container {
     display: grid;
     margin-top: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     justify-content: center;
+    max-width: 100%;
   }
-  
+ 
   .controls-toolbar {
     display: flex;
     justify-content: flex-end;
@@ -238,10 +238,19 @@
   }
 
   .token-list-container {
+    flex: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
+    gap: 8px;
     overflow-y: auto;
     min-height: 0;
     justify-items: center;
+    max-width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    .token-list-container {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>
