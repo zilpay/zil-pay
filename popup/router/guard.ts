@@ -35,7 +35,6 @@ export class RouteGuard {
       };
     }
 
-
     if (wallet.confirm.length != 0) {
       // detect if really conect
       this.navigate("connect");

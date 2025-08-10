@@ -75,12 +75,12 @@ export function viewChain({
   network,
   theme,
 }: {
-  network: IChainConfigState;
+  network?: IChainConfigState;
   theme: Themes;
 }): string {
-  const defaultIcon = 'assets/icons/default_chain.svg';
-
-  if (!network.logo) return defaultIcon;
+  if (!network) {
+    return "";
+  }
 
   const replacements = {
     'shortName': network.shortName.toLowerCase(),
