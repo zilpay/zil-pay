@@ -113,7 +113,6 @@
     &:focus {
       outline: none;
       border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 20%, transparent);
     }
 
     &.small {
