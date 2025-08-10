@@ -2,9 +2,12 @@
   import globalStore from "popup/store/global";
   import { viewChain } from 'lib/popup/url';
   import Header from '../components/Header.svelte';
+  import AddressCopy from '../components/AddressCopy.svelte';
   import { getAccountChain } from 'popup/mixins/chains';
 
   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
+  let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+  let currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
 
   function handleNetworkButton() {
     console.log('Network button clicked - go to network page');
@@ -49,7 +52,11 @@
   />
 
   <div class="content">
-    <h1>Welcome to the Wallet</h1>
+    {#if currentAccount?.addr}
+      <div class="address-section">
+        <AddressCopy address={currentAccount.addr} title={currentAccount.name} />
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -65,9 +72,11 @@
   .content {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: var(--padding-side);
+    gap: 20px;
   }
 
   h1 {
@@ -75,5 +84,18 @@
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
+  }
+
+  .address-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    
+    h3 {
+      font-size: var(--font-size-medium);
+      color: var(--text-secondary);
+      margin: 0;
+    }
   }
 </style>
