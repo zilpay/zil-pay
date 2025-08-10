@@ -10,15 +10,54 @@
   import { push } from '../router/navigation';
   import Button from '../components/Button.svelte';
   import { _ } from 'popup/i18n';
+  import TokenCard from '../components/TokenCard.svelte';
 
   const BUTTONS_HEIGHT = 30;
+
+  const fakeTokens = [
+    {
+      symbol: 'ZIL',
+      balance: '9.6855K',
+      convertedBalance: 'BTC 0.0010888',
+      iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
+    },
+    {
+      symbol: 'ZLP',
+      balance: '0',
+      convertedBalance: 'BTC 0',
+      iconSrc: 'https://app.zilswap.io/images/tokens/zlp.svg'
+    },
+    {
+      symbol: 'stZIL',
+      balance: '15',
+      convertedBalance: 'BTC 0.0000019',
+      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x546c24380da1a8019e3491f74f7627444c28fe9c.png'
+    },
+    {
+      symbol: 'zUSDT',
+      balance: '0.26775',
+      convertedBalance: 'BTC 0.0000024',
+      iconSrc: 'https://static.debank.com/image/token/logo_url/usdt/00000000000000000000000000000000.png'
+    },
+    {
+      symbol: 'gZIL',
+      balance: '0.0002883',
+      convertedBalance: 'BTC 0',
+      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x4253514a6a2f3f1244a33113190861077b9612c9.png'
+    },
+    {
+      symbol: 'zETH',
+      balance: '0',
+      convertedBalance: 'BTC 0',
+      iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
+    }
+  ];
 
   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
   let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
   let currentAccount = $derived(
     currentWallet?.accounts[currentWallet.selectedAccount]
   );
-
   function handleSettings() {
     push('/settings');
   }
@@ -84,6 +123,17 @@
             </button>
         </div>
       </div>
+      
+      <div class="token-list-container">
+        {#each fakeTokens as token}
+          <TokenCard
+            symbol={token.symbol}
+            balance={token.balance}
+            convertedValue={token.convertedBalance}
+            imageUrl={token.iconSrc}
+          />
+        {/each}
+      </div>
     {/if}
   </div>
 </div>
@@ -103,6 +153,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    min-height: 0;
   }
 
   .account-header {
@@ -179,10 +230,20 @@
     border-radius: 50%;
     color: var(--text-secondary);
     transition: all 0.2s ease;
-
     &:hover {
         background-color: color-mix(in srgb, var(--text-primary) 10%, transparent);
         color: var(--primary-purple);
     }
+  }
+
+  .token-list-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    overflow-y: auto;
+    padding: 8px 0;
+    min-height: 0;
+    justify-items: center;
   }
 </style>
