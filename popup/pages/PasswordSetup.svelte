@@ -205,7 +205,7 @@
     }
 
     if (!accountName) {
-      accountName = $_('wallet.naming.defaultChain') + ` 0`;
+      accountName = $_('passwordSetup.defaultAccountName') + ` 0`;
     }
   });
 </script>
