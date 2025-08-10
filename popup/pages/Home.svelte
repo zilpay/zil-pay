@@ -4,7 +4,7 @@
   import Header from '../components/Header.svelte';
   import { getAccountChain } from 'popup/mixins/chains';
 
-   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
+  let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
 
   function handleNetworkButton() {
     console.log('Network button clicked - go to network page');
