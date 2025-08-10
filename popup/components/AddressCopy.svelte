@@ -1,16 +1,14 @@
 <script module lang="ts">
-  export enum AddressCopySize {
-    Small,
-    Medium,
-    Large
-  }
+  export type AddressCopySize = "Small" | "Medium" | "Large";
 </script>
 
 <script lang="ts">
+  import { truncate } from "popup/mixins/address";
+
   let {
     address,
     title,
-    size = AddressCopySize.Medium,
+    size = "Small",
   }: {
     address: string;
     title: string;
@@ -20,12 +18,7 @@
   let isCopied = $state(false);
   let copyTimeoutId: number | null = $state(null);
 
-  const truncatedAddress = $derived.by(() => {
-    if (!address) return '';
-    const start = address.slice(0, 6);
-    const end = address.slice(-4);
-    return `${start}...${end}`;
-  });
+  const truncatedAddress = $derived.by(() => truncate(address));
 
   async function handleCopy() {
     if (isCopied) return;
@@ -56,9 +49,9 @@
 <div class="address-copy-container">
   <h3 class="title">{title}</h3>
   <button
-    class:small={size === AddressCopySize.Small}
-    class:medium={size === AddressCopySize.Medium}
-    class:large={size === AddressCopySize.Large}
+    class:small={size === "Small"}
+    class:medium={size === "Medium"}
+    class:large={size === "Large"}
     class:copied={isCopied}
     class="copy-button"
     onclick={handleCopy}

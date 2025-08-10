@@ -5,6 +5,7 @@
   import LedgerIcon from './icons/Ledger.svelte';
   import { WalletTypes } from 'config/wallet';
   import FastImg from './FastImg.svelte';
+  import { truncate } from '../mixins/address';
 
   const ICON_SIZE = 12;
 
@@ -19,12 +20,6 @@
     selected?: boolean;
     onclick?: () => void;
   } = $props();
-
-  function truncateAddress(address: string): string {
-  // TODO: move to dif file
-    if (!address || address.length < 10) return address;
-    return `${address.slice(0, 6)}...${address.slice(-6)}`;
-  }
 </script>
 
 <button 
@@ -44,7 +39,7 @@
   <div class="wallet-info">
     <div class="wallet-name">{wallet.walletName}</div>
     <div class="wallet-address">
-      {truncateAddress(wallet.uuid)}
+      {truncate(wallet.uuid)}
     </div>
   </div>
 
