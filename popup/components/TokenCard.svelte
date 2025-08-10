@@ -219,16 +219,4 @@
     }
   }
 
-  @media (max-width: 360px) {
-    .token-card {
-      width: 120px;
-      height: 85px;
-      padding: 8px;
-    }
-
-    .token-icon {
-      width: 22px;
-      height: 22px;
-    }
-  }
 </style>

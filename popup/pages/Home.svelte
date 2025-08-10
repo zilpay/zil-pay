@@ -129,7 +129,8 @@
           <TokenCard
             symbol={token.symbol}
             balance={token.balance}
-            convertedValue={token.convertedBalance}
+            loading={true}
+            convertedBalance={token.convertedBalance}
             imageUrl={token.iconSrc}
           />
         {/each}
@@ -237,12 +238,9 @@
   }
 
   .token-list-container {
-    flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
     overflow-y: auto;
-    padding: 8px 0;
     min-height: 0;
     justify-items: center;
   }
