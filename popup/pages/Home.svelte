@@ -6,6 +6,7 @@
   import { getAccountChain } from 'popup/mixins/chains';
   import Jazzicon from "../components/Jazzicon.svelte";
   import GearIcon from "../components/icons/Gear.svelte";
+  import { push } from "../router/navigation";
 
   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
   let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -24,7 +25,7 @@
   }
 
   function handleSettings() {
-    console.log('Settings clicked');
+    push('/settings');
   }
 
   function handleLock() {
@@ -55,17 +56,19 @@
 
   <div class="content">
     {#if currentAccount?.addr}
-       <div class="jazzicon-wrapper">
-        <Jazzicon seed={currentAccount.addr} diameter={100} />
-      </div>
-      <div>
-        <GearIcon text/>
-      </div>
-      <div class="address-section">
-        <AddressCopy address={currentAccount.addr} title={currentAccount.name} />
+      <div class="account-header">
+        <div class="jazzicon-container">
+          <Jazzicon seed={currentAccount.addr} diameter={35} />
+        </div>
+        <div class="address-container">
+          <AddressCopy address={currentAccount.addr} title={currentAccount.name} size="Medium" />
+        </div>
+        <button class="settings-button" onclick={handleSettings}>
+          <GearIcon text />
+        </button>
       </div>
     {/if}
-  </div>
+    </div>
 </div>
 
 <style lang="scss">
@@ -78,19 +81,50 @@
   }
 
   .content {
+    padding: 16px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--padding-side);
-    gap: 20px;
   }
 
-  .address-section {
+  .account-header {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 12px;
+  }
+
+  .jazzicon-container {
+    flex-shri35: 0;
+    width: 40px;
+    height: 40px;
+  }
+
+  .address-container {
+    flex-grow: 1;
+    text-align: center;
+    min-width: 0;
+    
+    :global(.address-copy-container) {
+        margin: 0 auto;
+    }
+  }
+
+  .settings-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--primary-purple);
+    }
+
+    :global(svg) {
+        width: 24px;
+        height: 24px;
+    }
   }
 </style>

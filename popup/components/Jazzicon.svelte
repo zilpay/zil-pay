@@ -183,6 +183,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: content-box;
+    flex-shrink: 0;
 
     &::before {
       content: '';
@@ -229,3 +231,4 @@
     height: 100%;
   }
 </style>
+
