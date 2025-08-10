@@ -4,6 +4,7 @@
   import Header from '../components/Header.svelte';
   import AddressCopy from '../components/AddressCopy.svelte';
   import { getAccountChain } from 'popup/mixins/chains';
+  import Jazzicon from "../components/Jazzicon.svelte";
 
   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
   let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -53,6 +54,9 @@
 
   <div class="content">
     {#if currentAccount?.addr}
+       <div class="jazzicon-wrapper">
+        <Jazzicon seed={currentAccount.addr} diameter={100} />
+      </div>
       <div class="address-section">
         <AddressCopy address={currentAccount.addr} title={currentAccount.name} />
       </div>
@@ -79,23 +83,10 @@
     gap: 20px;
   }
 
-  h1 {
-    font-size: var(--font-size-xl);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-  }
-
   .address-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    
-    h3 {
-      font-size: var(--font-size-medium);
-      color: var(--text-secondary);
-      margin: 0;
-    }
   }
 </style>
