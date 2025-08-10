@@ -5,13 +5,13 @@
   import AddressCopy from '../components/AddressCopy.svelte';
   import { getAccountChain } from 'popup/mixins/chains';
   import Jazzicon from '../components/Jazzicon.svelte';
-  import GearIcon from '../components/icons/Gear.svelte';
+  import BurgerMenuIcon from '../components/Burger.svelte';
   import ManageIcon from '../components/icons/Manage.svelte';
   import { push } from '../router/navigation';
   import Button from '../components/Button.svelte';
   import { _ } from 'popup/i18n';
   import TokenCard from '../components/TokenCard.svelte';
-
+  import BottomTabs from '../components/BottomTabs.svelte';
   const BUTTONS_HEIGHT = 30;
 
   const fakeTokens = [
@@ -50,9 +50,32 @@
       balance: '0',
       convertedBalance: 'BTC 0',
       iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
+    },
+    {
+      symbol: 'stZIL',
+      balance: '15',
+      convertedBalance: 'BTC 0.0000019',
+      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x546c24380da1a8019e3491f74f7627444c28fe9c.png'
+    },
+    {
+      symbol: 'zUSDT',
+      balance: '0.26775',
+      convertedBalance: 'BTC 0.0000024',
+      iconSrc: 'https://static.debank.com/image/token/logo_url/usdt/00000000000000000000000000000000.png'
+    },
+    {
+      symbol: 'gZIL',
+      balance: '0.0002883',
+      convertedBalance: 'BTC 0',
+      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x4253514a6a2f3f1244a33113190861077b9612c9.png'
+    },
+    {
+      symbol: 'zETH',
+      balance: '0',
+      convertedBalance: 'BTC 0',
+      iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
     }
   ];
-
   let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
   let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
   let currentAccount = $derived(
@@ -83,9 +106,9 @@
     onSettings={handleSettings}
   />
 
-  <div class="page-container">
-    <div class="content">
-      {#if currentAccount?.addr}
+  <main class="content-area">
+    {#if currentAccount?.addr}
+      <div class="account-info">
         <div class="account-header">
           <div class="icon-wrapper">
             <Jazzicon seed={currentAccount.addr} diameter={40} />
@@ -103,7 +126,7 @@
               onclick={handleSettings}
               aria-label="Account Settings"
             >
-              <GearIcon width="30" height="30" text />
+              <BurgerMenuIcon width="30" height="30" text />
             </button>
           </div>
         </div>
@@ -116,13 +139,15 @@
             {$_('home.receive')}
           </Button>
         </div>
+      </div>
 
+      <div class="token-area">
         <div class="controls-toolbar">
-          <div class="icon-actions-panel">
-              <button class="icon-button" onclick={handleManage} aria-label="Manage">
-                  <ManageIcon width="24" height="24" text={true} />
-              </button>
-          </div>
+            <div class="icon-actions-panel">
+                <button class="icon-button" onclick={handleManage} aria-label="Manage">
+                    <ManageIcon width="24" height="24" text={true} />
+                </button>
+            </div>
         </div>
         
         <div class="token-list-container">
@@ -135,9 +160,11 @@
             />
           {/each}
         </div>
-      {/if}
-    </div>
-  </div>
+      </div>
+    {/if}
+  </main>
+
+  <BottomTabs />
 </div>
 
 <style lang="scss">
@@ -147,15 +174,19 @@
     height: 100vh;
     background: var(--background-color);
     color: var(--text-primary);
+    box-sizing: border-box;
   }
 
-  .content {
+  .content-area {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 5px;
     min-height: 0;
-    padding-bottom: 16px;
+    padding: 0 var(--padding-side);
+  }
+  
+  .account-info {
+    padding-top: 5px;
   }
 
   .account-header {
@@ -208,11 +239,20 @@
     justify-content: center;
     max-width: 100%;
   }
- 
+  
+  .token-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-top: 5px;
+  }
+
   .controls-toolbar {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 8px;
+    flex-shrink: 0;
   }
 
   .icon-actions-panel {
