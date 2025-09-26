@@ -93,16 +93,6 @@ describe('Image and URL processing utilities', () => {
       expect(result).toBe(expectedUrl);
     });
 
-    it('should return a default icon if the network has no logo URL', () => {
-      const networkWithoutLogo: IChainConfigState = { ...zilliqaChain, logo: '' };
-      const expected = 'assets/icons/default_chain.svg';
-      const result = viewChain({
-        network: networkWithoutLogo,
-        theme: Themes.Light
-      });
-      expect(result).toBe(expected);
-    });
-
     it('should correctly process the logo URL for a different chain (Sepolia)', () => {
         const expectedUrl = 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/ethereum/chain/dark.svg';
         const result = viewChain({

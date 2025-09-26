@@ -316,9 +316,11 @@ export class WalletService {
     try {
       const wallet = this.#state.wallets[walletIndex];
 
-      await wallet.clearSession();
-      this.#state.selectedWallet = -1;
-      await this.#state.sync();
+      if (wallet) {
+        await wallet.clearSession();
+        this.#state.selectedWallet = -1;
+        await this.#state.sync();
+      }
 
       sendResponse({
         resolve: this.#state

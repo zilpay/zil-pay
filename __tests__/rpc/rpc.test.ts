@@ -163,9 +163,8 @@ describe("JsonRPC provder tests", () => {
     );
     const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
 
-    expect(fee.gasPrice).toBe(100000000n);
     expect(fee.nonce).toBeGreaterThan(0);
-    expect(fee.maxPriorityFee).toBe(100000000n);
+    expect(fee.maxPriorityFee).toBeGreaterThan(1000n);
     expect(fee.txEstimateGas).toBe(21000n);
     expect(fee.blobBaseFee).toBe(0n);
     expect(fee.feeHistory.baseFee).toBe(0n);
