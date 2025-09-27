@@ -3,9 +3,9 @@
   import { pop, push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
-  import Bip39Icon from '../components/icons/Bip39Icon.svelte';
-  import GridIcon from '../components/icons/GridIcon.svelte';
-  import LockIcon from '../components/icons/LockIcon.svelte';
+  import Bip39Icon from '../components/icons/BIP39.svelte';
+  import GridIcon from '../components/icons/Bill.svelte';
+  import LockIcon from '../components/icons/Locker.svelte';
 
   type GenerateOption = {
     id: string;

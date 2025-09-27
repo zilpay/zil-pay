@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RefreshIcon from './icons/ReloadIcon.svelte';
+  import RefreshIcon from './icons/Refresh.svelte';
 
   export let onClick: () => void = () => {};
   export let ariaLabel = 'Reload';

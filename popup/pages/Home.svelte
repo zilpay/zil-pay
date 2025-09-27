@@ -6,7 +6,7 @@
   import { getAccountChain } from 'popup/mixins/chains';
   import Jazzicon from '../components/Jazzicon.svelte';
   import BurgerMenuIcon from '../components/Burger.svelte';
-  import ManageIcon from '../components/icons/Manage.svelte';
+  import FilterIcon from '../components/icons/Filter.svelte';
   import { push } from '../router/navigation';
   import Button from '../components/Button.svelte';
   import { _ } from 'popup/i18n';
@@ -145,7 +145,7 @@
         <div class="controls-toolbar">
             <div class="icon-actions-panel">
                 <button class="icon-button" onclick={handleManage} aria-label="Manage">
-                    <ManageIcon width="24" height="24" text={true} />
+                    <FilterIcon width="24" height="24" text={true} />
                 </button>
             </div>
         </div>

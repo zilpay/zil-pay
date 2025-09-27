@@ -1,11 +1,11 @@
 <script lang="ts">
   import { currentRoute } from '../store/route';
   import { push } from '../router/navigation';
-  import HomeIcon from './icons/HomeIcon.svelte';
+  import HomeIcon from './icons/Home.svelte';
   import CollectIcon from './icons/CollectIcon.svelte';
-  import SwapIcon from './icons/SwapIcon.svelte';
-  import TimerIcon from './icons/TimerIcon.svelte';
-  import GearIcon from './icons/Gear.svelte';
+  import SwapIcon from './icons/Swap.svelte';
+  import TimerIcon from './icons/History.svelte';
+  import GearIcon from './icons/Settings.svelte';
 
   const links = {
     home: '/',

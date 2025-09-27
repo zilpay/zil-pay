@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import OpenEyeIcon from './icons/OpenEye.svelte';
-  import CloseEyeIcon from './icons/CloseEye.svelte';
+  import OpenEyeIcon from './icons/Eye.svelte';
+  import CloseEyeIcon from './icons/Hide.svelte';
 
   let {
     id = '',

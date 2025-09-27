@@ -2,12 +2,13 @@
     width="24" 
     height="24" 
     viewBox="0 0 24 24" 
-    fill="none"
+    fill="none" 
     {...$$restProps}
 >
     <path 
-        d="M19.9999 19.9999L12 12M12 12L4 4M12 12L20 4M12 12L4 20" 
-        stroke="var(  --color-content-icon-secondary)"
+        d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" 
+        stroke="var(--color-content-icon-accent-primary)" 
+        stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round"
     />

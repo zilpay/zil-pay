@@ -3,11 +3,11 @@
   import { pop, push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
-  import PuzzleIcon from '../components/icons/PuzzleIcon.svelte';
-  import BincodeIcon from '../components/icons/BincodeIcon.svelte';
-  import QRCodeIcon from '../components/icons/QRCodeIcon.svelte';
-  import Bip39Icon from '../components/icons/Bip39Icon.svelte';
-  import LockIcon from '../components/icons/LockIcon.svelte';
+  import PuzzleIcon from '../components/icons/Appearance.svelte';
+  import BincodeIcon from '../components/icons/ArrowDown.svelte';
+  import QRCodeIcon from '../components/icons/BIP39.svelte';
+  import Bip39Icon from '../components/icons/BIP39.svelte';
+  import LockIcon from '../components/icons/Locker.svelte';
 
   const restoreOptions = [
     {

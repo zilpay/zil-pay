@@ -5,7 +5,7 @@
     import globalStore from "popup/store/global";
 
     import SvgLoad from '../components/SvgLoad.svelte';
-    import LanguageIcon from '../components/icons/Language.svelte';
+    import LanguageIcon from '../components/icons/Planet.svelte';
     import AppearanceIcon from '../components/icons/Appearance.svelte';
     import Button from '../components/Button.svelte';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { IWalletState } from 'background/storage';
-  import Bip39Icon from './icons/Bip39Icon.svelte';
-  import LockIcon from './icons/LockIcon.svelte';
+  import Bip39Icon from './icons/BIP39.svelte';
+  import LockIcon from './icons/Locker.svelte';
   import LedgerIcon from './icons/Ledger.svelte';
   import { WalletTypes } from 'config/wallet';
   import FastImg from './FastImg.svelte';
