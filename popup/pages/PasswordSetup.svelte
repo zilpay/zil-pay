@@ -142,6 +142,7 @@
           placeholder={$_('passwordSetup.passwordPlaceholder')}
           bind:value={password}
           disabled={isLoading}
+          hide
           required
         />
         <SmartInput
@@ -150,6 +151,7 @@
           placeholder={$_('passwordSetup.confirmPlaceholder')}
           bind:value={confirmPassword}
           disabled={isLoading}
+          hide
           required
           hasError={confirmPassword.length > 0 && password !== confirmPassword}
           errorMessage={confirmPassword.length > 0 && password !== confirmPassword ? $_('passwordSetup.errors.mismatch') : ''}
