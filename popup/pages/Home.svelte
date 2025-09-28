@@ -1,296 +1,293 @@
 <script lang="ts">
-  import globalStore from 'popup/store/global';
-  import { viewChain } from 'lib/popup/url';
-  import Header from '../components/Header.svelte';
-  import AddressCopy from '../components/AddressCopy.svelte';
-  import { getAccountChain } from 'popup/mixins/chains';
-  import Jazzicon from '../components/Jazzicon.svelte';
-  import BurgerMenuIcon from '../components/Burger.svelte';
-  import FilterIcon from '../components/icons/Filter.svelte';
-  import { push } from '../router/navigation';
-  import Button from '../components/Button.svelte';
-  import { _ } from 'popup/i18n';
-  import TokenCard from '../components/TokenCard.svelte';
-  import BottomTabs from '../components/BottomTabs.svelte';
-  const BUTTONS_HEIGHT = 30;
+    import globalStore from 'popup/store/global';
+    import { viewChain } from 'lib/popup/url';
+    import Header from '../components/Header.svelte';
+    import AddressCopy from '../components/AddressCopy.svelte';
+    import { getAccountChain } from 'popup/mixins/chains';
+    import { push } from '../router/navigation';
+    import Button from '../components/Button.svelte';
+    import { _ } from 'popup/i18n';
+    import TokenCard from '../components/TokenCard.svelte';
+    import BottomTabs from '../components/BottomTabs.svelte';
+    import UpRightIcon from '../components/icons/UpRight.svelte';
+    import DownRightIcon from '../components/icons/DownRight.svelte';
+    import HideIcon from '../components/icons/Hide.svelte';
+    import EyeIcon from '../components/icons/Eye.svelte';
+    import GridIcon from '../components/icons/Grid.svelte';
+    import RowIcon from '../components/icons/Row.svelte';
+    import FilterIcon from '../components/icons/Filter.svelte';
 
-  const fakeTokens = [
-    {
-      symbol: 'ZIL',
-      balance: '9.6855K',
-      convertedBalance: 'BTC 0.0010888',
-      iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
-    },
-    {
-      symbol: 'ZLP',
-      balance: '0',
-      convertedBalance: 'BTC 0',
-      iconSrc: 'https://app.zilswap.io/images/tokens/zlp.svg'
-    },
-    {
-      symbol: 'stZIL',
-      balance: '15',
-      convertedBalance: 'BTC 0.0000019',
-      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x546c24380da1a8019e3491f74f7627444c28fe9c.png'
-    },
-    {
-      symbol: 'zUSDT',
-      balance: '0.26775',
-      convertedBalance: 'BTC 0.0000024',
-      iconSrc: 'https://static.debank.com/image/token/logo_url/usdt/00000000000000000000000000000000.png'
-    },
-    {
-      symbol: 'gZIL',
-      balance: '0.0002883',
-      convertedBalance: 'BTC 0',
-      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x4253514a6a2f3f1244a33113190861077b9612c9.png'
-    },
-    {
-      symbol: 'zETH',
-      balance: '0',
-      convertedBalance: 'BTC 0',
-      iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
-    },
-    {
-      symbol: 'stZIL',
-      balance: '15',
-      convertedBalance: 'BTC 0.0000019',
-      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x546c24380da1a8019e3491f74f7627444c28fe9c.png'
-    },
-    {
-      symbol: 'zUSDT',
-      balance: '0.26775',
-      convertedBalance: 'BTC 0.0000024',
-      iconSrc: 'https://static.debank.com/image/token/logo_url/usdt/00000000000000000000000000000000.png'
-    },
-    {
-      symbol: 'gZIL',
-      balance: '0.0002883',
-      convertedBalance: 'BTC 0',
-      iconSrc: 'https://storage.googleapis.com/zapper-fi-assets/tokens/zilliqa/0x4253514a6a2f3f1244a33113190861077b9612c9.png'
-    },
-    {
-      symbol: 'zETH',
-      balance: '0',
-      convertedBalance: 'BTC 0',
-      iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
+    const fakeTokens = [
+        {
+            symbol: 'ZIL',
+            balance: '9.6855K',
+            convertedBalance: 'BTC 0.0010888',
+            iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
+        },
+        {
+            symbol: 'ETH',
+            balance: '9.6855K',
+            convertedBalance: 'BTC 0.0010888',
+            iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
+        },
+        {
+            symbol: 'BNB',
+            balance: '9.6855K',
+            convertedBalance: 'BTC 0.0010888',
+            iconSrc: 'https://static.debank.com/image/token/logo_url/bnb/598a96d22239644771f543a9b2a472c4.png'
+        },
+        {
+            symbol: 'ZIL',
+            balance: '9.6855K',
+            convertedBalance: 'BTC 0.0010888',
+            iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
+        },
+        {
+            symbol: 'ZIL',
+            balance: '9.6855K',
+            convertedBalance: 'BTC 0.0010888',
+            iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
+        },
+        {
+            symbol: 'BNB',
+            balance: '9.6855K',
+            convertedBalance: 'BTC 0.0010888',
+            iconSrc: 'https://static.debank.com/image/token/logo_url/bnb/598a96d22239644771f543a9b2a472c4.png'
+        }
+    ];
+
+    let tokenViewMode = $state('grid');
+    let hideBalance = $state(false);
+
+    const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
+    const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
+
+    function handleAccountClick() {
+        push('/account-details');
     }
-  ];
-  let currentChain = $derived(getAccountChain($globalStore.selectedWallet));
-  let currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
-  let currentAccount = $derived(
-    currentWallet?.accounts[currentWallet.selectedAccount]
-  );
-  function handleSettings() {
-    push('/settings');
-  }
 
-  function handleSend() {
-  }
+    function handleUnlockWallet() {}
 
-  function handleReceive() {
-  }
+    function toggleViewMode() {
+        tokenViewMode = tokenViewMode === 'grid' ? 'row' : 'grid';
+    }
 
-  function handleManage() {
-  }
+    function handleManageTokens() {
+        push('/manage-tokens');
+    }
 </script>
 
 <div class="home-container">
-  <Header
-    showNetworkButton={true}
-    networkImageSrc={viewChain({
-      network: currentChain,
-      theme: $globalStore.appearances
-    })}
-    networkImageAlt={currentChain?.name || 'Network'}
-    onSettings={handleSettings}
-  />
+    <Header
+        showNetworkButton={true}
+        networkImageSrc={viewChain({
+            network: currentChain,
+            theme: $globalStore.appearances
+        })}
+        networkImageAlt={currentChain?.name || 'Network'}
+    />
 
-  <main class="content-area">
-    {#if currentAccount?.addr}
-      <div class="account-info">
-        <div class="account-header">
-          <div class="icon-wrapper">
-            <Jazzicon seed={currentAccount.addr} diameter={40} />
-          </div>
-          <div class="address-container">
-            <AddressCopy
-              address={currentAccount.addr}
-              title={currentAccount.name}
-              size="Medium"
-            />
-          </div>
-          <div class="icon-wrapper">
-            <button
-              class="settings-button"
-              onclick={handleSettings}
-              aria-label="Account Settings"
-            >
-              <BurgerMenuIcon width="30" height="30" text />
-            </button>
-          </div>
-        </div>
+    <main class="content-area">
+        {#if currentAccount?.addr}
+            <div class="account-section">
+                <AddressCopy
+                    name={currentAccount.name}
+                    address={currentAccount.addr}
+                    onclick={handleAccountClick}
+                />
 
-        <div class="actions-container">
-          <Button onclick={handleSend} height={BUTTONS_HEIGHT}>
-            {$_('home.send')}
-          </Button>
-          <Button onclick={handleReceive} height={BUTTONS_HEIGHT} class="secondary">
-            {$_('home.receive')}
-          </Button>
-        </div>
-      </div>
-
-      <div class="token-area">
-        <div class="controls-toolbar">
-            <div class="icon-actions-panel">
-                <button class="icon-button" onclick={handleManage} aria-label="Manage">
-                    <FilterIcon width="24" height="24" text={true} />
-                </button>
+                <div class="actions-row">
+                    <Button onclick={handleUnlockWallet} class="unlock-button-pink">
+                        Unlock Wallet
+                        <UpRightIcon />
+                    </Button>
+                    <Button onclick={handleUnlockWallet} class="unlock-button-purple">
+                        Unlock Wallet
+                        <DownRightIcon />
+                    </Button>
+                </div>
             </div>
-        </div>
-        
-        <div class="token-list-container">
-          {#each fakeTokens as token}
-            <TokenCard
-              symbol={token.symbol}
-              balance={token.balance}
-              convertedBalance={token.convertedBalance}
-              imageUrl={token.iconSrc}
-            />
-          {/each}
-        </div>
-      </div>
-    {/if}
-  </main>
 
-  <BottomTabs />
+            <div class="tokens-section">
+                <div class="tokens-header">
+                    <div class="tokens-title-section">
+                        <h2 class="tokens-title">Tokens</h2>
+                        <button class="control-button" onclick={() => hideBalance = !hideBalance}>
+                            {#if hideBalance}
+                                <HideIcon />
+                            {:else}
+                                <EyeIcon />
+                            {/if}
+                        </button>
+                    </div>
+                    <div class="view-controls">
+                        <button class="control-button" onclick={toggleViewMode}>
+                            {#if tokenViewMode === 'grid'}
+                                <GridIcon />
+                            {:else}
+                                <RowIcon />
+                            {/if}
+                        </button>
+                        <button class="control-button" onclick={handleManageTokens}>
+                            <FilterIcon />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tokens-grid">
+                    {#each fakeTokens as token}
+                        <TokenCard
+                            symbol={token.symbol}
+                            balance={hideBalance ? '******' : token.balance}
+                            convertedBalance={hideBalance ? '************' : token.convertedBalance}
+                            imageUrl={token.iconSrc}
+                        />
+                    {/each}
+                </div>
+            </div>
+        {/if}
+    </main>
+
+    <BottomTabs />
 </div>
 
 <style lang="scss">
-  .home-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background: var(--background-color);
-    color: var(--text-primary);
-    box-sizing: border-box;
-  }
-
-  .content-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    padding: 0 var(--padding-side);
-  }
-  
-  .account-info {
-    padding-top: 5px;
-  }
-
-  .account-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 5px;
-  }
-
-  .icon-wrapper {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .address-container {
-    flex-grow: 1;
-    text-align: center;
-    min-width: 0;
-    :global(.address-copy-container) {
-      margin: 0 auto;
+    .home-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: var(--color-neutral-background-base);
+        box-sizing: border-box;
     }
-  }
 
-  .settings-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: var(--text-secondary);
-    transition: color 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    &:hover {
-      color: var(--primary-purple);
+    .content-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        padding: 0 16px;
+        gap: 20px;
+        overflow-y: auto;
     }
-  }
 
-  .actions-container {
-    display: grid;
-    margin-top: 8px;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    justify-content: center;
-    max-width: 100%;
-  }
-  
-  .token-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    margin-top: 5px;
-  }
-
-  .controls-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 8px;
-    flex-shrink: 0;
-  }
-
-  .icon-actions-panel {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .icon-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
-    &:hover {
-        background-color: color-mix(in srgb, var(--text-primary) 10%, transparent);
-        color: var(--primary-purple);
+    .account-section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        flex-shrink: 0;
+        padding-top: 16px;
     }
-  }
 
-  .token-list-container {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
-    gap: 8px;
-    overflow-y: auto;
-    min-height: 0;
-    justify-items: center;
-    max-width: 100%;
-  }
-
-  @media (max-width: 480px) {
-    .token-list-container {
-      grid-template-columns: 1fr 1fr;
+    .actions-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
-  }
+
+    .actions-row :global(.unlock-button-pink) {
+        background-color: var(--color-button-regular-primary-default);
+        color: var(--color-content-text-primary);
+        
+        &:hover:not(:disabled) {
+            background-color: var(--color-button-regular-primary-hover);
+        }
+        &:active:not(:disabled) {
+            background-color: var(--color-button-regular-primary-pressed);
+        }
+    }
+
+    .actions-row :global(.unlock-button-purple) {
+        background-color: #ac59ff;
+        color: var(--color-content-text-primary);
+        
+        &:hover:not(:disabled) {
+            background-color: #9a4eeb;
+        }
+        &:active:not(:disabled) {
+            background-color: #8742d8;
+        }
+    }
+
+    .actions-row :global(button) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 44px;
+        font-size: var(--font-size-medium);
+        font-weight: 600;
+        border-radius: 12px;
+    }
+
+    .actions-row :global(svg) {
+        width: 16px;
+        height: 16px;
+    }
+
+    .tokens-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .tokens-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-shrink: 0;
+    }
+
+    .tokens-title-section {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .tokens-title {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--color-content-text-inverted);
+        margin: 0;
+    }
+
+    .view-controls {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .control-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        color: var(--color-content-icon-secondary);
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: var(--color-button-regular-quaternary-hover);
+            color: var(--color-content-text-inverted);
+        }
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .tokens-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        flex: 1;
+        align-content: start;
+        padding-bottom: 16px;
+    }
 </style>

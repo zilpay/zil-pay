@@ -119,11 +119,10 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        padding-left: 12px ;
-        padding-right: 12px ;
+        height: 60px;
+        padding: 0 16px;
         background: var(--color-neutral-background-base);
-        border-bottom: 1px solid var(--color-neutral-border-default);
-        min-height: 40px;
+        border-bottom: 1px solid var(--color-cards-regular-border-default);
         box-sizing: border-box;
     }
 
@@ -136,19 +135,19 @@
     .header-right {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 4px;
     }
 
     .system-button {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         padding: 0;
         background: transparent;
         border: none;
-        border-radius: 50%;
+        border-radius: 8px;
         cursor: pointer;
         color: var(--color-content-icon-secondary);
         transition: all 0.2s ease;
@@ -174,8 +173,8 @@
         }
 
         :global(svg) {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
         }
     }
 </style>

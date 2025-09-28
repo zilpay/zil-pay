@@ -44,14 +44,14 @@
     .round-image-button {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 4px 8px 4px 4px;
+        gap: 6px;
+        padding: 2px 6px 2px 2px;
         background-color: var(--color-neutral-background-container);
         border: 1px solid var(--color-neutral-border-default);
-        border-radius: 20px;
+        border-radius: 16px;
         cursor: pointer;
         transition: all 0.2s ease;
-        min-height: 26px;
+        height: 32px;
         box-sizing: border-box;
 
         &:hover:not(:disabled) {
@@ -70,8 +70,8 @@
     }
 
     .image-container {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         overflow: hidden;
         display: flex;
@@ -97,9 +97,8 @@
         flex-shrink: 0;
 
         :global(svg) {
-            width: 16px;
-            height: 16px;
+            width: 12px;
+            height: 12px;
         }
     }
 </style>
-
