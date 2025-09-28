@@ -116,7 +116,7 @@
 </script>
 
 <div class="page-container password-setup">
-  <NavBar title={$_('passwordSetup.title')} />
+  <NavBar title={$_('passwordSetup.title')} disabled={isLoading} />
 
   <div class="content">
     <div class="intro-section">
@@ -131,6 +131,7 @@
           label={$_('passwordSetup.walletNameLabel')}
           placeholder={$_('passwordSetup.walletNamePlaceholder')}
           bind:value={walletName}
+          hide={false}
           showToggle={false}
           disabled={isLoading}
           required
@@ -141,7 +142,6 @@
           placeholder={$_('passwordSetup.passwordPlaceholder')}
           bind:value={password}
           disabled={isLoading}
-          hide
           required
         />
         <SmartInput
@@ -150,7 +150,6 @@
           placeholder={$_('passwordSetup.confirmPlaceholder')}
           bind:value={confirmPassword}
           disabled={isLoading}
-          hide
           required
           hasError={confirmPassword.length > 0 && password !== confirmPassword}
           errorMessage={confirmPassword.length > 0 && password !== confirmPassword ? $_('passwordSetup.errors.mismatch') : ''}
@@ -160,9 +159,9 @@
       <div class="advanced-section">
         <LittleButton onclick={() => showAdvancedModal = true}>
           {$_('passwordSetup.advanced')}
-          <svelte:fragment slot="rightIcon">
+          {#snippet rightIcon()}
             <DownIcon />
-          </svelte:fragment>
+          {/snippet}
         </LittleButton>
       </div>
 
