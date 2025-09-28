@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from '../i18n';
-  import { push } from '../router/navigation';
+  import { pop, push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import { cacheStore } from '../store/cache';
@@ -58,43 +58,37 @@
 </script>
 
 <div class="page-container verify-page">
-  <div class="page-container">
-    <NavBar title={$_('bip39.verify.title')} />
+  <NavBar title={$_('bip39.verify.title')} onBack={pop} />
 
-    <div class="content">
-      <div class="instructions">
-        <h2 class="title">{$_('bip39.verify.subtitle')}</h2>
-        <p class="description">{$_('bip39.verify.instructions')}</p>
-      </div>
+  <div class="content">
+    <div class="instructions">
+      <h2 class="title">{$_('bip39.verify.subtitle')}</h2>
+      <p class="description">{$_('bip39.verify.instructions')}</p>
+    </div>
 
-      <div class="verification-section">
-        {#each selectedIndices as idx, i}
-          <div class="input-group">
-            <div class="word-indicator">
-              <span class="word-number">{idx + 1}</span>
-            </div>
-            <input
-              type="text"
-              bind:value={userInputs[i]}
-              placeholder={$_('bip39.verify.placeholder')}
-              autocapitalize="off"
-              autocomplete="off"
-              spellcheck="false"
-              class="word-input"
-            />
+    <div class="verification-section">
+      {#each selectedIndices as idx, i}
+        <div class="input-group">
+          <div class="word-indicator">
+            <span class="word-number">{idx + 1}</span>
           </div>
-        {/each}
-      </div>
+          <input
+            type="text"
+            bind:value={userInputs[i]}
+            placeholder={$_('bip39.verify.placeholder')}
+            autocapitalize="off"
+            autocomplete="off"
+            spellcheck="false"
+            class="word-input"
+          />
+        </div>
+      {/each}
+    </div>
 
-      <div class="actions">
-        <Button 
-          disabled={!isValid} 
-          onclick={handleVerify}
-          width="100%"
-        >
-          {$_('bip39.verify.button')}
-        </Button>
-      </div>
+    <div class="actions">
+      <Button disabled={!isValid} onclick={handleVerify}>
+        {$_('bip39.verify.button')}
+      </Button>
     </div>
   </div>
 </div>
@@ -102,20 +96,10 @@
 <style lang="scss">
   .verify-page {
     display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    background: var(--background-color);
-    color: var(--text-primary);
-    padding: 0 var(--padding-side);
-    box-sizing: border-box;
-  }
-
-  .page-container {
-    display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: var(--max-content-width);
     min-height: 100vh;
+    background-color: var(--color-neutral-background-base);
+    padding: 0 16px;
     box-sizing: border-box;
   }
 
@@ -123,43 +107,34 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 20px;
-    padding-bottom: 20px;
+    padding-top: 24px;
   }
 
   .instructions {
     text-align: center;
-    padding: 16px 0;
   }
 
   .title {
     font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 8px 0;
+    font-weight: bold;
+    color: var(--color-content-text-inverted);
+    margin-bottom: 8px;
     line-height: 1.3;
   }
 
   .description {
     font-size: var(--font-size-medium);
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.4;
-    opacity: 0.9;
+    color: var(--color-content-text-secondary);
     max-width: 320px;
     margin: 0 auto;
+    line-height: 1.4;
   }
 
   .verification-section {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    flex: 1;
-    justify-content: center;
-    max-width: 400px;
-    margin: 0 auto;
-    width: 100%;
+    margin: auto 0;
   }
 
   .input-group {
@@ -172,126 +147,46 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
-    border-radius: 10px;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-purple) 25%, transparent);
+    width: 32px;
     flex-shrink: 0;
   }
 
   .word-number {
     font-size: var(--font-size-medium);
-    font-weight: 700;
-    color: white;
+    font-weight: 600;
+    color: var(--color-content-text-secondary);
   }
 
   .word-input {
     flex: 1;
-    padding: 12px 16px;
-    border-radius: 10px;
-    border: 2px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
-    background: var(--card-background);
-    color: var(--text-primary);
+    width: 100%;
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    background-color: var(--color-neutral-background-container);
+    color: var(--color-content-text-inverted);
     font-size: var(--font-size-medium);
     font-weight: 500;
     transition: all 0.2s ease;
 
     &:focus {
       outline: none;
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 15%, transparent);
+      border-color: var(--color-inputs-border-focus);
+      background-color: var(--color-inputs-background-base);
+      box-shadow: none;
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--color-neutral-border-default);
     }
 
     &::placeholder {
-      color: var(--text-secondary);
-      opacity: 0.6;
+      color: var(--color-content-text-secondary);
     }
   }
 
   .actions {
-    padding: 16px 0;
-    max-width: 400px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  @media (max-width: 480px) {
-    .content {
-      gap: 16px;
-    }
-
-    .instructions {
-      padding: 12px 0;
-    }
-
-    .title {
-      font-size: calc(var(--font-size-xl) * 0.9);
-    }
-
-    .description {
-      font-size: var(--font-size-small);
-      max-width: 280px;
-    }
-
-    .verification-section {
-      gap: 14px;
-    }
-
-    .input-group {
-      gap: 10px;
-    }
-
-    .word-indicator {
-      width: 36px;
-      height: 36px;
-    }
-
-    .word-number {
-      font-size: var(--font-size-small);
-    }
-
-    .word-input {
-      padding: 10px 14px;
-      font-size: var(--font-size-small);
-    }
-
-    .actions {
-      padding: 12px 0;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .verification-section {
-      gap: 12px;
-    }
-
-    .input-group {
-      gap: 8px;
-    }
-
-    .word-indicator {
-      width: 32px;
-      height: 32px;
-    }
-
-    .word-input {
-      padding: 8px 12px;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .content {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .verification-section {
-      max-width: 450px;
-    }
-
-    .actions {
-      max-width: 450px;
-    }
+    padding: 24px 0;
   }
 </style>

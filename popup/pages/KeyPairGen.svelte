@@ -4,7 +4,6 @@
   import HexKey from '../components/HexKey.svelte';
   import Button from '../components/Button.svelte';
   import CopyButton from '../components/CopyButton.svelte';
-  import PrintButton from '../components/PrintButton.svelte';
   import ReloadButton from '../components/ReloadButton.svelte';
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
@@ -49,9 +48,6 @@
   <div class="page-container">
     <NavBar
       title={$_('secretKeyGenerator.title')}
-      onBack={pop}
-      rightIcon={ReloadButton}
-      onRight={handleReload}
     />
 
     <div class="content">
@@ -65,11 +61,6 @@
           <CopyButton
             text={keyPair.privateKey}
             ariaLabel="Copy private key"
-            size={44}
-          />
-          <PrintButton
-            keyPair={keyPair}
-            ariaLabel="Print private key"
             size={44}
           />
         </div>

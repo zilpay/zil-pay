@@ -15,7 +15,7 @@
   import { LANGUAGE_OPTIONS } from 'config/bip39';
   import { printBip39 } from '../mixins/print';
 
-  let wordCount = $state(12);
+  let wordCount = $state(24);
   let selectedLang = $state('en');
   let wordList = $state<string[]>([]);
   let phrase: string[] = $state([]);
@@ -110,7 +110,7 @@
 </script>
 
 <div class="page-container">
-  <NavBar title={$_('bip39.create.title')} onBack={pop} />
+  <NavBar title={$_('bip39.create.title')} />
 
   <div class="content">
     <div class="section">
