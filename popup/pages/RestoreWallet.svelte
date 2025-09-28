@@ -2,7 +2,7 @@
   import { _ } from 'popup/i18n';
   import { push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
-  import WalletOption from '../components/WalletOption.svelte';
+  import OptionCard from '../components/OptionCard.svelte';
   import BillIcon from '../components/icons/Bill.svelte';
   import BincodeIcon from '../components/icons/Bincode.svelte';
   
@@ -39,7 +39,7 @@
   
   <div class="options-container">
     {#each restoreOptions as option}
-      <WalletOption
+      <OptionCard
         title={$_(option.titleKey)}
         description={$_(option.descriptionKey)}
         icon={option.icon}

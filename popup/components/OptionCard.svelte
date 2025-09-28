@@ -57,13 +57,13 @@
 </script>
 
 <button
-  class="wallet-option"
+  class="option-card"
   class:selected
   onclick={handleClick}
   {disabled}
   aria-pressed={selected}
 >
-  <div class="option-icon" class:url={isIconUrl}>
+  <div class="option-icon" class:is-url={isIconUrl}>
     {#if isIconUrl}
       <FastImg src={icon as string} class="icon-image" />
     {:else if typeof icon === 'string'}
@@ -75,19 +75,19 @@
   </div>
 
   <div class="option-content">
-    <div class="option-header">
-      <h3 class="option-title">{title}</h3>
-      {#if tags.length > 0}
-        <div class="tags-container">
-          {#each tags as tag}
-            {@const tagType = getTagType(tag)}
-            {@const tagText = getTagText(tag)}
-            <span class="tag tag--{tagType}">{tagText}</span>
-          {/each}
-        </div>
-      {/if}
+    <div class="text-content">
+        <h3 class="option-title">{title}</h3>
+        <p class="option-description">{description}</p>
     </div>
-    <p class="option-description">{description}</p>
+    {#if tags.length > 0}
+      <div class="tags-container">
+        {#each tags as tag}
+          {@const tagType = getTagType(tag)}
+          {@const tagText = getTagText(tag)}
+          <span class="tag tag--{tagType}">{tagText}</span>
+        {/each}
+      </div>
+    {/if}
   </div>
 
   {#if showArrow}
@@ -111,36 +111,22 @@
 </button>
 
 <style lang="scss">
-  .wallet-option {
+  .option-card {
     display: flex;
     align-items: center;
     width: 100%;
     padding: 16px;
-    background-color: var(--color-cards-regular-base-default);
-    border: 1px solid var(--color-cards-regular-border-default);
+    background-color: var(--color-button-regular-quaternary-default);
+    border: 1px solid transparent;
     border-radius: 16px;
     cursor: pointer;
     text-align: left;
     min-height: 80px;
     transition: all 0.2s ease;
 
-    &.selected {
-      border-color: var(--color-content-icon-accent-secondary);
-      background-color: var(--color-cards-regular-base-selected);
-    }
-
     &:hover:not(:disabled) {
-      border-color: var(--color-cards-regular-border-hover);
-      background-color: var(--color-cards-regular-base-selected-hover);
-    }
-
-    &:focus:not(:disabled) {
-      outline: none;
-      border-color: var(--color-content-icon-accent-secondary);
-    }
-
-    &:active:not(:disabled) {
-      transform: scale(0.98);
+      border-color: var(--color-cards-regular-border-default);
+      background-color: var(--color-cards-regular-base-default);
     }
 
     &:disabled {
@@ -153,28 +139,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     margin-right: 16px;
     flex-shrink: 0;
-    border-radius: 12px;
+    border-radius: 50%;
     overflow: hidden;
-    transition: all 0.2s ease;
     
+    &.is-url {
+      background-color: var(--color-neutral-background-container);
+    }
+
     :global(svg) {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       color: var(--color-content-icon-accent-secondary);
     }
-  }
-
-  .icon-symbol {
-    font-size: calc(var(--font-size-xl) * 1.6);
-    font-weight: bold;
-    color: var(--color-content-icon-accent-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .icon-image {
@@ -187,17 +167,15 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     margin-right: 12px;
     overflow: hidden;
   }
-
-  .option-header {
+  
+  .text-content {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    min-height: 24px;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .option-title {
@@ -205,62 +183,53 @@
     font-weight: 600;
     color: var(--color-content-text-inverted);
     margin: 0;
-    line-height: 1.3;
   }
 
   .option-description {
     font-size: var(--font-size-medium);
     color: var(--color-content-text-secondary);
     margin: 0;
-    line-height: 1.4;
   }
 
   .tags-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
-    flex-shrink: 0;
+    gap: 6px;
   }
 
   .tag {
-    padding: 2px 6px;
-    border-radius: 6px;
+    padding: 2px 8px;
+    border-radius: 12px;
     font-size: var(--font-size-small);
-    font-weight: 500;
+    font-weight: 600;
     white-space: nowrap;
 
     &--mainnet {
       background-color: color-mix(in srgb, var(--color-notification-positive-content) 15%, transparent);
       color: var(--color-notification-positive-content);
-      border: 1px solid color-mix(in srgb, var(--color-notification-positive-border) 30%, transparent);
     }
 
     &--testnet {
-      background-color: color-mix(in srgb, var(--color-notification-neutral-content) 15%, transparent);
-      color: var(--color-notification-neutral-content);
-      border: 1px solid color-mix(in srgb, var(--color-notification-neutral-border) 30%, transparent);
-    }
-
-    &--warning {
-      background-color: color-mix(in srgb, var(--color-notification-negative-content) 15%, transparent);
-      color: var(--color-notification-negative-content);
-      border: 1px solid color-mix(in srgb, var(--color-notification-negative-border) 30%, transparent);
+      background-color: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 15%, transparent);
+      color: var(--color-neutral-tag-purple-text);
     }
 
     &--info {
-      background-color: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 15%, transparent);
-      color: var(--color-neutral-tag-purple-text);
-      border: 1px solid var(--color-neutral-tag-purple-border);
+      background-color: color-mix(in srgb, var(--color-neutral-tag-pink-fg) 15%, transparent);
+      color: var(--color-neutral-tag-pink-text);
     }
     
-    &--default {
+    &--default, &--warning {
       background-color: color-mix(in srgb, var(--color-content-text-secondary) 15%, transparent);
       color: var(--color-content-text-secondary);
-      border: 1px solid color-mix(in srgb, var(--color-content-text-secondary) 30%, transparent);
     }
   }
 
-  .arrow-indicator,
+  .arrow-indicator {
+    color: var(--color-content-icon-secondary);
+    opacity: 0.5;
+  }
+
   .option-selector {
     display: flex;
     align-items: center;
@@ -268,6 +237,5 @@
     width: 24px;
     height: 24px;
     flex-shrink: 0;
-    color: var(--color-content-icon-secondary);
   }
 </style>

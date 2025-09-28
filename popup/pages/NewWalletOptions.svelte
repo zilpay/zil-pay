@@ -2,7 +2,7 @@
   import { _ } from 'popup/i18n';
   import { pop, push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
-  import WalletOption from '../components/WalletOption.svelte';
+  import OptionCard from '../components/OptionCard.svelte';
   import PlusIcon from '../components/icons/Plus.svelte';
   import ArrowDownIcon from '../components/icons/ArrowDown.svelte';
   import LedgerIcon from '../components/icons/Ledger.svelte';
@@ -69,7 +69,7 @@
   <div class="options-container">
     <div class="options-group">
       {#each mainOptions as option}
-        <WalletOption
+        <OptionCard
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
           icon={option.icon}
@@ -84,7 +84,7 @@
       <h4 class="section-title">{$_('newWalletOptions.otherOptions')}</h4>
       <div class="options-group">
         {#each otherOptions as option}
-          <WalletOption
+          <OptionCard
             title={$_(option.titleKey)}
             description={$_(option.descriptionKey)}
             icon={option.icon}

@@ -2,7 +2,7 @@
   import { _ } from '../i18n';
   import { push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
-  import WalletOption from '../components/WalletOption.svelte';
+  import OptionCard from '../components/OptionCard.svelte';
   import BillIcon from '../components/icons/Bill.svelte';
   import BincodeIcon from '../components/icons/Bincode.svelte';
 
@@ -48,7 +48,7 @@
   
   <div class="options-container">
     {#each generateOptions as option}
-      <WalletOption
+      <OptionCard
         title={$_(option.titleKey)}
         description={$_(option.descriptionKey)}
         icon={option.icon}

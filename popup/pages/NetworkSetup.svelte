@@ -1,48 +1,39 @@
 <script lang="ts">
   import type { IChainConfigState } from 'background/storage/chain';
-
   import { getChains } from '../mixins/chains';
   import NavBar from '../components/NavBar.svelte';
-  import WalletOption from '../components/WalletOption.svelte';
-  import Switch from '../components/Switch.svelte';
+  import OptionCard from '../components/OptionCard.svelte';
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { push } from '../router/navigation';
   import globalStore from 'popup/store/global';
   import { viewChain } from 'lib/popup/url';
   import { themeDetect } from 'popup/mixins/theme';
   import { Themes } from 'config/theme';
-  import { cacheStore }  from 'popup/store/cache';
+  import { cacheStore } from 'popup/store/cache';
 
-  let isTestnet = $state(false);
-  let mainnetChains = $state<IChainConfigState[]>([]);
-  let testnetChains = $state<IChainConfigState[]>([]);
+  type DisplayChain = IChainConfigState & { isTestnet?: boolean };
 
-  let currentTheme = $state(
+  let allChains = $state<DisplayChain[]>([]);
+
+  let currentTheme = $derived(
     $globalStore.appearances === Themes.System
       ? themeDetect()
       : $globalStore.appearances,
   );
 
-  function generateTags(chain: IChainConfigState, isTestnetMode: boolean): string[] {
+  function generateTags(chain: DisplayChain): string[] {
     const tags: string[] = [];
-
-    if (chain.chainIds) {
+    if (chain.chainIds && chain.chainIds[0]) {
       tags.push(`ID: ${chain.chainIds[0]}`);
     }
-
-    if (isTestnetMode) {
-      tags.push('testnet');
-    } else {
-      tags.push('mainnet');
-    }
-
+    tags.push(chain.isTestnet ? 'testnet' : 'mainnet');
     return tags;
   }
 
   async function loadChains() {
-    const chains = await getChains();
-    mainnetChains = chains.mainnet || [];
-    testnetChains = chains.testnet || [];
+    const { mainnet } = await getChains();
+    const mainnetItems: DisplayChain[] = mainnet || [];
+    allChains = mainnetItems;
   }
 
   function next(chain: IChainConfigState) {
@@ -57,39 +48,23 @@
     if (!$cacheStore.keyPair && !$cacheStore.verifyPhrase) {
       return push("/start");
     }
-
     loadChains();
-  });
-
-  $effect(() => {
-    const newTheme = $globalStore.appearances;
-    currentTheme = newTheme === Themes.System ? themeDetect() : newTheme;
   });
 </script>
 
 <div class="page-container network-setup">
-  <NavBar
-    title={$_('networkSetup.title')}
-    onBack={pop}
-  />
-
-  <div class="controls">
-    <Switch
-      bind:checked={isTestnet}
-      ariaLabel="Mainnet"
-      name="testnet"
-    />
-  </div>
+  <NavBar title={$_('networkSetup.title')} />
 
   <div class="network-list">
-    {#each (isTestnet ? testnetChains : mainnetChains) as chain}
-      <WalletOption
+    {#each allChains as chain (chain.chain + (chain.isTestnet ? '_testnet' : ''))}
+      <OptionCard
         title={chain.name}
         description={chain.chain}
         icon={viewChain({ network: chain, theme: currentTheme })}
-        tags={generateTags(chain, isTestnet)}
+        tags={generateTags(chain)}
         disabled={false}
         onclick={() => next(chain)}
+        showArrow={true}
       />
     {/each}
   </div>
@@ -100,14 +75,9 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: var(--background-color);
-    padding: 0 20px 20px;
-  }
-
-  .controls {
-    margin: 0 0 16px;
-    display: flex;
-    justify-content: flex-end;
+    background-color: var(--color-neutral-background-base);
+    padding: 0 16px;
+    box-sizing: border-box;
   }
 
   .network-list {
@@ -115,12 +85,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-  }
-
-  @media (max-width: 480px) {
-    .network-setup {
-      padding: 0 16px 20px;
-    }
+    gap: 16px;
+    padding: 24px 0;
   }
 </style>
