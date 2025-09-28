@@ -9,7 +9,7 @@
   import InfoIcon from '../components/icons/Info.svelte';
   import DownIcon from '../components/icons/Down.svelte';
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { push } from '../router/navigation';
   import { cacheStore } from '../store/cache';
   import globalStore from '../store/global';
   import { CipherOrders } from 'crypto/keychain';

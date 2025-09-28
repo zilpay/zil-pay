@@ -169,7 +169,6 @@
     <RadioOption
       options={cipherPresets}
       bind:selected={selectedCipherPreset}
-      name="cipher-preset"
       onSelect={handleCipherPresetChange}
     />
   </div>
@@ -184,7 +183,6 @@
         <Switch
           bind:checked={advancedMode}
           ariaLabel={$_('modals.cryptsetup.hashing.advancedMode')}
-          size="small"
         />
         <span class="toggle-label">{$_('modals.cryptsetup.hashing.advancedMode')}</span>
       </div>
@@ -194,7 +192,6 @@
       <RadioOption
         options={memoryPresets}
         bind:selected={selectedMemoryPreset}
-        name="memory-preset"
         onSelect={handleMemoryPresetChange}
       />
     {:else}
