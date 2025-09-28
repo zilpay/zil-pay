@@ -8,7 +8,7 @@
   import { detectLanguage } from 'lib/utils/locale';
   import { ALLOWED_COUNTS, LANGUAGE_OPTIONS } from 'config/bip39';
   import { validateBip39Checksum } from 'popup/background/wallet';
-  import { cacheStore }  from 'popup/store/cache';
+  import { cacheStore } from 'popup/store/cache';
 
   let words = $state<string[]>(Array(12).fill(''));
   let wordErrors = $state<number[]>([]);
@@ -180,7 +180,7 @@
 </script>
 
 <div class="page-container restore-page">
-  <NavBar title={$_('bip39.restore.title')} onBack={pop} />
+  <NavBar title={$_('bip39.restore.title')} />
 
   <div class="content">
     <WordCountSelector
@@ -189,10 +189,10 @@
     />
 
     <div class="words-grid">
-      {#each words as word, index (index)}
+      {#each { length: count } as _, index}
         <MnemonicWordInput
           index={index + 1}
-          {word}
+          word={words[index] || ''}
           isEditable={true}
           hasError={wordErrors.includes(index)}
           onChanged={handleWordChange}
@@ -203,23 +203,19 @@
     {#if showChecksumWarning}
       <div class="checksum-warning">
         <p class="warning-text">{$_('bip39.restore.checksumWarning')}</p>
-        <label class="bypass-checkbox">
-          <input
-            type="checkbox"
-            bind:checked={bypassChecksum}
-          />
+        <label class="checkbox-label">
+          <input type="checkbox" bind:checked={bypassChecksum} class="checkbox-input" />
+          <span class="checkbox-custom"></span>
           <span class="checkbox-text">{$_('bip39.restore.bypassCheckbox')}</span>
         </label>
       </div>
     {/if}
 
-    <Button
-      disabled={!isButtonEnabled}
-      onclick={handleRestore}
-      width="100%"
-    >
-      {$_('bip39.restore.restoreButton')}
-    </Button>
+    <div class="footer">
+      <Button disabled={!isButtonEnabled} onclick={handleRestore}>
+        {$_('bip39.restore.restoreButton')}
+      </Button>
+    </div>
   </div>
 </div>
 
@@ -227,10 +223,9 @@
   .restore-page {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background: var(--background-color);
-    color: var(--text-primary);
-    padding: 0 20px;
+    min-height: 100vh;
+    background-color: var(--color-neutral-background-base);
+    padding: 0 16px;
     box-sizing: border-box;
   }
 
@@ -238,24 +233,24 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-    padding-bottom: 20px;
+    gap: 24px;
+    padding: 24px 0;
+    min-height: 0;
   }
 
   .words-grid {
+    flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 12px;
     overflow-y: auto;
-    padding: 8px 0;
-    min-height: 200px;
+    align-content: start;
   }
 
   .checksum-warning {
     padding: 16px;
-    background-color: color-mix(in srgb, var(--danger-color) 10%, var(--card-background));
-    border: 1px solid var(--danger-color);
+    background-color: color-mix(in srgb, var(--color-inputs-border-error) 10%, transparent);
+    border: 1px solid var(--color-inputs-border-error);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -263,63 +258,50 @@
   }
 
   .warning-text {
-    color: var(--danger-color);
+    color: var(--color-inputs-border-error);
     font-weight: 600;
     font-size: var(--font-size-medium);
     margin: 0;
   }
 
-  .bypass-checkbox {
+  .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     cursor: pointer;
-    color: var(--text-primary);
     user-select: none;
-  }
-
-  .checkbox-text {
     font-size: var(--font-size-medium);
-    color: var(--text-secondary);
-    line-height: 1.4;
+    color: var(--color-content-text-secondary);
   }
 
-  .bypass-checkbox input {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--primary-purple);
-    cursor: pointer;
+  .checkbox-input {
+    display: none;
   }
 
-  @media (max-width: 480px) {
-    .restore-page {
-      padding: 0 16px;
-    }
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--color-controls-selector-border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
 
-    .content {
-      gap: 16px;
-    }
-
-    .words-grid {
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-    }
-
-    .checksum-warning {
-      padding: 12px;
-      gap: 10px;
-    }
-
-    .warning-text,
-    .checkbox-text {
-      font-size: var(--font-size-small);
+  .checkbox-input:checked + .checkbox-custom {
+    background-color: var(--color-controls-selector-select);
+    border-color: var(--color-controls-selector-select);
+    &::after {
+      content: '✓';
+      color: var(--color-content-icon-primary);
+      font-weight: bold;
     }
   }
 
-  @media (max-width: 360px) {
-    .words-grid {
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
-    }
+  .footer {
+    padding-top: 16px;
+    margin-top: auto;
   }
 </style>
