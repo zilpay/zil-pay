@@ -7,7 +7,7 @@
   import RefreshIcon from '../components/icons/Refresh.svelte';
   import SaveIcon from '../components/icons/Save.svelte';
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { push } from '../router/navigation';
   import { generateKeyPair } from 'popup/background/wallet';
   import { ETHEREUM } from 'config/slip44';
   import { cacheStore } from 'popup/store/cache';
@@ -59,7 +59,7 @@
 </script>
 
 <div class="page-container secret-key-page">
-  <NavBar title={$_('secretKeyGenerator.title')} onBack={pop} />
+  <NavBar title={$_('secretKeyGenerator.title')} />
 
   <div class="content">
     <div class="key-display-section">
