@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
   import OpenEyeIcon from './icons/Eye.svelte';
   import CloseEyeIcon from './icons/Hide.svelte';
 
@@ -49,7 +48,7 @@
   }
 </script>
 
-<div class="password-input-container" style="width: {width}">
+<div class="smart-input-container" style="width: {width}">
   {#if label}
     <label for={id} class="input-label">
       {label}
@@ -66,7 +65,7 @@
       {id}
       oninput={oninput}
       type={hide ? 'password' : 'text'}
-      class="password-input"
+      class="input-field"
       {placeholder}
       {disabled}
       {required}
@@ -75,21 +74,21 @@
     />
 
     {#if showToggle}
-      <span
-        role="button"
+      <button
+        type="button"
         tabindex={disabled ? -1 : 0}
         class="visibility-toggle"
         onclick={handleToggle}
         onkeydown={handleKeyDown}
         aria-pressed={!hide}
-        aria-label="a"
+        aria-label="Toggle password visibility"
       >
         {#if hide}
-          <CloseEyeIcon primary={!disabled} />
+          <CloseEyeIcon />
         {:else}
-          <OpenEyeIcon primary={!disabled} />
+          <OpenEyeIcon />
         {/if}
-      </span>
+      </button>
     {/if}
   </div>
 
@@ -101,7 +100,7 @@
 </div>
 
 <style lang="scss">
-  .password-input-container {
+  .smart-input-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -110,14 +109,14 @@
   .input-label {
     font-size: var(--font-size-medium);
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--color-content-text-secondary);
     display: flex;
     align-items: center;
     gap: 4px;
   }
 
   .required-indicator {
-    color: var(--danger-color);
+    color: var(--color-negative-border-primary);
     font-weight: 600;
   }
 
@@ -126,60 +125,35 @@
     display: flex;
     align-items: center;
     
-    &.has-error {
-      .password-input {
-        border-color: var(--danger-color);
-        
-        &:focus {
-          border-color: var(--danger-color);
-          box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger-color) 15%, transparent);
-        }
-      }
-      
-      .visibility-toggle {
-        color: var(--danger-color);
-      }
-    }
-    
     &.disabled {
       opacity: 0.6;
-      
-      .password-input {
-        cursor: not-allowed;
-        background-color: color-mix(in srgb, var(--card-background) 50%, transparent);
-      }
-      
-      .visibility-toggle {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
     }
   }
 
-  .password-input {
+  .input-field {
     width: 100%;
-    padding: 14px 50px 14px 16px;
+    height: 52px;
+    padding: 0 48px 0 16px;
     font-size: var(--font-size-medium);
     font-weight: 500;
-    color: var(--text-primary);
-    border: 2px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
-    background-color: var(--card-background);
+    color: var(--color-content-text-inverted);
+    border: 2px solid transparent;
+    background-color: var(--color-neutral-background-container);
     border-radius: 12px;
     transition: all 0.2s ease;
     outline: none;
 
     &:focus {
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 15%, transparent);
+      border-color: var(--color-inputs-border-focus);
+      background-color: var(--color-inputs-background-base);
     }
 
     &:hover:not(:disabled):not(:focus) {
-      border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
+      border-color: var(--color-neutral-border-default);
     }
 
     &::placeholder {
-      color: var(--text-secondary);
-      opacity: 0.6;
+      color: var(--color-content-text-secondary);
     }
 
     &:disabled {
@@ -187,79 +161,46 @@
     }
   }
 
+  .input-wrapper.has-error .input-field {
+    border-color: var(--color-inputs-border-error);
+    
+    &:focus {
+      border-color: var(--color-inputs-border-error);
+    }
+  }
+
   .visibility-toggle {
     position: absolute;
-    right: 12px;
+    right: 6px;
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-secondary);
-    padding: 6px;
-    border-radius: 6px;
+    color: var(--color-content-icon-secondary);
+    padding: 8px;
+    border-radius: 8px;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    &:hover:not([aria-disabled='true']) {
-      color: var(--primary-purple);
-      background-color: color-mix(in srgb, var(--primary-purple) 10%, transparent);
+    &:hover:not(:disabled) {
+      background-color: var(--color-button-regular-quaternary-hover);
     }
 
-    &:focus:not([aria-disabled='true']) {
-      outline: none;
-      color: var(--primary-purple);
-      background-color: color-mix(in srgb, var(--primary-purple) 15%, transparent);
+    &:disabled {
+      cursor: not-allowed;
     }
 
-    &:active:not([aria-disabled='true']) {
-      transform: scale(0.95);
+    :global(svg) {
+        width: 20px;
+        height: 20px;
     }
   }
 
   .error-message {
     font-size: var(--font-size-small);
-    color: var(--danger-color);
+    color: var(--color-inputs-border-error);
     font-weight: 500;
     line-height: 1.3;
   }
-
-  @media (max-width: 480px) {
-    .password-input {
-      padding: 12px 46px 12px 14px;
-      font-size: var(--font-size-small);
-    }
-
-    .visibility-toggle {
-      right: 10px;
-      padding: 4px;
-      :global(svg) {
-        width: 18px;
-        height: 18px;
-      }
-    }
-
-    .input-label {
-      font-size: var(--font-size-small);
-    }
-
-    .error-message {
-      font-size: calc(var(--font-size-small) * 0.9);
-    }
-  }
-
-  @media (max-width: 360px) {
-    .password-input {
-      padding: 10px 42px 10px 12px;
-    }
-
-    .visibility-toggle {
-      right: 8px;
-      :global(svg) {
-        width: 16px;
-        height: 16px;
-      }
-    }
-  }
 </style>
-
