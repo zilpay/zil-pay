@@ -6,6 +6,8 @@
   import SmartInput from '../components/SmartInput.svelte';
   import LittleButton from '../components/LittleButton.svelte';
   import Modal from '../components/Modal.svelte';
+  import InfoIcon from '../components/icons/Info.svelte';
+  import DownIcon from '../components/icons/Down.svelte';
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
   import { cacheStore } from '../store/cache';
@@ -20,12 +22,11 @@
   let confirmPassword = $state('');
   let walletName = $state('');
   let accountName = $state('');
-  let passwordStrength = $state(0);
   let isValid = $state(false);
-  let errors = $state<string[]>([]);
   let showAdvancedModal = $state(false);
   let isLoading = $state(false);
-  let error = $state<string | null>(null);
+  let creationError = $state<string | null>(null);
+  
   let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
     hashFnParams: {
@@ -47,120 +48,41 @@
     sessionTime: 3600,
   });
 
-  const strengthLabels = [
-    'passwordSetup.strength.veryWeak',
-    'passwordSetup.strength.weak',
-    'passwordSetup.strength.fair',
-    'passwordSetup.strength.good',
-    'passwordSetup.strength.strong'
-  ];
-
-  const strengthColors = [
-    'var(--danger-color)',
-    'var(--warning-color)',
-    'var(--warning-color)',
-    'var(--success-color)',
-    'var(--success-color)'
-  ];
-
-  const isFormDisabled = $derived(isLoading);
-
   function generateDefaultWalletName(): string {
     const chainName = $cacheStore.chain?.name || 'Wallet';
     const walletCount = $globalStore.wallets.length;
-    return `${chainName} ${walletCount}`;
-  }
-
-  function calculatePasswordStrength(pwd: string): number {
-    if (!pwd) return 0;
-    
-    let score = 0;
-    
-    if (pwd.length >= 8) score++;
-    if (pwd.length >= 12) score++;
-    if (/[a-z]/.test(pwd)) score++;
-    if (/[A-Z]/.test(pwd)) score++;
-    if (/[0-9]/.test(pwd)) score++;
-    if (/[^A-Za-z0-9]/.test(pwd)) score++;
-    
-    return Math.min(Math.floor(score / 1.2), 4);
-  }
-
-  function validatePassword(): string[] {
-    const validationErrors: string[] = [];
-    
-    if (password.length < 8) {
-      validationErrors.push($_('passwordSetup.errors.minLength'));
-    }
-    
-    if (!/[a-z]/.test(password)) {
-      validationErrors.push($_('passwordSetup.errors.lowercase'));
-    }
-    
-    if (!/[A-Z]/.test(password)) {
-      validationErrors.push($_('passwordSetup.errors.uppercase'));
-    }
-    
-    if (!/[0-9]/.test(password)) {
-      validationErrors.push($_('passwordSetup.errors.number'));
-    }
-    
-    if (password !== confirmPassword && confirmPassword.length > 0) {
-      validationErrors.push($_('passwordSetup.errors.mismatch'));
-    }
-    
-    return validationErrors;
-  }
-
-  function handlePasswordInput() {
-    if (isFormDisabled) return;
-    passwordStrength = calculatePasswordStrength(password);
-    updateValidation();
-    clearError();
-  }
-
-  function handleConfirmPasswordInput() {
-    if (isFormDisabled) return;
-    updateValidation();
-    clearError();
+    return `${chainName} ${walletCount + 1}`;
   }
 
   function updateValidation() {
-    errors = validatePassword();
-    isValid = errors.length === 0 && password.length > 0 && confirmPassword.length > 0 && walletName.trim().length > 0;
+    const isPasswordValid = password.length >= 8 && password === confirmPassword;
+    isValid = isPasswordValid && walletName.trim().length > 0;
   }
 
-  function clearError() {
-    error = null;
-  }
+  $effect(() => {
+    updateValidation();
+  });
 
   async function handleCreateWallet(e: SubmitEvent) {
     e.preventDefault();
     if (!isValid || isLoading) return;
     
     isLoading = true;
-    error = null;
+    creationError = null;
     
     try {
       if ($cacheStore.keyPair && $cacheStore.chain) {
         const payload: WalletFromPrivateKeyParams = {
-          walletName,
-          accountName,
-          password,
+          walletName, accountName, password,
           key: $cacheStore.keyPair,
           chain: $cacheStore.chain,
           settings: walletSettings,
         };
         await walletFromPrivateKey(payload);
       } else if ($cacheStore.verifyPhrase && $cacheStore.chain && $cacheStore.bip39WordList) {
-        const accounts: Bip32Account[] = [{
-          index: 0,
-          name: accountName,
-        }];
+        const accounts: Bip32Account[] = [{ index: 0, name: accountName }];
         const payload: WalletFromBip39Params = {
-          walletName,
-          accounts,
-          password,
+          walletName, accounts, password,
           bip39WordList: $cacheStore.bip39WordList,
           verifyCheckSum: Boolean($cacheStore.verifyCheckSum),
           mnemonic: $cacheStore.verifyPhrase.join(" "),
@@ -169,30 +91,14 @@
         };
         await walletFromBip39Mnemonic(payload);
       } else {
-        throw new Error('invalidData');
+        throw new Error('Invalid data for wallet creation.');
       }
-
       push('/');
     } catch (err) {
-      error = String(err);
+      creationError = String(err);
     } finally {
       isLoading = false;
     }
-  }
-
-  function handleAdvancedSettings() {
-    if (isFormDisabled) return;
-    showAdvancedModal = true;
-  }
-
-  function handleModalClose() {
-    showAdvancedModal = false;
-  }
-
-  function handleWalletNameInput() {
-    if (isFormDisabled) return;
-    updateValidation();
-    clearError();
   }
 
   $effect(() => {
@@ -203,116 +109,77 @@
     if (!walletName) {
       walletName = generateDefaultWalletName();
     }
-
     if (!accountName) {
-      accountName = $_('passwordSetup.defaultAccountName') + ` 0`;
+      accountName = $_('passwordSetup.defaultAccountName') + ` 1`;
     }
   });
 </script>
 
-<div class="page-container password-setup" class:disabled={isFormDisabled}>
-  <NavBar title={$_('passwordSetup.title')} onBack={isFormDisabled ? undefined : pop} />
+<div class="page-container password-setup">
+  <NavBar title={$_('passwordSetup.title')} />
 
   <div class="content">
     <div class="intro-section">
-      <h2 class="subtitle">{$_('passwordSetup.subtitle')}</h2>
+      <h2 class="title">{$_('passwordSetup.subtitle')}</h2>
       <p class="description">{$_('passwordSetup.description')}</p>
     </div>
 
     <form class="form-section" onsubmit={handleCreateWallet}>
-      <SmartInput
-        id="wallet-name"
-        hide
-        label={$_('passwordSetup.walletNameLabel')}
-        placeholder={$_('passwordSetup.walletNamePlaceholder')}
-        bind:value={walletName}
-        disabled={isFormDisabled}
-        required
-        oninput={() => handleWalletNameInput()}
-      />
+      <div class="form-card">
+        <SmartInput
+          id="wallet-name"
+          label={$_('passwordSetup.walletNameLabel')}
+          placeholder={$_('passwordSetup.walletNamePlaceholder')}
+          bind:value={walletName}
+          showToggle={false}
+          disabled={isLoading}
+          required
+        />
+        <SmartInput
+          id="password"
+          label={$_('passwordSetup.passwordLabel')}
+          placeholder={$_('passwordSetup.passwordPlaceholder')}
+          bind:value={password}
+          disabled={isLoading}
+          hide
+          required
+        />
+        <SmartInput
+          id="confirm-password"
+          label={$_('passwordSetup.confirmLabel')}
+          placeholder={$_('passwordSetup.confirmPlaceholder')}
+          bind:value={confirmPassword}
+          disabled={isLoading}
+          hide
+          required
+          hasError={confirmPassword.length > 0 && password !== confirmPassword}
+          errorMessage={confirmPassword.length > 0 && password !== confirmPassword ? $_('passwordSetup.errors.mismatch') : ''}
+        />
+      </div>
 
-      <SmartInput
-        id="password"
-        label={$_('passwordSetup.passwordLabel')}
-        placeholder={$_('passwordSetup.passwordPlaceholder')}
-        bind:value={password}
-        disabled={isFormDisabled}
-        oninput={() => handlePasswordInput()}
-        required
-        hasError={password.length > 0 && passwordStrength < 2}
-      />
+      <div class="advanced-section">
+        <LittleButton onclick={() => showAdvancedModal = true}>
+          {$_('passwordSetup.advanced')}
+          <svelte:fragment slot="rightIcon">
+            <DownIcon />
+          </svelte:fragment>
+        </LittleButton>
+      </div>
 
-      {#if password.length > 0}
-        <div id="password-strength" class="strength-indicator">
-          <div class="strength-label">
-            {$_('passwordSetup.strength.label')}:
-            <span
-              class="strength-text"
-              style="color: {strengthColors[passwordStrength]}"
-            >
-              {$_(strengthLabels[passwordStrength])}
-            </span>
-          </div>
-          <div class="strength-bar">
-            {#each Array(5) as _, index}
-              <div
-                class="strength-segment"
-                class:active={index <= passwordStrength}
-                style="background-color: {index <= passwordStrength ? strengthColors[passwordStrength] : 'var(--card-background)'}"
-              ></div>
-            {/each}
-          </div>
+      {#if creationError}
+        <div class="error-notice">
+          <InfoIcon />
+          <p>{creationError}</p>
         </div>
       {/if}
 
-      <SmartInput
-        id="confirm-password"
-        label={$_('passwordSetup.confirmLabel')}
-        placeholder={$_('passwordSetup.confirmPlaceholder')}
-        bind:value={confirmPassword}
-        disabled={isFormDisabled}
-        oninput={handleConfirmPasswordInput}
-        required
-        hasError={confirmPassword.length > 0 && password !== confirmPassword}
-        errorMessage={confirmPassword.length > 0 && password !== confirmPassword ? $_('passwordSetup.errors.mismatch') : ''}
-      />
-
-      {#if errors.length > 0}
-        <div class="error-section">
-          <div class="error-title">{$_('passwordSetup.requirements')}</div>
-          <ul class="error-list">
-            {#each errors as validationError}
-              <li class="error-item">{validationError}</li>
-            {/each}
-          </ul>
-        </div>
-      {/if}
-
-      {#if error}
-        <div class="error-section critical">
-          <div class="error-title">{$_('passwordSetup.errors.title')}</div>
-          <p class="error-message">{error}</p>
-        </div>
-      {/if}
-
-      <div class="actions-section">
-        <div class="advanced-section">
-          <LittleButton onclick={handleAdvancedSettings} disabled={isFormDisabled}>
-            {$_('passwordSetup.advanced')}
-          </LittleButton>
-        </div>
-
-        <div class="security-note">
-          <div class="note-icon">🔒</div>
-          <p class="note-text">{$_('passwordSetup.securityNote')}</p>
-        </div>
-
-        <Button
-          type="submit"
-          disabled={!isValid || isLoading}
-          loading={isLoading}
-          width="100%"
-        >
+      <div class="security-note">
+        <InfoIcon />
+        <p>{$_('passwordSetup.securityNote')}</p>
+      </div>
+      
+      <div class="footer">
+        <Button type="submit" disabled={!isValid || isLoading} loading={isLoading}>
           {$_('passwordSetup.createButton')}
         </Button>
       </div>
@@ -323,9 +190,9 @@
 <Modal
   bind:show={showAdvancedModal}
   title={$_('passwordSetup.advancedTitle')}
-  onClose={handleModalClose}
+  onClose={() => showAdvancedModal = false}
   width="600px"
-  closeOnOverlay={!isFormDisabled}
+  closeOnOverlay={!isLoading}
 >
   <CryptModal
     walletSettings={walletSettings}
@@ -338,224 +205,97 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: var(--background-color);
-    color: var(--text-primary);
+    background-color: var(--color-neutral-background-base);
     padding: 0 16px;
-    transition: opacity 0.2s ease;
-    &.disabled {
-      pointer-events: none;
-    }
-  }
-
-  .page-container {
-    max-width: 420px;
-    margin: 0 auto;
-    width: 100%;
+    box-sizing: border-box;
   }
 
   .content {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 8px 0 16px;
   }
 
   .intro-section {
     text-align: center;
-    padding: 8px 0;
+    padding: 24px 0;
   }
 
-  .subtitle {
-    font-size: var(--font-size-large);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 4px 0;
-    line-height: 1.2;
+  .title {
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    color: var(--color-content-text-inverted);
+    margin-bottom: 8px;
   }
 
   .description {
-    font-size: calc(var(--font-size-small) * 0.95);
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.3;
-    opacity: 0.9;
+    font-size: var(--font-size-medium);
+    color: var(--color-content-text-secondary);
+    max-width: 320px;
+    margin: 0 auto;
+    line-height: 1.5;
   }
 
   .form-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    flex-grow: 1;
   }
-
-  .strength-indicator {
+  
+  .form-card {
+    background-color: var(--color-button-regular-quaternary-default);
+    border-radius: 16px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-  }
-
-  .strength-label {
-    font-size: calc(var(--font-size-small) * 0.9);
-    color: var(--text-secondary);
-  }
-
-  .strength-text {
-    font-weight: 600;
-  }
-
-  .strength-bar {
-    display: flex;
-    gap: 2px;
-    height: 3px;
-  }
-
-  .strength-segment {
-    flex: 1;
-    border-radius: 1.5px;
-    transition: background-color 0.3s ease;
-  }
-
-  .error-section {
-    padding: 10px;
-    background-color: color-mix(in srgb, var(--danger-color) 10%, var(--card-background));
-    border: 1px solid var(--danger-color);
-    border-radius: 8px;
-
-    &.critical {
-      background-color: color-mix(in srgb, var(--danger-color) 15%, var(--card-background));
-      border-width: 2px;
-    }
-  }
-
-  .error-title {
-    font-size: calc(var(--font-size-small) * 0.9);
-    font-weight: 600;
-    color: var(--danger-color);
-    margin-bottom: 4px;
-  }
-
-  .error-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .error-item {
-    font-size: calc(var(--font-size-small) * 0.85);
-    color: var(--danger-color);
-    margin-bottom: 2px;
-    position: relative;
-    padding-left: 10px;
-    &::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: var(--danger-color);
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .error-message {
-    font-size: calc(var(--font-size-small) * 0.9);
-    color: var(--danger-color);
-    margin: 0;
-    line-height: 1.3;
-  }
-
-  .actions-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 20px;
   }
 
   .advanced-section {
     display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 2px 0;
+    padding: 4px 0;
+  }
+
+  .security-note, .error-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: var(--font-size-medium);
+    line-height: 1.4;
+
+    :global(svg) {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    p {
+      margin: 0;
+    }
   }
 
   .security-note {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 10px;
-    background: color-mix(in srgb, var(--primary-purple) 8%, var(--card-background));
-    border-radius: 8px;
-    border: 1px solid color-mix(in srgb, var(--primary-purple) 20%, transparent);
+    background-color: var(--color-button-regular-quaternary-default);
+    color: var(--color-content-text-secondary);
+    :global(svg) {
+      color: var(--color-content-icon-secondary);
+    }
   }
-
-  .note-icon {
-    font-size: calc(var(--font-size-small) * 1.1);
-    flex-shrink: 0;
-    line-height: 1;
-  }
-
-  .note-text {
-    font-size: calc(var(--font-size-small) * 0.85);
-    color: var(--text-secondary);
-    line-height: 1.3;
-    margin: 0;
-  }
-
-  @media (max-width: 480px) {
-    .password-setup {
-      padding: 0 12px;
-    }
-
-    .page-container {
-      max-width: 100%;
-    }
-
-    .content {
-      gap: 14px;
-      padding: 6px 0 12px;
-    }
-
-    .intro-section {
-      padding: 6px 0;
-    }
-
-    .subtitle {
-      font-size: var(--font-size-medium);
-      margin-bottom: 3px;
-    }
-
-    .description {
-      font-size: calc(var(--font-size-small) * 0.9);
-    }
-
-    .form-section {
-      gap: 10px;
-    }
-
-    .actions-section {
-      gap: 8px;
-    }
-
-    .security-note {
-      padding: 8px;
-      gap: 6px;
-    }
-
-    .note-text {
-      font-size: calc(var(--font-size-small) * 0.8);
+  
+  .error-notice {
+    background-color: color-mix(in srgb, var(--color-negative-border-primary) 10%, transparent);
+    color: var(--color-negative-border-primary);
+    font-weight: 500;
+     :global(svg) {
+      color: var(--color-negative-border-primary);
     }
   }
 
-  @media (max-width: 360px) {
-    .password-setup {
-      padding: 0 10px;
-    }
-
-    .form-section {
-      gap: 8px;
-    }
-
-    .actions-section {
-      gap: 6px;
-    }
+  .footer {
+    margin-top: auto;
+    padding: 24px 0;
   }
 </style>

@@ -4,11 +4,13 @@
   let {
     onclick = () => {},
     disabled = false,
-    children
+    children,
+    rightIcon = undefined
   }: {
     onclick?: () => void;
     disabled?: boolean;
     children: Snippet;
+    rightIcon?: Snippet;
   } = $props();
 </script>
 
@@ -20,10 +22,17 @@
   type="button"
 >
   {@render children()}
+  {#if rightIcon}
+    {@render rightIcon()}
+  {/if}
 </button>
 
 <style lang="scss">
   .little-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background: transparent;
     border: none;
     color: var(--color-content-text-purple);
@@ -38,19 +47,15 @@
       background-color: var(--color-button-regular-quaternary-hover);
     }
 
-    &:focus:not(:disabled) {
-      outline: none;
-      background-color: var(--color-button-regular-quaternary-pressed);
-    }
-
-    &:active:not(:disabled) {
-      transform: scale(0.97);
-    }
-
     &:disabled {
       cursor: not-allowed;
       opacity: 0.5;
       color: var(--color-content-text-secondary);
+    }
+
+    :global(svg) {
+      width: 16px;
+      height: 16px;
     }
   }
 </style>

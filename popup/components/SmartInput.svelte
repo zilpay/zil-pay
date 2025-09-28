@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import OpenEyeIcon from './icons/Eye.svelte';
   import CloseEyeIcon from './icons/Hide.svelte';
 
@@ -7,7 +8,7 @@
     label = '',
     placeholder = '',
     value = $bindable(''),
-    hide = $bindable(true),
+    hide = $bindable(false),
     disabled = false,
     required = false,
     showToggle = true,
@@ -48,7 +49,7 @@
   }
 </script>
 
-<div class="smart-input-container" style="width: {width}">
+<div class="smart-input-container" style="width: {width}" class:disabled>
   {#if label}
     <label for={id} class="input-label">
       {label}
@@ -58,7 +59,7 @@
     </label>
   {/if}
 
-  <div class="input-wrapper" class:has-error={hasError} class:disabled={disabled}>
+  <div class="input-wrapper" class:has-error={hasError}>
     <input
       bind:this={inputElement}
       bind:value={value}
@@ -104,12 +105,16 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    &.disabled {
+      opacity: 0.6;
+    }
   }
 
   .input-label {
     font-size: var(--font-size-medium);
     font-weight: 500;
-    color: var(--color-content-text-secondary);
+    color: var(--color-content-text-inverted);
     display: flex;
     align-items: center;
     gap: 4px;
@@ -117,40 +122,35 @@
 
   .required-indicator {
     color: var(--color-negative-border-primary);
-    font-weight: 600;
   }
 
   .input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    background-color: var(--color-inputs-background-base);
+    border-radius: 12px;
+    border: 1px solid var(--color-cards-regular-border-default);
+    transition: border-color 0.2s ease;
     
-    &.disabled {
-      opacity: 0.6;
+    &:focus-within {
+      border-color: var(--color-inputs-border-focus);
+    }
+    
+    &.has-error {
+      border-color: var(--color-inputs-border-error);
     }
   }
 
   .input-field {
     width: 100%;
-    height: 52px;
+    height: 48px;
     padding: 0 48px 0 16px;
-    font-size: var(--font-size-medium);
-    font-weight: 500;
+    font-size: var(--font-size-large);
     color: var(--color-content-text-inverted);
-    border: 2px solid transparent;
-    background-color: var(--color-neutral-background-container);
-    border-radius: 12px;
-    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
     outline: none;
-
-    &:focus {
-      border-color: var(--color-inputs-border-focus);
-      background-color: var(--color-inputs-background-base);
-    }
-
-    &:hover:not(:disabled):not(:focus) {
-      border-color: var(--color-neutral-border-default);
-    }
 
     &::placeholder {
       color: var(--color-content-text-secondary);
@@ -158,14 +158,6 @@
 
     &:disabled {
       cursor: not-allowed;
-    }
-  }
-
-  .input-wrapper.has-error .input-field {
-    border-color: var(--color-inputs-border-error);
-    
-    &:focus {
-      border-color: var(--color-inputs-border-error);
     }
   }
 
@@ -178,18 +170,9 @@
     color: var(--color-content-icon-secondary);
     padding: 8px;
     border-radius: 8px;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &:hover:not(:disabled) {
-      background-color: var(--color-button-regular-quaternary-hover);
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-    }
 
     :global(svg) {
         width: 20px;
@@ -201,6 +184,5 @@
     font-size: var(--font-size-small);
     color: var(--color-inputs-border-error);
     font-weight: 500;
-    line-height: 1.3;
   }
 </style>

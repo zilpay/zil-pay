@@ -194,7 +194,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: color-mix(in srgb, var(--color-content-icon-inverted) 50%, transparent);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -215,20 +215,18 @@
 
   .modal-content {
     width: 100%;
-    background: var(--card-background);
+    background: var(--color-cards-regular-base-default);
     border-radius: 16px;
-    box-shadow: 0 20px 40px color-mix(in srgb, var(--text-primary) 20%, transparent);
     overflow: hidden;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
-    border: 1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent);
+    border: 1px solid var(--color-cards-regular-border-default);
 
     &.small-screen {
       max-height: 85vh;
       border-radius: 16px 16px 0 0;
       margin: 0;
-      box-shadow: 0 -10px 40px color-mix(in srgb, var(--text-primary) 30%, transparent);
       max-width: none !important;
     }
 
@@ -242,8 +240,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent);
-    background: var(--background-color);
+    border-bottom: 1px solid var(--color-navbar-backgrdound-border);
+    background: var(--color-neutral-background-container);
     flex-shrink: 0;
     position: relative;
 
@@ -258,7 +256,8 @@
         transform: translateX(-50%);
         width: 36px;
         height: 4px;
-        background: color-mix(in srgb, var(--text-secondary) 40%, transparent);
+        background: var(--color-content-icon-secondary);
+        opacity: 0.5;
         border-radius: 2px;
       }
     }
@@ -267,7 +266,7 @@
   .modal-title {
     font-size: var(--font-size-xl);
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     margin: 0;
     line-height: 1.3;
 
@@ -286,12 +285,15 @@
     padding: 4px;
     border-radius: 8px;
     transition: all 0.2s ease;
-    color: var(--text-secondary);
+    color: var(--color-content-icon-secondary);
+
+    &:hover {
+        background-color: var(--color-button-regular-quaternary-hover);
+    }
 
     &:focus {
       outline: none;
-      background: color-mix(in srgb, var(--primary-purple) 15%, transparent);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 20%, transparent);
+      background-color: var(--color-button-regular-quaternary-pressed);
     }
 
     &:active {
@@ -320,11 +322,11 @@
   }
 
   .modal-body::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--text-secondary) 30%, transparent);
+    background: color-mix(in srgb, var(--color-content-text-secondary) 30%, transparent);
     border-radius: 3px;
 
     &:hover {
-      background: color-mix(in srgb, var(--text-secondary) 50%, transparent);
+      background: color-mix(in srgb, var(--color-content-text-secondary) 50%, transparent);
     }
   }
 
