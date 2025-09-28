@@ -24,45 +24,33 @@
 
 <style lang="scss">
   .little-button {
-    background: none;
+    background: transparent;
     border: none;
-    color: var(--primary-purple);
+    color: var(--color-content-text-purple);
     font-size: var(--font-size-medium);
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 4px;
     transition: all 0.2s ease;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 8px;
 
     &:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--primary-purple) 8%, transparent);
-      text-decoration: none;
+      background-color: var(--color-button-regular-quaternary-hover);
     }
 
     &:focus:not(:disabled) {
       outline: none;
-      background: color-mix(in srgb, var(--primary-purple) 12%, transparent);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 20%, transparent);
+      background-color: var(--color-button-regular-quaternary-pressed);
     }
 
     &:active:not(:disabled) {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
 
     &:disabled {
       cursor: not-allowed;
       opacity: 0.5;
-      color: var(--text-secondary);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .little-button {
-      font-size: var(--font-size-small);
-      padding: 6px 12px;
+      color: var(--color-content-text-secondary);
     }
   }
 </style>
-
