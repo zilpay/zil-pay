@@ -1,108 +1,52 @@
 <script lang="ts">
-	import type { Snippet, SvelteComponent } from 'svelte';
+	import { pop } from '../router/navigation';
+	import LeftArrowIcon from './icons/LedftArrow.svelte';
 
-	let {
-		title = '',
-		onBack = () => window.history.back(),
-		onRight = null,
-		rightIcon = null,
-		left = null
-	}: {
-		title?: string;
-		onBack?: () => void;
-		onRight?: (() => void) | null;
-		rightIcon?: typeof SvelteComponent<any> | null;
-		left?: Snippet | null;
-	} = $props();
+	let { title = '' }: { title?: string } = $props();
 </script>
 
 <nav class="nav-bar">
-	<button
-		class="nav-left-button"
-		type="button"
-		onclick={() => onBack()}
-		aria-label="Back"
-	>
-		{#if left}
-			{@render left()}
-		{:else}
-			<span class="arrow">←</span>
-		{/if}
+	<button class="back-button" onclick={pop} aria-label="Back">
+		<LeftArrowIcon />
 	</button>
 	<h1 class="nav-title">{title}</h1>
-	{#if rightIcon}
-		<button
-			class="nav-right-button"
-			type="button"
-			onclick={() => onRight && onRight()}
-			aria-label="Action"
-		>
-			{#if typeof rightIcon === 'string'}
-				<img src={rightIcon} alt="" />
-			{:else}
-				{@const Icon = rightIcon}
-				<Icon />
-			{/if}
-		</button>
-	{:else}
-		<div class="nav-right-placeholder"></div>
-	{/if}
 </nav>
 
 <style lang="scss">
-  .nav-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 20px 0;
-    box-sizing: border-box;
-  }
+	.nav-bar {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: 56px;
+		padding: 0 4px;
+		box-sizing: border-box;
+		background-color: var(--color-navbar-backgrdound-fg);
+		gap: 8px;
+	}
 
-  .nav-title {
-    font-size: var(--font-size-xl);
-    font-weight: bold;
-    flex: 1;
-    text-align: center;
-    color: var(--text-primary);
-    margin: 0;
-  }
+	.back-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		color: var(--color-content-text-inverted);
+		border-radius: 50%;
+		transition: background-color 0.2s ease;
+		flex-shrink: 0;
 
-  .nav-left-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-primary);
-    font-weight: bold;
-    font-size: calc(var(--font-size-xl) * 1.33);
-    padding: 0;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+		&:hover {
+			background-color: var(--color-button-regular-quaternary-hover);
+		}
+	}
 
-  .arrow {
-    font-size: calc(var(--font-size-xl) * 1.33);
-  }
-
-  .nav-right-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    color: var(--text-primary);
-  }
-
-  .nav-right-placeholder {
-    width: 36px;
-    height: 36px;
-  }
+	.nav-title {
+		font-size: var(--font-size-xl);
+		font-weight: bold;
+		color: var(--color-content-text-inverted);
+		margin: 0;
+	}
 </style>
-

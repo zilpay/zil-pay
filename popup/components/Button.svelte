@@ -27,26 +27,37 @@
     align-items: center;
     cursor: pointer;
     border: none;
-    border-radius: 30px;
+    border-radius: 16px;
     padding: 0 16px;
-    background-color: var(--button-background);
+    background-color: var(--color-button-regular-primary-default);
+    color: #FFFFFF;
     transform-origin: center;
-    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     transform: scale(1);
     position: relative;
-  }
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--color-button-regular-primary-default) 30%, transparent);
 
-  button:active:not(:disabled) {
-    transform: scale(0.9);
-  }
+    &:hover:not(:disabled) {
+        background-color: var(--color-button-regular-primary-hover);
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px color-mix(in srgb, var(--color-button-regular-primary-default) 40%, transparent);
+    }
 
-  button:disabled {
-    cursor: not-allowed;
-    background-color: color-mix(in srgb, var(--button-background) 50%, transparent);
-  }
+    &:active:not(:disabled) {
+        background-color: var(--color-button-regular-primary-pressed);
+        transform: scale(0.98);
+    }
 
-  button.loading {
-    cursor: not-allowed;
+    &:disabled {
+        cursor: not-allowed;
+        background-color: color-mix(in srgb, var(--color-button-regular-primary-default) 50%, transparent);
+        color: color-mix(in srgb, #FFFFFF 60%, transparent);
+        box-shadow: none;
+    }
+
+    &.loading {
+        cursor: not-allowed;
+    }
   }
 
   .text {
@@ -55,18 +66,13 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--button-text);
-  }
-
-  button:disabled .text {
-    color: color-mix(in srgb, var(--button-text) 50%, transparent);
   }
 
   .loading-spinner {
     width: 20px;
     height: 20px;
-    border: 2px solid color-mix(in srgb, var(--button-text) 30%, transparent);
-    border-top: 2px solid var(--button-text);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #FFFFFF;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -77,6 +83,18 @@
   }
 
   .secondary {
-      background-color: var(--secondary-purple);
+    background-color: var(--color-button-regular-secondary-default);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-button-regular-secondary-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-button-regular-secondary-pressed);
+    }
+
+    &:disabled {
+      background-color: color-mix(in srgb, var(--color-button-regular-secondary-default) 50%, transparent);
+    }
   }
 </style>

@@ -3,14 +3,17 @@
   import { pop, push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WalletOption from '../components/WalletOption.svelte';
+  import PlusIcon from '../components/icons/Plus.svelte';
+  import ArrowDownIcon from '../components/icons/ArrowDown.svelte';
   import LedgerIcon from '../components/icons/Ledger.svelte';
+  import EyeIcon from '../components/icons/Eye.svelte';
 
   const mainOptions = [
     {
       id: 'new-wallet',
       titleKey: 'newWalletOptions.newWallet.title',
       descriptionKey: 'newWalletOptions.newWallet.description',
-      icon: '+',
+      icon: PlusIcon,
       disabled: false,
       action: () => handleNewWallet()
     },
@@ -18,7 +21,7 @@
       id: 'existing-wallet',
       titleKey: 'newWalletOptions.existingWallet.title',
       descriptionKey: 'newWalletOptions.existingWallet.description',
-      icon: '↑',
+      icon: ArrowDownIcon,
       disabled: false,
       action: () => handleExistingWallet()
     },
@@ -37,7 +40,7 @@
       id: 'watch-account',
       titleKey: 'newWalletOptions.watchAccount.title',
       descriptionKey: 'newWalletOptions.watchAccount.description',
-      icon: '👁',
+      icon: EyeIcon,
       disabled: true,
       action: () => handleWatchAccount()
     }
@@ -64,21 +67,22 @@
   <NavBar title={$_('newWalletOptions.title')} onBack={pop} />
 
   <div class="options-container">
-    <div class="main-options">
+    <div class="options-group">
       {#each mainOptions as option}
         <WalletOption
           title={$_(option.titleKey)}
           description={$_(option.descriptionKey)}
-          icon={option.icon as any}
+          icon={option.icon}
           disabled={option.disabled}
           onclick={option.action}
+          showArrow={true}
         />
       {/each}
     </div>
 
     <div class="other-section">
       <h4 class="section-title">{$_('newWalletOptions.otherOptions')}</h4>
-      <div class="other-options">
+      <div class="options-group">
         {#each otherOptions as option}
           <WalletOption
             title={$_(option.titleKey)}
@@ -86,6 +90,7 @@
             icon={option.icon}
             disabled={option.disabled}
             onclick={option.action}
+            showArrow={true}
           />
         {/each}
       </div>
@@ -98,26 +103,25 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: var(--background-color);
-    padding: 0 20px 20px;
+    background-color: var(--color-neutral-background-base);
+    padding: 0 16px;
     box-sizing: border-box;
   }
 
   .options-container {
-    flex: 1;
+    padding-top: 24px;
     display: flex;
     flex-direction: column;
     gap: 32px;
     overflow-y: auto;
-    padding: 8px 0;
   }
 
-  .main-options {
+  .options-group {
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
-
+  
   .other-section {
     display: flex;
     flex-direction: column;
@@ -125,16 +129,9 @@
   }
 
   .section-title {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: var(--font-size-large);
+    color: var(--color-content-text-secondary);
     font-weight: 500;
     margin: 0;
-    opacity: 0.8;
-  }
-
-  .other-options {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
   }
 </style>

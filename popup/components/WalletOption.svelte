@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
   import FastImg from './FastImg.svelte';
+  import RightIcon from './icons/Right.svelte';
 
   interface TagConfig {
     text: string;
@@ -14,7 +15,8 @@
     onclick = () => {},
     disabled = false,
     selected = false,
-    tags = []
+    tags = [],
+    showArrow = false
   }: {
     title: string;
     description: string;
@@ -23,6 +25,7 @@
     disabled?: boolean;
     selected?: boolean;
     tags?: (string | TagConfig)[];
+    showArrow?: boolean;
   } = $props();
 
   function handleClick() {
@@ -67,7 +70,7 @@
       <span class="icon-symbol">{icon}</span>
     {:else}
       {@const Component = icon}
-      <Component />
+      <svelte:component this={Component} />
     {/if}
   </div>
 
@@ -87,18 +90,24 @@
     <p class="option-description">{description}</p>
   </div>
 
-  <div class="option-selector">
-    {#if selected}
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="var(--primary-purple)" stroke-width="2"/>
-        <circle cx="12" cy="12" r="6" fill="var(--primary-purple)"/>
-      </svg>
-    {:else}
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="var(--border-color)" stroke-width="2"/>
-      </svg>
-    {/if}
-  </div>
+  {#if showArrow}
+    <div class="arrow-indicator">
+      <RightIcon />
+    </div>
+  {:else}
+    <div class="option-selector">
+      {#if selected}
+        <svg width="24" height="24" viewBox="0 0 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="var(--color-controls-selector-select)" stroke-width="2"/>
+          <circle cx="12" cy="12" r="6" fill="var(--color-controls-selector-select)"/>
+        </svg>
+      {:else}
+        <svg width="24" height="24" viewBox="0 0 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="var(--color-controls-selector-border)" stroke-width="2"/>
+        </svg>
+      {/if}
+    </div>
+  {/if}
 </button>
 
 <style lang="scss">
@@ -106,9 +115,9 @@
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 20px;
-    background-color: var(--card-background);
-    border: 2px solid transparent;
+    padding: 16px;
+    background-color: var(--color-cards-regular-base-default);
+    border: 1px solid var(--color-cards-regular-border-default);
     border-radius: 16px;
     cursor: pointer;
     text-align: left;
@@ -116,19 +125,18 @@
     transition: all 0.2s ease;
 
     &.selected {
-      border-color: var(--primary-purple);
-      background-color: color-mix(in srgb, var(--primary-purple) 8%, var(--card-background));
+      border-color: var(--color-content-icon-accent-secondary);
+      background-color: var(--color-cards-regular-base-selected);
     }
 
     &:hover:not(:disabled) {
-      border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
-      background-color: color-mix(in srgb, var(--card-background) 95%, var(--primary-purple));
+      border-color: var(--color-cards-regular-border-hover);
+      background-color: var(--color-cards-regular-base-selected-hover);
     }
 
     &:focus:not(:disabled) {
       outline: none;
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-purple) 15%, transparent);
+      border-color: var(--color-content-icon-accent-secondary);
     }
 
     &:active:not(:disabled) {
@@ -138,25 +146,6 @@
     &:disabled {
       cursor: not-allowed;
       opacity: 0.6;
-      background-color: color-mix(in srgb, var(--card-background) 80%, transparent);
-      
-      .option-title {
-        color: color-mix(in srgb, var(--text-primary) 60%, transparent);
-      }
-      
-      .option-description {
-        color: color-mix(in srgb, var(--text-secondary) 50%, transparent);
-      }
-      
-      .option-icon {
-        opacity: 0.5;
-        background: color-mix(in srgb, var(--primary-purple) 50%, transparent);
-        box-shadow: none;
-      }
-
-      .tag {
-        opacity: 0.5;
-      }
     }
   }
 
@@ -168,23 +157,21 @@
     height: 48px;
     margin-right: 16px;
     flex-shrink: 0;
-    background: linear-gradient(135deg, var(--primary-purple), color-mix(in srgb, var(--primary-purple) 80%, #000));
     border-radius: 12px;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-purple) 25%, transparent);
     overflow: hidden;
     transition: all 0.2s ease;
-    padding: 8px;
-
-    &.url {
-      background: transparent;
-      box-shadow: none;
+    
+    :global(svg) {
+      width: 28px;
+      height: 28px;
+      color: var(--color-content-icon-accent-secondary);
     }
   }
 
   .icon-symbol {
     font-size: calc(var(--font-size-xl) * 1.6);
     font-weight: bold;
-    color: white;
+    color: var(--color-content-icon-accent-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,30 +201,18 @@
   }
 
   .option-title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-large);
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     margin: 0;
     line-height: 1.3;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .option-description {
     font-size: var(--font-size-medium);
-    color: var(--text-secondary);
+    color: var(--color-content-text-secondary);
     margin: 0;
-    opacity: 0.8;
     line-height: 1.4;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
   }
 
   .tags-container {
@@ -245,8 +220,6 @@
     flex-wrap: wrap;
     gap: 4px;
     flex-shrink: 0;
-    align-items: flex-start;
-    max-width: 50%;
   }
 
   .tag {
@@ -255,46 +228,39 @@
     font-size: var(--font-size-small);
     font-weight: 500;
     white-space: nowrap;
-    line-height: 1.2;
-    transition: all 0.2s ease;
 
     &--mainnet {
-      background-color: color-mix(in srgb, var(--success-color) 15%, transparent);
-      color: var(--success-color);
-      border: 1px solid color-mix(in srgb, var(--success-color) 30%, transparent);
+      background-color: color-mix(in srgb, var(--color-notification-positive-content) 15%, transparent);
+      color: var(--color-notification-positive-content);
+      border: 1px solid color-mix(in srgb, var(--color-notification-positive-border) 30%, transparent);
     }
 
     &--testnet {
-      background-color: color-mix(in srgb, var(--warning-color) 15%, transparent);
-      color: var(--warning-color);
-      border: 1px solid color-mix(in srgb, var(--warning-color) 30%, transparent);
+      background-color: color-mix(in srgb, var(--color-notification-neutral-content) 15%, transparent);
+      color: var(--color-notification-neutral-content);
+      border: 1px solid color-mix(in srgb, var(--color-notification-neutral-border) 30%, transparent);
     }
 
     &--warning {
-      background-color: color-mix(in srgb, var(--danger-color) 15%, transparent);
-      color: var(--danger-color);
-      border: 1px solid color-mix(in srgb, var(--danger-color) 30%, transparent);
+      background-color: color-mix(in srgb, var(--color-notification-negative-content) 15%, transparent);
+      color: var(--color-notification-negative-content);
+      border: 1px solid color-mix(in srgb, var(--color-notification-negative-border) 30%, transparent);
     }
 
     &--info {
-      background-color: color-mix(in srgb, var(--primary-purple) 15%, transparent);
-      color: var(--primary-purple);
-      border: 1px solid color-mix(in srgb, var(--primary-purple) 30%, transparent);
+      background-color: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 15%, transparent);
+      color: var(--color-neutral-tag-purple-text);
+      border: 1px solid var(--color-neutral-tag-purple-border);
     }
-
-    &--success {
-      background-color: color-mix(in srgb, var(--success-color) 15%, transparent);
-      color: var(--success-color);
-      border: 1px solid color-mix(in srgb, var(--success-color) 30%, transparent);
-    }
-
+    
     &--default {
-      background-color: color-mix(in srgb, var(--text-secondary) 15%, transparent);
-      color: var(--text-secondary);
-      border: 1px solid color-mix(in srgb, var(--text-secondary) 30%, transparent);
+      background-color: color-mix(in srgb, var(--color-content-text-secondary) 15%, transparent);
+      color: var(--color-content-text-secondary);
+      border: 1px solid color-mix(in srgb, var(--color-content-text-secondary) 30%, transparent);
     }
   }
 
+  .arrow-indicator,
   .option-selector {
     display: flex;
     align-items: center;
@@ -302,69 +268,6 @@
     width: 24px;
     height: 24px;
     flex-shrink: 0;
-    transition: transform 0.2s ease;
-  }
-
-  .wallet-option:hover:not(:disabled) .option-selector {
-    transform: scale(1.1);
-  }
-
-  @media (max-width: 480px) {
-    .wallet-option {
-      padding: 16px;
-      min-height: 72px;
-    }
-
-    .option-icon {
-      width: 44px;
-      height: 44px;
-      margin-right: 14px;
-    }
-
-    .option-header {
-      gap: 8px;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .option-title {
-      font-size: var(--font-size-large);
-      white-space: normal;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
-      display: -webkit-box;
-    }
-
-    .tags-container {
-      max-width: 100%;
-      gap: 3px;
-    }
-
-    .tag {
-      font-size: calc(var(--font-size-small) * 0.9);
-      padding: 1px 4px;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .wallet-option {
-      padding: 14px;
-    }
-
-    .option-icon {
-      width: 40px;
-      height: 40px;
-      margin-right: 12px;
-    }
-
-    .option-header {
-      gap: 6px;
-    }
-
-    .tag {
-      font-size: calc(var(--font-size-small) * 0.85);
-    }
+    color: var(--color-content-icon-secondary);
   }
 </style>
-
