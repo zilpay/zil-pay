@@ -3,19 +3,13 @@
     index = 1,
     word = '',
     isEditable = false,
-    borderColor = undefined,
-    errorBorderColor = undefined,
     hasError = false,
-    opacity = 1,
     onChanged = undefined
   }: {
     index: number;
     word: string;
     isEditable?: boolean;
-    borderColor?: string;
-    errorBorderColor?: string;
     hasError?: boolean;
-    opacity?: number;
     onChanged?: (index: number, value: string) => void;
   } = $props();
 
@@ -43,12 +37,6 @@
 <div 
   class="mnemonic-word-input"
   class:has-error={hasError}
-  class:has-custom-border={borderColor && !hasError}
-  style="
-    opacity: {opacity};
-    --custom-border-color: {borderColor || 'transparent'};
-    --custom-error-color: {errorBorderColor || 'var(--danger-color)'};
-  "
 >
   <span class="word-index">
     {index}
@@ -70,28 +58,24 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 12px;
-    background-color: var(--card-background);
+    padding: 0 12px;
+    height: 44px;
+    background-color: var(--color-neutral-background-container);
     border-radius: 12px;
     border: 1px solid transparent;
-    transition: border-color 0.2s ease;
-    min-width: 0;
-    width: 100%;
+    transition: all 0.2s ease;
     box-sizing: border-box;
-    
-    &.has-custom-border {
-      border-color: var(--custom-border-color);
+
+    &:focus-within {
+      background-color: var(--color-inputs-background-base);
+      border-color: var(--color-inputs-border-focus);
     }
     
     &.has-error {
-      border-color: var(--custom-error-color);
+      border-color: var(--color-inputs-border-error);
       
-      .word-index {
-        color: var(--custom-error-color);
-      }
-      
-      .word-input {
-        color: var(--custom-error-color);
+      .word-index, .word-input {
+        color: var(--color-inputs-border-error);
       }
     }
   }
@@ -99,54 +83,24 @@
   .word-index {
     font-size: var(--font-size-small);
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--color-content-text-secondary);
     min-width: 16px;
     flex-shrink: 0;
-    line-height: 1;
-    text-align: center;
   }
 
   .word-input {
     flex: 1;
     border: none;
     background: transparent;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-medium);
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     outline: none;
     padding: 0;
-    min-width: 0;
     width: 100%;
     
     &:disabled {
       cursor: default;
-      user-select: none;
-    }
-    
-    &::placeholder {
-      color: var(--text-secondary);
-      opacity: 0.5;
-      font-style: italic;
-    }
-    
-    &:focus {
-      outline: none;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .mnemonic-word-input {
-      padding: 8px 10px;
-      gap: 6px;
-    }
-    
-    .word-index {
-      min-width: 14px;
-      font-size: calc(var(--font-size-small) * 0.9);
-    }
-    
-    .word-input {
-      font-size: calc(var(--font-size-small) * 0.9);
     }
   }
 </style>
