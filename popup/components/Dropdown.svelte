@@ -9,7 +9,7 @@
   let {
     options = [],
     selected = $bindable(''),
-    placeholder = 'Select option',
+    placeholder = '',
     onSelect = () => {},
     disabled = false,
     width = '100%'
@@ -142,25 +142,25 @@
     justify-content: space-between;
     width: 100%;
     padding: 12px 16px;
-    background-color: var(--card-background);
-    border: 2px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
+    background-color: var(--color-inputs-background-base);
+    border: 1px solid var(--color-inputs-border-default);
     border-radius: 12px;
     cursor: pointer;
     font-size: var(--font-size-medium);
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     transition: all 0.2s ease;
 
     &:hover:not(:disabled) {
-      border-color: color-mix(in srgb, var(--primary-purple) 30%, transparent);
+      border-color: var(--color-inputs-border-focus);
     }
 
     &:focus {
       outline: none;
-      border-color: var(--primary-purple);
+      border-color: var(--color-inputs-border-focus);
     }
 
     &.open {
-      border-color: var(--primary-purple);
+      border-color: var(--color-inputs-border-focus);
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
     }
@@ -168,7 +168,7 @@
     &.disabled {
       cursor: not-allowed;
       opacity: 0.6;
-      background-color: color-mix(in srgb, var(--card-background) 50%, transparent);
+      background-color: var(--color-button-regular-quaternary-default);
     }
   }
 
@@ -189,20 +189,20 @@
 
   .option-code {
     font-size: var(--font-size-small);
-    color: var(--text-secondary);
+    color: var(--color-content-text-secondary);
     opacity: 0.8;
     flex-shrink: 0;
   }
 
   .placeholder {
-    color: var(--text-secondary);
+    color: var(--color-content-text-secondary);
     opacity: 0.7;
     font-style: italic;
   }
 
   .dropdown-arrow {
     font-size: var(--font-size-small);
-    color: var(--text-secondary);
+    color: var(--color-content-text-secondary);
     transition: transform 0.2s ease;
     flex-shrink: 0;
 
@@ -216,11 +216,10 @@
     top: 100%;
     left: 0;
     right: 0;
-    background-color: var(--card-background);
-    border: 2px solid var(--primary-purple);
+    background-color: var(--color-cards-regular-base-default);
+    border: 1px solid var(--color-inputs-border-focus);
     border-top: none;
     border-radius: 0 0 12px 12px;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-purple) 15%, transparent);
     z-index: 1000;
     max-height: 280px;
     overflow-y: auto;
@@ -236,24 +235,24 @@
     border: none;
     cursor: pointer;
     font-size: var(--font-size-medium);
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     transition: background-color 0.2s ease;
     text-align: left;
 
     &:hover {
-      background-color: color-mix(in srgb, var(--primary-purple) 10%, transparent);
+      background-color: var(--color-cards-regular-base-selected-hover);
     }
 
     &:focus {
       outline: none;
-      background-color: color-mix(in srgb, var(--primary-purple) 15%, transparent);
+      background-color: var(--color-cards-regular-base-selected-hover);
     }
 
     &.selected {
-      background-color: color-mix(in srgb, var(--primary-purple) 20%, transparent);
+      background-color: var(--color-cards-regular-base-selected);
       
       .option-label {
-        color: var(--primary-purple);
+        color: var(--color-content-text-purple);
         font-weight: 600;
       }
     }
@@ -272,13 +271,12 @@
   }
 
   .check-mark {
-    color: var(--primary-purple);
+    color: var(--color-content-text-purple);
     font-weight: bold;
     font-size: var(--font-size-large);
     flex-shrink: 0;
   }
 
-  /* Scrollbar styling */
   .dropdown-menu::-webkit-scrollbar {
     width: 6px;
   }
@@ -288,11 +286,11 @@
   }
 
   .dropdown-menu::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--text-secondary) 30%, transparent);
+    background: color-mix(in srgb, var(--color-content-text-secondary) 30%, transparent);
     border-radius: 3px;
 
     &:hover {
-      background: color-mix(in srgb, var(--text-secondary) 50%, transparent);
+      background: color-mix(in srgb, var(--color-content-text-secondary) 50%, transparent);
     }
   }
 
@@ -308,4 +306,3 @@
     }
   }
 </style>
-
