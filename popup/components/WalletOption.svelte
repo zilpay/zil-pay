@@ -70,7 +70,7 @@
       <span class="icon-symbol">{icon}</span>
     {:else}
       {@const Component = icon}
-      <svelte:component this={Component} />
+      <Component />
     {/if}
   </div>
 
