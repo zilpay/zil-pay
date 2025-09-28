@@ -13,6 +13,7 @@
   import { generateBip39Words } from 'popup/background/wallet';
   import { cacheStore } from 'popup/store/cache';
   import { LANGUAGE_OPTIONS } from 'config/bip39';
+  import { printBip39 } from '../mixins/print';
 
   let wordCount = $state(12);
   let selectedLang = $state('en');
@@ -87,14 +88,7 @@
   }
 
   function handleSave() {
-    const data = phrase.join(' ');
-    const blob = new Blob([data], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'recovery-phrase.txt';
-    a.click();
-    URL.revokeObjectURL(url);
+    printBip39(phrase, $_);
   }
 
   $effect(() => {
