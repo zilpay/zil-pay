@@ -19,10 +19,6 @@
     padding: 12px 0;
     border-bottom: 1px solid var(--color-cards-regular-border-default);
     min-width: 0;
-
-    &:last-child {
-      border-bottom: none;
-    }
   }
 
   .word-index {
