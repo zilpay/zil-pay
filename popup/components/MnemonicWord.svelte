@@ -15,26 +15,28 @@
   .mnemonic-word {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: var(--background-color);
-    border-radius: 8px;
-    padding: 14px 16px;
-    border: 1px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-cards-regular-border-default);
     min-width: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
   .word-index {
-    font-size: var(--font-size-small);
-    font-weight: 600;
-    color: var(--text-secondary);
-    min-width: 20px;
+    font-size: var(--font-size-medium);
+    font-weight: 500;
+    color: var(--color-content-text-secondary);
+    width: 24px;
     flex-shrink: 0;
   }
 
   .word-text {
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-large);
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
