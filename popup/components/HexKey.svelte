@@ -114,46 +114,48 @@
 <style lang="scss">
   .hex-key-display {
     width: 100%;
-    padding: var(--padding-side);
     box-sizing: border-box;
   }
 
   .title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-large);
     font-weight: 600;
-    color: var(--text-secondary);
-    margin: 0 0 var(--padding-side) 0;
+    color: var(--color-content-text-secondary);
+    margin: 0 0 12px 0;
     line-height: 1.3;
   }
 
   .hex-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    border-radius: 12px;
+    padding: 16px;
   }
 
   .hex-row {
     display: flex;
-    gap: 0;
-    min-height: 32px;
-    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
   }
 
   .hex-pair {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 45px;
-    height: 32px;
+    flex-basis: 0;
+    flex-grow: 1;
+    height: 28px;
     font-family: 'Courier New', Courier, monospace;
     font-size: var(--font-size-medium);
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--color-content-text-inverted);
     border-radius: 4px;
-    transition: color 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
     
     &.animating {
-      color: var(--secondary-purple);
+      color: var(--color-content-text-purple);
+      background-color: var(--color-button-small-border-default);
     }
   }
 </style>
