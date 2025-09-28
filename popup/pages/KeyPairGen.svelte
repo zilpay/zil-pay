@@ -3,13 +3,15 @@
   import NavBar from '../components/NavBar.svelte';
   import HexKey from '../components/HexKey.svelte';
   import Button from '../components/Button.svelte';
-  import CopyButton from '../components/CopyButton.svelte';
-  import ReloadButton from '../components/ReloadButton.svelte';
+  import CopyIcon from '../components/icons/Copy.svelte';
+  import RefreshIcon from '../components/icons/Refresh.svelte';
+  import SaveIcon from '../components/icons/Save.svelte';
   import { _ } from '../i18n';
   import { pop, push } from '../router/navigation';
   import { generateKeyPair } from 'popup/background/wallet';
   import { ETHEREUM } from 'config/slip44';
-  import { cacheStore }  from 'popup/store/cache';
+  import { cacheStore } from 'popup/store/cache';
+  import { printKeyPair } from '../mixins/print';
 
   let keyPair = $state<IKeyPair>({
     address: "",
@@ -39,55 +41,62 @@
     generateKeys();
   }
 
+  function handleCopy() {
+    if (keyPair.privateKey) {
+      navigator.clipboard.writeText(keyPair.privateKey);
+    }
+  }
+
+  function handleSave() {
+    if (keyPair.privateKey) {
+      printKeyPair(keyPair, $_);
+    }
+  }
+
   $effect(() => {
     generateKeys();
   });
 </script>
 
-<div class="secret-key-page">
-  <div class="page-container">
-    <NavBar
-      title={$_('secretKeyGenerator.title')}
-    />
+<div class="page-container secret-key-page">
+  <NavBar title={$_('secretKeyGenerator.title')} onBack={pop} />
 
-    <div class="content">
-      <div class="keys-section">
-        <HexKey
-          hexKey={keyPair.privateKey}
-          title={$_('secretKeyGenerator.privateKey')}
-        />
-        
-        <div class="key-actions">
-          <CopyButton
-            text={keyPair.privateKey}
-            ariaLabel="Copy private key"
-            size={44}
-          />
-        </div>
+  <div class="content">
+    <div class="key-display-section">
+      <HexKey
+        hexKey={keyPair.privateKey}
+        title={$_('secretKeyGenerator.privateKey')}
+      />
+      
+      <div class="action-buttons">
+        <button class="action-btn" onclick={handleCopy}>
+          <CopyIcon />
+          <span class="btn-text">{$_('bip39.create.copy')}</span>
+        </button>
+        <button class="action-btn" onclick={handleReload}>
+          <RefreshIcon />
+          <span class="btn-text">{$_('bip39.create.refresh')}</span>
+        </button>
+        <button class="action-btn" onclick={handleSave}>
+          <SaveIcon />
+          <span class="btn-text">{$_('bip39.create.save')}</span>
+        </button>
       </div>
+    </div>
 
-      <div class="actions-section">
-        <div class="backup-confirmation">
-          <label class="checkbox-container">
-            <input
-              type="checkbox"
-              bind:checked={hasBackup}
-              class="checkbox-input"
-            />
-            <span class="checkbox-text">
-              {$_('secretKeyGenerator.backupCheckbox')}
-            </span>
-          </label>
-        </div>
+    <div class="footer">
+      <label class="checkbox-label">
+        <input type="checkbox" bind:checked={hasBackup} class="checkbox-input" />
+        <span class="checkbox-custom"></span>
+        <span class="checkbox-text">{$_('secretKeyGenerator.backupCheckbox')}</span>
+      </label>
 
-        <Button
-          onclick={handleNext}
-          disabled={!hasBackup || !keyPair.privateKey}
-          width="100%"
-        >
-          {$_('secretKeyGenerator.nextButton')}
-        </Button>
-      </div>
+      <Button
+        onclick={handleNext}
+        disabled={!hasBackup || !keyPair.privateKey}
+      >
+        {$_('secretKeyGenerator.nextButton')}
+      </Button>
     </div>
   </div>
 </div>
@@ -95,19 +104,10 @@
 <style lang="scss">
   .secret-key-page {
     display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    background: var(--background-color);
-    color: var(--text-primary);
-  }
-
-  .page-container {
-    display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 480px;
     min-height: 100vh;
-    padding: 0 20px;
+    background-color: var(--color-neutral-background-base);
+    padding: 0 16px;
     box-sizing: border-box;
   }
 
@@ -115,108 +115,98 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 24px;
-    overflow-y: auto;
-    padding-bottom: 20px;
-  }
-
-  .keys-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    padding-top: 24px;
     min-height: 0;
-    overflow-y: auto;
   }
 
-  .key-actions {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    padding: 8px 0;
-  }
-
-  .actions-section {
+  .key-display-section {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 16px 0;
-    max-width: 480px;
-    margin: 0 auto;
-    width: 100%;
+  }
+  
+  .action-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 
-  .backup-confirmation {
+  .action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    height: 36px;
+    background-color: var(--color-button-regular-quaternary-default);
+    border: 1px solid var(--color-cards-regular-border-default);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: var(--font-size-medium);
+    font-weight: 500;
+    color: var(--color-content-text-inverted);
+    transition: background-color 0.2s ease;
+    min-width: 0;
+
+    &:hover {
+      background-color: var(--color-button-regular-quaternary-hover);
+    }
+    
+    :global(svg) {
+      width: 16px;
+      height: 16px;
+      color: var(--color-content-icon-secondary);
+      flex-shrink: 0;
+    }
   }
 
-  .checkbox-container {
+  .btn-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .footer {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 0;
+    margin-top: auto;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
     gap: 12px;
     cursor: pointer;
     user-select: none;
+    font-size: var(--font-size-medium);
+    color: var(--color-content-text-secondary);
   }
 
   .checkbox-input {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    accent-color: var(--primary-purple);
-    cursor: pointer;
+    display: none;
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--color-controls-selector-border);
+    border-radius: 6px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
   }
 
-  .checkbox-text {
-    font-size: var(--font-size-medium);
-    color: var(--text-secondary);
-    line-height: 1.4;
-  }
-
-  @media (max-width: 480px) {
-    .page-container {
-      padding: 0 16px;
-    }
-
-    .content {
-      gap: 20px;
-    }
-
-    .key-actions {
-      gap: 10px;
-    }
-
-    .actions-section {
-      padding: 12px 0;
-      gap: 14px;
-    }
-
-    .checkbox-text {
-      font-size: var(--font-size-small);
-    }
-  }
-
-  @media (max-width: 360px) {
-    .content {
-      gap: 16px;
-    }
-
-    .key-actions {
-      gap: 8px;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .content {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .actions-section {
-      max-width: 450px;
+  .checkbox-input:checked + .checkbox-custom {
+    background-color: var(--color-controls-selector-select);
+    border-color: var(--color-controls-selector-select);
+    &::after {
+      content: '✓';
+      color: var(--color-content-icon-primary);
+      font-weight: bold;
     }
   }
 </style>

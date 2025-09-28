@@ -135,7 +135,7 @@
 
   .hex-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 4px;
   }
 
