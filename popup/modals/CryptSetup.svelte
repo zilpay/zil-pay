@@ -7,14 +7,11 @@
     import RadioOption, { type OptionData } from '../components/RadioOption.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import Dropdown, { type DropdownOption } from '../components/Dropdown.svelte';
-    import Button from '../components/Button.svelte';
     import DownIcon from '../components/icons/Down.svelte';
 
     let {
         walletSettings,
         onchange,
-        onSave = () => {},
-        onReset = () => {}
     }: {
         walletSettings: IWalletSettingsState;
         onchange: (settings: IWalletSettingsState) => void;
@@ -274,11 +271,6 @@
             />
         </div>
     </div>
-    
-    <div class="footer-actions">
-        <Button onclick={onSave}>{$_('modals.cryptsetup.saveButton')}</Button>
-        <Button class="secondary" onclick={onReset}>{$_('modals.cryptsetup.resetButton')}</Button>
-    </div>
 </div>
 
 <style lang="scss">
@@ -386,12 +378,6 @@
             outline: none;
             border-color: var(--color-inputs-border-focus);
         }
-    }
-    
-    .footer-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
     }
 </style>
 
