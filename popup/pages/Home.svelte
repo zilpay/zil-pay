@@ -16,52 +16,15 @@
     import GridIcon from '../components/icons/Grid.svelte';
     import RowIcon from '../components/icons/Row.svelte';
     import FilterIcon from '../components/icons/Filter.svelte';
-
-    const fakeTokens = [
-        {
-            symbol: 'ZIL',
-            balance: '9.6855K',
-            convertedBalance: 'BTC 0.0010888',
-            iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
-        },
-        {
-            symbol: 'ETH',
-            balance: '9.6855K',
-            convertedBalance: 'BTC 0.0010888',
-            iconSrc: 'https://static.debank.com/image/token/logo_url/eth/935ae4c4d1d12d59a59409263a95996f.png'
-        },
-        {
-            symbol: 'BNB',
-            balance: '9.6855K',
-            convertedBalance: 'BTC 0.0010888',
-            iconSrc: 'https://static.debank.com/image/token/logo_url/bnb/598a96d22239644771f543a9b2a472c4.png'
-        },
-        {
-            symbol: 'ZIL',
-            balance: '9.6855K',
-            convertedBalance: 'BTC 0.0010888',
-            iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
-        },
-        {
-            symbol: 'ZIL',
-            balance: '9.6855K',
-            convertedBalance: 'BTC 0.0010888',
-            iconSrc: 'https://static.debank.com/image/token/logo_url/zil/b8b4c09d6a3a6d25326555513cbe3e36.png'
-        },
-        {
-            symbol: 'BNB',
-            balance: '9.6855K',
-            convertedBalance: 'BTC 0.0010888',
-            iconSrc: 'https://static.debank.com/image/token/logo_url/bnb/598a96d22239644771f543a9b2a472c4.png'
-        }
-    ];
+    import { setGlobalState } from 'popup/background/wallet';
 
     let tokenViewMode = $state<'grid' | 'row'>('grid');
-    let hideBalance = $state(false);
 
+    const hideBalance = $derived($globalStore.hideBalance);
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
+    const tokens = $derived(currentWallet?.tokens || []);
 
     function handleAccountClick() {
         push('/account-details');
@@ -72,6 +35,15 @@
 
     function toggleViewMode() {
         tokenViewMode = tokenViewMode === 'grid' ? 'row' : 'grid';
+    }
+
+    async function toggleHideBalance() {
+        globalStore.set({
+            ...$globalStore,
+            hideBalance: !$globalStore.hideBalance,
+        });
+
+        await setGlobalState();
     }
 
     function handleManageTokens() {
@@ -113,7 +85,7 @@
             <div class="tokens-area">
                 <div class="tokens-header">
                     <div class="tokens-title-section">
-                        <button class="control-button" onclick={() => hideBalance = !hideBalance} aria-label="Toggle balance visibility">
+                        <button class="control-button" onclick={toggleHideBalance}>
                             {#if hideBalance}
                                 <HideIcon />
                             {:else}
@@ -122,27 +94,27 @@
                         </button>
                     </div>
                     <div class="view-controls">
-                        <button class="control-button" onclick={toggleViewMode} aria-label="Toggle token view mode">
+                        <button class="control-button" onclick={toggleViewMode}>
                             {#if tokenViewMode === 'grid'}
                                 <GridIcon />
                             {:else}
                                 <RowIcon />
                             {/if}
                         </button>
-                        <button class="control-button" onclick={handleManageTokens} aria-label="Manage tokens">
+                        <button class="control-button" onclick={handleManageTokens}>
                             <FilterIcon />
                         </button>
                     </div>
                 </div>
 
                 <div class="tokens-grid" class:row-view={tokenViewMode === 'row'}>
-                    {#each fakeTokens as token, index (index)}
+                    {#each tokens as token, index (index)}
                         <TokenCard
                             viewMode={tokenViewMode}
                             symbol={token.symbol}
-                            balance={hideBalance ? '******' : token.balance}
-                            convertedBalance={hideBalance ? '******' : token.convertedBalance}
-                            imageUrl={token.iconSrc}
+                            balance={hideBalance ? '******' : token.balances[currentAccount.addr] ?? 0}
+                            convertedBalance={hideBalance ? '******' : "-"}
+                            imageUrl={token.logo || ""}
                         />
                     {/each}
                 </div>
