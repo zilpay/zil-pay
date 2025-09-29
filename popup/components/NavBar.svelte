@@ -34,22 +34,12 @@
         cursor: pointer;
         display: flex;
         align-items: center;
-        justify-content: center;
         width: 36px;
         height: 36px;
         color: var(--color-content-text-inverted);
         border-radius: 50%;
         transition: background-color 0.2s ease;
         flex-shrink: 0;
-
-        &:hover:not(:disabled) {
-            background-color: var(--color-button-regular-quaternary-hover);
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
 
         :global(svg) {
             width: 24px;
