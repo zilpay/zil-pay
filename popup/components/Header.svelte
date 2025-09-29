@@ -5,6 +5,10 @@
     import RefreshIcon from './icons/Refresh.svelte';
     import LinkIcon from './icons/Link.svelte';
     import LockIcon from './icons/Locker.svelte';
+    import { logout } from 'popup/background/wallet';
+    import { push } from '../router/navigation';
+    import globalStore from 'popup/store/global';
+
 
     let {
         showNetworkButton = true,
@@ -23,7 +27,6 @@
         onExpand = () => {},
         onRefresh = () => {},
         onSettings = () => {},
-        onLock = () => {},
         left = undefined
     }: {
         showNetworkButton?: boolean;
@@ -42,9 +45,14 @@
         onExpand?: () => void;
         onRefresh?: () => void;
         onSettings?: () => void;
-        onLock?: () => void;
         left?: Snippet;
     } = $props();
+
+  async function onLock() {
+    const walletIndex = $globalStore.selectedWallet;
+    await logout(walletIndex);
+    push('/lock');
+  };
 </script>
 
 <header class="system-header">

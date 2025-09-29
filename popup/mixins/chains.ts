@@ -26,11 +26,12 @@ export function getWalletChain(walletIndex: number) {
 export function getAccountChain(walletIndex: number) {
   const globalState = get(globalStore);
   const wallet = globalState.wallets[walletIndex];
-  const accountIndex = wallet.selectedAccount;
 
   if (!wallet) {
     return;
   }
+
+  const accountIndex = wallet.selectedAccount;
 
   return globalState.chains.find((c) => {
     const hash = hashChainConfig(c.chainIds, c.slip44, c.chain);

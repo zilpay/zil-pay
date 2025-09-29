@@ -42,7 +42,7 @@
         justify-content: space-around;
         align-items: center;
         width: 100%;
-        height: 60px;
+        height: 45px;
         background-color: var(--color-navbar-backgrdound-fg);
         z-index: 100;
         box-sizing: border-box;
