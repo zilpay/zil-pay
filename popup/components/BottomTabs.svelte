@@ -2,18 +2,18 @@
     import { currentRoute } from '../store/route';
     import { push } from '../router/navigation';
     import HomeIcon from './icons/Home.svelte';
-    import CollectIcon from './icons/CollectIcon.svelte';
-    import ReceiveIcon from './icons/Receive.svelte';
+    import GridIcon from './icons/Grid.svelte';
+    import ArrowDownIcon from './icons/ArrowDown.svelte';
     import HistoryIcon from './icons/History.svelte';
     import SettingsIcon from './icons/Settings.svelte';
 
-    const links = {
-        home: '/',
-        collect: '/collect',
-        swap: '/swap',
-        history: '/history',
-        settings: '/settings'
-    };
+    const tabs = [
+        { path: '/', component: HomeIcon, label: 'Home' },
+        { path: '/collect', component: GridIcon, label: 'Collection' },
+        { path: '/swap', component: ArrowDownIcon, label: 'Receive' },
+        { path: '/history', component: HistoryIcon, label: 'History' },
+        { path: '/settings', component: SettingsIcon, label: 'Settings' }
+    ];
 
     function navigate(path: string) {
         if ($currentRoute?.path !== path) {
@@ -23,55 +23,17 @@
 </script>
 
 <nav class="bottom-nav-bar">
-    <button
-        class="nav-button"
-        class:active={$currentRoute?.path === links.home}
-        onclick={() => navigate(links.home)}
-        aria-label="Home"
-        aria-current={$currentRoute?.path === links.home ? 'page' : undefined}
-    >
-        <HomeIcon />
-    </button>
-
-    <button
-        class="nav-button"
-        class:active={$currentRoute?.path === links.collect}
-        onclick={() => navigate(links.collect)}
-        aria-label="Collect"
-        aria-current={$currentRoute?.path === links.collect ? 'page' : undefined}
-    >
-        <CollectIcon />
-    </button>
-
-    <button
-        class="nav-button"
-        class:active={$currentRoute?.path === links.swap}
-        onclick={() => navigate(links.swap)}
-        aria-label="Receive"
-        aria-current={$currentRoute?.path === links.swap ? 'page' : undefined}
-    >
-        <ReceiveIcon />
-    </button>
-
-    <button
-        class="nav-button"
-        class:active={$currentRoute?.path === links.history}
-        onclick={() => navigate(links.history)}
-        aria-label="History"
-        aria-current={$currentRoute?.path === links.history ? 'page' : undefined}
-    >
-        <HistoryIcon />
-    </button>
-
-    <button
-        class="nav-button"
-        class:active={$currentRoute?.path === links.settings}
-        onclick={() => navigate(links.settings)}
-        aria-label="Settings"
-        aria-current={$currentRoute?.path === links.settings ? 'page' : undefined}
-    >
-        <SettingsIcon />
-    </button>
+    {#each tabs as tab (tab.path)}
+        <button
+            class="nav-button"
+            class:active={$currentRoute?.path === tab.path}
+            onclick={() => navigate(tab.path)}
+            aria-label={tab.label}
+            aria-current={$currentRoute?.path === tab.path ? 'page' : undefined}
+        >
+            <svelte:component this={tab.component} />
+        </button>
+    {/each}
 </nav>
 
 <style lang="scss">
@@ -87,6 +49,15 @@
         flex-shrink: 0;
     }
 
+
+    :global(.active > svg > path) {
+        stroke: var(--color-navbar-icon-selected-default);
+    }
+
+    :global(svg > path) {
+        stroke: var(--color-navbar-icon-default-default);
+    }
+
     .nav-button {
         flex: 1;
         height: 100%;
@@ -100,23 +71,6 @@
         color: var(--color-navbar-icon-default-default);
         transition: color 0.2s ease;
         -webkit-tap-highlight-color: transparent;
-
-        &:hover {
-            color: var(--color-navbar-icon-default-hover);
-        }
-
-        &.active {
-            color: var(--color-navbar-icon-selected-default);
-            &:hover {
-                color: var(--color-navbar-icon-selected-hover);
-            }
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--color-inputs-border-focus);
-            outline-offset: -2px;
-            border-radius: 4px;
-        }
 
         :global(svg) {
             width: 28px;

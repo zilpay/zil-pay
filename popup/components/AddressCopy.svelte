@@ -40,8 +40,8 @@
 
 <div
     class="account-card"
-    on:click={onclick}
-    on:keydown={handleKeydown}
+    onclick={onclick}
+    onkeydown={handleKeydown}
     role="button"
     tabindex="0"
     aria-label={`Select account ${name}`}
@@ -54,7 +54,7 @@
 
     <div class="info-container">
         <div class="account-name">{name}</div>
-        <button type="button" class="address-line" on:click={handleCopy} aria-label="Copy address">
+        <button type="button" class="address-line" onclick={handleCopy} aria-label="Copy address">
             <span class="account-address">{truncatedAddress}</span>
             <div class="copy-icon-wrapper">
                 {#if isCopied}
