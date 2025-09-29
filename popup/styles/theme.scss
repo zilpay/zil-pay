@@ -7,16 +7,19 @@
 
   --max-content-width: 360px;
   --padding-side: 16px;
+  --padding-side-min: 4px;
 
   @media (min-width: 480px) {
     --max-content-width: 480px;
     --padding-side: 20px;
+    --padding-side-min: 8px;
     --font-size-base: 13px;  // ~11px, 13px, ~15px, ~18px
   }
 
   @media (min-width: 768px) {
     --max-content-width: 600px;
     --padding-side: 24px;
+    --padding-side-min: 12px;
     --font-size-base: 14px;  // ~12px, 14px, ~16px, ~20px
   }
 }

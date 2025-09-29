@@ -56,7 +56,7 @@
         }
     ];
 
-    let tokenViewMode = $state('grid');
+    let tokenViewMode = $state<'grid' | 'row'>('grid');
     let hideBalance = $state(false);
 
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
@@ -113,7 +113,6 @@
             <div class="tokens-area">
                 <div class="tokens-header">
                     <div class="tokens-title-section">
-                        <h2 class="tokens-title">{$_('home.tokens')}</h2>
                         <button class="control-button" onclick={() => hideBalance = !hideBalance} aria-label="Toggle balance visibility">
                             {#if hideBalance}
                                 <HideIcon />
@@ -136,9 +135,10 @@
                     </div>
                 </div>
 
-                <div class="tokens-grid">
+                <div class="tokens-grid" class:row-view={tokenViewMode === 'row'}>
                     {#each fakeTokens as token, index (index)}
                         <TokenCard
+                            viewMode={tokenViewMode}
                             symbol={token.symbol}
                             balance={hideBalance ? '******' : token.balance}
                             convertedBalance={hideBalance ? '******' : token.convertedBalance}
@@ -158,7 +158,8 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        width: 340px;
+        width: 100%;
+        max-width: var(--max-content-width);
         margin: 0 auto;
         background: var(--color-neutral-background-base);
         box-sizing: border-box;
@@ -170,7 +171,6 @@
         display: flex;
         flex-direction: column;
         min-height: 0;
-        overflow-y: auto;
     }
 
     .account-section {
@@ -178,7 +178,7 @@
         flex-direction: column;
         gap: 24px;
         flex-shrink: 0;
-        padding: 20px 16px 24px 16px;
+        padding: 20px var(--padding-side) 24px var(--padding-side);
     }
 
     .actions-row {
@@ -207,7 +207,7 @@
         background: var(--color-neutral-background-container);
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
-        padding: 16px;
+        padding: 8px var(--padding-side-min) 0 var(--padding-side-min);
     }
 
     .tokens-header {
@@ -216,6 +216,8 @@
         align-items: center;
         margin-bottom: 16px;
         flex-shrink: 0;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
     .tokens-title-section {
@@ -263,9 +265,14 @@
 
     .tokens-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
         gap: 12px;
         align-content: start;
         padding-bottom: 16px;
+        overflow-y: auto;
+    }
+
+    .tokens-grid.row-view {
+        grid-template-columns: 1fr;
     }
 </style>
