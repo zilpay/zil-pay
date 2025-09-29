@@ -210,6 +210,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         appearances: Themes.System,
         abbreviatedNumber: true,
         hideBalance: false,
+        tokensRow: true,
         chains: [mainChain], 
     });
 

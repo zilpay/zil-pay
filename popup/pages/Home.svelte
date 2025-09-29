@@ -18,9 +18,8 @@
     import FilterIcon from '../components/icons/Filter.svelte';
     import { setGlobalState } from 'popup/background/wallet';
 
-    let tokenViewMode = $state<'grid' | 'row'>('grid');
-
     const hideBalance = $derived($globalStore.hideBalance);
+    const tokensRow = $derived($globalStore.tokensRow);
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
@@ -33,8 +32,14 @@
     function handleSend() {}
     function handleReceive() {}
 
-    function toggleViewMode() {
-        tokenViewMode = tokenViewMode === 'grid' ? 'row' : 'grid';
+    async function toggleViewMode() {
+        console.log(tokensRow);
+        globalStore.set({
+            ...$globalStore,
+            tokensRow: !$globalStore.tokensRow,
+        });
+
+        await setGlobalState();
     }
 
     async function toggleHideBalance() {
@@ -95,7 +100,7 @@
                     </div>
                     <div class="view-controls">
                         <button class="control-button" onclick={toggleViewMode}>
-                            {#if tokenViewMode === 'grid'}
+                            {#if !tokensRow}
                                 <GridIcon />
                             {:else}
                                 <RowIcon />
@@ -107,10 +112,10 @@
                     </div>
                 </div>
 
-                <div class="tokens-grid" class:row-view={tokenViewMode === 'row'}>
+                <div class="tokens-grid" class:row-view={tokensRow}>
                     {#each tokens as token, index (index)}
                         <TokenCard
-                            viewMode={tokenViewMode}
+                            tokensRow={tokensRow}
                             symbol={token.symbol}
                             balance={hideBalance ? '******' : token.balances[currentAccount.addr] ?? 0}
                             convertedBalance={hideBalance ? '******' : "-"}
@@ -194,14 +199,6 @@
         display: flex;
         align-items: center;
         gap: 8px;
-    }
-
-    .tokens-title {
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 30px;
-        color: var(--color-content-text-inverted);
-        margin: 0;
     }
 
     .view-controls {

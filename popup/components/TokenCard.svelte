@@ -8,7 +8,7 @@
         convertedBalance = '0.00',
         loading = false,
         disabled = false,
-        viewMode = 'grid',
+        tokensRow = true,
         onSelect = () => {}
     }: {
         balance?: string;
@@ -17,7 +17,7 @@
         convertedBalance?: string;
         loading?: boolean;
         disabled?: boolean;
-        viewMode?: 'grid' | 'row';
+        tokensRow?: boolean;
         onSelect?: () => void;
     } = $props();
 
@@ -30,14 +30,14 @@
 
 <button
     class="token-card"
-    class:row={viewMode === 'row'}
+    class:row={tokensRow}
     class:disabled={disabled}
     class:loading={loading}
     onclick={handleClick}
     type="button"
     aria-label={`Select ${symbol} token`}
 >
-    {#if viewMode === 'grid'}
+    {#if !tokensRow}
         <div class="grid-header">
             <span class="symbol">{symbol}</span>
             <div class="token-icon">
@@ -97,12 +97,6 @@
         background: var(--color-neutral-background-container);
     }
     
-    .icon-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
     .grid-header {
         display: flex;
         justify-content: space-between;

@@ -15,6 +15,7 @@ export interface IBackgroundState {
   appearances: Themes;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
+  tokensRow: boolean;
   chains: IChainConfigState[];
 }
 
@@ -27,6 +28,7 @@ export class BackgroundState implements IBackgroundState {
   appearances: Themes;
   abbreviatedNumber: boolean;
   hideBalance: boolean;
+  tokensRow: boolean;
   chains: ChainConfig[];
 
   static default() {
@@ -38,6 +40,7 @@ export class BackgroundState implements IBackgroundState {
       appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
+      tokensRow: true,
       chains: [],
       storageVersion: 4,
     });
@@ -81,6 +84,7 @@ export class BackgroundState implements IBackgroundState {
     this.appearances = data.appearances;
     this.abbreviatedNumber = data.abbreviatedNumber;
     this.hideBalance = data.hideBalance;
+    this.tokensRow = data.tokensRow;
     this.selectedWallet = Number(data.selectedWallet);
     this.chains = (data.chains).map(
       (c) => new ChainConfig(c)
@@ -110,6 +114,7 @@ export class BackgroundState implements IBackgroundState {
       appearances: this.appearances,
       abbreviatedNumber: this.abbreviatedNumber,
       hideBalance: this.hideBalance,
+      tokensRow: this.tokensRow,
       chains: this.chains.map(c => c.toJSON()),
     };
   }

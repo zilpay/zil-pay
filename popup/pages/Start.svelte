@@ -60,7 +60,6 @@
     <div class="content">
         <SvgLoad
             src="/icons/little_dragons.svg"
-            class="dragon-image"
             viewBox="0 0 460 460"
         />
         <div class="title-group">
@@ -139,12 +138,6 @@
         gap: 8px;
     }
     
-    .dragon-image {
-        width: 202px;
-        height: 202px;
-        transition: width 0.3s ease, height 0.3s ease;
-    }
-
     .title-group {
         text-align: center;
     }
@@ -172,11 +165,6 @@
     @media (min-width: 480px) {
         .content {
             gap: 24px;
-        }
-
-        .dragon-image {
-            width: 260px;
-            height: 260px;
         }
     }
 </style>

@@ -91,6 +91,7 @@ export class WalletService {
     this.#state.abbreviatedNumber = payload.abbreviatedNumber;
     this.#state.appearances = payload.appearances;
     this.#state.hideBalance = payload.hideBalance;
+    this.#state.tokensRow = payload.tokensRow;
     this.#state.selectedWallet = payload.selectedWallet;
     this.#state.locale = payload.locale;
     this.#state.notificationsGlobalEnabled = payload.notificationsGlobalEnabled;

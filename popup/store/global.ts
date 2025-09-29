@@ -13,6 +13,7 @@ export default writable<IBackgroundState>({
   appearances: Themes.System,
   abbreviatedNumber: true,
   hideBalance: false,
+  tokensRow: true,
   chains: [] 
 });
 

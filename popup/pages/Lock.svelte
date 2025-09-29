@@ -318,12 +318,6 @@
         flex-shrink: 0;
     }
 
-    .chain-logo {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
     .info-container {
         flex: 1 1 0;
         min-width: 0;

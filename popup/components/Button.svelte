@@ -1,11 +1,15 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
+
     let {
+        children,
         width = '100%',
         height = 48,
         loading = false,
         variant = 'primary',
         ...rest
     }: {
+        children: Snippet;
         width?: string;
         height?: number;
         loading?: boolean;
@@ -26,7 +30,7 @@
         <div class="loading-spinner"></div>
     {:else}
         <span class="text">
-            <slot />
+            {@render children()}
         </span>
     {/if}
 </button>
