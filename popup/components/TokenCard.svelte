@@ -37,47 +37,51 @@
     type="button"
     aria-label={`Select ${symbol} token`}
 >
-    <div class="token-icon">
-        {#if imageUrl}
-            <FastImg src={imageUrl} alt={symbol} class="icon-image" />
-        {:else}
-            <div class="icon-placeholder">
-                {symbol.charAt(0)}
+    {#if viewMode === 'grid'}
+        <div class="grid-header">
+            <span class="symbol">{symbol}</span>
+            <div class="token-icon">
+                <FastImg src={imageUrl} alt={symbol} class="icon-image" />
             </div>
-        {/if}
-    </div>
-    <div class="info-group">
-        <div class="symbol">{symbol}</div>
-        {#if viewMode === 'grid'}
+        </div>
+        <div class="balance-group">
             <div class="balance">{balance}</div>
-        {/if}
-    </div>
-    <div class="balance-group">
-        {#if viewMode === 'row'}
+            <div class="converted">{convertedBalance}</div>
+        </div>
+    {:else}
+        <div class="info-group">
+            <div class="token-icon">
+                <FastImg src={imageUrl} alt={symbol} class="icon-image" />
+            </div>
+            <span class="symbol">{symbol}</span>
+        </div>
+        <div class="balance-group">
             <div class="balance">{balance}</div>
-        {/if}
-        <div class="converted">{convertedBalance}</div>
-    </div>
+            <div class="converted">{convertedBalance}</div>
+        </div>
+    {/if}
 </button>
 
 <style lang="scss">
     .token-card {
         display: flex;
-        flex-direction: column;
-        gap: 16px;
         padding: 12px;
         background: var(--color-cards-tokens-base-default);
         border: 1px solid var(--color-cards-regular-border-default);
         border-radius: 12px;
         cursor: pointer;
         text-align: left;
-        transition: all 0.2s ease;
+        transition: border-color 0.2s ease;
         box-sizing: border-box;
-        min-width: 148px;
+        
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 16px;
+        width: 148px;
 
         &:hover:not(:disabled) {
             border-color: var(--color-cards-regular-border-hover);
-            background-color: var(--color-cards-tokens-base-hover);
         }
     }
 
@@ -92,43 +96,46 @@
         justify-content: center;
         background: var(--color-neutral-background-container);
     }
+    
+    .icon-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-    .info-group {
+    .grid-header {
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
     }
 
-    .symbol {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--color-content-text-inverted);
-        line-height: 22px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .balance {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--color-content-text-inverted);
-        line-height: 22px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
+    .info-group,
     .balance-group {
         display: flex;
         flex-direction: column;
-        margin-top: auto;
+        align-items: flex-start;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .symbol,
+    .balance {
+        color: var(--color-content-text-inverted);
+        font-size: 16px;
+        font-family: Geist;
+        font-weight: 700;
+        line-height: 22px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .converted {
-        font-size: 12px;
-        font-weight: 400;
         color: var(--color-content-text-secondary);
+        font-size: 12px;
+        font-family: Geist;
+        font-weight: 400;
         line-height: 16px;
         white-space: nowrap;
         overflow: hidden;
@@ -137,24 +144,31 @@
 
     .token-card.row {
         flex-direction: row;
+        justify-content: space-between;
         align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
+        gap: 8px;
         width: 100%;
-        min-width: 0;
-
+        
         .token-icon {
             width: 32px;
             height: 32px;
         }
 
         .info-group {
-            flex-grow: 1;
+            flex: 1 1 0;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .symbol {
+            font-weight: 400;
         }
 
         .balance-group {
+            flex: 1 1 0;
             align-items: flex-end;
-            margin-top: 0;
+            text-align: right;
         }
     }
 </style>

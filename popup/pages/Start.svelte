@@ -61,8 +61,6 @@
         <SvgLoad
             src="/icons/little_dragons.svg"
             class="dragon-image"
-            width="202"
-            height="202"
             viewBox="0 0 460 460"
         />
         <div class="title-group">
@@ -141,6 +139,12 @@
         gap: 8px;
     }
     
+    .dragon-image {
+        width: 202px;
+        height: 202px;
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+
     .title-group {
         text-align: center;
     }
@@ -164,6 +168,15 @@
         padding: 16px 0 24px 0;
         flex-shrink: 0;
     }
+
+    @media (min-width: 480px) {
+        .content {
+            gap: 24px;
+        }
+
+        .dragon-image {
+            width: 260px;
+            height: 260px;
+        }
+    }
 </style>
-
-
