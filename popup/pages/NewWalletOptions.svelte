@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from 'popup/i18n';
-  import { pop, push } from 'popup/router/navigation';
+  import { push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import OptionCard from '../components/OptionCard.svelte';
   import PlusIcon from '../components/icons/Plus.svelte';
@@ -64,7 +64,7 @@
 </script>
 
 <div class="page-container new-wallet-options">
-  <NavBar title={$_('newWalletOptions.title')} onBack={pop} />
+  <NavBar title={$_('newWalletOptions.title')} />
 
   <div class="options-container">
     <div class="options-group">
