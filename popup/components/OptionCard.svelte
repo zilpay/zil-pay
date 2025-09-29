@@ -65,7 +65,7 @@
 >
   <div class="option-icon" class:is-url={isIconUrl}>
     {#if isIconUrl}
-      <FastImg src={icon as string} class="icon-image" />
+      <FastImg src={icon as string} class="icon-image" width="45" height="45"/>
     {:else if typeof icon === 'string'}
       <span class="icon-symbol">{icon}</span>
     {:else}

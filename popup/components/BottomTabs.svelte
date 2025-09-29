@@ -80,11 +80,11 @@
         justify-content: space-around;
         align-items: center;
         width: 100%;
-        height: 64px;
-        background-color: var(--color-cards-regular-base-default);
-        border-top: 1px solid var(--color-cards-regular-border-default);
+        height: 60px;
+        background-color: var(--color-navbar-backgrdound-fg);
         z-index: 100;
         box-sizing: border-box;
+        flex-shrink: 0;
     }
 
     .nav-button {
@@ -97,16 +97,19 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--color-content-icon-secondary);
-        transition: background-color 0.2s ease, color 0.2s ease;
+        color: var(--color-navbar-icon-default-default);
+        transition: color 0.2s ease;
         -webkit-tap-highlight-color: transparent;
 
-        &.active {
-            color: var(--color-content-icon-accent-primary);
+        &:hover {
+            color: var(--color-navbar-icon-default-hover);
         }
 
-        &:hover {
-            background-color: var(--color-button-regular-quaternary-hover);
+        &.active {
+            color: var(--color-navbar-icon-selected-default);
+            &:hover {
+                color: var(--color-navbar-icon-selected-hover);
+            }
         }
 
         &:focus-visible {
@@ -116,9 +119,8 @@
         }
 
         :global(svg) {
-            width: 24px;
-            height: 24px;
-            stroke-width: 2;
+            width: 28px;
+            height: 28px;
         }
     }
 </style>

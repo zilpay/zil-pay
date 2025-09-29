@@ -67,7 +67,8 @@
         push('/account-details');
     }
 
-    function handleUnlockWallet() {}
+    function handleSend() {}
+    function handleReceive() {}
 
     function toggleViewMode() {
         tokenViewMode = tokenViewMode === 'grid' ? 'row' : 'grid';
@@ -98,22 +99,22 @@
                 />
 
                 <div class="actions-row">
-                    <Button onclick={handleUnlockWallet} class="unlock-button-pink">
-                        Unlock Wallet
+                    <Button onclick={handleSend} variant="primary">
+                        {$_('home.send')}
                         <UpRightIcon />
                     </Button>
-                    <Button onclick={handleUnlockWallet} class="unlock-button-purple">
-                        Unlock Wallet
+                    <Button onclick={handleReceive} variant="secondary">
+                        {$_('home.receive')}
                         <DownRightIcon />
                     </Button>
                 </div>
             </div>
 
-            <div class="tokens-section">
+            <div class="tokens-area">
                 <div class="tokens-header">
                     <div class="tokens-title-section">
-                        <h2 class="tokens-title">Tokens</h2>
-                        <button class="control-button" onclick={() => hideBalance = !hideBalance}>
+                        <h2 class="tokens-title">{$_('home.tokens')}</h2>
+                        <button class="control-button" onclick={() => hideBalance = !hideBalance} aria-label="Toggle balance visibility">
                             {#if hideBalance}
                                 <HideIcon />
                             {:else}
@@ -122,25 +123,25 @@
                         </button>
                     </div>
                     <div class="view-controls">
-                        <button class="control-button" onclick={toggleViewMode}>
+                        <button class="control-button" onclick={toggleViewMode} aria-label="Toggle token view mode">
                             {#if tokenViewMode === 'grid'}
                                 <GridIcon />
                             {:else}
                                 <RowIcon />
                             {/if}
                         </button>
-                        <button class="control-button" onclick={handleManageTokens}>
+                        <button class="control-button" onclick={handleManageTokens} aria-label="Manage tokens">
                             <FilterIcon />
                         </button>
                     </div>
                 </div>
 
                 <div class="tokens-grid">
-                    {#each fakeTokens as token}
+                    {#each fakeTokens as token, index (index)}
                         <TokenCard
                             symbol={token.symbol}
                             balance={hideBalance ? '******' : token.balance}
-                            convertedBalance={hideBalance ? '************' : token.convertedBalance}
+                            convertedBalance={hideBalance ? '******' : token.convertedBalance}
                             imageUrl={token.iconSrc}
                         />
                     {/each}
@@ -157,8 +158,11 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
+        width: 340px;
+        margin: 0 auto;
         background: var(--color-neutral-background-base);
         box-sizing: border-box;
+        overflow: hidden;
     }
 
     .content-area {
@@ -166,70 +170,44 @@
         display: flex;
         flex-direction: column;
         min-height: 0;
-        padding: 0 16px;
-        gap: 20px;
         overflow-y: auto;
     }
 
     .account-section {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 24px;
         flex-shrink: 0;
-        padding-top: 16px;
+        padding: 20px 16px 24px 16px;
     }
 
     .actions-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .actions-row :global(.unlock-button-pink) {
-        background-color: var(--color-button-regular-primary-default);
-        color: var(--color-content-text-primary);
-        
-        &:hover:not(:disabled) {
-            background-color: var(--color-button-regular-primary-hover);
-        }
-        &:active:not(:disabled) {
-            background-color: var(--color-button-regular-primary-pressed);
-        }
-    }
-
-    .actions-row :global(.unlock-button-purple) {
-        background-color: #ac59ff;
-        color: var(--color-content-text-primary);
-        
-        &:hover:not(:disabled) {
-            background-color: #9a4eeb;
-        }
-        &:active:not(:disabled) {
-            background-color: #8742d8;
-        }
+        gap: 8px;
     }
 
     .actions-row :global(button) {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        height: 44px;
-        font-size: var(--font-size-medium);
-        font-weight: 600;
-        border-radius: 12px;
+        gap: 4px;
     }
 
     .actions-row :global(svg) {
-        width: 16px;
-        height: 16px;
+        width: 24px;
+        height: 24px;
     }
 
-    .tokens-section {
+    .tokens-area {
         flex: 1;
         display: flex;
         flex-direction: column;
         min-height: 0;
+        background: var(--color-neutral-background-container);
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        padding: 16px;
     }
 
     .tokens-header {
@@ -247,8 +225,9 @@
     }
 
     .tokens-title {
-        font-size: var(--font-size-xl);
+        font-size: 20px;
         font-weight: 700;
+        line-height: 30px;
         color: var(--color-content-text-inverted);
         margin: 0;
     }
@@ -256,37 +235,36 @@
     .view-controls {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 8px;
     }
 
     .control-button {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent;
-        border: none;
+        background: var(--color-button-regular-quaternary-default);
+        border: 1px solid var(--color-neutral-border-default);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         cursor: pointer;
-        padding: 6px;
-        border-radius: 50%;
-        color: var(--color-content-icon-secondary);
+        color: var(--color-content-icon-inverted);
         transition: all 0.2s ease;
 
         &:hover {
             background-color: var(--color-button-regular-quaternary-hover);
-            color: var(--color-content-text-inverted);
         }
 
         :global(svg) {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
         }
     }
 
     .tokens-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        flex: 1;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
         align-content: start;
         padding-bottom: 16px;
     }

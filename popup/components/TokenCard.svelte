@@ -57,18 +57,17 @@
     .token-card {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        height: 120px;
-        padding: 16px;
+        width: 148px;
+        gap: 16px;
+        padding: 12px;
         background: var(--color-cards-tokens-base-default);
-        border: 1px solid var(--color-cards-regular-border-default);
-        border-radius: 16px;
+        border-radius: 12px;
         cursor: pointer;
         text-align: left;
         transition: all 0.2s ease;
+        box-sizing: border-box;
 
         &:hover:not(:disabled) {
-            border-color: var(--color-cards-regular-border-hover);
             background-color: var(--color-cards-tokens-base-hover);
         }
 
@@ -102,20 +101,19 @@
     .card-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: auto;
+        align-items: center;
     }
 
     .symbol {
-        font-size: var(--font-size-large);
+        font-size: 16px;
         font-weight: 700;
         color: var(--color-content-text-inverted);
-        line-height: 1.2;
+        line-height: 22px;
     }
 
     .token-icon {
-        width: 32px;
-        height: 32px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         overflow: hidden;
         flex-shrink: 0;
@@ -140,24 +138,23 @@
     .card-body {
         display: flex;
         flex-direction: column;
-        gap: 2px;
     }
 
     .balance {
-        font-size: var(--font-size-large);
+        font-size: 16px;
         font-weight: 700;
         color: var(--color-content-text-inverted);
-        line-height: 1.2;
+        line-height: 22px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     .converted {
-        font-size: var(--font-size-small);
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: 400;
         color: var(--color-content-text-secondary);
-        line-height: 1.2;
+        line-height: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

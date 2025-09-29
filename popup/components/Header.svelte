@@ -122,8 +122,8 @@
         height: 60px;
         padding: 0 16px;
         background: var(--color-neutral-background-base);
-        border-bottom: 1px solid var(--color-cards-regular-border-default);
         box-sizing: border-box;
+        flex-shrink: 0;
     }
 
     .header-left {
@@ -146,8 +146,8 @@
         height: 32px;
         padding: 0;
         background: transparent;
-        border: none;
-        border-radius: 8px;
+        border: 1px solid var(--color-neutral-border-default);
+        border-radius: 6px;
         cursor: pointer;
         color: var(--color-content-icon-secondary);
         transition: all 0.2s ease;
@@ -173,8 +173,8 @@
         }
 
         :global(svg) {
-            width: 16px;
-            height: 16px;
+            width: 24px;
+            height: 24px;
         }
     }
 </style>

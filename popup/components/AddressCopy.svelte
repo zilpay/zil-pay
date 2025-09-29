@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { truncate } from "popup/mixins/address";
+    import { truncate } from 'popup/mixins/address';
     import CopyIcon from './icons/Copy.svelte';
     import RightIcon from './icons/Right.svelte';
+    import { clipboardCopy } from 'lib/popup/clipboard';
 
     let {
         name,
@@ -15,40 +16,33 @@
 
     let isCopied = $state(false);
 
-    const truncatedAddress = $derived(truncate(address));
+    const truncatedAddress = $derived(truncate(address, 6, 6));
 
     async function handleCopy(event: MouseEvent) {
         event.stopPropagation();
         if (isCopied) return;
 
-        try {
-            await navigator.clipboard.writeText(address);
+        const success = await clipboardCopy(address);
+        if (success) {
             isCopied = true;
             setTimeout(() => {
                 isCopied = false;
             }, 2000);
-        } catch (error) {
-            console.error('Failed to copy address:', error);
-        }
-    }
-
-    function handleCardKeyDown(event: KeyboardEvent) {
-        if (event.key === 'Enter' || event.key === ' ') {
-            onclick();
         }
     }
 </script>
 
-<div 
-    class="account-card" 
-    onclick={onclick} 
-    onkeydown={handleCardKeyDown}
-    role="button" 
+<div
+    class="account-card"
+    onclick={onclick}
+    role="button"
     tabindex="0"
     aria-label={`Select account ${name}`}
 >
     <div class="icon-container">
-        <div class="jazzicon"></div>
+        <div class="jazzicon">
+            <div class="jazzicon-shape"></div>
+        </div>
     </div>
 
     <div class="info-container">
@@ -58,38 +52,22 @@
             <button class="copy-button" onclick={handleCopy} aria-label="Copy address">
                 <CopyIcon />
             </button>
-            <div class="type-indicator"></div>
         </div>
     </div>
 
-    <div class="arrow-container">
+    <button class="arrow-button" aria-label="View account details">
         <RightIcon />
-    </div>
+    </button>
 </div>
 
 <style lang="scss">
     .account-card {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         width: 100%;
-        padding: 16px;
-        background-color: var(--color-button-regular-quaternary-default);
-        border: 1px solid var(--color-cards-regular-border-default);
-        border-radius: 16px;
         cursor: pointer;
         text-align: left;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
-
-        &:hover {
-            background-color: var(--color-button-regular-quaternary-hover);
-            border-color: var(--color-cards-regular-border-hover);
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--color-inputs-border-focus);
-            outline-offset: 2px;
-        }
     }
 
     .icon-container {
@@ -100,19 +78,22 @@
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #ff007a 0%, #ff007a 50%, transparent 50%);
+        background: var(--color-content-text-pink);
         position: relative;
-        
-        &::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: transparent;
-        }
+        overflow: hidden;
+        outline: 1px solid var(--color-neutral-border-default);
+        outline-offset: -1px;
+    }
+
+    .jazzicon-shape {
+        width: 74px;
+        height: 30.77px;
+        left: 11.38px;
+        top: 16px;
+        position: absolute;
+        transform: rotate(30deg);
+        transform-origin: top left;
+        background: var(--color-neutral-background-base);
     }
 
     .info-container {
@@ -126,6 +107,7 @@
     .account-name {
         font-size: var(--font-size-large);
         font-weight: 600;
+        line-height: 20px;
         color: var(--color-content-text-inverted);
         white-space: nowrap;
         overflow: hidden;
@@ -135,13 +117,14 @@
     .address-line {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
     }
 
     .account-address {
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-large);
         color: var(--color-content-text-secondary);
-        font-family: monospace;
+        font-family: Geist, monospace;
+        line-height: 20px;
     }
 
     .copy-button {
@@ -151,38 +134,36 @@
         background: none;
         border: none;
         cursor: pointer;
-        padding: 2px;
-        color: var(--color-content-icon-secondary);
-        opacity: 0.7;
-        transition: opacity 0.2s ease, color 0.2s ease;
+        padding: 0;
+        color: var(--color-content-icon-accent-secondary);
+        transition: opacity 0.2s ease;
 
         &:hover {
-            opacity: 1;
-            color: var(--color-content-text-purple);
+            opacity: 0.8;
         }
 
         :global(svg) {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
         }
     }
 
-    .type-indicator {
-        width: 12px;
-        height: 12px;
-        background-color: var(--color-content-text-purple);
-        border-radius: 2px;
+    .arrow-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
         flex-shrink: 0;
-    }
-
-    .arrow-container {
-        flex-shrink: 0;
-        color: var(--color-content-icon-secondary);
-        opacity: 0.5;
+        background-color: var(--color-button-regular-quaternary-default);
+        border: 1px solid var(--color-neutral-border-default);
+        border-radius: 8px;
+        color: var(--color-content-icon-inverted);
+        cursor: pointer;
 
         :global(svg) {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
         }
     }
 </style>

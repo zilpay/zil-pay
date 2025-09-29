@@ -44,11 +44,11 @@
     .round-image-button {
         display: flex;
         align-items: center;
-        gap: 6px;
-        padding: 2px 6px 2px 2px;
-        background-color: var(--color-neutral-background-container);
+        gap: 4px;
+        padding: 4px;
+        background-color: transparent;
         border: 1px solid var(--color-neutral-border-default);
-        border-radius: 16px;
+        border-radius: 46px;
         cursor: pointer;
         transition: all 0.2s ease;
         height: 32px;
@@ -85,7 +85,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 50%;
     }
 
     .arrow-icon {
@@ -97,8 +96,8 @@
         flex-shrink: 0;
 
         :global(svg) {
-            width: 12px;
-            height: 12px;
+            width: 24px;
+            height: 24px;
         }
     }
 </style>
