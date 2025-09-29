@@ -67,7 +67,7 @@
         display: flex;
         padding: 12px;
         background: var(--color-cards-tokens-base-default);
-        border: 1px solid var(--color-cards-regular-border-default);
+        border: 2px solid var(--color-cards-regular-border-default);
         border-radius: 12px;
         cursor: pointer;
         text-align: left;
