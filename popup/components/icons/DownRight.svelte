@@ -7,7 +7,7 @@
 >
     <path 
         d="M7.5 7.5L17 17M17 17H9M17 17V9" 
-        stroke="var(  --color-content-icon-secondary)"
+        stroke="var(--color-content-icon-secondary)"
         stroke-linecap="round" 
         stroke-linejoin="round"
     />

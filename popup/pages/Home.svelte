@@ -99,13 +99,13 @@
                 />
 
                 <div class="actions-row">
-                    <Button onclick={handleSend} variant="primary">
+                    <Button onclick={handleSend} variant="primary" height ={40}>
                         {$_('home.send')}
-                        <UpRightIcon />
+                        <UpRightIcon class="rightup"/>
                     </Button>
-                    <Button onclick={handleReceive} variant="secondary">
+                    <Button onclick={handleReceive} variant="secondary" height ={40}>
                         {$_('home.receive')}
-                        <DownRightIcon />
+                        <DownRightIcon class="rightdown" />
                     </Button>
                 </div>
             </div>
@@ -187,16 +187,14 @@
         gap: 8px;
     }
 
-    .actions-row :global(button) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .actions-row :global(svg) {
+    :global(.rightup),
+    :global(.rightdown) {
         width: 24px;
         height: 24px;
+
+        :global(path) {
+            stroke: var(--color-content-icon-primary);
+        }
     }
 
     .tokens-area {
