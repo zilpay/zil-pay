@@ -26,7 +26,6 @@
     height: 56px;
     padding: 0 4px;
     box-sizing: border-box;
-    background-color: var(--color-navbar-backgrdound-fg);
     gap: 8px;
   }
 
