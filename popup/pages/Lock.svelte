@@ -209,10 +209,6 @@
             stroke: var(--color-content-icon-primary);
         }
 
-        // &:hover:not(:disabled) {
-        //     background: var(--color-button-regular-secondary-hover);
-        // }
-
         &:active:not(:disabled) {
             transform: scale(0.95);
         }

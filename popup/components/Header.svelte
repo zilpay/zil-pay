@@ -8,6 +8,7 @@
     import { logout } from 'popup/background/wallet';
     import { push } from '../router/navigation';
     import globalStore from 'popup/store/global';
+    import { linksExpand } from 'popup/mixins/links';
 
 
     let {
@@ -24,7 +25,6 @@
         settingsDisabled = false,
         lockDisabled = false,
         onNetworkButton = () => {},
-        onExpand = () => {},
         onRefresh = () => {},
         onSettings = () => {},
         left = undefined
@@ -42,7 +42,6 @@
         settingsDisabled?: boolean;
         lockDisabled?: boolean;
         onNetworkButton?: () => void;
-        onExpand?: () => void;
         onRefresh?: () => void;
         onSettings?: () => void;
         left?: Snippet;
@@ -52,6 +51,10 @@
     const walletIndex = $globalStore.selectedWallet;
     await logout(walletIndex);
     push('/lock');
+  };
+
+  function onExpand() {
+      linksExpand();
   };
 </script>
 
