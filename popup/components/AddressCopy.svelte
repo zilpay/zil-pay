@@ -1,8 +1,8 @@
 <script lang="ts">
     import { truncate } from 'popup/mixins/address';
-    import CopyIcon from './icons/Copy.svelte';
-    import RightIcon from './icons/Right.svelte';
     import { clipboardCopy } from 'lib/popup/clipboard';
+    import CopyIcon from './icons/Copy.svelte';
+    import SuccessIcon from './icons/Success.svelte';
 
     let {
         name,
@@ -27,14 +27,21 @@
             isCopied = true;
             setTimeout(() => {
                 isCopied = false;
-            }, 2000);
+            }, 1000);
+        }
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            onclick();
         }
     }
 </script>
 
 <div
     class="account-card"
-    onclick={onclick}
+    on:click={onclick}
+    on:keydown={handleKeydown}
     role="button"
     tabindex="0"
     aria-label={`Select account ${name}`}
@@ -47,27 +54,37 @@
 
     <div class="info-container">
         <div class="account-name">{name}</div>
-        <div class="address-line">
+        <button type="button" class="address-line" on:click={handleCopy} aria-label="Copy address">
             <span class="account-address">{truncatedAddress}</span>
-            <button class="copy-button" onclick={handleCopy} aria-label="Copy address">
-                <CopyIcon />
-            </button>
-        </div>
+            <div class="copy-icon-wrapper">
+                {#if isCopied}
+                    <SuccessIcon />
+                {:else}
+                    <CopyIcon />
+                {/if}
+            </div>
+        </button>
     </div>
-
-    <button class="arrow-button" aria-label="View account details">
-        <RightIcon />
-    </button>
 </div>
 
 <style lang="scss">
     .account-card {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
         width: 100%;
         cursor: pointer;
         text-align: left;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        border-radius: 4px;
+
+        &:focus-visible {
+            outline: 2px solid var(--color-inputs-border-focus);
+            outline-offset: 2px;
+        }
     }
 
     .icon-container {
@@ -81,8 +98,12 @@
         background: var(--color-content-text-pink);
         position: relative;
         overflow: hidden;
-        outline: 1px solid var(--color-neutral-border-default);
-        outline-offset: -1px;
+        outline: 2px solid transparent;
+        transition: outline-color 0.2s ease;
+
+        &:hover {
+            outline-color: var(--color-neutral-border-hover);
+        }
     }
 
     .jazzicon-shape {
@@ -115,9 +136,22 @@
     }
 
     .address-line {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 5px;
+        align-self: flex-start;
+        gap: 8px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 8px;
+        margin: -4px -8px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+        font-family: inherit;
+
+        &:hover {
+            background-color: var(--color-button-regular-quaternary-default);
+        }
     }
 
     .account-address {
@@ -127,43 +161,15 @@
         line-height: 20px;
     }
 
-    .copy-button {
+    .copy-icon-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
         color: var(--color-content-icon-accent-secondary);
-        transition: opacity 0.2s ease;
-
-        &:hover {
-            opacity: 0.8;
-        }
-
+        
         :global(svg) {
             width: 16px;
             height: 16px;
-        }
-    }
-
-    .arrow-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        flex-shrink: 0;
-        background-color: var(--color-button-regular-quaternary-default);
-        border: 1px solid var(--color-neutral-border-default);
-        border-radius: 8px;
-        color: var(--color-content-icon-inverted);
-        cursor: pointer;
-
-        :global(svg) {
-            width: 24px;
-            height: 24px;
         }
     }
 </style>
