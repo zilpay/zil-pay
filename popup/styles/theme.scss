@@ -119,83 +119,118 @@
   --color-button-regular-primary-default: #ff007a;
   --color-button-regular-primary-hover: #ff3395;
   --color-button-regular-primary-pressed: #e6006e;
-  --color-button-regular-quaternary-default: #f9f9fb;
-  --color-button-regular-quaternary-hover: #f3f4f7;
-  --color-button-regular-quaternary-pressed: #eeeef3;
-  --color-button-regular-secondary-default: #3b3b40;
-  --color-button-regular-secondary-hover: #4f4f56;
-  --color-button-regular-secondary-pressed: #141415;
-  --color-button-small-border-default: #f7eeff;
-  --color-button-small-border-hover: #eedeff;
-  --color-button-small-border-pressed: #e6cdff;
-  --color-button-small-fg-default: #f9f9fb;
-  --color-button-small-fg-hover: #f3f4f7;
-  --color-button-small-fg-pressed: #eeeef3;
-  --color-cards-navigation-base-default: #f9f9fb;
-  --color-cards-navigation-base-hover: #f3f4f7;
-  --color-cards-navigation-icon-primary: #ac59ff;
-  --color-cards-navigation-icon-fg: #ac59ff;
-  --color-cards-navigation-icon-secondary:#9e9eab;
-  --color-cards-regular-base-default: #ffffff;
-  --color-cards-regular-base-selected: #f9f9fb;
-  --color-cards-regular-base-selected-hover: #f3f4f7;
-  --color-cards-regular-border-default: #eeeef3;
-  --color-cards-regular-border-hover: #cbccda;
-  --color-cards-tokens-base-default: #ffffff;
-  --color-cards-tokens-base-hover: #e8e8ef;
+
+  --color-button-regular-quaternary-default: #141415;
+  --color-button-regular-quaternary-hover: #141415;
+  --color-button-regular-quaternary-pressed: #1e1e21;
+
+  --color-button-regular-secondary-default: #ac59ff;
+  --color-button-regular-secondary-hover: #bd7aff;
+  --color-button-regular-secondary-pressed: #bd7aff;
+
+  --color-button-small-border-default: #27282b;
+  --color-button-small-border-hover: #673599;
+  --color-button-small-border-pressed: #673599;
+
+  --color-button-small-fg-default: #673599;
+  --color-button-small-fg-hover: #673599;
+  --color-button-small-fg-pressed: #673599;
+
+  --color-cards-navigation-base-default: #673599;
+  --color-cards-navigation-base-hover: #27282b;
+
+  --color-cards-navigation-icon-primary: #27282b;
+  --color-cards-navigation-icon-fg: #27282b;
+  --color-cards-navigation-icon-secondary: #27282b;
+
+  --color-cards-regular-base-default: #27282b;
+  --color-cards-regular-base-selected: #27282b;
+  --color-cards-regular-base-selected-hover: #27282b;
+
+  --color-cards-regular-border-default: #27282b;
+  --color-cards-regular-border-hover: #27282b;
+  // TODO: --color-cards-regular-border-hover-selected
+
+  --color-cards-tokens-base-default: #000000;
+  --color-cards-tokens-base-hover: #808080;
+
   --color-content-icon-primary: #ffffff;
   --color-content-icon-secondary: #808080;
-  --color-content-icon-inverted: #000000;
-  --color-content-icon-accent-secondary: #ac59ff;
-  --color-content-icon-accent-primary: #ff007a;
+  --color-content-icon-inverted: #f9f9fb;
+  --color-content-icon-accent-secondary: #c58bff;
+  --color-content-icon-accent-primary: #ff4da2;
+
   --color-content-text-primary: #ffffff;
   --color-content-text-secondary: #808080;
-  --color-content-text-inverted: #141415;
+  --color-content-text-inverted: #f9f9fb;
   --color-content-text-pink: #ff007a;
   --color-content-text-purple: #ac59ff;
-  --color-controls-selector-border: #cbccda;
+
+  // TODO: chips 
+
+  --color-controls-selector-border: #767780;
   --color-controls-selector-checker: #ffffff;
-  --color-controls-selector-base: #ffffff;
+  --color-controls-selector-base: #000000;
   --color-controls-selector-select: #ff007a;
-  --color-controls-tabs-selected: #27282b;
-  --color-controls-tabs-fg: #f3f4f7;
-  --color-controls-toggle-main-off: #c5c6d6;
+
+  --color-controls-tabs-selected: #141415;
+  --color-controls-tabs-fg: #27282b;
+
+  --color-controls-toggle-main-off: #3b3b40;
   --color-controls-toggle-main-on: #43cc71;
-  --color-controls-toggle-main-fg-switcher: #ffffff;
-  --color-controls-toggle-theme-light-fg: #c5c6d6;
-  --color-controls-toggle-theme-dark-fg: #27282b;
-  --color-controls-toggle-theme-light-switcher: #ffffff;
+  --color-controls-toggle-main-fg-switcher: #000000;
+
+  --color-controls-toggle-theme-light-fg: #1e1e21;
+  --color-controls-toggle-theme-dark-fg: #1e1e21;
+  --color-controls-toggle-theme-light-switcher: #000000;
   --color-controls-toggle-theme-dark-switcher: #000000;
-  --color-inputs-border-default: #e8e8ef;
-  --color-inputs-border-focus: #b1b2c1;
-  --color-inputs-border-error: #ff4949;
-  --color-inputs-border-success: #3bb363;
-  --color-inputs-background-base: #ffffff;
-  --color-navbar-backgrdound-fg: #ffffff;
-  --color-navbar-backgrdound-border: #eeeef3;
-  --color-navbar-icon-default-default: #c5c6d6;
-  --color-navbar-icon-default-hover: #d1d1de;
-  --color-navbar-icon-selected-default: #ff007a;
-  --color-navbar-icon-selected-hover: #ff3395;
-  --color-negative-border-primary: #ff4949;
-  --color-neutral-background-base: #ffffff;
-  --color-neutral-background-container: #f6f7f9;
-  --color-neutral-border-default: #eeeef3;
-  --color-neutral-border-hover: #d6d7e2;
+
+  --color-inputs-border-default: #000000;
+  --color-inputs-border-focus: #767780;
+  --color-inputs-border-error: #ff7777;
+  --color-inputs-border-success: #4ce67f;
+
+  --color-inputs-background-base: #000000;
+
+  --color-navbar-backgrdound-fg: #000000;
+  --color-navbar-backgrdound-border: #4f4f56;
+
+  --color-navbar-icon-default-default: #63636b;
+  --color-navbar-icon-default-hover: #767780;
+
+  --color-navbar-icon-selected-default: #ff3395;
+  --color-navbar-icon-selected-hover: #ff4da2;
+
+  --color-negative-border-primary: #ff6060;
+  --color-negative-border-text: #ff4949; // TODO: add light
+
+  --color-neutral-background-base: #000000;
+  --color-neutral-background-container: #1e1e21;
+
+  --color-neutral-border-default: #3b3b40;
+  --color-neutral-border-hover: #63636b;
+
   --color-neutral-tag-pink-border: #ff007a;
   --color-neutral-tag-pink-fg: #ff007a;
   --color-neutral-tag-pink-text: #ff007a;
-  --color-neutral-tag-purple-border: #ac59ff;
+
+  --color-neutral-tag-purple-border: #783eb3;
   --color-neutral-tag-purple-fg: #ac59ff;
-  --color-neutral-tag-purple-text: #8a47cc;
+  --color-neutral-tag-purple-text: #ac59ff;
+
   --color-notification-negative-border: #ff007a;
   --color-notification-negative-background: #ff007a;
   --color-notification-negative-content: #ff007a;
+
   --color-notification-neutral-border: #ac59ff;
-  --color-notification-neutral-background: #ffffff;
+  --color-notification-neutral-background: #191919;
   --color-notification-neutral-content: #ac59ff;
+
   --color-notification-positive-border: #43cc71;
   --color-notification-positive-background: #43cc71;
   --color-notification-positive-content: #43cc71;
-  --color-positive-border-primary:#4ce67f;
+
+  --color-positive-border-primary: #4ce67f;
+
+  --color-positive-text-primary: #43cc71; // TODO: add light
 }

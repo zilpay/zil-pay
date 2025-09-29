@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { _ }	 from 'popup/i18n';
+    import { _ } from 'popup/i18n';
     import { push } from 'popup/router/navigation';
 
     import globalStore from "popup/store/global";
@@ -78,11 +78,11 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        max-width: 400px;
+        max-width: var(--max-content-width);
         margin: 0 auto;
-        background-color: var(--background-color);
-        color: var(--text-primary);
-        padding: 0 20px;
+        background-color: var(--color-neutral-background-base);
+        color: var(--color-content-text-inverted);
+        padding: 0 var(--padding-side);
         box-sizing: border-box;
     }
 
@@ -102,7 +102,7 @@
         justify-content: center;
         cursor: pointer;
         border: 1px solid var(--color-inputs-border-default);
-        background-color: var(--background-color);
+        background-color: var(--color-neutral-background-base);
         transition: all 0.2s ease;
 
         &:hover {
@@ -122,7 +122,7 @@
         border-radius: 8px;
         font-size: var(--font-size-medium);
         font-weight: 500;
-        color: var(--text-secondary);
+        color: var(--color-content-text-secondary);
 
         :global(svg) {
             opacity: 0.7;
@@ -147,7 +147,7 @@
 
     .subtitle {
         font-size: var(--font-size-large);
-        color: var(--text-secondary);
+        color: var(--color-content-text-secondary);
         margin: -10px 0 0 0;
     }
 

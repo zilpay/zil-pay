@@ -1,38 +1,37 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
-	import { setupI18n } from 'popup/i18n';
-	import globlSettingsStore from 'popup/store/global';
-	import { Locales } from 'config/locale';
-	import Router from './Router.svelte';
+    import { get } from 'svelte/store';
+    import { setupI18n } from 'popup/i18n';
+    import globlSettingsStore from 'popup/store/global';
+    import { Locales } from 'config/locale';
+    import Router from './Router.svelte';
 
-	let loading = $state(true);
+    let loading = $state(true);
 
-	$effect(() => {
-		const initialize = async () => {
-			const { locale } = get<any>(globlSettingsStore);
-			try {
-				if (locale === Locales.Auto) {
-					await setupI18n();
-				} else {
-					await setupI18n({
-						withLocale: locale,
-					});
-				}
-			} catch (err) {
-				console.error(err);
-				await setupI18n({
-					withLocale: Locales.EN,
-				});
-			} finally {
-				loading = false;
-			}
-		};
+    $effect(() => {
+        const initialize = async () => {
+            const { locale } = get<any>(globlSettingsStore);
+            try {
+                if (locale === Locales.Auto) {
+                    await setupI18n();
+                } else {
+                    await setupI18n({
+                        withLocale: locale,
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                await setupI18n({
+                    withLocale: Locales.EN,
+                });
+            } finally {
+                loading = false;
+            }
+        };
 
-		initialize();
-	});
+        initialize();
+    });
 </script>
 
 {#if !loading}
-	<Router />
+    <Router />
 {/if}
-
