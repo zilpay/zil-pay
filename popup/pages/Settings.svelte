@@ -68,7 +68,9 @@
     <main class="content">
         {#if currentWallet && currentAccount}
             <WalletInfoCard
-                onclick={() => {}}
+                onclick={() => {
+                    push("/wallet");
+                }}
                 iconSrc={viewChain({
                     network: getAccountChain($globalStore.selectedWallet),
                     theme: $globalStore.appearances

@@ -3,24 +3,31 @@
 
     let {
         label,
+        value,
         Icon,
         onclick = () => {}
     }: {
         label: string;
+        value?: string | number;
         Icon: new (...args: any) => SvelteComponent;
         onclick?: () => void;
     } = $props();
 </script>
 
-<button class="settings-item" {onclick}>
-    <span class="label">{label}</span>
-    <div class="icon-wrapper">
-        <Icon />
+<button class="settings-link-item" {onclick}>
+    <div class="left-content">
+        <div class="icon-wrapper">
+            <Icon />
+        </div>
+        <span class="label">{label}</span>
     </div>
+    {#if value !== undefined}
+        <span class="value">{value}</span>
+    {/if}
 </button>
 
 <style lang="scss">
-    .settings-item {
+    .settings-link-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -32,12 +39,10 @@
         text-align: left;
     }
 
-    .label {
-        color: var(--color-content-text-inverted);
-        font-size: var(--font-size-large);
-        font-family: Geist;
-        font-weight: 400;
-        line-height: 20px;
+    .left-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .icon-wrapper {
@@ -52,5 +57,21 @@
             width: 100%;
             height: 100%;
         }
+    }
+
+    .label {
+        color: var(--color-content-text-inverted);
+        font-size: var(--font-size-large);
+        font-family: Geist;
+        font-weight: 400;
+        line-height: 20px;
+    }
+
+    .value {
+        color: var(--color-content-text-inverted);
+        font-size: var(--font-size-large);
+        font-family: Geist;
+        font-weight: 400;
+        line-height: 20px;
     }
 </style>

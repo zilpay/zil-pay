@@ -1,0 +1,182 @@
+<script lang="ts">
+    import { _ } from 'popup/i18n';
+    import globalStore from 'popup/store/global';
+    import { getWalletChain } from 'popup/mixins/chains';
+    import { viewChain } from 'lib/popup/url';
+
+    import NavBar from '../components/NavBar.svelte';
+    import FastImg from '../components/FastImg.svelte';
+    import SmartInput from '../components/SmartInput.svelte';
+    import SettingsLinkItem from '../components/SettingsLinkItem.svelte';
+    import Button from '../components/Button.svelte';
+    
+    import EditIcon from '../components/icons/Edit.svelte';
+    import ConnectionIcon from '../components/icons/Connection.svelte';
+    import RepeatIcon from '../components/icons/Repeat.svelte';
+    import DeleteIcon from '../components/icons/Delete.svelte';
+
+    let walletName = $state('');
+
+    const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const walletChain = $derived(getWalletChain($globalStore.selectedWallet));
+    
+    $effect(() => {
+        if (wallet) {
+            walletName = wallet.walletName;
+        }
+    });
+
+    function handleBackup() {
+        // Логика для бэкапа
+    }
+
+    function handleManageConnections() {
+        // Логика для управления подключениями
+    }
+
+    function handleDelete() {
+        // Логика для удаления кошелька
+    }
+</script>
+
+<div class="page-container wallet-settings-page">
+    <NavBar title={$_('walletSettings.title')} />
+
+    <main class="content">
+        <div class="wallet-icon-container">
+            {#if walletChain}
+                <FastImg 
+                    src={viewChain({ network: walletChain, theme: $globalStore.appearances })}
+                    alt={walletChain.name}
+                    class="wallet-icon"
+                />
+            {/if}
+        </div>
+
+        <SmartInput 
+            bind:value={walletName}
+            hide={false}
+            showToggle={false}
+        >
+            {#snippet rightAction()}
+                <button class="edit-button">
+                    <EditIcon />
+                </button>
+            {/snippet}
+        </SmartInput>
+
+        <div class="preferences-section">
+            <span class="section-title">{$_('walletSettings.preferences')}</span>
+            <div class="settings-group">
+                <div class="item-wrapper">
+                    <SettingsLinkItem 
+                        label={$_('walletSettings.manageConnections')}
+                        Icon={ConnectionIcon}
+                        value={2}
+                        onclick={handleManageConnections}
+                    />
+                </div>
+                <div class="item-wrapper no-divider">
+                    <SettingsLinkItem 
+                        label={$_('walletSettings.backup')}
+                        Icon={RepeatIcon}
+                        onclick={handleBackup}
+                    />
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <Button variant="outline" onclick={handleDelete}>
+            {$_('walletSettings.destroy')}
+            <DeleteIcon />
+        </Button>
+    </footer>
+</div>
+
+<style lang="scss">
+    .wallet-settings-page {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: var(--color-neutral-background-base);
+    }
+
+    .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .wallet-icon-container {
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        background-color: var(--color-neutral-background-base);
+    }
+
+    .wallet-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .edit-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        :global(svg) {
+            width: 24px;
+            height: 24px;
+            color: var(--color-content-icon-secondary);
+        }
+    }
+
+    .preferences-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .section-title {
+        color: var(--color-content-text-secondary);
+        font-size: var(--font-size-medium);
+        font-family: Geist;
+        font-weight: 400;
+        line-height: 16px;
+        padding: 0 4px;
+    }
+
+    .settings-group {
+        padding: 4px 12px;
+        background: var(--color-neutral-background-container);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+    }
+
+    .item-wrapper {
+        border-bottom: 1px solid var(--color-cards-regular-border-default);
+    }
+
+    .item-wrapper.no-divider {
+        border-bottom: none;
+    }
+
+    .footer {
+        padding: 24px 0;
+        margin-top: auto;
+    }
+</style>

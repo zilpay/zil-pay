@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import { cacheStore } from '../store/cache';
@@ -58,7 +58,7 @@
 </script>
 
 <div class="page-container verify-page">
-  <NavBar title={$_('bip39.verify.title')} onBack={pop} />
+  <NavBar title={$_('bip39.verify.title')} />
 
   <div class="content">
     <div class="instructions">

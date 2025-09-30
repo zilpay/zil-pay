@@ -5,6 +5,7 @@
   import OptionCard from '../components/OptionCard.svelte';
   import BillIcon from '../components/icons/Bill.svelte';
   import BincodeIcon from '../components/icons/Bincode.svelte';
+  import { SvelteComponent } from 'svelte';
   
   const restoreOptions = [
     {
@@ -42,7 +43,7 @@
       <OptionCard
         title={$_(option.titleKey)}
         description={$_(option.descriptionKey)}
-        icon={option.icon}
+        icon={option.icon as typeof SvelteComponent}
         disabled={option.disabled}
         onclick={option.action}
         showArrow={true}

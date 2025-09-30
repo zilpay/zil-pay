@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { SvelteComponent } from 'svelte';
     import { _ } from 'popup/i18n';
     import { push } from 'popup/router/navigation';
     import NavBar from '../components/NavBar.svelte';
@@ -72,7 +73,7 @@
                 <OptionCard
                     title={$_(option.titleKey)}
                     description={$_(option.descriptionKey)}
-                    icon={option.icon}
+                    icon={option.icon as typeof SvelteComponent}
                     disabled={option.disabled}
                     onclick={option.action}
                     showArrow={true}
@@ -87,7 +88,7 @@
                     <OptionCard
                         title={$_(option.titleKey)}
                         description={$_(option.descriptionKey)}
-                        icon={option.icon}
+                        icon={option.icon as typeof SvelteComponent}
                         disabled={option.disabled}
                         onclick={option.action}
                         showArrow={true}

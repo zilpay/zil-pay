@@ -19,6 +19,7 @@ import NetworkSetupPage from '../pages/NetworkSetup.svelte';
 import TokenManagerPage from '../pages/TokenManager.svelte';
 import PasswordSetupPage from '../pages/PasswordSetup.svelte';
 import SettingsPages from '../pages/Settings.svelte';
+import WalletPage from '../pages/Wallet.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -40,6 +41,7 @@ export const protectedRoutes: Route[] = [
   { path: "/confirm", component: ConfirmPopupPage, isProtected: true },
   { path: "/sign-message", component: SignMessagePopupPage, isProtected: true },
   { path: "/settings", component: SettingsPages, isProtected: true },
+  { path: "/wallet", component: WalletPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [

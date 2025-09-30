@@ -13,7 +13,7 @@
         width?: string;
         height?: number;
         loading?: boolean;
-        variant?: 'primary' | 'secondary';
+        variant?: 'primary' | 'secondary' | 'outline';
         [key: string]: any;
     } = $props();
 </script>
@@ -41,7 +41,7 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        border: none;
+        border: 1px solid transparent;
         border-radius: 10px;
         padding: 0 16px;
         transform-origin: center;
@@ -91,6 +91,7 @@
     .primary {
         background-color: var(--color-button-regular-primary-default);
         color: var(--color-content-text-primary);
+        border-color: var(--color-button-regular-primary-default);
 
         &:hover:not(:disabled) {
             background-color: var(--color-button-regular-primary-hover);
@@ -111,6 +112,20 @@
 
         &:active:not(:disabled) {
             background-color: var(--color-button-regular-secondary-pressed);
+        }
+    }
+
+    .outline {
+        background-color: transparent;
+        color: var(--color-content-text-pink);
+        border-color: var(--color-button-regular-primary-default);
+
+        :global(svg > path) {
+            stroke: var(--color-content-text-pink);
+        }
+
+        &:hover:not(:disabled) {
+            background-color: color-mix(in srgb, var(--color-button-regular-primary-default) 8%, transparent);
         }
     }
 </style>
