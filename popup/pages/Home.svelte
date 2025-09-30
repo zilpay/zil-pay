@@ -115,11 +115,10 @@
                 <div class="tokens-grid" class:row-view={tokensRow}>
                     {#each tokens as token, index (index)}
                         <TokenCard
+                            token={token}
                             tokensRow={tokensRow}
-                            symbol={token.symbol}
-                            balance={hideBalance ? '******' : token.balances[currentAccount.addr] ?? 0}
-                            convertedBalance={hideBalance ? '******' : "-"}
-                            imageUrl={token.logo || ""}
+                            account={currentAccount}
+                            hide={hideBalance }
                         />
                     {/each}
                 </div>

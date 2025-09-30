@@ -44,7 +44,7 @@ export function processTokenLogo({
   theme,
 }: {
   token: IFTokenState;
-  shortName: string;
+  shortName?: string;
   theme: Themes;
 }): string {
   if (!token.logo) return 'assets/icons/warning.svg';
@@ -53,7 +53,7 @@ export function processTokenLogo({
     'symbol': token.symbol.toLowerCase(),
     'contract_address': token.addr.toLowerCase(),
     'name': token.name,
-    'shortName': shortName,
+    'shortName': shortName ?? "",
   };
 
   return processUrlTemplate({

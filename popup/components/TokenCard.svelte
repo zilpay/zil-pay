@@ -1,25 +1,35 @@
 <script lang="ts">
+    import globalStore from 'popup/store/global';
+    import type { IAccountState, IFTokenState } from 'background/storage';
     import FastImg from './FastImg.svelte';
+    import { processTokenLogo } from 'lib/popup/url';
 
     let {
-        balance = '0',
-        symbol = '',
-        imageUrl = '',
-        convertedBalance = '0.00',
+        token,
+        account,
+        hide = false,
         loading = false,
         disabled = false,
         tokensRow = true,
         onSelect = () => {}
     }: {
-        balance?: string;
-        symbol?: string;
-        imageUrl?: string;
-        convertedBalance?: string;
+        token: IFTokenState,
+        account: IAccountState,
+        hide: boolean;
         loading?: boolean;
         disabled?: boolean;
         tokensRow?: boolean;
         onSelect?: () => void;
     } = $props();
+
+    const balance = $derived(hide ? '******' : token.balances[account.addr] ?? 0);
+    // TODO: add token rate.
+    const convertedBalance = $derived(hide ? '******' : token.rate ?? 0);
+    const logo = $derived(processTokenLogo({
+        token,
+        theme: $globalStore.appearances,
+    }));
+
 
     function handleClick() {
         if (!disabled && !loading) {
@@ -35,13 +45,12 @@
     class:loading={loading}
     onclick={handleClick}
     type="button"
-    aria-label={`Select ${symbol} token`}
 >
     {#if !tokensRow}
         <div class="grid-header">
-            <span class="symbol">{symbol}</span>
+            <span class="symbol">{token.symbol}</span>
             <div class="token-icon">
-                <FastImg src={imageUrl} alt={symbol} class="icon-image" />
+                <FastImg src={logo} class="icon-image" />
             </div>
         </div>
         <div class="balance-group">
@@ -51,9 +60,9 @@
     {:else}
         <div class="info-group">
             <div class="token-icon">
-                <FastImg src={imageUrl} alt={symbol} class="icon-image" />
+                <FastImg src={logo} class="icon-image" />
             </div>
-            <span class="symbol">{symbol}</span>
+            <span class="symbol">{token.symbol}</span>
         </div>
         <div class="balance-group">
             <div class="balance">{balance}</div>
