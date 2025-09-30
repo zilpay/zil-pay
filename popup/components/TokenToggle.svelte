@@ -7,17 +7,18 @@
 
     let {
         token,
-        visible = false,
+        disabled = false,
+        value = true,
         onchange = (_: CustomEvent) => {}
     } = $props<{
         token: IFTokenState,
-        visible: boolean,
+        disabled: boolean,
+        value: boolean,
         onchange?: (e: Event) => void
     }>();
 
     const logo = $derived(processTokenLogo({
         token,
-        shortName: 'zil',
         theme: $globalStore.appearances,
     }));
 
@@ -37,7 +38,8 @@
         </div>
     </div>
     <Switch 
-        checked={visible}
+        checked={value}
+        disabled={disabled}
         onChange={handleToggle}
         variant="default"
     />

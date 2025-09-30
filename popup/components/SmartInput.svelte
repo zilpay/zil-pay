@@ -18,7 +18,8 @@
         ariaDescribedBy = '',
         oninput = (_e: Event) => null,
         leftIcon = undefined,
-        rightAction = undefined
+        rightAction = undefined,
+        autofocus = false
     }: {
         id?: string;
         label?: string;
@@ -35,9 +36,16 @@
         oninput?: (e: Event) => unknown;
         leftIcon?: Snippet;
         rightAction?: Snippet;
+        autofocus?: boolean;
     } = $props();
 
     let inputElement: HTMLInputElement;
+
+    $effect(() => {
+        if (autofocus && inputElement) {
+            inputElement.focus();
+        }
+    });
 
     function handleToggle() {
         if (disabled) return;
@@ -235,4 +243,5 @@
         font-weight: 500;
     }
 </style>
+
 

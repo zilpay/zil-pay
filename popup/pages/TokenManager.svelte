@@ -4,7 +4,6 @@
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import SearchIcon from '../components/icons/Search.svelte';
-    import PlusIcon from '../components/icons/Plus.svelte';
     import TokenToggleItem from '../components/TokenToggle.svelte';
     import { setGlobalState } from 'popup/background/wallet';
 
@@ -49,14 +48,10 @@
             bind:value={searchTerm}
             placeholder={$_('tokenManager.searchPlaceholder')}
             showToggle={false}
+            autofocus
         >
             {#snippet leftIcon()}
                 <SearchIcon />
-            {/snippet}
-            {#snippet rightAction()}
-                <button class="add-button">
-                    <PlusIcon />
-                </button>
             {/snippet}
         </SmartInput>
     </div>
@@ -65,7 +60,8 @@
         {#each filteredTokens() as token}
             <TokenToggleItem
                 {token}
-                visible={token.default_}
+                disabled={token.default_}
+                value={true}
                 onchange={(e) => handleTokenVisibilityChange(token.addr, Boolean((e as CustomEvent).detail))}
             />
         {/each}
@@ -88,27 +84,6 @@
         gap: 8px;
         margin-top: 24px;
         margin-bottom: 24px;
-    }
-
-    .add-button {
-        width: 30px;
-        height: 30px;
-        background: var(--color-cards-regular-border-default);
-        border-radius: 8px;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        flex-shrink: 0;
-
-        :global(svg > path) {
-            stroke: var(--color-content-icon-primary);
-        }
-
-        &:hover {
-            background: var(--color-cards-regular-border-hover);
-        }
     }
 
     .token-list-container {
