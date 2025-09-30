@@ -55,7 +55,7 @@
     }
 </script>
 
-<div class="home-container">
+<div class="page-container">
     <Header
         showNetworkButton={true}
         networkImageSrc={viewChain({
@@ -129,7 +129,7 @@
 </div>
 
 <style lang="scss">
-    .home-container {
+    .page-container {
         display: flex;
         flex-direction: column;
         height: 100vh;
@@ -139,6 +139,7 @@
         background: var(--color-neutral-background-base);
         box-sizing: border-box;
         overflow: hidden;
+        padding: 0;
     }
 
     .content-area {

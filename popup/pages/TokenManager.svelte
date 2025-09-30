@@ -41,7 +41,7 @@
 </script>
 
 <div class="page-container">
-    <NavBar title={$_('tokenManager.title', { default: 'Tokens' })} />
+    <NavBar title={$_('tokenManager.title')} />
 
     <div class="search-container">
         <SmartInput
