@@ -16,7 +16,7 @@
 
 <button class="wallet-info-card" {onclick}>
     <div class="icon-container">
-        <FastImg src={iconSrc} alt={title} class="icon-image" />
+        <FastImg src={iconSrc} alt={title} />
     </div>
     <div class="info-container">
         <div class="subtitle">{subtitle}</div>
@@ -53,12 +53,6 @@
         overflow: hidden;
         flex-shrink: 0;
         background-color: var(--color-neutral-background-base);
-    }
-
-    .icon-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
     }
 
     .info-container {

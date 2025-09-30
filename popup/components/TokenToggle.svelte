@@ -30,7 +30,7 @@
 <div class="token-list-item">
     <div class="info">
         <div class="icon-container">
-            <FastImg src={logo} alt={token.name} class="token-icon" />
+            <FastImg src={logo} alt={token.name} />
         </div>
         <div class="text-info">
             <div class="token-name">{token.name}</div>
@@ -74,12 +74,6 @@
         align-items: center;
         justify-content: center;
         background: var(--color-neutral-background-base);
-    }
-
-    .token-icon {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
     }
 
     .text-info {

@@ -27,19 +27,16 @@
     });
 
     function handleBackup() {
-        // Логика для бэкапа
     }
 
     function handleManageConnections() {
-        // Логика для управления подключениями
     }
 
     function handleDelete() {
-        // Логика для удаления кошелька
     }
 </script>
 
-<div class="page-container wallet-settings-page">
+<div class="page-container">
     <NavBar title={$_('walletSettings.title')} />
 
     <main class="content">
@@ -48,7 +45,6 @@
                 <FastImg 
                     src={viewChain({ network: walletChain, theme: $globalStore.appearances })}
                     alt={walletChain.name}
-                    class="wallet-icon"
                 />
             {/if}
         </div>
@@ -96,11 +92,12 @@
 </div>
 
 <style lang="scss">
-    .wallet-settings-page {
+    .page-container {
         display: flex;
         flex-direction: column;
         height: 100vh;
         background-color: var(--color-neutral-background-base);
+        padding: 0;
     }
 
     .content {
@@ -120,12 +117,6 @@
         background-color: var(--color-neutral-background-base);
     }
 
-    .wallet-icon {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
     .edit-button {
         background: none;
         border: none;

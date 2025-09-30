@@ -1,11 +1,11 @@
 <script lang="ts">
+  import type { SvelteComponent } from 'svelte';
   import { _ } from 'popup/i18n';
   import { push } from 'popup/router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import OptionCard from '../components/OptionCard.svelte';
   import BillIcon from '../components/icons/Bill.svelte';
   import BincodeIcon from '../components/icons/Bincode.svelte';
-  import { SvelteComponent } from 'svelte';
   
   const restoreOptions = [
     {
