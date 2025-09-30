@@ -97,7 +97,6 @@
         flex-direction: column;
         height: 100vh;
         background-color: var(--color-neutral-background-base);
-        padding: 0;
     }
 
     .content {
