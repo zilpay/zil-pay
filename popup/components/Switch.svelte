@@ -7,6 +7,7 @@
         id = '',
         name = '',
         ariaLabel = '',
+        variant = 'theme',
         onChange = (_newChecked: boolean) => {},
         children
     }: {
@@ -15,6 +16,7 @@
         id?: string;
         name?: string;
         ariaLabel?: string;
+        variant?: 'theme' | 'default';
         onChange?: (newChecked: boolean) => void;
         children?: Snippet;
     } = $props();
@@ -36,6 +38,7 @@
     class="switch-button"
     class:checked
     class:disabled
+    class:default-variant={variant === 'default'}
     onclick={handleToggle}
     {disabled}
 >
@@ -114,6 +117,33 @@
         transform: translateX(24px);
         background-color: var(--color-controls-toggle-theme-dark-switcher);
     }
+
+    .switch-button.default-variant {
+        width: 44px;
+        height: 24px;
+        border-radius: 6px;
+    }
+
+    .default-variant .switch-track {
+        border-radius: 6px;
+        background-color: var(--color-controls-toggle-main-off);
+    }
+
+    .default-variant.checked .switch-track {
+        background-color: var(--color-controls-toggle-main-on);
+    }
+
+    .default-variant .switch-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        top: 2px;
+        left: 2px;
+        background-color: var(--color-controls-toggle-main-fg-switcher);
+    }
+
+    .default-variant.checked .switch-thumb {
+        transform: translateX(20px);
+        background-color: var(--color-controls-toggle-main-fg-switcher);
+    }
 </style>
-
-

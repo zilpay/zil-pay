@@ -33,7 +33,6 @@
     function handleReceive() {}
 
     async function toggleViewMode() {
-        console.log(tokensRow);
         globalStore.set({
             ...$globalStore,
             tokensRow: !$globalStore.tokensRow,

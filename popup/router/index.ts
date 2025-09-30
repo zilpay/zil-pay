@@ -16,6 +16,7 @@ import KeyPairGenPage from "../pages/KeyPairGen.svelte";
 import Bip39RestorePage from "../pages/Bip39Restore.svelte"; 
 import KeyPairRestorePage from "../pages/KeyPairRestore.svelte";
 import NetworkSetupPage from '../pages/NetworkSetup.svelte';
+import TokenManagerPage from '../pages/TokenManager.svelte';
 import PasswordSetupPage from '../pages/PasswordSetup.svelte';
 
 
@@ -34,6 +35,7 @@ export const notFoundRoute: Route = {
 export const protectedRoutes: Route[] = [
   { path: "/", component: HomePage, isProtected: true },
   { path: "/connect", component: ConnectPage, isProtected: true },
+  { path: "/manage-tokens", component: TokenManagerPage, isProtected: true },
   { path: "/confirm", component: ConfirmPopupPage, isProtected: true },
   { path: "/sign-message", component: SignMessagePopupPage, isProtected: true },
 ];
