@@ -74,8 +74,13 @@
         flex-direction: column;
         height: 100vh;
         background: var(--color-neutral-background-base);
-        padding: 0 16px;
+        padding: 0;
         box-sizing: border-box;
+    }
+
+    .search-container,
+    .token-list-container {
+        padding: 0 var(--padding-side, 20px);
     }
 
     .search-container {
