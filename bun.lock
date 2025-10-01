@@ -11,6 +11,7 @@
         "@noble/secp256k1": "^2.3.0",
         "aes-js": "^3.1.2",
         "js-md5": "^0.8.3",
+        "lean-qr": "^2.6.0",
         "micro-eth-signer": "^0.15.0",
         "svelte-i18n": "^4.0.1",
       },
@@ -543,6 +544,8 @@
     "jsonfile": ["jsonfile@4.0.0", "", { "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg=="],
 
     "just-extend": ["just-extend@4.2.1", "", {}, "sha512-g3UB796vUFIY90VIv/WX3L2c8CS2MdWUww3CNrYmqza1Fg0DURc2K/O4YrnklBdQarSJ/y8JnJYDGc+1iumQjg=="],
+
+    "lean-qr": ["lean-qr@2.6.0", "", { "bin": { "lean-qr": "cli.mjs" } }, "sha512-Cc+G3vm65jsuYmBdK2HEsdGSeOFO0qSlusCI9zLN1U18VyB/TXABc14wv27GJCNpYnJflizByTt7rzSOa+4M8Q=="],
 
     "lilconfig": ["lilconfig@2.1.0", "", {}, "sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ=="],
 

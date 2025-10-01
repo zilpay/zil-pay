@@ -22,6 +22,7 @@ import SettingsPages from '../pages/Settings.svelte';
 import WalletPage from '../pages/Wallet.svelte';
 import HistoryPage from '../pages/History.svelte';
 import TransferPage from '../pages/Transfer.svelte';
+import ReceivePage from '../pages/Receive.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -38,6 +39,7 @@ export const notFoundRoute: Route = {
 
 export const protectedRoutes: Route[] = [
   { path: "/", component: HomePage, isProtected: true },
+  { path: "/receive", component: ReceivePage, isProtected: true },
   { path: "/connect", component: ConnectPage, isProtected: true },
   { path: "/manage-tokens", component: TokenManagerPage, isProtected: true },
   { path: "/confirm", component: ConfirmPopupPage, isProtected: true },

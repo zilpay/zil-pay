@@ -97,12 +97,13 @@
         flex-direction: column;
         height: 100vh;
         background-color: var(--color-neutral-background-base);
+        padding: 0;
     }
 
     .content {
         flex: 1;
         overflow-y: auto;
-        padding: 24px 0;
+        padding: 24px var(--padding-side, 20px);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -166,7 +167,7 @@
     }
 
     .footer {
-        padding: 24px 0;
+        padding: 24px var(--padding-side, 20px);
         margin-top: auto;
     }
 </style>

@@ -35,7 +35,9 @@
     function handleSend(addr?: string) {
         push("/transfer");
     }
-    function handleReceive() {}
+    function handleReceive() {
+        push("/receive");
+    }
 
     async function toggleViewMode() {
         globalStore.set({
