@@ -61,7 +61,7 @@ export class ChainConfig implements IChainConfigState {
         default_: true,
         rate: 0,
         chainHash: t.chainHash ?? hashChainConfig(this.chainIds, this.slip44, this.chain),
-        addrType: KeyPair.addressType(this.slip44),
+        addrType: KeyPair.addressTypeFromAddress(t.addr),
         balances: t.balances ?? {},
       })
     );

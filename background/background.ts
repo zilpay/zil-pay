@@ -40,6 +40,11 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.LOG_OUT:
         core.wallet.logoutWallet(msg.payload.walletIndex, sendResponse);
         return true;
+
+      // provider
+      case MTypePopup.WALLET_BALANCE_UPDATE:
+        core.provider.balanceUpdate(msg.payload.walletIndex, sendResponse);
+        return true;
       default:
         sendResponse(null);
         return true;

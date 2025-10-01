@@ -30,6 +30,16 @@ export class KeyPair {
     }
   }
 
+  static addressTypeFromAddress(addr: string): AddressType {
+    if (addr.startsWith("0x")) {
+      return AddressType.EthCheckSum;
+    } else if (addr.startsWith("zil1")) {
+      return AddressType.Bech32;
+    } else {
+      throw new Error(`Invlid addr: ${addr}`);
+    }
+  }
+
   static async fromPrivateKey(privateKey: Uint8Array, slip44: number) {
     const pubKey = await deriveFromPrivateKeyPublicKey(privateKey, slip44);
 
