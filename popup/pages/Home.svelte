@@ -26,7 +26,7 @@
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
     const tokens = $derived(currentWallet?.tokens || []);
 
-    let tokensloading = $state(true);
+    let tokensloading = $state(false);
 
     function handleAccountClick() {
         push('/account-details');

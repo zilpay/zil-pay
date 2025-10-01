@@ -1,5 +1,6 @@
+@use "./fonts";
 @use "./mixins";
-@use "./theme.scss";
+@use "./theme";
 
 :global(*),
 :global(*::after),
@@ -10,31 +11,27 @@
 }
 
 :global(:root) {
-  font-family: var(--font-family, system-ui, sans-serif);
+  font-family: 'Geist', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: var(--text-primary);
-  
-  /* Smooth scrolling for supported browsers */
+  color: var(--color-content-text-inverted);
   scroll-behavior: smooth;
 }
 
 :global(*) {
   user-select: none;
   scrollbar-width: none;
-  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Specifically handle focus outlines for accessibility */
 :global(*:focus) {
   outline-offset: 2px;
 }
 
 :global(*:focus:not(:focus-visible)) {
-  outline: none; /* Remove outline for mouse users but keep for keyboard */
+  outline: none;
 }
 
-/* Document body */
 :global(body),
 :global(html) {
   margin: 0;
@@ -43,25 +40,18 @@
   font-kerning: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
   min-width: 320px;
   min-height: 600px;
-  
   background-color: var(--color-neutral-background-base);
-  
-  /* Prevent overscrolling on iOS */
   overscroll-behavior: none;
 }
 
-
-/* Images */
 :global(img) {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Hide scrollbars but allow scrolling */
 :global(::-webkit-scrollbar) {
   display: none;
 }
@@ -73,3 +63,4 @@
   padding: 0 var(--padding-side, 20px);
   box-sizing: border-box;
 }
+
