@@ -3,6 +3,7 @@
     import type { IAccountState, IFTokenState } from 'background/storage';
     import FastImg from './FastImg.svelte';
     import { processTokenLogo } from 'lib/popup/url';
+    import { abbreviateNumber } from 'popup/mixins/numbers';
 
     let {
         token,
@@ -22,7 +23,7 @@
         onSelect?: () => void;
     } = $props();
 
-    const balance = $derived(hide ? '******' : token.balances[account.addr] ?? 0);
+    const balance = $derived(hide ? '******' : abbreviateNumber(token.balances[account.addr] ?? 0, token.decimals));
     // TODO: add token rate.
     const convertedBalance = $derived(hide ? '******' : token.rate ?? 0);
     const logo = $derived(processTokenLogo({
