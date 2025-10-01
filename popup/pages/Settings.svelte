@@ -75,7 +75,7 @@
                     network: getAccountChain($globalStore.selectedWallet),
                     theme: $globalStore.appearances
                 })}
-                subtitle={currentAccount.name}
+                subtitle={currentWallet.walletName}
                 title={getAccountChain($globalStore.selectedWallet)?.name ?? ""}
             />
         {/if}

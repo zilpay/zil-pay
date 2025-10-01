@@ -3,6 +3,8 @@
     import globalStore from 'popup/store/global';
     import { getWalletChain } from 'popup/mixins/chains';
     import { viewChain } from 'lib/popup/url';
+    import { Message } from 'lib/streem/message';
+    import { getGlobalState, setGlobalState } from 'popup/background/wallet';
 
     import NavBar from '../components/NavBar.svelte';
     import FastImg from '../components/FastImg.svelte';
@@ -25,6 +27,33 @@
             walletName = wallet.walletName;
         }
     });
+
+    async function handleWalletNameChange(event: Event) {
+        event.preventDefault();
+        if (!wallet) return;
+
+        const newName = walletName.trim();
+        if (!newName || newName === wallet.walletName) {
+            walletName = wallet.walletName;
+            return;
+        }
+
+        try {
+            let state = $globalStore;
+            let wallet = state.wallets[state.selectedWallet]; 
+
+            wallet.walletName = newName;
+            globalStore.set(state);
+
+            await setGlobalState();
+            const input = (event.target as HTMLFormElement).querySelector('input');
+            if (input) input.blur();
+
+        } catch (error) {
+            console.error('Failed to update wallet name:', error);
+            walletName = wallet.walletName;
+        }
+    }
 
     function handleBackup() {
     }
@@ -49,17 +78,19 @@
             {/if}
         </div>
 
-        <SmartInput 
-            bind:value={walletName}
-            hide={false}
-            showToggle={false}
-        >
-            {#snippet rightAction()}
-                <button class="edit-button">
-                    <EditIcon />
-                </button>
-            {/snippet}
-        </SmartInput>
+        <form class="wallet-name-form" onsubmit={handleWalletNameChange}>
+            <SmartInput 
+                bind:value={walletName}
+                hide={false}
+                showToggle={false}
+            >
+                {#snippet rightAction()}
+                    <button type="submit" class="edit-button">
+                        <EditIcon />
+                    </button>
+                {/snippet}
+            </SmartInput>
+        </form>
 
         <div class="preferences-section">
             <span class="section-title">{$_('walletSettings.preferences')}</span>
@@ -117,6 +148,10 @@
         background-color: var(--color-neutral-background-base);
     }
 
+    .wallet-name-form {
+        width: 100%;
+    }
+
     .edit-button {
         background: none;
         border: none;
@@ -171,3 +206,4 @@
         margin-top: auto;
     }
 </style>
+
