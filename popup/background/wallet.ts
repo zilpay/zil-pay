@@ -17,6 +17,16 @@ export async function getGlobalState() {
     resolve.appearances = themeDetect();
   }
 
+  resolve.wallets = resolve.wallets.map((w) => {
+    const account = w.accounts[w.selectedAccount];
+
+    w.tokens = w.tokens.filter((t) => {
+      return t.addrType === account.addrType;
+    });
+
+    return w;
+  });
+
   document.body.setAttribute("theme", resolve.appearances);
   globalStore.set(resolve);
 

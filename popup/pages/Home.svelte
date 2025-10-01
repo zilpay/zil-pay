@@ -29,7 +29,7 @@
         push('/account-details');
     }
 
-    function handleSend(addr: string) {
+    function handleSend(addr?: string) {
         push("/transfer");
     }
     function handleReceive() {}
@@ -100,13 +100,15 @@
                         </button>
                     </div>
                     <div class="view-controls">
-                        <button class="control-button" onclick={toggleViewMode}>
-                            {#if !tokensRow}
-                                <GridIcon />
-                            {:else}
-                                <RowIcon />
-                            {/if}
-                        </button>
+                        {#if tokens.length > 1}
+                            <button class="control-button" onclick={toggleViewMode}>
+                                {#if !tokensRow}
+                                    <GridIcon />
+                                {:else}
+                                    <RowIcon />
+                                {/if}
+                            </button>
+                        {/if}
                         <button class="control-button" onclick={handleManageTokens}>
                             <FilterIcon />
                         </button>
@@ -117,7 +119,7 @@
                     {#each tokens as token, index (index)}
                         <TokenCard
                             token={token}
-                            tokensRow={tokensRow}
+                            tokensRow={tokensRow || tokens.length == 1}
                             account={currentAccount}
                             hide={hideBalance }
                             onSelect={() => handleSend(token.addr)}

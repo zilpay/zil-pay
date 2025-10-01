@@ -84,16 +84,6 @@ export class WalletService {
   async getGlobalState(sendResponse: StreamResponse) {
     let payload = this.#state;
 
-    payload.wallets.map((w) => {
-      w.tokens.filter((t) => {
-        let account = w.accounts[w.selectedAccount];
-
-        return t.addrType === account.addrType;
-      });
-
-      return w;
-    });
-
     sendResponse({
       resolve: payload,
     });
