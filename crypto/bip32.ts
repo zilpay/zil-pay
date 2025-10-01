@@ -67,7 +67,7 @@ async function hmacSha512(
   try {
     const importedKey = await globalThis.crypto.subtle.importKey(
       "raw",
-      key,
+      key as BufferSource,
       {
         name: "HMAC",
         hash: { name: ShaAlgorithms.Sha512 },
@@ -79,7 +79,7 @@ async function hmacSha512(
     const signature = await globalThis.crypto.subtle.sign(
       "HMAC",
       importedKey,
-      data,
+      data as BufferSource,
     );
 
     return new Uint8Array(signature);

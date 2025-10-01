@@ -2,13 +2,13 @@ import { ShaAlgorithms } from "../config/pbkdf2";
 
 export async function pbkdf2(
   password: Uint8Array,
-  salt: Uint8Array,
+  salt: BufferSource,
   iterations: number,
   algorithms = ShaAlgorithms.Sha512,
 ) {
   const passphraseKey = await globalThis.crypto.subtle.importKey(
     "raw",
-    password,
+    password as BufferSource,
     { name: "PBKDF2" },
     false,
     ["deriveBits", "deriveKey"],

@@ -57,7 +57,7 @@ export const AESCipherV2 = Object.freeze({
 
     const cryptoKey = await crypto.subtle.importKey(
       "raw",
-      derivedKey,
+      derivedKey as BufferSource,
       { name: "AES-CBC" },
       false,
       ["decrypt"],
@@ -66,7 +66,7 @@ export const AESCipherV2 = Object.freeze({
     let decrypted: ArrayBuffer;
     try {
       decrypted = await crypto.subtle.decrypt(
-        { name: "AES-CBC", iv },
+        { name: "AES-CBC", iv: iv as BufferSource },
         cryptoKey,
         ciphertext,
       );

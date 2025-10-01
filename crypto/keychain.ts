@@ -82,7 +82,7 @@ export class KeyChain {
     algorithm: ShaAlgorithms,
     iteractions: number,
   ): Promise<KeyChain> {
-    const salt = utf8ToUint8Array(EXTENSION_ID);
+    const salt = utf8ToUint8Array(EXTENSION_ID) as BufferSource;
     const key = await pbkdf2(password, salt, iteractions, algorithm);
     const keyBytes = await sha256(key);
     const ntrupKeys = ntruKeysFromSeed(
