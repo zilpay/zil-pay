@@ -74,13 +74,15 @@
 <style lang="scss">
     .token-card {
         display: flex;
+        position: relative;
+        overflow: hidden;
         padding: 12px;
         background: var(--color-cards-tokens-base-default);
         border: 2px solid var(--color-cards-regular-border-default);
         border-radius: 12px;
         cursor: pointer;
         text-align: left;
-        transition: border-color 0.2s ease;
+        transition: border-color 0.2s ease, opacity 0.2s ease;
         box-sizing: border-box;
         
         flex-direction: column;
@@ -88,9 +90,32 @@
         align-items: flex-start;
         gap: 16px;
         width: 148px;
+        align-self: start;
 
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not(.loading) {
             border-color: var(--color-cards-regular-border-hover);
+        }
+
+        &.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        &.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: translateX(-100%);
+            animation: shimmer 1.5s infinite;
         }
     }
 
@@ -174,4 +199,12 @@
             text-align: right;
         }
     }
+
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
 </style>
+
+

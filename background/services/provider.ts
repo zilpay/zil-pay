@@ -14,15 +14,16 @@ export class ProviderService {
     try {
       const wallet = this.#state.wallets[walletIndex];
       const account = wallet.accounts[wallet.selectedAccount];
+      const tokens = wallet.tokens.filter((t) => t.addrType === account.addrType);
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
       const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
 
-      await provider.updateBalances(wallet.tokens, addresses);
+      await provider.updateBalances(tokens, addresses);
       this.#state.sync();
 
       sendResponse({
-        resolve: true,
+        resolve: tokens,
       });
     } catch (err) {
       sendResponse({

@@ -17,6 +17,7 @@
     import RowIcon from '../components/icons/Row.svelte';
     import FilterIcon from '../components/icons/Filter.svelte';
     import { setGlobalState } from 'popup/background/wallet';
+    import { ftBalanceUpdate } from 'popup/background/provider';
 
     const hideBalance = $derived($globalStore.hideBalance);
     const tokensRow = $derived($globalStore.tokensRow);
@@ -24,6 +25,8 @@
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
     const tokens = $derived(currentWallet?.tokens || []);
+
+    let tokensloading = $state(true);
 
     function handleAccountClick() {
         push('/account-details');
@@ -55,6 +58,17 @@
     function handleManageTokens() {
         push('/manage-tokens');
     }
+
+    async function handleTokensUpdate() {
+        tokensloading = true;
+        try {
+            await ftBalanceUpdate($globalStore.selectedWallet);
+        } catch (e) {
+            // TODO: hanlde errors.
+        } finally {
+            tokensloading = false;
+        }
+    }
 </script>
 
 <div class="page-container">
@@ -65,6 +79,7 @@
             theme: $globalStore.appearances
         })}
         networkImageAlt={currentChain?.name || 'Network'}
+        onRefresh={handleTokensUpdate}
     />
 
     <main class="content-area">
@@ -119,6 +134,8 @@
                     {#each tokens as token, index (index)}
                         <TokenCard
                             token={token}
+                            loading={tokensloading}
+                            disabled={tokensloading}
                             tokensRow={tokensRow || tokens.length == 1}
                             account={currentAccount}
                             hide={hideBalance }
