@@ -4,6 +4,8 @@
     import { generate } from 'lean-qr';
     import globalStore from 'popup/store/global';
     import { clipboardCopy } from 'lib/popup/clipboard';
+    import { Message } from 'lib/streem/message';
+    import { getGlobalState, setGlobalState } from 'popup/background/wallet';
 
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
@@ -53,6 +55,32 @@
             }
         }
     }
+
+    async function hanlderInputWalletName(event: Event) {
+        event.preventDefault();
+        if (!currentAccount || !currentWallet) return;
+
+        const newName = accountName.trim();
+        if (!newName || newName === currentAccount.name) {
+            accountName = currentAccount.name;
+            return;
+        }
+
+        try {
+            let state = $globalStore;
+            let wallet = state.wallets[state.selectedWallet]; 
+
+            wallet.accounts[wallet.selectedAccount].name = newName;
+            globalStore.set(state);
+
+            await setGlobalState();
+            const input = (event.target as HTMLFormElement).querySelector('input');
+            if (input) input.blur();
+        } catch (error) {
+            console.error('Failed to update account name:', error);
+            accountName = currentAccount.name;
+        }
+    }
     
     $effect(() => {
         if (currentAccount) {
@@ -97,15 +125,15 @@
             <p class="address-text">{currentAccount?.addr}</p>
         </div>
 
-        <div class="account-name-input">
+        <form class="account-name-input" onsubmit={hanlderInputWalletName}>
             <SmartInput bind:value={accountName} hide={false} showToggle={false}>
                 {#snippet rightAction()}
-                    <button class="edit-button">
+                    <button type="submit" class="edit-button">
                         <EditIcon />
                     </button>
                 {/snippet}
             </SmartInput>
-        </div>
+        </form>
 
         <div class="actions-grid">
             <button class="action-button" onclick={handleCopy}>
@@ -135,16 +163,15 @@
         flex-direction: column;
         height: 100vh;
         background: var(--color-neutral-background-base);
-        padding: 0;
         box-sizing: border-box;
+        padding: 0;
     }
 
     .content {
         display: flex;
         flex-direction: column;
         gap: 20px;
-        padding: 24px var(--padding-side, 20px);
-        padding-bottom: 24px;
+        padding: var(--padding-side, 20px) var(--padding-side, 20px);
         flex: 1;
         min-height: 0;
     }
@@ -266,12 +293,13 @@
         :global(svg) {
             width: 24px;
             height: 24px;
-            color: var(--color-content-icon-accent-secondary);
         }
-
-        :global(svg > path) {
-            stroke: currentColor;
-            fill: none;
+        
+        :global(.scilla > path),
+        :global(.sol > path) {
+            fill: var(--color-content-icon-accent-secondary);
         }
     }
 </style>
+
+
