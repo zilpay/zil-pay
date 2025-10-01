@@ -21,6 +21,7 @@ import PasswordSetupPage from '../pages/PasswordSetup.svelte';
 import SettingsPages from '../pages/Settings.svelte';
 import WalletPage from '../pages/Wallet.svelte';
 import HistoryPage from '../pages/History.svelte';
+import TransferPage from '../pages/Transfer.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -44,6 +45,7 @@ export const protectedRoutes: Route[] = [
   { path: "/settings", component: SettingsPages, isProtected: true },
   { path: "/wallet", component: WalletPage, isProtected: true },
   { path: "/history", component: HistoryPage, isProtected: true },
+  { path: "/transfer", component: TransferPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [

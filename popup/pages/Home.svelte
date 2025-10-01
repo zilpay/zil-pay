@@ -29,7 +29,9 @@
         push('/account-details');
     }
 
-    function handleSend() {}
+    function handleSend(addr: string) {
+        push("/transfer");
+    }
     function handleReceive() {}
 
     async function toggleViewMode() {
@@ -118,6 +120,7 @@
                             tokensRow={tokensRow}
                             account={currentAccount}
                             hide={hideBalance }
+                            onSelect={() => handleSend(token.addr)}
                         />
                     {/each}
                 </div>
