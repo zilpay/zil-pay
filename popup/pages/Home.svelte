@@ -16,8 +16,11 @@
     import GridIcon from '../components/icons/Grid.svelte';
     import RowIcon from '../components/icons/Row.svelte';
     import FilterIcon from '../components/icons/Filter.svelte';
+    import CloseIcon from '../components/icons/Close.svelte';
+    import CopyIcon from '../components/icons/Copy.svelte';
     import { setGlobalState } from 'popup/background/wallet';
     import { ftBalanceUpdate } from 'popup/background/provider';
+    import { clipboardCopy } from 'lib/popup/clipboard';
 
     const hideBalance = $derived($globalStore.hideBalance);
     const tokensRow = $derived($globalStore.tokensRow);
@@ -27,6 +30,8 @@
     const tokens = $derived(currentWallet?.tokens || []);
 
     let tokensloading = $state(false);
+    let error = $state<string | null>(null);
+    let isCopied = $state(false);
 
     function handleAccountClick() {
         push('/account-details');
@@ -35,25 +40,24 @@
     function handleSend(addr?: string) {
         push("/transfer");
     }
+
     function handleReceive() {
         push("/receive");
     }
 
     async function toggleViewMode() {
-        globalStore.set({
-            ...$globalStore,
-            tokensRow: !$globalStore.tokensRow,
-        });
-
+        globalStore.update(store => ({
+            ...store,
+            tokensRow: !store.tokensRow
+        }));
         await setGlobalState();
     }
 
     async function toggleHideBalance() {
-        globalStore.set({
-            ...$globalStore,
-            hideBalance: !$globalStore.hideBalance,
-        });
-
+        globalStore.update(store => ({
+            ...store,
+            hideBalance: !store.hideBalance
+        }));
         await setGlobalState();
     }
 
@@ -63,12 +67,30 @@
 
     async function handleTokensUpdate() {
         tokensloading = true;
+        error = null;
+        
         try {
             await ftBalanceUpdate($globalStore.selectedWallet);
         } catch (e) {
-            // TODO: hanlde errors.
+            error = String(e);
         } finally {
             tokensloading = false;
+        }
+    }
+
+    function handleDismissError() {
+        error = null;
+    }
+
+    async function handleCopyError() {
+        if (!error) return;
+        
+        const success = await clipboardCopy(error);
+        if (success) {
+            isCopied = true;
+            setTimeout(() => {
+                isCopied = false;
+            }, 2000);
         }
     }
 </script>
@@ -94,11 +116,11 @@
                 />
 
                 <div class="actions-row">
-                    <Button onclick={handleSend} variant="primary" height ={40}>
+                    <Button onclick={handleSend} variant="primary" height={40}>
                         {$_('home.send')}
                         <UpRightIcon class="rightup"/>
                     </Button>
-                    <Button onclick={handleReceive} variant="secondary" height ={40}>
+                    <Button onclick={handleReceive} variant="secondary" height={40}>
                         {$_('home.receive')}
                         <DownRightIcon class="rightdown" />
                     </Button>
@@ -108,7 +130,7 @@
             <div class="tokens-area">
                 <div class="tokens-header">
                     <div class="tokens-title-section">
-                        <button class="control-button" onclick={toggleHideBalance}>
+                        <button class="control-button" onclick={toggleHideBalance} type="button">
                             {#if hideBalance}
                                 <HideIcon />
                             {:else}
@@ -118,7 +140,7 @@
                     </div>
                     <div class="view-controls">
                         {#if tokens.length > 1}
-                            <button class="control-button" onclick={toggleViewMode}>
+                            <button class="control-button" onclick={toggleViewMode} type="button">
                                 {#if !tokensRow}
                                     <GridIcon />
                                 {:else}
@@ -126,7 +148,7 @@
                                 {/if}
                             </button>
                         {/if}
-                        <button class="control-button" onclick={handleManageTokens}>
+                        <button class="control-button" onclick={handleManageTokens} type="button">
                             <FilterIcon />
                         </button>
                     </div>
@@ -135,12 +157,12 @@
                 <div class="tokens-grid" class:row-view={tokensRow}>
                     {#each tokens as token, index (index)}
                         <TokenCard
-                            token={token}
+                            {token}
                             loading={tokensloading}
                             disabled={tokensloading}
-                            tokensRow={tokensRow || tokens.length == 1}
+                            tokensRow={tokensRow || tokens.length === 1}
                             account={currentAccount}
-                            hide={hideBalance }
+                            hide={hideBalance}
                             onSelect={() => handleSend(token.addr)}
                         />
                     {/each}

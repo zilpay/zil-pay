@@ -1,4 +1,4 @@
-import type { BackgroundState, IFTokenState } from "background/storage";
+import type { IFTokenState } from "background/storage";
 
 import { get } from "svelte/store";
 import { MTypePopup } from "config/stream";
@@ -8,19 +8,21 @@ import globalStore from "popup/store/global";
  
 
 export async function ftBalanceUpdate(walletIndex: number) {
-  const data =    await new Message<SendResponseParams>({
+  const data = await new Message<SendResponseParams>({
     type: MTypePopup.WALLET_BALANCE_UPDATE,
-    payload: {
-      walletIndex,
-    },
+    payload: { walletIndex },
   }).send();
-  let resolve = warpMessage(data) as IFTokenState[];
+  
+  const resolve = warpMessage(data) as IFTokenState[];
   const currentState = get(globalStore);
-
-  currentState.wallets[walletIndex].tokens = resolve;
 
   globalStore.set({
     ...currentState,
+    wallets: currentState.wallets.map((wallet, index) => 
+      index === walletIndex 
+        ? { ...wallet, tokens: resolve }
+        : wallet
+    )
   });
 
   return resolve;
