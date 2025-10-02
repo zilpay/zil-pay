@@ -61,6 +61,7 @@
         <SvgLoad
             src="/icons/little_dragons.svg"
             viewBox="0 0 460 460"
+            class="dragons"
         />
         <div class="title-group">
             <h1 class="title">
@@ -136,6 +137,10 @@
         align-items: center;
         width: 100%;
         gap: 8px;
+    }
+
+    :global(.dragons) {
+        width: 50vh;
     }
     
     .title-group {

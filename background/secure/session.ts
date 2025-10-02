@@ -22,9 +22,9 @@ export class Session {
 
   static async getActiveWallet(): Promise<number> {
     const data = await Runtime.storage.session.get(SessionStorageKeys.ActiveWalletIndex);
-    const index = Number(data[SessionStorageKeys.ActiveWalletIndex]);
+    const index = data ? Number(data[SessionStorageKeys.ActiveWalletIndex]) : null;
 
-    return TypeOf.isNumber(index) ? index : -1;
+    return TypeOf.isNumber(index) ? Number(index) : -1;
   }
 
   constructor(uuid: string) {
