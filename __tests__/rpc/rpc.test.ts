@@ -14,6 +14,14 @@ import {
 } from "../../background/rpc/history_tx";
 import { FToken } from "../../background/storage";
 import { KeyPair } from "../../crypto/keypair";
+import { hexToUint8Array } from "../../lib/utils/hex";
+import { hashXOR } from "../../lib/utils/hashing";
+
+const pubKeys = [
+  hexToUint8Array("0229fff97d3823f556f151623053415a7e8207742928e08dafe400c3d4a02642fd"),
+  hexToUint8Array("03d6928f1e0127643059a268a2fc48e9267f288465932c5540af3603239a31d33b"),
+  hexToUint8Array("03d235424094b812fe31458be3805265fb3eece18d84c44deb606874d19b3557e7"),
+];
 
 describe("JsonRPC provder tests", () => {
   const zilConfig = createZilliqaConfig();
@@ -25,13 +33,10 @@ describe("JsonRPC provder tests", () => {
     const zlpContract = Address.fromStr(
       "zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4",
     );
-    const accounts = [
-      Address.fromStr("zil1q9j4duzmxewzapj7j56ljfc6gggv3a9er8h766"),
-      Address.fromStr("zil1q9l6zd560sdd4y9772k07fxee05wmj8hmg5lfz"),
-      Address.fromStr("zil1qxja2utwtn0e3qdj8keauak7a3m5lugj9gryyw"),
-      Address.fromStr("zil1qxn2qve0vs59cul2nl9ymjnsrc09mhuk8hzz3w"),
+    const pubKeys = [
+      hexToUint8Array("03b0194095e799a6a5f2e81a79fde0a927906c130520f050db263f0d9acbece1ba"),
     ];
-    const result = await rpc.ftokenMeta(zlpContract, accounts);
+    const result = await rpc.ftokenMeta(zlpContract, pubKeys);
 
     expect(result.addr).toBe(await zlpContract.toZilBech32());
     expect(result.addrType).toBe(AddressType.Bech32);
@@ -39,9 +44,9 @@ describe("JsonRPC provder tests", () => {
     expect(result.symbol).toBe("ZLP");
     expect(result.name).toBe("ZilPay wallet");
 
-    accounts.forEach((_account, index) => {
-      expect(result.balances[index]).toBeDefined();
-      expect(BigInt(result.balances[index])).toBeGreaterThan(0);
+    pubKeys.forEach((pubkey) => {
+      expect(result.balances[hashXOR(pubkey)]).toBeDefined();
+      expect(BigInt(result.balances[hashXOR(pubkey)])).toBeGreaterThan(0);
     });
   });
 
@@ -50,11 +55,7 @@ describe("JsonRPC provder tests", () => {
     const usdtContract = Address.fromStr(
       "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     );
-    const accounts = [
-      Address.fromStr("0xA9D1e08C7793af67e9d92fe308d5697FB81d3E43"),
-      Address.fromStr("0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE"),
-    ];
-    const result = await rpc.ftokenMeta(usdtContract, accounts);
+    const result = await rpc.ftokenMeta(usdtContract, pubKeys);
 
     expect(result.addr).toBe(await usdtContract.toEthChecksum());
     expect(result.addrType).toBe(AddressType.EthCheckSum);
@@ -62,9 +63,8 @@ describe("JsonRPC provder tests", () => {
     expect(result.name).toBe("Tether USD");
     expect(result.symbol).toBe("USDT");
 
-    accounts.forEach((_account, index) => {
-      expect(result.balances[index]).toBeDefined();
-      expect(BigInt(result.balances[index])).toBeGreaterThan(0);
+    pubKeys.forEach((pubKey) => {
+      expect(result.balances[hashXOR(pubKey)]).toBeDefined();
     });
   });
 
@@ -305,11 +305,6 @@ describe("JsonRPC provder tests", () => {
 
   it("should update balances for multiple scilla tokens and accounts", async () => {
     const provider = new NetworkProvider(zilConfig);
-    const accounts = [
-      Address.fromStr("zil1xr07v36qa4zeagg4k5tm6ummht0jrwpcu0n55d"),
-      Address.fromStr("zil163dwl9rs82gtq0h5gukrhhvefzqmn3d06vwsmr"),
-      Address.fromStr("zil13gt2mjm2cq83mq3e30nwhdt9wl7elcwue094dz"),
-    ];
     const tokens = [
       new FToken({
         native: true,
@@ -352,11 +347,11 @@ describe("JsonRPC provder tests", () => {
       }),
     ];
 
-    await provider.updateBalances(tokens, accounts);
+    await provider.updateBalances(tokens, pubKeys);
 
-    const addr0 = await accounts[0].autoFormat();
-    const addr1 = await accounts[1].autoFormat();
-    const addr2= await accounts[2].autoFormat();
+    const addr0 = hashXOR(pubKeys[0]);
+    const addr1 = hashXOR( pubKeys[1]);
+    const addr2= hashXOR(pubKeys[2]);
 
     expect(BigInt(tokens[0].balances[addr0])).toBeDefined();
     expect(BigInt(tokens[0].balances[addr1])).toBeDefined();
@@ -373,10 +368,6 @@ describe("JsonRPC provder tests", () => {
 
   it("should update balances for multiple EVM tokens and accounts", async () => {
     const provider = new NetworkProvider(ethConfig);
-    const accounts = [
-      Address.fromStr("0x81014f44b0a345033bb2b3b21c7a1a308b35feea"),
-      Address.fromStr("0x3ee18b2214aff97000d974cf647e7c347e8fa585"),
-    ];
     const tokens = [
       new FToken({
         native: true,
@@ -406,16 +397,16 @@ describe("JsonRPC provder tests", () => {
       }),
     ];
 
-    await provider.updateBalances(tokens, accounts);
+    await provider.updateBalances(tokens, pubKeys);
 
-    const addr0 = await accounts[0].autoFormat();
-    const addr1 = await accounts[1].autoFormat();
+    const hash0 = hashXOR(pubKeys[0]);
+    const hash1 = hashXOR(pubKeys[1]);
 
-    expect(BigInt(tokens[0].balances[addr0])).toBeDefined();
-    expect(BigInt(tokens[0].balances[addr1])).toBeDefined();
+    expect(BigInt(tokens[0].balances[hash0])).toBeDefined();
+    expect(BigInt(tokens[0].balances[hash1])).toBeDefined();
 
-    expect(BigInt(tokens[1].balances[addr0])).toBeDefined();
-    expect(BigInt(tokens[1].balances[addr1])).toBeDefined();
+    expect(BigInt(tokens[1].balances[hash0])).toBeDefined();
+    expect(BigInt(tokens[1].balances[hash1])).toBeDefined();
   }, 20000);
 
   it("should broadcast a signed EVM transaction and fail", async () => {
@@ -472,3 +463,4 @@ describe("JsonRPC provder tests", () => {
     ).rejects.toThrow("Invalid nonce (0)");
   }, 20000);
 });
+
