@@ -14,7 +14,7 @@ import { readFileSync } from 'fs';
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 const production = !process.env.ROLLUP_WATCH;
-const manifest = process.env.MANIFEST || 2;
+const manifest = process.env.MANIFEST || 3;
 
 const createConfig = (name, input, output, extraPlugins = []) => ({
   input,

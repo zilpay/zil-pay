@@ -15,13 +15,15 @@ import {
 import { Address } from "../../crypto/address";
 import { KeyPair } from "../../crypto/keypair";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
-import { ZILLIQA } from "../../config/slip44";
+import { ETHEREUM, ZILLIQA } from "../../config/slip44";
+import { hexToUint8Array } from "../../lib/utils/hex";
 import type { JsonRPCResponse } from "../../background/rpc/provider";
 
+const pubKeyBytes = hexToUint8Array("03b0194095e799a6a5f2e81a79fde0a927906c130520f050db263f0d9acbece1ba");
 const createEthAddress = () =>
-  Address.fromStr("0x0089d53F703f7E0843953D48133f74cE247184c2");
+  Address.fromPubKey(pubKeyBytes, ETHEREUM);
 const createZilAddress = () =>
-  Address.fromStr("zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz");
+Address.fromPubKey(pubKeyBytes, ZILLIQA);
 
 describe("ft_parser", () => {
   describe("ERC20Helper", () => {
@@ -71,9 +73,9 @@ describe("ft_parser", () => {
 
   describe("buildTokenRequests", () => {
     it("should build requests for an ETH (ERC20) token", async () => {
-      const contract = createEthAddress();
-      const accounts = [createEthAddress()];
-      const requests = await buildTokenRequests(contract, accounts, false);
+      const contract = await createEthAddress();
+      const pubkeys = [pubKeyBytes];
+      const requests = await buildTokenRequests(contract, pubkeys, false);
 
       expect(requests).toHaveLength(4);
 
@@ -92,18 +94,18 @@ describe("ft_parser", () => {
     });
 
     it("should build requests for a native ETH balance", async () => {
-      const contract = createEthAddress();
-      const accounts = [createEthAddress()];
-      const requests = await buildTokenRequests(contract, accounts, true);
+      const contract = await createEthAddress();
+      const pubKeys = [pubKeyBytes];
+      const requests = await buildTokenRequests(contract, pubKeys, true);
 
       expect(requests).toHaveLength(4);
       expect(requests[3].payload.method).toBe(EvmMethods.GetBalance);
     });
 
     it("should build requests for a ZIL (ZRC2) token", async () => {
-      const contract = createZilAddress();
-      const accounts = [createZilAddress()];
-      const requests = await buildTokenRequests(contract, accounts, false);
+      const contract = await createZilAddress();
+      const pubKeys = [pubKeyBytes];
+      const requests = await buildTokenRequests(contract, pubKeys, false);
 
       expect(requests).toHaveLength(2);
       expect(requests[0].payload.method).toBe(ZilMethods.GetSmartContractInit);
@@ -113,9 +115,9 @@ describe("ft_parser", () => {
     });
 
     it("should build requests for a native ZIL balance", async () => {
-      const contract = createZilAddress();
-      const accounts = [createZilAddress()];
-      const requests = await buildTokenRequests(contract, accounts, true);
+      const contract = await createZilAddress();
+      const pubkeys = [pubKeyBytes];
+      const requests = await buildTokenRequests(contract, pubkeys, true);
 
       expect(requests).toHaveLength(2);
       expect(requests[0].payload.method).toBe(ZilMethods.GetSmartContractInit);
@@ -221,7 +223,7 @@ describe("ft_parser", () => {
       });
 
       it("should process native ZIL balance response", async () => {
-        const mockAccount = createZilAddress();
+        const mockAccount = await createZilAddress();
         const mockResponse: JsonRPCResponse<ZilBalanceResponse> = {
           id: 1,
           jsonrpc: "2.0",
@@ -266,7 +268,7 @@ describe("ft_parser", () => {
       });
 
       it("should return 0 for ZRC2 balance if account not in response", async () => {
-        const mockAccount = createZilAddress();
+        const mockAccount = await createZilAddress();
         const someOtherChecksumAddress =
           "0x01a6a0332f64285c73ea9fca4dca701e1e5ddf96";
 
@@ -290,7 +292,7 @@ describe("ft_parser", () => {
       });
 
       it("should return 0 if ZIL response has an error", async () => {
-        const mockAccount = createZilAddress();
+        const mockAccount = await createZilAddress();
         const mockResponse: JsonRPCResponse<any> = {
           id: 1,
           jsonrpc: "2.0",

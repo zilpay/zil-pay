@@ -4,6 +4,8 @@ import { createContract } from 'micro-eth-signer/abi.js';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address, AddressType } from 'crypto/address';
 import { TypeOf } from 'lib/types';
+import { ETHEREUM, ZILLIQA } from 'config/slip44';
+import { hashXOR } from 'lib/utils/hashing';
 
 const ERC20_ABI = [
   { name: 'name', type: 'function', outputs: [{ type: 'string' }] },
@@ -43,7 +45,7 @@ type FunctionArgs = {
 
 export type RequestType =
   | { type: 'Metadata'; field: MetadataField; address?: Address }
-  | { type: 'Balance'; address: Address };
+  | { type: 'Balance'; address: Address, pubKeyHash: number, };
 
 export interface GetTokenInitItem {
   vname: string;
@@ -145,14 +147,15 @@ export function generateErc20TransferData(to: string, amount: bigint): string {
 
 export async function buildTokenRequests(
   contract: Address,
-  accounts: Address[],
+  pubKeys: Uint8Array[],
   native: boolean,
 ): Promise<{ payload: JsonRPCRequest; requestType: RequestType }[]> {
   const requests: { payload: JsonRPCRequest; requestType: RequestType }[] = [];
+
   if (contract.type === AddressType.Bech32) {
-    await buildZilRequests(contract, accounts, native, requests);
-  } else {
-    await buildEthRequests(contract, accounts, native, requests);
+    await buildZilRequests(contract, pubKeys, native, requests);
+  } else if (contract.type === AddressType.EthCheckSum) {
+    await buildEthRequests(contract, pubKeys, native, requests);
   }
 
   return requests;
@@ -160,7 +163,7 @@ export async function buildTokenRequests(
 
 async function buildZilRequests(
   contract: Address,
-  accounts: Address[],
+  pubKeys: Uint8Array[],
   native: boolean,
   requests: { payload: JsonRPCRequest; requestType: RequestType }[],
 ): Promise<void> {
@@ -171,8 +174,9 @@ async function buildZilRequests(
     ]),
     requestType: { type: 'Metadata', field: MetadataField.Name },
   });
-  for (const account of accounts) {
-    const base16Account = (await account.toZilChecksum()).toLowerCase();
+  for (const pubKey of pubKeys) {
+    const addr = await Address.fromPubKey(pubKey, ZILLIQA);
+    const base16Account = (await addr.toZilChecksum()).toLowerCase();
     let payload;
     if (native) {
       payload = RpcProvider.buildPayload(ZilMethods.GetBalance, [
@@ -187,14 +191,14 @@ async function buildZilRequests(
     }
     requests.push({
       payload,
-      requestType: { type: 'Balance', address: account },
+      requestType: { type: 'Balance', address: addr, pubKeyHash: hashXOR(pubKey) },
     });
   }
 }
 
 async function buildEthRequests(
   contract: Address,
-  accounts: Address[],
+  pubKeys: Uint8Array[],
   native: boolean,
   requests: { payload: JsonRPCRequest; requestType: RequestType }[],
 ): Promise<void> {
@@ -225,9 +229,10 @@ async function buildEthRequests(
     });
   }
 
-  for (const account of accounts) {
+  for (const pubKey of pubKeys) {
+    const addr = await Address.fromPubKey(pubKey, ETHEREUM);
     let payload;
-    const ethAddress = await account.toEthChecksum();
+    const ethAddress = await addr.toEthChecksum();
     if (native) {
       payload = RpcProvider.buildPayload(EvmMethods.GetBalance, [
         ethAddress,
@@ -241,7 +246,7 @@ async function buildEthRequests(
     }
     requests.push({
       payload,
-      requestType: { type: 'Balance', address: account },
+      requestType: { type: 'Balance', address: addr, pubKeyHash: hashXOR(pubKey) },
     });
   }
 }

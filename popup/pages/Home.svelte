@@ -16,8 +16,6 @@
     import GridIcon from '../components/icons/Grid.svelte';
     import RowIcon from '../components/icons/Row.svelte';
     import FilterIcon from '../components/icons/Filter.svelte';
-    import CloseIcon from '../components/icons/Close.svelte';
-    import CopyIcon from '../components/icons/Copy.svelte';
     import { setGlobalState } from 'popup/background/wallet';
     import { ftBalanceUpdate } from 'popup/background/provider';
     import { clipboardCopy } from 'lib/popup/clipboard';

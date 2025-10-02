@@ -7,7 +7,7 @@ export interface IFTokenState {
   addr: string;
   addrType: AddressType;
   logo: string | null;
-  balances: Record<string, string>;
+  balances: Record<number, string>;
   rate: number;
   default_: boolean;
   native: boolean;
@@ -21,7 +21,7 @@ export class FToken implements IFTokenState {
   addr: string;
   addrType: AddressType;
   logo: string | null;
-  balances: Record<string, string>;
+  balances: Record<number, string>;
   rate: number;
   default_: boolean;
   native: boolean;

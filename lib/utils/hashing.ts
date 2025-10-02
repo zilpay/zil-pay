@@ -20,3 +20,8 @@ export function hashChainConfig(chainIds: number[], slip44: number, chain: strin
   return hash >>> 0;
 }
 
+export function hashXOR(arr: Uint8Array): number {
+  let h = 0;
+  for (let i = 0; i < arr.length; i++) h ^= arr[i];
+  return h % 0x100000;
+}

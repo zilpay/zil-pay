@@ -36,7 +36,7 @@ getGlobalState().finally(() => {
     target: document.body,
   });
 
-  firstLaunch();
+  // firstLaunch();
 });
 
 export default app;

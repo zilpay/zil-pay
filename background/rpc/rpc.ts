@@ -145,8 +145,8 @@ export class NetworkProvider {
     };
   }
 
-  async ftokenMeta(contract: Address, accounts: Address[]): Promise<FToken> {
-    const requestsWithTypes = await buildTokenRequests(contract, accounts, false);
+  async ftokenMeta(contract: Address, pubKeys: Uint8Array[]): Promise<FToken> {
+    const requestsWithTypes = await buildTokenRequests(contract, pubKeys, false);
     const provider = new RpcProvider(this.config);
 
     const payloads = requestsWithTypes.map(r => r.payload);
@@ -160,15 +160,10 @@ export class NetworkProvider {
         const reqWithType = requestsWithTypes[i];
 
         if (reqWithType.requestType.type === 'Balance') {
-          const addresss = reqWithType.requestType.address;
-          const balance = await processZilBalanceResponse(responses[i], addresss, false);
-          const accountIndex = accounts.findIndex(
-            acc => acc === reqWithType.requestType.address
-          );
+          const addr = reqWithType.requestType.address;
+          const balance = await processZilBalanceResponse(responses[i], addr, false);
 
-          if (accountIndex !== -1) {
-            balances[accountIndex] = balance.toString();
-          }
+          balances[reqWithType.requestType.pubKeyHash] = balance.toString();
         }
       }
 
@@ -196,13 +191,9 @@ export class NetworkProvider {
         if (reqWithType.requestType.type === 'Balance') {
           const response = responses[responseIterator + index];
           const balance = processEthBalanceResponse(response);
+
           if (reqWithType.requestType.type == 'Balance') {
-            const accountIndex = accounts.findIndex(
-              acc => acc === reqWithType.requestType.address,
-            );
-            if (accountIndex !== -1) {
-              balances[accountIndex] = balance.toString();
-            }
+            balances[reqWithType.requestType.pubKeyHash] = balance.toString();
           }
         }
       });
@@ -261,13 +252,13 @@ export class NetworkProvider {
     return txns;
   }
 
-  async updateBalances(tokens: FToken[], accounts: Address[]): Promise<void> {
+  async updateBalances(tokens: FToken[], keys: Uint8Array[]): Promise<void> {
     const allRequests: { payload: JsonRPCRequest; requestType: RequestType; tokenIndex: number; }[] = [];
 
     for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
       const token = tokens[tokenIndex];
       const tokenAddress = Address.fromStr(token.addr);
-      const requests = await buildTokenRequests(tokenAddress, accounts, token.native);
+      const requests = await buildTokenRequests(tokenAddress, keys, token.native);
 
       for (const req of requests) {
         if (req.requestType.type === 'Balance') {
@@ -296,10 +287,10 @@ export class NetworkProvider {
     
       if (tokenAddress.type === AddressType.Bech32) {
         const balance = await processZilBalanceResponse(response, account, token.native);
-        token.balances[await account.autoFormat()] = balance.toString();
+        token.balances[requestInfo.requestType.pubKeyHash] = balance.toString();
       } else if (tokenAddress.type === AddressType.EthCheckSum) {
         const balance = processEthBalanceResponse(response);
-        token.balances[await account.autoFormat()] = balance.toString();
+        token.balances[requestInfo.requestType.pubKeyHash] = balance.toString();
       }
     }
   }

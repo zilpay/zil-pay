@@ -2,6 +2,7 @@ import { NetworkProvider } from "background/rpc";
 import type { BackgroundState } from "background/storage";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
+import { hexToUint8Array } from "lib/utils/hex";
 
 export class ProviderService {
   #state: BackgroundState;
@@ -17,9 +18,9 @@ export class ProviderService {
       const tokens = wallet.tokens.filter((t) => t.chainHash === account.chainHash);
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
-      const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
+      const keys: Uint8Array[] = wallet.accounts.map((a) => hexToUint8Array(a.pubKey));
 
-      await provider.updateBalances(tokens, addresses);
+      await provider.updateBalances(tokens, keys);
       this.#state.sync();
 
       sendResponse({
@@ -81,8 +82,8 @@ export class ProviderService {
       const account = wallet.accounts[accountIndex];
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
-      const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
-      const metadata = await provider.ftokenMeta(contractAddr, addresses);
+      const pubKeys = wallet.accounts.map((a) => hexToUint8Array(a.pubKey));
+      const metadata = await provider.ftokenMeta(contractAddr, pubKeys);
 
       sendResponse({
         resolve: metadata,
