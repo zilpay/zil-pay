@@ -25,3 +25,11 @@ export function hashXOR(arr: Uint8Array): number {
   for (let i = 0; i < arr.length; i++) h ^= arr[i];
   return h % 0x100000;
 }
+
+export function hashXORHex(hex: string): number {
+  let h = 0;
+  for (let i = 0; i < hex.length; i += 2) {
+    h ^= parseInt(hex.slice(i, i + 2), 16);
+  }
+  return h % 0x100000;
+}
