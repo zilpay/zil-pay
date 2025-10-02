@@ -9,7 +9,6 @@ import { Runtime } from "lib/runtime";
   startBackground(state);
 
   Runtime.runtime.onInstalled.addListener(async (details) => {
-    console.log(details);
     if (details.reason === 'install') {
       if (state.state.wallets.length === 0) {
         const startPageUrl = Runtime.runtime.getURL(Common.PROMT_PAGE);

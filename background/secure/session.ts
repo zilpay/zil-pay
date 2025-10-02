@@ -2,7 +2,8 @@ import { TypeOf } from 'lib/types';
 import { AESCipherV3 } from '../../crypto/aes256';
 import { uint8ArrayToBase64, base64ToUint8Array } from '../../crypto/b64';
 import { randomBytes } from '../../crypto/random';
-import { Runtime } from '../../lib/runtime';
+import { getManifestVersion, Runtime } from '../../lib/runtime';
+import { ManifestVersions } from 'config/manifest';
 
 export enum SessionStorageKeys {
   EndSession = 'SESSION_END',
@@ -28,7 +29,10 @@ export class Session {
   }
 
   constructor(uuid: string) {
-    Runtime.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+    if (getManifestVersion() === ManifestVersions.V3) {
+      Runtime.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+    }
+
     this.#uuid = uuid;
   }
 
