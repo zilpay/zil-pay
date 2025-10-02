@@ -100,7 +100,7 @@
     const memoryPresetValues: Record<MemoryPreset, Partial<IWalletHashParams>> = {
         [MemoryPreset.Low]: { memory: 64, iterations: 3, threads: 1 },
         [MemoryPreset.Medium]: { memory: 650, iterations: 2, threads: 2 },
-        [MemoryPreset.Secure]: { memory: 65536, iterations: 3, threads: 4 }
+        [MemoryPreset.Secure]: { memory: 6553, iterations: 3, threads: 4 }
     };
 
     function updateSettings(newSettings: Partial<IWalletSettingsState>) {
@@ -192,7 +192,7 @@
                     {$_('modals.cryptsetup.hashing.description')}
                 </p>
             </div>
-            
+
             <button class="more-options-toggle" onclick={() => (advancedMode = !advancedMode)}>
                 <span>{$_('modals.cryptsetup.hashing.advancedMode')}</span>
                 <div class="arrow-icon" class:rotated={advancedMode}>
@@ -278,6 +278,7 @@
         display: flex;
         flex-direction: column;
         gap: 32px;
+        padding: 24px;
     }
 
     .main-content {
@@ -325,7 +326,7 @@
         padding: 8px 0;
         align-self: flex-start;
     }
-    
+
     .arrow-icon {
         display: flex;
         align-items: center;
@@ -380,4 +381,3 @@
         }
     }
 </style>
-
