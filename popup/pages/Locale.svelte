@@ -1,6 +1,5 @@
 <script lang="ts">
     import { _ } from 'popup/i18n';
-    import { pop } from 'popup/router/navigation';
     import globalStore from 'popup/store/global';
     import { setGlobalState } from 'popup/background/wallet';
     import { setupI18n } from 'popup/i18n';
@@ -44,7 +43,7 @@
 </script>
 
 <div class="page-container locale-page">
-    <NavBar title={$_('locale.title')} onBack={pop} />
+    <NavBar title={$_('locale.title')} />
     <div class="language-container">
         <div class="language-grid">
             {#each languages as lang}

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { IAccountState, IFTokenState } from 'background/storage';
     import NavBar from '../components/NavBar.svelte';
     import AddressCopy from '../components/AddressCopy.svelte';
     import SmartInput from '../components/SmartInput.svelte';
@@ -7,7 +8,7 @@
     import ContactsIcon from '../components/icons/Contacts.svelte';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
-    import type { IAccountState, IFTokenState } from 'background/storage';
+    import { hashXORHex } from 'lib/utils/hashing';
 
     let recipientAddress = $state('');
     let amount = $state('');
@@ -22,7 +23,7 @@
     function setAmountPercentage(percentage: number) {
         if (!selectedToken || !currentAccount) return;
 
-        const balanceStr = selectedToken.balances[currentAccount.addr];
+        const balanceStr = selectedToken.balances[hashXORHex(currentAccount.pubKey)];
         
         if (balanceStr) {
             const balance = Number(balanceStr);

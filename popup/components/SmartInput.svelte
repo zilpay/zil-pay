@@ -16,6 +16,7 @@
         hasError = false,
         errorMessage = '',
         ariaDescribedBy = '',
+        loading = false,
         oninput = (_e: Event) => null,
         leftIcon = undefined,
         rightAction = undefined,
@@ -33,6 +34,7 @@
         hasError?: boolean;
         errorMessage?: string;
         ariaDescribedBy?: string;
+        loading?: boolean;
         oninput?: (e: Event) => unknown;
         leftIcon?: Snippet;
         rightAction?: Snippet;
@@ -71,7 +73,7 @@
         </label>
     {/if}
 
-    <div class="input-wrapper" class:has-error={hasError}>
+    <div class="input-wrapper" class:has-error={hasError} class:loading>
         {#if leftIcon}
             <div class="left-icon-wrapper">
                 {@render leftIcon()}
@@ -86,9 +88,9 @@
             type={hide ? 'password' : 'text'}
             class="input-field"
             class:with-left-icon={leftIcon}
-            class:with-right-action={rightAction}
+            class:with-right-action={rightAction || showToggle}
             {placeholder}
-            {disabled}
+            disabled={disabled || loading}
             {required}
             aria-invalid={hasError ? 'true' : undefined}
             aria-describedby={ariaDescribedBy || (hasError && errorMessage ? `${id}-error` : undefined)}
@@ -101,12 +103,13 @@
         {:else if showToggle}
             <button
                 type="button"
-                tabindex={disabled ? -1 : 0}
+                tabindex={disabled || loading ? -1 : 0}
                 class="visibility-toggle"
                 onclick={handleToggle}
                 onkeydown={handleKeyDown}
                 aria-pressed={!hide}
                 aria-label="Toggle password visibility"
+                disabled={loading}
             >
                 {#if hide}
                     <CloseEyeIcon />
@@ -156,13 +159,43 @@
         border-radius: 12px;
         border: 1px solid var(--color-cards-regular-border-default);
         transition: border-color 0.2s ease;
-        
-        &:focus-within {
+        overflow: hidden;
+
+        &:focus-within:not(.loading) {
             border-color: var(--color-inputs-border-focus);
         }
-        
-        &.has-error {
+
+        &.has-error:not(.loading) {
             border-color: var(--color-inputs-border-error);
+        }
+
+        &.loading {
+            border-color: transparent;
+            &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(
+                    from 180deg at 50% 50%,
+                    var(--color-content-text-purple) 0%,
+                    var(--color-button-regular-primary-default) 50%,
+                    var(--color-content-text-purple) 100%
+                );
+                transform: translate(-50%, -50%);
+                animation: spin 2s linear infinite;
+            }
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
         }
     }
 
@@ -175,9 +208,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 2;
     }
 
     .input-field {
+        position: relative;
+        z-index: 1;
         width: 100%;
         height: 48px;
         padding: 0 16px;
@@ -186,6 +222,10 @@
         border: none;
         background: transparent;
         outline: none;
+        border-radius: 11px;
+        margin: 1px;
+        background-color: var(--color-inputs-background-base);
+
 
         &.with-left-icon {
             padding-left: 48px;
@@ -193,10 +233,6 @@
 
         &.with-right-action {
              padding-right: 56px;
-        }
-
-        &:not(.with-right-action) {
-             padding-right: 48px;
         }
 
         &::placeholder {
@@ -207,10 +243,16 @@
             cursor: not-allowed;
         }
     }
+    
+    .input-wrapper.loading .input-field {
+        background-color: var(--color-button-regular-quaternary-default);
+    }
+
 
     .visibility-toggle {
         position: absolute;
         right: 6px;
+        z-index: 2;
         background: none;
         border: none;
         cursor: pointer;
@@ -220,6 +262,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        &:disabled {
+            cursor: not-allowed;
+        }
 
         :global(svg) {
             width: 20px;
@@ -235,6 +281,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 2;
     }
 
     .error-message {
@@ -243,5 +290,4 @@
         font-weight: 500;
     }
 </style>
-
 

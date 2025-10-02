@@ -103,7 +103,6 @@
         networkImageAlt={currentChain?.name || 'Network'}
         onRefresh={handleTokensUpdate}
     />
-
     <main class="content-area">
         {#if currentAccount?.addr}
             <div class="account-section">
@@ -112,7 +111,6 @@
                     address={currentAccount.addr}
                     onclick={handleAccountClick}
                 />
-
                 <div class="actions-row">
                     <Button onclick={handleSend} variant="primary" height={40}>
                         {$_('home.send')}
@@ -124,7 +122,6 @@
                     </Button>
                 </div>
             </div>
-
             <div class="tokens-area">
                 <div class="tokens-header">
                     <div class="tokens-title-section">
@@ -151,7 +148,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div class="tokens-grid" class:row-view={tokensRow}>
                     {#each tokens as token, index (index)}
                         <TokenCard
@@ -168,7 +164,6 @@
             </div>
         {/if}
     </main>
-
     <BottomTabs />
 </div>
 
@@ -211,7 +206,6 @@
     :global(.rightdown) {
         width: 24px;
         height: 24px;
-
         :global(path) {
             stroke: var(--color-content-icon-primary);
         }
@@ -262,11 +256,9 @@
         cursor: pointer;
         color: var(--color-content-icon-inverted);
         transition: all 0.2s ease;
-
         &:hover {
             background-color: var(--color-button-regular-quaternary-hover);
         }
-
         :global(svg) {
             width: 24px;
             height: 24px;
@@ -274,15 +266,20 @@
     }
 
     .tokens-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 12px;
+        justify-content: flex-start;
         align-content: start;
         padding-bottom: 16px;
         overflow-y: auto;
     }
 
-    .tokens-grid.row-view {
-        grid-template-columns: 1fr;
+    .tokens-grid > :global(*) {
+        flex: 0 1 148px;
+    }
+
+    .tokens-grid.row-view > :global(*) {
+        flex: 0 1 100%;
     }
 </style>

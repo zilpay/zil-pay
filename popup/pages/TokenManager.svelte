@@ -11,7 +11,7 @@
 
     let searchTerm = $state('');
     let foundToken = $state<IFTokenState | null>(null);
-    let isSearchingContract = $state(false);
+    let loading = $state(false);
     let searchError = $state<string | null>(null);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -27,18 +27,18 @@
         const term = searchTerm.trim();
         foundToken = null;
         searchError = null;
-        isSearchingContract = false;
+        loading = false;
 
         if (term.startsWith('0x') || term.startsWith('zil1')) {
             const performSearch = async () => {
-                isSearchingContract = true;
+                loading = true;
                 try {
                     foundToken = await fetchFTMeta($globalStore.selectedWallet, term);
                 } catch (e) {
                     searchError = $_('tokenManager.errorFetching');
                     console.error(e);
                 } finally {
-                    isSearchingContract = false;
+                    loading = false;
                 }
             };
             
@@ -48,20 +48,29 @@
     });
 
     const filteredTokens = $derived(() => {
+        const baseTokens = tokens;
+        let filtered;
+
         if (!searchTerm || searchTerm.startsWith('0x') || searchTerm.startsWith('zil1')) {
-            return tokens;
+            filtered = baseTokens;
+        } else {
+            const lowercasedFilter = searchTerm.toLowerCase();
+            filtered = baseTokens.filter(
+                (token) =>
+                    token.name.toLowerCase().includes(lowercasedFilter) ||
+                    token.symbol.toLowerCase().includes(lowercasedFilter)
+            );
         }
-        const lowercasedFilter = searchTerm.toLowerCase();
-        return tokens.filter(
-            (token) =>
-                token.name.toLowerCase().includes(lowercasedFilter) ||
-                token.symbol.toLowerCase().includes(lowercasedFilter)
-        );
+
+        return {
+            native: filtered.filter(t => t.native),
+            user: filtered.filter(t => !t.native)
+        };
     });
 
-    function handleTokenToggle(token: IFTokenState, isEnabled: boolean) {
+    function handleTokenToggle(token: IFTokenState | null, isEnabled: boolean) {
         const wallet = $globalStore.wallets[$globalStore.selectedWallet];
-        if (!wallet) return;
+        if (!wallet || !token) return;
 
         const tokenAddress = token.addr.toLowerCase();
         const existingTokenIndex = wallet.tokens.findIndex(t => t.addr.toLowerCase() === tokenAddress);
@@ -76,7 +85,7 @@
                 setGlobalState();
             }
         } else if (isEnabled) {
-            wallet.tokens.push({ ...token, default_: true });
+            wallet.tokens.push(token);
             globalStore.update(s => ({ ...s }));
             setGlobalState();
             foundToken = null;
@@ -95,6 +104,7 @@
             placeholder={$_('tokenManager.searchPlaceholder')}
             showToggle={false}
             autofocus
+            {loading}
         >
             {#snippet leftIcon()}
                 <SearchIcon />
@@ -103,12 +113,10 @@
     </div>
 
     <div class="token-list-container">
-        {#if isSearchingContract}
-            <div class="status-message">{$_('tokenManager.searching')}...</div>
-        {:else if searchError}
+        {#if searchError}
             <div class="status-message error">{searchError}</div>
         {:else if foundToken && !isTokenAlreadyAdded(foundToken)}
-            <div class="found-token-section">
+            <div class="token-group">
                 <span class="section-label">{$_('tokenManager.foundTokenTitle')}</span>
                 <TokenToggleItem
                     token={foundToken}
@@ -119,14 +127,33 @@
             </div>
         {/if}
 
-        {#each filteredTokens() as token (token.addr)}
-            <TokenToggleItem
-                {token}
-                disabled={token.native}
-                value={token.default_}
-                onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
-            />
-        {/each}
+        {#if filteredTokens().native.length > 0}
+            <div class="token-group">
+                <span class="section-label">{$_('tokenManager.defaultTokens')}</span>
+                {#each filteredTokens().native as token (token.addr)}
+                    <TokenToggleItem
+                        {token}
+                        disabled={token.native}
+                        value={true}
+                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
+                    />
+                {/each}
+            </div>
+        {/if}
+
+        {#if filteredTokens().user.length > 0}
+            <div class="token-group">
+                <span class="section-label">{$_('tokenManager.addedTokens')}</span>
+                {#each filteredTokens().user as token (token.addr)}
+                    <TokenToggleItem
+                        {token}
+                        disabled={token.native}
+                        value={true}
+                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
+                    />
+                {/each}
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -157,7 +184,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 24px;
         overflow-y: auto;
         padding-bottom: 24px;
     }
@@ -173,7 +200,7 @@
         }
     }
 
-    .found-token-section {
+    .token-group {
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -186,3 +213,5 @@
         padding: 0 4px;
     }
 </style>
+
+
