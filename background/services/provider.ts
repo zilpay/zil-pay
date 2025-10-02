@@ -75,11 +75,11 @@ export class ProviderService {
 
   async estimateGasParamsBatch(sendResponse: StreamResponse) {}
 
-  async fetchFtokenMeta(contract: string, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+  async fetchFtokenMeta(contract: string, walletIndex: number, sendResponse: StreamResponse) {
     try {
       const contractAddr = Address.fromStr(contract);
       const wallet = this.#state.wallets[walletIndex];
-      const account = wallet.accounts[accountIndex];
+      const account = wallet.accounts[wallet.selectedAccount];
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
       const pubKeys = wallet.accounts.map((a) => hexToUint8Array(a.pubKey));

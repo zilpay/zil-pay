@@ -16,5 +16,6 @@ export const MTypePopup = {
   LOG_OUT: `@/${app}/logout`,
 
   WALLET_BALANCE_UPDATE: `@/${app}/wallet-balance-update`,
+  FT_GET_META: `@/${app}/get-ft-meta`,
 }
 

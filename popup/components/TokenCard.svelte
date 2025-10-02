@@ -4,6 +4,7 @@
     import FastImg from './FastImg.svelte';
     import { processTokenLogo } from 'lib/popup/url';
     import { abbreviateNumber } from 'popup/mixins/numbers';
+    import { hashXORHex } from 'lib/utils/hashing';
 
     let {
         token,
@@ -23,7 +24,7 @@
         onSelect?: () => void;
     } = $props();
 
-    const balance = $derived(hide ? '******' : abbreviateNumber(token.balances[account.addr] ?? 0, token.decimals));
+    const balance = $derived(hide ? '******' : abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals));
     // TODO: add token rate.
     const convertedBalance = $derived(hide ? '******' : token.rate ?? 0);
     const logo = $derived(processTokenLogo({

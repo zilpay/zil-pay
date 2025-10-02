@@ -27,3 +27,22 @@ export async function ftBalanceUpdate(walletIndex: number) {
 
   return resolve;
 }
+
+export async function fetchFTMeta(walletIndex: number, contract: string) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.FT_GET_META,
+    payload: { walletIndex, contract },
+  }).send();
+  
+  const resolve = warpMessage(data) as IFTokenState;
+  const state = get(globalStore);
+  const token = state.wallets[state.selectedWallet]?.tokens[0];
+
+  if (token) {
+    resolve.logo = token.logo;
+  }
+
+
+  return resolve;
+}
+
