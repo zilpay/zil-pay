@@ -13,9 +13,37 @@
     let foundToken = $state<IFTokenState | null>(null);
     let loading = $state(false);
     let searchError = $state<string | null>(null);
+    let deletedTokens = $state<IFTokenState[]>([]);
 
+    const DELETED_TOKENS_KEY_PREFIX = 'deleted_tokens_';
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const tokens = $derived(currentWallet?.tokens || []);
+
+    function getDeletedTokens(walletId: string): IFTokenState[] {
+        const key = `${DELETED_TOKENS_KEY_PREFIX}${walletId}`;
+        try {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Failed to parse deleted tokens from LocalStorage', e);
+            return [];
+        }
+    }
+
+    function saveDeletedTokens(walletId: string, tokens: IFTokenState[]) {
+        const key = `${DELETED_TOKENS_KEY_PREFIX}${walletId}`;
+        try {
+            localStorage.setItem(key, JSON.stringify(tokens));
+        } catch (e) {
+            console.error('Failed to save deleted tokens to LocalStorage', e);
+        }
+    }
+
+    $effect(() => {
+        if (currentWallet?.uuid) {
+            deletedTokens = getDeletedTokens(currentWallet.uuid);
+        }
+    });
 
     const isTokenAlreadyAdded = $derived((tokenToCheck: IFTokenState | null) => {
         if (!tokenToCheck || !currentWallet) return false;
@@ -41,57 +69,90 @@
                     loading = false;
                 }
             };
-            
             const timeoutId = setTimeout(performSearch, 500);
             return () => clearTimeout(timeoutId);
         }
     });
 
     const filteredTokens = $derived(() => {
-        const baseTokens = tokens;
-        let filtered;
-
+        const lowercasedFilter = searchTerm.toLowerCase();
+        
         if (!searchTerm || searchTerm.startsWith('0x') || searchTerm.startsWith('zil1')) {
-            filtered = baseTokens;
-        } else {
-            const lowercasedFilter = searchTerm.toLowerCase();
-            filtered = baseTokens.filter(
-                (token) =>
-                    token.name.toLowerCase().includes(lowercasedFilter) ||
-                    token.symbol.toLowerCase().includes(lowercasedFilter)
-            );
+            return {
+                native: tokens.filter(t => t.native),
+                user: tokens.filter(t => !t.native)
+            };
         }
+
+        const filtered = tokens.filter(
+            (token) =>
+                token.name.toLowerCase().includes(lowercasedFilter) ||
+                token.symbol.toLowerCase().includes(lowercasedFilter)
+        );
 
         return {
             native: filtered.filter(t => t.native),
             user: filtered.filter(t => !t.native)
         };
     });
+    
+    const filteredDeletedTokens = $derived(() => {
+        if (!searchTerm || searchTerm.startsWith('0x') || searchTerm.startsWith('zil1')) {
+            return deletedTokens;
+        }
+        const lowercasedFilter = searchTerm.toLowerCase();
+        return deletedTokens.filter(
+            (token) =>
+                token.name.toLowerCase().includes(lowercasedFilter) ||
+                token.symbol.toLowerCase().includes(lowercasedFilter)
+        );
+    });
 
     function handleTokenToggle(token: IFTokenState | null, isEnabled: boolean) {
-        const wallet = $globalStore.wallets[$globalStore.selectedWallet];
-        if (!wallet || !token) return;
+        const walletIndex = $globalStore.selectedWallet;
+        const originalWallet = $globalStore.wallets[walletIndex];
+
+        if (!originalWallet || !token) return;
 
         const tokenAddress = token.addr.toLowerCase();
-        const existingTokenIndex = wallet.tokens.findIndex(t => t.addr.toLowerCase() === tokenAddress);
+        const activeTokenIndex = originalWallet.tokens.findIndex(t => t.addr.toLowerCase() === tokenAddress);
+        
+        let newTokens: IFTokenState[];
 
-        if (existingTokenIndex !== -1) {
-            const isNative = wallet.tokens[existingTokenIndex].native;
-            if (isNative) return;
+        if (activeTokenIndex !== -1) {
+            if (token.native || isEnabled) return;
 
-            if (!isEnabled) {
-                wallet.tokens.splice(existingTokenIndex, 1);
-                globalStore.update(s => ({ ...s }));
-                setGlobalState();
-            }
+            const removedToken = originalWallet.tokens[activeTokenIndex];
+            newTokens = originalWallet.tokens.filter((_, index) => index !== activeTokenIndex);
+            
+            const currentDeleted = getDeletedTokens(originalWallet.uuid);
+            saveDeletedTokens(originalWallet.uuid, [...currentDeleted, removedToken]);
+            deletedTokens = getDeletedTokens(originalWallet.uuid);
         } else if (isEnabled) {
-            wallet.tokens.push(token);
-            globalStore.update(s => ({ ...s }));
-            setGlobalState();
+            newTokens = [...originalWallet.tokens, token];
+
+            const updatedDeleted = deletedTokens.filter(t => t.addr.toLowerCase() !== tokenAddress);
+            saveDeletedTokens(originalWallet.uuid, updatedDeleted);
+            deletedTokens = updatedDeleted;
             foundToken = null;
+        } else {
+            return;
         }
 
-        searchTerm = "";
+        globalStore.update(state => {
+            const newWallets = [...state.wallets];
+            newWallets[walletIndex] = {
+                ...originalWallet,
+                tokens: newTokens
+            };
+            return {
+                ...state,
+                wallets: newWallets
+            };
+        });
+
+        setGlobalState();
+        searchTerm = '';
     }
 </script>
 
@@ -147,8 +208,22 @@
                 {#each filteredTokens().user as token (token.addr)}
                     <TokenToggleItem
                         {token}
-                        disabled={token.native}
+                        disabled={false}
                         value={true}
+                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
+                    />
+                {/each}
+            </div>
+        {/if}
+
+        {#if filteredDeletedTokens().length > 0}
+            <div class="token-group">
+                <span class="section-label">{$_('tokenManager.deletedTokens')}</span>
+                {#each filteredDeletedTokens() as token (token.addr)}
+                    <TokenToggleItem
+                        {token}
+                        disabled={false}
+                        value={false}
                         onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
                     />
                 {/each}
@@ -178,6 +253,7 @@
         gap: 8px;
         margin-top: 24px;
         margin-bottom: 24px;
+        flex-shrink: 0;
     }
 
     .token-list-container {
@@ -187,6 +263,7 @@
         gap: 24px;
         overflow-y: auto;
         padding-bottom: 24px;
+        min-height: 0;
     }
 
     .status-message {
@@ -213,5 +290,3 @@
         padding: 0 4px;
     }
 </style>
-
-
