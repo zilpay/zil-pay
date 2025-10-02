@@ -145,6 +145,8 @@ const messageManager = {
   },
 };
 
+sinonChrome.runtime.getManifest.returns({ manifest_version: 3 });
+
 Object.defineProperty(global.chrome.runtime, "sendMessage", {
   value: messageManager.sendMessage,
 });
