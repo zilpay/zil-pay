@@ -30,7 +30,7 @@
   let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
     hashFnParams: {
-      memory: 65536,
+      memory: 6553,
       threads: 4,
       secret: "",
       iterations: 3,

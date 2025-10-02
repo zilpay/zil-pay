@@ -14,7 +14,7 @@ export class ProviderService {
     try {
       const wallet = this.#state.wallets[walletIndex];
       const account = wallet.accounts[wallet.selectedAccount];
-      const tokens = wallet.tokens.filter((t) => t.addrType === account.addrType);
+      const tokens = wallet.tokens.filter((t) => t.chainHash === account.chainHash);
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
       const addresses = wallet.accounts.map((a) => Address.fromStr(a.addr));
