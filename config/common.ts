@@ -8,3 +8,7 @@ export enum Common {
 }
 
 export const WORKER_POOLING = 8000; // Seconds
+
+export const ZERO_EVM = "0x0000000000000000000000000000000000000000";
+export const ZERO_ZIL = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz";
+

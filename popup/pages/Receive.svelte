@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { _ } from 'popup/i18n';
     import { generate } from 'lean-qr';
+    import { get } from 'svelte/store';
     import globalStore from 'popup/store/global';
-    import { clipboardCopy } from 'lib/popup/clipboard';
-    import { Message } from 'lib/streem/message';
-    import { getGlobalState, setGlobalState } from 'popup/background/wallet';
+    import { setGlobalState } from 'popup/background/wallet';
+    import { processTokenLogo } from 'lib/popup/url';
+    import { generateCryptoUrl } from '../mixins/qrcode';
+    import { getAccountChain } from 'popup/mixins/chains';
+    import type { IFTokenState } from 'background/storage';
 
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
@@ -13,89 +15,100 @@
     import InfoIcon from '../components/icons/Info.svelte';
     import DownIcon from '../components/icons/Down.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
-    import CopyIcon from '../components/icons/Copy.svelte';
-    import BillIcon from '../components/icons/Bill.svelte';
-    import ScillaIcon from '../components/icons/Scilla.svelte';
-    import Solidityicon from '../components/icons/Solidity.svelte';
     import ShareIcon from '../components/icons/Share.svelte';
-    import SuccessIcon from '../components/icons/Success.svelte';
-    import { processTokenLogo } from 'lib/popup/url';
+    import Button from '../components/Button.svelte';
+    import TokenSelectorModal from '../modals/TokenSelectorModal.svelte';
 
     let canvasElement: HTMLCanvasElement;
     let accountName = $state('');
-    let isCopied = $state(false);
+    let selectedToken = $state<IFTokenState | undefined>(undefined);
+    let showTokenModal = $state(false);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
-    const nativeToken = $derived(currentWallet?.tokens.find(t => t.native));
-    const logo = $derived(nativeToken ? processTokenLogo({
-        token: nativeToken,
+    const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
+
+    $effect(() => {
+        if (currentWallet && !selectedToken) {
+            selectedToken = currentWallet.tokens.find(t => t.native) ?? currentWallet.tokens[0];
+        }
+    });
+
+    const currentAddress = $derived(currentAccount?.addr ?? '');
+    const logo = $derived(selectedToken ? processTokenLogo({
+        token: selectedToken,
         theme: $globalStore.appearances,
     }) : '');
 
-    function handleCopy() {
-        if (currentAccount?.addr && !isCopied) {
-            clipboardCopy(currentAccount.addr);
-            isCopied = true;
-            setTimeout(() => {
-                isCopied = false;
-            }, 2000);
+    const qrData = $derived(generateCryptoUrl({
+        address: currentAddress,
+        chain: currentChain?.chain.toLowerCase() ?? '',
+        token: selectedToken?.addr,
+    }));
+
+    $effect(() => {
+        if (canvasElement && qrData) {
+            const code = generate(qrData);
+            code.toCanvas(canvasElement, {
+                on: [255, 0, 122, 255],
+                off: [0, 0, 0, 0],
+                pad: 0
+            });
         }
-    }
+    });
 
     async function handleShare() {
-        if (navigator.share && currentAccount?.addr) {
-            try {
+        if (!navigator.share || !qrData) {
+            return;
+        }
+
+        try {
+            if (navigator.canShare && navigator.canShare({ files: [] })) {
+                canvasElement.toBlob(async (blob) => {
+                    if (!blob) return;
+                    const file = new File([blob], 'qrcode.png', { type: 'image/png' });
+                    await navigator.share({
+                        files: [file],
+                        title: accountName,
+                        text: currentAddress,
+                    });
+                }, 'image/png');
+            } else {
                 await navigator.share({
-                    title: currentAccount.name,
-                    text: currentAccount.addr,
+                    title: accountName,
+                    text: qrData
                 });
-            } catch (error) {
-                console.error('Error sharing', error);
             }
+        } catch (error) {
+            console.error('Error sharing', error);
         }
     }
 
-    async function hanlderInputWalletName(event: Event) {
+    async function handleInputWalletName(event: Event) {
         event.preventDefault();
         if (!currentAccount || !currentWallet) return;
-
         const newName = accountName.trim();
         if (!newName || newName === currentAccount.name) {
             accountName = currentAccount.name;
             return;
         }
 
-        try {
-            let state = $globalStore;
-            let wallet = state.wallets[state.selectedWallet]; 
+        const walletIndex = get(globalStore).selectedWallet;
+        globalStore.update(store => {
+            const newWallets = [...store.wallets];
+            const accountIndex = newWallets[walletIndex].selectedAccount;
+            newWallets[walletIndex].accounts[accountIndex].name = newName;
+            return { ...store, wallets: newWallets };
+        });
 
-            wallet.accounts[wallet.selectedAccount].name = newName;
-            globalStore.set(state);
-
-            await setGlobalState();
-            const input = (event.target as HTMLFormElement).querySelector('input');
-            if (input) input.blur();
-        } catch (error) {
-            console.error('Failed to update account name:', error);
-            accountName = currentAccount.name;
-        }
+        await setGlobalState();
+        const input = (event.target as HTMLFormElement).querySelector('input');
+        if (input) input.blur();
     }
-    
+
     $effect(() => {
         if (currentAccount) {
             accountName = currentAccount.name;
-        }
-    });
-
-    onMount(() => {
-        if (canvasElement && currentAccount?.addr) {
-            const code = generate(currentAccount.addr);
-            code.toCanvas(canvasElement, {
-                on: [255, 0, 122, 255],
-                off: [0, 0, 0, 0],
-                pad: 0
-            });
         }
     });
 </script>
@@ -106,26 +119,26 @@
     <div class="content">
         <div class="info-banner">
             <InfoIcon />
-            <p>{$_('receive.warning')}</p>
+            <p>{$_('receive.warning', { values: { chain: currentChain?.name, token: selectedToken?.symbol } })}</p>
         </div>
 
         <div class="qr-card">
-            <button class="token-selector">
-                {#if nativeToken}
+            <button class="token-selector" onclick={() => showTokenModal = true}>
+                {#if selectedToken}
                     <div class="token-icon">
-                        <FastImg src={logo} alt={nativeToken.symbol} />
+                        <FastImg src={logo} alt={selectedToken.symbol} />
                     </div>
-                    <span>{nativeToken.name} ({nativeToken.symbol})</span>
+                    <span>{selectedToken.name} ({selectedToken.symbol})</span>
                 {/if}
                 <DownIcon />
             </button>
             <div class="canvas-container">
                 <canvas bind:this={canvasElement}></canvas>
             </div>
-            <p class="address-text">{currentAccount?.addr}</p>
+            <p class="address-text">{currentAddress}</p>
         </div>
 
-        <form class="account-name-input" onsubmit={hanlderInputWalletName}>
+        <form onsubmit={handleInputWalletName}>
             <SmartInput bind:value={accountName} hide={false} showToggle={false}>
                 {#snippet rightAction()}
                     <button type="submit" class="edit-button">
@@ -134,28 +147,25 @@
                 {/snippet}
             </SmartInput>
         </form>
+    </div>
 
-        <div class="actions-grid">
-            <button class="action-button" onclick={handleCopy}>
-                {#if isCopied}
-                    <SuccessIcon />
-                {:else}
-                    <CopyIcon />
-                {/if}
-            </button>
-            <button class="action-button">
-                <BillIcon />
-            </button>
-            <button class="action-button">
-                <ScillaIcon />
-                <Solidityicon />
-            </button>
-            <button class="action-button" onclick={handleShare}>
-                <ShareIcon />
-            </button>
-        </div>
+    <div class="footer">
+        <Button onclick={handleShare} width="100%" variant="outline">
+            <ShareIcon />
+            <span>{$_('receive.share')}</span>
+        </Button>
     </div>
 </div>
+
+{#if currentWallet && currentAccount}
+    <TokenSelectorModal
+        bind:show={showTokenModal}
+        tokens={currentWallet.tokens}
+        account={currentAccount}
+        selectedToken={selectedToken}
+        onSelect={(token: IFTokenState) => selectedToken = token}
+    />
+{/if}
 
 <style lang="scss">
     .page-container {
@@ -171,9 +181,10 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        padding: var(--padding-side, 20px) var(--padding-side, 20px);
+        padding: 16px var(--padding-side, 20px);
         flex: 1;
         min-height: 0;
+        overflow-y: auto;
     }
 
     .info-banner {
@@ -192,13 +203,11 @@
             flex-shrink: 0;
             color: var(--color-notification-neutral-content);
         }
-
         p {
+            margin: 0;
             flex: 1 1 0;
             color: var(--color-content-text-inverted);
             font-size: 12px;
-            font-family: Geist;
-            font-weight: 400;
             line-height: 16px;
         }
     }
@@ -216,15 +225,20 @@
     .token-selector {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 8px;
         background: none;
         border: none;
         cursor: pointer;
         color: var(--color-content-text-inverted);
         font-size: 16px;
-        font-family: Geist;
-        font-weight: 400;
+        font-weight: 500;
         line-height: 22px;
+        padding: 4px 8px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+        &:hover {
+            background-color: var(--color-button-regular-quaternary-hover);
+        }
     }
 
     .token-icon {
@@ -233,11 +247,10 @@
         border-radius: 50%;
         overflow: hidden;
     }
-    
+
     .canvas-container {
         width: 166px;
         height: 166px;
-
         canvas {
             width: 100%;
             height: 100%;
@@ -246,15 +259,14 @@
     }
 
     .address-text {
-        color: var(--color-content-text-inverted);
+        color: var(--color-content-text-secondary);
         font-size: 14px;
-        font-family: Geist;
         font-weight: 400;
         line-height: 20px;
         word-break: break-all;
         text-align: center;
     }
-    
+
     .edit-button {
         background: none;
         border: none;
@@ -262,44 +274,17 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        
-        :global(svg) {
-            color: var(--color-content-icon-secondary);
-        }
+        :global(svg) { color: var(--color-content-icon-secondary); }
     }
 
-    .actions-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+    .footer {
         margin-top: auto;
-    }
-
-    .action-button {
-        height: 52px;
-        background: var(--color-button-regular-quaternary-default);
-        border-radius: 11px;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s ease;
-
-        &:hover {
-            background: var(--color-button-regular-quaternary-hover);
+        padding: 0 var(--padding-side, 20px) var(--padding-side, 20px);
+        :global(span) {
+            margin-left: 8px;
         }
-
-        :global(svg) {
-            width: 24px;
-            height: 24px;
-        }
-        
-        :global(.scilla > path),
-        :global(.sol > path) {
-            fill: var(--color-content-icon-accent-secondary);
+        :global(svg > path) {
+            stroke: var(--color-content-text-pink);
         }
     }
 </style>
-
-
