@@ -1,20 +1,21 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
     import { _ } from 'popup/i18n';
+    import { processTokenLogo } from 'lib/popup/url';
+    import { hashXORHex } from 'lib/utils/hashing';
+    import globalStore from 'popup/store/global';
+    import { abbreviateNumber } from 'popup/mixins/numbers';
 
-    import Modal from '../components/Modal.svelte';
     import SmartInput from '../components/SmartInput.svelte';
-    import TokenCard from '../components/TokenCard.svelte';
     import SearchIcon from '../components/icons/Search.svelte';
+    import FastImg from '../components/FastImg.svelte';
 
     let {
-        show = $bindable(),
         tokens = [],
         account,
         selectedToken,
         onSelect
     }: {
-        show: boolean;
         tokens: IFTokenState[];
         account: IAccountState;
         selectedToken: IFTokenState | undefined;
@@ -34,52 +35,58 @@
                 token.symbol.toLowerCase().includes(lowercasedFilter)
         );
     });
-
-    function handleTokenSelect(token: IFTokenState) {
-        onSelect(token);
-        show = false;
-    }
 </script>
 
-<Modal bind:show title={$_('receive.selectTokenTitle')}>
-    <div class="token-selector-modal-content">
-        <div class="search-container">
-            <SmartInput
-                bind:value={searchTerm}
-                placeholder={$_('tokenManager.searchPlaceholder')}
-                showToggle={false}
-                autofocus={true}
-            >
-                {#snippet leftIcon()}
-                    <SearchIcon />
-                {/snippet}
-            </SmartInput>
-        </div>
-
-        <div class="token-list">
-            {#each filteredTokens() as token (token.addr)}
-                <div 
-                    class="token-item-wrapper" 
-                    class:selected={selectedToken?.addr === token.addr}
-                >
-                    <TokenCard
-                        {token}
-                        {account}
-                        hide={false}
-                        tokensRow={true}
-                        onSelect={() => handleTokenSelect(token)}
-                    />
-                </div>
-            {/each}
-        </div>
+<div class="token-selector-content">
+    <div class="search-container">
+        <SmartInput
+            bind:value={searchTerm}
+            placeholder={$_('tokenManager.searchPlaceholder')}
+            showToggle={false}
+            autofocus={true}
+        >
+            {#snippet leftIcon()}
+                <SearchIcon />
+            {/snippet}
+        </SmartInput>
     </div>
-</Modal>
+
+    <div class="token-list">
+        {#each filteredTokens() as token (token.addr)}
+            <button
+                class="token-item"
+                class:selected={selectedToken?.addr === token.addr}
+                onclick={() => onSelect(token)}
+            >
+                <div class="token-info">
+                    <div class="token-icon">
+                        <FastImg
+                            src={processTokenLogo({ token, theme: $globalStore.appearances })}
+                            alt={token.symbol}
+                        />
+                    </div>
+                    <span class="token-symbol">{token.symbol}</span>
+                </div>
+                <div class="token-balances">
+                    <span class="balance">
+                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals)}
+                    </span>
+                    <span class="fiat-balance">
+                        {token.rate ?? 0}
+                    </span>
+                </div>
+            </button>
+        {/each}
+    </div>
+</div>
 
 <style lang="scss">
-    .token-selector-modal-content {
+    .token-selector-content {
         display: flex;
         flex-direction: column;
         gap: 16px;
+        padding: 24px;
+        padding-top: 16px;
     }
 
     .search-container {
@@ -90,23 +97,66 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
-        max-height: 40vh;
+        max-height: 45vh;
         overflow-y: auto;
         padding-right: 4px;
+        margin-right: -4px;
     }
 
-    .token-item-wrapper {
+    .token-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px;
         border-radius: 12px;
-        outline: 2px solid transparent;
-        transition: outline-color 0.2s ease;
-        
-        &.selected {
-            outline-color: var(--color-controls-selector-select);
+        background: var(--color-cards-regular-base-default);
+        border: 1px solid var(--color-cards-regular-border-default);
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+
+        &:hover {
+            border-color: var(--color-cards-regular-border-hover);
         }
 
-        :global(.token-card) {
-            border: none;
-            background-color: var(--color-neutral-background-container);
+        &.selected {
+            border-color: var(--color-controls-selector-select);
         }
+    }
+
+    .token-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .token-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .token-symbol {
+        font-size: var(--font-size-large);
+        font-weight: 500;
+        color: var(--color-content-text-inverted);
+    }
+
+    .token-balances {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .balance {
+        font-size: var(--font-size-large);
+        font-weight: 500;
+        color: var(--color-content-text-inverted);
+    }
+
+    .fiat-balance {
+        font-size: var(--font-size-small);
+        color: var(--color-content-text-secondary);
     }
 </style>

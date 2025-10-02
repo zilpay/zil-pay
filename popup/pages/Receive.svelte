@@ -17,7 +17,8 @@
     import EditIcon from '../components/icons/Edit.svelte';
     import ShareIcon from '../components/icons/Share.svelte';
     import Button from '../components/Button.svelte';
-    import TokenSelectorModal from '../modals/TokenSelectorModal.svelte';
+    import Modal from '../components/Modal.svelte';
+    import TokenSelector from '../modals/TokenSelectorModal.svelte';
 
     let canvasElement: HTMLCanvasElement;
     let accountName = $state('');
@@ -56,6 +57,11 @@
             });
         }
     });
+
+    function handleTokenSelect(token: IFTokenState) {
+        selectedToken = token;
+        showTokenModal = false;
+    }
 
     async function handleShare() {
         if (!navigator.share || !qrData) {
@@ -157,15 +163,16 @@
     </div>
 </div>
 
-{#if currentWallet && currentAccount}
-    <TokenSelectorModal
-        bind:show={showTokenModal}
-        tokens={currentWallet.tokens}
-        account={currentAccount}
-        selectedToken={selectedToken}
-        onSelect={(token: IFTokenState) => selectedToken = token}
-    />
-{/if}
+<Modal bind:show={showTokenModal} title={$_('receive.selectTokenTitle')}>
+    {#if currentWallet && currentAccount}
+        <TokenSelector
+            tokens={currentWallet.tokens}
+            account={currentAccount}
+            selectedToken={selectedToken}
+            onSelect={handleTokenSelect}
+        />
+    {/if}
+</Modal>
 
 <style lang="scss">
     .page-container {

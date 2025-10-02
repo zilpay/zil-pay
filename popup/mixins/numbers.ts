@@ -5,28 +5,18 @@ export function abbreviateNumber(value: number | string, decimals: number = 0): 
         return '0';
     }
 
-    if (num < 1000) {
-        return num.toFixed(4);
+    if (num < 1000 && num > -1000) {
+        return new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4,
+            useGrouping: false
+        }).format(num);
     }
 
-    const si = [
-        { value: 1, symbol: "" },
-        { value: 1E3, symbol: "K" },
-        { value: 1E6, symbol: "M" },
-        { value: 1E9, symbol: "B" },
-        { value: 1E12, symbol: "T" },
-        { value: 1E15, symbol: "P" },
-        { value: 1E18, symbol: "E" }
-    ];
-
-    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-    
-    let i: number;
-    for (i = si.length - 1; i > 0; i--) {
-        if (num >= si[i].value) {
-            break;
-        }
-    }
-    
-    return (num / si[i].value).toFixed(2).replace(rx, "$1") + si[i].symbol;
+    return new Intl.NumberFormat(undefined, {
+        notation: 'compact',
+        compactDisplay: 'short',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }).format(num);
 }
