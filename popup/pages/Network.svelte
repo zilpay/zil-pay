@@ -12,6 +12,7 @@
     import SearchIcon from '../components/icons/Search.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
     import OptionCard from '../components/OptionCard.svelte';
+    import { pop } from 'popup/router/navigation';
 
     type DisplayChain = IChainConfigState & { 
         isTestnet: boolean;
@@ -124,6 +125,7 @@
         });
 
         await setGlobalState();
+        pop();
     }
 
     $effect(() => {

@@ -24,7 +24,6 @@
         refreshDisabled = false,
         settingsDisabled = false,
         lockDisabled = false,
-        onNetworkButton = () => {},
         onRefresh = () => {},
         onSettings = () => {},
         left = undefined
@@ -41,7 +40,6 @@
         refreshDisabled?: boolean;
         settingsDisabled?: boolean;
         lockDisabled?: boolean;
-        onNetworkButton?: () => void;
         onRefresh?: () => void;
         onSettings?: () => void;
         left?: Snippet;
@@ -51,6 +49,10 @@
     const walletIndex = $globalStore.selectedWallet;
     await logout(walletIndex);
     push('/lock');
+  };
+
+  async function onNetworkButton() {
+    push('/networks');
   };
 
   function onExpand() {
