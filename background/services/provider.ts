@@ -11,6 +11,35 @@ export class ProviderService {
     this.#state = state;
   }
 
+  async swichNetwork(walletIndex: number, chainIndex: number, sendResponse: StreamResponse) {
+    const chain = this.#state.chains[chainIndex];
+    const wallet = this.#state.wallets[walletIndex];
+
+    try {
+      wallet.tokens = wallet.tokens.filter((t) => !t.native); 
+      wallet.tokens = [...chain.ftokens, ...wallet.tokens];
+      wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
+        const pubKeyBytes = hexToUint8Array(account.pubKey);
+        const addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
+        account.chainHash = chain.hash();
+        account.chainId = chain.chainId;
+        account.addr = await addr.autoFormat();
+        account.addrType = addr.type;
+        return account;
+      }));
+
+      console.log(wallet);
+
+      sendResponse({
+        resolve: {},
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async balanceUpdate(walletIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
@@ -33,8 +62,6 @@ export class ProviderService {
     }
   }
 
-  async sendSignedTransaction(sendResponse: StreamResponse) {}
-
   async getCurrentBlock(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
@@ -53,8 +80,6 @@ export class ProviderService {
     }
   }
 
-  async proxyChannel(sendResponse: StreamResponse) {}
-
   async estimateBlockTime(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
@@ -72,8 +97,6 @@ export class ProviderService {
       });
     }
   }
-
-  async estimateGasParamsBatch(sendResponse: StreamResponse) {}
 
   async fetchFtokenMeta(contract: string, walletIndex: number, sendResponse: StreamResponse) {
     try {
