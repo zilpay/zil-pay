@@ -31,7 +31,7 @@
 
     const securitySettings = [
         { id: 'security', labelKey: 'settings.security', Icon: ShieldIcon, path: '/settings/security' },
-        { id: 'networks', labelKey: 'settings.networks', Icon: ConnectionIcon, path: '/settings/networks' },
+        { id: 'networks', labelKey: 'settings.networks', Icon: ConnectionIcon, path: '/networks' },
         { id: 'language', labelKey: 'settings.language', Icon: LanguageIcon, path: '/locale' }
     ];
 
