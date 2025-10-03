@@ -32,11 +32,19 @@
         compact?: boolean;
     } = $props();
 
-    function handleClick() {
-        if (!disabled) {
-            onclick();
-        }
-    }
+    const isIconUrl = $derived(
+        typeof icon === 'string' &&
+        (icon.startsWith('http') || icon.startsWith('data:') || icon.startsWith('/'))
+    );
+
+    const hasCustomAccessory = $derived(!!rightAccessory);
+
+    const normalizedTags = $derived(
+        tags.map(tag => ({
+            text: typeof tag === 'string' ? tag : tag.text,
+            type: resolveTagType(tag)
+        }))
+    );
 
     function resolveTagType(tag: string | TagConfig): TagConfig['type'] {
         if (typeof tag === 'object' && tag.type) {
@@ -55,28 +63,26 @@
         return 'default';
     }
 
-    function resolveTagText(tag: string | TagConfig) {
-        return typeof tag === 'string' ? tag : tag.text;
+    function handleClick() {
+        if (!disabled) {
+            onclick();
+        }
     }
-
-    const isIconUrl =
-        typeof icon === 'string' &&
-        (icon.startsWith('http') || icon.startsWith('data:') || icon.startsWith('/'));
-
-    const hasCustomAccessory = !!rightAccessory;
 </script>
 
 <button
     class="option-card"
     class:selected
     class:compact
+    class:disabled
     onclick={handleClick}
     {disabled}
     aria-pressed={selected}
+    type="button"
 >
     <div class="option-icon" class:is-url={isIconUrl}>
         {#if isIconUrl}
-            <FastImg src={icon as string} class="icon-image" width="45" height="45" />
+            <FastImg src={icon as string} class="icon-image" />
         {:else if typeof icon === 'string'}
             <span class="icon-symbol">{icon}</span>
         {:else}
@@ -91,12 +97,11 @@
             <p class="option-description">{description}</p>
         </div>
 
-        {#if tags.length > 0}
+        {#if normalizedTags.length > 0}
             <div class="tags-container">
-                {#each tags as tag (resolveTagText(tag))}
-                    {@const tagType = resolveTagType(tag)}
-                    <span class="tag tag--{tagType}">
-                        {resolveTagText(tag)}
+                {#each normalizedTags as tag (tag.text)}
+                    <span class="tag tag--{tag.type}">
+                        {tag.text}
                     </span>
                 {/each}
             </div>
@@ -111,19 +116,6 @@
         <div class="arrow-indicator">
             <RightIcon />
         </div>
-    {:else}
-        <div class="option-selector">
-            {#if selected}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="var(--color-controls-selector-select)" stroke-width="2" />
-                    <circle cx="12" cy="12" r="6" fill="var(--color-controls-selector-select)" />
-                </svg>
-            {:else}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="var(--color-controls-selector-border)" stroke-width="2" />
-                </svg>
-            {/if}
-        </div>
     {/if}
 </button>
 
@@ -132,13 +124,13 @@
         display: flex;
         align-items: center;
         width: 100%;
-        padding: 16px;
-        border-radius: 16px;
         background: var(--color-button-regular-quaternary-default);
         border: 1px solid transparent;
+        border-radius: 16px;
         cursor: pointer;
-        transition: background 0.2s ease, border-color 0.2s ease;
         text-align: left;
+        transition: background 0.2s ease, border-color 0.2s ease;
+        padding: 16px;
         gap: 16px;
 
         &.compact {
@@ -146,7 +138,7 @@
             gap: 12px;
         }
 
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not(.selected) {
             background: var(--color-cards-regular-base-default);
             border-color: var(--color-cards-regular-border-default);
         }
@@ -156,6 +148,7 @@
             outline-offset: 2px;
         }
 
+        &.disabled,
         &:disabled {
             cursor: not-allowed;
             opacity: 0.6;
@@ -173,19 +166,24 @@
         justify-content: center;
         width: 40px;
         height: 40px;
-        border-radius: 50%;
-        overflow: hidden;
-        flex-shrink: 0;
         background: var(--color-neutral-background-container);
+        border-radius: 50%;
+        flex-shrink: 0;
+        overflow: hidden;
 
         &.is-url {
             background: var(--color-neutral-background-base);
         }
 
-        .icon-image {
+        :global(.icon-image) {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .icon-symbol {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
         }
 
         :global(svg) {
@@ -198,16 +196,16 @@
     .option-content {
         display: flex;
         flex-direction: column;
-        gap: 8px;
         flex: 1;
         min-width: 0;
+        gap: 8px;
     }
 
     .text-content {
         display: flex;
         flex-direction: column;
-        gap: 2px;
         min-width: 0;
+        gap: 2px;
     }
 
     .option-title {
@@ -242,12 +240,12 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
         padding: 2px 8px;
         font-size: var(--font-size-small);
         font-weight: 600;
         line-height: 16px;
         border: 1px solid transparent;
+        border-radius: 12px;
         background: var(--color-button-regular-quaternary-default);
         color: var(--color-content-text-secondary);
 
@@ -275,8 +273,7 @@
     }
 
     .custom-accessory,
-    .arrow-indicator,
-    .option-selector {
+    .arrow-indicator {
         display: flex;
         align-items: center;
         justify-content: center;

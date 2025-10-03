@@ -97,6 +97,7 @@ export class WalletService {
     this.#state.selectedWallet = payload.selectedWallet;
     this.#state.locale = payload.locale;
     this.#state.notificationsGlobalEnabled = payload.notificationsGlobalEnabled;
+    this.#state.chains = payload.chains.map((c) => new ChainConfig(c));
 
     payload.wallets.forEach((wallet, index) => {
       const currentWallet = this.#state.wallets[index];

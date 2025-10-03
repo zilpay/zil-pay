@@ -2,59 +2,84 @@
     import { _ } from 'popup/i18n';
     import { getChains, type ChainData } from 'popup/mixins/chains';
     import { viewChain } from 'lib/popup/url';
+    import { hashChainConfig } from 'lib/utils/hashing';
     import globalStore from 'popup/store/global';
     import type { IChainConfigState } from 'background/storage';
+    import { setGlobalState } from 'popup/background/wallet';
 
     import NavBar from '../components/NavBar.svelte';
-    import Switch from '../components/Switch.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import SearchIcon from '../components/icons/Search.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
-    import PlusIcon from '../components/icons/Plus.svelte';
     import OptionCard from '../components/OptionCard.svelte';
 
-    type DisplayChain = IChainConfigState & { isTestnet: boolean };
+    type DisplayChain = IChainConfigState & { 
+        isTestnet: boolean;
+        isAdded: boolean;
+        hash: number;
+        iconUrl: string;
+    };
 
-    let showTestnets = $state(false);
     let searchTerm = $state('');
     let allAvailableChains = $state<ChainData>({ mainnet: [], testnet: [] });
 
+    const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
+    const currentAccountChainHash = $derived(currentAccount?.chainHash ?? -1);
     const addedChains = $derived($globalStore.chains);
     const currentTheme = $derived($globalStore.appearances);
 
-    const availableChains = $derived(() => {
-        const addedIds = new Set(addedChains.map((chain) => chain.chainIds.join()));
-        const mainnet = allAvailableChains.mainnet
-            .filter((chain) => !addedIds.has(chain.chainIds.join()))
-            .map<DisplayChain>((chain) => ({ ...chain, isTestnet: false }));
-        const testnet = allAvailableChains.testnet
-            .filter((chain) => !addedIds.has(chain.chainIds.join()))
-            .map<DisplayChain>((chain) => ({ ...chain, isTestnet: true }));
+    const chainHashMap = $derived(() => {
+        const map = new Map<string, boolean>();
+        addedChains.forEach(chain => {
+            map.set(chain.chainIds.join(), true);
+        });
+        return map;
+    });
 
-        return { mainnet, testnet };
+    const allChains = $derived(() => {
+        const added = addedChains.map<DisplayChain>(chain => {
+            const hash = hashChainConfig(chain.chainIds, chain.slip44, chain.chain);
+            return {
+                ...chain,
+                isTestnet: chain.testnet === true,
+                isAdded: true,
+                hash,
+                iconUrl: viewChain({ network: chain, theme: currentTheme })
+            };
+        });
+
+        const available = [
+            ...allAvailableChains.mainnet,
+            ...allAvailableChains.testnet
+        ]
+            .filter(chain => !chainHashMap().has(chain.chainIds.join()))
+            .map<DisplayChain>(chain => {
+                const hash = hashChainConfig(chain.chainIds, chain.slip44, chain.chain);
+                return {
+                    ...chain,
+                    isTestnet: chain.testnet === true,
+                    isAdded: false,
+                    hash,
+                    iconUrl: viewChain({ network: chain, theme: currentTheme })
+                };
+            });
+
+        return { added, available };
     });
 
     const filteredChains = $derived(() => {
         const term = searchTerm.trim().toLowerCase();
+        
+        if (!term) return allChains();
 
-        const predicate = (chain: DisplayChain) => {
-            if (!showTestnets && chain.isTestnet) {
-                return false;
-            }
-            if (!term) {
-                return true;
-            }
-            return (
-                chain.name.toLowerCase().includes(term) ||
-                chain.chain.toLowerCase().includes(term)
-            );
-        };
+        const filterFn = (chain: DisplayChain) => 
+            chain.name.toLowerCase().includes(term) ||
+            chain.chain.toLowerCase().includes(term);
 
         return {
-            added: addedChains
-                .map<DisplayChain>((chain) => ({ ...chain, isTestnet: chain.testnet === true }))
-                .filter(predicate),
-            available: [...availableChains().mainnet, ...availableChains().testnet].filter(predicate),
+            added: allChains().added.filter(filterFn),
+            available: allChains().available.filter(filterFn)
         };
     });
 
@@ -64,25 +89,47 @@
         if (chain.chainIds?.[0]) {
             tags.push({ text: `ID: ${chain.chainIds[0]}`, type: 'id' });
         }
-        tags.push({ text: chain.isTestnet ? 'TESTNET' : 'MAINNET', type: chain.isTestnet ? 'testnet' : 'mainnet' });
+        
+        tags.push({ 
+            text: chain.isTestnet ? 'TESTNET' : 'MAINNET', 
+            type: chain.isTestnet ? 'testnet' : 'mainnet' 
+        });
 
         return tags;
     }
 
-    function handleEdit(_chain: DisplayChain) {}
+    async function handleAdd(chain: DisplayChain) {
+        globalStore.update(state => ({
+            ...state,
+            chains: [...state.chains, chain]
+        }));
+        await setGlobalState();
+    }
 
-    function handleAdd(_chain: DisplayChain) {}
+    async function handleEdit(chain: DisplayChain) {
+    }
 
-    function iconFor(chain: DisplayChain) {
-        return viewChain({ network: chain, theme: currentTheme });
+    async function handleSelect(chain: DisplayChain) {
+        if (!currentWallet || !currentAccount) return;
+
+        const walletIndex = $globalStore.selectedWallet;
+        const accountIndex = currentWallet.selectedAccount;
+
+        globalStore.update(state => {
+            const newWallets = [...state.wallets];
+            newWallets[walletIndex].accounts[accountIndex].chainHash = chain.hash;
+            newWallets[walletIndex].accounts[accountIndex].chainId = chain.chainId;
+            newWallets[walletIndex].accounts[accountIndex].slip44 = chain.slip44;
+            return { ...state, wallets: newWallets };
+        });
+
+        await setGlobalState();
     }
 
     $effect(() => {
-        async function loadChains() {
-            allAvailableChains = await getChains();
-        }
-
-        loadChains();
+        getChains().then(chains => {
+            allAvailableChains = chains;
+        });
     });
 </script>
 
@@ -90,11 +137,6 @@
     <NavBar title={$_('networks.title')} />
 
     <section class="controls">
-        <div class="toggle-row">
-            <span class="toggle-label">{$_('networks.showTestnet')}</span>
-            <Switch bind:checked={showTestnets} variant="default" />
-        </div>
-
         <SmartInput
             bind:value={searchTerm}
             placeholder={$_('networks.searchPlaceholder')}
@@ -115,16 +157,20 @@
                         <OptionCard
                             title={chain.name}
                             description={chain.chain}
-                            icon={iconFor(chain)}
-                            selected={true}
+                            icon={chain.iconUrl}
+                            selected={chain.hash === currentAccountChainHash}
                             compact={true}
                             tags={createTags(chain)}
-                            onclick={() => handleEdit(chain)}
+                            onclick={() => handleSelect(chain)}
                         >
                             {#snippet rightAccessory()}
                                 <button
                                     type="button"
                                     class="icon-button"
+                                    onclick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit(chain);
+                                    }}
                                     aria-label={$_('networks.manageNetwork', { values: { name: chain.name } })}
                                 >
                                     <EditIcon />
@@ -144,21 +190,11 @@
                         <OptionCard
                             title={chain.name}
                             description={chain.chain}
-                            icon={iconFor(chain)}
+                            icon={chain.iconUrl}
                             compact={true}
                             tags={createTags(chain)}
                             onclick={() => handleAdd(chain)}
-                        >
-                            {#snippet rightAccessory()}
-                                <button
-                                    type="button"
-                                    class="icon-button"
-                                    aria-label={$_('networks.addNetwork', { values: { name: chain.name } })}
-                                >
-                                    <PlusIcon />
-                                </button>
-                            {/snippet}
-                        </OptionCard>
+                        />
                     {/each}
                 </div>
             </div>
@@ -171,29 +207,14 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        padding: 0 var(--padding-side);
-        box-sizing: border-box;
         background: var(--color-neutral-background-base);
+        box-sizing: border-box;
+        padding: 0;
     }
 
     .controls {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding-top: 16px;
-    }
-
-    .toggle-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .toggle-label {
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 22px;
-        color: var(--color-content-text-inverted);
+        flex-shrink: 0;
+        padding: var(--padding-side) var(--padding-side);
     }
 
     .lists {
@@ -201,8 +222,9 @@
         display: flex;
         flex-direction: column;
         gap: 32px;
+        min-height: 0;
         overflow-y: auto;
-        padding: 24px 0;
+        padding: var(--padding-side) var(--padding-side);
     }
 
     .group {
@@ -212,6 +234,7 @@
     }
 
     .group-title {
+        margin: 0;
         font-size: 12px;
         font-weight: 400;
         line-height: 16px;
@@ -230,11 +253,12 @@
         justify-content: center;
         width: 32px;
         height: 32px;
-        border-radius: 8px;
-        border: 1px solid var(--color-neutral-border-default);
         background: var(--color-button-regular-quaternary-default);
+        border: 1px solid var(--color-neutral-border-default);
+        border-radius: 8px;
+        cursor: pointer;
         color: var(--color-cards-navigation-icon-secondary);
-        transition: background 0.2s ease, border-color 0.2s ease;
+        transition: all 0.2s ease;
 
         &:hover {
             background: var(--color-button-regular-quaternary-hover);
@@ -244,6 +268,10 @@
         &:focus-visible {
             outline: 2px solid var(--color-inputs-border-focus);
             outline-offset: 2px;
+        }
+
+        &:active {
+            transform: scale(0.95);
         }
 
         :global(svg) {
