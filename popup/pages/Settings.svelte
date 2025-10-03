@@ -23,7 +23,7 @@
     import InfoIcon from '../components/icons/Info.svelte';
 
     const generalSettings = [
-        { id: 'currency', labelKey: 'settings.currency', Icon: CurrencyIcon, path: '/settings/currency' },
+        { id: 'currency', labelKey: 'settings.currency', Icon: CurrencyIcon, path: '/currency' },
         { id: 'appearance', labelKey: 'settings.appearance', Icon: AppearanceIcon, path: '/settings/appearance' },
         { id: 'notifications', labelKey: 'settings.notifications', Icon: NotificationIcon, path: '/settings/notifications' },
         { id: 'address_book', labelKey: 'settings.addressBook', Icon: ContactsIcon, path: '/settings/address-book' }

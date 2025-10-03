@@ -23,6 +23,7 @@ import WalletPage from '../pages/Wallet.svelte';
 import HistoryPage from '../pages/History.svelte';
 import TransferPage from '../pages/Transfer.svelte';
 import ReceivePage from '../pages/Receive.svelte';
+import CurrencyPage from '../pages/Currency.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -48,6 +49,7 @@ export const protectedRoutes: Route[] = [
   { path: "/wallet", component: WalletPage, isProtected: true },
   { path: "/history", component: HistoryPage, isProtected: true },
   { path: "/transfer", component: TransferPage, isProtected: true },
+  { path: "/currency", component: CurrencyPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [

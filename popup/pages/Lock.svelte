@@ -142,10 +142,11 @@
                 oninput={() => (error = null)}
                 hasError={!!error}
                 errorMessage={error || ''}
+                loading={isLoading}
                 width="100%" />
 
             <Button
-                type="submit"
+          type="submit"
                 disabled={!password.trim() || !isWalletSelected}
                 loading={isLoading}
                 width="100%"
