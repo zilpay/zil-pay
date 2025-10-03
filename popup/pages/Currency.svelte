@@ -1,14 +1,18 @@
-<!-- pages/Currency.svelte (updated) -->
 <script lang="ts">
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { setGlobalState } from 'popup/background/wallet';
+    import { RatesApiOptions } from 'config/api';
+
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
-    import SearchIcon from '../components/icons/Search.svelte';
-    import CurrencyIcon from '../components/icons/Currency.svelte';
     import ActionCard from '../components/ActionCard.svelte';
     import SelectableListItem from '../components/SelectableListItem.svelte';
+    import Modal from '../components/Modal.svelte';
+    import CurrencyEngine from '../modals/CurrencyEngineSelector.svelte';
+    
+    import SearchIcon from '../components/icons/Search.svelte';
+    import CurrencyIcon from '../components/icons/Currency.svelte';
     
     interface Currency {
         code: string;
@@ -60,11 +64,14 @@
         { code: 'IRR', name: 'Iranian Rial', symbol: '﷼' },
         { code: 'SAR', name: 'Saudi Riyal', symbol: '﷼' }
     ];
-    
+
     let searchTerm = $state('');
-    let selectedCurrency = $state($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert || 'BTC');
-    
+    let showEngineModal = $state(false);
+
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const selectedCurrency = $derived(currentWallet?.settings?.currencyConvert ?? 'BTC');
+    const selectedEngine = $derived(currentWallet?.settings?.ratesApiOptions ?? RatesApiOptions.CoinGecko);
+
     const filteredCurrencies = $derived(() => {
         if (!searchTerm) return currencies;
         const term = searchTerm.toLowerCase();
@@ -73,24 +80,50 @@
             c.name.toLowerCase().includes(term)
         );
     });
-    
+
     async function selectCurrency(code: string) {
-        selectedCurrency = code;
         const walletIndex = $globalStore.selectedWallet;
         if (walletIndex >= 0) {
             globalStore.update(state => {
-                const newWallets = [...state.wallets];
-                if (newWallets[walletIndex]?.settings) {
-                    newWallets[walletIndex].settings.currencyConvert = code;
-                }
+                const newWallets = state.wallets.map((wallet, index) => {
+                    if (index === walletIndex && wallet.settings) {
+                        return {
+                            ...wallet,
+                            settings: {
+                                ...wallet.settings,
+                                currencyConvert: code
+                            }
+                        };
+                    }
+                    return wallet;
+                });
                 return { ...state, wallets: newWallets };
             });
             await setGlobalState();
         }
     }
-    
-    function handleEngineSettings() {
-    
+
+    async function handleEngineSelect(engine: RatesApiOptions) {
+        const walletIndex = $globalStore.selectedWallet;
+        if (walletIndex >= 0) {
+            globalStore.update(state => {
+                const newWallets = state.wallets.map((wallet, index) => {
+                    if (index === walletIndex && wallet.settings) {
+                        return {
+                            ...wallet,
+                            settings: {
+                                ...wallet.settings,
+                                ratesApiOptions: engine
+                            }
+                        };
+                    }
+                    return wallet;
+                });
+                return { ...state, wallets: newWallets };
+            });
+            await setGlobalState();
+        }
+        showEngineModal = false;
     }
 </script>
 
@@ -103,8 +136,8 @@
                 Icon={CurrencyIcon}
                 title={$_('currency.engineTitle')}
                 subtitle={$_('currency.engineSubtitle')}
-                tag={$_('currency.engineProvider')[currentWallet.settings.ratesApiOptions]}
-                onaction={handleEngineSettings}
+                tag={String(selectedEngine)}
+                onaction={() => showEngineModal = true}
             />
         </div>
         
@@ -125,7 +158,7 @@
                 {#each filteredCurrencies() as currency (currency.code)}
                     <SelectableListItem
                         label={`${currency.name} ${currency.symbol}`}
-                        sublabel={`(${currency.code})`}
+                        sublabel={currency.code}
                         selected={selectedCurrency === currency.code}
                         onselect={() => selectCurrency(currency.code)}
                     />
@@ -134,6 +167,13 @@
         </div>
     </div>
 </div>
+
+<Modal bind:show={showEngineModal} title={$_('settings.currencyEngine.title')}>
+    <CurrencyEngine 
+        selectedEngine={selectedEngine}
+        onselect={handleEngineSelect} 
+    />
+</Modal>
 
 <style lang="scss">
     .page-container {
@@ -149,8 +189,8 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        padding: 0px var(--padding-side, 20px);
+        gap: 24px;
+        padding: 0 16px 16px 16px;
         min-height: 0;
     }
     
