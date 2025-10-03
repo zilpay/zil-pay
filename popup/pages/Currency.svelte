@@ -9,7 +9,7 @@
     import ActionCard from '../components/ActionCard.svelte';
     import SelectableListItem from '../components/SelectableListItem.svelte';
     import Modal from '../components/Modal.svelte';
-    import CurrencyEngine from '../modals/CurrencyEngineSelector.svelte';
+    import CurrencyEngineSelector from '../modals/CurrencyEngineSelector.svelte';
     
     import SearchIcon from '../components/icons/Search.svelte';
     import CurrencyIcon from '../components/icons/Currency.svelte';
@@ -72,6 +72,12 @@
     const selectedCurrency = $derived(currentWallet?.settings?.currencyConvert ?? 'BTC');
     const selectedEngine = $derived(currentWallet?.settings?.ratesApiOptions ?? RatesApiOptions.CoinGecko);
 
+    const engineNames = $derived({
+        [RatesApiOptions.CoinGecko]: 'Coingecko',
+        [RatesApiOptions.None]: $_('currency.engine.none')
+    });
+    const selectedEngineName = $derived(engineNames[selectedEngine]);
+
     const filteredCurrencies = $derived(() => {
         if (!searchTerm) return currencies;
         const term = searchTerm.toLowerCase();
@@ -131,15 +137,16 @@
     <NavBar title={$_('settings.currency')} />
     
     <div class="content">
-        <div class="engine-section">
-            <ActionCard
-                Icon={CurrencyIcon}
-                title={$_('currency.engineTitle')}
-                subtitle={$_('currency.engineSubtitle')}
-                tag={String(selectedEngine)}
-                onaction={() => showEngineModal = true}
-            />
-        </div>
+        <ActionCard
+            title={$_('currency.engineTitle')}
+            subtitle={$_('currency.engineSubtitle')}
+            tag={selectedEngineName}
+            onaction={() => showEngineModal = true}
+        >
+            {#snippet left()}
+                <CurrencyIcon />
+            {/snippet}
+        </ActionCard>
         
         <div class="currencies-section">
             <div class="search-container">
@@ -168,8 +175,8 @@
     </div>
 </div>
 
-<Modal bind:show={showEngineModal} title={$_('settings.currencyEngine.title')}>
-    <CurrencyEngine 
+<Modal bind:show={showEngineModal} title={$_('currency.engine.title')}>
+    <CurrencyEngineSelector 
         selectedEngine={selectedEngine}
         onselect={handleEngineSelect} 
     />
@@ -179,7 +186,7 @@
     .page-container {
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        height: 100%;
         background: var(--color-neutral-background-base);
         padding: 0;
         box-sizing: border-box;
@@ -190,12 +197,8 @@
         display: flex;
         flex-direction: column;
         gap: 24px;
-        padding: 0 16px 16px 16px;
+        padding: 24px var(--padding-side);
         min-height: 0;
-    }
-    
-    .engine-section {
-        width: 100%;
     }
     
     .currencies-section {
@@ -220,5 +223,6 @@
         gap: 0;
         overflow-y: auto;
         min-height: 0;
+        padding-right: 4px;
     }
 </style>
