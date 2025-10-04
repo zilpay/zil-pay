@@ -17,22 +17,20 @@ export class ProviderService {
 
     try {
       wallet.tokens = wallet.tokens.filter((t) => !t.native); 
-      console.log(this.#state.chains, this.#state.chains[chainIndex], chainIndex);
-      // wallet.tokens = [...chain.ftokens, ...wallet.tokens];
-      // wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
-      //   const pubKeyBytes = hexToUint8Array(account.pubKey);
-      //   const addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
-      //   account.chainHash = chain.hash();
-      //   account.chainId = chain.chainId;
-      //   account.addr = await addr.autoFormat();
-      //   account.addrType = addr.type;
-      //   return account;
-      // }));
-
-      // console.log(JSON.stringify(this.#state, null, 4));
+      wallet.tokens = [...chain.ftokens, ...wallet.tokens];
+      wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
+        const pubKeyBytes = hexToUint8Array(account.pubKey);
+        const addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
+        account.chainHash = chain.hash();
+        account.chainId = chain.chainId;
+        account.addr = await addr.autoFormat();
+        account.addrType = addr.type;
+        return account;
+      }));
+      await this.#state.sync();
 
       sendResponse({
-        resolve: true,
+        resolve: this.#state,
       });
     } catch (err) {
       sendResponse({
@@ -51,7 +49,7 @@ export class ProviderService {
       const keys: Uint8Array[] = wallet.accounts.map((a) => hexToUint8Array(a.pubKey));
 
       await provider.updateBalances(tokens, keys);
-      this.#state.sync();
+      await this.#state.sync();
 
       sendResponse({
         resolve: tokens,

@@ -220,11 +220,9 @@ describe("WalletService through background messaging", () => {
 
       state.chains.push(CHAINS[1]);
       await globalState.wallet.setGlobalState(state, () => null);
-      state = await getGlobalState();
-      await changeChainProvider(1, 1);
-      // state = await getGlobalState();
+      state = await changeChainProvider(1, 1);
 
-      // console.log(state);
+      console.log(state);
     });
   });
 
