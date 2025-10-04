@@ -13,12 +13,16 @@ export async function getGlobalState() {
   const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
   let resolve = warpMessage(data) as BackgroundState;
 
-  if (resolve.appearances == Themes.System) {
-    resolve.appearances = themeDetect();
-  }
+  try {
+    if (resolve.appearances == Themes.System) {
+      resolve.appearances = themeDetect();
+    }
 
-  document.body.setAttribute("theme", resolve.appearances);
-  globalStore.set(resolve);
+    document.body.setAttribute("theme", resolve.appearances);
+    globalStore.set(resolve);
+  } catch {
+    ///
+  }
 
   return resolve;
 }

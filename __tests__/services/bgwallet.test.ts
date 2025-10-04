@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   generateBip39Words,
   generateKeyPair,
@@ -28,17 +28,19 @@ import type {
   WalletFromBip39Params,
   WalletFromPrivateKeyParams,
 } from "../../types/wallet";
-import { WalletSettings } from "../../background/storage";
+import { FToken, WalletSettings } from "../../background/storage";
 import { CipherOrders } from "../../crypto/keychain";
 import { HashTypes } from "../../background/storage";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import '../setupTests';
+import { messageManager } from "../setupTests";
 
 describe("WalletService through background messaging", () => {
   let globalState: GlobalState;
 
   beforeEach(async () => {
     await BrowserStorage.clear();
+    messageManager.onMessage.clearListeners();
     globalState = await GlobalState.fromStorage();
     startBackground(globalState);
   });
@@ -140,7 +142,29 @@ describe("WalletService through background messaging", () => {
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
-      const params: WalletFromBip39Params = {
+      // First, create the imported wallet (as in previous test)
+      const keyPair: IKeyPair = {
+        privateKey: IMPORTED_KEY,
+        publicKey:
+          "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
+        address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
+        slip44: ZILLIQA,
+      };
+
+      const importedParams: WalletFromPrivateKeyParams = {
+        key: keyPair,
+        walletName: "My Imported Wallet",
+        accountName: "Imported Account",
+        chain: CHAINS[0],
+        password: PASSWORD,
+        settings: new WalletSettings(baseSettings),
+      };
+
+      let state = await walletFromPrivateKey(importedParams);
+      expect(state.wallets).toHaveLength(1);
+
+      // Now create the BIP39 wallet
+      const bip39Params: WalletFromBip39Params = {
         mnemonic: WORDS,
         bip39WordList: WORD_LIST,
         walletName: "My BIP39 Wallet",
@@ -151,7 +175,7 @@ describe("WalletService through background messaging", () => {
         settings: new WalletSettings(baseSettings),
       };
 
-      let state = await walletFromBip39Mnemonic(params);
+      state = await walletFromBip39Mnemonic(bip39Params);
 
       expect(state.wallets).toHaveLength(2);
       const wallet = state.wallets[1];
@@ -162,7 +186,6 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts[0].addr).toBe(
         "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
       );
-      console.log(state.chains);
       expect(wallet.accounts[0].slip44).toBe(state.chains[0].slip44);
       expect(wallet.accounts[0].chainId).toBe(state.chains[0].chainId);
       expect(wallet.accounts[0].chainHash).toBe(state.chains[0].hash());
@@ -174,17 +197,38 @@ describe("WalletService through background messaging", () => {
       expect(state.chains[0].chainIds).toEqual([32769, 1]);
       expect(state.chains[0].chainId).toBe(32769);
 
-      const zlp = await fetchFTMeta(0, "zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
-      console.log(zlp);
+      await globalState.wallet.setGlobalState(state, () => null);
 
-      // state.chains.push(CHAINS[1]);
-      // await globalState.wallet.setGlobalState(state, () => null);
+      const zlp = new FToken({
+        name: 'ZilPay wallet',
+        symbol: 'ZLP',
+        decimals: 18,
+        addr: 'zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4',
+        addrType: 0,
+        logo: '',
+        balances: {},
+        rate: 0,
+        default_: false,
+        native: false,
+        chainHash: 208425510
+      });
 
-      // await changeChainProvider(0, 1);
+      wallet.tokens.push(zlp);
+      await globalState.wallet.setGlobalState(state, () => null);
 
+      state = await getGlobalState();
+
+      state.chains.push(CHAINS[1]);
+      await globalState.wallet.setGlobalState(state, () => null);
+      state = await getGlobalState();
+      await changeChainProvider(1, 1);
       // state = await getGlobalState();
 
       // console.log(state);
     });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 });

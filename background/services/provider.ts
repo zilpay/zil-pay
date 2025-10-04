@@ -17,21 +17,22 @@ export class ProviderService {
 
     try {
       wallet.tokens = wallet.tokens.filter((t) => !t.native); 
-      wallet.tokens = [...chain.ftokens, ...wallet.tokens];
-      wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
-        const pubKeyBytes = hexToUint8Array(account.pubKey);
-        const addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
-        account.chainHash = chain.hash();
-        account.chainId = chain.chainId;
-        account.addr = await addr.autoFormat();
-        account.addrType = addr.type;
-        return account;
-      }));
+      console.log(this.#state.chains, this.#state.chains[chainIndex], chainIndex);
+      // wallet.tokens = [...chain.ftokens, ...wallet.tokens];
+      // wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
+      //   const pubKeyBytes = hexToUint8Array(account.pubKey);
+      //   const addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
+      //   account.chainHash = chain.hash();
+      //   account.chainId = chain.chainId;
+      //   account.addr = await addr.autoFormat();
+      //   account.addrType = addr.type;
+      //   return account;
+      // }));
 
-      console.log(JSON.stringify(this.#state, null, 4));
+      // console.log(JSON.stringify(this.#state, null, 4));
 
       sendResponse({
-        resolve: {},
+        resolve: true,
       });
     } catch (err) {
       sendResponse({

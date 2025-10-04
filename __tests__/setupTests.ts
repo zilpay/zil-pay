@@ -115,7 +115,7 @@ type MessageListener = (
 
 let listeners: MessageListener[] = [];
 
-const messageManager = {
+export const messageManager = {
   sendMessage: vi.fn(async (message: any, callback?: (response: any) => void) => {
     const sender: chrome.runtime.MessageSender = { id: EXTENSION_ID };
     
