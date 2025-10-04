@@ -64,7 +64,7 @@ export function processTokenLogo({
 }
 
 export function formExplorerUrl(explorer: IExplorerState, transactionHash: string): string {
-  const baseUrl = explorer.url.endsWith('/')
+ const baseUrl = explorer.url.endsWith('/')
     ? explorer.url.substring(0, explorer.url.length - 1)
     : explorer.url;
 

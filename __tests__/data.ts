@@ -60,12 +60,13 @@ export const STORAGE_V3 = {
 export const EXTENSION_ID = "klnaejjgbibmhlephnhpmaofohgkpgkd";
 
 export const CHAINS = JSON.parse(`[
-  {
-    "name": "Zilliqa proto",
+    {
+    "name": "Zilliqa",
     "chain": "ZIL",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
-      "https://api.zq2-protomainnet.zilliqa.com"
+      "https://api.zilliqa.com",
+      "https://ssn.zilpay.io/api"
     ],
     "features": [],
     "ftokens": [
@@ -81,21 +82,20 @@ export const CHAINS = JSON.parse(`[
         "native": true,
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
         "addr": "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
-        "name": "Zilliqa Scilla",
+        "name": "Zilliqa",
         "symbol": "ZIL",
         "decimals": 12
       }
     ],
-    "chainIds": [32770, 2],
+    "chainIds": [32769, 1],
     "infoURL": "https://www.zilliqa.com/",
-    "testnet": true,
     "shortName": "zilliqa",
     "slip44": 313,
     "explorers": [
       {
         "name": "Otterscan",
-        "icon": "https://explorer.zq2-protomainnet.zilliqa.com/assets/otter-DYFeLtFi.png",
-        "url": "https://explorer.zq2-protomainnet.zilliqa.com",
+        "icon": "https://otterscan.zilliqa.com/assets/otter-DYFeLtFi.png",
+        "url": "https://otterscan.zilliqa.com/",
         "standard": "EIP3091"
       }
     ]

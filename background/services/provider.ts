@@ -28,7 +28,7 @@ export class ProviderService {
         return account;
       }));
 
-      console.log(wallet);
+      console.log(JSON.stringify(this.#state, null, 4));
 
       sendResponse({
         resolve: {},

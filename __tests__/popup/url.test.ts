@@ -60,7 +60,7 @@ describe('Image and URL processing utilities', () => {
     it('should correctly form the explorer URL for a transaction', () => {
       const explorer: IExplorerState = zilliqaChain.explorers[0];
       const txHash = '0x1234567890abcdef';
-      const expectedUrl = `${explorer.url}/tx/${txHash}`;
+      const expectedUrl = `${explorer.url}tx/${txHash}`;
       const result = formExplorerUrl(explorer, txHash);
       expect(result).toBe(expectedUrl);
     });
