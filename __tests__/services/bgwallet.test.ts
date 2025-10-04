@@ -178,7 +178,7 @@ describe("WalletService through background messaging", () => {
       state = await walletFromBip39Mnemonic(bip39Params);
 
       expect(state.wallets).toHaveLength(2);
-      const wallet = state.wallets[1];
+      let wallet = state.wallets[1];
       expect(wallet.walletName).toBe("My BIP39 Wallet");
       expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
       expect(wallet.accounts).toHaveLength(1);
@@ -221,8 +221,16 @@ describe("WalletService through background messaging", () => {
       state.chains.push(CHAINS[1]);
       await globalState.wallet.setGlobalState(state, () => null);
       state = await changeChainProvider(1, 1);
+      wallet = state.wallets[1];
 
-      console.log(state);
+      
+      expect(wallet.accounts[0].chainHash).toBe(state.chains[1].hash());
+      expect(wallet.accounts[0].chainId).toBe(state.chains[1].chainId);
+      expect(wallet.defaultChainHash).toBe(state.chains[0].hash());
+      expect(wallet.tokens[0]).equals(state.chains[1].ftokens[0]);
+      expect(wallet.tokens[0].chainHash).equals(wallet.accounts[0].chainHash);
+      expect(wallet.tokens[0].default_).toBeTruthy();
+      expect(wallet.tokens[0].native).toBeTruthy();
     });
   });
 
