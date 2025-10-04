@@ -31,7 +31,6 @@ interface EthResultRes<T> {
 
 describe("RpcProvider", () => {
   it("test_build_payload", () => {
-    const provider = new RpcProvider(createBscConfig());
     const payload = RpcProvider.buildPayload(EvmMethods.GetBalance, [
       "param1",
       "param2",
@@ -46,7 +45,7 @@ describe("RpcProvider", () => {
   });
 
   it("test_get_balance_scilla", async () => {
-    const address = await fromBech32Address(ZERO_ADDR_BECH32);
+    const address = fromBech32Address(ZERO_ADDR_BECH32);
     const netConf = createZilliqaConfig();
     const zil = new RpcProvider(netConf);
     const payload = RpcProvider.buildPayload(ZilMethods.GetBalance, [

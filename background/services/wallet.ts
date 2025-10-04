@@ -116,7 +116,7 @@ export class WalletService {
     await this.#state.sync();
 
     sendResponse({
-      resolve: this.#state
+      resolve: true,
     });
   }
 

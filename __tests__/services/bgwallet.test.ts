@@ -2,12 +2,15 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   generateBip39Words,
   generateKeyPair,
+  getGlobalState,
   logout,
+  setGlobalState,
   unlockWallet,
   validateBip39Checksum,
   walletFromBip39Mnemonic,
   walletFromPrivateKey,
 } from "../../popup/background/wallet";
+import { changeChainProvider } from "../../popup/background/provider";
 import { GlobalState } from "../../background/state";
 import { startBackground } from "../../background/background";
 import { BrowserStorage } from "../../lib/storage";
@@ -148,7 +151,7 @@ describe("WalletService through background messaging", () => {
         settings: new WalletSettings(baseSettings),
       };
 
-      const state = await walletFromBip39Mnemonic(params);
+      let state = await walletFromBip39Mnemonic(params);
 
       expect(state.wallets).toHaveLength(2);
       const wallet = state.wallets[1];
@@ -159,7 +162,25 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts[0].addr).toBe(
         "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
       );
+      expect(wallet.accounts[0].slip44).toBe(state.chains[0].slip44);
+      expect(wallet.accounts[0].chainId).toBe(state.chains[0].chainId);
+      expect(wallet.accounts[0].chainHash).toBe(state.chains[0].hash());
       expect(state.selectedWallet).toBe(1);
+      expect(state.chains[0].testnet).toBeTruthy();
+      expect(state.chains[0].fallbackEnabled).toBeTruthy();
+      expect(state.chains[0].ftokens.length).toBe(2);
+      expect(state.chains[0].slip44).toBe(313);
+      expect(state.chains[0].chainIds).toEqual([ 32770, 2 ]);
+      expect(state.chains[0].chainId).toBe(32770);
+
+      state.chains.push(CHAINS[1]);
+      await globalState.wallet.setGlobalState(state, () => null);
+
+      await changeChainProvider(0, 1);
+
+      state = await getGlobalState();
+
+      // console.log(state);
     });
   });
 });

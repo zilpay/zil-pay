@@ -46,3 +46,15 @@ export async function fetchFTMeta(walletIndex: number, contract: string) {
   return resolve;
 }
 
+export async function changeChainProvider(walletIndex: number, chainIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.SWICH_CHAIN,
+    payload: { walletIndex, chainIndex },
+  }).send();
+  
+  const resolve = warpMessage(data);
+
+  return resolve;
+}
+
+

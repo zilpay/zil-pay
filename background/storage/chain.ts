@@ -48,12 +48,12 @@ export class ChainConfig implements IChainConfigState {
     this.chainIds = data.chainIds;
     this.chainId = this.chainIds[0];
     this.slip44 = data.slip44;
-    this.diffBlockTime = data.diffBlockTime;
+    this.diffBlockTime = data.diffBlockTime ?? 5;
     this.ens = data.ens ?? null;
     this.explorers = (data.explorers).map(
       (e) => new Explorer(e)
     );
-    this.fallbackEnabled = data.fallbackEnabled;
+    this.fallbackEnabled = data.fallbackEnabled ?? true;
     this.testnet = data.testnet ?? null;
     this.ftokens = (data.ftokens).map(
       (t) => new FToken({

@@ -45,6 +45,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.WALLET_BALANCE_UPDATE:
         core.provider.balanceUpdate(msg.payload.walletIndex, sendResponse);
         return true;
+      case MTypePopup.SWICH_CHAIN:
+        core.provider.swichNetwork(msg.payload.walletIndex, msg.payload.chainIndex, sendResponse);
+        return true;
       case MTypePopup.FT_GET_META:
         core.provider.fetchFtokenMeta(msg.payload.contract, msg.payload.walletIndex, sendResponse);
         return true;
