@@ -1,4 +1,4 @@
-import type { IFTokenState } from "background/storage";
+import type { BackgroundState, IFTokenState } from "background/storage";
 
 import { get } from "svelte/store";
 import { MTypePopup } from "config/stream";
@@ -52,7 +52,9 @@ export async function changeChainProvider(walletIndex: number, chainIndex: numbe
     payload: { walletIndex, chainIndex },
   }).send();
   
-  const resolve = warpMessage(data);
+  const resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
 
   return resolve;
 }

@@ -13,6 +13,7 @@
     import EditIcon from '../components/icons/Edit.svelte';
     import OptionCard from '../components/OptionCard.svelte';
     import { pop } from 'popup/router/navigation';
+    import { changeChainProvider } from 'popup/background/provider';
 
     type DisplayChain = IChainConfigState & { 
         isTestnet: boolean;
@@ -111,21 +112,19 @@
     }
 
     async function handleSelect(chain: DisplayChain) {
-        if (!currentWallet || !currentAccount) return;
+        const chainIndex = $globalStore.chains.findIndex((c) => hashChainConfig(chain.chainIds, chain.slip44, chain.chain) == hashChainConfig(c.chainIds, c.slip44, c.chain));
+
+        if (!currentWallet || !currentAccount || chainIndex < 0) return;
 
         const walletIndex = $globalStore.selectedWallet;
-        const accountIndex = currentWallet.selectedAccount;
 
-        globalStore.update(state => {
-            const newWallets = [...state.wallets];
-            newWallets[walletIndex].accounts[accountIndex].chainHash = chain.hash;
-            newWallets[walletIndex].accounts[accountIndex].chainId = chain.chainId;
-            newWallets[walletIndex].accounts[accountIndex].slip44 = chain.slip44;
-            return { ...state, wallets: newWallets };
-        });
-
-        await setGlobalState();
-        pop();
+        try {
+            await changeChainProvider(walletIndex, chainIndex);
+        } catch (e) {
+            console.warn(e);
+        } finally {
+            pop();
+        }
     }
 
     $effect(() => {
