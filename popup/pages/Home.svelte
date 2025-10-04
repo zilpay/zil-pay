@@ -19,13 +19,14 @@
     import { setGlobalState } from 'popup/background/wallet';
     import { ftBalanceUpdate } from 'popup/background/provider';
     import { clipboardCopy } from 'lib/popup/clipboard';
+    import { getChainTokens } from 'popup/filters/tokens';
 
     const hideBalance = $derived($globalStore.hideBalance);
     const tokensRow = $derived($globalStore.tokensRow);
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
-    const tokens = $derived(currentWallet?.tokens || []);
+    const tokens = $derived(getChainTokens(currentWallet?.tokens ?? [], currentAccount));
 
     let tokensloading = $state(false);
     let error = $state<string | null>(null);
