@@ -47,13 +47,16 @@
             };
 
             globalStore.update(state => {
-                state.book.push(newRecord);
+                if (!state.book) {
+                    state.book = [newRecord];
+                } else {
+                    state.book.push(newRecord);
+                }
                 return state;
             });
             
             await setGlobalState();
             onsuccess();
-
         } catch (err) {
             error = String(err);
         } finally {
@@ -76,14 +79,6 @@
 
     <form class="form" onsubmit={handleAddContact}>
         <SmartInput
-            bind:value={name}
-            placeholder={$_('addressBook.modal.namePlaceholder')}
-            hide={false}
-            showToggle={false}
-            disabled={isLoading}
-            autofocus={true}
-        />
-        <SmartInput
             bind:value={address}
             placeholder={$_('addressBook.modal.addressPlaceholder')}
             hide={false}
@@ -92,7 +87,14 @@
             hasError={!!error}
             errorMessage={error ?? ''}
         />
-
+        <SmartInput
+            bind:value={name}
+            placeholder={$_('addressBook.modal.namePlaceholder')}
+            hide={false}
+            showToggle={false}
+            disabled={isLoading}
+            autofocus={true}
+        />
         <div class="action-button">
             <Button
                 type="submit"
