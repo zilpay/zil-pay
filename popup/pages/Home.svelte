@@ -150,7 +150,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="tokens-grid" class:row-view={tokensRow}>
+                <div class="tokens-grid" class:row-mode={tokensRow || tokens.length === 1}>
                     {#each tokens as token, index (index)}
                         <TokenCard
                             {token}
@@ -271,17 +271,28 @@
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
-        justify-content: flex-start;
-        align-content: start;
         padding-bottom: 16px;
         overflow-y: auto;
-    }
 
-    .tokens-grid > :global(*) {
-        flex: 0 1 148px;
-    }
+        &:not(.row-mode) {
+            justify-content: flex-start;
+            align-content: flex-start;
 
-    .tokens-grid.row-view > :global(*) {
-        flex: 0 1 100%;
+            > :global(*) {
+                flex: 0 0 148px;
+                max-width: 148px;
+            }
+        }
+
+        &.row-mode {
+            flex-direction: column;
+            flex-wrap: nowrap;
+
+            > :global(*) {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
     }
 </style>
