@@ -12,8 +12,7 @@
     import { currentParams } from 'popup/store/route';
     import { hashXORHex } from 'lib/utils/hashing';
 
-
-    let recipientAddress = $state($currentParams.addr ?? '');
+    let recipientAddress = $state('');
     let amount = $state('');
     let selectedToken = $state<IFTokenState | undefined>(undefined);
     let showTokenModal = $state(false);
@@ -23,10 +22,26 @@
     const tokens = $derived<IFTokenState[]>(currentWallet?.tokens ?? []);
 
     $effect(() => {
+        if ($currentParams.addr) {
+            recipientAddress = $currentParams.addr as string;
+        }
+    });
+
+    $effect(() => {
         if (!tokens.length) {
             selectedToken = undefined;
             return;
         }
+
+        if ($currentParams.token) {
+            const tokenAddr = ($currentParams.token as string).toLowerCase();
+            const foundToken = tokens.find(t => t.addr.toLowerCase() === tokenAddr);
+            if (foundToken) {
+                selectedToken = foundToken;
+                return;
+            }
+        }
+
         if (!selectedToken || !tokens.find((token) => token.addr === selectedToken?.addr)) {
             selectedToken = tokens.find((token) => token.native) ?? tokens[0];
         }
@@ -79,10 +94,10 @@
     });
 </script>
 
-<div class="transfer-page">
+<div class="page-container">
     <NavBar title={$_('tokenTransfer.title')} />
     <main class="content">
-        {#if selectedToken && currentAccount }
+        {#if selectedToken && currentAccount}
             <AmountInput
                 bind:value={amount}
                 token={selectedToken}
@@ -132,11 +147,13 @@
 {/if}
 
 <style lang="scss">
-    .transfer-page {
+    .page-container {
         display: flex;
         flex-direction: column;
         height: 100vh;
         background: var(--color-neutral-background-base);
+        padding: 0;
+        box-sizing: border-box;
     }
 
     .content {
@@ -146,6 +163,7 @@
         gap: 24px;
         padding: 24px var(--padding-side);
         overflow-y: auto;
+        min-height: 0;
     }
 
     .recipient-section {
@@ -170,15 +188,15 @@
         background: none;
         color: var(--color-content-icon-secondary);
         cursor: pointer;
-    }
 
-    .contacts-button:active {
-        transform: scale(0.95);
-    }
+        &:active {
+            transform: scale(0.95);
+        }
 
-    .contacts-button :global(svg) {
-        width: 20px;
-        height: 20px;
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+        }
     }
 
     .footer {

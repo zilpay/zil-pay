@@ -37,7 +37,7 @@
     }
 
     function handleSend(addr?: string) {
-        const path = addr ? `/transfer?addr=${addr}` : '/transfer';
+        const path = addr ? `/transfer?token=${addr}` : '/transfer';
         push(path);
     }
 
