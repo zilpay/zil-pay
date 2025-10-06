@@ -1,13 +1,16 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import { pop } from '../router/navigation';
     import LeftArrowIcon from './icons/LedftArrow.svelte';
 
     let { 
         title = '',
-        disabled = false
+        disabled = false,
+        right
     }: {
         title?: string,
-        disabled?: boolean
+        disabled?: boolean,
+        right?: Snippet
     } = $props();
 </script>
 
@@ -16,6 +19,11 @@
         <LeftArrowIcon />
     </button>
     <h1 class="nav-title">{title}</h1>
+    <div class="right-container">
+        {#if right}
+            {@render right()}
+        {/if}
+    </div>
 </nav>
 
 <style lang="scss">
@@ -25,7 +33,6 @@
         width: 100%;
         height: 56px;
         box-sizing: border-box;
-        gap: 4px;
     }
 
     .back-button {
@@ -34,6 +41,7 @@
         cursor: pointer;
         display: flex;
         align-items: center;
+        justify-content: center;
         width: 36px;
         height: 36px;
         color: var(--color-content-text-inverted);
@@ -48,12 +56,21 @@
     }
 
     .nav-title {
+        flex: 1;
         font-size: var(--font-size-xl);
         font-weight: 700;
         line-height: 30px;
         color: var(--color-content-text-inverted);
         margin: 0;
+        text-align: center;
+    }
+
+    .right-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
     }
 </style>
-
-

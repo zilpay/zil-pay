@@ -7,11 +7,10 @@ import { WalletSettings } from '../storage/settings';
 import { HashTypes, WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
-import { AddressType } from 'crypto/address';
 import { uuid } from 'crypto/uuid';
 import { Themes } from 'config/theme';
 import { RatesApiOptions } from 'config/api';
-import { AuthMethod, WalletTypes } from 'config/wallet';
+import { AddressType, AuthMethod, WalletTypes } from 'config/wallet';
 import { Locales } from 'config/locale';
 
 interface WalletIdentities {
@@ -212,6 +211,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         hideBalance: false,
         tokensRow: true,
         chains: [mainChain], 
+        book: [],
     });
 
     return backgroundState;

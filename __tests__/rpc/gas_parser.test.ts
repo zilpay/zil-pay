@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   buildFeeHistoryRequest,
   buildEvmEstimateGasRequest,
@@ -10,9 +10,10 @@ import {
   type GasFeeHistory,
 } from "../../background/rpc/gas_parse";
 import { TransactionRequest } from "../../crypto/tx";
-import { Address, AddressType } from "../../crypto/address";
+import { Address } from "../../crypto/address";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
 import { hexToBigInt } from "../../lib/utils/hex";
+import { AddressType } from "../../config/wallet";
 
 describe("Gas Parser Utilities", () => {
   const mockEvmTx = { to: "0x...", data: "0x..." };

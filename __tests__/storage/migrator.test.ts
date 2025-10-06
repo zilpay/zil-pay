@@ -1,7 +1,6 @@
 import "../setupTests";
 import { describe, it, expect } from "vitest";
 import { migrateToV4 } from "../../background/secure/migrator";
-import { AddressType } from "../../crypto/address";
 import { Themes } from "../../config/theme";
 import {
   BackgroundState,
@@ -11,7 +10,7 @@ import { FToken } from "../../background/storage/ftoken";
 import {
   Wallet,
 } from "../../background/storage/wallet";
-import { WalletTypes, AuthMethod } from "../../config/wallet";
+import { WalletTypes, AuthMethod, AddressType } from "../../config/wallet";
 import { Account } from "../../background/storage/account";
 import { HashTypes, WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
@@ -30,6 +29,7 @@ const createV4Storage = (): Record<string, unknown> => ({
   abbreviatedNumber: true,
   hideBalance: false,
   chains: [],
+  selectedWallet: -1,
 });
 
 describe("migrateToV4", () => {

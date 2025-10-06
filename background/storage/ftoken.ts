@@ -1,4 +1,4 @@
-import { type AddressType } from "crypto/address";
+import type { AddressType } from "config/wallet";
 
 export interface IFTokenState {
   name: string;

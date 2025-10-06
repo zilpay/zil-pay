@@ -1,9 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { Address, AddressType } from "../../crypto/address";
+import { Address } from "../../crypto/address";
 import { KeyPair } from "../../crypto/keypair";
 import { ZILLIQA, ETHEREUM } from "../../config/slip44";
 import { toBech32Address } from "../../lib/zilliqa";
 import { hexToUint8Array, uint8ArrayToHex } from "../../lib/utils/hex";
+import { AddressType } from "../../config/wallet";
 
 describe("Address", () => {
   const zilData = new Uint8Array(20).fill(1);
@@ -37,8 +38,8 @@ describe("Address", () => {
     const derivedAddr = await Address.fromPubKey(keyPair.pubKey, ZILLIQA);
     const expectedAddr = "zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu";
 
-    expect(await derivedAddr.toZilBech32()).toBe(expectedAddr);
-    expect(derivedAddr.type).toBe(AddressType.Bech32);
+    expect(await derivedAddr!.toZilBech32()).toBe(expectedAddr);
+    expect(derivedAddr!.type).toBe(AddressType.Bech32);
   });
 
   it("should derive an ETH address from a public key", async () => {
@@ -46,8 +47,8 @@ describe("Address", () => {
     const derivedAddr = await Address.fromPubKey(keyPair.pubKey, ETHEREUM);
     const expectedAddr = "0xC315295101461753b838E0BE8688E744cf52Dd6b";
 
-    expect(await derivedAddr.toEthChecksum()).toBe(expectedAddr);
-    expect(derivedAddr.type).toBe(AddressType.EthCheckSum);
+    expect(await derivedAddr!.toEthChecksum()).toBe(expectedAddr);
+    expect(derivedAddr!.type).toBe(AddressType.EthCheckSum);
   });
 
   it("should create an ETH address from a valid hex string", async () => {
@@ -96,11 +97,11 @@ describe("Address", () => {
     // Test for Zilliqa
     const addrZil = await Address.fromPubKey(pubKeyBytes, ZILLIQA);
     const expectedAddrZil = "zil1a0vtxuxamd3kltmyzpqdyxqu25vsss8mp58jtu";
-    expect(await addrZil.toZilBech32()).toBe(expectedAddrZil);
+    expect(await addrZil!.toZilBech32()).toBe(expectedAddrZil);
 
     // Test for Ethereum
     const addrEth = await Address.fromPubKey(pubKeyBytes, ETHEREUM);
     const expectedAddrEth = "0xC315295101461753b838E0BE8688E744cf52Dd6b";
-    expect(await addrEth.toEthChecksum()).toBe(expectedAddrEth);
+    expect(await addrEth!.toEthChecksum()).toBe(expectedAddrEth);
   });
 });

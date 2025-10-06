@@ -14,8 +14,7 @@ import {
 } from "./data";
 import { BrowserStorage } from "../lib/storage";
 import { Wallet } from "../background/storage/wallet";
-import { WalletTypes, AuthMethod } from "../config/wallet";
-import { AddressType } from "../crypto/address";
+import { WalletTypes, AuthMethod, AddressType } from "../config/wallet";
 import { CipherOrders } from "../crypto/keychain";
 import { HashTypes } from "../background/storage/argon";
 import { ShaAlgorithms } from "../config/pbkdf2";

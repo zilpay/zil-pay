@@ -12,7 +12,8 @@ import {
 import { verify } from "./zilliqa/schnorr";
 import { uint8ArrayToHex } from "lib/utils/hex";
 import { uint8ArrayToUtf8 } from "lib/utils/utf8";
-import { Address, AddressType } from "./address";
+import { Address } from "./address";
+import { AddressType } from "config/wallet";
 
 const U128LEN = 16;
 
@@ -76,7 +77,7 @@ export class ZILTransactionRequest {
       keypair.pubKey,
       this.code,
       this.data,
-      sig,
+      sig!,
       false,
     );
   }

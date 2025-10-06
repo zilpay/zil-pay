@@ -4,7 +4,7 @@ import {
   generateErc20TransferData,
   NetworkProvider,
 } from "../../background/rpc";
-import { Address, AddressType } from "../../crypto/address";
+import { Address } from "../../crypto/address";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
@@ -16,6 +16,7 @@ import { FToken } from "../../background/storage";
 import { KeyPair } from "../../crypto/keypair";
 import { hexToUint8Array } from "../../lib/utils/hex";
 import { hashXOR } from "../../lib/utils/hashing";
+import { AddressType } from "../../config/wallet";
 
 const pubKeys = [
   hexToUint8Array("0229fff97d3823f556f151623053415a7e8207742928e08dafe400c3d4a02642fd"),

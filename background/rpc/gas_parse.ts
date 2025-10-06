@@ -1,9 +1,9 @@
 import { TransactionRequest } from 'crypto/tx';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
-import { Address } from 'crypto/address';
 import { buildNonceRequest } from 'background/rpc/nonce_parser';
 import { RpcProvider, type JsonRPCRequest } from 'background/rpc/provider';
 import { TypeOf } from 'lib/types';
+import type { Address } from 'crypto/address';
 
 export interface GasFeeHistory {
   maxFee: bigint;

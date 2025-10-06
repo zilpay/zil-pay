@@ -6,7 +6,8 @@ import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 import { utils } from "aes-js";
 import { WORDS, KEY, IMPORTED_KEY } from "../data";
 import { verify } from "../../crypto/zilliqa/schnorr";
-import { Address, AddressType } from "../../crypto/address";
+import { Address } from "../../crypto/address";
+import { AddressType } from "../../config/wallet";
 
 describe("KeyPair", () => {
   describe("fromPrivateKey", () => {
@@ -133,8 +134,8 @@ describe("KeyPair", () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
       const signature = new Uint8Array(65); // Dummy signature
-      const address = await Address.fromStr(
-        "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825",
+      const address = Address.fromStr(
+          "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825"
       );
 
       await expect(

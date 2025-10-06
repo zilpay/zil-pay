@@ -12,7 +12,8 @@ import {
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";
-import { Address, AddressType } from "./address";
+import { Address } from "./address";
+import { AddressType } from "config/wallet";
 
 export class KeyPair {
   #privateKey: Uint8Array;

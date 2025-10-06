@@ -4,8 +4,8 @@ import {
   processNonceResponse,
   type ZilBalance,
 } from "../../background/rpc/nonce_parser";
-import { AddressType } from "../../crypto/address";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
+import { AddressType } from "../../config/wallet";
 
 describe("Nonce Handling Logic", () => {
   describe("buildNonceRequest", () => {

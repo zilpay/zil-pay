@@ -26,6 +26,7 @@ import ReceivePage from '../pages/Receive.svelte';
 import CurrencyPage from '../pages/Currency.svelte';
 import AppearancePage from '../pages/Appearance.svelte';
 import NetworkPage from '../pages/Network.svelte';
+import AddressBookPage from '../pages/AddressBook.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -54,6 +55,7 @@ export const protectedRoutes: Route[] = [
   { path: "/currency", component: CurrencyPage, isProtected: true },
   { path: "/appearance", component: AppearancePage, isProtected: true },
   { path: "/networks", component: NetworkPage, isProtected: true },
+  { path: "/addressbook", component: AddressBookPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [

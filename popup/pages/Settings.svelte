@@ -26,7 +26,7 @@
         { id: 'currency', labelKey: 'settings.currency', Icon: CurrencyIcon, path: '/currency' },
         { id: 'appearance', labelKey: 'settings.appearance', Icon: AppearanceIcon, path: '/appearance' },
         { id: 'notifications', labelKey: 'settings.notifications', Icon: NotificationIcon, path: '/settings/notifications' },
-        { id: 'address_book', labelKey: 'settings.addressBook', Icon: ContactsIcon, path: '/settings/address-book' }
+        { id: 'address_book', labelKey: 'settings.addressBook', Icon: ContactsIcon, path: '/addressbook' }
     ];
 
     const securitySettings = [

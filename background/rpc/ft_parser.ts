@@ -2,10 +2,11 @@ import { RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provid
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
 import { createContract } from 'micro-eth-signer/abi.js';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
-import { Address, AddressType } from 'crypto/address';
+import { Address } from 'crypto/address';
 import { TypeOf } from 'lib/types';
 import { ETHEREUM, ZILLIQA } from 'config/slip44';
 import { hashXOR } from 'lib/utils/hashing';
+import { AddressType } from 'config/wallet';
 
 const ERC20_ABI = [
   { name: 'name', type: 'function', outputs: [{ type: 'string' }] },

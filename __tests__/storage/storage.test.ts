@@ -7,10 +7,9 @@ import { ChainConfig } from "../../background/storage/chain";
 import {
   Wallet,
 } from "../../background/storage/wallet";
-import { WalletTypes, AuthMethod } from "../../config/wallet";
+import { WalletTypes, AuthMethod, AddressType } from "../../config/wallet";
 import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
-import { AddressType } from "../../crypto/address";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";
@@ -75,12 +74,16 @@ describe("BackgroundState", () => {
           vault: "testVault",
         },
       ],
+      tokensRow: false,
       notificationsGlobalEnabled: true,
       locale: "en",
       appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
       chains: CHAINS,
+      book: [],
+      selectedWallet: 0,
+      storageVersion: 0,
     };
 
     const state = new BackgroundState(mockData);

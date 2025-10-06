@@ -14,6 +14,7 @@ export default writable<IBackgroundState>({
   abbreviatedNumber: true,
   hideBalance: false,
   tokensRow: true,
-  chains: [] 
+  chains: [],
+  book: [],
 });
 

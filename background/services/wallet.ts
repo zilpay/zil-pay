@@ -96,6 +96,7 @@ export class WalletService {
     this.#state.tokensRow = payload.tokensRow;
     this.#state.selectedWallet = payload.selectedWallet;
     this.#state.locale = payload.locale;
+    this.#state.book = payload.book;
     this.#state.notificationsGlobalEnabled = payload.notificationsGlobalEnabled;
     this.#state.chains = payload.chains.map((c) => new ChainConfig(c));
 

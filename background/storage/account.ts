@@ -1,7 +1,7 @@
-import type { AddressType } from 'crypto/address';
 import { utils } from 'aes-js';
 import { ChainConfig } from './chain';
 import { KeyPair } from 'crypto/keypair';
+import type { AddressType } from 'config/wallet';
 
 export interface Bip32Account {
   name: string;

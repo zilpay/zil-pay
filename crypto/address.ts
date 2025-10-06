@@ -8,11 +8,7 @@ import {
 import { KeyPair } from "./keypair";
 import { HRP } from "lib/zilliqa/config";
 import { hasHexPrefix, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-
-export enum AddressType {
-  Bech32,
-  EthCheckSum,
-}
+import { AddressType } from "config/wallet";
 
 export class Address {
   readonly #bytes: Uint8Array;

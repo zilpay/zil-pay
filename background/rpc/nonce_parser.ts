@@ -1,10 +1,10 @@
 import { RpcProvider, type JsonRPCRequest } from './provider';
 import { EvmMethods, ZilMethods } from '../../config/jsonrpc';
-import { AddressType } from '../../crypto/address';
 import { addr } from 'micro-eth-signer';
 import { fromBech32Address } from '../../lib/zilliqa';
 import { TypeOf } from 'lib/types';
 import { hexToBigInt, stripHexPrefix } from 'lib/utils/hex';
+import { AddressType } from 'config/wallet';
 
 export interface ZilBalance {
   balance: string;
@@ -16,7 +16,7 @@ export type NonceResponse = string | ZilBalance;
 export async function buildNonceRequest(addressType: AddressType, address: string): Promise<JsonRPCRequest> {
   switch (addressType) {
     case AddressType.Bech32:
-      const base16 = await fromBech32Address(address);
+      const base16 = fromBech32Address(address);
       return RpcProvider.buildPayload(
         ZilMethods.GetBalance,
         [stripHexPrefix(base16).toLowerCase()]

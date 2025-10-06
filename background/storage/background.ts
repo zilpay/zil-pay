@@ -1,3 +1,4 @@
+import type { IAddressBookRecord } from './book';
 import { BrowserStorage, buildObject } from 'lib/storage';
 import { ChainConfig, type IChainConfigState } from './chain';
 import { Wallet, type IWalletState } from './wallet';
@@ -17,6 +18,7 @@ export interface IBackgroundState {
   hideBalance: boolean;
   tokensRow: boolean;
   chains: IChainConfigState[];
+  book: IAddressBookRecord[];
 }
 
 export class BackgroundState implements IBackgroundState {
@@ -30,6 +32,7 @@ export class BackgroundState implements IBackgroundState {
   hideBalance: boolean;
   tokensRow: boolean;
   chains: ChainConfig[];
+  book: IAddressBookRecord[];
 
   static default() {
     return new BackgroundState({
@@ -43,6 +46,7 @@ export class BackgroundState implements IBackgroundState {
       tokensRow: true,
       chains: [],
       storageVersion: 4,
+      book: [],
     });
   }
 
@@ -85,6 +89,7 @@ export class BackgroundState implements IBackgroundState {
     this.abbreviatedNumber = data.abbreviatedNumber;
     this.hideBalance = data.hideBalance;
     this.tokensRow = data.tokensRow;
+    this.book = data.book ?? [];
     this.selectedWallet = Number(data.selectedWallet);
     this.chains = (data.chains).map(
       (c) => new ChainConfig(c)
@@ -115,6 +120,7 @@ export class BackgroundState implements IBackgroundState {
       abbreviatedNumber: this.abbreviatedNumber,
       hideBalance: this.hideBalance,
       tokensRow: this.tokensRow,
+      book: this.book,
       chains: this.chains.map(c => c.toJSON()),
     };
   }

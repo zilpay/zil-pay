@@ -1,6 +1,6 @@
 import { ChainConfig, FToken } from '../storage';
 import { RpcProvider, type JsonRPCResponse, type JsonRPCRequest } from './provider';
-import { Address, AddressType } from '../../crypto/address';
+import { Address } from '../../crypto/address';
 import {
   buildTokenRequests,
   processZilMetadataResponse,
@@ -18,6 +18,7 @@ import { EvmMethods } from 'config/jsonrpc';
 import type { EVMBlock } from './block';
 import { type HistoricalTransaction } from './history_tx';
 import { buildPayloadTxReceipt, buildSendSignedTxRequest, processTxReceiptResponse, processTxSendResponse } from './tx_parse';
+import { AddressType } from 'config/wallet';
 
 export class NetworkProvider {
   config: ChainConfig;

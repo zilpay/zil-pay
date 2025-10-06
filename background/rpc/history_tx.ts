@@ -1,10 +1,11 @@
 import { TransactionReceipt } from 'crypto/tx';
 import { uint8ArrayToBigIntBigEndian } from 'crypto/number';
 import { HEX_PREFIX, uint8ArrayToHex } from 'lib/utils/hex';
-import { Address, AddressType } from 'crypto/address';
+import { Address } from 'crypto/address';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import { ETHEREUM } from 'config/slip44';
 import { initSig } from "micro-eth-signer/utils.js";
+import { AddressType } from 'config/wallet';
 
 
 export enum TransactionStatus {
