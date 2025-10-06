@@ -37,7 +37,8 @@
     }
 
     function handleSend(addr?: string) {
-        push("/transfer");
+        const path = addr ? `/transfer?addr=${addr}` : '/transfer';
+        push(path);
     }
 
     function handleReceive() {

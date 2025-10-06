@@ -30,9 +30,9 @@ import NetworkPage from '../pages/Network.svelte';
 
 export type ParamsRecord = Record<string, string | null>;
 export interface Route {
-  path: string;
-  component: Component;
-  isProtected?: boolean;
+    path: string;
+    component: Component;
+    isProtected?: boolean;
 }
 
 export const notFoundRoute: Route = {
@@ -75,68 +75,77 @@ export const publicRoutes: Route[] = [
 export const routes = [...protectedRoutes, ...publicRoutes];
 
 export function matchRoute(url: string, routes: Route[]): Route | null {
-  const urlParts = url.split("/").filter(Boolean);
+    const [pathname] = url.split('?');
+    const urlParts = pathname.split("/").filter(Boolean);
 
-  for (const route of routes) {
-    const routeParts = route.path.split("/").filter(Boolean);
+    for (const route of routes) {
+        const routeParts = route.path.split("/").filter(Boolean);
 
-    if (!isMatchingLength(routeParts, urlParts)) {
-      continue;
-    }
-
-    let isMatch = true;
-
-    for (let i = 0; i < routeParts.length; i++) {
-      const routePart = routeParts[i];
-      const urlPart = urlParts[i];
-
-      if (routePart.startsWith(":")) {
-        const isOptional = routePart.endsWith("?");
-        if (!urlPart && !isOptional) {
-          isMatch = false;
-          break;
+        if (!isMatchingLength(routeParts, urlParts)) {
+            continue;
         }
-        continue;
-      }
 
-      if (routePart !== urlPart) {
-        isMatch = false;
-        break;
-      }
+        let isMatch = true;
+
+        for (let i = 0; i < routeParts.length; i++) {
+            const routePart = routeParts[i];
+            const urlPart = urlParts[i];
+
+            if (routePart.startsWith(":")) {
+                const isOptional = routePart.endsWith("?");
+                if (!urlPart && !isOptional) {
+                    isMatch = false;
+                    break;
+                }
+                continue;
+            }
+
+            if (routePart !== urlPart) {
+                isMatch = false;
+                break;
+            }
+        }
+
+        if (isMatch) {
+            return route;
+        }
     }
 
-    if (isMatch) {
-      return route;
-    }
-  }
-
-  return null;
+    return null;
 }
 
 export function parseUrlParams(pattern: string, url: string): ParamsRecord {
-  const params: ParamsRecord = {};
-  const patternParts: string[] = pattern.split("/").filter(Boolean);
-  const urlParts: string[] = url.split("/").filter(Boolean);
+    const params: ParamsRecord = {};
+    const [pathname, search] = url.split('?');
+    const patternParts: string[] = pattern.split("/").filter(Boolean);
+    const urlParts: string[] = pathname.split("/").filter(Boolean);
 
-  for (let i = 0; i < patternParts.length; i++) {
-    const patternPart = patternParts[i];
+    for (let i = 0; i < patternParts.length; i++) {
+        const patternPart = patternParts[i];
 
-    if (!patternPart.startsWith(":")) {
-      continue;
+        if (!patternPart.startsWith(":")) {
+            continue;
+        }
+
+        let paramName = patternPart.slice(1);
+        const isOptional = paramName.endsWith("?");
+
+        if (isOptional) {
+            paramName = paramName.slice(0, -1);
+        }
+
+        const value = urlParts[i];
+        params[paramName] = value || null;
     }
 
-    let paramName = patternPart.slice(1);
-    const isOptional = paramName.endsWith("?");
-
-    if (isOptional) {
-      paramName = paramName.slice(0, -1);
+    if (search) {
+        const searchParams = new URLSearchParams(search);
+        searchParams.forEach((value, key) => {
+            params[key] = value;
+        });
     }
 
-    const value = urlParts[i];
-    params[paramName] = value || null;
-  }
-
-  return params;
+    return params;
 }
 
 function isMatchingLength(routeParts: string[], urlParts: string[]): boolean {

@@ -9,9 +9,11 @@
     import TokenSelector from '../modals/TokenSelectorModal.svelte';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
+    import { currentParams } from 'popup/store/route';
     import { hashXORHex } from 'lib/utils/hashing';
 
-    let recipientAddress = $state('');
+
+    let recipientAddress = $state($currentParams.addr ?? '');
     let amount = $state('');
     let selectedToken = $state<IFTokenState | undefined>(undefined);
     let showTokenModal = $state(false);
@@ -19,7 +21,6 @@
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
     const tokens = $derived<IFTokenState[]>(currentWallet?.tokens ?? []);
-    const currencyCode = $derived(currentWallet?.settings?.currencyConvert);
 
     $effect(() => {
         if (!tokens.length) {

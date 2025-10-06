@@ -15,9 +15,9 @@
     }
 
     function handleRouteChange() {
-        const path = window.location.hash.slice(1) || '/';
-        const route = findRouteByHash(path);
-        const params = parseUrlParams(route.path, path);
+        const hash = window.location.hash.slice(1) || '/';
+        const route = findRouteByHash(hash);
+        const params = parseUrlParams(route.path, hash);
 
         currentParams.set(params);
 
