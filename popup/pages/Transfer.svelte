@@ -1,209 +1,186 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
     import NavBar from '../components/NavBar.svelte';
-    import AddressCopy from '../components/AddressCopy.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import Button from '../components/Button.svelte';
-    import TokenCard from '../components/TokenCard.svelte';
     import ContactsIcon from '../components/icons/Contacts.svelte';
+    import AmountInput from '../components/AmountInput.svelte';
+    import Modal from '../components/Modal.svelte';
+    import TokenSelector from '../modals/TokenSelectorModal.svelte';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { hashXORHex } from 'lib/utils/hashing';
 
     let recipientAddress = $state('');
     let amount = $state('');
+    let selectedToken = $state<IFTokenState | undefined>(undefined);
+    let showTokenModal = $state(false);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
-    
-    // For now, let's just use the native token as the selected one.
-    // A proper selection mechanism should be implemented later.
-    const selectedToken = $derived(currentWallet?.tokens.find(t => t.native) || currentWallet?.tokens[0] as IFTokenState | undefined);
+    const tokens = $derived<IFTokenState[]>(currentWallet?.tokens ?? []);
+    const currencyCode = $derived(currentWallet?.settings?.currencyConvert ?? '');
 
-    function setAmountPercentage(percentage: number) {
-        if (!selectedToken || !currentAccount) return;
+    $effect(() => {
+        if (!tokens.length) {
+            selectedToken = undefined;
+            return;
+        }
+        if (!selectedToken || !tokens.find((token) => token.addr === selectedToken?.addr)) {
+            selectedToken = tokens.find((token) => token.native) ?? tokens[0];
+        }
+    });
 
-        const balanceStr = selectedToken.balances[hashXORHex(currentAccount.pubKey)];
-        
-        if (balanceStr) {
-            const balance = Number(balanceStr);
-            if (!isNaN(balance)) {
-                amount = ((balance / (10 ** selectedToken.decimals)) * (percentage / 100)).toString();
-            }
+    function handleTokenSelect(token: IFTokenState) {
+        selectedToken = token;
+        showTokenModal = false;
+    }
+
+    function handleTokenSwitch() {
+        if (tokens.length > 1) {
+            showTokenModal = true;
         }
     }
+
+    function formatUnits(rawValue: string, decimals: number) {
+        try {
+            const base = BigInt(rawValue);
+            if (decimals === 0) {
+                return base.toString();
+            }
+            const divisor = BigInt(10) ** BigInt(decimals);
+            const integer = base / divisor;
+            const fraction = base % divisor;
+            if (fraction === 0n) {
+                return integer.toString();
+            }
+            const fractionString = fraction.toString().padStart(decimals, '0').replace(/0+$/, '');
+            return fractionString ? `${integer.toString()}.${fractionString}` : integer.toString();
+        } catch {
+            return '0';
+        }
+    }
+
+    function handleMaxAmount() {
+        if (!selectedToken || !currentAccount) return;
+        const balance = selectedToken.balances[hashXORHex(currentAccount.pubKey)] ?? '0';
+        amount = formatUnits(balance, selectedToken.decimals);
+    }
+
+    const isContinueDisabled = $derived(() => {
+        if (!selectedToken || !currentAccount) return true;
+        const trimmedAmount = amount.trim();
+        const trimmedRecipient = recipientAddress.trim();
+        if (!trimmedAmount || !trimmedRecipient) return true;
+        const numeric = Number(trimmedAmount);
+        if (!Number.isFinite(numeric) || numeric <= 0) return true;
+        return false;
+    });
 </script>
 
-<div class="page-container">
+<div class="transfer-page">
     <NavBar title={$_('tokenTransfer.title')} />
-
-    {#if currentAccount && selectedToken}
-        <div class="content">
-            <div class="sender-section">
-                <h2 class="section-title">{$_('tokenTransfer.senderAccount')}</h2>
-                <AddressCopy name={currentAccount.name} address={currentAccount.addr} />
-            </div>
-
-            <div class="form-container">
-                <div class="section">
-                    <h2 class="section-title">{$_('tokenTransfer.selectToken')}</h2>
-                    <TokenCard
-                        token={selectedToken}
-                        account={currentAccount}
-                        hide={false}
-                    />
-                </div>
-
-                <div class="section">
-                    <h2 class="section-title">{$_('tokenTransfer.sendTo')}</h2>
-                    <SmartInput
-                        bind:value={recipientAddress}
-                        placeholder={$_('tokenTransfer.enterAddress')}
-                        hide={false}
-                        showToggle={false}
-                    >
-                        {#snippet rightAction()}
-                            <button class="contacts-button">
-                                <ContactsIcon />
-                            </button>
-                        {/snippet}
-                    </SmartInput>
-                </div>
-
-                <div class="section">
-                    <h2 class="section-title">{$_('tokenTransfer.tokenAmount')}</h2>
-                    <SmartInput
-                        bind:value={amount}
-                        placeholder={$_('tokenTransfer.enterAmount')}
-                        hide={false}
-                        showToggle={false}
-                    />
-                    <div class="percentage-buttons">
-                        <button onclick={() => setAmountPercentage(10)}>10%</button>
-                        <button onclick={() => setAmountPercentage(25)}>25%</button>
-                        <button onclick={() => setAmountPercentage(50)}>50%</button>
-                        <button onclick={() => setAmountPercentage(100)}>100%</button>
-                    </div>
-                </div>
-            </div>
+    <main class="content">
+        <AmountInput
+            bind:value={amount}
+            token={selectedToken}
+            account={currentAccount}
+            currency={currencyCode}
+            onTokenSelect={tokens.length > 1 ? handleTokenSwitch : undefined}
+            onMax={handleMaxAmount}
+        />
+        <div class="recipient-section">
+            <span class="section-label">{$_('tokenTransfer.sendTo')}</span>
+            <SmartInput
+                bind:value={recipientAddress}
+                placeholder={$_('tokenTransfer.enterAddress')}
+                hide={false}
+                showToggle={false}
+            >
+                {#snippet rightAction()}
+                    <button type="button" class="contacts-button" aria-label="Contacts">
+                        <ContactsIcon />
+                    </button>
+                {/snippet}
+            </SmartInput>
         </div>
-        <div class="footer">
-            <Button>
-                {$_('tokenTransfer.continue')}
-            </Button>
-        </div>
-    {:else}
-        <div class="content content-loading">
-            <p>{$_('tokenTransfer.loading') || 'Loading...'}</p>
-        </div>
-    {/if}
+    </main>
+    <div class="footer">
+        <Button width="100%" height={48} disabled={isContinueDisabled}>
+            {$_('tokenTransfer.continue')}
+        </Button>
+    </div>
 </div>
 
+{#if tokens.length > 1}
+    <Modal
+        bind:show={showTokenModal}
+        title={$_('receive.selectTokenTitle')}
+        onClose={() => (showTokenModal = false)}
+    >
+        {#if currentAccount}
+            <TokenSelector
+                tokens={tokens}
+                account={currentAccount}
+                selectedToken={selectedToken}
+                onSelect={handleTokenSelect}
+            />
+        {/if}
+    </Modal>
+{/if}
+
 <style lang="scss">
-    .page-container {
+    .transfer-page {
         display: flex;
         flex-direction: column;
         height: 100vh;
         background: var(--color-neutral-background-base);
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    :global(.nav-bar) {
-        margin-left: var(--padding-side);
-        margin-right: var(--padding-side);
     }
 
     .content {
         flex: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .content-loading {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: var(--color-content-text-secondary);
-        padding-bottom: 24px;
-    }
-
-    .sender-section {
-        margin-bottom: 24px;
-        flex-shrink: 0;
-        margin: var(--padding-side);
-    }
-
-    .section-title {
-        color: var(--color-content-text-secondary);
-        font-size: 12px;
-        font-family: Geist;
-        font-weight: 400;
-        line-height: 16px;
-        margin-bottom: 8px;
-    }
-
-    .form-container {
-        background: var(--color-neutral-background-container);
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
-        padding: var(--padding-side);
         display: flex;
         flex-direction: column;
         gap: 24px;
-        flex: 1;
+        padding: 24px var(--padding-side);
+        overflow-y: auto;
     }
-    
-    .section {
+
+    .recipient-section {
         display: flex;
         flex-direction: column;
+        gap: 8px;
+    }
+
+    .section-label {
+        font-size: var(--font-size-small);
+        font-weight: 500;
+        color: var(--color-content-text-secondary);
     }
 
     .contacts-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 28px;
+        height: 28px;
+        border: none;
+        background: none;
+        color: var(--color-content-icon-secondary);
+        cursor: pointer;
     }
 
-    .percentage-buttons {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        margin-top: 8px;
+    .contacts-button:active {
+        transform: scale(0.95);
+    }
 
-        button {
-            padding: 8px;
-            background: var(--color-controls-tabs-fg);
-            border-radius: 8px;
-            border: 1px solid transparent;
-            cursor: pointer;
-            text-align: center;
-            color: var(--color-content-text-inverted);
-            font-size: 12px;
-            font-family: Geist;
-            font-weight: 400;
-            line-height: 16px;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-
-            &:hover {
-                background: var(--color-button-regular-quaternary-hover);
-                border-color: var(--color-cards-regular-border-hover);
-            }
-        }
+    .contacts-button :global(svg) {
+        width: 20px;
+        height: 20px;
     }
 
     .footer {
-        padding: 16px 0;
-        background: var(--color-neutral-background-container);
-        flex-shrink: 0;
-        padding-left: 16px;
-        padding-right: 16px;
+        padding: 24px var(--padding-side) calc(16px + env(safe-area-inset-bottom));
+        background: var(--color-neutral-background-base);
     }
 </style>
-
-
