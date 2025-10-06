@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
-    import { from, greaterThan, equal } from 'dnum';
+    import { from, greaterThan, equal, type Dnum } from 'dnum';
     import FastImg from './FastImg.svelte';
     import DownIcon from './icons/Down.svelte';
     import { hashXORHex } from 'lib/utils/hashing';
@@ -31,7 +31,7 @@
     const rawBalance = $derived(token.balances[hashXORHex(account.pubKey)] ?? 0);
     const balance = $derived(() => {
         if (!token || !account) return from(0, token.decimals);
-        return [BigInt(rawBalance), 18];
+        return [BigInt(rawBalance), token.decimals] as Dnum;
     });
     const availableDisplay = $derived(() => {
         return abbreviateNumber(rawBalance, token.decimals);
@@ -56,7 +56,10 @@
         return greaterThan(inputAmount(), balance());
     });
 
-    const approxDisplay = $derived("-");
+    const approxDisplay = $derived(() => {
+        // TODO: add rates.
+        return "-";
+    });
     const canSelectToken = $derived(Boolean(onTokenSelect && token) && !disabled);
     const showMax = $derived(Boolean(onMax && token) && !disabled);
 
@@ -103,7 +106,7 @@
         {/if}
     </div>
     <div class="bottom-row">
-        <span class="approx">{approxDisplay}</span>
+        <span class="approx">{approxDisplay()}</span>
         <div class="availability">
             <span class="balance">
                 <span class="balance-value">{availableDisplay()}</span>
