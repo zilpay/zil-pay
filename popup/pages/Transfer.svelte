@@ -19,7 +19,7 @@
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
     const tokens = $derived<IFTokenState[]>(currentWallet?.tokens ?? []);
-    const currencyCode = $derived(currentWallet?.settings?.currencyConvert ?? '');
+    const currencyCode = $derived(currentWallet?.settings?.currencyConvert);
 
     $effect(() => {
         if (!tokens.length) {
@@ -81,14 +81,15 @@
 <div class="transfer-page">
     <NavBar title={$_('tokenTransfer.title')} />
     <main class="content">
-        <AmountInput
-            bind:value={amount}
-            token={selectedToken}
-            account={currentAccount}
-            currency={currencyCode}
-            onTokenSelect={tokens.length > 1 ? handleTokenSwitch : undefined}
-            onMax={handleMaxAmount}
-        />
+        {#if selectedToken && currentAccount }
+            <AmountInput
+                bind:value={amount}
+                token={selectedToken}
+                account={currentAccount}
+                onTokenSelect={tokens.length > 1 ? handleTokenSwitch : undefined}
+                onMax={handleMaxAmount}
+            />
+        {/if}
         <div class="recipient-section">
             <span class="section-label">{$_('tokenTransfer.sendTo')}</span>
             <SmartInput

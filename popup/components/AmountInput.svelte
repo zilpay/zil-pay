@@ -1,11 +1,12 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
+    import { from, greaterThan, equal } from 'dnum';
     import FastImg from './FastImg.svelte';
     import DownIcon from './icons/Down.svelte';
-    import { abbreviateNumber } from 'popup/mixins/numbers';
     import { hashXORHex } from 'lib/utils/hashing';
     import { processTokenLogo } from 'lib/popup/url';
     import globalStore from 'popup/store/global';
+    import { abbreviateNumber } from 'popup/mixins/numbers';
 
     let {
         value = $bindable(''),
@@ -16,21 +17,45 @@
         onTokenSelect = undefined,
         onMax = undefined
     }: {
+        token: IFTokenState;
+        account: IAccountState;
         value?: string;
-        token?: IFTokenState;
-        account?: IAccountState;
         placeholder?: string;
         disabled?: boolean;
         onTokenSelect?: () => void;
         onMax?: () => void;
     } = $props();
 
-    const logo = $derived(token ? processTokenLogo({ token, theme: $globalStore.appearances }) : '');
-    const availableDisplay = $derived(() => {
-        if (!token || !account) return '0';
-        const balance = token.balances[hashXORHex(account.pubKey)] ?? 0;
-        return abbreviateNumber(balance, token.decimals);
+    const logo = $derived(processTokenLogo({ token, theme: $globalStore.appearances }));
+    
+    const rawBalance = $derived(token.balances[hashXORHex(account.pubKey)] ?? 0);
+    const balance = $derived(() => {
+        if (!token || !account) return from(0, token.decimals);
+        return [BigInt(rawBalance), 18];
     });
+    const availableDisplay = $derived(() => {
+        return abbreviateNumber(rawBalance, token.decimals);
+    });
+
+    const inputAmount = $derived(() => {
+        if (!value.trim() || !token) return from(0, token.decimals);
+        try {
+            return from(value, token.decimals);
+        } catch {
+            return from(0, token.decimals);
+        }
+    });
+
+    const isMaxSelected = $derived(() => {
+        if (!value.trim() || !token) return false;
+        return equal(inputAmount(), balance());
+    });
+
+    const isOverBalance = $derived(() => {
+        if (!value.trim() || !token) return false;
+        return greaterThan(inputAmount(), balance());
+    });
+
     const approxDisplay = $derived("-");
     const canSelectToken = $derived(Boolean(onTokenSelect && token) && !disabled);
     const showMax = $derived(Boolean(onMax && token) && !disabled);
@@ -84,7 +109,13 @@
                 <span class="balance-value">{availableDisplay()}</span>
             </span>
             {#if showMax}
-                <button type="button" class="max-button" onclick={handleMaxClick}>
+                <button 
+                    type="button" 
+                    class="max-button" 
+                    class:selected={isMaxSelected()}
+                    class:error={isOverBalance()}
+                    onclick={handleMaxClick}
+                >
                     max
                 </button>
             {/if}
@@ -226,14 +257,20 @@
         font-weight: 500;
         line-height: 16px;
         cursor: pointer;
-        transition: background-color 0.2s ease, transform 0.15s ease;
+        transition: background-color 0.2s ease;
 
         &:hover {
             background: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 20%, transparent);
         }
 
-        &:active {
-            transform: scale(0.97);
+        &.selected {
+            background: var(--color-warning-background);
+            color: var(--color-warning-text);
+        }
+
+        &.error {
+            background: var(--color-error-background);
+            color: var(--color-error-text);
         }
     }
 </style>

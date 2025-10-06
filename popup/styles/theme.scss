@@ -117,6 +117,11 @@
   --color-notification-positive-background: #43cc71;
   --color-notification-positive-content: #43cc71;
   --color-positive-border-primary:#4ce67f;
+
+  --color-warning-background: #fff3cd;
+  --color-warning-text: #856404;
+  --color-error-background: #ffe5e5;
+  --color-error-text: #d93025;
 }
 
 :global(body[theme="dark"]) {
@@ -237,4 +242,9 @@
   --color-positive-border-primary: #4ce67f;
 
   --color-positive-text-primary: #43cc71; // TODO: add light
+
+  --color-warning-background: #3d3519;
+  --color-warning-text: #ffc107;
+  --color-error-background: #3d1919;
+  --color-error-text: #ff6b6b;
 }
