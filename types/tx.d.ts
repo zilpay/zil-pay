@@ -23,6 +23,7 @@ export interface TokenTransferMetadata {
   symbol: string;
   name: string;
   to: string;
+  amount: string;
 }
 
 export interface TransactionRequestEVM {

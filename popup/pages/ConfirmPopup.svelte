@@ -14,6 +14,7 @@
     import { push } from 'popup/router/navigation';
     import { rejectConfirm } from 'popup/background/transactions';
     import { getGlobalState } from 'popup/background/wallet';
+    import { abbreviateNumber } from 'popup/mixins/numbers';
 
     const GAS_SPEEDS = {
         LOW: 0,
@@ -27,11 +28,14 @@
     let expandedSpeed = $state<GasSpeed | null>(null);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const nativeToken = $derived(wallet.tokens[0]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
     const chain = $derived(getAccountChain($globalStore.selectedWallet));
     const confirmLastIndex = $derived(wallet.confirm.length - 1);
     const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
     const book = $derived($globalStore.book || []);
+    const token = $derived(confirmTx.token ?? nativeToken);
+    const tokenAmount = $derived(confirmTx.token?.amount ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
 
     const recipientName = $derived(() => {
         if (!confirmTx?.token?.to) return null;
@@ -94,9 +98,9 @@
     <main class="content">
         {#if confirmTx?.token}
             <TransferSummary
-                amount="0.212357"
-                symbol={confirmTx.token.symbol}
-                fiatValue="0.00...0001 BTC"
+                amount={abbreviateNumber(tokenAmount, token.decimals)}
+                symbol={confirmTx.token?.symbol ?? nativeToken.symbol}
+                fiatValue="-"
             />
 
             <TransferRoute

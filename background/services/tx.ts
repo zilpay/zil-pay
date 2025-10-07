@@ -32,7 +32,8 @@ export class TransactionService {
         decimals: token.decimals,
         symbol: token.symbol,
         name: token.name,
-        to: payload.to
+        to: payload.to,
+        amount: payload.amount,
       };
 
       const confirmTx: IConfirmState = {

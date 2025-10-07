@@ -117,7 +117,7 @@
                 accountIndex: currentWallet.selectedAccount,
                 tokenAddr: selectedToken.addr,
                 to: recipientAddress,
-                amount: dn.toString(inputAmount())
+                amount: inputAmount()[0].toString(),
             };
 
             await buildTokenTransfer(params);
