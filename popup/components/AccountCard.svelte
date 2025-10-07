@@ -18,18 +18,7 @@
     const truncatedAddress = $derived(truncate(address, 6, 6));
 
     function handleClick() {
-        if (!selected) {
-            onclick();
-        }
-    }
-
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            if (!selected) {
-                onclick();
-            }
-        }
+        onclick();
     }
 </script>
 
@@ -37,9 +26,7 @@
     class="account-card"
     class:selected
     onclick={handleClick}
-    onkeydown={handleKeydown}
     type="button"
-    disabled={selected}
 >
     <div class="icon-container">
         <Jazzicon seed={address} diameter={48} onclick={() => {}} />
@@ -79,8 +66,6 @@
         &.selected {
             background: var(--color-cards-regular-base-selected);
             outline-color: var(--color-neutral-tag-purple-border);
-            cursor: default;
-            pointer-events: none;
         }
 
         &:disabled {

@@ -18,7 +18,10 @@
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
 
     async function handleAccountSelect(index: number) {
-        if (!currentWallet || index === selectedAccountIndex) return;
+        if (!currentWallet || index === selectedAccountIndex) {
+            push("/");
+            return;
+        };
 
         const walletIndex = $globalStore.selectedWallet;
         
@@ -32,6 +35,7 @@
         });
 
         await setGlobalState();
+        push("/");
     }
 
     function handleAddAccount() {
