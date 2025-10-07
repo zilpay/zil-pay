@@ -85,11 +85,15 @@
 
     const isContinueDisabled = $derived(() => {
         if (!selectedToken || !currentAccount) return true;
+
         const trimmedAmount = amount.trim();
         const trimmedRecipient = recipientAddress.trim();
+
         if (!trimmedAmount || !trimmedRecipient) return true;
+
         const numeric = Number(trimmedAmount);
-        if (!Number.isFinite(numeric) || numeric <= 0) return true;
+
+        if (!Number.isFinite(numeric)) return true;
         return false;
     });
 
@@ -150,7 +154,7 @@
         <Button 
             width="100%" 
             height={48} 
-            disabled={isContinueDisabled}
+            disabled={isContinueDisabled()}
             loading={isLoading}
             onclick={handleContinue}
         >
