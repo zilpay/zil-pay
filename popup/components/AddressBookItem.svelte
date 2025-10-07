@@ -3,6 +3,9 @@
     import { truncate } from 'popup/mixins/address';
     import Jazzicon from './Jazzicon.svelte';
     import CopyButton from './CopyButton.svelte';
+    import ScillaIcon from './icons/Scilla.svelte';
+    import SolidityIcon from './icons/Solidity.svelte';
+    import { AddressType } from 'config/wallet';
 
     let {
         record,
@@ -33,7 +36,16 @@
     tabindex="0"
 >
     <div class="main-content">
-        <Jazzicon seed={record.address} diameter={48} />
+        <div class="avatar-container">
+            <Jazzicon seed={record.address} diameter={48} />
+            <div class="address-type-badge">
+                {#if record.addrType === AddressType.Bech32}
+                    <ScillaIcon class="icon"/>
+                {:else if record.addrType === AddressType.EthCheckSum}
+                    <SolidityIcon class="icon" />
+                {/if}
+            </div>
+        </div>
         <div class="info-container">
             <div class="name">{record.name}</div>
             <CopyButton value={truncatedAddress} />
@@ -67,6 +79,33 @@
         min-width: 0;
     }
 
+    .avatar-container {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .address-type-badge {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-neutral-background-base);
+        border-radius: 50%;
+        border: 2px solid var(--color-neutral-background-base);
+
+        :global(svg) {
+            width: 16px;
+            height: 16px;
+        }
+        :global(.icon > path) {
+            fill: var(--color-content-text-secondary);
+        }
+    }
+
     .info-container {
         display: flex;
         flex-direction: column;
@@ -76,7 +115,7 @@
     }
 
     .name {
-        color: var(--color-content-text-inverted, #141415);
+        color: var(--color-content-text-inverted);
         font-size: 14px;
         font-family: Geist;
         font-weight: 600;
