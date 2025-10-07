@@ -1,8 +1,6 @@
 <script lang="ts">
     import { truncate } from 'popup/mixins/address';
-    import { clipboardCopy } from 'lib/popup/clipboard';
-    import CopyIcon from './icons/Copy.svelte';
-    import SuccessIcon from './icons/Success.svelte';
+    import CopyButton from './CopyButton.svelte';
 
     let {
         name,
@@ -14,22 +12,7 @@
         onclick?: () => void;
     } = $props();
 
-    let isCopied = $state(false);
-
     const truncatedAddress = $derived(truncate(address, 6, 6));
-
-    async function handleCopy(event: MouseEvent) {
-        event.stopPropagation();
-        if (isCopied) return;
-
-        const success = await clipboardCopy(address);
-        if (success) {
-            isCopied = true;
-            setTimeout(() => {
-                isCopied = false;
-            }, 1000);
-        }
-    }
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -54,16 +37,7 @@
 
     <div class="info-container">
         <div class="account-name">{name}</div>
-        <button type="button" class="address-line" onclick={handleCopy} aria-label="Copy address">
-            <span class="account-address">{truncatedAddress}</span>
-            <div class="copy-icon-wrapper">
-                {#if isCopied}
-                    <SuccessIcon />
-                {:else}
-                    <CopyIcon />
-                {/if}
-            </div>
-        </button>
+        <CopyButton value={truncatedAddress} />
     </div>
 </div>
 
@@ -133,43 +107,5 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .address-line {
-        display: inline-flex;
-        align-items: center;
-        align-self: flex-start;
-        gap: 8px;
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 4px 8px;
-        margin: -4px -8px;
-        border-radius: 8px;
-        transition: background-color 0.2s ease;
-        font-family: inherit;
-
-        &:hover {
-            background-color: var(--color-button-regular-quaternary-default);
-        }
-    }
-
-    .account-address {
-        font-size: var(--font-size-large);
-        color: var(--color-content-text-secondary);
-        font-family: Geist, monospace;
-        line-height: 20px;
-    }
-
-    .copy-icon-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--color-content-icon-accent-secondary);
-        
-        :global(svg) {
-            width: 16px;
-            height: 16px;
-        }
     }
 </style>
