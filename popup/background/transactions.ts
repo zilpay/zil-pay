@@ -17,6 +17,18 @@ export async function buildTokenTransfer(params: BuildTokenTransferParams) {
   return resolve;
 }
 
+export async function rejectConfirm(index: number, walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.REJECT_CONFIRM,
+    payload: {
+      index,
+      walletIndex,
+    },
+  }).send();
+  
+  warpMessage(data);
+}
+
 
 
 

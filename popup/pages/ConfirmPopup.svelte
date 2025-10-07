@@ -12,6 +12,8 @@
     import Button from '../components/Button.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
     import { push } from 'popup/router/navigation';
+    import { rejectConfirm } from 'popup/background/transactions';
+    import { getGlobalState } from 'popup/background/wallet';
 
     const GAS_SPEEDS = {
         LOW: 0,
@@ -27,7 +29,8 @@
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
     const chain = $derived(getAccountChain($globalStore.selectedWallet));
-    const confirmTx = $derived(wallet?.confirm[0]);
+    const confirmLastIndex = $derived(wallet.confirm.length - 1);
+    const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
     const book = $derived($globalStore.book || []);
 
     const recipientName = $derived(() => {
@@ -61,7 +64,9 @@
         push('/transfer');
     }
 
-    function handleReject() {
+    async function handleReject() {
+        await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
+        await getGlobalState();
     }
 
     function handleConfirm() {

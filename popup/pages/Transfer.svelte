@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
     import type { BuildTokenTransferParams } from 'types/tx';
+    import * as dn from 'dnum';
+    
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import Button from '../components/Button.svelte';
@@ -24,6 +26,41 @@
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
     const tokens = $derived<IFTokenState[]>(currentWallet?.tokens ?? []);
+
+    const balance = $derived(() => {
+        if (!selectedToken || !currentAccount) return dn.from(0, 18);
+        const rawBalance = selectedToken.balances[hashXORHex(currentAccount.pubKey)] ?? 0;
+        return [BigInt(rawBalance), selectedToken.decimals] as dn.Dnum;
+    });
+
+    const inputAmount = $derived(() => {
+        if (!amount.trim() || !selectedToken) {
+            return dn.from(0, selectedToken?.decimals ?? 18);
+        }
+        try {
+            return dn.from(amount.trim(), selectedToken.decimals);
+        } catch {
+            return dn.from(0, selectedToken.decimals);
+        }
+    });
+
+    const isOverBalance = $derived(() => {
+        if (!amount.trim() || !selectedToken) return false;
+        return dn.greaterThan(inputAmount(), balance());
+    });
+
+    const isContinueDisabled = $derived(() => {
+        if (!selectedToken || !currentAccount) return true;
+        if (!amount.trim() || !recipientAddress.trim()) return true;
+        if (isOverBalance()) return true;
+
+        try {
+            dn.from(amount.trim(), selectedToken.decimals);
+            return false;
+        } catch {
+            return true;
+        }
+    });
 
     $effect(() => {
         if ($currentParams.addr) {
@@ -62,40 +99,12 @@
         }
     }
 
-    function formatUnits(rawValue: string, decimals: number) {
-        try {
-            const base = BigInt(rawValue);
-            if (decimals === 0) return base.toString();
-            const divisor = BigInt(10) ** BigInt(decimals);
-            const integer = base / divisor;
-            const fraction = base % divisor;
-            if (fraction === 0n) return integer.toString();
-            const fractionString = fraction.toString().padStart(decimals, '0').replace(/0+$/, '');
-            return fractionString ? `${integer.toString()}.${fractionString}` : integer.toString();
-        } catch {
-            return '0';
-        }
-    }
-
     function handleMaxAmount() {
         if (!selectedToken || !currentAccount) return;
-        const balance = selectedToken.balances[hashXORHex(currentAccount.pubKey)] ?? '0';
-        amount = formatUnits(balance, selectedToken.decimals);
+        const rawBalance = selectedToken.balances[hashXORHex(currentAccount.pubKey)] ?? '0';
+        const maxDnum: dn.Dnum = [BigInt(rawBalance), selectedToken.decimals];
+        amount = dn.toString(maxDnum);
     }
-
-    const isContinueDisabled = $derived(() => {
-        if (!selectedToken || !currentAccount) return true;
-
-        const trimmedAmount = amount.trim();
-        const trimmedRecipient = recipientAddress.trim();
-
-        if (!trimmedAmount || !trimmedRecipient) return true;
-
-        const numeric = Number(trimmedAmount);
-
-        if (!Number.isFinite(numeric)) return true;
-        return false;
-    });
 
     async function handleContinue() {
         if (isContinueDisabled() || isLoading || !selectedToken || !currentAccount) return;
@@ -108,11 +117,10 @@
                 accountIndex: currentWallet.selectedAccount,
                 tokenAddr: selectedToken.addr,
                 to: recipientAddress,
-                amount
+                amount: dn.toString(inputAmount())
             };
 
             await buildTokenTransfer(params);
-            console.log($globalStore);
             push('/confirm');
         } catch (error) {
             console.error(error);

@@ -59,6 +59,9 @@ export function startBackground(core: GlobalState) {
     case MTypePopup.BUILD_TOKEN_TRANSFER:
       core.transaction.buildTokenTransfer(msg.payload, sendResponse);
       return true;
+    case MTypePopup.REJECT_CONFIRM:
+      core.transaction.reject(msg.payload.index, msg.payload.walletIndex, sendResponse);
+      return true;
       default:
         sendResponse(null);
         return true;

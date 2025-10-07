@@ -22,5 +22,6 @@ export const MTypePopup = {
   SWICH_CHAIN: `@/${app}/swich-chain`,
 
   BUILD_TOKEN_TRANSFER: `@/${app}/build-token-transfer`,
+  REJECT_CONFIRM: `@/${app}/reject-confirm`,
 }
 
