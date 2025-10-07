@@ -3,9 +3,7 @@ import globalStore from "popup/store/global";
 import { type Route } from "./index";
 import StartPage from "../pages/Start.svelte";
 import LockPage from "../pages/Lock.svelte";
-import ConnectPage from "../pages/Connect.svelte";
 import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
-import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
 
 export class RouteGuard {
   private static navigate(path: string) {
@@ -36,30 +34,17 @@ export class RouteGuard {
     }
 
     if (wallet.confirm.length != 0) {
-      // detect if really conect
-      this.navigate("connect");
-      return {
-        path: "/connect",
-        component: ConnectPage,
-      };
-    }
+      const last = wallet.confirm[wallet.confirm.length - 1];
 
-    if (wallet.confirm.length != 0) {
-      // detect if really confirm
-      this.navigate("confirm");
-      return {
-        path: "/confirm",
-        component: ConfirmPopupPage,
-      };
-    }
-
-    if (wallet.confirm.length != 0) {
-      // detect if really sign-message
-      this.navigate("sign-message");
-      return {
-        path: "/sign-message",
-        component: SignMessagePopupPage,
-      };
+      if (last?.evm || last?.scilla) {
+        this.navigate("confirm");
+        return {
+          path: "/confirm",
+          component: ConfirmPopupPage,
+        };
+      } else {
+        // TODO: add connect and sign message.
+      }
     }
 
     return route;

@@ -13,23 +13,48 @@
     import EditIcon from '../components/icons/Edit.svelte';
     import { push } from 'popup/router/navigation';
 
-    enum GasSpeed {
-        Low,
-        Market,
-        Aggressive
-    }
+    const GAS_SPEEDS = {
+        LOW: 0,
+        MARKET: 1,
+        AGGRESSIVE: 2
+    } as const;
 
-    let selectedSpeed = $state(GasSpeed.Market);
+    type GasSpeed = typeof GAS_SPEEDS[keyof typeof GAS_SPEEDS];
+
+    let selectedSpeed = $state<GasSpeed>(GAS_SPEEDS.MARKET);
     let expandedSpeed = $state<GasSpeed | null>(null);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
     const chain = $derived(getAccountChain($globalStore.selectedWallet));
     const confirmTx = $derived(wallet?.confirm[0]);
+    const book = $derived($globalStore.book || []);
+
+    const recipientName = $derived(() => {
+        if (!confirmTx?.token?.to) return null;
+
+        const address = confirmTx.token.to.toLowerCase();
+        
+        const bookEntry = book.find(entry => 
+            entry.address.toLowerCase() === address
+        );
+        if (bookEntry) return bookEntry.name;
+
+        const walletAccount = wallet?.accounts.find(acc => 
+            acc.addr.toLowerCase() === address
+        );
+        if (walletAccount) return walletAccount.name;
+
+        return null;
+    });
 
     function handleSpeedSelect(speed: GasSpeed) {
-        selectedSpeed = speed;
-        expandedSpeed = expandedSpeed === speed ? null : speed;
+        if (selectedSpeed === speed) {
+            expandedSpeed = expandedSpeed === speed ? null : speed;
+        } else {
+            selectedSpeed = speed;
+            expandedSpeed = null;
+        }
     }
 
     function handleEdit() {
@@ -72,7 +97,7 @@
             <TransferRoute
                 fromName={account?.name || 'Unknown'}
                 fromAddress={account?.addr || ''}
-                toName="Unknown"
+                toName={recipientName() || 'Unknown'}
                 toAddress={confirmTx.token.to}
             />
         {/if}
@@ -92,19 +117,25 @@
                     time="~2 min"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GasSpeed.Low}
-                    expanded={expandedSpeed === GasSpeed.Low}
-                    onselect={() => handleSpeedSelect(GasSpeed.Low)}
-                />
+                    selected={selectedSpeed === GAS_SPEEDS.LOW}
+                    expanded={expandedSpeed === GAS_SPEEDS.LOW}
+                    onselect={() => handleSpeedSelect(GAS_SPEEDS.LOW)}
+                >
+                    <GasDetailRow label="Estimated Gas" value="21000" />
+                    <GasDetailRow label="Gas Price" value="0.20 Gwei" />
+                    <GasDetailRow label="Base Fee" value="0.18 Gwei" />
+                    <GasDetailRow label="Priority Fee" value="100000" />
+                    <GasDetailRow label="Max Fee" value="100000" />
+                </GasOption>
 
                 <GasOption
                     label="Market"
                     time="~1 min"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GasSpeed.Market}
-                    expanded={expandedSpeed === GasSpeed.Market}
-                    onselect={() => handleSpeedSelect(GasSpeed.Market)}
+                    selected={selectedSpeed === GAS_SPEEDS.MARKET}
+                    expanded={expandedSpeed === GAS_SPEEDS.MARKET}
+                    onselect={() => handleSpeedSelect(GAS_SPEEDS.MARKET)}
                 >
                     <GasDetailRow label="Estimated Gas" value="21000" />
                     <GasDetailRow label="Gas Price" value="0.26 Gwei" />
@@ -118,10 +149,16 @@
                     time="~24 sec"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GasSpeed.Aggressive}
-                    expanded={expandedSpeed === GasSpeed.Aggressive}
-                    onselect={() => handleSpeedSelect(GasSpeed.Aggressive)}
-                />
+                    selected={selectedSpeed === GAS_SPEEDS.AGGRESSIVE}
+                    expanded={expandedSpeed === GAS_SPEEDS.AGGRESSIVE}
+                    onselect={() => handleSpeedSelect(GAS_SPEEDS.AGGRESSIVE)}
+                >
+                    <GasDetailRow label="Estimated Gas" value="21000" />
+                    <GasDetailRow label="Gas Price" value="0.35 Gwei" />
+                    <GasDetailRow label="Base Fee" value="0.28 Gwei" />
+                    <GasDetailRow label="Priority Fee" value="150000" />
+                    <GasDetailRow label="Max Fee" value="150000" />
+                </GasOption>
             </div>
         </div>
     </main>

@@ -34,7 +34,7 @@
 
     <div class="info-container">
         <div class="account-name">{name}</div>
-        <CopyButton value={truncatedAddress} />
+        <CopyButton label={truncatedAddress} value={address}/>
     </div>
 </button>
 
