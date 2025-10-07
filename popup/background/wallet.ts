@@ -127,6 +127,21 @@ export async function unlockWallet(password: string, walletIndex: number) {
   return resolve;
 }
 
+export async function destroyWallet(password: string, walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      password,
+    },
+    type: MTypePopup.DESTROY_WALLET,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
 export async function logout(walletIndex: number) {
   const data = await new Message<SendResponseParams>({
     payload: {

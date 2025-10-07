@@ -3,20 +3,22 @@
     import globalStore from 'popup/store/global';
     import { getWalletChain } from 'popup/mixins/chains';
     import { viewChain } from 'lib/popup/url';
-    import { Message } from 'lib/streem/message';
-    import { getGlobalState, setGlobalState } from 'popup/background/wallet';
+    import { setGlobalState, unlockWallet } from 'popup/background/wallet';
 
     import NavBar from '../components/NavBar.svelte';
     import FastImg from '../components/FastImg.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import SettingsLinkItem from '../components/SettingsLinkItem.svelte';
     import Button from '../components/Button.svelte';
+    import Modal from '../components/Modal.svelte';
     
     import EditIcon from '../components/icons/Edit.svelte';
     import ConnectionIcon from '../components/icons/Connection.svelte';
     import RepeatIcon from '../components/icons/Repeat.svelte';
     import DeleteIcon from '../components/icons/Delete.svelte';
+    import DestroyWallet from '../modals/DestroyWallet.svelte';
 
+    let showDeleteModal = $state(false);
     let walletName = $state('');
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -60,11 +62,15 @@
 
     function handleManageConnections() {
     }
-
-    function handleDelete() {
-    }
 </script>
 
+
+<Modal 
+    bind:show={showDeleteModal} 
+    title={$_('deleteWallet.title')}
+>
+    <DestroyWallet />
+</Modal>
 <div class="page-container">
     <NavBar title={$_('walletSettings.title')} />
 
@@ -115,7 +121,7 @@
     </main>
 
     <footer class="footer">
-        <Button variant="outline" onclick={handleDelete}>
+        <Button variant="outline" onclick={() => showDeleteModal = true}>
             {$_('walletSettings.destroy')}
             <DeleteIcon />
         </Button>

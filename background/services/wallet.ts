@@ -285,11 +285,11 @@ export class WalletService {
       const wallet = this.#state.wallets[walletIndex];
 
       await wallet.unlock(passwordBytes);
-      this.#state.wallets.splice(walletIndex);
+      this.#state.wallets.splice(walletIndex, 1);
       await this.#state.sync();
 
       sendResponse({
-        resolve: true,
+        resolve: this.#state,
       });
     } catch (err) {
       sendResponse({
