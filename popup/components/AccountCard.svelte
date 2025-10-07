@@ -6,29 +6,40 @@
     let {
         name,
         address,
+        selected = false,
         onclick = () => {}
     }: {
         name: string;
         address: string;
+        selected?: boolean;
         onclick?: () => void;
     } = $props();
 
     const truncatedAddress = $derived(truncate(address, 6, 6));
 
+    function handleClick() {
+        if (!selected) {
+            onclick();
+        }
+    }
+
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            onclick();
+            if (!selected) {
+                onclick();
+            }
         }
     }
 </script>
 
 <button
     class="account-card"
-    onclick={onclick}
+    class:selected
+    onclick={handleClick}
     onkeydown={handleKeydown}
     type="button"
-    aria-label={`Select account ${name}`}
+    disabled={selected}
 >
     <div class="icon-container">
         <Jazzicon seed={address} diameter={48} onclick={() => {}} />
@@ -44,19 +55,36 @@
     .account-card {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         width: 100%;
+        padding: 8px;
+        background: var(--color-cards-regular-base-default);
+        border-radius: 12px;
+        border: none;
+        outline: 1px solid var(--color-neutral-border-default);
+        outline-offset: -1px;
         cursor: pointer;
         text-align: left;
-        background: none;
-        border: none;
-        padding: 0;
-        font-family: inherit;
-        border-radius: 4px;
+        transition: background 0.2s ease;
 
-        &:focus-visible {
+        &:hover:not(.selected):not(:disabled) {
+            background: var(--color-cards-regular-base-hover);
+        }
+
+        &:focus-visible:not(.selected):not(:disabled) {
             outline: 2px solid var(--color-inputs-border-focus);
             outline-offset: 2px;
+        }
+
+        &.selected {
+            background: var(--color-cards-regular-base-selected);
+            outline-color: var(--color-neutral-tag-purple-border);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        &:disabled {
+            opacity: 1;
         }
     }
 
@@ -73,7 +101,7 @@
     }
 
     .account-name {
-        font-size: var(--font-size-large);
+        font-size: 14px;
         font-weight: 600;
         line-height: 20px;
         color: var(--color-content-text-inverted);

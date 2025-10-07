@@ -17,9 +17,16 @@
   } = $props();
 
   const THEME_COLORS = [
-    '#fc72ff', '#b0b0b0', '#ffffff', '#f7f7f7', 
-    '#000000', '#6c6c6c', '#ff007a', '#00d395', 
-    '#ff4d4d', '#ffa500'
+    'var(--color-content-text-purple)',
+    'var(--color-content-text-pink)',
+    'var(--color-content-icon-accent-secondary)',
+    'var(--color-content-icon-accent-primary)',
+    'var(--color-neutral-tag-purple-fg)',
+    'var(--color-neutral-tag-pink-fg)',
+    'var(--color-button-regular-primary-default)',
+    'var(--color-button-regular-secondary-default)',
+    'var(--color-positive-border-primary)',
+    'var(--color-notification-positive-content)'
   ];
 
   function generateSeedFromString(str: string): number {
@@ -41,72 +48,20 @@
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     }
   }
-  
-  function hslToHex(h: number, s: number, l: number): string {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = (n: number) => {
-      const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`;
-  }
-
-  function hexToHsl(hex: string): { h: number, s: number, l: number } {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    if (!result) return { h: 0, s: 0, l: 0 };
-    
-    let r = parseInt(result[1], 16) / 255;
-    let g = parseInt(result[2], 16) / 255;
-    let b = parseInt(result[3], 16) / 255;
-
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
-
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
-    }
-
-    return { h: h * 360, s: s * 100, l: l * 100 };
-  }
 
   const shapes = $derived(() => {
     if (!seed) return [];
     
     const random = mulberry32(generateSeedFromString(seed));
 
-    function colorRotate(hex: string, degrees: number): string {
-        const hsl = hexToHsl(hex);
-        let hue = hsl.h;
-        hue = (hue + degrees) % 360;
-        hue = hue < 0 ? 360 + hue : hue;
-        return hslToHex(hue, hsl.s, hsl.l);
-    }
-    
-    function hueShift(colors: string[]): string[] {
-        const wobble = 30;
-        const amount = (random() * wobble) - (wobble / 2);
-        return colors.map(color => colorRotate(color, amount));
-    }
-    
-    const shiftedColors = hueShift([...THEME_COLORS]);
-
     function genColor(remainingColors: string[]): string {
-      if (remainingColors.length === 0) return '#000000';
+      if (remainingColors.length === 0) return THEME_COLORS[0];
       const idx = Math.floor(random() * remainingColors.length);
       return remainingColors.splice(idx, 1)[0];
     }
     
     const shapeConfigs: ShapeConfig[] = [];
-    const remainingColors = [...shiftedColors];
+    const remainingColors = [...THEME_COLORS];
     
     const backgroundColor = genColor(remainingColors);
     shapeConfigs.push({
@@ -152,6 +107,7 @@
   style:width="{diameter}px" 
   style:height="{diameter}px"
   aria-label="Jazzicon"
+  type="button"
 >
   <div 
     class="jazzicon-container" 
@@ -199,7 +155,7 @@
     }
 
     &:hover::before {
-      border-color: var(--primary-purple);
+      border-color: var(--color-neutral-border-hover);
     }
     
     &:focus {
@@ -207,8 +163,8 @@
     }
 
     &:focus-visible::before {
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 2px var(--background-color), 0 0 0 4px var(--primary-purple);
+      border-color: var(--color-inputs-border-focus);
+      box-shadow: 0 0 0 2px var(--color-neutral-background-base), 0 0 0 4px var(--color-inputs-border-focus);
     }
 
     &:active {
@@ -231,4 +187,3 @@
     height: 100%;
   }
 </style>
-

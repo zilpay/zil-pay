@@ -18,7 +18,6 @@
     import FilterIcon from '../components/icons/Filter.svelte';
     import { setGlobalState } from 'popup/background/wallet';
     import { ftBalanceUpdate } from 'popup/background/provider';
-    import { clipboardCopy } from 'lib/popup/clipboard';
     import { getChainTokens } from 'popup/filters/tokens';
 
     const hideBalance = $derived($globalStore.hideBalance);
@@ -30,10 +29,9 @@
 
     let tokensloading = $state(false);
     let error = $state<string | null>(null);
-    let isCopied = $state(false);
 
     function handleAccountClick() {
-        push('/account-details');
+        push('/accounts');
     }
 
     function handleSend(addr?: string) {
@@ -75,22 +73,6 @@
             error = String(e);
         } finally {
             tokensloading = false;
-        }
-    }
-
-    function handleDismissError() {
-        error = null;
-    }
-
-    async function handleCopyError() {
-        if (!error) return;
-        
-        const success = await clipboardCopy(error);
-        if (success) {
-            isCopied = true;
-            setTimeout(() => {
-                isCopied = false;
-            }, 2000);
         }
     }
 </script>
