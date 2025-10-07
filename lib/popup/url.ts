@@ -1,8 +1,13 @@
 import type { IExplorerState, IChainConfigState, IFTokenState } from "background/storage";
 import { Themes } from "config/theme";
+import { themeDetect } from "popup/mixins/theme";
 
 function selectVariant(theme: Themes, options: string[]): string {
   if (options.length === 0) return '';
+  if (theme === Themes.System) {
+    theme = themeDetect();
+  }
+
   if (theme === Themes.Light) return options[0];
   if (theme === Themes.Dark && options.length >= 2) return options[1];
   return options[0];
