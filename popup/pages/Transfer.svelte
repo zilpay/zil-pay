@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
+    import type { BuildTokenTransferParams } from 'types/tx';
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import Button from '../components/Button.svelte';
@@ -11,11 +12,14 @@
     import globalStore from 'popup/store/global';
     import { currentParams } from 'popup/store/route';
     import { hashXORHex } from 'lib/utils/hashing';
+    import { buildTokenTransfer } from 'popup/background/transactions';
+    import { push } from 'popup/router/navigation';
 
     let recipientAddress = $state('');
     let amount = $state('');
     let selectedToken = $state<IFTokenState | undefined>(undefined);
     let showTokenModal = $state(false);
+    let isLoading = $state(false);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
@@ -61,15 +65,11 @@
     function formatUnits(rawValue: string, decimals: number) {
         try {
             const base = BigInt(rawValue);
-            if (decimals === 0) {
-                return base.toString();
-            }
+            if (decimals === 0) return base.toString();
             const divisor = BigInt(10) ** BigInt(decimals);
             const integer = base / divisor;
             const fraction = base % divisor;
-            if (fraction === 0n) {
-                return integer.toString();
-            }
+            if (fraction === 0n) return integer.toString();
             const fractionString = fraction.toString().padStart(decimals, '0').replace(/0+$/, '');
             return fractionString ? `${integer.toString()}.${fractionString}` : integer.toString();
         } catch {
@@ -92,6 +92,30 @@
         if (!Number.isFinite(numeric) || numeric <= 0) return true;
         return false;
     });
+
+    async function handleContinue() {
+        if (isContinueDisabled() || isLoading || !selectedToken || !currentAccount) return;
+
+        isLoading = true;
+
+        try {
+            const params: BuildTokenTransferParams = {
+                walletIndex: $globalStore.selectedWallet,
+                accountIndex: currentWallet.selectedAccount,
+                tokenAddr: selectedToken.addr,
+                to: recipientAddress,
+                amount
+            };
+
+            await buildTokenTransfer(params);
+            console.log($globalStore);
+            push('/confirm');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            isLoading = false;
+        }
+    }
 </script>
 
 <div class="page-container">
@@ -123,7 +147,13 @@
         </div>
     </main>
     <div class="footer">
-        <Button width="100%" height={48} disabled={isContinueDisabled}>
+        <Button 
+            width="100%" 
+            height={48} 
+            disabled={isContinueDisabled}
+            loading={isLoading}
+            onclick={handleContinue}
+        >
             {$_('tokenTransfer.continue')}
         </Button>
     </div>

@@ -1,3 +1,11 @@
+export interface BuildTokenTransferParams {
+  walletIndex: number;
+  accountIndex: number;
+  tokenAddr: string;
+  to: string;
+  amount: string;
+}
+
 export interface MinScillaParams {
   chainId?: number;
   nonce?: string | number;

@@ -54,6 +54,11 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.FT_GET_META:
         core.provider.fetchFtokenMeta(msg.payload.contract, msg.payload.walletIndex, sendResponse);
         return true;
+
+    // transactions
+    case MTypePopup.BUILD_TOKEN_TRANSFER:
+      core.transaction.buildTokenTransfer(msg.payload, sendResponse);
+      return true;
       default:
         sendResponse(null);
         return true;

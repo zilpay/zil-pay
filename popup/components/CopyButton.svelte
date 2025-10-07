@@ -4,10 +4,12 @@
     import SuccessIcon from './icons/Success.svelte';
 
     let {
+        label,
         value,
         disabled = false
     }: {
         value: string;
+        label: string;
         disabled?: boolean;
     } = $props();
 
@@ -34,7 +36,7 @@
     {disabled}
     aria-label="Copy to clipboard"
 >
-    <span class="value-text">{value}</span>
+    <span class="value-text">{label}</span>
     <div class="icon-wrapper">
         {#if isCopied}
             <SuccessIcon />

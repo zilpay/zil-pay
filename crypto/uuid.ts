@@ -1,11 +1,5 @@
 import { randomBytes } from "./random";
 
-/**
- * Generates a version 4 UUID.
- * Uses the native `crypto.randomUUID` if available, otherwise falls back to a
- * custom implementation using the `randomBytes` function.
- * @returns A UUID string.
- */
 export function uuid(): string {
   if (globalThis.crypto.randomUUID) {
     return globalThis.crypto.randomUUID();

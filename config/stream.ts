@@ -20,5 +20,7 @@ export const MTypePopup = {
   FT_GET_META: `@/${app}/get-ft-meta`,
 
   SWICH_CHAIN: `@/${app}/swich-chain`,
+
+  BUILD_TOKEN_TRANSFER: `@/${app}/build-token-transfer`,
 }
 

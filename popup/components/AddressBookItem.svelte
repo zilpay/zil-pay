@@ -48,7 +48,7 @@
         </div>
         <div class="info-container">
             <div class="name">{record.name}</div>
-            <CopyButton value={truncatedAddress} />
+            <CopyButton label={truncatedAddress} value={record.address} />
         </div>
     </div>
 </div>
