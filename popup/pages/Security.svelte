@@ -2,81 +2,86 @@
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { setGlobalState } from 'popup/background/wallet';
-
+    
     import NavBar from '../components/NavBar.svelte';
     import ActionCard from '../components/ActionCard.svelte';
     import Switch from '../components/Switch.svelte';
-    import EtherscanIcon from '../components/icons/Etherscan.svelte';
-    import CurrencyIcon from '../components/icons/Currency.svelte';
+    import TokensFetcherIcon from '../components/icons/Currency.svelte';
+    import ENSIcon from '../components/icons/ENS.svelte';
 
-    let settings = $derived($globalStore.wallets[$globalStore.selectedWallet]?.settings);
+    const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const tokensListFetcher = $derived(currentWallet?.settings?.tokensListFetcher ?? false);
+    const ensEnabled = $derived(currentWallet?.settings?.ensEnabled ?? false);
 
-    let tokensFetcher = $state(settings?.tokensListFetcher ?? true);
-    let ensEnabled = $state(settings?.ensEnabled ?? true);
-
-    async function updateSettings() {
-        if (!settings) return;
-
+    async function handleTokensFetcherToggle() {
         const walletIndex = $globalStore.selectedWallet;
-        
+        if (walletIndex < 0 || !currentWallet) return;
+
         globalStore.update(state => {
             const newWallets = [...state.wallets];
-            const currentSettings = newWallets[walletIndex].settings;
-            
-            if (currentSettings) {
-                 newWallets[walletIndex].settings = {
-                    ...currentSettings,
-                    tokensListFetcher: tokensFetcher,
-                    ensEnabled: ensEnabled
-                };
-            }
-            
+            newWallets[walletIndex] = {
+                ...newWallets[walletIndex],
+                settings: {
+                    ...newWallets[walletIndex].settings,
+                    tokensListFetcher: !tokensListFetcher
+                }
+            };
             return { ...state, wallets: newWallets };
         });
 
         await setGlobalState();
     }
 
-    $effect(() => {
-        tokensFetcher = settings?.tokensListFetcher ?? true;
-        ensEnabled = settings?.ensEnabled ?? true;
-    });
+    async function handleEnsToggle() {
+        const walletIndex = $globalStore.selectedWallet;
+        if (walletIndex < 0 || !currentWallet) return;
 
-    $effect(() => {
-        if (settings) {
-            updateSettings();
-        }
-    });
+        globalStore.update(state => {
+            const newWallets = [...state.wallets];
+            newWallets[walletIndex] = {
+                ...newWallets[walletIndex],
+                settings: {
+                    ...newWallets[walletIndex].settings,
+                    ensEnabled: !ensEnabled
+                }
+            };
+            return { ...state, wallets: newWallets };
+        });
 
+        await setGlobalState();
+    }
 </script>
 
-<div class="security-page-container">
+<div class="page-container">
     <NavBar title={$_('security.title')} />
+
     <main class="content">
-        <h2 class="section-title">{$_('security.networkPrivacy')}</h2>
-        <div class="options-group">
-            <ActionCard 
+        <h3 class="section-title">{$_('security.networkPrivacy')}</h3>
+
+        <div class="settings-list">
+            <ActionCard
                 title={$_('security.tokensFetcher.title')}
-                subtitle={$_('security.tokensFetcher.subtitle')}
-                onaction={() => tokensFetcher = !tokensFetcher}
+                subtitle={$_('security.tokensFetcher.description')}
+                onaction={handleTokensFetcherToggle}
             >
                 {#snippet left()}
-                    <EtherscanIcon />
+                    <TokensFetcherIcon />
                 {/snippet}
                 {#snippet right()}
                     <Switch
-                        checked={tokensFetcher}
+                        checked={tokensListFetcher}
                         variant="default"
                     />
                 {/snippet}
             </ActionCard>
-            <ActionCard 
-                title={$_('security.ensDomains.title')}
-                subtitle={$_('security.ensDomains.subtitle')}
-                onaction={() => ensEnabled = !ensEnabled}
+
+            <ActionCard
+                title={$_('security.ens.title')}
+                subtitle={$_('security.ens.description')}
+                onaction={handleEnsToggle}
             >
                 {#snippet left()}
-                    <CurrencyIcon />
+                    <ENSIcon />
                 {/snippet}
                 {#snippet right()}
                     <Switch
@@ -90,36 +95,35 @@
 </div>
 
 <style lang="scss">
-    .security-page-container {
+    .page-container {
         display: flex;
         flex-direction: column;
         height: 100vh;
         background: var(--color-neutral-background-base);
-        padding: 0 16px;
+        padding: 0;
         box-sizing: border-box;
     }
 
     .content {
-        padding-top: 24px;
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 12px;
+        padding: 24px var(--padding-side);
+        overflow-y: auto;
     }
 
     .section-title {
-        color: var(--color-content-text-secondary, #808080);
         font-size: 12px;
-        font-family: Geist;
         font-weight: 400;
         line-height: 16px;
+        color: var(--color-content-text-secondary);
         margin: 0;
     }
-    
-    .options-group {
+
+    .settings-list {
         display: flex;
         flex-direction: column;
         gap: 12px;
     }
 </style>
-
-
