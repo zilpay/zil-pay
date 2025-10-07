@@ -154,13 +154,6 @@
             </SmartInput>
         </form>
     </div>
-
-    <div class="footer">
-        <Button onclick={handleShare} width="100%" variant="outline">
-            <ShareIcon />
-            <span>{$_('receive.share')}</span>
-        </Button>
-    </div>
 </div>
 
 <Modal bind:show={showTokenModal} title={$_('receive.selectTokenTitle')}>
@@ -282,16 +275,5 @@
         align-items: center;
         justify-content: center;
         :global(svg) { color: var(--color-content-icon-secondary); }
-    }
-
-    .footer {
-        margin-top: auto;
-        padding: 0 var(--padding-side, 20px) var(--padding-side, 20px);
-        :global(span) {
-            margin-left: 8px;
-        }
-        :global(svg > path) {
-            stroke: var(--color-content-text-pink);
-        }
     }
 </style>

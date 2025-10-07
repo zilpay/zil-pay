@@ -186,7 +186,7 @@
     .page-container {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        height: 100vh;
         background: var(--color-neutral-background-base);
         padding: 0;
         box-sizing: border-box;
@@ -197,8 +197,9 @@
         display: flex;
         flex-direction: column;
         gap: 24px;
-        padding: 24px var(--padding-side);
+        padding: var(--padding-side) var(--padding-side);
         min-height: 0;
+        overflow: hidden;
     }
     
     .currencies-section {
@@ -210,6 +211,7 @@
         background: var(--color-neutral-background-container);
         border-radius: 12px;
         min-height: 0;
+        overflow: hidden;
     }
     
     .search-container {
@@ -223,6 +225,5 @@
         gap: 0;
         overflow-y: auto;
         min-height: 0;
-        padding-right: 4px;
     }
 </style>
