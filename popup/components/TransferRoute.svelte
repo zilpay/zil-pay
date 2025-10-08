@@ -47,6 +47,7 @@
         flex-direction: column;
         align-items: center;
         gap: 4px;
+        min-width: 0;
     }
 
     .name {
@@ -54,6 +55,10 @@
         font-size: 12px;
         line-height: 16px;
         text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
     }
 
     .address {
@@ -73,6 +78,7 @@
         justify-content: center;
         background: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 5%, transparent);
         border-radius: 8px;
+        flex-shrink: 0;
 
         :global(svg) {
             width: 24px;
