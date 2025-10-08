@@ -28,7 +28,7 @@
     const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
     const book = $derived($globalStore.book || []);
     const token = $derived(confirmTx.metadata?.tokenInfo ?? nativeToken);
-    const tokenAmount = $derived(confirmTx.metadata?.tokenInfo?.amount ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
+    const tokenAmount = $derived(confirmTx?.metadata?.tokenInfo?.amount ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
 
     const recipientName = $derived(() => {
         if (!confirmTx?.metadata?.tokenInfo?.to) return null;
@@ -70,7 +70,7 @@
     }
 
     $effect(() => {
-        if (!confirmTx) {
+        if (!confirmTx || !confirmTx?.metadata) {
             push('/');
         }
     });
