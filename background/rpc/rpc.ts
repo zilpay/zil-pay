@@ -11,7 +11,7 @@ import {
   type RequestType
 } from './ft_parser';
 import type { TransactionReceipt, TransactionRequest } from 'crypto/tx';
-import { buildBatchGasRequest, EIP1559, EIP4844, processParseFeeHistoryRequest, type GasFeeHistory, type RequiredTxParams } from './gas_parse';
+import { buildBatchGasRequest, EIP1559, EIP4844, processParseFeeHistoryRequest } from './gas_parse';
 import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
 import { EvmMethods } from 'config/jsonrpc';
@@ -19,6 +19,7 @@ import type { EVMBlock } from './block';
 import { type HistoricalTransaction } from './history_tx';
 import { buildPayloadTxReceipt, buildSendSignedTxRequest, processTxReceiptResponse, processTxSendResponse } from './tx_parse';
 import { AddressType } from 'config/wallet';
+import type { GasFeeHistory, RequiredTxParams } from 'types/gas';
 
 export class NetworkProvider {
   config: ChainConfig;
@@ -72,7 +73,7 @@ export class NetworkProvider {
     return Number(latestTimestamp - previousTimestamp);
   }
 
-  async estimateParamsBatch(
+  async estimateGasParamsBatch(
     tx: TransactionRequest,
     sender: Address,
     blockCount: number,

@@ -46,3 +46,14 @@ export interface AccessListItem {
   address: string;
   storageKeys: string[];
 }
+
+export interface TransactionMetadata {
+  chainHash: number;
+  hash?: string;
+  info?: string;
+  icon?: string;
+  title?: string;
+  signer?: string;
+  tokenInfo?: TokenTransferMetadata;
+}
+

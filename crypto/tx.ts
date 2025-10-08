@@ -4,16 +4,7 @@ import { Transaction } from "micro-eth-signer";
 import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
 import { convertBigIntsToHex } from "lib/utils/hex";
-
-export interface TransactionMetadata {
-  chainHash: number;
-  hash?: string;
-  info?: string;
-  icon?: string;
-  title?: string;
-  signer?: string;
-  tokenInfo?: [string, number, string];
-}
+import type { TransactionMetadata } from "types/tx";
 
 export class TransactionRequest {
   constructor(

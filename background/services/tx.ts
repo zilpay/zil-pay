@@ -5,7 +5,7 @@ import type { BuildTokenTransferParams, TokenTransferMetadata } from "types/tx";
 import { uuid } from "crypto/uuid";
 import { processTokenLogo } from "lib/popup/url";
 import { AddressType } from "config/wallet";
-import { generateErc20TransferData } from "background/rpc";
+import { generateErc20TransferData, NetworkProvider } from "background/rpc";
 
 export class TransactionService {
   #state: BackgroundState;
@@ -49,16 +49,12 @@ export class TransactionService {
             chainId: chain.chainId,
             toAddr: payload.to,
             amount: amountBigInt.toString(),
-            gasPrice: '2000000000',
-            gasLimit: '50'
           };
         } else {
           confirmTx.scilla = {
             chainId: chain.chainId,
             toAddr: token.addr,
             amount: '0',
-            gasPrice: '2000000000',
-            gasLimit: '5000',
             data: JSON.stringify({
               _tag: 'Transfer',
               params: [
@@ -75,7 +71,6 @@ export class TransactionService {
             to: payload.to,
             value: amountBigInt.toString(),
             chainId: chain.chainId,
-            gasLimit: 21000
           };
         } else {
           confirmTx.evm = {
@@ -84,7 +79,6 @@ export class TransactionService {
             value: '0',
             data: generateErc20TransferData(payload.to, amountBigInt),
             chainId: chain.chainId,
-            gasLimit: 65000
           };
         }
       }
@@ -123,6 +117,23 @@ export class TransactionService {
       wallet.confirm.splice(index, 1);
       await this.#state.sync();
       // TODO: sending response to Tab with uuid.
+
+      sendResponse({
+        resolve: true,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async estimateGas(payload: IConfirmState, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
 
       sendResponse({
         resolve: true,

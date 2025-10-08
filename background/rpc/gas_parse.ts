@@ -4,28 +4,7 @@ import { buildNonceRequest } from 'background/rpc/nonce_parser';
 import { RpcProvider, type JsonRPCRequest } from 'background/rpc/provider';
 import { TypeOf } from 'lib/types';
 import type { Address } from 'crypto/address';
-
-export interface GasFeeHistory {
-  maxFee: bigint;
-  priorityFee: bigint;
-  baseFee: bigint;
-}
-
-export interface RequiredTxParams {
-  gasPrice: bigint;
-  maxPriorityFee: bigint;
-  feeHistory: GasFeeHistory;
-  txEstimateGas: bigint;
-  blobBaseFee: bigint;
-  nonce: number;
-}
-
-export interface FeeHistoryResult {
-  baseFeePerGas: string[];
-  reward: string[][];
-  oldestBlock: string;
-  gasUsedRatio: number[];
-}
+import type { FeeHistoryResult, GasFeeHistory } from 'types/gas';
 
 export const EIP1559 = 1559;
 export const EIP4844 = 4844;

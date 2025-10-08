@@ -97,7 +97,7 @@ describe("JsonRPC provder tests", () => {
       ethTx,
     );
 
-    const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
+    const fee = await provider.estimateGasParamsBatch(txRequest, from, 4, null);
 
     expect(fee.gasPrice).toBeGreaterThan(0n);
     expect(fee.nonce).toBeGreaterThan(0);
@@ -130,7 +130,7 @@ describe("JsonRPC provder tests", () => {
       ethTx,
     );
 
-    const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
+    const fee = await provider.estimateGasParamsBatch(txRequest, from, 4, null);
 
     expect(fee.gasPrice).toBeGreaterThan(0n);
     expect(fee.nonce).toBeGreaterThan(0);
@@ -162,7 +162,7 @@ describe("JsonRPC provder tests", () => {
       undefined,
       bscTx,
     );
-    const fee = await provider.estimateParamsBatch(txRequest, from, 4, null);
+    const fee = await provider.estimateGasParamsBatch(txRequest, from, 4, null);
 
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(1000n);
@@ -191,7 +191,7 @@ describe("JsonRPC provder tests", () => {
       zilTx,
       undefined,
     );
-    const params = await provider.estimateParamsBatch(
+    const params = await provider.estimateGasParamsBatch(
       txRequest,
       from,
       4,
