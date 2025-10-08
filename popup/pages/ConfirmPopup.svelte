@@ -122,7 +122,7 @@
 
             <div class="gas-options">
                 <GasOption
-                    label="Low"
+              label="Low"
                     time="~2 min"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
@@ -138,7 +138,7 @@
                 </GasOption>
 
                 <GasOption
-                    label="Market"
+              label="Market"
                     time="~1 min"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
@@ -154,7 +154,7 @@
                 </GasOption>
 
                 <GasOption
-                    label="Aggressive"
+              label="Aggressive"
                     time="~24 sec"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"

@@ -1,6 +1,7 @@
 import { WalletHashParams, type IWalletHashParams } from './argon';
 import { CipherOrders } from '../../crypto/keychain';
 import type { RatesApiOptions } from 'config/api';
+import { GasSpeed } from 'config/gas';
 
 export interface IWalletSettingsState {
   cipherOrders: CipherOrders[];
@@ -14,6 +15,7 @@ export interface IWalletSettingsState {
   requestTimeoutSecs: number;
   ratesApiOptions: RatesApiOptions;
   sessionTime: number;
+  gasOption: GasSpeed;
 }
 
 export class WalletSettings implements IWalletSettingsState {
@@ -28,6 +30,7 @@ export class WalletSettings implements IWalletSettingsState {
   requestTimeoutSecs: number;
   ratesApiOptions: RatesApiOptions;
   sessionTime: number;
+  gasOption: GasSpeed;
 
   constructor(data: IWalletSettingsState) {
     this.cipherOrders = data.cipherOrders;
@@ -35,6 +38,7 @@ export class WalletSettings implements IWalletSettingsState {
     this.currencyConvert = data.currencyConvert;
     this.ipfsNode = data.ipfsNode;
     this.ensEnabled = data.ensEnabled;
+    this.gasOption = data.gasOption ?? GasSpeed.Market;
     this.tokensListFetcher = data.tokensListFetcher;
     this.nodeRankingEnabled = data.nodeRankingEnabled;
     this.maxConnections = data.maxConnections;
@@ -55,7 +59,8 @@ export class WalletSettings implements IWalletSettingsState {
       maxConnections: this.maxConnections,
       requestTimeoutSecs: this.requestTimeoutSecs,
       ratesApiOptions: this.ratesApiOptions,
-      sessionTime: this.sessionTime
+      sessionTime: this.sessionTime,
+      gasOption: this.gasOption
     };
   }
 }
