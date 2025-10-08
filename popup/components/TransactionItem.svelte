@@ -28,11 +28,11 @@
     });
 
     const formattedAmount = $derived(() => {
-        const amount = transaction.token_info
-            ? Number(transaction.token_info.value) / (10 ** transaction.token_info.decimals)
+        const amount = transaction.metadata?.tokenInfo
+            ? Number(transaction.metadata.tokenInfo.amount) / (10 ** transaction.metadata.tokenInfo.decimals)
             : Number(transaction.amount) / (10 ** 18);
         
-        const symbol = transaction.token_info?.symbol || 'ZIL';
+        const symbol = transaction.metadata?.tokenInfo?.symbol;
         const sign = isReceive ? '+' : '-';
         
         return `${sign}${amount.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${symbol}`;

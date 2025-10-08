@@ -6,6 +6,7 @@ import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import { ETHEREUM } from 'config/slip44';
 import { initSig } from "micro-eth-signer/utils.js";
 import { AddressType } from 'config/wallet';
+import type { TransactionMetadata } from 'types/tx';
 
 
 export enum TransactionStatus {
@@ -38,17 +39,11 @@ export interface IHistoricalTransactionState {
   error: string | null;
   sig: string;
   nonce: bigint;
-  token_info: TokenInfo | null;
+  metadata?: TransactionMetadata;
   chain_type: ChainType;
   chain_hash: number;
   data?: string;
   code?: string;
-}
-
-export interface TokenInfo {
-  value: bigint;
-  symbol: string;
-  decimals: number;
 }
 
 export class HistoricalTransaction implements IHistoricalTransactionState {
@@ -73,7 +68,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
   public error: string | null;
   public sig: string;
   public nonce: bigint;
-  public token_info: TokenInfo | null;
+  public metadata?: TransactionMetadata;
   public chain_type: ChainType;
   public chain_hash: number;
   public data?: string;
@@ -101,7 +96,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
     this.error = data.error;
     this.sig = data.sig;
     this.nonce = data.nonce;
-    this.token_info = data.token_info;
+    this.metadata = data.metadata;
     this.chain_type = data.chain_type;
     this.chain_hash = data.chain_hash;
     this.data= data.data;
@@ -147,13 +142,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
         icon: metadata.icon || null,
         title: metadata.title || null,
         nonce: zil_receipt.nonce,
-        token_info: metadata.tokenInfo
-          ? {
-              value: BigInt(metadata.tokenInfo[0]),
-              decimals: metadata.tokenInfo[1],
-              symbol: metadata.tokenInfo[2],
-            }
-          : null,
+        metadata,
         gasUsed: null,
         blobGasUsed: null,
         blobGasPrice: null,
@@ -192,7 +181,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
         gasPrice,
         data,
         error: null,
-        sig: HEX_PREFIX + sig.toCompactHex(), // TODO: fix it.
+        sig: HEX_PREFIX + sig.toBytes('compact'), // TODO: fix it.
         block_number: null,
         status_code: null,
         contract_address: (txData.to && txData.data && txData.data.length > 2) ? txData.to : null,
@@ -213,13 +202,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
         blobGasPrice: null,
         effectiveGasPrice: effectiveGasPrice,
         nonce: BigInt(txData.nonce ?? 0),
-        token_info: metadata.tokenInfo
-          ? {
-              value: BigInt(metadata.tokenInfo[0]),
-              decimals: metadata.tokenInfo[1],
-              symbol: metadata.tokenInfo[2],
-            }
-          : null,
+        metadata, 
       });
     }
 
@@ -249,11 +232,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
       error: this.error,
       sig: this.sig,
       nonce: this.nonce.toString(),
-      token_info: this.token_info ? {
-        value: this.token_info.value.toString(),
-        symbol: this.token_info.symbol,
-        decimals: this.token_info.decimals
-      } : null,
+      metadata: this.metadata,
       chain_type: this.chain_type,
       chain_hash: this.chain_hash,
       data: this.data,

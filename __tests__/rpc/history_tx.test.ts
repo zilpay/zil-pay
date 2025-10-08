@@ -14,6 +14,7 @@ import { KeyPair } from "../../crypto/keypair";
 import { createBscConfig, createZilliqaConfig } from "../data";
 import { randomBytes } from "../../crypto/random";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
+import type { TransactionMetadata } from '../../types/tx';
 
 const ZIL_CONFIG = createZilliqaConfig();
 const BSC_CONFIG = createBscConfig();
@@ -87,7 +88,7 @@ describe("HistoricalTransaction", () => {
         expect(historicalTx.error).toBeNull();
         expect(historicalTx.sig).toBeDefined();
         expect(historicalTx.nonce).toBe(1n);
-        expect(historicalTx.token_info).toBeNull();
+        expect(historicalTx.metadata.tokenInfo).toBeUndefined();
         expect(historicalTx.chain_type).toBe("Scilla" as ChainType);
         expect(historicalTx.chain_hash).toBe(ZIL_CONFIG.hash());
       });
@@ -150,7 +151,7 @@ describe("HistoricalTransaction", () => {
         expect(historicalTx.error).toBeNull();
         expect(historicalTx.sig).toEqual(expect.any(String));
         expect(historicalTx.nonce).toBe(0n);
-        expect(historicalTx.token_info).toBeNull();
+        expect(historicalTx.metadata.tokenInfo).toBeUndefined();
         expect(historicalTx.chain_type).toBe("EVM" as ChainType);
         expect(historicalTx.chain_hash).toBe(BSC_CONFIG.hash());
       });
@@ -189,9 +190,15 @@ describe("toJSON", () => {
       new Uint8Array(),
       utf8ToUint8Array(data),
     );
-    const metadata = {
+    const metadata: TransactionMetadata = {
       chainHash: ZIL_CONFIG.hash(),
-      tokenInfo: ["1000000000000", 12, "ZIL"] as [string, number, string],
+      tokenInfo: {
+        decimals: 18,
+        symbol: "USDT",
+        amount: "69000000000000000000",
+        to: '',
+        name: '',
+      },
     };
     const txReq = new TransactionRequest(metadata, txZilReq);
     const receipt = await txReq.sign(keypair);
@@ -223,10 +230,16 @@ describe("toJSON", () => {
       error: null,
       sig: expect.any(String),
       nonce: "1",
-      token_info: {
-        value: "1000000000000",
-        decimals: 12,
-        symbol: "ZIL",
+      metadata: {
+        chainHash: ZIL_CONFIG.hash(),
+        hash: receipt.metadata.hash,
+        tokenInfo: {
+          decimals: 18,
+          symbol: "USDT",
+          amount: "69000000000000000000",
+          to: '',
+          name: '',
+        },
       },
       chain_type: "Scilla",
       chain_hash: ZIL_CONFIG.hash(),
@@ -258,9 +271,15 @@ describe("toJSON", () => {
       chainId: BigInt(BSC_CONFIG.chainId),
       data: transferData,
     });
-    const metadata = {
+    const metadata: TransactionMetadata = {
       chainHash: BSC_CONFIG.hash(),
-      tokenInfo: ["69000000000000000000", 18, "USDT"] as [string, number, string],
+      tokenInfo: {
+        decimals: 18,
+        symbol: "USDT",
+        amount: "69000000000000000000",
+        to: '',
+        name: '',
+      },
     };
     const txReq = new TransactionRequest(metadata, undefined, ethTx);
     const receipt = await txReq.sign(keypair);
@@ -292,10 +311,16 @@ describe("toJSON", () => {
       error: null,
       sig: expect.any(String),
       nonce: "0",
-      token_info: {
-        value: "69000000000000000000",
-        decimals: 18,
-        symbol: "USDT",
+      metadata: {
+        chainHash: BSC_CONFIG.hash(),
+        "hash": receipt.metadata.hash,
+        tokenInfo: {
+          decimals: 18,
+          symbol: "USDT",
+          amount: "69000000000000000000",
+          to: '',
+          name: '',
+        },
       },
       chain_type: "EVM",
       chain_hash: BSC_CONFIG.hash(),

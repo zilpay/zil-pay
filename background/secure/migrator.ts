@@ -12,6 +12,7 @@ import { Themes } from 'config/theme';
 import { RatesApiOptions } from 'config/api';
 import { AddressType, AuthMethod, WalletTypes } from 'config/wallet';
 import { Locales } from 'config/locale';
+import { GasSpeed } from 'config/gas';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -193,8 +194,9 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
             nodeRankingEnabled: false,
             maxConnections: 10,
             requestTimeoutSecs: 30,
+            gasOption: GasSpeed.Market,
             ratesApiOptions: RatesApiOptions.CoinGecko,
-                sessionTime: Number(storage['time_before_lock']) || 3600,
+            sessionTime: Number(storage['time_before_lock']) || 3600,
         }),
         defaultChainHash: mainChain.hash(),
         vault: String(storage.vault),

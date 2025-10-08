@@ -1,14 +1,14 @@
 import type { BackgroundState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { ConfirmState, type IConfirmState } from "background/storage/confirm";
-import type { BuildTokenTransferParams, TokenTransferMetadata, TransactionMetadata, TransactionRequestEVM } from "types/tx";
+import type { BuildTokenTransferParams, TokenTransferMetadata, TransactionMetadata } from "types/tx";
 import { uuid } from "crypto/uuid";
 import { processTokenLogo } from "lib/popup/url";
 import { AddressType } from "config/wallet";
 import { generateErc20TransferData, NetworkProvider } from "background/rpc";
 import { TransactionRequest } from "crypto/tx";
 import { ZILTransactionRequest } from "crypto/zilliqa_tx";
-import { Transaction, addr } from "micro-eth-signer";
+import { Transaction } from "micro-eth-signer";
 import { Address } from "crypto/address";
 import { hexToUint8Array } from "lib/utils/hex";
 
@@ -33,7 +33,6 @@ export class TransactionService {
 
       const amountBigInt = BigInt(payload.amount);
       const isNative = token.native;
-
       const tokenMetadata: TokenTransferMetadata = {
         decimals: token.decimals,
         symbol: token.symbol,
@@ -41,12 +40,16 @@ export class TransactionService {
         to: payload.to,
         amount: payload.amount,
       };
+      const metadata: TransactionMetadata = {
+        chainHash: account.chainHash,
+        tokenInfo: tokenMetadata,
+        title: `Send ${token.symbol}`,
+        icon: processTokenLogo({ token, theme: this.#state.appearances }),
+      }
 
       const confirmTx: IConfirmState = {
         uuid: uuid(),
-        title: `Send ${token.symbol}`,
-        icon: processTokenLogo({ token, theme: this.#state.appearances }),
-        metadata: tokenMetadata
+        metadata,
       };
 
       if (token.addrType === AddressType.Bech32) {

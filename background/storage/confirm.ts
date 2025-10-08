@@ -2,8 +2,6 @@ import type { MinScillaParams, TransactionMetadata, TransactionRequestEVM } from
 
 export interface IConfirmState {
   uuid: string;
-  title: string;
-  icon: string;
   metadata?: TransactionMetadata;
   scilla?: MinScillaParams;
   signMessageScilla?: string;
@@ -14,8 +12,6 @@ export interface IConfirmState {
 
 export class ConfirmState implements IConfirmState {
   uuid: string;
-  title: string;
-  icon: string;
   metadata?: TransactionMetadata;
   scilla?: MinScillaParams;
   signMessageScilla?: string;
@@ -25,8 +21,6 @@ export class ConfirmState implements IConfirmState {
 
   constructor(data: IConfirmState) {
     this.uuid = data.uuid;
-    this.title = data.title;
-    this.icon = data.icon;
 
     if (data.metadata) {
       this.metadata = data.metadata;
@@ -56,8 +50,6 @@ export class ConfirmState implements IConfirmState {
   toJSON(): IConfirmState {
     return {
       uuid: this.uuid,
-      title: this.title,
-      icon: this.icon,
       metadata: this.metadata,
       scilla: this.scilla,
       signMessageScilla: this.signMessageScilla,

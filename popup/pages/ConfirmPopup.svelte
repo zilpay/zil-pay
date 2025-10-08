@@ -15,16 +15,9 @@
     import { rejectConfirm } from 'popup/background/transactions';
     import { getGlobalState } from 'popup/background/wallet';
     import { abbreviateNumber } from 'popup/mixins/numbers';
+    import { GasSpeed } from 'config/gas';
 
-    const GAS_SPEEDS = {
-        LOW: 0,
-        MARKET: 1,
-        AGGRESSIVE: 2
-    } as const;
-
-    type GasSpeed = typeof GAS_SPEEDS[keyof typeof GAS_SPEEDS];
-
-    let selectedSpeed = $state<GasSpeed>(GAS_SPEEDS.MARKET);
+    let selectedSpeed = $state<GasSpeed>(GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -34,13 +27,13 @@
     const confirmLastIndex = $derived(wallet.confirm.length - 1);
     const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
     const book = $derived($globalStore.book || []);
-    const token = $derived(confirmTx.token ?? nativeToken);
-    const tokenAmount = $derived(confirmTx.token?.amount ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
+    const token = $derived(confirmTx.metadata?.tokenInfo ?? nativeToken);
+    const tokenAmount = $derived(confirmTx.metadata?.tokenInfo?.amount ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
 
     const recipientName = $derived(() => {
-        if (!confirmTx?.token?.to) return null;
+        if (!confirmTx?.metadata?.tokenInfo?.to) return null;
 
-        const address = confirmTx.token.to.toLowerCase();
+        const address = confirmTx.metadata.tokenInfo.to.toLowerCase();
         
         const bookEntry = book.find(entry => 
             entry.address.toLowerCase() === address
@@ -85,7 +78,7 @@
 
 <div class="page-container">
     <header class="header">
-        <h1 class="title">{confirmTx?.title || 'Token transfer'}</h1>
+        <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
         {#if chain}
             <RoundImageButton
                 imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
@@ -96,20 +89,18 @@
     </header>
 
     <main class="content">
-        {#if confirmTx?.token}
-            <TransferSummary
-                amount={abbreviateNumber(tokenAmount, token.decimals)}
-                symbol={confirmTx.token?.symbol ?? nativeToken.symbol}
-                fiatValue="-"
-            />
+        <TransferSummary
+            amount={abbreviateNumber(tokenAmount, token.decimals)}
+            symbol={confirmTx.metadata?.tokenInfo?.symbol ?? nativeToken.symbol}
+            fiatValue="-"
+        />
 
-            <TransferRoute
-                fromName={account?.name || 'Unknown'}
-                fromAddress={account?.addr || ''}
-                toName={recipientName() || 'Unknown'}
-                toAddress={confirmTx.token.to}
-            />
-        {/if}
+        <TransferRoute
+            fromName={account?.name || 'Unknown'}
+            fromAddress={account?.addr || ''}
+            toName={recipientName() || 'Unknown'}
+            toAddress={confirmTx.metadata?.tokenInfo?.to ?? confirmTx.evm?.to ?? confirmTx.scilla?.toAddr ?? ""}
+        />
 
         <div class="transaction-section">
             <div class="section-header">
@@ -126,9 +117,9 @@
                     time="~2 min"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GAS_SPEEDS.LOW}
-                    expanded={expandedSpeed === GAS_SPEEDS.LOW}
-                    onselect={() => handleSpeedSelect(GAS_SPEEDS.LOW)}
+                    selected={selectedSpeed === GasSpeed.Low}
+                    expanded={expandedSpeed === GasSpeed.Low}
+                    onselect={() => handleSpeedSelect(GasSpeed.Low)}
                 >
                     <GasDetailRow label="Estimated Gas" value="21000" />
                     <GasDetailRow label="Gas Price" value="0.20 Gwei" />
@@ -142,9 +133,9 @@
                     time="~1 min"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GAS_SPEEDS.MARKET}
-                    expanded={expandedSpeed === GAS_SPEEDS.MARKET}
-                    onselect={() => handleSpeedSelect(GAS_SPEEDS.MARKET)}
+                    selected={selectedSpeed === GasSpeed.Market}
+                    expanded={expandedSpeed === GasSpeed.Market}
+                    onselect={() => handleSpeedSelect(GasSpeed.Market)}
                 >
                     <GasDetailRow label="Estimated Gas" value="21000" />
                     <GasDetailRow label="Gas Price" value="0.26 Gwei" />
@@ -158,9 +149,9 @@
                     time="~24 sec"
                     fee="0.000004"
                     fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GAS_SPEEDS.AGGRESSIVE}
-                    expanded={expandedSpeed === GAS_SPEEDS.AGGRESSIVE}
-                    onselect={() => handleSpeedSelect(GAS_SPEEDS.AGGRESSIVE)}
+                    selected={selectedSpeed === GasSpeed.Aggressive}
+                    expanded={expandedSpeed === GasSpeed.Aggressive}
+                    onselect={() => handleSpeedSelect(GasSpeed.Aggressive)}
                 >
                     <GasDetailRow label="Estimated Gas" value="21000" />
                     <GasDetailRow label="Gas Price" value="0.35 Gwei" />

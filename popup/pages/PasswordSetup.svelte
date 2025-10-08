@@ -17,6 +17,7 @@
   import { RatesApiOptions } from 'config/api';
   import CryptModal from '../modals/CryptSetup.svelte';
   import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
+    import { GasSpeed } from 'config/gas';
 
   let password = $state('');
   let confirmPassword = $state('');
@@ -46,6 +47,7 @@
     requestTimeoutSecs: 15,
     ratesApiOptions: RatesApiOptions.CoinGecko,
     sessionTime: 3600,
+    gasOption: GasSpeed.Market,
   });
 
   function generateDefaultWalletName(): string {
