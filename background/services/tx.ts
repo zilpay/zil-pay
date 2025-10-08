@@ -1,11 +1,17 @@
 import type { BackgroundState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { ConfirmState, type IConfirmState } from "background/storage/confirm";
-import type { BuildTokenTransferParams, TokenTransferMetadata } from "types/tx";
+import type { BuildTokenTransferParams, TokenTransferMetadata, TransactionMetadata, TransactionRequestEVM } from "types/tx";
 import { uuid } from "crypto/uuid";
 import { processTokenLogo } from "lib/popup/url";
 import { AddressType } from "config/wallet";
 import { generateErc20TransferData, NetworkProvider } from "background/rpc";
+import { TransactionRequest } from "crypto/tx";
+import { ZILTransactionRequest } from "crypto/zilliqa_tx";
+import { Transaction, addr } from "micro-eth-signer";
+import { Address } from "crypto/address";
+import { hexToUint8Array } from "lib/utils/hex";
+
 
 export class TransactionService {
   #state: BackgroundState;
@@ -40,7 +46,7 @@ export class TransactionService {
         uuid: uuid(),
         title: `Send ${token.symbol}`,
         icon: processTokenLogo({ token, theme: this.#state.appearances }),
-        token: tokenMetadata
+        metadata: tokenMetadata
       };
 
       if (token.addrType === AddressType.Bech32) {
@@ -134,6 +140,20 @@ export class TransactionService {
       const account = wallet.accounts[accountIndex];
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
+      const metadata  = payload.metadata!; 
+      const scilla = payload.scilla ? ZILTransactionRequest.from(payload.scilla) : undefined;
+      const sender = await Address.fromPubKey(hexToUint8Array(account.pubKey), account.slip44);
+      const evm = payload.evm ? Transaction.prepare({
+        value: BigInt(payload.evm.value ?? 0),
+        to: await Address.fromStr(payload.evm.to!).toEthChecksum(),
+        data: payload.evm.data,
+        nonce: 0n,
+        maxFeePerGas: 0n,
+      }) : undefined;
+      const txReq = new TransactionRequest(metadata, scilla, evm);
+      const gas = await provider.estimateGasParamsBatch(txReq, sender, 4, null);
+
+      console.log(gas);
 
       sendResponse({
         resolve: true,

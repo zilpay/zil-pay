@@ -1,10 +1,10 @@
-import type { MinScillaParams, TokenTransferMetadata, TransactionRequestEVM } from "types/tx";
+import type { MinScillaParams, TransactionMetadata, TransactionRequestEVM } from "types/tx";
 
 export interface IConfirmState {
   uuid: string;
   title: string;
   icon: string;
-  token?: TokenTransferMetadata;
+  metadata?: TransactionMetadata;
   scilla?: MinScillaParams;
   signMessageScilla?: string;
   evm?: TransactionRequestEVM;
@@ -16,7 +16,7 @@ export class ConfirmState implements IConfirmState {
   uuid: string;
   title: string;
   icon: string;
-  token?: TokenTransferMetadata;
+  metadata?: TransactionMetadata;
   scilla?: MinScillaParams;
   signMessageScilla?: string;
   evm?: TransactionRequestEVM;
@@ -28,8 +28,8 @@ export class ConfirmState implements IConfirmState {
     this.title = data.title;
     this.icon = data.icon;
 
-    if (data.token) {
-      this.token = data.token;
+    if (data.metadata) {
+      this.metadata = data.metadata;
     }
 
     if (data.scilla) {
@@ -58,7 +58,7 @@ export class ConfirmState implements IConfirmState {
       uuid: this.uuid,
       title: this.title,
       icon: this.icon,
-      token: this.token,
+      metadata: this.metadata,
       scilla: this.scilla,
       signMessageScilla: this.signMessageScilla,
       evm: this.evm,

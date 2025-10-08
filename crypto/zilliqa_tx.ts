@@ -11,9 +11,10 @@ import {
 } from "./proto/zq1";
 import { verify } from "./zilliqa/schnorr";
 import { uint8ArrayToHex } from "lib/utils/hex";
-import { uint8ArrayToUtf8 } from "lib/utils/utf8";
+import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
 import { Address } from "./address";
 import { AddressType } from "config/wallet";
+import type { MinScillaParams } from "types/tx";
 
 const U128LEN = 16;
 
@@ -32,6 +33,30 @@ export function chainIdFromVersion(version: number): number {
 }
 
 export class ZILTransactionRequest {
+  static from(payload: MinScillaParams): ZILTransactionRequest {
+    const nonce =  payload.nonce ? BigInt(payload.nonce) : 0n;
+    const gasPrice = payload.gasPrice ? BigInt(payload.gasPrice) : 0n;
+    const gasLimit = payload.gasLimit ? BigInt(payload.gasLimit) : 0n;
+    const amount = BigInt(payload.amount);
+
+    const address = Address.fromStr(payload.toAddr);
+    const toAddr = address.bytes;
+
+    const code = payload.code ? utf8ToUint8Array(payload.code) : new Uint8Array();
+    const data = payload.data ? utf8ToUint8Array(payload.data) : new Uint8Array();
+
+    return new ZILTransactionRequest(
+      payload.chainId ?? 1,
+      nonce,
+      gasPrice,
+      gasLimit,
+      toAddr,
+      amount,
+      code,
+      data
+    );
+  }
+
   constructor(
     public chainId: number,
     public nonce: bigint,
