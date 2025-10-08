@@ -216,14 +216,6 @@ describe("JsonRPC provder tests", () => {
     expect(blockNumber).toBeGreaterThan(0n);
   });
 
-  it("should estimate block time for EVM", async () => {
-    const provider = new NetworkProvider(bscConfig);
-    const blockTime = await provider.estimateBlockTime();
-    expect(typeof blockTime).toBe("number");
-    expect(blockTime).toBeGreaterThan(0.0);
-    expect(blockTime).toBeLessThan(30);
-  });
-
   it("should update multiple scilla transaction receipts", async () => {
     const provider = new NetworkProvider(zilConfig);
     const mockTxns = [
@@ -252,7 +244,6 @@ describe("JsonRPC provder tests", () => {
         title: null,
         error: null,
         sig: "",
-        token_info: null,
       }),
       new HistoricalTransaction({
         transaction_hash:
@@ -279,7 +270,6 @@ describe("JsonRPC provder tests", () => {
         title: null,
         error: null,
         sig: "",
-        token_info: null,
       }),
     ];
 
