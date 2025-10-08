@@ -1,5 +1,5 @@
-import type { IChainConfigState } from 'background/storage';
-import type { Bip32Account } from 'background/storage';
+import type { IChainConfigState } from "background/storage";
+import type { Bip32Account } from "background/storage";
 
 export interface SetPasswordPayload {
   cipherOrders: CipherOrders[];
@@ -35,4 +35,4 @@ export interface IKeyPair {
   privateKey: string;
   publicKey: string;
   slip44: number;
-};
+}

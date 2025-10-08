@@ -9,7 +9,7 @@ import { Runtime } from "lib/runtime";
   startBackground(state);
 
   Runtime.runtime.onInstalled.addListener(async (details) => {
-    if (details.reason === 'install') {
+    if (details.reason === "install") {
       if (state.state.wallets.length === 0) {
         const startPageUrl = Runtime.runtime.getURL(Common.PROMT_PAGE);
         Runtime.tabs.create({ url: startPageUrl });

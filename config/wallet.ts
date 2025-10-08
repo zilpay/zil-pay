@@ -1,16 +1,15 @@
 export enum WalletTypes {
-    Ledger,
-    SecretPhrase,
-    SecretKey,
+  Ledger,
+  SecretPhrase,
+  SecretKey,
 }
 
 export enum AuthMethod {
-    Biometric,
-    None,
+  Biometric,
+  None,
 }
 
 export enum AddressType {
   Bech32,
   EthCheckSum,
 }
-

@@ -2,7 +2,7 @@ import { mount } from "svelte";
 import App from "./App.svelte";
 import { getGlobalState } from "./background/wallet";
 import { get } from "svelte/store";
-import globalStore from 'popup/store/global';
+import globalStore from "popup/store/global";
 import { Runtime } from "lib/runtime";
 import { Common } from "config/common";
 

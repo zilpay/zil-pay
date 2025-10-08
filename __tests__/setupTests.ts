@@ -41,7 +41,7 @@ const sessionStorageMock = (() => {
 })();
 
 const createLocalStorageMock = () => {
-  let store = {}; 
+  let store = {};
 
   return {
     get: vi.fn(async (keys) => {
@@ -80,12 +80,12 @@ const mockGetRandomValues = (array: Uint8Array): Uint8Array => {
   return array;
 };
 
-const matchMediaMock = vi.fn().mockImplementation(query => ({
-  matches: false, 
+const matchMediaMock = vi.fn().mockImplementation((query) => ({
+  matches: false,
   media: query,
   onchange: null,
-  addListener: vi.fn(), 
-  removeListener: vi.fn(), 
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
@@ -110,34 +110,36 @@ Object.defineProperty(global.chrome.storage, "local", {
 type MessageListener = (
   message: any,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
+  sendResponse: (response?: any) => void,
 ) => boolean | undefined;
 
 let listeners: MessageListener[] = [];
 
 export const messageManager = {
-  sendMessage: vi.fn(async (message: any, callback?: (response: any) => void) => {
-    const sender: chrome.runtime.MessageSender = { id: EXTENSION_ID };
-    
-    await new Promise(resolve => setTimeout(resolve, 0));
+  sendMessage: vi.fn(
+    async (message: any, callback?: (response: any) => void) => {
+      const sender: chrome.runtime.MessageSender = { id: EXTENSION_ID };
 
-    for (const listener of listeners) {
-      const sendResponse = (response: any) => {
-        if (callback) {
-          callback(response);
-        }
-      };
-      
-      listener(message, sender, sendResponse);
-    }
-  }),
-  
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      for (const listener of listeners) {
+        const sendResponse = (response: any) => {
+          if (callback) {
+            callback(response);
+          }
+        };
+
+        listener(message, sender, sendResponse);
+      }
+    },
+  ),
+
   onMessage: {
     addListener: vi.fn((listener: MessageListener) => {
       listeners.push(listener);
     }),
     removeListener: vi.fn((listenerToRemove: MessageListener) => {
-      listeners = listeners.filter(listener => listener !== listenerToRemove);
+      listeners = listeners.filter((listener) => listener !== listenerToRemove);
     }),
     clearListeners: () => {
       listeners = [];
