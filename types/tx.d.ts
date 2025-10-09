@@ -83,6 +83,5 @@ export interface TransactionMetadata {
   info?: string;
   icon?: string;
   title?: string;
-  tokenInfo: IFTokenState;
 }
 
