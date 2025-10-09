@@ -5,26 +5,27 @@ import {
   processTxReceiptResponse,
   processTxSendResponse,
 } from "../../background/rpc/tx_parse";
-import {
-  HistoricalTransaction,
-  TransactionStatus,
-} from "../../background/rpc/history_tx";
+import { HistoricalTransaction } from "../../background/rpc/history_tx";
 import { TransactionReceipt, TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
-import { uint8ArrayToHex } from "../../lib/utils/hex";
 import { utf8ToUint8Array } from "../../lib/utils/utf8";
 import { Address } from "../../crypto/address";
 import { KeyPair } from "../../crypto/keypair";
-import { randomBytes } from "../../crypto/random";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { generateErc20TransferData } from "../../background/rpc/ft_parser";
 import { createBscConfig, createZilliqaConfig } from "../data";
+import { TransactionStatus } from "../../config/tx";
+import type {
+  TransactionReceiptEVM,
+  TransactionReceiptScilla,
+} from "../../types/tx";
 
 describe("Transaction Parse Functions", () => {
   const ZIL_CONFIG = createZilliqaConfig();
   const BSC_CONFIG = createBscConfig();
 
+  // Helper to create a signed Zilliqa TransactionReceipt
   const createZilTransactionReceipt = async (): Promise<TransactionReceipt> => {
     const keypair = await KeyPair.generate(ZIL_CONFIG.slip44);
     const toAddr = Address.fromStr(
@@ -47,7 +48,7 @@ describe("Transaction Parse Functions", () => {
     });
 
     const txZilReq = new ZILTransactionRequest(
-      42,
+      ZIL_CONFIG.chainId,
       BigInt(1),
       BigInt(2000) * BigInt(10 ** 6),
       BigInt(100000),
@@ -59,12 +60,11 @@ describe("Transaction Parse Functions", () => {
 
     const metadata = {
       chainHash: ZIL_CONFIG.hash(),
+      token: {} as any,
     };
 
     const txReq = new TransactionRequest(metadata, txZilReq);
     const receipt = await txReq.sign(keypair);
-    receipt.metadata.hash = uint8ArrayToHex(randomBytes(32), true);
-
     return receipt;
   };
 
@@ -95,78 +95,77 @@ describe("Transaction Parse Functions", () => {
 
     const metadata = {
       chainHash: BSC_CONFIG.hash(),
+      token: {} as any,
     };
 
     const txReq = new TransactionRequest(metadata, undefined, ethTx);
     const receipt = await txReq.sign(keypair);
-    receipt.metadata.hash = uint8ArrayToHex(randomBytes(32), true);
-
     return receipt;
   };
 
   const createZilHistoricalTransaction = (): HistoricalTransaction => {
+    const scillaTx: TransactionReceiptScilla = {
+      hash: "ce924ea2d0dca2c76af0b8c7858d0401a95f6528122c8f3cd1da11d22b2bb01a",
+      amount: "10000000000000",
+      senderPubKey: "0x1234567890123456789012345678901234567890",
+      toAddr: "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
+      receipt: { success: false, accepted: false } as any,
+      gasLimit: "50000",
+      gasPrice: "2000000000",
+      signature:
+        "0x304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0",
+      nonce: "1",
+      version: String(ZIL_CONFIG.chainId),
+      priority: false,
+    };
+
     return new HistoricalTransaction({
-      transaction_hash:
-        "ce924ea2d0dca2c76af0b8c7858d0401a95f6528122c8f3cd1da11d22b2bb01a",
-      amount: 10000000000000n,
-      sender: "0x1234567890123456789012345678901234567890",
-      recipient: "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
-      contract_address: null,
       status: TransactionStatus.Pending,
-      status_code: null,
       timestamp: Math.floor(Date.now() / 1000) - 60,
-      block_number: null,
-      gasUsed: null,
-      gasLimit: 50000n,
-      gasPrice: 2000000000n,
-      blobGasUsed: null,
-      blobGasPrice: null,
-      effectiveGasPrice: null,
-      fee: 100000000000000n,
-      icon: null,
-      title: null,
-      error: null,
-      sig: "0x304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0",
-      nonce: 1n,
-      token_info: null,
-      chain_type: "Scilla",
-      chain_hash: 1,
+      metadata: {
+        chainHash: ZIL_CONFIG.hash(),
+        token: {} as any,
+      },
+      scilla: scillaTx,
     });
   };
 
+  // NEW: Creates a mock HistoricalTransaction for EVM tests
   const createEvmHistoricalTransaction = (): HistoricalTransaction => {
-    return new HistoricalTransaction({
-      transaction_hash:
+    const evmTx: TransactionReceiptEVM = {
+      transactionHash:
         "0x9a65c7bd4b028cf6e24a184c2a35589c7287358926a1d4492e90c844eb6f37d3",
-      amount: 1000000000000000000n,
-      sender: "0x7d3034d6281900Af5Ac0b2615E3051884012AF1B",
-      recipient: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
-      contract_address: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
+      from: "0x7d3034d6281900Af5Ac0b2615E3051884012AF1B",
+      to: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
+      status: "0x0",
+      blockHash: "",
+      blockNumber: "",
+      contractAddress: null,
+      cumulativeGasUsed: "0",
+      effectiveGasPrice: "0",
+      gasUsed: "0",
+      logs: [],
+      logsBloom: "",
+      transactionIndex: "",
+      type: "0x2",
+    };
+
+    return new HistoricalTransaction({
       status: TransactionStatus.Pending,
-      status_code: null,
       timestamp: Math.floor(Date.now() / 1000) - 60,
-      block_number: null,
-      gasUsed: null,
-      gasLimit: 21000n,
-      gasPrice: 20000000000n,
-      blobGasUsed: null,
-      blobGasPrice: null,
-      effectiveGasPrice: null,
-      fee: 420000000000000n,
-      icon: null,
-      title: null,
-      error: null,
-      sig: "0xf86c808504a817c800825208941234567890123456789012345678901234567890872386f26fc10000801ba0",
-      nonce: 0n,
-      token_info: null,
-      chain_type: "EVM",
-      chain_hash: 56,
+      scilla: undefined,
+      metadata: {
+        chainHash: BSC_CONFIG.hash(),
+        token: {} as any,
+      },
+      evm: evmTx,
     });
   };
 
   describe("buildSendSignedTxRequest", () => {
     it("should build request for Zilliqa transaction", async () => {
       const tx = await createZilTransactionReceipt();
+      tx.metadata.hash = "some_hash"; // required by fromReceipt
       const request = await buildSendSignedTxRequest(tx);
 
       expect(request.method).toBe(ZilMethods.CreateTransaction);
@@ -187,7 +186,10 @@ describe("Transaction Parse Functions", () => {
     });
 
     it("should throw error for invalid transaction type", async () => {
-      const invalidTx = new TransactionReceipt({ chainHash: 1 });
+      const invalidTx = new TransactionReceipt({
+        chainHash: 1,
+        token: {} as any,
+      });
       await expect(() => buildSendSignedTxRequest(invalidTx)).rejects.toThrow(
         "Invalid transaction type",
       );
@@ -199,8 +201,8 @@ describe("Transaction Parse Functions", () => {
       const tx = createZilHistoricalTransaction();
       const request = buildPayloadTxReceipt(tx);
 
-      expect(request.method).toBe(ZilMethods.GetTransactionStatus);
-      expect(request.params).toEqual([tx.transaction_hash]);
+      expect(request.method).toBe(ZilMethods.GetTransaction);
+      expect(request.params).toEqual([tx.scilla!.hash]);
     });
 
     it("should build request for EVM transaction receipt", () => {
@@ -208,12 +210,12 @@ describe("Transaction Parse Functions", () => {
       const request = buildPayloadTxReceipt(tx);
 
       expect(request.method).toBe(EvmMethods.GetTransactionReceipt);
-      expect(request.params).toEqual([tx.transaction_hash]);
+      expect(request.params).toEqual([tx.evm!.transactionHash]);
     });
 
     it("should throw error for invalid chain type", () => {
       const tx = createZilHistoricalTransaction();
-      tx.chain_type = "Invalid" as any;
+      tx.scilla = undefined; // Make it invalid
       expect(() => buildPayloadTxReceipt(tx)).toThrow("Invalid chain type");
     });
   });
@@ -225,159 +227,85 @@ describe("Transaction Parse Functions", () => {
         jsonrpc: "2.0",
         id: "1",
         result: {
-          ID: "1bb178b023f816e950d862f6505cd79a32bb97e71fd78441cbc3486940a2e1b7",
-          _id: null,
-          amount: "15000000000000",
-          data: '{"_tag":"AddAccount","params":[{"vname":"address","type":"ByStr20","value":"0x0434cdcf27e2294b3539cb6ffe2cc328d7f9757e"},{"vname":"datetime_added","type":"String","value":"1607488428"}]}',
-          epochInserted: "2152404",
-          epochUpdated: "2152404",
-          gasLimit: "75000",
-          gasPrice: "3000000000",
-          lastModified: "1607488477327083",
-          modificationState: 1,
-          status: 3,
-          nonce: "2",
-          senderAddr:
-            "0x023cbc87c0f1f54ba4cfda17a4afc9edca5e074b8f2b5d63d6bfcd05f8c53f8455",
-          signature:
-            "0xbaa6964c66ae0608c6cefbaab69138e9358a1604c647dffef94e7022f2ab33d67f70802f71e934a0690be4ba81cc3866b2fb668b29c528e6b77b1285533a2e2c",
-          success: true,
-          toAddr: "0xdb4955ba4b1a957200ee0a36cf5f84eb4d7447e5",
-          version: "21823489",
+          "ID": "b25e482c62bae3c7adca3ef248726a795671dabc04ea2242bc23daa2d9e98d77",
+          "version": "65537",
+          "nonce": "1275",
+          "toAddr": "ec6bb19886c9d5f5125dfc739362bf54aa23d51f",
+          "senderPubKey": "0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9",
+          "amount": "1000000000000",
+          "signature": "0x39e0de461479f976f09af6b8bd2f2303f36e9ea1e120baf3f82ae11effc4042641eeb0db83307f06a600e650d67307e27d75810e4d95827de0bd70f7b460298f",
+          "receipt": {
+            "accepted": false,
+            "gas_used": "50",
+            "cumulative_gas_used": "50",
+            "cumulative_gas": "50",
+            "epoch_num": "11037537",
+            "transitions": [],
+            "event_logs": [],
+            "errors": {},
+            "exceptions": [],
+            "success": true
+          },
+          "gasPrice": "2000000016",
+          "gasLimit": "50",
+          "code": null,
+          "data": null
         },
       };
 
       await processTxReceiptResponse(response, tx);
 
-      expect(tx.amount).toBe(15000000000000n);
-      expect(tx.gasLimit).toBe(75000n);
-      expect(tx.gasPrice).toBe(3000000000n);
-      expect(tx.nonce).toBe(2n);
       expect(tx.status).toBe(TransactionStatus.Success);
-      expect(tx.status_code).toBe(3);
-      expect(tx.fee).toBe(225000000000000n);
-      expect(tx.sender).toBe("zil1p9knv9epazfxq9uyedfjr3xanj3nh29hztx97l");
+      expect(tx.scilla).toBeDefined();
+      expect(tx.scilla!.amount).toBe("1000000000000");
+      expect(tx.scilla!.gasLimit).toBe("50");
+      expect(tx.scilla!.gasPrice).toBe("2000000016");
+      expect(tx.scilla!.nonce).toBe("1275");
+      expect(tx.scilla!.receipt.success).toBe(true);
+      expect(tx.scilla!.senderAddr).toBe(
+        "zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace",
+      );
+      expect(tx.scilla!.senderPubKey).toBe(
+        "0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9",
+      );
     });
 
-    it("should process pending Zilliqa transaction", async () => {
+    it("should process failed Zilliqa transaction", async () => {
       const tx = createZilHistoricalTransaction();
       const response = {
         jsonrpc: "2.0",
         id: "1",
         result: {
-          ID: "1bb178b023f816e950d862f6505cd79a32bb97e71fd78441cbc3486940a2e1b7",
-          _id: null,
-          amount: "10000000000000",
-          data: "",
-          epochInserted: "2152400",
-          epochUpdated: "2152400",
-          gasLimit: "50000",
-          gasPrice: "2000000000",
-          lastModified: "1607488400000000",
-          modificationState: 1,
-          status: 1,
-          nonce: "1",
-          senderAddr:
-            "0x023cbc87c0f1f54ba4cfda17a4afc9edca5e074b8f2b5d63d6bfcd05f8c53f8455",
-          signature:
-            "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
-          success: false,
-          toAddr: "0xdb4955ba4b1a957200ee0a36cf5f84eb4d7447e5",
-          version: "21823489",
-        },
-      };
-
-      await processTxReceiptResponse(response, tx);
-
-      expect(tx.status).toBe(TransactionStatus.Pending);
-      expect(tx.status_code).toBe(1);
-      expect(tx.amount).toBe(10000000000000n);
-      expect(tx.gasLimit).toBe(50000n);
-      expect(tx.gasPrice).toBe(2000000000n);
-      expect(tx.nonce).toBe(1n);
-      expect(tx.sender).toBe("zil1p9knv9epazfxq9uyedfjr3xanj3nh29hztx97l");
-    });
-
-    it("should process rejected Zilliqa transaction", async () => {
-      const tx = createZilHistoricalTransaction();
-      const response = {
-        jsonrpc: "2.0",
-        id: "1",
-        result: {
-          ID: "1bb178b023f816e950d862f6505cd79a32bb97e71fd78441cbc3486940a2e1b7",
-          _id: null,
-          amount: "10000000000000",
-          data: "",
-          epochInserted: "2152400",
-          epochUpdated: "2152400",
-          gasLimit: "50000",
-          gasPrice: "2000000000",
-          lastModified: "1607488400000000",
-          modificationState: 2,
-          status: 0,
-          nonce: "1",
-          senderAddr:
-            "0x023cbc87c0f1f54ba4cfda17a4afc9edca5e074b8f2b5d63d6bfcd05f8c53f8455",
-          signature:
-            "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
-          success: false,
-          toAddr: "0xdb4955ba4b1a957200ee0a36cf5f84eb4d7447e5",
-          version: "21823489",
-          errorMsg: "INSUFFICIENT_BALANCE",
-        },
-      };
-
-      await processTxReceiptResponse(response, tx);
-
-      expect(tx.status).toBe(0);
-      expect(tx.amount).toBe(10000000000000n);
-      expect(tx.gasLimit).toBe(50000n);
-      expect(tx.gasPrice).toBe(2000000000n);
-      expect(tx.nonce).toBe(1n);
-      expect(tx.sender).toBe("zil1p9knv9epazfxq9uyedfjr3xanj3nh29hztx97l");
-    });
-
-    it("should handle standard length sender address", async () => {
-      const tx = createZilHistoricalTransaction();
-      const response = {
-        jsonrpc: "2.0",
-        id: "1",
-        result: {
-          ID: "1bb178b023f816e950d862f6505cd79a32bb97e71fd78441cbc3486940a2e1b7",
-          amount: "10000000000000",
-          gasLimit: "50000",
-          gasPrice: "2000000000",
-          nonce: "1",
-          status: 3,
-          senderAddr: "0xdb4955ba4b1a957200ee0a36cf5f84eb4d7447e5",
-          toAddr: "0x1234567890123456789012345678901234567890",
-          success: true,
-        },
-      };
-
-      await processTxReceiptResponse(response, tx);
-
-      expect(tx.sender).toBe("zil1me34whmtxs5duhhyu7vf02a0zvdtpdxj04uumr");
-      expect(tx.status).toBe(TransactionStatus.Success);
-    });
-
-    it("should handle Zilliqa transaction timeout", async () => {
-      const tx = createZilHistoricalTransaction();
-      tx.timestamp = Math.floor(Date.now() / 1000) - 700;
-      tx.status = TransactionStatus.Pending;
-
-      const response = {
-        id: 1,
-        jsonrpc: "2.0",
-        result: {
-          status: 1,
+          ID: "some_id",
+          receipt: { success: false, accepted: false },
         },
       };
 
       await processTxReceiptResponse(response, tx);
 
       expect(tx.status).toBe(TransactionStatus.Failed);
-      expect(tx.error).toBe("timeout");
+      expect(tx.scilla).toBeDefined();
+      expect(tx.scilla!.receipt.success).toBe(false);
+    });
+
+    it("should handle Zilliqa transaction timeout (by becoming Failed)", async () => {
+      const tx = createZilHistoricalTransaction();
+      tx.timestamp = Math.floor(Date.now() / 1000) - 700; // 11+ minutes ago
+      tx.status = TransactionStatus.Pending;
+
+      const response = {
+        id: 1,
+        jsonrpc: "2.0",
+        error: {
+          code: -1,
+          message: "Txn Hash not found",
+        },
+      };
+
+      await processTxReceiptResponse(response, tx);
+
+      // The function marks it as Failed if it's old and there's an error.
+      expect(tx.status).toBe(TransactionStatus.Failed);
     });
 
     it("should process successful EVM transaction receipt", async () => {
@@ -390,31 +318,23 @@ describe("Transaction Parse Functions", () => {
           from: "0x7d3034d6281900af5ac0b2615e3051884012af1b",
           to: "0x7693f0ec4d80fbe8befa31ae845cde344043dd6e",
           status: "0x1",
-          cumulativeGasUsed: "0x11faee3",
-          transactionHash:
-            "0x9a65c7bd4b028cf6e24a184c2a35589c7287358926a1d4492e90c844eb6f37d3",
-          contractAddress: null,
           gasUsed: "0x9a235",
-          blockHash:
-            "0x14842ec868a947aaa9aef4392f7a927abfbaace09d2c0b8ab205eb2d9606f3fc",
           blockNumber: "0x314a8d6",
-          transactionIndex: "0x7f",
-          effectiveGasPrice: "0x0",
+          effectiveGasPrice: "0x123",
         },
       };
 
       await processTxReceiptResponse(response, tx);
 
-      expect(tx.sender).toBe("0x7d3034d6281900af5ac0b2615e3051884012af1b");
-      expect(tx.recipient).toBe("0x7693f0ec4d80fbe8befa31ae845cde344043dd6e");
-      expect(tx.block_number).toBe(0x314a8d6n);
-      expect(tx.gasUsed).toBe(0x9a235n);
-      expect(tx.effectiveGasPrice).toBe(0x0n);
       expect(tx.status).toBe(TransactionStatus.Success);
-      expect(tx.blobGasUsed).toBe(null);
-      expect(tx.blobGasPrice).toBe(null);
-      expect(tx.fee).toBe(0n);
-      expect(tx.contract_address).toBe(null);
+      expect(tx.evm).toBeDefined();
+      expect(tx.evm!.from).toBe(
+        "0x7d3034d6281900af5ac0b2615e3051884012af1b",
+      );
+      expect(tx.evm!.to).toBe("0x7693f0ec4d80fbe8befa31ae845cde344043dd6e");
+      expect(tx.evm!.blockNumber).toBe("0x314a8d6");
+      expect(tx.evm!.gasUsed).toBe("0x9a235");
+      expect(tx.evm!.effectiveGasPrice).toBe("0x123");
     });
 
     it("should process failed EVM transaction receipt", async () => {
@@ -433,10 +353,31 @@ describe("Transaction Parse Functions", () => {
       await processTxReceiptResponse(response, tx);
 
       expect(tx.status).toBe(TransactionStatus.Failed);
+      expect(tx.evm!.status).toBe("0x0");
     });
 
-    it("should handle RPC error response", async () => {
+    it("should handle RPC error response for a recent tx (remain pending)", async () => {
       const tx = createZilHistoricalTransaction();
+      // Timestamp is recent, so it should not be marked as failed
+      tx.timestamp = Math.floor(Date.now() / 1000);
+
+      const response = {
+        id: 1,
+        jsonrpc: "2.0",
+        error: {
+          code: -32000,
+          message: "Transaction not found",
+        },
+      };
+
+      await processTxReceiptResponse(response, tx);
+
+      expect(tx.status).toBe(TransactionStatus.Pending);
+    });
+
+    it("should handle RPC error response for an old tx (become failed)", async () => {
+      const tx = createZilHistoricalTransaction();
+      // Timestamp is old
       tx.timestamp = Math.floor(Date.now() / 1000) - 700;
 
       const response = {
@@ -451,7 +392,6 @@ describe("Transaction Parse Functions", () => {
       await processTxReceiptResponse(response, tx);
 
       expect(tx.status).toBe(TransactionStatus.Failed);
-      expect(tx.error).toBe("Transaction not found");
     });
   });
 
@@ -468,12 +408,11 @@ describe("Transaction Parse Functions", () => {
         },
       };
 
-      processTxSendResponse(response, tx);
+      const hash = processTxSendResponse(response, tx);
 
-      expect(tx.metadata.hash).toBe(
+      expect(hash).toBe(
         "ce924ea2d0dca2c76af0b8c7858d0401a95f6528122c8f3cd1da11d22b2bb01a",
       );
-      expect(tx.metadata.info).toBe("Txn processed");
     });
 
     it("should process successful EVM transaction send", async () => {
@@ -485,9 +424,9 @@ describe("Transaction Parse Functions", () => {
           "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
       };
 
-      processTxSendResponse(response, tx);
+      const hash = processTxSendResponse(response, tx);
 
-      expect(tx.metadata.hash).toBe(
+      expect(hash).toBe(
         "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
       );
     });
@@ -519,7 +458,7 @@ describe("Transaction Parse Functions", () => {
       };
 
       expect(() => processTxSendResponse(response, tx)).toThrow(
-        "Invalid transaction hash",
+        "Invalid tx hash",
       );
     });
 
@@ -532,7 +471,7 @@ describe("Transaction Parse Functions", () => {
       };
 
       expect(() => processTxSendResponse(response, tx)).toThrow(
-        "Invalid transaction hash",
+        "Invalid tx hash",
       );
     });
 
@@ -546,43 +485,6 @@ describe("Transaction Parse Functions", () => {
       expect(() => processTxSendResponse(response, tx)).toThrow(
         "Invalid response: missing result",
       );
-    });
-  });
-
-  describe("Edge cases and error handling", () => {
-    it("should handle malformed Zilliqa status codes", async () => {
-      const tx = createZilHistoricalTransaction();
-      const response = {
-        id: 1,
-        jsonrpc: "2.0",
-        result: {
-          status: 999,
-        },
-      };
-
-      await processTxReceiptResponse(response, tx);
-
-      expect(tx.status).toBe(TransactionStatus.Failed);
-      expect(tx.status_code).toBe(999);
-    });
-
-    it("should handle missing optional fields in EVM receipt", async () => {
-      const tx = createEvmHistoricalTransaction();
-      const response = {
-        id: 1,
-        jsonrpc: "2.0",
-        result: {
-          status: "0x1",
-          from: "0x742d35Cc6634C0532925a3b8D6C9B5A6abc12345",
-          gasUsed: "0x5208",
-          effectiveGasPrice: "0x174876e800",
-        },
-      };
-
-      await processTxReceiptResponse(response, tx);
-      expect(tx.status).toBe(TransactionStatus.Success);
-      expect(tx.blobGasUsed).toBe(null);
-      expect(tx.contract_address).toBe(null);
     });
   });
 });

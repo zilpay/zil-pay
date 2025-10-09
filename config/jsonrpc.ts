@@ -9,7 +9,6 @@ export enum ZilMethods {
   GetPendingTxn = "GetPendingTxn",
   GetTransaction = "GetTransaction",
   CreateTransaction = "CreateTransaction",
-  GetTransactionStatus = "GetTransactionStatus",
   GetLatestTxBlock = "GetLatestTxBlock",
   GetTxBlock = "GetTxBlock",
   GetRecentTransactions = "GetRecentTransactions",

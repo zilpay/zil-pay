@@ -1,7 +1,7 @@
 import type { BackgroundState } from "background/storage";
 import type { StreamResponse } from "lib/streem";
 import { ConfirmState, type IConfirmState } from "background/storage/confirm";
-import type { BuildTokenTransferParams, TokenTransferMetadata, TransactionMetadata } from "types/tx";
+import type { BuildTokenTransferParams, FTState, TransactionMetadata } from "types/tx";
 import { uuid } from "crypto/uuid";
 import { processTokenLogo } from "lib/popup/url";
 import { AddressType } from "config/wallet";
@@ -33,17 +33,16 @@ export class TransactionService {
 
       const amountBigInt = BigInt(payload.amount);
       const isNative = token.native;
-      const tokenMetadata: TokenTransferMetadata = {
-        decimals: token.decimals,
-        symbol: token.symbol,
-        name: token.name,
-        to: payload.to,
-        amount: payload.amount,
+      const tokenMetadata: FTState = {
+        ...token,
+        balances: undefined,
+        value: payload.amount,
+        recipient: payload.to,
       };
       const metadata: TransactionMetadata = {
         chainHash: account.chainHash,
-        tokenInfo: tokenMetadata,
-        title: `Send ${token.symbol}`,
+        token: tokenMetadata,
+        title: `Send ${token.symbol}`, // TODO: change title.
         icon: processTokenLogo({ token, theme: this.#state.appearances }),
       }
 

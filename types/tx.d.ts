@@ -26,6 +26,7 @@ export interface TransactionReceiptScilla extends TransactionRequestScilla {
   signature: string;
   nonce: string;
   senderPubKey: string;
+  senderAddr: string;
   gasPrice: string;
   gasLimit: string;
   receipt: {
@@ -34,21 +35,14 @@ export interface TransactionReceiptScilla extends TransactionRequestScilla {
     cumulative_gas_used: string;
     cumulative_gas: string;
     epoch_num: string;
-    event_logs: unknown;
-    errors: unknown;
-    exceptions: {
+    event_logs?: unknown;
+    errors?: unknown;
+    success?: boolean;
+    exceptions?: {
       line: number;
       message: string;
     }[];
   };
-}
-
-export interface TokenTransferMetadata {
-  decimals: number;
-  symbol: string;
-  name: string;
-  to: string;
-  amount: string;
 }
 
 export interface TransactionRequestEVM {
@@ -67,10 +61,34 @@ export interface TransactionRequestEVM {
   maxFeePerBlobGas?: string;
 }
 
-export interface TransactionReceiptEVM extends TransactionRequestEVM {
-  sig: string;
-  hash: string;
-  type?: number;
+export interface Log {
+  address: string;
+  blockHash: string;
+  blockNumber: string;
+  blockTimestamp: string;
+  data: string;
+  logIndex: string;
+  removed: boolean;
+  topics: string[];
+  transactionHash: string;
+  transactionIndex: string;
+}
+
+export interface TransactionReceiptEVM {
+  blockHash: string;
+  blockNumber: string;
+  contractAddress: string | null;
+  cumulativeGasUsed: string;
+  effectiveGasPrice: string;
+  from: string;
+  gasUsed: string;
+  logs: Log[];
+  logsBloom: string;
+  status: string;
+  to: string;
+  transactionHash: string;
+  transactionIndex: string;
+  type: string;
 }
 
 export interface AccessListItem {
@@ -86,7 +104,6 @@ export interface FTState extends IFTokenState {
 
 export interface TransactionMetadata {
   chainHash: number;
-  info?: string;
   icon?: string;
   title?: string;
   token: FTState;
