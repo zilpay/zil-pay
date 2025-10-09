@@ -1,3 +1,5 @@
+import type { IFTokenState } from "background/storage";
+
 export interface BuildTokenTransferParams {
   walletIndex: number;
   accountIndex: number;
@@ -6,7 +8,7 @@ export interface BuildTokenTransferParams {
   amount: string;
 }
 
-export interface MinScillaParams {
+export interface TransactionRequestScilla {
   chainId?: number;
   nonce?: string | number;
   gasPrice?: string | number;
@@ -16,6 +18,29 @@ export interface MinScillaParams {
   data?: string;
   toAddr: string;
   amount: string;
+}
+
+export interface TransactionReceiptScilla extends TransactionRequestScilla {
+  hash: string;
+  version: string;
+  signature: string;
+  nonce: string;
+  senderPubKey: string;
+  gasPrice: string;
+  gasLimit: string;
+  receipt: {
+    accepted: boolean;
+    gas_used: string;
+    cumulative_gas_used: string;
+    cumulative_gas: string;
+    epoch_num: string;
+    event_logs: unknown;
+    errors: unknown;
+    exceptions: {
+      line: number;
+      message: string;
+    }[];
+  };
 }
 
 export interface TokenTransferMetadata {
@@ -42,6 +67,12 @@ export interface TransactionRequestEVM {
   maxFeePerBlobGas?: string;
 }
 
+export interface TransactionReceiptEVM extends TransactionRequestEVM {
+  sig: string;
+  hash: string;
+  type?: number;
+}
+
 export interface AccessListItem {
   address: string;
   storageKeys: string[];
@@ -49,11 +80,9 @@ export interface AccessListItem {
 
 export interface TransactionMetadata {
   chainHash: number;
-  hash?: string;
   info?: string;
   icon?: string;
   title?: string;
-  signer?: string;
-  tokenInfo?: TokenTransferMetadata;
+  tokenInfo: IFTokenState;
 }
 

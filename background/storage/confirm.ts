@@ -1,9 +1,9 @@
-import type { MinScillaParams, TransactionMetadata, TransactionRequestEVM } from "types/tx";
+import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM } from "types/tx";
 
 export interface IConfirmState {
   uuid: string;
   metadata?: TransactionMetadata;
-  scilla?: MinScillaParams;
+  scilla?: TransactionRequestScilla;
   signMessageScilla?: string;
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: string;
@@ -13,7 +13,7 @@ export interface IConfirmState {
 export class ConfirmState implements IConfirmState {
   uuid: string;
   metadata?: TransactionMetadata;
-  scilla?: MinScillaParams;
+  scilla?: TransactionRequestScilla;
   signMessageScilla?: string;
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: string;

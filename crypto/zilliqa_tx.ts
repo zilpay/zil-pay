@@ -14,7 +14,7 @@ import { uint8ArrayToHex } from "lib/utils/hex";
 import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
 import { Address } from "./address";
 import { AddressType } from "config/wallet";
-import type { MinScillaParams } from "types/tx";
+import type { TransactionRequestScilla } from "types/tx";
 
 const U128LEN = 16;
 
@@ -33,7 +33,7 @@ export function chainIdFromVersion(version: number): number {
 }
 
 export class ZILTransactionRequest {
-  static from(payload: MinScillaParams): ZILTransactionRequest {
+  static from(payload: TransactionRequestScilla): ZILTransactionRequest {
     const nonce =  payload.nonce ? BigInt(payload.nonce) : 0n;
     const gasPrice = payload.gasPrice ? BigInt(payload.gasPrice) : 0n;
     const gasLimit = payload.gasLimit ? BigInt(payload.gasLimit) : 0n;
