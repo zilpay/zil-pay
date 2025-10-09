@@ -78,10 +78,17 @@ export interface AccessListItem {
   storageKeys: string[];
 }
 
+export interface FTState extends IFTokenState {
+  balances: undefined;
+  value?: string;
+  recipient?: string;
+}
+
 export interface TransactionMetadata {
   chainHash: number;
   info?: string;
   icon?: string;
   title?: string;
+  token: FTState;
 }
 

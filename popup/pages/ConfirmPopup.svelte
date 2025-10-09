@@ -27,14 +27,14 @@
     const confirmLastIndex = $derived(wallet.confirm.length - 1);
     const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
     const book = $derived($globalStore.book || []);
-    const token = $derived(confirmTx.metadata?.tokenInfo ?? nativeToken);
-    const tokenAmount = $derived(confirmTx?.metadata?.tokenInfo?.amount ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
+    const token = $derived(confirmTx.metadata?.token ?? nativeToken);
+    const tokenAmount = $derived(confirmTx?.metadata?.token.value ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
+    const toAddress = $derived(confirmTx.metadata?.token.recipient ?? confirmTx.evm?.to ?? confirmTx.scilla?.toAddr ?? "");
 
     const recipientName = $derived(() => {
-        if (!confirmTx?.metadata?.tokenInfo?.to) return null;
+        if (!confirmTx) return; 
 
-        const address = confirmTx.metadata.tokenInfo.to.toLowerCase();
-        
+        const address = toAddress.toLowerCase();
         const bookEntry = book.find(entry => 
             entry.address.toLowerCase() === address
         );
@@ -91,7 +91,7 @@
     <main class="content">
         <TransferSummary
             amount={abbreviateNumber(tokenAmount, token.decimals)}
-            symbol={confirmTx.metadata?.tokenInfo?.symbol ?? nativeToken.symbol}
+            symbol={confirmTx.metadata?.token?.symbol ?? nativeToken.symbol}
             fiatValue="-"
         />
 
@@ -99,7 +99,7 @@
             fromName={account?.name || 'Unknown'}
             fromAddress={account?.addr || ''}
             toName={recipientName() || 'Unknown'}
-            toAddress={confirmTx.metadata?.tokenInfo?.to ?? confirmTx.evm?.to ?? confirmTx.scilla?.toAddr ?? ""}
+            toAddress={toAddress}
         />
 
         <div class="transaction-section">
