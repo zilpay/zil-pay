@@ -1,3 +1,4 @@
+import type { BuildTokenTransferParams } from '../../types/tx';
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   generateBip39Words,
@@ -11,6 +12,7 @@ import {
 } from "../../popup/background/wallet";
 import { GasSpeed } from '../../config/gas';
 import { changeChainProvider } from "../../popup/background/provider";
+import { buildTokenTransfer } from "../../popup/background/transactions";
 import { GlobalState } from "../../background/state";
 import { startBackground } from "../../background/background";
 import { BrowserStorage } from "../../lib/storage";
@@ -210,6 +212,42 @@ describe("WalletService through background messaging", () => {
       expect(wallet.tokens[0].chainHash).equals(wallet.accounts[0].chainHash);
       expect(wallet.tokens[0].default_).toBeTruthy();
       expect(wallet.tokens[0].native).toBeTruthy();
+
+      state = await changeChainProvider(0, 0);
+
+      const params: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: zlp.addr,
+        to: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
+        amount: '1',
+      };
+
+      await buildTokenTransfer(params);
+
+      state = await getGlobalState();
+
+      expect(state.wallets[0].confirm).toHaveLength(1);
+
+      const confirm = state.wallets[0].confirm[0];
+      const account = state.wallets[0].accounts[0];
+
+      expect(confirm.metadata.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata.token.name).toBe(zlp.name);
+      expect(confirm.metadata.token.symbol).toBe(zlp.symbol);
+      expect(confirm.metadata.token.addr).toBe("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
+      expect(confirm.metadata.token.value).toBe(params.amount);
+      expect(confirm.metadata.token.recipient).toBe(params.to);
+
+      expect(confirm.evm).toBeUndefined();
+      expect(confirm.signMessageScilla).toBeUndefined();
+      expect(confirm.signPersonalMessageEVM).toBeUndefined();
+      expect(confirm.signTypedDataJsonEVM).toBeUndefined();
+
+      expect(confirm.scilla.chainId).toBe(1);
+      expect(confirm.scilla.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
+      expect(confirm.scilla.amount).toBe('0');
+      expect(confirm.scilla.data).toBe('{"_tag":"Transfer","params":[{"vname":"to","type":"ByStr20","value":"0x77e27c39ce572283b848e2cdf32cce761e34fa49"},{"vname":"amount","type":"Uint128","value":"1"}]}');
     });
   });
 

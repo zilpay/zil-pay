@@ -52,21 +52,25 @@ export class TransactionService {
       };
 
       if (token.addrType === AddressType.Bech32) {
+        const chainId = token.addrType == AddressType.Bech32 ? chain.chainIds[1] : chain.chainIds[0];
+        const to = Address.fromStr(payload.to);
+
         if (isNative) {
           confirmTx.scilla = {
-            chainId: chain.chainId,
-            toAddr: payload.to,
+            chainId,
+            toAddr: to.toBase16(),
             amount: amountBigInt.toString(),
           };
         } else {
+          const tokenAddr = Address.fromStr(token.addr);
           confirmTx.scilla = {
-            chainId: chain.chainId,
-            toAddr: token.addr,
+            chainId,
+            toAddr: tokenAddr.toBase16(),
             amount: '0',
             data: JSON.stringify({
               _tag: 'Transfer',
               params: [
-                { vname: 'to', type: 'ByStr20', value: payload.to.replace('zil1', '0x') },
+                { vname: 'to', type: 'ByStr20', value: (await to.toZilChecksum()).toLowerCase() },
                 { vname: 'amount', type: 'Uint128', value: amountBigInt.toString() }
               ]
             })
