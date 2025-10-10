@@ -1,19 +1,24 @@
 import { describe, it, expect } from "vitest";
 import {
   TransactionRequest,
-  TransactionReceipt,
-  TransactionMetadata,
+  SignedTransaction,
 } from "../../crypto/tx";
 import { KeyPair } from "../../crypto/keypair";
 import { ZILLIQA, ETHEREUM } from "../../config/slip44";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { hexToUint8Array } from "../../lib/utils/hex";
+import type { TransactionMetadata } from "../../types/tx";
+
 
 describe("TransactionRequest and TransactionReceipt", () => {
   const metadata: TransactionMetadata = {
     chainHash: 123,
-    info: "Test Transaction",
+    token: {
+        balances: undefined,
+        value: "0",
+        recipient: "0xtest",
+    }
   };
 
   it("should correctly sign and verify a Scilla transaction", async () => {
@@ -32,7 +37,7 @@ describe("TransactionRequest and TransactionReceipt", () => {
     const request = new TransactionRequest(metadata, scillaTxReq);
     const receipt = await request.sign(keypair);
 
-    expect(receipt).toBeInstanceOf(TransactionReceipt);
+    expect(receipt).toBeInstanceOf(SignedTransaction);
     expect(receipt.scilla).toBeDefined();
     expect(receipt.evm).toBeUndefined();
 
@@ -51,7 +56,7 @@ describe("TransactionRequest and TransactionReceipt", () => {
     const request = new TransactionRequest(metadata, undefined, evmTx);
     const receipt = await request.sign(keypair);
 
-    expect(receipt).toBeInstanceOf(TransactionReceipt);
+    expect(receipt).toBeInstanceOf(SignedTransaction);
     expect(receipt.evm).toBeDefined();
     expect(receipt.scilla).toBeUndefined();
 
@@ -67,7 +72,7 @@ describe("TransactionRequest and TransactionReceipt", () => {
   });
 
   it("should throw an error when verifying an invalid transaction type", async () => {
-    const receipt = new TransactionReceipt(metadata, undefined, undefined);
+    const receipt = new SignedTransaction(metadata, undefined, undefined);
 
     await expect(receipt.verify()).rejects.toThrow("Invlid tx type");
   });

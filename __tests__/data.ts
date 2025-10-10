@@ -197,6 +197,10 @@ export const createZilliqaConfig = (): ChainConfig =>
     fallbackEnabled: true,
     testnet: false,
     ftokens: [],
+    chainId: 1,
+    shortName: "zilliqa",
+    ens: null,
+    diffBlockTime: 1,
   });
 
 export const createBscConfig = (): ChainConfig =>
@@ -220,6 +224,10 @@ export const createBscConfig = (): ChainConfig =>
     fallbackEnabled: true,
     testnet: false,
     ftokens: [],
+    chainId: 1,
+    shortName: "zilliqa",
+    ens: null,
+    diffBlockTime: 1,
   });
 
 export const createEthConfig = (): ChainConfig =>
@@ -241,4 +249,8 @@ export const createEthConfig = (): ChainConfig =>
     fallbackEnabled: true,
     testnet: true,
     ftokens: [],
+    chainId: 1,
+    shortName: "zilliqa",
+    ens: null,
+    diffBlockTime: 1,
   });
