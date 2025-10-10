@@ -17,6 +17,7 @@ import { randomBytes } from "../../crypto/random";
 import { KeyPair } from "../../crypto/keypair";
 import { hexToUint8Array } from '../../lib/utils/hex';
 import { utf8ToUint8Array } from '../../lib/utils/utf8';
+import { GasSpeed } from '../../config/gas';
 
 describe("Wallet", () => {
   const MNEMONIC =
@@ -40,6 +41,7 @@ describe("Wallet", () => {
     requestTimeoutSecs: 30,
     ratesApiOptions: RatesApiOptions.CoinGecko,
     sessionTime: 3600,
+    gasOption: GasSpeed.Market,
   });
   const chain = new ChainConfig(CHAINS[0]);
   const bip32Accounts = [{ index: 0, name: "account 0" }];

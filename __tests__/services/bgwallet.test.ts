@@ -4,13 +4,13 @@ import {
   generateKeyPair,
   getGlobalState,
   logout,
-  setGlobalState,
   unlockWallet,
   validateBip39Checksum,
   walletFromBip39Mnemonic,
   walletFromPrivateKey,
 } from "../../popup/background/wallet";
-import { changeChainProvider, fetchFTMeta } from "../../popup/background/provider";
+import { GasSpeed } from '../../config/gas';
+import { changeChainProvider } from "../../popup/background/provider";
 import { GlobalState } from "../../background/state";
 import { startBackground } from "../../background/background";
 import { BrowserStorage } from "../../lib/storage";
@@ -28,7 +28,7 @@ import type {
   WalletFromBip39Params,
   WalletFromPrivateKeyParams,
 } from "../../types/wallet";
-import { FToken, WalletSettings } from "../../background/storage";
+import { FToken, IWalletSettingsState, WalletSettings } from "../../background/storage";
 import { CipherOrders } from "../../crypto/keychain";
 import { HashTypes } from "../../background/storage";
 import { ShaAlgorithms } from "../../config/pbkdf2";
@@ -85,7 +85,8 @@ describe("WalletService through background messaging", () => {
   });
 
   describe("Wallet Creation", () => {
-    const baseSettings = {
+    const baseSettings: IWalletSettingsState = {
+      gasOption: GasSpeed.Market,
       cipherOrders: [CipherOrders.AESGCM256],
       hashFnParams: {
         memory: 64,
@@ -142,28 +143,6 @@ describe("WalletService through background messaging", () => {
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
-      // First, create the imported wallet (as in previous test)
-      const keyPair: IKeyPair = {
-        privateKey: IMPORTED_KEY,
-        publicKey:
-          "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
-        address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
-        slip44: ZILLIQA,
-      };
-
-      const importedParams: WalletFromPrivateKeyParams = {
-        key: keyPair,
-        walletName: "My Imported Wallet",
-        accountName: "Imported Account",
-        chain: CHAINS[0],
-        password: PASSWORD,
-        settings: new WalletSettings(baseSettings),
-      };
-
-      let state = await walletFromPrivateKey(importedParams);
-      expect(state.wallets).toHaveLength(1);
-
-      // Now create the BIP39 wallet
       const bip39Params: WalletFromBip39Params = {
         mnemonic: WORDS,
         bip39WordList: WORD_LIST,
@@ -175,10 +154,10 @@ describe("WalletService through background messaging", () => {
         settings: new WalletSettings(baseSettings),
       };
 
-      state = await walletFromBip39Mnemonic(bip39Params);
+      let state = await walletFromBip39Mnemonic(bip39Params);
 
-      expect(state.wallets).toHaveLength(2);
-      let wallet = state.wallets[1];
+      expect(state.wallets).toHaveLength(1);
+      let wallet = state.wallets[0];
       expect(wallet.walletName).toBe("My BIP39 Wallet");
       expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
       expect(wallet.accounts).toHaveLength(1);
@@ -189,7 +168,7 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts[0].slip44).toBe(state.chains[0].slip44);
       expect(wallet.accounts[0].chainId).toBe(state.chains[0].chainId);
       expect(wallet.accounts[0].chainHash).toBe(state.chains[0].hash());
-      expect(state.selectedWallet).toBe(1);
+      expect(state.selectedWallet).toBe(0);
       expect(state.chains[0].testnet).toBeFalsy();
       expect(state.chains[0].fallbackEnabled).toBeTruthy();
       expect(state.chains[0].ftokens.length).toBe(2);
@@ -220,8 +199,8 @@ describe("WalletService through background messaging", () => {
 
       state.chains.push(CHAINS[1]);
       await globalState.wallet.setGlobalState(state, () => null);
-      state = await changeChainProvider(1, 1);
-      wallet = state.wallets[1];
+      state = await changeChainProvider(0, 1);
+      wallet = state.wallets[0];
 
       
       expect(wallet.accounts[0].chainHash).toBe(state.chains[1].hash());
