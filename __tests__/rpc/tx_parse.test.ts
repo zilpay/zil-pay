@@ -6,7 +6,7 @@ import {
   processTxSendResponse,
 } from "../../background/rpc/tx_parse";
 import { HistoricalTransaction } from "../../background/rpc/history_tx";
-import { TransactionReceipt, TransactionRequest } from "../../crypto/tx";
+import { SignedTransaction, TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
 import { utf8ToUint8Array } from "../../lib/utils/utf8";
@@ -25,8 +25,7 @@ describe("Transaction Parse Functions", () => {
   const ZIL_CONFIG = createZilliqaConfig();
   const BSC_CONFIG = createBscConfig();
 
-  // Helper to create a signed Zilliqa TransactionReceipt
-  const createZilTransactionReceipt = async (): Promise<TransactionReceipt> => {
+  const createZilTransactionReceipt = async (): Promise<SignedTransaction> => {
     const keypair = await KeyPair.generate(ZIL_CONFIG.slip44);
     const toAddr = Address.fromStr(
       "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
@@ -68,7 +67,7 @@ describe("Transaction Parse Functions", () => {
     return receipt;
   };
 
-  const createEvmTransactionReceipt = async (): Promise<TransactionReceipt> => {
+  const createEvmTransactionReceipt = async (): Promise<SignedTransaction> => {
     const keypair = await KeyPair.generate(BSC_CONFIG.slip44);
     const tokenAddress = Address.fromStr(
       "0x524bC91Dc82d6b90EF29F76A3ECAaBAffFD490Bc",
@@ -186,7 +185,7 @@ describe("Transaction Parse Functions", () => {
     });
 
     it("should throw error for invalid transaction type", async () => {
-      const invalidTx = new TransactionReceipt({
+      const invalidTx = new SignedTransaction({
         chainHash: 1,
         token: {} as any,
       });

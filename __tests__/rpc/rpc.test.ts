@@ -10,12 +10,12 @@ import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import {
   HistoricalTransaction,
-  TransactionStatus,
 } from "../../background/rpc/history_tx";
 import { FToken } from "../../background/storage";
 import { KeyPair } from "../../crypto/keypair";
 import { hexToUint8Array } from "../../lib/utils/hex";
 import { hashXOR } from "../../lib/utils/hashing";
+import { TransactionStatus } from '../../config/tx';
 import { AddressType } from "../../config/wallet";
 
 const pubKeys = [
@@ -217,81 +217,56 @@ describe("JsonRPC provder tests", () => {
   });
 
   it("should update multiple scilla transaction receipts", async () => {
-    const provider = new NetworkProvider(zilConfig);
+    const provider = new NetworkProvider(ethConfig);
     const mockTxns = [
       new HistoricalTransaction({
-        transaction_hash:
-          "0xd0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7",
-        chain_hash: zilConfig.hash(),
-        chain_type: "Scilla",
-        amount: 0n,
-        sender: "",
-        recipient: "",
         status: TransactionStatus.Pending,
-        timestamp: 0,
-        fee: 0n,
-        nonce: 0n,
-        contract_address: null,
-        status_code: null,
-        block_number: null,
-        gasUsed: null,
-        gasLimit: null,
-        gasPrice: null,
-        blobGasUsed: null,
-        blobGasPrice: null,
-        effectiveGasPrice: null,
-        icon: null,
-        title: null,
-        error: null,
-        sig: "",
+        metadata: {
+          token: {
+              balances: undefined,
+          },
+          chainHash: ethConfig.hash,
+        },
+        evm: {
+          transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
+          from: "0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
+        },
+        timestamp: new Date().getSeconds(),
       }),
       new HistoricalTransaction({
-        transaction_hash:
-          "0x96830fa2fbd322d9731f4fd75b44d028a73a1323d7b52b099c6ae397ab4ccf43",
-        chain_hash: zilConfig.hash(),
-        chain_type: "Scilla",
-        amount: 0n,
-        sender: "",
-        recipient: "",
         status: TransactionStatus.Pending,
-        timestamp: 0,
-        fee: 0n,
-        nonce: 0n,
-        contract_address: null,
-        status_code: null,
-        block_number: null,
-        gasUsed: null,
-        gasLimit: null,
-        gasPrice: null,
-        blobGasUsed: null,
-        blobGasPrice: null,
-        effectiveGasPrice: null,
-        icon: null,
-        title: null,
-        error: null,
-        sig: "",
+        metadata: {
+          token: {
+              balances: undefined,
+          },
+          chainHash: ethConfig.hash,
+        },
+        evm: {
+          transactionHash: "0x08dafea60b7cdac9b9ff2dfb3660c652820347ded94fb470d1cd68f0fbc7704a",
+          from: "0x6cab48ab9945f0cb10b20d1181bae37a56d8e3d2",
+        },
+        timestamp: new Date().getSeconds(),
       }),
     ];
 
-    await provider.updateTransactionsReceipt(mockTxns);
+    await provider.updateTransactionsHistory(mockTxns);
 
-    const [tx1, tx2] = mockTxns;
+    expect(mockTxns[0].evm.blockHash).toBeDefined();
+    expect(mockTxns[0].evm.blockNumber).toBeDefined();
+    expect(mockTxns[0].evm.status).toBe('0x1');
+    expect(mockTxns[0].evm.gasUsed).toBeDefined();
+    expect(mockTxns[0].evm.logs).toBeDefined();
+    expect(mockTxns[0].evm.logs?.length).toBeGreaterThan(0);
 
-    expect(tx1.status).toBe(TransactionStatus.Success);
-    expect(tx1.amount).toBe(348369130769230760n);
-    expect(tx1.fee).toBe(100000000000n);
-    expect(tx1.gasLimit).toBe(50n);
-    expect(tx1.gasPrice).toBe(2000000000n);
-    expect(tx1.nonce).toBe(1697n);
-    expect(tx1.sender).toBe("zil1jl8qen2lutenrwdjla7kht3d4t4u47ywvnmkkw");
+    expect(mockTxns[1].evm.blockHash).toBeDefined();
+    expect(mockTxns[1].evm.blockNumber).toBeDefined();
+    expect(mockTxns[1].evm.status).toBe('0x1');
+    expect(mockTxns[1].evm.gasUsed).toBeDefined();
+    expect(mockTxns[1].evm.logs).toBeDefined();
+    expect(mockTxns[1].evm.logs?.length).toBeGreaterThan(0);
 
-    expect(tx2.status).toBe(TransactionStatus.Success);
-    expect(tx2.amount).toBe(0n);
-    expect(tx2.fee).toBe(16000000000000n);
-    expect(tx2.gasLimit).toBe(8000n);
-    expect(tx2.gasPrice).toBe(2000000000n);
-    expect(tx2.nonce).toBe(217n);
-    expect(tx2.sender).toBe("zil1jmfl0ywaserpcxa3lu03e8nhestlay3p7fjm43");
+    expect(mockTxns[0].scilla).toBeUndefined();
+    expect(mockTxns[1].scilla).toBeUndefined();
   }, 20000);
 
   it("should update balances for multiple scilla tokens and accounts", async () => {

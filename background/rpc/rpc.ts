@@ -218,7 +218,7 @@ export class NetworkProvider {
     throw new Error("unsupported contract");
   }
 
-  async updateTransactionsReceipt(txns: HistoricalTransaction[]): Promise<void> {
+  async updateTransactionsHistory(txns: HistoricalTransaction[]): Promise<void> {
     if (txns.length === 0) {
       return;
     }
@@ -229,7 +229,7 @@ export class NetworkProvider {
 
     await Promise.all(responses.map((res, index) => {
       const tx = txns[index];
-      return processTxReceiptResponse(res, tx);
+      return tx.updateFromJsonRPCResult(res.result);
     }));
   }
 
