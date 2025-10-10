@@ -4,8 +4,21 @@ import { Address } from "crypto/address";
 import type { SignedTransaction } from "crypto/tx";
 import { chainIdFromVersion } from "crypto/zilliqa_tx";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import type { TxType } from "micro-eth-signer/core/tx-internal";
 import type { TransactionMetadata, TransactionReceiptEVM, TransactionReceiptScilla } from "types/tx";
 
+export const typeMap: Record<string, TxType> = {
+  '0x0': 'legacy',
+  '0x1': 'eip2930',
+  '0x2': 'eip1559',
+  '0x3': 'eip4844',
+  '0x4': 'eip7702',
+  '0': 'legacy',
+  '1': 'eip2930',
+  '2': 'eip1559',
+  '3': 'eip4844',
+  '4': 'eip7702',
+};
 
 export interface IHistoricalTransactionState {
   status: TransactionStatus;
@@ -114,7 +127,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
     throw new Error("Invalid SignedTransaction: missing scilla or evm");
   }
 
-    async updateFromJsonRPCResult(result: unknown): Promise<void> {
+  async updateFromJsonRPCResult(result: unknown): Promise<void> {
     if (!result) {
       throw new Error("Invalid result");
     }
@@ -150,7 +163,29 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
         ? TransactionStatus.Success 
         : TransactionStatus.Failed;
     } else if (this.evm) {
-      throw new Error("EVM transactions not yet implemented");
+      const data = result as any;
+    
+      this.evm = {
+        ...this.evm,
+        blockHash: data.blockHash,
+        blockNumber: BigInt(data.blockNumber ?? 0).toString(),
+        contractAddress: data.contractAddress,
+        cumulativeGasUsed: BigInt(data.cumulativeGasUsed ?? 0).toString(),
+        effectiveGasPrice: BigInt(data.effectiveGasPrice ?? 0).toString(),
+        from: data.from,
+        gasUsed: BigInt(data.gasUsed ?? 0).toString(),
+        logs: data.logs,
+        logsBloom: data.logsBloom,
+        status: data.status,
+        to: data.to,
+        transactionHash: data.transactionHash,
+        transactionIndex: data.transactionIndex,
+        type: typeMap[String(data.type)],
+      };
+
+      this.status = data.status === "0x1" 
+        ? TransactionStatus.Success 
+        : TransactionStatus.Failed;
     }
   }
 }

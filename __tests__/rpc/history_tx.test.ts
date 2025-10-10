@@ -16,7 +16,7 @@ const ZIL_CONFIG = createZilliqaConfig();
 const BSC_CONFIG = createBscConfig();
 
 describe("HistoricalTransaction", () => {
-  describe("Scilla Transactions", () => {
+  describe("Scilla Transactions Fail", () => {
     const mockResult = {
       ID: "1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125",
       version: "65537",
@@ -193,6 +193,90 @@ describe("HistoricalTransaction", () => {
       expect(historicalTx.evm!.maxFeePerGas).toBeDefined();
       expect(historicalTx.evm!.maxPriorityFeePerGas).toBeDefined();
       expect(historicalTx.evm!.gasPrice).toBeUndefined();
+    });
+
+    it("should update HistoricalTransaction from EVM JSON RPC result", async () => {
+      const mockResult = {
+        blockHash: "0x70e7d1a5fd2c06e29a99b7ab4cffbee6c66e29decc8a71558223ede933980b42",
+        blockNumber: "0x16746d2",
+        contractAddress: null,
+        cumulativeGasUsed: "0xb73a6a",
+        effectiveGasPrice: "0x92fd8f2",
+        from: "0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
+        gasUsed: "0xf6e9",
+        logs: [
+          {
+            address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            blockHash: "0x70e7d1a5fd2c06e29a99b7ab4cffbee6c66e29decc8a71558223ede933980b42",
+            blockNumber: "0x16746d2",
+            blockTimestamp: "0x68e8a7f3",
+            data: "0x000000000000000000000000000000000000000000000000000000001dd19d56",
+            logIndex: "0x12d",
+            removed: false,
+            topics: [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x0000000000000000000000001c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
+              "0x000000000000000000000000e33a784044d62147e6fc3a149f3debabf9a890f8"
+            ],
+            transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
+            transactionIndex: "0xc0"
+          }
+        ],
+        logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000200000000000000008000000000000000000100000000020000000008000000080000000000000000000000000000000000000000004000002000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        status: "0x1",
+        to: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
+        transactionIndex: "0xc0",
+        type: "0x2"
+      };
+
+      const metadata: TransactionMetadata = {
+        chainHash: BSC_CONFIG.hash(),
+        token: {} as any,
+      };
+
+      const historicalTx = new HistoricalTransaction({
+        status: TransactionStatus.Pending,
+        metadata,
+        timestamp: Math.floor(Date.now() / 1000),
+        evm: {
+          transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
+          from: "",
+          to: "",
+          type: "0",
+          value: "0",
+          nonce: "0",
+        }
+      });
+
+      await historicalTx.updateFromJsonRPCResult(mockResult);
+
+      expect(historicalTx.status).toBe(TransactionStatus.Success);
+      expect(historicalTx.evm).toBeDefined();
+      expect(historicalTx.evm!.transactionHash).toBe("0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1");
+      expect(historicalTx.evm!.blockHash).toBe("0x70e7d1a5fd2c06e29a99b7ab4cffbee6c66e29decc8a71558223ede933980b42");
+      expect(historicalTx.evm!.blockNumber).toBe("23545554");
+      expect(historicalTx.evm!.contractAddress).toBe(null);
+      expect(historicalTx.evm!.cumulativeGasUsed).toBe("12008042");
+      expect(historicalTx.evm!.effectiveGasPrice).toBe("154130674");
+      expect(historicalTx.evm!.from).toBe("0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d");
+      expect(historicalTx.evm!.gasUsed).toBe("63209");
+      expect(historicalTx.evm!.status).toBe("0x1");
+      expect(historicalTx.evm!.to).toBe("0xdac17f958d2ee523a2206206994597c13d831ec7");
+      expect(historicalTx.evm!.transactionIndex).toBe("0xc0");
+      expect(historicalTx.evm!.type).toBe("eip1559");
+      expect(historicalTx.evm!.logs).toHaveLength(1);
+      expect(historicalTx.evm!.logs![0].address).toBe("0xdac17f958d2ee523a2206206994597c13d831ec7");
+      expect(historicalTx.evm!.logs![0].blockHash).toBe("0x70e7d1a5fd2c06e29a99b7ab4cffbee6c66e29decc8a71558223ede933980b42");
+      expect(historicalTx.evm!.logs![0].blockNumber).toBe("0x16746d2");
+      expect(historicalTx.evm!.logs![0].blockTimestamp).toBe("0x68e8a7f3");
+      expect(historicalTx.evm!.logs![0].data).toBe("0x000000000000000000000000000000000000000000000000000000001dd19d56");
+      expect(historicalTx.evm!.logs![0].logIndex).toBe("0x12d");
+      expect(historicalTx.evm!.logs![0].removed).toBe(false);
+      expect(historicalTx.evm!.logs![0].topics).toHaveLength(3);
+      expect(historicalTx.evm!.logs![0].transactionHash).toBe("0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1");
+      expect(historicalTx.evm!.logs![0].transactionIndex).toBe("0xc0");
+      expect(historicalTx.evm!.logsBloom).toBeDefined();
     });
   });
 });
