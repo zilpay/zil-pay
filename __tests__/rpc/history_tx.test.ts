@@ -4,8 +4,6 @@ import {
 } from "../../background/rpc/history_tx";
 import { generateErc20TransferData } from "../../background/rpc";
 import { TransactionRequest } from "../../crypto/tx";
-import { uint8ArrayToHex } from "../../lib/utils/hex";
-import { utf8ToUint8Array } from "../../lib/utils/utf8";
 import { Address } from "../../crypto/address";
 import { KeyPair } from "../../crypto/keypair";
 import { createBscConfig, createZilliqaConfig } from "../data";
@@ -19,19 +17,50 @@ const BSC_CONFIG = createBscConfig();
 
 describe("HistoricalTransaction", () => {
   describe("Scilla Transactions", () => {
+    const mockResult = {
+      ID: "1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125",
+      version: "65537",
+      nonce: "1274",
+      toAddr: "6eaf9b37f9870994f5853eb28405919f87e8dec2",
+      senderPubKey: "0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9",
+      amount: "0",
+      signature: "0x9bc96ba0baba5a34cf6e4de6218ff7a7809763f6324912dff1c546ce0295e47b41bfb7eda6b6034eeeed69077088253e9d55eeb85dc77829c774fe45894d2eef",
+      receipt: {
+        accepted: false,
+        gas_used: "1843",
+        cumulative_gas_used: "1843",
+        cumulative_gas: "1843",
+        epoch_num: "10915779",
+        transitions: [],
+        event_logs: [],
+        errors: { "0": [7] },
+        exceptions: [
+          {
+            line: 175,
+            message: "Exception thrown: (Message [(_exception : (String \"Error\")) ; (code : (Int32 -10))])"
+          }
+        ],
+        success: false
+      },
+      gasPrice: "2000000016",
+      gasLimit: "5000",
+      code: null,
+      data: "{\"_tag\":\"CallRewards\",\"params\":[{\"vname\":\"token_id\",\"type\":\"Uint256\",\"value\":\"1892\"}]}"
+    };
+
     it("should create HistoricalTransaction from Scilla SignedTransaction", async () => {
       const keypair = await KeyPair.generate(ZIL_CONFIG.slip44);
       const recipient = Address.fromStr(
-        "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
+        "zil1d6hekdlesuyefav986eggpv3n7r73hkzcnpdjm",
       );
   
       const zilTx = new ZILTransactionRequest(
         ZIL_CONFIG.chainId,
-        1697n,
-        2000000000n,
-        50n,
+        1274n,
+        2000000016n,
+        5000n,
         recipient.bytes,
-        348369130769230760n,
+        0n,
       );
   
       const metadata: TransactionMetadata = {
@@ -50,11 +79,34 @@ describe("HistoricalTransaction", () => {
 
       expect(historicalTx.scilla).toBeDefined();
       expect(historicalTx.scilla!.hash).toBe(mockHash);
-      expect(historicalTx.scilla!.nonce).toBe("1697");
-      expect(historicalTx.scilla!.gasLimit).toBe("50");
-      expect(historicalTx.scilla!.gasPrice).toBe("2000000000");
-      expect(historicalTx.scilla!.amount).toBe("348369130769230760");
+      expect(historicalTx.scilla!.nonce).toBe("1274");
+      expect(historicalTx.scilla!.gasLimit).toBe("5000");
+      expect(historicalTx.scilla!.gasPrice).toBe("2000000016");
+      expect(historicalTx.scilla!.amount).toBe("0");
       expect(historicalTx.status).toBe(TransactionStatus.Pending);
+
+      await historicalTx.updateFromJsonRPCResult(mockResult);
+
+      expect(historicalTx.status).toBe(TransactionStatus.Failed);
+      expect(historicalTx.scilla).toBeDefined();
+      expect(historicalTx.scilla!.hash).toBe("1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125");
+      expect(historicalTx.scilla!.version).toBe("65537");
+      expect(historicalTx.scilla!.nonce).toBe("1274");
+      expect(historicalTx.scilla!.toAddr).toBe("6eaf9b37f9870994f5853eb28405919f87e8dec2");
+      expect(historicalTx.scilla!.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
+      expect(historicalTx.scilla!.amount).toBe("0");
+      expect(historicalTx.scilla!.signature).toBe("0x9bc96ba0baba5a34cf6e4de6218ff7a7809763f6324912dff1c546ce0295e47b41bfb7eda6b6034eeeed69077088253e9d55eeb85dc77829c774fe45894d2eef");
+      expect(historicalTx.scilla!.gasPrice).toBe("2000000016");
+      expect(historicalTx.scilla!.gasLimit).toBe("5000");
+      expect(historicalTx.scilla!.data).toBe("{\"_tag\":\"CallRewards\",\"params\":[{\"vname\":\"token_id\",\"type\":\"Uint256\",\"value\":\"1892\"}]}");
+      expect(historicalTx.scilla!.code).toBe("");
+      expect(historicalTx.scilla!.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
+      expect(historicalTx.scilla!.chainId).toBe(1);
+      expect(historicalTx.scilla!.receipt).toBeDefined();
+      expect(historicalTx.scilla!.receipt!.success).toBe(false);
+      expect(historicalTx.scilla!.receipt!.accepted).toBe(false);
+      expect(historicalTx.scilla!.receipt!.gas_used).toBe("1843");
+      expect(historicalTx.scilla!.receipt!.epoch_num).toBe("10915779");
     });
   });
 

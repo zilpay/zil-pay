@@ -2,7 +2,8 @@ import { ZILLIQA } from "config/slip44";
 import { TransactionStatus } from "config/tx";
 import { Address } from "crypto/address";
 import type { SignedTransaction } from "crypto/tx";
-import { uint8ArrayToHex } from "lib/utils/hex";
+import { chainIdFromVersion } from "crypto/zilliqa_tx";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import type { TransactionMetadata, TransactionReceiptEVM, TransactionReceiptScilla } from "types/tx";
 
 
@@ -111,6 +112,46 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
     }
 
     throw new Error("Invalid SignedTransaction: missing scilla or evm");
+  }
+
+    async updateFromJsonRPCResult(result: unknown): Promise<void> {
+    if (!result) {
+      throw new Error("Invalid result");
+    }
+
+    if (this.scilla) {
+      const data = result as any;
+      
+      this.scilla = {
+        hash: data.ID,
+        version: data.version,
+        nonce: data.nonce,
+        toAddr: data.toAddr,
+        amount: data.amount,
+        gasPrice: data.gasPrice,
+        gasLimit: data.gasLimit,
+        code: data.code || "",
+        data: data.data || "",
+        senderPubKey: data.senderPubKey,
+        signature: data.signature,
+        priority: this.scilla.priority ?? false,
+        senderAddr: "",
+        receipt: data.receipt,
+        chainId: chainIdFromVersion(Number(data.version)),
+      };
+
+      if (this.scilla.senderPubKey) {
+        const pubKeyBytes = hexToUint8Array(this.scilla.senderPubKey);
+        const addr = await Address.fromPubKey(pubKeyBytes, ZILLIQA);
+        this.scilla.senderAddr = await addr.toZilBech32();
+      }
+
+      this.status = this.scilla.receipt?.success 
+        ? TransactionStatus.Success 
+        : TransactionStatus.Failed;
+    } else if (this.evm) {
+      throw new Error("EVM transactions not yet implemented");
+    }
   }
 }
 
