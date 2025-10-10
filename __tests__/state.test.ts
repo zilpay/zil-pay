@@ -25,8 +25,9 @@ import { WalletSettings } from "../background/storage/settings";
 import { WORD_LIST } from "./crypto/word_list";
 import {
   HistoricalTransaction,
-  TransactionStatus,
 } from "../background/rpc/history_tx";
+import { GasSpeed } from '../config/gas';
+import { TransactionStatus } from "../config/tx";
 
 describe("test bg state with empty storage", () => {
   beforeAll(async () => {
@@ -58,10 +59,11 @@ describe("test bg state with empty storage", () => {
   it("should save storage", async () => {
     await BrowserStorage.clear();
     const globalState = await GlobalState.fromStorage();
+    const bscConfig = createBscConfig();
 
     expect(globalState.state).toStrictEqual(BackgroundState.default());
 
-    globalState.state.chains.push(createBscConfig());
+    globalState.state.chains.push(bscConfig);
 
     const bip32Accounts = [
       { index: 0, name: "account 0" },
@@ -71,6 +73,7 @@ describe("test bg state with empty storage", () => {
       { index: 4, name: "account 4" },
     ];
     const settings = new WalletSettings({
+      gasOption: GasSpeed.Market,
       cipherOrders: [
         CipherOrders.KUZNECHIK,
         CipherOrders.NTRUP761,
@@ -108,33 +111,18 @@ describe("test bg state with empty storage", () => {
     globalState.state.wallets.push(bip39Wallet);
 
     const historicalTx = new HistoricalTransaction({
-      transaction_hash:
-        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      amount: 1000n,
-      sender: "zil1senderaddress",
-      recipient: "zil1recipientaddress",
-      contract_address: null,
-      status: TransactionStatus.Success,
-      status_code: 3,
-      timestamp: 1672531200000,
-      block_number: 12345n,
-      gasUsed: 21000n,
-      gasLimit: 21000n,
-      gasPrice: 1000000000n,
-      blobGasUsed: null,
-      blobGasPrice: null,
-      effectiveGasPrice: 1000000000n,
-      fee: 21000000000000n,
-      icon: null,
-      title: "Test Transaction",
-      error: null,
-      sig: "0xabcdef123456",
-      nonce: 1n,
-      token_info: null,
-      chain_type: "Scilla",
-      chain_hash: globalState.state.chains[0].hash(),
-      data: "some data",
-      code: "some code",
+      status: TransactionStatus.Pending,
+      metadata: {
+        token: {
+            balances: undefined,
+        },
+        chainHash: bscConfig.hash,
+      },
+      evm: {
+        transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
+        from: "0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
+      },
+      timestamp: new Date().getSeconds(),
     });
 
     globalState.state.wallets[0].history.push(historicalTx);
