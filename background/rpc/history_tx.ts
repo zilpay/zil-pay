@@ -88,10 +88,21 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
         yParity: raw.yParity?.toString(),
       };
 
-      if ('gasLimit' in raw) historicalEvm.gasLimit = raw.gasLimit.toString();
-      if ('gasPrice' in raw) historicalEvm.gasPrice = raw.gasPrice.toString();
-      if ('maxFeePerGas' in raw) historicalEvm.maxFeePerGas = raw.maxFeePerGas.toString();
-      if ('maxPriorityFeePerGas' in raw) historicalEvm.maxPriorityFeePerGas = raw.maxPriorityFeePerGas.toString();
+      if ('data' in raw && raw.data) {
+        historicalEvm.data = raw.data.toString();
+      }
+      if ('gasLimit' in raw && raw.gasLimit) {
+        historicalEvm.gasLimit = raw.gasLimit.toString();
+      }
+      if ('gasPrice' in raw && raw.gasPrice) {
+        historicalEvm.gasPrice = raw.gasPrice.toString();
+      }
+      if ('maxFeePerGas' in raw && raw.maxFeePerGas) {
+        historicalEvm.maxFeePerGas = raw.maxFeePerGas.toString();
+      }
+      if ('maxPriorityFeePerGas' in raw && raw.maxPriorityFeePerGas) {
+        historicalEvm.maxPriorityFeePerGas = raw.maxPriorityFeePerGas.toString();
+      }
 
       return new HistoricalTransaction({
         ...commonData,
