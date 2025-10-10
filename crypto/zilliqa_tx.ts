@@ -34,7 +34,7 @@ export function chainIdFromVersion(version: number): number {
 
 export class ZILTransactionRequest {
   static from(payload: TransactionRequestScilla): ZILTransactionRequest {
-    const nonce =  payload.nonce ? BigInt(payload.nonce) : 0n;
+    const nonce = payload.nonce ? BigInt(payload.nonce) : 0n;
     const gasPrice = payload.gasPrice ? BigInt(payload.gasPrice) : 0n;
     const gasLimit = payload.gasLimit ? BigInt(payload.gasLimit) : 0n;
     const amount = BigInt(payload.amount);
@@ -42,8 +42,12 @@ export class ZILTransactionRequest {
     const address = Address.fromStr(payload.toAddr);
     const toAddr = address.bytes;
 
-    const code = payload.code ? utf8ToUint8Array(payload.code) : new Uint8Array();
-    const data = payload.data ? utf8ToUint8Array(payload.data) : new Uint8Array();
+    const code = payload.code
+      ? utf8ToUint8Array(payload.code)
+      : new Uint8Array();
+    const data = payload.data
+      ? utf8ToUint8Array(payload.data)
+      : new Uint8Array();
 
     return new ZILTransactionRequest(
       payload.chainId ?? 1,
@@ -53,7 +57,7 @@ export class ZILTransactionRequest {
       toAddr,
       amount,
       code,
-      data
+      data,
     );
   }
 

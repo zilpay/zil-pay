@@ -17,12 +17,12 @@ export class TransactionRequest {
     if (this.scilla) {
       const receipt = await this.scilla.sign(keypair);
 
-      return new TransactionReceipt(this.metadata, receipt);
+      return new SignedTransaction(this.metadata, receipt);
     } else if (this.evm) {
       const entropy = randomBytes(128);
       const receipt = this.evm.signBy(keypair.privateKey, entropy);
 
-      return new TransactionReceipt(this.metadata, undefined, receipt);
+      return new SignedTransaction(this.metadata, undefined, receipt);
     }
 
     throw new Error("Invlid tx type");
@@ -39,7 +39,7 @@ export class TransactionRequest {
   }
 }
 
-export class TransactionReceipt {
+export class SignedTransaction {
   constructor(
     public metadata: TransactionMetadata,
     public scilla?: ZILTransactionReceipt,

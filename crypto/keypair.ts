@@ -4,11 +4,7 @@ import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
 import { sign, verify } from "./zilliqa/schnorr";
-import {
-    eip191Signer,
-  signTyped,
-  verifyTyped,
-} from "micro-eth-signer";
+import { eip191Signer, signTyped, verifyTyped } from "micro-eth-signer";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";

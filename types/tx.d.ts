@@ -75,29 +75,35 @@ export interface Log {
 }
 
 export interface TransactionReceiptEVM {
-  accessList?: { address: string; storageKeys: string[] }[];
-  blockHash?: string;
-  blockNumber?: string;
-  chainId?: string;
-  contractAddress?: string | null;
-  cumulativeGasUsed?: string;
-  effectiveGasPrice?: string;
+  transactionHash: string;
   from: string;
+  to: string;
+  type: string;
+  value: string;
+  nonce: string;
+  data?: string;
+  chainId?: string;
+  
   gas?: string;
+  gasLimit?: string;
   gasPrice?: string;
-  gasUsed?: string;
-  input?: string;
-  logs?: Log[];
-  logsBloom?: string;
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
-  nonce?: string;
+  
+  r?: string;
+  s?: string;
+  yParity?: string;
+  
+  blockHash?: string;
+  blockNumber?: string;
   status?: string;
-  to: string;
-  transactionHash: string;
+  gasUsed?: string;
+  effectiveGasPrice?: string;
+  cumulativeGasUsed?: string;
+  contractAddress?: string | null;
+  logs?: Log[];
+  logsBloom?: string;
   transactionIndex?: string;
-  type: string;
-  value?: string;
 }
 
 export interface AccessListItem {
@@ -117,4 +123,3 @@ export interface TransactionMetadata {
   title?: string;
   token: FTState;
 }
-

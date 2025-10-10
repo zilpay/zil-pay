@@ -10,7 +10,7 @@ import {
   MetadataField,
   type RequestType
 } from './ft_parser';
-import type { TransactionReceipt, TransactionRequest } from 'crypto/tx';
+import type { SignedTransaction, TransactionRequest } from 'crypto/tx';
 import { buildBatchGasRequest, EIP1559, EIP4844, processParseFeeHistoryRequest } from './gas_parse';
 import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
@@ -233,7 +233,7 @@ export class NetworkProvider {
     }));
   }
 
-  async broadcastSignedTransactions(txns: TransactionReceipt[]): Promise<TransactionReceipt[]> {
+  async broadcastSignedTransactions(txns: SignedTransaction[]): Promise<SignedTransaction[]> {
     const allRequests: JsonRPCRequest[] = [];
 
     for (const tx of txns) {

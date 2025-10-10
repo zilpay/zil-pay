@@ -35,12 +35,14 @@ describe("HistoricalTransaction", () => {
         const ethTx = Transaction.prepare({
           to: await tokenAddress.toEthChecksum(),
           value: 0n,
-          maxFeePerGas: weigwei.decode("1"),
+          // maxFeePerGas: weigwei.decode("1"),
           gasLimit: 24000n,
-          maxPriorityFeePerGas: 10n,
+          // maxPriorityFeePerGas: 10n,
           nonce: 0n,
+          gasPrice: 100n,
           chainId: BigInt(BSC_CONFIG.chainId),
           data: transferData,
+          type: 'legacy',
         });
         const metadata = {
           chainHash: BSC_CONFIG.hash(),
@@ -48,7 +50,7 @@ describe("HistoricalTransaction", () => {
         const txReq = new TransactionRequest(metadata, undefined, ethTx);
         const receipt = await txReq.sign(keypair);
 
-        console.log(receipt.evm?.hash);
+        console.log(receipt.evm);
       });
     });
   });

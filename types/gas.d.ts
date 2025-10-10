@@ -19,4 +19,3 @@ export interface FeeHistoryResult {
   oldestBlock: string;
   gasUsedRatio: number[];
 }
-

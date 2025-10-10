@@ -1,7 +1,7 @@
 import { RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
 import { HistoricalTransaction } from './history_tx';
-import { TransactionReceipt } from 'crypto/tx';
+import { SignedTransaction } from 'crypto/tx';
 import { hexToUint8Array, stripHexPrefix } from 'lib/utils/hex';
 import { TransactionStatus } from 'config/tx';
 import { TypeOf } from 'lib/types';
@@ -10,7 +10,7 @@ import { ZILLIQA } from 'config/slip44';
 
 const MINUTES_IN_SECONDS = 10 * 60;
 
-export async function buildSendSignedTxRequest(tx: TransactionReceipt): Promise<JsonRPCRequest> {
+export async function buildSendSignedTxRequest(tx: SignedTransaction): Promise<JsonRPCRequest> {
   if (tx.scilla) {
     return RpcProvider.buildPayload(ZilMethods.CreateTransaction, [await tx.scilla.toJSON()]);
   } else if (tx.evm) {
@@ -80,7 +80,7 @@ export async function processTxReceiptResponse(
 
 export function processTxSendResponse(
   response: JsonRPCResponse<any>,
-  tx: TransactionReceipt
+  tx: SignedTransaction
 ): string {
   let hash: string | undefined;
 

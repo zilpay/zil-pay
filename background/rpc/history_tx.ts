@@ -1,7 +1,7 @@
 import { ZILLIQA } from "config/slip44";
 import { TransactionStatus } from "config/tx";
 import { Address } from "crypto/address";
-import type { TransactionReceipt } from "crypto/tx";
+import type { SignedTransaction } from "crypto/tx";
 import { uint8ArrayToHex } from "lib/utils/hex";
 import type { TransactionMetadata, TransactionReceiptEVM, TransactionReceiptScilla } from "types/tx";
 
@@ -39,51 +39,67 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
     };
   }
 
-  static async fromTransactionReceipt(receipt: TransactionReceipt, hash: string): Promise<HistoricalTransaction> {
+  static async fromSignedTransaction(
+    signedTx: SignedTransaction, 
+    hash: string
+  ): Promise<HistoricalTransaction> {
     const commonData = {
       status: TransactionStatus.Pending,
-      metadata: receipt.metadata,
+      metadata: signedTx.metadata,
       timestamp: Math.floor(Date.now() / 1000),
     };
 
-    if (receipt.scilla) {
-      const scillaData = await receipt.scilla.toJSON();
-      const senderAddr = await Address.fromPubKey(receipt.scilla.pubKey, ZILLIQA);
+    if (signedTx.scilla) {
+      const scillaData = await signedTx.scilla.toJSON();
+      const senderPubKey = uint8ArrayToHex(signedTx.scilla.pubKey);
+      const senderAddr = await Address.fromPubKey(
+        signedTx.scilla.pubKey, 
+        ZILLIQA
+      );
 
       const historicalScilla: TransactionReceiptScilla = {
         ...scillaData,
-         version: String(scillaData.version),
-        nonce: String(scillaData.nonce),
-        senderPubKey: uint8ArrayToHex(receipt.scilla.pubKey),
         hash: hash,
+        senderPubKey,
         senderAddr: await senderAddr.toZilBech32(),
+        version: String(scillaData.version),
+        nonce: String(scillaData.nonce),
+        receipt: undefined,
       };
-      
+    
       return new HistoricalTransaction({
         ...commonData,
         scilla: historicalScilla,
       });
-
-    } else if (receipt.evm) {
-      const sender = receipt.evm.recoverSender();
-      const rawTx = receipt.evm.raw;
-
+    } else if (signedTx.evm) {
+      const sender = signedTx.evm.recoverSender();
+      const raw = signedTx.evm.raw;
       const historicalEvm: TransactionReceiptEVM = {
         transactionHash: hash,
         from: sender.address,
-        to: rawTx.to || '',
-
-        type: String(receipt.evm.type),
+        to: raw.to,
+        type: String(signedTx.evm.type),
+        value: raw.value.toString(),
+        nonce: raw.nonce.toString(),
+        data: raw.data?.toString(),
+        chainId: raw.chainId?.toString(),
+        r: raw.r?.toString(),
+        s: raw.s?.toString(),
+        yParity: raw.yParity?.toString(),
       };
+
+      if ('gasLimit' in raw) historicalEvm.gasLimit = raw.gasLimit.toString();
+      if ('gasPrice' in raw) historicalEvm.gasPrice = raw.gasPrice.toString();
+      if ('maxFeePerGas' in raw) historicalEvm.maxFeePerGas = raw.maxFeePerGas.toString();
+      if ('maxPriorityFeePerGas' in raw) historicalEvm.maxPriorityFeePerGas = raw.maxPriorityFeePerGas.toString();
 
       return new HistoricalTransaction({
         ...commonData,
         evm: historicalEvm,
       });
-
-    } else {
-      throw new Error("Invalid TransactionReceipt");
     }
+
+    throw new Error("Invalid SignedTransaction: missing scilla or evm");
   }
 }
 
