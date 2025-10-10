@@ -1,6 +1,6 @@
+import { createContract } from 'micro-eth-signer/advanced/abi.js';
 import { RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
-import { createContract } from 'micro-eth-signer/abi.js';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address } from 'crypto/address';
 import { TypeOf } from 'lib/types';
@@ -312,4 +312,3 @@ export async function processZilBalanceResponse(
     return 0n;
   }
 }
-

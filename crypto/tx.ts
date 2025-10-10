@@ -1,10 +1,10 @@
-import type { TxType } from "micro-eth-signer/esm/tx";
 import { ZILTransactionRequest, ZILTransactionReceipt } from "./zilliqa_tx";
 import { Transaction } from "micro-eth-signer";
 import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
 import { convertBigIntsToHex } from "lib/utils/hex";
 import type { TransactionMetadata } from "types/tx";
+import type { TxType } from "micro-eth-signer/core/tx-internal";
 
 export class TransactionRequest {
   constructor(

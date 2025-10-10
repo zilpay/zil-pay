@@ -62,7 +62,7 @@ export async function processTxReceiptResponse(
       tx.scilla!.senderAddr = await addr.toZilBech32();
     }
 
-    if (tx.scilla?.receipt.success) {
+    if (tx.scilla?.receipt?.success) {
       tx.status = TransactionStatus.Success;
     } else {
       tx.status = TransactionStatus.Failed;

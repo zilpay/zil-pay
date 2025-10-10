@@ -29,7 +29,7 @@ export interface TransactionReceiptScilla extends TransactionRequestScilla {
   senderAddr: string;
   gasPrice: string;
   gasLimit: string;
-  receipt: {
+  receipt?: {
     accepted: boolean;
     gas_used: string;
     cumulative_gas_used: string;
@@ -75,20 +75,29 @@ export interface Log {
 }
 
 export interface TransactionReceiptEVM {
-  blockHash: string;
-  blockNumber: string;
-  contractAddress: string | null;
-  cumulativeGasUsed: string;
-  effectiveGasPrice: string;
+  accessList?: { address: string; storageKeys: string[] }[];
+  blockHash?: string;
+  blockNumber?: string;
+  chainId?: string;
+  contractAddress?: string | null;
+  cumulativeGasUsed?: string;
+  effectiveGasPrice?: string;
   from: string;
-  gasUsed: string;
-  logs: Log[];
-  logsBloom: string;
-  status: string;
+  gas?: string;
+  gasPrice?: string;
+  gasUsed?: string;
+  input?: string;
+  logs?: Log[];
+  logsBloom?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+  nonce?: string;
+  status?: string;
   to: string;
   transactionHash: string;
-  transactionIndex: string;
+  transactionIndex?: string;
   type: string;
+  value?: string;
 }
 
 export interface AccessListItem {

@@ -1,14 +1,14 @@
-import type { TypedData } from "micro-eth-signer/typed-data.js";
+import type { TypedData } from "micro-eth-signer";
 
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { deriveFromPrivateKeyPublicKey, derivePrivateKey } from "./bip32";
 import { DerivationPath } from "./bip49";
 import { sign, verify } from "./zilliqa/schnorr";
 import {
-  personal,
+    eip191Signer,
   signTyped,
   verifyTyped,
-} from "micro-eth-signer/typed-data.js";
+} from "micro-eth-signer";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";
@@ -94,7 +94,7 @@ export class KeyPair {
         const sigZil = await sign(msg, this.privateKey);
         return Uint8Array.from(sigZil.toBytes());
       case AddressType.EthCheckSum:
-        const sigEth = personal.sign(msg, this.privateKey);
+        const sigEth = eip191Signer.sign(msg, this.privateKey);
         return hexToUint8Array(sigEth);
     }
   }
@@ -134,7 +134,7 @@ export class KeyPair {
         const ethChecsum = await address.toEthChecksum();
         const sigHex = uint8ArrayToHex(sig);
 
-        return personal.verify(sigHex, msg, ethChecsum);
+        return eip191Signer.verify(sigHex, msg, ethChecsum);
     }
   }
 
