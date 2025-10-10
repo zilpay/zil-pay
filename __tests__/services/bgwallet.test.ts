@@ -12,7 +12,7 @@ import {
 } from "../../popup/background/wallet";
 import { GasSpeed } from '../../config/gas';
 import { changeChainProvider } from "../../popup/background/provider";
-import { buildTokenTransfer } from "../../popup/background/transactions";
+import { buildTokenTransfer, rejectConfirm } from "../../popup/background/transactions";
 import { GlobalState } from "../../background/state";
 import { startBackground } from "../../background/background";
 import { BrowserStorage } from "../../lib/storage";
@@ -248,6 +248,11 @@ describe("WalletService through background messaging", () => {
       expect(confirm.scilla.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
       expect(confirm.scilla.amount).toBe('0');
       expect(confirm.scilla.data).toBe('{"_tag":"Transfer","params":[{"vname":"to","type":"ByStr20","value":"0x77e27c39ce572283b848e2cdf32cce761e34fa49"},{"vname":"amount","type":"Uint128","value":"1"}]}');
+
+      await rejectConfirm(0, 0);
+      state = await getGlobalState();
+
+      expect(state.wallets[0].confirm).toHaveLength(0);
     });
   });
 
