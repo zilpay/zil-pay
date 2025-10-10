@@ -216,7 +216,7 @@ describe("JsonRPC provder tests", () => {
     expect(blockNumber).toBeGreaterThan(0n);
   });
 
-  it("should update multiple scilla transaction receipts", async () => {
+  it("should update multiple eth transaction receipts", async () => {
     const provider = new NetworkProvider(ethConfig);
     const mockTxns = [
       new HistoricalTransaction({
@@ -267,6 +267,80 @@ describe("JsonRPC provder tests", () => {
 
     expect(mockTxns[0].scilla).toBeUndefined();
     expect(mockTxns[1].scilla).toBeUndefined();
+  }, 20000);
+
+  it("should update multiple scilla transaction receipts", async () => {
+    const provider = new NetworkProvider(zilConfig);
+    const mockTxns = [
+      new HistoricalTransaction({
+        status: TransactionStatus.Pending,
+        metadata: {
+          token: {
+              balances: undefined,
+          },
+          chainHash: zilConfig.hash,
+        },
+        scilla: {
+          hash: "1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125",
+          toAddr: "6eaf9b37f9870994f5853eb28405919f87e8dec2",
+        },
+        timestamp: new Date().getSeconds(),
+      }),
+      new HistoricalTransaction({
+        status: TransactionStatus.Pending,
+        metadata: {
+          token: {
+              balances: undefined,
+          },
+          chainHash: zilConfig.hash,
+        },
+        scilla: {
+          hash: "d4ffc62b9e7dd7764bc772959f5901e7d8149f1956fd9288116c073362373da4",
+          toAddr: "fbd07e692543d3064b9cf570b27faabfd7948da4",
+        },
+        timestamp: new Date().getSeconds(),
+      }),
+    ];
+
+    await provider.updateTransactionsHistory(mockTxns);
+
+    expect(mockTxns[0].status).toBe(TransactionStatus.Failed);
+    expect(mockTxns[0].evm).toBeUndefined();
+    expect(mockTxns[0].scilla.hash).toBe("0x1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125");
+    expect(mockTxns[0].scilla.version).toBe("65537");
+    expect(mockTxns[0].scilla.nonce).toBe("1274");
+    expect(mockTxns[0].scilla.toAddr).toBe("6eaf9b37f9870994f5853eb28405919f87e8dec2");
+    expect(mockTxns[0].scilla.amount).toBe("0");
+    expect(mockTxns[0].scilla.gasPrice).toBe("2000000016");
+    expect(mockTxns[0].scilla.gasLimit).toBe("5000");
+    expect(mockTxns[0].scilla.data).toContain("CallRewards");
+    expect(mockTxns[0].scilla.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
+    expect(mockTxns[0].scilla.priority).toBe(false);
+    expect(mockTxns[0].scilla.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
+    expect(mockTxns[0].scilla.receipt.success).toBe(false);
+    expect(mockTxns[0].scilla.receipt.accepted).toBe(false);
+    expect(mockTxns[0].scilla.receipt.exceptions).toBeDefined();
+    expect(mockTxns[0].scilla.receipt.exceptions?.length).toBeGreaterThan(0);
+    expect(mockTxns[0].scilla.chainId).toBe(1);
+
+    expect(mockTxns[1].status).toBe(TransactionStatus.Success);
+    expect(mockTxns[1].evm).toBeUndefined();
+    expect(mockTxns[1].scilla.hash).toBe("0xd4ffc62b9e7dd7764bc772959f5901e7d8149f1956fd9288116c073362373da4");
+    expect(mockTxns[1].scilla.version).toBe("65537");
+    expect(mockTxns[1].scilla.nonce).toBe("1276");
+    expect(mockTxns[1].scilla.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
+    expect(mockTxns[1].scilla.amount).toBe("0");
+    expect(mockTxns[1].scilla.gasPrice).toBe("2000000016");
+    expect(mockTxns[1].scilla.gasLimit).toBe("2000");
+    expect(mockTxns[1].scilla.data).toContain("Transfer");
+    expect(mockTxns[1].scilla.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
+    expect(mockTxns[1].scilla.priority).toBe(false);
+    expect(mockTxns[1].scilla.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
+    expect(mockTxns[1].scilla.receipt.success).toBe(true);
+    expect(mockTxns[1].scilla.receipt.accepted).toBe(false);
+    expect(mockTxns[1].scilla.receipt.event_logs).toBeDefined();
+    expect(mockTxns[1].scilla.receipt.event_logs?.length).toBeGreaterThan(0);
+    expect(mockTxns[1].scilla.chainId).toBe(1);
   }, 20000);
 
   it("should update balances for multiple scilla tokens and accounts", async () => {

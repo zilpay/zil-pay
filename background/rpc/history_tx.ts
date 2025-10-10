@@ -3,7 +3,7 @@ import { TransactionStatus } from "config/tx";
 import { Address } from "crypto/address";
 import type { SignedTransaction } from "crypto/tx";
 import { chainIdFromVersion } from "crypto/zilliqa_tx";
-import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import { HEX_PREFIX, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import type { TxType } from "micro-eth-signer/core/tx-internal";
 import type { TransactionMetadata, TransactionReceiptEVM, TransactionReceiptScilla } from "types/tx";
 
@@ -73,7 +73,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
 
       const historicalScilla: TransactionReceiptScilla = {
         ...scillaData,
-        hash: hash,
+        hash: HEX_PREFIX + hash,
         senderPubKey,
         senderAddr: await senderAddr.toZilBech32(),
         version: String(scillaData.version),
@@ -136,7 +136,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
       const data = result as any;
       
       this.scilla = {
-        hash: data.ID,
+        hash: HEX_PREFIX + data.ID,
         version: data.version,
         nonce: data.nonce,
         toAddr: data.toAddr,

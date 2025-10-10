@@ -11,6 +11,7 @@ import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import type { TransactionMetadata } from '../../types/tx';
 import { TransactionStatus } from '../../config/tx';
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
+import { HEX_PREFIX } from "../../lib/utils/hex";
 
 const ZIL_CONFIG = createZilliqaConfig();
 const BSC_CONFIG = createBscConfig();
@@ -71,14 +72,14 @@ describe("HistoricalTransaction", () => {
       const txReq = new TransactionRequest(metadata, zilTx);
       const signedTx = await txReq.sign(keypair);
   
-      const mockHash = "0xd0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7";
+      const mockHash = "d0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7";
       const historicalTx = await HistoricalTransaction.fromSignedTransaction(
         signedTx,
         mockHash
       );
 
       expect(historicalTx.scilla).toBeDefined();
-      expect(historicalTx.scilla!.hash).toBe(mockHash);
+      expect(historicalTx.scilla!.hash).toBe(HEX_PREFIX + mockHash);
       expect(historicalTx.scilla!.nonce).toBe("1274");
       expect(historicalTx.scilla!.gasLimit).toBe("5000");
       expect(historicalTx.scilla!.gasPrice).toBe("2000000016");
@@ -89,7 +90,7 @@ describe("HistoricalTransaction", () => {
 
       expect(historicalTx.status).toBe(TransactionStatus.Failed);
       expect(historicalTx.scilla).toBeDefined();
-      expect(historicalTx.scilla!.hash).toBe("1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125");
+      expect(historicalTx.scilla!.hash).toBe("0x1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125");
       expect(historicalTx.scilla!.version).toBe("65537");
       expect(historicalTx.scilla!.nonce).toBe("1274");
       expect(historicalTx.scilla!.toAddr).toBe("6eaf9b37f9870994f5853eb28405919f87e8dec2");
