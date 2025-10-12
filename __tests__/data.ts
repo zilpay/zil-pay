@@ -296,3 +296,18 @@ export const BASE_SETTINGS = {
   sessionTime: 60,
 };
 
+
+export const ZLP = new FToken({
+  name: 'ZilPay wallet',
+  symbol: 'ZLP',
+  decimals: 18,
+  addr: 'zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4',
+  addrType: 0,
+  logo: '',
+  balances: {},
+  rate: 0,
+  default_: false,
+  native: false,
+  chainHash: 208425510
+});
+

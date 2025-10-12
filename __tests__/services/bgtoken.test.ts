@@ -17,6 +17,7 @@ import {
   IMPORTED_KEY,
   PASSWORD,
   WORDS,
+  ZLP,
 } from "../data";
 import { WORD_LIST } from '../crypto/word_list';
 import { ZILLIQA } from "../../config/slip44";
@@ -206,21 +207,8 @@ describe("WalletService through background messaging", () => {
       state = await getGlobalState();
       let wallet = state.wallets[0];
 
-      const zlp = new FToken({
-        name: 'ZilPay wallet',
-        symbol: 'ZLP',
-        decimals: 18,
-        addr: 'zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4',
-        addrType: 0,
-        logo: '',
-        balances: {},
-        rate: 0,
-        default_: false,
-        native: false,
-        chainHash: 208425510
-      });
 
-      wallet.tokens.push(zlp);
+      wallet.tokens.push(ZLP);
       await globalState.wallet.setGlobalState(state, () => null);
 
       state = await getGlobalState();
@@ -244,7 +232,7 @@ describe("WalletService through background messaging", () => {
       const params: BuildTokenTransferParams = {
         walletIndex: 0,
         accountIndex: 0,
-        tokenAddr: zlp.addr,
+        tokenAddr: ZLP.addr,
         to: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
         amount: '1',
       };
@@ -259,8 +247,8 @@ describe("WalletService through background messaging", () => {
       const account = state.wallets[0].accounts[0];
 
       expect(confirm.metadata?.chainHash).toBe(account.chainHash);
-      expect(confirm.metadata?.token.name).toBe(zlp.name);
-      expect(confirm.metadata?.token.symbol).toBe(zlp.symbol);
+      expect(confirm.metadata?.token.name).toBe(ZLP.name);
+      expect(confirm.metadata?.token.symbol).toBe(ZLP.symbol);
       expect(confirm.metadata?.token.addr).toBe("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
       expect(confirm.metadata?.token.value).toBe(params.amount);
       expect(confirm.metadata?.token.recipient).toBe(params.to);

@@ -5,12 +5,12 @@ import { BrowserStorage } from "../../lib/storage";
 import '../setupTests';
 import { messageManager } from "../setupTests";
 import type { IKeyPair, WalletFromPrivateKeyParams } from "types/wallet";
-import { BASE_SETTINGS, createZilliqaConfig, createZilliqaTestnetConfig, IMPORTED_KEY, PASSWORD } from "__tests__/data";
+import { BASE_SETTINGS, createZilliqaTestnetConfig, IMPORTED_KEY, PASSWORD, ZLP } from "__tests__/data";
 import { ZILLIQA } from "config/slip44";
 import { WalletSettings } from "background/storage";
-import { getGlobalState, walletFromPrivateKey } from "popup/background/wallet";
+import { getGlobalState, setGlobalState, walletFromPrivateKey } from "popup/background/wallet";
 import type { BuildTokenTransferParams } from "types/tx";
-import { buildTokenTransfer, estimateGas } from "popup/background/transactions";
+import { buildTokenTransfer, estimateGas, rejectConfirm } from "popup/background/transactions";
 
 describe("WalletService through background messaging with tx service", () => {
   let globalState: GlobalState;
@@ -66,6 +66,36 @@ describe("WalletService through background messaging with tx service", () => {
       expect(gas.feeHistory.baseFee).toBe(0n);
       expect(gas.feeHistory.maxFee).toBe(0n);
       expect(gas.feeHistory.priorityFee).toBe(0n);
+
+      await rejectConfirm(0, 0);
+      state = await getGlobalState();
+
+      state.wallets[0].tokens.push(ZLP);
+      await setGlobalState();
+      state = await getGlobalState();
+
+      const txParamsZLP: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: ZLP.addr,
+        to: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
+        amount: '1',
+      };
+
+      await buildTokenTransfer(txParamsZLP);
+      state = await getGlobalState();
+
+      expect(state.wallets[0].confirm[0].scilla?.gasLimit).toBe(5000);
+      const zlpTransferGas = await estimateGas(0, 0,0);
+
+      expect(zlpTransferGas.blobBaseFee).toBe(0n);
+      expect(zlpTransferGas.gasPrice).toBe(2000000016n);
+      expect(zlpTransferGas.txEstimateGas).toBe(5000n);
+      expect(zlpTransferGas.maxPriorityFee).toBe(0n);
+      expect(zlpTransferGas.blobBaseFee).toBe(0n);
+      expect(zlpTransferGas.feeHistory.baseFee).toBe(0n);
+      expect(zlpTransferGas.feeHistory.maxFee).toBe(0n);
+      expect(zlpTransferGas.feeHistory.priorityFee).toBe(0n);
     });
 
     it("should generate a valid BIP39 mnemonic phrase", async () => {
