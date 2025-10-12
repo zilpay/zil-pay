@@ -188,12 +188,13 @@ describe("WalletService through background messaging", () => {
       expect(confirm.scilla.amount).toBe('1');
     });
 
-    it("test create EVM wallet", async () => {
+    it("test create EVM wallet, send tokens", async () => {
+      const ethNetConfig = createEthConfig();
       const params: WalletFromPrivateKeyParams = {
         key: keyPairZilliqa,
         walletName: "My ETH Wallet",
         accountName: "ETH 0",
-        chain: createEthConfig(),
+        chain: ethNetConfig,
         password: PASSWORD,
         settings: new WalletSettings(baseSettings),
       };
@@ -205,9 +206,30 @@ describe("WalletService through background messaging", () => {
         walletIndex: 0,
         accountIndex: 0,
         tokenAddr: token.addr,
-        to: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
+        to: '0xEC6bB19886c9D5f5125DfC739362Bf54AA23d51F',
         amount: '1',
       };
+
+      await buildTokenTransfer(txParams);
+      state = await getGlobalState();
+      const confirm = state.wallets[0].confirm[0];
+      const account = state.wallets[0].accounts[0];
+
+      expect(confirm.metadata.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata.token.name).toBe(ethNetConfig.ftokens[0].name);
+      expect(confirm.metadata.token.symbol).toBe(ethNetConfig.ftokens[0].symbol);
+      expect(confirm.metadata.token.addr).toBe(ethNetConfig.ftokens[0].addr);
+      expect(confirm.metadata.token.value).toBe(txParams.amount);
+      expect(confirm.metadata.token.recipient).toBe(txParams.to);
+
+      expect(confirm.scilla).toBeUndefined();
+      expect(confirm.signMessageScilla).toBeUndefined();
+      expect(confirm.signPersonalMessageEVM).toBeUndefined();
+      expect(confirm.signTypedDataJsonEVM).toBeUndefined();
+
+      expect(confirm.evm.chainId).toBe(1);
+      expect(confirm.evm.to).toBe(txParams.to);
+      expect(confirm.evm.value).toBe(txParams.amount);
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
