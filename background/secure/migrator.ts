@@ -4,7 +4,7 @@ import { FToken } from '../storage/ftoken';
 import { Wallet } from '../storage/wallet';
 import { Account } from '../storage/account';
 import { WalletSettings } from '../storage/settings';
-import { HashTypes, WalletHashParams } from '../storage/argon';
+import { WalletHashParams } from '../storage/argon';
 import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { uuid } from 'crypto/uuid';
@@ -13,6 +13,7 @@ import { RatesApiOptions } from 'config/api';
 import { AddressType, AuthMethod, WalletTypes } from 'config/wallet';
 import { Locales } from 'config/locale';
 import { GasSpeed } from 'config/gas';
+import { HashTypes } from 'config/argon2';
 
 interface WalletIdentities {
   selectedAddress: number;

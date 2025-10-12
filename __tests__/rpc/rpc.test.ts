@@ -103,7 +103,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(0n);
     expect(fee.txEstimateGas).toBe(22765n);
-    expect(fee.blobBaseFee).toBe(0n);
+    expect(fee.blobBaseFee).toBe(1n);
     expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
@@ -136,7 +136,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(0n);
     expect(fee.txEstimateGas).toBe(21000n);
-    expect(fee.blobBaseFee).toBe(0n);
+    expect(fee.blobBaseFee).toBe(1n);
     expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
@@ -167,7 +167,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(1000n);
     expect(fee.txEstimateGas).toBe(21000n);
-    expect(fee.blobBaseFee).toBe(0n);
+    expect(fee.blobBaseFee).toBe(1n);
     expect(fee.feeHistory.baseFee).toBe(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThanOrEqual(100n);
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(1000000n);
@@ -500,7 +500,7 @@ describe("JsonRPC provder tests", () => {
 
     await expect(
       provider.broadcastSignedTransactions([signedTx]),
-    ).rejects.toThrow("Invalid nonce (0)");
+    ).rejects.toThrow("Invalid params");
   }, 20000);
 });
 

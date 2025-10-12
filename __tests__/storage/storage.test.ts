@@ -8,11 +8,11 @@ import {
   Wallet,
 } from "../../background/storage/wallet";
 import { WalletTypes, AuthMethod, AddressType } from "../../config/wallet";
-import { HashTypes } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";
+import { HashTypes } from "config/argon2";
 
 describe("BackgroundState", () => {
   it("should initialize with correct properties", () => {

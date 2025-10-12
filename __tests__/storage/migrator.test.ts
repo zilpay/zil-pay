@@ -12,12 +12,13 @@ import {
 } from "../../background/storage/wallet";
 import { WalletTypes, AuthMethod, AddressType } from "../../config/wallet";
 import { Account } from "../../background/storage/account";
-import { HashTypes, WalletHashParams } from "../../background/storage/argon";
+import { WalletHashParams } from "../../background/storage/argon";
 import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { TypeOf } from "../../lib/types";
 import { PASSWORD, STORAGE_V2, STORAGE_V3, WORDS } from "../data";
 import { utils } from "aes-js";
+import { HashTypes } from "config/argon2";
 
 // Helper function to create a minimal storage object for version 4
 const createV4Storage = (): Record<string, unknown> => ({

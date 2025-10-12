@@ -16,7 +16,6 @@ import { BrowserStorage } from "../lib/storage";
 import { Wallet } from "../background/storage/wallet";
 import { WalletTypes, AuthMethod, AddressType } from "../config/wallet";
 import { CipherOrders } from "../crypto/keychain";
-import { HashTypes } from "../background/storage/argon";
 import { ShaAlgorithms } from "../config/pbkdf2";
 import { FToken } from "../background/storage/ftoken";
 import { utf8ToUint8Array } from "../lib/utils/utf8";
@@ -28,6 +27,7 @@ import {
 } from "../background/rpc/history_tx";
 import { GasSpeed } from '../config/gas';
 import { TransactionStatus } from "../config/tx";
+import { HashTypes } from "config/argon2";
 
 describe("test bg state with empty storage", () => {
   beforeAll(async () => {
