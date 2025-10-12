@@ -1,4 +1,8 @@
+import { FToken } from "../background/storage/ftoken";
 import { ChainConfig } from "../background/storage/chain";
+import { hashChainConfig } from '../lib/utils/hashing';
+import { AddressType } from "../config/wallet";
+import mainnetChains from '../public/chains/mainnet.json';
 
 export const WORDS =
   "rule hard brush glare magic east glimpse tank junk will media submit";
@@ -232,25 +236,20 @@ export const createBscConfig = (): ChainConfig =>
 
 export const createEthConfig = (): ChainConfig =>
   new ChainConfig({
-    name: "Ethereum Mainnet",
-    chain: "ETH",
-    logo: "",
-    rpc: [
-      "https://eth.llamarpc.com",
-      "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
-      "https://eth.rpc.blxrbdn.com",
-      "https://mainnet.gateway.tenderly.co",
-      "https://1rpc.io/eth",
-    ],
-    features: [155, 1559],
-    chainIds: [1, 0],
-    slip44: 60,
+    ...mainnetChains[1],
+    features: mainnetChains[1].features.map((n) =>Number(n.replace("EIP", ""))),
     explorers: [],
     fallbackEnabled: true,
     testnet: true,
-    ftokens: [],
-    chainId: 1,
-    shortName: "zilliqa",
+    ftokens: mainnetChains[1].ftokens.map((t) => new FToken({
+      ...t,
+      default_: true,
+      balances: {},
+      rate: 0,
+      addrType: AddressType.EthCheckSum,
+      chainHash: hashChainConfig(mainnetChains[1].chainIds, mainnetChains[1].slip44, mainnetChains[1].chain),
+    })),
+    chainId: mainnetChains[1].chainIds[0],
     ens: null,
     diffBlockTime: 1,
   });

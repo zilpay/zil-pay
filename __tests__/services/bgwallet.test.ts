@@ -18,6 +18,7 @@ import { startBackground } from "../../background/background";
 import { BrowserStorage } from "../../lib/storage";
 import {
   CHAINS,
+  createEthConfig,
   IMPORTED_KEY,
   PASSWORD,
   WORDS,
@@ -108,7 +109,7 @@ describe("WalletService through background messaging", () => {
       ratesApiOptions: 0,
       sessionTime: 60,
     };
-    const keyPair: IKeyPair = {
+    const keyPairZilliqa: IKeyPair = {
       privateKey: IMPORTED_KEY,
       publicKey:
         "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
@@ -118,7 +119,7 @@ describe("WalletService through background messaging", () => {
 
     it("should create a new wallet from a private key", async () => {
       const params: WalletFromPrivateKeyParams = {
-        key: keyPair,
+        key: keyPairZilliqa,
         walletName: "My Imported Wallet",
         accountName: "Imported Account",
         chain: CHAINS[0],
@@ -134,7 +135,7 @@ describe("WalletService through background messaging", () => {
       expect(wallet.walletType).toBe(WalletTypes.SecretKey);
       expect(wallet.accounts).toHaveLength(1);
       expect(wallet.accounts[0].name).toBe("Imported Account");
-      expect(wallet.accounts[0].addr).toBe(keyPair.address);
+      expect(wallet.accounts[0].addr).toBe(keyPairZilliqa.address);
       expect(state.selectedWallet).toBe(0);
 
       state = await logout(0);
@@ -143,9 +144,9 @@ describe("WalletService through background messaging", () => {
       expect(state.selectedWallet).toBe(0);
     });
 
-    it("test scilla tx", async () => {
+    it("test create scilla tx", async () => {
       const params: WalletFromPrivateKeyParams = {
-        key: keyPair,
+        key: keyPairZilliqa,
         walletName: "My Imported Wallet",
         accountName: "Imported Account",
         chain: CHAINS[0],
@@ -185,6 +186,28 @@ describe("WalletService through background messaging", () => {
       expect(confirm.scilla.chainId).toBe(1);
       expect(confirm.scilla.toAddr).toBe("77e27c39ce572283b848e2cdf32cce761e34fa49");
       expect(confirm.scilla.amount).toBe('1');
+    });
+
+    it("test create EVM wallet", async () => {
+      const params: WalletFromPrivateKeyParams = {
+        key: keyPairZilliqa,
+        walletName: "My ETH Wallet",
+        accountName: "ETH 0",
+        chain: createEthConfig(),
+        password: PASSWORD,
+        settings: new WalletSettings(baseSettings),
+      };
+
+      let state = await walletFromPrivateKey(params);
+      const token = state.wallets[0].tokens[0];
+
+      const txParams: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: token.addr,
+        to: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
+        amount: '1',
+      };
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
