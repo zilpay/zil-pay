@@ -25,7 +25,7 @@ import {
 } from "../data";
 import { WORD_LIST } from '../crypto/word_list';
 import { ZILLIQA, ETHEREUM } from "../../config/slip44";
-import { WalletTypes } from "../../config/wallet";
+import { AddressType, WalletTypes } from "../../config/wallet";
 import type {
   IKeyPair,
   WalletFromBip39Params,
@@ -212,8 +212,8 @@ describe("WalletService through background messaging", () => {
 
       await buildTokenTransfer(txParams);
       state = await getGlobalState();
-      const confirm = state.wallets[0].confirm[0];
-      const account = state.wallets[0].accounts[0];
+      let confirm = state.wallets[0].confirm[0];
+      let account = state.wallets[0].accounts[0];
 
       expect(confirm.metadata?.chainHash).toBe(account.chainHash);
       expect(confirm.metadata?.token.name).toBe(ethNetConfig.ftokens[0].name);
@@ -230,6 +230,57 @@ describe("WalletService through background messaging", () => {
       expect(confirm.evm?.chainId).toBe(1);
       expect(confirm.evm?.to).toBe(txParams.to);
       expect(confirm.evm?.value).toBe(txParams.amount);
+
+      await rejectConfirm(0, 0);
+      state = await getGlobalState();
+
+      const usdt = new FToken ({
+        name: 'Tether USD',
+        symbol: 'USDT',
+        decimals: 6,
+        addr: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+        addrType: AddressType.EthCheckSum,
+        logo: '',
+        balances: {},
+        rate: 0,
+        default_: false,
+        native: false,
+        chainHash: ethNetConfig.hash(),       
+      });
+      state.wallets[0].tokens.push(usdt);
+      await globalState.wallet.setGlobalState(state, () => null);
+      state = await getGlobalState();
+
+      const usdtTrasnferParams: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: usdt.addr,
+        to: '0xEC6bB19886c9D5f5125DfC739362Bf54AA23d51F',
+        amount: '1',
+      };
+
+      await buildTokenTransfer(usdtTrasnferParams);
+      state = await getGlobalState();
+      confirm = state.wallets[0].confirm[0];
+
+
+      expect(confirm.scilla).toBeUndefined();
+      expect(confirm.signMessageScilla).toBeUndefined();
+      expect(confirm.signPersonalMessageEVM).toBeUndefined();
+      expect(confirm.signTypedDataJsonEVM).toBeUndefined();
+
+      expect(confirm.evm?.from).toBe(account.addr);
+      expect(confirm.evm?.to).toBe(usdt.addr);
+      expect(confirm.evm?.value).toBe('0');
+      expect(confirm.evm?.chainId).toBe(ethNetConfig.chainId);
+      expect(confirm.evm?.data).toBe("0xa9059cbb000000000000000000000000ec6bb19886c9d5f5125dfc739362bf54aa23d51f0000000000000000000000000000000000000000000000000000000000000001");
+
+      expect(confirm.metadata?.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata?.token.name).toBe(usdt.name);
+      expect(confirm.metadata?.token.symbol).toBe(usdt.symbol);
+      expect(confirm.metadata?.token.addr).toBe(usdt.addr);
+      expect(confirm.metadata?.token.value).toBe(usdtTrasnferParams.amount);
+      expect(confirm.metadata?.token.recipient).toBe(usdtTrasnferParams.to);
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
