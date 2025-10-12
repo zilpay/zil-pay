@@ -146,6 +146,28 @@ describe("WalletService through background messaging with tx service", () => {
       expect(nativeTransferGas.gasPrice).toBe(4761904800000n);
       expect(nativeTransferGas.txEstimateGas).toBe(21640n);
       expect(nativeTransferGas.maxPriorityFee).toBe(0n);
+
+      await rejectConfirm(0, 0);
+      state = await getGlobalState();
+
+      const txParamsgZIL: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: gZIL.addr,
+        to: '0xEC6bB19886c9D5f5125DfC739362Bf54AA23d51F',
+        amount: '0',
+      };
+      await buildTokenTransfer(txParamsgZIL);
+      state = await getGlobalState();
+      const gzilTransferGas = await estimateGas(0, 0,0);
+
+      expect(gzilTransferGas.feeHistory.baseFee).toBe(0n);
+      expect(gzilTransferGas.feeHistory.maxFee).toBe(0n);
+      expect(gzilTransferGas.feeHistory.priorityFee).toBe(0n);
+      expect(gzilTransferGas.nonce).toBe(0);
+      expect(gzilTransferGas.gasPrice).toBe(4761904800000n);
+      expect(gzilTransferGas.txEstimateGas).toBe(49654n);
+      expect(gzilTransferGas.maxPriorityFee).toBe(0n);
     });
   });
 

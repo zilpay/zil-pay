@@ -155,30 +155,17 @@ export class TransactionService {
       const metadata  = confirm.metadata!; 
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const sender = await Address.fromPubKeyType(hexToUint8Array(account.pubKey), confirm.metadata!.token.addrType);
-      const evm = confirm.evm ? (
-        confirm.evm.gasPrice 
-          ? Transaction.prepare({
-              type: 'legacy' as const,
-              value: BigInt(confirm.evm.value ?? 0),
-              to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
-              data: confirm.evm.data ?? '0x',
-              gasLimit: BigInt(confirm.evm.gasLimit ?? 21000),
-              nonce: BigInt(confirm.evm.nonce ?? 0),
-              gasPrice: BigInt(confirm.evm.gasPrice),
-              chainId: BigInt(chainConfig.chainId),
-            }, false)
-          : Transaction.prepare({
-              type: 'eip1559' as const,
-              value: BigInt(confirm.evm.value ?? 0),
-              to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
-              data: confirm.evm.data ?? '0x',
-              gasLimit: BigInt(confirm.evm.gasLimit ?? 21000),
-              nonce: BigInt(confirm.evm.nonce ?? 0),
-              maxFeePerGas: BigInt(confirm.evm.maxFeePerGas ?? 0),
-              maxPriorityFeePerGas: BigInt(confirm.evm.maxPriorityFeePerGas ?? 0),
-              chainId: BigInt(chainConfig.chainId),
-            }, false)
-      ) : undefined;
+      const evm = confirm.evm ? Transaction.prepare({
+        type: 'eip1559' as const,
+        value: BigInt(confirm.evm.value ?? '0'),
+        to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
+        data: confirm.evm.data ?? '0x',
+        gasLimit: BigInt(confirm.evm.gasLimit ?? '21000'),
+        nonce: BigInt(confirm.evm.nonce ?? '0'),
+        chainId: BigInt(chainConfig.chainId ?? 1),
+        maxFeePerGas: BigInt(1_000_000_000),
+        maxPriorityFeePerGas: BigInt(1_000_000_000),
+      }, false) : undefined;
       const txReq = new TransactionRequest(metadata, scilla, evm);
       const gas = await provider.estimateGasParamsBatch(txReq, sender, 4, null);
 
