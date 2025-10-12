@@ -60,7 +60,7 @@ describe("WalletService through background messaging with tx service", () => {
 
       expect(gas.blobBaseFee).toBe(0n);
       expect(gas.gasPrice).toBe(2000000016n);
-      expect(gas.txEstimateGas).toBe(0n);
+      expect(gas.txEstimateGas).toBe(50n);
       expect(gas.maxPriorityFee).toBe(0n);
       expect(gas.blobBaseFee).toBe(0n);
       expect(gas.feeHistory.baseFee).toBe(0n);

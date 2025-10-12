@@ -112,7 +112,7 @@ export class NetworkProvider {
       gasPrice = BigInt(responses[1]?.result ?? 0);
     }
 
-    const txEstimateGas = responses[2]?.result ? hexToBigInt(responses[2].result) : 0n;
+    const txEstimateGas = responses[2]?.result ? hexToBigInt(responses[2].result) : tx.evm?.raw.gasLimit ?? tx.scilla?.gasLimit ?? 0n;
 
     let maxPriorityFee = 0n;
     let feeHistory: GasFeeHistory = { maxFee: 0n, priorityFee: 0n, baseFee: 0n };

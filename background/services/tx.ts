@@ -60,6 +60,7 @@ export class TransactionService {
             chainId,
             toAddr: to.toBase16(),
             amount: amountBigInt.toString(),
+            gasLimit: 50,
           };
         } else {
           const tokenAddr = Address.fromStr(token.addr);
@@ -67,6 +68,7 @@ export class TransactionService {
             chainId,
             toAddr: tokenAddr.toBase16(),
             amount: '0',
+            gasLimit: 5000,
             data: JSON.stringify({
               _tag: 'Transfer',
               params: [
