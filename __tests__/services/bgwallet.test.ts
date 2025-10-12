@@ -108,16 +108,15 @@ describe("WalletService through background messaging", () => {
       ratesApiOptions: 0,
       sessionTime: 60,
     };
+    const keyPair: IKeyPair = {
+      privateKey: IMPORTED_KEY,
+      publicKey:
+        "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
+      address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
+      slip44: ZILLIQA,
+    };
 
     it("should create a new wallet from a private key", async () => {
-      const keyPair: IKeyPair = {
-        privateKey: IMPORTED_KEY,
-        publicKey:
-          "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
-        address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
-        slip44: ZILLIQA,
-      };
-
       const params: WalletFromPrivateKeyParams = {
         key: keyPair,
         walletName: "My Imported Wallet",
@@ -142,6 +141,50 @@ describe("WalletService through background messaging", () => {
       expect(state.selectedWallet).toBe(-1);
       state = await unlockWallet(PASSWORD, 0);
       expect(state.selectedWallet).toBe(0);
+    });
+
+    it("test scilla tx", async () => {
+      const params: WalletFromPrivateKeyParams = {
+        key: keyPair,
+        walletName: "My Imported Wallet",
+        accountName: "Imported Account",
+        chain: CHAINS[0],
+        password: PASSWORD,
+        settings: new WalletSettings(baseSettings),
+      };
+
+      let state = await walletFromPrivateKey(params);
+
+      const token = state.wallets[0].tokens[1];
+      const txParams: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: token.addr,
+        to: 'zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace',
+        amount: '1',
+      };
+
+      await buildTokenTransfer(txParams);
+      state = await getGlobalState();
+
+      const confirm = state.wallets[0].confirm[0];
+      const account = state.wallets[0].accounts[0];
+
+      expect(confirm.metadata.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata.token.name).toBe(token.name);
+      expect(confirm.metadata.token.symbol).toBe(token.symbol);
+      expect(confirm.metadata.token.addr).toBe(token.addr);
+      expect(confirm.metadata.token.value).toBe(txParams.amount);
+      expect(confirm.metadata.token.recipient).toBe(txParams.to);
+
+      expect(confirm.evm).toBeUndefined();
+      expect(confirm.signMessageScilla).toBeUndefined();
+      expect(confirm.signPersonalMessageEVM).toBeUndefined();
+      expect(confirm.signTypedDataJsonEVM).toBeUndefined();
+
+      expect(confirm.scilla.chainId).toBe(1);
+      expect(confirm.scilla.toAddr).toBe("77e27c39ce572283b848e2cdf32cce761e34fa49");
+      expect(confirm.scilla.amount).toBe('1');
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
