@@ -1,15 +1,10 @@
 import type { Argon2Config } from '../../crypto/argon2';
 import { Variant, Version, Config } from '@hicaru/argon2-pure.js';
-import { APP_ID } from '../../config/argon2';
+import { APP_ID, HashTypes } from '../../config/argon2';
 import { deriveArgon2Key } from '../../crypto/argon2';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { KeyChain } from '../../crypto/keychain';
 import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
-
-export enum HashTypes {
-  Argon2,
-  Pbkdf2,
-}
 
 export interface IWalletHashParams {
   memory: number;

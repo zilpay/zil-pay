@@ -3,6 +3,9 @@ import { ChainConfig } from "../background/storage/chain";
 import { hashChainConfig } from '../lib/utils/hashing';
 import { AddressType } from "../config/wallet";
 import mainnetChains from '../public/chains/mainnet.json';
+import { GasSpeed } from "../config/gas";
+import { ShaAlgorithms } from "../config/pbkdf2";
+import { HashTypes } from "../config/argon2";
 
 export const WORDS =
   "rule hard brush glare magic east glimpse tank junk will media submit";
@@ -247,3 +250,26 @@ export const createEthConfig = (): ChainConfig =>
     ens: null,
     diffBlockTime: 1,
   });
+
+export const BASE_SETTINGS = {
+  gasOption: GasSpeed.Market,
+  cipherOrders: [1],
+  hashFnParams: {
+    memory: 64,
+    iterations: 1,
+    threads: 1,
+    secret: "",
+    hashType: HashTypes.Argon2,
+    hashSize: ShaAlgorithms.sha256,
+  },
+  currencyConvert: "btc",
+  ipfsNode: null,
+  ensEnabled: false,
+  tokensListFetcher: false,
+  nodeRankingEnabled: false,
+  maxConnections: 10,
+  requestTimeoutSecs: 30,
+  ratesApiOptions: 0,
+  sessionTime: 60,
+};
+
