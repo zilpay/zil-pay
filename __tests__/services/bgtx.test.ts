@@ -5,12 +5,13 @@ import { BrowserStorage } from "../../lib/storage";
 import '../setupTests';
 import { messageManager } from "../setupTests";
 import type { IKeyPair, WalletFromPrivateKeyParams } from "types/wallet";
-import { BASE_SETTINGS, createZilliqaTestnetConfig, IMPORTED_KEY, PASSWORD, ZLP } from "__tests__/data";
+import { BASE_SETTINGS, createZilliqaConfig, createZilliqaTestnetConfig, IMPORTED_KEY, PASSWORD, ZLP } from "__tests__/data";
 import { ZILLIQA } from "config/slip44";
-import { WalletSettings } from "background/storage";
+import { FToken, WalletSettings } from "background/storage";
 import { getGlobalState, setGlobalState, walletFromPrivateKey } from "popup/background/wallet";
 import type { BuildTokenTransferParams } from "types/tx";
 import { buildTokenTransfer, estimateGas, rejectConfirm } from "popup/background/transactions";
+import { fetchFTMeta } from "popup/background/provider";
 
 describe("WalletService through background messaging with tx service", () => {
   let globalState: GlobalState;
@@ -35,8 +36,8 @@ describe("WalletService through background messaging with tx service", () => {
       const zilConfig = createZilliqaTestnetConfig();
       const params: WalletFromPrivateKeyParams = {
         key: keyPairZilliqa,
-        walletName: "My Imported Wallet",
-        accountName: "Imported Account",
+        walletName: "ZIL Wallet",
+        accountName: "ZIL 0",
         chain: zilConfig,
         password: PASSWORD,
         settings: new WalletSettings(BASE_SETTINGS),
@@ -98,7 +99,53 @@ describe("WalletService through background messaging with tx service", () => {
       expect(zlpTransferGas.feeHistory.priorityFee).toBe(0n);
     });
 
-    it("should generate a valid BIP39 mnemonic phrase", async () => {
+    it("testing fetch evm gas token trasnfer ERC20 Legacy", async () => {
+      const zilConfig = createZilliqaConfig();
+      const params: WalletFromPrivateKeyParams = {
+        key: keyPairZilliqa,
+        walletName: "ZIL Wallet",
+        accountName: "ZIL 0",
+        chain: zilConfig,
+        password: PASSWORD,
+        settings: new WalletSettings(BASE_SETTINGS),
+      };
+
+      let state = await walletFromPrivateKey(params);
+      const gZIL = new FToken({
+        name: 'Governance ZIL',
+        symbol: 'gZIL',
+        decimals: 15,
+        addr: '0x03A79429acc808e4261a68b0117aCD43Cb0FdBfa',
+        addrType: 1,
+        logo: 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp',
+        balances: {},
+        rate: 0,
+        default_: false,
+        native: false,
+        chainHash: zilConfig.hash(),
+      });
+
+      state.wallets[0].tokens.push(gZIL);
+      await setGlobalState();
+      const zilToken = state.wallets[0].tokens[0];
+      const txParams: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: zilToken.addr,
+        to: '0xEC6bB19886c9D5f5125DfC739362Bf54AA23d51F',
+        amount: '1',
+      };
+      await buildTokenTransfer(txParams);
+      state = await getGlobalState();
+      const nativeTransferGas = await estimateGas(0, 0,0);
+
+      expect(nativeTransferGas.feeHistory.baseFee).toBe(0n);
+      expect(nativeTransferGas.feeHistory.maxFee).toBe(0n);
+      expect(nativeTransferGas.feeHistory.priorityFee).toBe(0n);
+      expect(nativeTransferGas.nonce).toBe(0);
+      expect(nativeTransferGas.gasPrice).toBe(4761904800000n);
+      expect(nativeTransferGas.txEstimateGas).toBe(21640n);
+      expect(nativeTransferGas.maxPriorityFee).toBe(0n);
     });
   });
 

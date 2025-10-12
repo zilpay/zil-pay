@@ -46,6 +46,10 @@ export class Address {
   static async fromPubKey(pubKey: Uint8Array, slip44: number) {
     const addressType = KeyPair.addressType(slip44);
 
+    return Address.fromPubKeyType(pubKey, addressType);
+  }
+
+  static async fromPubKeyType(pubKey: Uint8Array, addressType: AddressType) {
     switch (addressType) {
       case AddressType.Bech32:
         const zilBytes = await fromZilPubKey(pubKey);
@@ -58,6 +62,7 @@ export class Address {
         return new Address(ethBytes, addressType);
     }
   }
+
 
   static async fromPrivateKey(privateKey: Uint8Array, slip44: number) {
     const keypair = await KeyPair.fromPrivateKey(privateKey, slip44);

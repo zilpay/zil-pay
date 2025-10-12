@@ -11,6 +11,7 @@ import { ZILTransactionRequest } from "crypto/zilliqa_tx";
 import { Transaction } from "micro-eth-signer";
 import { Address } from "crypto/address";
 import { hexToUint8Array } from "lib/utils/hex";
+import { ETHEREUM } from "config/slip44";
 
 
 export class TransactionService {
@@ -79,16 +80,18 @@ export class TransactionService {
           };
         }
       } else if (token.addrType === AddressType.EthCheckSum) {
+        const evmAddr = await Address.fromPubKey(hexToUint8Array(account.pubKey), ETHEREUM);
+
         if (isNative) {
           confirmTx.evm = {
-            from: account.addr,
+            from: await evmAddr.toEthChecksum(),
             to: payload.to,
             value: amountBigInt.toString(),
             chainId: chain.chainId,
           };
         } else {
           confirmTx.evm = {
-            from: account.addr,
+            from: await evmAddr.toEthChecksum(),
             to: token.addr,
             value: '0',
             data: generateErc20TransferData(payload.to, amountBigInt),
@@ -151,14 +154,31 @@ export class TransactionService {
       const provider = new NetworkProvider(chainConfig);
       const metadata  = confirm.metadata!; 
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
-      const sender = await Address.fromPubKey(hexToUint8Array(account.pubKey), account.slip44);
-      const evm = confirm.evm ? Transaction.prepare({
-        value: BigInt(confirm.evm.value ?? 0),
-        to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
-        data: confirm.evm.data,
-        nonce: 0n,
-        maxFeePerGas: 0n,
-      }) : undefined;
+      const sender = await Address.fromPubKeyType(hexToUint8Array(account.pubKey), confirm.metadata!.token.addrType);
+      const evm = confirm.evm ? (
+        confirm.evm.gasPrice 
+          ? Transaction.prepare({
+              type: 'legacy' as const,
+              value: BigInt(confirm.evm.value ?? 0),
+              to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
+              data: confirm.evm.data ?? '0x',
+              gasLimit: BigInt(confirm.evm.gasLimit ?? 21000),
+              nonce: BigInt(confirm.evm.nonce ?? 0),
+              gasPrice: BigInt(confirm.evm.gasPrice),
+              chainId: BigInt(chainConfig.chainId),
+            }, false)
+          : Transaction.prepare({
+              type: 'eip1559' as const,
+              value: BigInt(confirm.evm.value ?? 0),
+              to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
+              data: confirm.evm.data ?? '0x',
+              gasLimit: BigInt(confirm.evm.gasLimit ?? 21000),
+              nonce: BigInt(confirm.evm.nonce ?? 0),
+              maxFeePerGas: BigInt(confirm.evm.maxFeePerGas ?? 0),
+              maxPriorityFeePerGas: BigInt(confirm.evm.maxPriorityFeePerGas ?? 0),
+              chainId: BigInt(chainConfig.chainId),
+            }, false)
+      ) : undefined;
       const txReq = new TransactionRequest(metadata, scilla, evm);
       const gas = await provider.estimateGasParamsBatch(txReq, sender, 4, null);
 
@@ -172,3 +192,4 @@ export class TransactionService {
     }
   }
 }
+
