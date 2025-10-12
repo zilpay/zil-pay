@@ -11,7 +11,6 @@ import { FToken, WalletSettings } from "background/storage";
 import { getGlobalState, setGlobalState, walletFromPrivateKey } from "popup/background/wallet";
 import type { BuildTokenTransferParams } from "types/tx";
 import { buildTokenTransfer, estimateGas, rejectConfirm } from "popup/background/transactions";
-import { fetchFTMeta } from "popup/background/provider";
 
 describe("WalletService through background messaging with tx service", () => {
   let globalState: GlobalState;
