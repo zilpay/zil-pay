@@ -31,7 +31,7 @@ import type {
   WalletFromBip39Params,
   WalletFromPrivateKeyParams,
 } from "../../types/wallet";
-import { FToken, IWalletSettingsState, WalletSettings } from "../../background/storage";
+import { FToken, type IWalletSettingsState, WalletSettings } from "../../background/storage";
 import { CipherOrders } from "../../crypto/keychain";
 import { HashTypes } from "../../background/storage";
 import { ShaAlgorithms } from "../../config/pbkdf2";
@@ -171,21 +171,21 @@ describe("WalletService through background messaging", () => {
       const confirm = state.wallets[0].confirm[0];
       const account = state.wallets[0].accounts[0];
 
-      expect(confirm.metadata.chainHash).toBe(account.chainHash);
-      expect(confirm.metadata.token.name).toBe(token.name);
-      expect(confirm.metadata.token.symbol).toBe(token.symbol);
-      expect(confirm.metadata.token.addr).toBe(token.addr);
-      expect(confirm.metadata.token.value).toBe(txParams.amount);
-      expect(confirm.metadata.token.recipient).toBe(txParams.to);
+      expect(confirm.metadata?.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata?.token.name).toBe(token.name);
+      expect(confirm.metadata?.token.symbol).toBe(token.symbol);
+      expect(confirm.metadata?.token.addr).toBe(token.addr);
+      expect(confirm.metadata?.token.value).toBe(txParams.amount);
+      expect(confirm.metadata?.token.recipient).toBe(txParams.to);
 
       expect(confirm.evm).toBeUndefined();
       expect(confirm.signMessageScilla).toBeUndefined();
       expect(confirm.signPersonalMessageEVM).toBeUndefined();
       expect(confirm.signTypedDataJsonEVM).toBeUndefined();
 
-      expect(confirm.scilla.chainId).toBe(1);
-      expect(confirm.scilla.toAddr).toBe("77e27c39ce572283b848e2cdf32cce761e34fa49");
-      expect(confirm.scilla.amount).toBe('1');
+      expect(confirm.scilla?.chainId).toBe(1);
+      expect(confirm.scilla?.toAddr).toBe("77e27c39ce572283b848e2cdf32cce761e34fa49");
+      expect(confirm.scilla?.amount).toBe('1');
     });
 
     it("test create EVM wallet, send tokens", async () => {
@@ -215,21 +215,21 @@ describe("WalletService through background messaging", () => {
       const confirm = state.wallets[0].confirm[0];
       const account = state.wallets[0].accounts[0];
 
-      expect(confirm.metadata.chainHash).toBe(account.chainHash);
-      expect(confirm.metadata.token.name).toBe(ethNetConfig.ftokens[0].name);
-      expect(confirm.metadata.token.symbol).toBe(ethNetConfig.ftokens[0].symbol);
-      expect(confirm.metadata.token.addr).toBe(ethNetConfig.ftokens[0].addr);
-      expect(confirm.metadata.token.value).toBe(txParams.amount);
-      expect(confirm.metadata.token.recipient).toBe(txParams.to);
+      expect(confirm.metadata?.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata?.token.name).toBe(ethNetConfig.ftokens[0].name);
+      expect(confirm.metadata?.token.symbol).toBe(ethNetConfig.ftokens[0].symbol);
+      expect(confirm.metadata?.token.addr).toBe(ethNetConfig.ftokens[0].addr);
+      expect(confirm.metadata?.token.value).toBe(txParams.amount);
+      expect(confirm.metadata?.token.recipient).toBe(txParams.to);
 
       expect(confirm.scilla).toBeUndefined();
       expect(confirm.signMessageScilla).toBeUndefined();
       expect(confirm.signPersonalMessageEVM).toBeUndefined();
       expect(confirm.signTypedDataJsonEVM).toBeUndefined();
 
-      expect(confirm.evm.chainId).toBe(1);
-      expect(confirm.evm.to).toBe(txParams.to);
-      expect(confirm.evm.value).toBe(txParams.amount);
+      expect(confirm.evm?.chainId).toBe(1);
+      expect(confirm.evm?.to).toBe(txParams.to);
+      expect(confirm.evm?.value).toBe(txParams.amount);
     });
 
     it("should create a new wallet from a BIP39 mnemonic", async () => {
@@ -320,22 +320,22 @@ describe("WalletService through background messaging", () => {
       const confirm = state.wallets[0].confirm[0];
       const account = state.wallets[0].accounts[0];
 
-      expect(confirm.metadata.chainHash).toBe(account.chainHash);
-      expect(confirm.metadata.token.name).toBe(zlp.name);
-      expect(confirm.metadata.token.symbol).toBe(zlp.symbol);
-      expect(confirm.metadata.token.addr).toBe("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
-      expect(confirm.metadata.token.value).toBe(params.amount);
-      expect(confirm.metadata.token.recipient).toBe(params.to);
+      expect(confirm.metadata?.chainHash).toBe(account.chainHash);
+      expect(confirm.metadata?.token.name).toBe(zlp.name);
+      expect(confirm.metadata?.token.symbol).toBe(zlp.symbol);
+      expect(confirm.metadata?.token.addr).toBe("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
+      expect(confirm.metadata?.token.value).toBe(params.amount);
+      expect(confirm.metadata?.token.recipient).toBe(params.to);
 
       expect(confirm.evm).toBeUndefined();
       expect(confirm.signMessageScilla).toBeUndefined();
       expect(confirm.signPersonalMessageEVM).toBeUndefined();
       expect(confirm.signTypedDataJsonEVM).toBeUndefined();
 
-      expect(confirm.scilla.chainId).toBe(1);
-      expect(confirm.scilla.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
-      expect(confirm.scilla.amount).toBe('0');
-      expect(confirm.scilla.data).toBe('{"_tag":"Transfer","params":[{"vname":"to","type":"ByStr20","value":"0x77e27c39ce572283b848e2cdf32cce761e34fa49"},{"vname":"amount","type":"Uint128","value":"1"}]}');
+      expect(confirm.scilla?.chainId).toBe(1);
+      expect(confirm.scilla?.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
+      expect(confirm.scilla?.amount).toBe('0');
+      expect(confirm.scilla?.data).toBe('{"_tag":"Transfer","params":[{"vname":"to","type":"ByStr20","value":"0x77e27c39ce572283b848e2cdf32cce761e34fa49"},{"vname":"amount","type":"Uint128","value":"1"}]}');
 
       await rejectConfirm(0, 0);
       state = await getGlobalState();
