@@ -87,6 +87,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.BUILD_TOKEN_TRANSFER:
         core.transaction.buildTokenTransfer(msg.payload, sendResponse);
         return true;
+      case MTypePopup.ESTIMATE_GAS:
+        core.transaction.estimateGas(msg.payload.confirmIndex, msg.payload.walletIndex, msg.payload.accountIndex, sendResponse);
+        return true;
       case MTypePopup.REJECT_CONFIRM:
         core.transaction.reject(
           msg.payload.index,

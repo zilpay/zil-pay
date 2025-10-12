@@ -10,11 +10,12 @@ import {
   type ProtoTransactionCoreInfo,
 } from "./proto/zq1";
 import { verify } from "./zilliqa/schnorr";
-import { uint8ArrayToHex } from "lib/utils/hex";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
 import { Address } from "./address";
 import { AddressType } from "config/wallet";
 import type { TransactionRequestScilla } from "types/tx";
+import { ZILLIQA } from "config/slip44";
 
 const U128LEN = 16;
 
@@ -34,12 +35,12 @@ export function chainIdFromVersion(version: number): number {
 
 export class ZILTransactionRequest {
   static from(payload: TransactionRequestScilla): ZILTransactionRequest {
-    const nonce = payload.nonce ? BigInt(payload.nonce) : 0n;
-    const gasPrice = payload.gasPrice ? BigInt(payload.gasPrice) : 0n;
-    const gasLimit = payload.gasLimit ? BigInt(payload.gasLimit) : 0n;
+    const nonce = BigInt(payload.nonce ?? 0);
+    const gasPrice = BigInt(payload.gasPrice ?? 0);
+    const gasLimit = BigInt(payload.gasLimit ?? 0);
     const amount = BigInt(payload.amount);
 
-    const address = Address.fromStr(payload.toAddr);
+    const address = new Address(hexToUint8Array(payload.toAddr), AddressType.Bech32);
     const toAddr = address.bytes;
 
     const code = payload.code

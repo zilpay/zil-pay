@@ -140,29 +140,28 @@ export class TransactionService {
     }
   }
 
-  async estimateGas(payload: IConfirmState, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+  async estimateGas(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
       const account = wallet.accounts[accountIndex];
+      const confirm= wallet .confirm[confirmIndex];
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const provider = new NetworkProvider(chainConfig);
-      const metadata  = payload.metadata!; 
-      const scilla = payload.scilla ? ZILTransactionRequest.from(payload.scilla) : undefined;
+      const metadata  = confirm.metadata!; 
+      const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const sender = await Address.fromPubKey(hexToUint8Array(account.pubKey), account.slip44);
-      const evm = payload.evm ? Transaction.prepare({
-        value: BigInt(payload.evm.value ?? 0),
-        to: await Address.fromStr(payload.evm.to!).toEthChecksum(),
-        data: payload.evm.data,
+      const evm = confirm.evm ? Transaction.prepare({
+        value: BigInt(confirm.evm.value ?? 0),
+        to: await Address.fromStr(confirm.evm.to!).toEthChecksum(),
+        data: confirm.evm.data,
         nonce: 0n,
         maxFeePerGas: 0n,
       }) : undefined;
       const txReq = new TransactionRequest(metadata, scilla, evm);
       const gas = await provider.estimateGasParamsBatch(txReq, sender, 4, null);
 
-      console.log(gas);
-
       sendResponse({
-        resolve: true,
+        resolve: gas,
       });
     } catch (err) {
       sendResponse({

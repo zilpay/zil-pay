@@ -23,4 +23,5 @@ export const MTypePopup = {
 
   BUILD_TOKEN_TRANSFER: `@/${app}/build-token-transfer`,
   REJECT_CONFIRM: `@/${app}/reject-confirm`,
+  ESTIMATE_GAS: `@/${app}/estimate-gas`,
 };

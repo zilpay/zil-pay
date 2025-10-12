@@ -3,9 +3,11 @@ import { ChainConfig } from "../background/storage/chain";
 import { hashChainConfig } from '../lib/utils/hashing';
 import { AddressType } from "../config/wallet";
 import mainnetChains from '../public/chains/mainnet.json';
+import testnetChains from '../public/chains/testnet.json';
 import { GasSpeed } from "../config/gas";
 import { ShaAlgorithms } from "../config/pbkdf2";
 import { HashTypes } from "../config/argon2";
+import { HRP } from "lib/zilliqa";
 
 export const WORDS =
   "rule hard brush glare magic east glimpse tank junk will media submit";
@@ -247,6 +249,27 @@ export const createEthConfig = (): ChainConfig =>
       chainHash: hashChainConfig(mainnetChains[1].chainIds, mainnetChains[1].slip44, mainnetChains[1].chain),
     })),
     chainId: mainnetChains[1].chainIds[0],
+    ens: null,
+    diffBlockTime: 1,
+  });
+
+  
+export const createZilliqaTestnetConfig = (): ChainConfig =>
+  new ChainConfig({
+    ...testnetChains[0],
+    features: testnetChains[0].features.map((n) =>Number(n.replace("EIP", ""))),
+    explorers: [],
+    fallbackEnabled: true,
+    testnet: true,
+    ftokens: testnetChains[0].ftokens.map((t) => new FToken({
+      ...t,
+      default_: true,
+      balances: {},
+      rate: 0,
+      addrType: t.addr.startsWith(HRP) ? AddressType.Bech32 : AddressType.EthCheckSum,
+      chainHash: hashChainConfig(testnetChains[0].chainIds, testnetChains[0].slip44, testnetChains[0].chain),
+    })),
+    chainId: testnetChains[0].chainIds[0],
     ens: null,
     diffBlockTime: 1,
   });

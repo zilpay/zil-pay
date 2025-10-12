@@ -5,6 +5,7 @@ import { MTypePopup } from "config/stream";
 import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import globalStore from "popup/store/global";
+import type { RequiredTxParams } from "types/gas";
 
 export async function buildTokenTransfer(params: BuildTokenTransferParams) {
   const data = await new Message<SendResponseParams>({
@@ -16,6 +17,21 @@ export async function buildTokenTransfer(params: BuildTokenTransferParams) {
   globalStore.set(resolve);
   return resolve;
 }
+
+export async function estimateGas(confirmIndex: number, walletIndex: number, accountIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.ESTIMATE_GAS,
+    payload: {
+      confirmIndex,
+      walletIndex,
+      accountIndex,
+    },
+  }).send();
+  
+  const resolve = warpMessage(data) as RequiredTxParams;
+  return resolve;
+}
+
 
 export async function rejectConfirm(index: number, walletIndex: number) {
   const data = await new Message<SendResponseParams>({
