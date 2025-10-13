@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { Message, ReqBody } from "lib/streem/message";
+import { Message, type ReqBody } from "lib/streem/message";
 import { Runtime } from "lib/runtime/extensionizer";
 
 vi.mock("lib/runtime/extensionizer", () => ({

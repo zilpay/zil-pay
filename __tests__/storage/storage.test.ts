@@ -13,12 +13,17 @@ import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";
 import { HashTypes } from "config/argon2";
+import { GasSpeed } from "config/gas";
+import { uuid } from "crypto/uuid";
 
 describe("BackgroundState", () => {
   it("should initialize with correct properties", () => {
     const mockData = {
       wallets: [
         {
+          uuid: uuid(),
+          history: [],
+          confirm: [],
           walletType: WalletTypes.SecretPhrase,
           walletName: "Test Wallet",
           authType: AuthMethod.None,
@@ -53,6 +58,7 @@ describe("BackgroundState", () => {
           ],
           settings: {
             cipherOrders: [CipherOrders.AESCBC],
+            sessionTime: 0,
             hashFnParams: {
               memory: 1024,
               iterations: 0,
@@ -69,6 +75,8 @@ describe("BackgroundState", () => {
             maxConnections: 10,
             requestTimeoutSecs: 30,
             ratesApiOptions: 0,
+            GasSpeed: GasSpeed.Market,
+            gasOption: GasSpeed.Market,
           },
           defaultChainHash: 1,
           vault: "testVault",
@@ -76,7 +84,7 @@ describe("BackgroundState", () => {
       ],
       tokensRow: false,
       notificationsGlobalEnabled: true,
-      locale: "en",
+      locale: Locales.Auto,
       appearances: Themes.System,
       abbreviatedNumber: true,
       hideBalance: false,
@@ -92,7 +100,7 @@ describe("BackgroundState", () => {
     expect(state.wallets).toHaveLength(1);
     expect(state.wallets[0]).toBeInstanceOf(Wallet);
     expect(state.notificationsGlobalEnabled).toBe(true);
-    expect(state.locale).toBe("en");
+    expect(state.locale).toBe(Locales.Auto);
     expect(state.appearances).toBe(Themes.System);
     expect(state.abbreviatedNumber).toBe(true);
     expect(state.hideBalance).toBe(false);
@@ -104,11 +112,15 @@ describe("BackgroundState", () => {
     const mockData = {
       wallets: [],
       notificationsGlobalEnabled: false,
-      locale: null,
+      locale: Locales.Auto,
       appearances: Themes.Dark,
       abbreviatedNumber: false,
       hideBalance: true,
       chains: [],
+      storageVersion: 0,
+      selectedWallet: 0,
+      tokensRow: false,
+      book: [],
     };
 
     const state = new BackgroundState(mockData);
