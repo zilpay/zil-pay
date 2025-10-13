@@ -12,6 +12,7 @@
     import { _ } from '../i18n';
     import { unlockWallet } from 'popup/background/wallet';
     import { truncate } from 'popup/mixins/address';
+    import { linksExpand } from 'popup/mixins/links';
 
     let password = $state('');
     let isLoading = $state(false);
@@ -82,7 +83,8 @@
 
     function handleAddWallet() {
         if (isLoading) return;
-        push('/new-wallet-options');
+
+        linksExpand("/new-wallet-options");
     }
 </script>
 

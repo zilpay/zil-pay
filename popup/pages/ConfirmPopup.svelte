@@ -64,12 +64,14 @@
         isLoading = true;
         try {
             await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
+            push('/');
         } finally {
             isLoading = false;
         }
     }
 
     function handleConfirm() {
+        console.log(confirmTx);
         // Confirm logic goes here
     }
 
@@ -81,6 +83,7 @@
 
     $effect(() => {
         if (confirmLastIndex === -1) return;
+        console.log(confirmTx);
 
         const updateGas = async () => {
             if (wallet) {
