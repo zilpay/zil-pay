@@ -114,14 +114,15 @@ describe("test bg state with empty storage", () => {
       status: TransactionStatus.Pending,
       metadata: {
         token: {
-            balances: undefined,
+          ...bscConfig.ftokens[0],
+          balances: undefined,
         },
-        chainHash: bscConfig.hash,
+        chainHash: bscConfig.hash(),
       },
       evm: {
         transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
         from: "0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
-      },
+      } as any,
       timestamp: new Date().getSeconds(),
     });
 
