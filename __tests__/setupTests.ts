@@ -2,7 +2,7 @@ import { vi } from "vitest";
 import sinonChrome from "sinon-chrome";
 import { EXTENSION_ID } from "./data";
 
-global.chrome = sinonChrome;
+global.chrome = sinonChrome as any;
 global.chrome.runtime.id = EXTENSION_ID;
 
 const sessionStorageMock = (() => {
@@ -41,7 +41,7 @@ const sessionStorageMock = (() => {
 })();
 
 const createLocalStorageMock = () => {
-  let store = {};
+  let store: Record<string, string> = {};
 
   return {
     get: vi.fn(async (keys) => {
@@ -49,7 +49,7 @@ const createLocalStorageMock = () => {
         return Promise.resolve(store);
       }
 
-      const result = {};
+      const result: Record<string, string> = {};
       const keyList = Array.isArray(keys) ? keys : [keys];
 
       for (const key of keyList) {

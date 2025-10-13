@@ -19,13 +19,14 @@
       "devDependencies": {
         "@rollup/plugin-commonjs": "^28.0.6",
         "@rollup/plugin-json": "^6.1.0",
-        "@rollup/plugin-node-resolve": "^16.0.2",
+        "@rollup/plugin-node-resolve": "^16.0.3",
         "@rollup/plugin-replace": "^5.0.7",
         "@rollup/plugin-typescript": "^12.1.4",
         "@tsconfig/svelte": "^5.0.5",
         "@types/aes-js": "^3.1.4",
         "@types/bun": "latest",
         "@types/chrome": "^0.0.313",
+        "@types/sinon-chrome": "^2.2.16",
         "prettier": "^3.6.2",
         "rollup": "^4.52.4",
         "rollup-plugin-copy": "^3.5.0",
@@ -277,6 +278,12 @@
     "@types/react": ["@types/react@19.2.2", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-6mDvHUFSjyT2B2yeNx2nUgMxh9LtOWvkhIU3uePn2I2oyNymUAX1NIsdgviM4CH+JSrp2D2hsMvJOkxY+0wNRA=="],
 
     "@types/resolve": ["@types/resolve@1.20.2", "", {}, "sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q=="],
+
+    "@types/sinon": ["@types/sinon@17.0.4", "", { "dependencies": { "@types/sinonjs__fake-timers": "*" } }, "sha512-RHnIrhfPO3+tJT0s7cFaXGZvsL4bbR3/k7z3P312qMS4JaS2Tk+KiwiLx1S0rQ56ERj00u1/BtdyVd0FY+Pdew=="],
+
+    "@types/sinon-chrome": ["@types/sinon-chrome@2.2.16", "", { "dependencies": { "@types/chrome": "*", "@types/sinon": "*" } }, "sha512-gAaX/QaSMy6x7JyeGTDn1Bye7ZcM2xdkNdlCStVHsDfWPNQ9lN8FYVU5NRpbdxrFeqntfm0yxMx55VF8OEF66Q=="],
+
+    "@types/sinonjs__fake-timers": ["@types/sinonjs__fake-timers@8.1.5", "", {}, "sha512-mQkU2jY8jJEF7YHjHvsQO8+3ughTL1mcnn96igfhONmR+fUPSKIkefQYpSe8bsly2Ep7oQbn/6VG5/9/0qcArQ=="],
 
     "@vitest/expect": ["@vitest/expect@3.2.4", "", { "dependencies": { "@types/chai": "^5.2.2", "@vitest/spy": "3.2.4", "@vitest/utils": "3.2.4", "chai": "^5.2.0", "tinyrainbow": "^2.0.0" } }, "sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig=="],
 
