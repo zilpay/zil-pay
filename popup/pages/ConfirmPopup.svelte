@@ -28,7 +28,7 @@
     const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
     const book = $derived($globalStore.book || []);
     const token = $derived(confirmTx.metadata?.token ?? nativeToken);
-    const tokenAmount = $derived(confirmTx?.metadata?.token.value ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
+    const tokenAmount = $derived(confirmTx?.metadata?.token?.value ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
     const toAddress = $derived(confirmTx.metadata?.token.recipient ?? confirmTx.evm?.to ?? confirmTx.scilla?.toAddr ?? "");
 
     const recipientName = $derived(() => {
@@ -76,102 +76,108 @@
     });
 </script>
 
-<div class="page-container">
-    <header class="header">
-        <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
-        {#if chain}
-            <RoundImageButton
-                imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
-                alt={chain.name}
-                disabled={true}
+<svelte:boundary onerror={async (error, _) => {
+    console.warn(error);
+    const wallet = $globalStore.wallets[$globalStore.selectedWallet];
+    await rejectConfirm(wallet.confirm.length - 1, $globalStore.selectedWallet);
+}}>
+    <div class="page-container">
+        <header class="header">
+            <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
+            {#if chain}
+                <RoundImageButton
+                    imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
+                    alt={chain.name}
+                    disabled={true}
+                />
+            {/if}
+        </header>
+
+        <main class="content">
+            <TransferSummary
+                amount={abbreviateNumber(tokenAmount, token.decimals)}
+                symbol={confirmTx.metadata?.token?.symbol ?? nativeToken.symbol}
+                fiatValue="-"
             />
-        {/if}
-    </header>
 
-    <main class="content">
-        <TransferSummary
-            amount={abbreviateNumber(tokenAmount, token.decimals)}
-            symbol={confirmTx.metadata?.token?.symbol ?? nativeToken.symbol}
-            fiatValue="-"
-        />
+            <TransferRoute
+                fromName={account?.name || 'Unknown'}
+                fromAddress={account?.addr || ''}
+                toName={recipientName() || 'Unknown'}
+                toAddress={toAddress}
+            />
 
-        <TransferRoute
-            fromName={account?.name || 'Unknown'}
-            fromAddress={account?.addr || ''}
-            toName={recipientName() || 'Unknown'}
-            toAddress={toAddress}
-        />
+            <div class="transaction-section">
+                <div class="section-header">
+                    <span class="section-title">{$_('confirm.transaction')}</span>
+                    <button class="edit-button" onclick={handleEdit}>
+                        <span>{$_('confirm.edit')}</span>
+                        <EditIcon />
+                    </button>
+                </div>
 
-        <div class="transaction-section">
-            <div class="section-header">
-                <span class="section-title">{$_('confirm.transaction')}</span>
-                <button class="edit-button" onclick={handleEdit}>
-                    <span>{$_('confirm.edit')}</span>
-                    <EditIcon />
-                </button>
+                <div class="gas-options">
+                    <GasOption
+                  label="Low"
+                        time="~2 min"
+                        fee="0.000004"
+                        fiatFee="0.00...0001 BTC"
+                        selected={selectedSpeed === GasSpeed.Low}
+                        expanded={expandedSpeed === GasSpeed.Low}
+                        onselect={() => handleSpeedSelect(GasSpeed.Low)}
+                    >
+                        <GasDetailRow label="Estimated Gas" value="21000" />
+                        <GasDetailRow label="Gas Price" value="0.20 Gwei" />
+                        <GasDetailRow label="Base Fee" value="0.18 Gwei" />
+                        <GasDetailRow label="Priority Fee" value="100000" />
+                        <GasDetailRow label="Max Fee" value="100000" />
+                    </GasOption>
+
+                    <GasOption
+                  label="Market"
+                        time="~1 min"
+                        fee="0.000004"
+                        fiatFee="0.00...0001 BTC"
+                        selected={selectedSpeed === GasSpeed.Market}
+                        expanded={expandedSpeed === GasSpeed.Market}
+                        onselect={() => handleSpeedSelect(GasSpeed.Market)}
+                    >
+                        <GasDetailRow label="Estimated Gas" value="21000" />
+                        <GasDetailRow label="Gas Price" value="0.26 Gwei" />
+                        <GasDetailRow label="Base Fee" value="0.22 Gwei" />
+                        <GasDetailRow label="Priority Fee" value="125132" />
+                        <GasDetailRow label="Max Fee" value="123125" />
+                    </GasOption>
+
+                    <GasOption
+                  label="Aggressive"
+                        time="~24 sec"
+                        fee="0.000004"
+                        fiatFee="0.00...0001 BTC"
+                        selected={selectedSpeed === GasSpeed.Aggressive}
+                        expanded={expandedSpeed === GasSpeed.Aggressive}
+                        onselect={() => handleSpeedSelect(GasSpeed.Aggressive)}
+                    >
+                        <GasDetailRow label="Estimated Gas" value="21000" />
+                        <GasDetailRow label="Gas Price" value="0.35 Gwei" />
+                        <GasDetailRow label="Base Fee" value="0.28 Gwei" />
+                        <GasDetailRow label="Priority Fee" value="150000" />
+                        <GasDetailRow label="Max Fee" value="150000" />
+                    </GasOption>
+                </div>
             </div>
+        </main>
 
-            <div class="gas-options">
-                <GasOption
-              label="Low"
-                    time="~2 min"
-                    fee="0.000004"
-                    fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GasSpeed.Low}
-                    expanded={expandedSpeed === GasSpeed.Low}
-                    onselect={() => handleSpeedSelect(GasSpeed.Low)}
-                >
-                    <GasDetailRow label="Estimated Gas" value="21000" />
-                    <GasDetailRow label="Gas Price" value="0.20 Gwei" />
-                    <GasDetailRow label="Base Fee" value="0.18 Gwei" />
-                    <GasDetailRow label="Priority Fee" value="100000" />
-                    <GasDetailRow label="Max Fee" value="100000" />
-                </GasOption>
-
-                <GasOption
-              label="Market"
-                    time="~1 min"
-                    fee="0.000004"
-                    fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GasSpeed.Market}
-                    expanded={expandedSpeed === GasSpeed.Market}
-                    onselect={() => handleSpeedSelect(GasSpeed.Market)}
-                >
-                    <GasDetailRow label="Estimated Gas" value="21000" />
-                    <GasDetailRow label="Gas Price" value="0.26 Gwei" />
-                    <GasDetailRow label="Base Fee" value="0.22 Gwei" />
-                    <GasDetailRow label="Priority Fee" value="125132" />
-                    <GasDetailRow label="Max Fee" value="123125" />
-                </GasOption>
-
-                <GasOption
-              label="Aggressive"
-                    time="~24 sec"
-                    fee="0.000004"
-                    fiatFee="0.00...0001 BTC"
-                    selected={selectedSpeed === GasSpeed.Aggressive}
-                    expanded={expandedSpeed === GasSpeed.Aggressive}
-                    onselect={() => handleSpeedSelect(GasSpeed.Aggressive)}
-                >
-                    <GasDetailRow label="Estimated Gas" value="21000" />
-                    <GasDetailRow label="Gas Price" value="0.35 Gwei" />
-                    <GasDetailRow label="Base Fee" value="0.28 Gwei" />
-                    <GasDetailRow label="Priority Fee" value="150000" />
-                    <GasDetailRow label="Max Fee" value="150000" />
-                </GasOption>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <Button variant="outline" onclick={handleReject}>
-            {$_('confirm.reject')}
-        </Button>
-        <Button onclick={handleConfirm}>
-            {$_('confirm.confirm')}
-        </Button>
-    </footer>
-</div>
+        <footer class="footer">
+            <Button variant="outline" onclick={handleReject}>
+                {$_('confirm.reject')}
+            </Button>
+            <Button onclick={handleConfirm}>
+                {$_('confirm.confirm')}
+            </Button>
+        </footer>
+    </div>
+</svelte:boundary>
 
 <style lang="scss">
     .page-container {
