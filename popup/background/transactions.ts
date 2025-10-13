@@ -27,9 +27,20 @@ export async function estimateGas(confirmIndex: number, walletIndex: number, acc
       accountIndex,
     },
   }).send();
-  
+
   const resolve = warpMessage(data) as RequiredTxParams;
-  return resolve;
+  return {
+    gasPrice: BigInt(resolve.gasPrice),
+    maxPriorityFee: BigInt(resolve.maxPriorityFee.toString()),
+    feeHistory: {
+      maxFee: BigInt(resolve.feeHistory.maxFee),
+      priorityFee: BigInt(resolve.feeHistory.priorityFee),
+      baseFee: BigInt(resolve.feeHistory.baseFee),
+    },
+    txEstimateGas: BigInt(resolve.txEstimateGas),
+    blobBaseFee: BigInt(resolve.blobBaseFee),
+    nonce: resolve.nonce,
+  } as RequiredTxParams;
 }
 
 

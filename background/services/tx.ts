@@ -170,7 +170,18 @@ export class TransactionService {
       const gas = await provider.estimateGasParamsBatch(txReq, sender, 4, null);
 
       sendResponse({
-        resolve: gas,
+        resolve: {
+          gasPrice: gas.gasPrice.toString(),
+          maxPriorityFee: gas.maxPriorityFee.toString(),
+          feeHistory: {
+            maxFee: gas.feeHistory.maxFee.toString(),
+            priorityFee: gas.feeHistory.priorityFee.toString(),
+            baseFee: gas.feeHistory.baseFee.toString(),
+          },
+          txEstimateGas: gas.txEstimateGas.toString(),
+          blobBaseFee: gas.blobBaseFee.toString(),
+          nonce: gas.nonce,
+        },
       });
     } catch (err) {
       sendResponse({

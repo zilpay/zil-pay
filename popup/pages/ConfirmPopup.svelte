@@ -12,13 +12,15 @@
     import Button from '../components/Button.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
     import { push } from 'popup/router/navigation';
-    import { rejectConfirm } from 'popup/background/transactions';
+    import { estimateGas, rejectConfirm } from 'popup/background/transactions';
     import { getGlobalState } from 'popup/background/wallet';
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { GasSpeed } from 'config/gas';
+    import type { RequiredTxParams } from 'types/gas';
 
     let selectedSpeed = $state<GasSpeed>(GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
+    let gasEstimate = $state<RequiredTxParams | null>(null);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const nativeToken = $derived(wallet.tokens[0]);
@@ -73,6 +75,24 @@
         if (!confirmTx || !confirmTx?.metadata) {
             push('/');
         }
+    });
+    $effect(() => {
+        let interval: NodeJS.Timeout;
+
+        const updateGas = async () => {
+            try {
+                gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+                console.log(gasEstimate);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        updateGas();
+
+        interval = setInterval(updateGas, 10000);
+
+        return () => clearInterval(interval);
     });
 </script>
 
