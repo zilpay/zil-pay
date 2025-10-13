@@ -35,7 +35,7 @@ export interface TransactionReceiptScilla extends TransactionRequestScilla {
     cumulative_gas_used: string;
     cumulative_gas: string;
     epoch_num: string;
-    event_logs?: unknown;
+    event_logs?: unknown[];
     errors?: unknown;
     success?: boolean;
     exceptions?: {

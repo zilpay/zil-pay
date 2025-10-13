@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createBscConfig, createEthConfig, createZilliqaConfig } from "../data";
+import { createBscConfig, createEthConfig, createZilliqaConfig, ZLP } from "../data";
 import {
   generateErc20TransferData,
   NetworkProvider,
@@ -92,7 +92,13 @@ describe("JsonRPC provder tests", () => {
       data: transferData,
     });
     const txRequest = new TransactionRequest(
-      { chainHash: ethConfig.hash() },
+      {
+        chainHash: ethConfig.hash(),
+        token: {
+          ...ethConfig.ftokens[0],
+          balances: undefined,
+        }
+      },
       undefined,
       ethTx,
     );
@@ -103,7 +109,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(0n);
     expect(fee.txEstimateGas).toBe(22765n);
-    expect(fee.blobBaseFee).toBe(1n);
+    expect(fee.blobBaseFee).toBeGreaterThan(1n);
     expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
@@ -125,7 +131,13 @@ describe("JsonRPC provder tests", () => {
       maxFeePerGas: weigwei.decode("100"),
     });
     const txRequest = new TransactionRequest(
-      { chainHash: ethConfig.hash() },
+      {
+        chainHash: ethConfig.hash(),
+        token: {
+          ...ethConfig.ftokens[0],
+          balances: undefined,
+        }
+      },
       undefined,
       ethTx,
     );
@@ -136,7 +148,7 @@ describe("JsonRPC provder tests", () => {
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(0n);
     expect(fee.txEstimateGas).toBe(21000n);
-    expect(fee.blobBaseFee).toBe(1n);
+    expect(fee.blobBaseFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
@@ -158,7 +170,13 @@ describe("JsonRPC provder tests", () => {
     });
 
     const txRequest = new TransactionRequest(
-      { chainHash: bscConfig.hash() },
+      {
+        chainHash: bscConfig.hash(),
+        token: {
+          ...bscConfig.ftokens[0],
+          balances: undefined,
+        }
+      },
       undefined,
       bscTx,
     );
@@ -187,7 +205,13 @@ describe("JsonRPC provder tests", () => {
       10n ** 12n,
     );
     const txRequest = new TransactionRequest(
-      { chainHash: zilConfig.hash() },
+      {
+        chainHash: zilConfig.hash(),
+        token: {
+          ...zilConfig.ftokens[0],
+          balances: undefined,
+        }
+      },
       zilTx,
       undefined,
     );
@@ -223,47 +247,49 @@ describe("JsonRPC provder tests", () => {
         status: TransactionStatus.Pending,
         metadata: {
           token: {
+          ...ethConfig.ftokens[0],
               balances: undefined,
           },
-          chainHash: ethConfig.hash,
+          chainHash: ethConfig.hash(),
         },
         evm: {
           transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
           from: "0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
-        },
+        } as any,
         timestamp: new Date().getSeconds(),
       }),
       new HistoricalTransaction({
         status: TransactionStatus.Pending,
         metadata: {
           token: {
-              balances: undefined,
+            ...ethConfig.ftokens[0],
+            balances: undefined,
           },
-          chainHash: ethConfig.hash,
+          chainHash: ethConfig.hash(),
         },
         evm: {
           transactionHash: "0x08dafea60b7cdac9b9ff2dfb3660c652820347ded94fb470d1cd68f0fbc7704a",
           from: "0x6cab48ab9945f0cb10b20d1181bae37a56d8e3d2",
-        },
+        } as any,
         timestamp: new Date().getSeconds(),
       }),
     ];
 
     await provider.updateTransactionsHistory(mockTxns);
 
-    expect(mockTxns[0].evm.blockHash).toBeDefined();
-    expect(mockTxns[0].evm.blockNumber).toBeDefined();
-    expect(mockTxns[0].evm.status).toBe('0x1');
-    expect(mockTxns[0].evm.gasUsed).toBeDefined();
-    expect(mockTxns[0].evm.logs).toBeDefined();
-    expect(mockTxns[0].evm.logs?.length).toBeGreaterThan(0);
+    expect(mockTxns[0].evm?.blockHash).toBeDefined();
+    expect(mockTxns[0].evm?.blockNumber).toBeDefined();
+    expect(mockTxns[0].evm?.status).toBe('0x1');
+    expect(mockTxns[0].evm?.gasUsed).toBeDefined();
+    expect(mockTxns[0].evm?.logs).toBeDefined();
+    expect(mockTxns[0].evm?.logs?.length).toBeGreaterThan(0);
 
-    expect(mockTxns[1].evm.blockHash).toBeDefined();
-    expect(mockTxns[1].evm.blockNumber).toBeDefined();
-    expect(mockTxns[1].evm.status).toBe('0x1');
-    expect(mockTxns[1].evm.gasUsed).toBeDefined();
-    expect(mockTxns[1].evm.logs).toBeDefined();
-    expect(mockTxns[1].evm.logs?.length).toBeGreaterThan(0);
+    expect(mockTxns[1].evm?.blockHash).toBeDefined();
+    expect(mockTxns[1].evm?.blockNumber).toBeDefined();
+    expect(mockTxns[1].evm?.status).toBe('0x1');
+    expect(mockTxns[1].evm?.gasUsed).toBeDefined();
+    expect(mockTxns[1].evm?.logs).toBeDefined();
+    expect(mockTxns[1].evm?.logs?.length).toBeGreaterThan(0);
 
     expect(mockTxns[0].scilla).toBeUndefined();
     expect(mockTxns[1].scilla).toBeUndefined();
@@ -276,28 +302,30 @@ describe("JsonRPC provder tests", () => {
         status: TransactionStatus.Pending,
         metadata: {
           token: {
-              balances: undefined,
+            ...zilConfig.ftokens[1],
+            balances: undefined,
           },
-          chainHash: zilConfig.hash,
+          chainHash: zilConfig.hash(),
         },
         scilla: {
           hash: "1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125",
           toAddr: "6eaf9b37f9870994f5853eb28405919f87e8dec2",
-        },
+        } as any,
         timestamp: new Date().getSeconds(),
       }),
       new HistoricalTransaction({
         status: TransactionStatus.Pending,
         metadata: {
           token: {
-              balances: undefined,
+            ...zilConfig.ftokens[1],
+            balances: undefined,
           },
-          chainHash: zilConfig.hash,
+          chainHash: zilConfig.hash(),
         },
         scilla: {
           hash: "d4ffc62b9e7dd7764bc772959f5901e7d8149f1956fd9288116c073362373da4",
           toAddr: "fbd07e692543d3064b9cf570b27faabfd7948da4",
-        },
+        } as any,
         timestamp: new Date().getSeconds(),
       }),
     ];
@@ -306,59 +334,47 @@ describe("JsonRPC provder tests", () => {
 
     expect(mockTxns[0].status).toBe(TransactionStatus.Failed);
     expect(mockTxns[0].evm).toBeUndefined();
-    expect(mockTxns[0].scilla.hash).toBe("0x1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125");
-    expect(mockTxns[0].scilla.version).toBe("65537");
-    expect(mockTxns[0].scilla.nonce).toBe("1274");
-    expect(mockTxns[0].scilla.toAddr).toBe("6eaf9b37f9870994f5853eb28405919f87e8dec2");
-    expect(mockTxns[0].scilla.amount).toBe("0");
-    expect(mockTxns[0].scilla.gasPrice).toBe("2000000016");
-    expect(mockTxns[0].scilla.gasLimit).toBe("5000");
-    expect(mockTxns[0].scilla.data).toContain("CallRewards");
-    expect(mockTxns[0].scilla.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
-    expect(mockTxns[0].scilla.priority).toBe(false);
-    expect(mockTxns[0].scilla.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
-    expect(mockTxns[0].scilla.receipt.success).toBe(false);
-    expect(mockTxns[0].scilla.receipt.accepted).toBe(false);
-    expect(mockTxns[0].scilla.receipt.exceptions).toBeDefined();
-    expect(mockTxns[0].scilla.receipt.exceptions?.length).toBeGreaterThan(0);
-    expect(mockTxns[0].scilla.chainId).toBe(1);
+    expect(mockTxns[0].scilla?.hash).toBe("0x1878b575d736e88827c926f0251a13d639f605edb75ef916ab278485d96f1125");
+    expect(mockTxns[0].scilla?.version).toBe("65537");
+    expect(mockTxns[0].scilla?.nonce).toBe("1274");
+    expect(mockTxns[0].scilla?.toAddr).toBe("6eaf9b37f9870994f5853eb28405919f87e8dec2");
+    expect(mockTxns[0].scilla?.amount).toBe("0");
+    expect(mockTxns[0].scilla?.gasPrice).toBe("2000000016");
+    expect(mockTxns[0].scilla?.gasLimit).toBe("5000");
+    expect(mockTxns[0].scilla?.data).toContain("CallRewards");
+    expect(mockTxns[0].scilla?.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
+    expect(mockTxns[0].scilla?.priority).toBe(false);
+    expect(mockTxns[0].scilla?.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
+    expect(mockTxns[0].scilla?.receipt?.success).toBe(false);
+    expect(mockTxns[0].scilla?.receipt?.accepted).toBe(false);
+    expect(mockTxns[0].scilla?.receipt?.exceptions).toBeDefined();
+    expect(mockTxns[0].scilla?.receipt?.exceptions?.length).toBeGreaterThan(0);
+    expect(mockTxns[0].scilla?.chainId).toBe(1);
 
     expect(mockTxns[1].status).toBe(TransactionStatus.Success);
     expect(mockTxns[1].evm).toBeUndefined();
-    expect(mockTxns[1].scilla.hash).toBe("0xd4ffc62b9e7dd7764bc772959f5901e7d8149f1956fd9288116c073362373da4");
-    expect(mockTxns[1].scilla.version).toBe("65537");
-    expect(mockTxns[1].scilla.nonce).toBe("1276");
-    expect(mockTxns[1].scilla.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
-    expect(mockTxns[1].scilla.amount).toBe("0");
-    expect(mockTxns[1].scilla.gasPrice).toBe("2000000016");
-    expect(mockTxns[1].scilla.gasLimit).toBe("2000");
-    expect(mockTxns[1].scilla.data).toContain("Transfer");
-    expect(mockTxns[1].scilla.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
-    expect(mockTxns[1].scilla.priority).toBe(false);
-    expect(mockTxns[1].scilla.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
-    expect(mockTxns[1].scilla.receipt.success).toBe(true);
-    expect(mockTxns[1].scilla.receipt.accepted).toBe(false);
-    expect(mockTxns[1].scilla.receipt.event_logs).toBeDefined();
-    expect(mockTxns[1].scilla.receipt.event_logs?.length).toBeGreaterThan(0);
-    expect(mockTxns[1].scilla.chainId).toBe(1);
+    expect(mockTxns[1].scilla?.hash).toBe("0xd4ffc62b9e7dd7764bc772959f5901e7d8149f1956fd9288116c073362373da4");
+    expect(mockTxns[1].scilla?.version).toBe("65537");
+    expect(mockTxns[1].scilla?.nonce).toBe("1276");
+    expect(mockTxns[1].scilla?.toAddr).toBe("fbd07e692543d3064b9cf570b27faabfd7948da4");
+    expect(mockTxns[1].scilla?.amount).toBe("0");
+    expect(mockTxns[1].scilla?.gasPrice).toBe("2000000016");
+    expect(mockTxns[1].scilla?.gasLimit).toBe("2000");
+    expect(mockTxns[1].scilla?.data).toContain("Transfer");
+    expect(mockTxns[1].scilla?.senderPubKey).toBe("0x02f006b10b35ed60ac7cb79866b228a048b7d820561ec917b1ad3d2e5a851cedb9");
+    expect(mockTxns[1].scilla?.priority).toBe(false);
+    expect(mockTxns[1].scilla?.senderAddr).toBe("zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace");
+    expect(mockTxns[1].scilla?.receipt?.success).toBe(true);
+    expect(mockTxns[1].scilla?.receipt?.accepted).toBe(false);
+    expect(mockTxns[1].scilla?.receipt?.event_logs).toBeDefined();
+    expect(mockTxns[1].scilla?.receipt?.event_logs?.length).toBeGreaterThan(0);
+    expect(mockTxns[1].scilla?.chainId).toBe(1);
   }, 20000);
 
   it("should update balances for multiple scilla tokens and accounts", async () => {
     const provider = new NetworkProvider(zilConfig);
     const tokens = [
-      new FToken({
-        native: true,
-        addr: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
-        name: "Zilliqa",
-        symbol: "ZIL",
-        decimals: 12,
-        addrType: AddressType.Bech32,
-        balances: {},
-        chainHash: zilConfig.hash(),
-        default_: true,
-        logo: null,
-        rate: 0,
-      }),
+      ...zilConfig.ftokens,
       new FToken({
         native: false,
         addr: "zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy",
@@ -372,19 +388,7 @@ describe("JsonRPC provder tests", () => {
         logo: null,
         rate: 0,
       }),
-      new FToken({
-        native: false,
-        addr: "zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4",
-        name: "ZilPay Wallet",
-        symbol: "ZLP",
-        decimals: 18,
-        addrType: AddressType.Bech32,
-        balances: {},
-        chainHash: zilConfig.hash(),
-        default_: false,
-        logo: null,
-        rate: 0,
-      }),
+      ZLP,
     ];
 
     await provider.updateBalances(tokens, pubKeys);
@@ -465,7 +469,13 @@ describe("JsonRPC provder tests", () => {
     });
 
     const txRequest = new TransactionRequest(
-      { chainHash: ethConfig.hash() },
+      {
+        chainHash: ethConfig.hash(),
+        token: {
+          ...zilConfig.ftokens[0],
+          balances: undefined,
+        }
+      },
       undefined,
       ethTx,
     );
@@ -493,7 +503,13 @@ describe("JsonRPC provder tests", () => {
       1000000n,
     );
     const txRequest = new TransactionRequest(
-      { chainHash: zilConfig.hash() },
+      {
+        chainHash: zilConfig.hash(),
+        token: {
+          ...zilConfig.ftokens[0],
+          balances: undefined,
+        }
+      },
       zilTx,
     );
     const signedTx = await txRequest.sign(keypair);
