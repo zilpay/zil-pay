@@ -6,16 +6,17 @@ import {
   processParseFeeHistoryRequest,
   EIP1559,
   EIP4844,
-  type FeeHistoryResult,
-  type GasFeeHistory,
 } from "../../background/rpc/gas_parse";
 import { TransactionRequest } from "../../crypto/tx";
 import { Address } from "../../crypto/address";
 import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
 import { hexToBigInt } from "../../lib/utils/hex";
 import { AddressType } from "../../config/wallet";
+import type { FeeHistoryResult, GasFeeHistory } from "types/gas";
+import { createEthConfig } from "__tests__/data";
 
 describe("Gas Parser Utilities", () => {
+  const ETH_CONFIG = createEthConfig();
   const mockEvmTx = { to: "0x...", data: "0x..." };
   const mockScillaTx = { a: "1" };
   const mockEvmSender = new Address(
@@ -45,6 +46,10 @@ describe("Gas Parser Utilities", () => {
       const tx = new TransactionRequest(
         {
           chainHash: 0,
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
         },
         undefined,
         mockEvmTx as any,
@@ -59,6 +64,10 @@ describe("Gas Parser Utilities", () => {
       const tx = new TransactionRequest(
         {
           chainHash: 0,
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
         },
         mockScillaTx as any,
         undefined,
@@ -110,7 +119,13 @@ describe("Gas Parser Utilities", () => {
   describe("buildBatchGasRequest", () => {
     it("should build a batch request for a Zilliqa (Scilla) transaction", async () => {
       const tx = new TransactionRequest(
-        { chainHash: 1 },
+        {
+          chainHash: ETH_CONFIG.hash(),
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
+        },
         mockScillaTx as any,
         undefined,
       );
@@ -127,7 +142,13 @@ describe("Gas Parser Utilities", () => {
 
     it("should build a basic batch request for an EVM transaction", async () => {
       const tx = new TransactionRequest(
-        { chainHash: 2 },
+        {
+          chainHash: ETH_CONFIG.hash(),
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
+        },
         undefined,
         mockEvmTx as any,
       );
@@ -152,7 +173,13 @@ describe("Gas Parser Utilities", () => {
 
     it("should include EIP1559 requests when the feature is enabled", async () => {
       const tx = new TransactionRequest(
-        { chainHash: 2 },
+        {
+          chainHash: ETH_CONFIG.hash(),
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
+        },
         undefined,
         mockEvmTx as any,
       );
@@ -172,7 +199,13 @@ describe("Gas Parser Utilities", () => {
 
     it("should include EIP4844 request when the feature is enabled", async () => {
       const tx = new TransactionRequest(
-        { chainHash: 2 },
+        {
+          chainHash: ETH_CONFIG.hash(),
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
+        },
         undefined,
         mockEvmTx as any,
       );
@@ -189,7 +222,13 @@ describe("Gas Parser Utilities", () => {
     });
 
     it("should throw TransactionError if evm transaction is not provided for an EVM chain", async () => {
-      const tx = new TransactionRequest({ chainHash: 2 }, undefined, undefined);
+      const tx = new TransactionRequest({
+          chainHash: ETH_CONFIG.hash(),
+          token: {
+            ...ETH_CONFIG.ftokens[0],
+            balances: undefined,
+          },
+      }, undefined, undefined);
       await expect(
         buildBatchGasRequest(tx, 10, [], [], mockEvmSender),
       ).rejects.toThrow("unsupported transaction.");
