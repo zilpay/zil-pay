@@ -9,15 +9,16 @@ import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { hexToUint8Array } from "../../lib/utils/hex";
 import type { TransactionMetadata } from "../../types/tx";
+import { createEthConfig } from "__tests__/data";
 
 
 describe("TransactionRequest and TransactionReceipt", () => {
+  const ETH_CONFIG = createEthConfig();
   const metadata: TransactionMetadata = {
     chainHash: 123,
     token: {
-        balances: undefined,
-        value: "0",
-        recipient: "0xtest",
+      ...ETH_CONFIG.ftokens[0],
+      balances: undefined,
     }
   };
 
