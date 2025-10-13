@@ -1,8 +1,15 @@
 <script lang="ts">
+    import { get } from 'svelte/store';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain } from 'popup/mixins/chains';
+    import { push } from 'popup/router/navigation';
+    import { estimateGas, rejectConfirm } from 'popup/background/transactions';
+    import { abbreviateNumber } from 'popup/mixins/numbers';
+    import { GasSpeed } from 'config/gas';
+    import type { RequiredTxParams } from 'types/gas';
+    import { calculateGasFee, type GasOptionDetails } from '../mixins/gas';
     
     import RoundImageButton from '../components/RoundImageButton.svelte';
     import TransferSummary from '../components/TransferSummary.svelte';
@@ -11,192 +18,159 @@
     import GasDetailRow from '../components/GasDetailRow.svelte';
     import Button from '../components/Button.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
-    import { push } from 'popup/router/navigation';
-    import { estimateGas, rejectConfirm } from 'popup/background/transactions';
-    import { getGlobalState } from 'popup/background/wallet';
-    import { abbreviateNumber } from 'popup/mixins/numbers';
-    import { GasSpeed } from 'config/gas';
-    import type { RequiredTxParams } from 'types/gas';
 
     let selectedSpeed = $state<GasSpeed>(GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
     let gasEstimate = $state<RequiredTxParams | null>(null);
+    let isLoading = $state(false);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
-    const nativeToken = $derived(wallet.tokens[0]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
     const chain = $derived(getAccountChain($globalStore.selectedWallet));
-    const confirmLastIndex = $derived(wallet.confirm.length - 1);
-    const confirmTx = $derived(wallet?.confirm[confirmLastIndex]);
+    const confirmLastIndex = $derived(wallet ? wallet.confirm.length - 1 : -1);
+    const confirmTx = $derived(confirmLastIndex !== -1 ? wallet.confirm[confirmLastIndex] : null);
     const book = $derived($globalStore.book || []);
-    const token = $derived(confirmTx.metadata?.token ?? nativeToken);
-    const tokenAmount = $derived(confirmTx?.metadata?.token?.value ?? confirmTx.evm?.value ?? confirmTx.scilla?.amount ?? '0');
-    const toAddress = $derived(confirmTx.metadata?.token.recipient ?? confirmTx.evm?.to ?? confirmTx.scilla?.toAddr ?? "");
+    const nativeToken = $derived(wallet?.tokens.filter((t) => t.addrType == confirmTx?.metadata?.token.addrType).find(t => t.native));
+    
+    const token = $derived(confirmTx?.metadata?.token ?? nativeToken);
+    const tokenAmount = $derived(confirmTx?.metadata?.token?.value ?? confirmTx?.evm?.value ?? confirmTx?.scilla?.amount ?? '0');
+    const toAddress = $derived(confirmTx?.metadata?.token.recipient ?? confirmTx?.evm?.to ?? confirmTx?.scilla?.toAddr ?? "");
 
     const recipientName = $derived(() => {
-        if (!confirmTx) return; 
-
+        if (!confirmTx) return null;
         const address = toAddress.toLowerCase();
-        const bookEntry = book.find(entry => 
-            entry.address.toLowerCase() === address
-        );
+        const bookEntry = book.find(entry => entry.address.toLowerCase() === address);
         if (bookEntry) return bookEntry.name;
 
-        const walletAccount = wallet?.accounts.find(acc => 
-            acc.addr.toLowerCase() === address
-        );
+        const walletAccount = wallet?.accounts.find(acc => acc.addr.toLowerCase() === address);
         if (walletAccount) return walletAccount.name;
 
         return null;
     });
+
+    const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken) : []);
 
     function handleSpeedSelect(speed: GasSpeed) {
         if (selectedSpeed === speed) {
             expandedSpeed = expandedSpeed === speed ? null : speed;
         } else {
             selectedSpeed = speed;
-            expandedSpeed = null;
+            expandedSpeed = speed;
         }
-    }
-
-    function handleEdit() {
-        push('/transfer');
     }
 
     async function handleReject() {
-        await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
-        await getGlobalState();
+        if (confirmLastIndex === -1) return;
+        isLoading = true;
+        try {
+            await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
+        } finally {
+            isLoading = false;
+        }
     }
 
     function handleConfirm() {
+        // Confirm logic goes here
     }
 
     $effect(() => {
-        if (!confirmTx || !confirmTx?.metadata) {
+        if (!confirmTx || !confirmTx.metadata) {
             push('/');
         }
     });
+
     $effect(() => {
-        let interval: NodeJS.Timeout;
+        if (confirmLastIndex === -1) return;
 
         const updateGas = async () => {
-            try {
-                gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-                console.log(gasEstimate);
-            } catch (error) {
-                console.error(error);
+            if (wallet) {
+                try {
+                    gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+                } catch (error) {
+                    console.error("Gas estimation failed:", error);
+                }
             }
         };
 
         updateGas();
-
-        interval = setInterval(updateGas, 10000);
+        const interval = setInterval(updateGas, 15000);
 
         return () => clearInterval(interval);
     });
 </script>
 
-<svelte:boundary onerror={async (error, _) => {
-    console.warn(error);
-    const wallet = $globalStore.wallets[$globalStore.selectedWallet];
-    await rejectConfirm(wallet.confirm.length - 1, $globalStore.selectedWallet);
+<svelte:boundary onerror={async () => {
+    const store = get(globalStore);
+    const currentWallet = store.wallets[store.selectedWallet];
+    if (currentWallet && currentWallet.confirm.length > 0) {
+        await rejectConfirm(currentWallet.confirm.length - 1, store.selectedWallet);
+    }
 }}>
-    <div class="page-container">
-        <header class="header">
-            <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
-            {#if chain}
+    {#if !token || !chain || !account}
+        <div class="loading-container"></div>
+    {:else}
+        <div class="page-container">
+            <header class="header">
+                <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
                 <RoundImageButton
                     imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
                     alt={chain.name}
                     disabled={true}
                 />
-            {/if}
-        </header>
+            </header>
 
-        <main class="content">
-            <TransferSummary
-                amount={abbreviateNumber(tokenAmount, token.decimals)}
-                symbol={confirmTx.metadata?.token?.symbol ?? nativeToken.symbol}
-                fiatValue="-"
-            />
-
-            <TransferRoute
-                fromName={account?.name || 'Unknown'}
-                fromAddress={account?.addr || ''}
-                toName={recipientName() || 'Unknown'}
-                toAddress={toAddress}
-            />
-
-            <div class="transaction-section">
-                <div class="section-header">
-                    <span class="section-title">{$_('confirm.transaction')}</span>
-                    <button class="edit-button" onclick={handleEdit}>
-                        <span>{$_('confirm.edit')}</span>
-                        <EditIcon />
-                    </button>
+            <main class="content">
+                <TransferSummary
+                    amount={abbreviateNumber(tokenAmount, token.decimals)}
+                    symbol={token.symbol}
+                    fiatValue="-"
+                />
+                <TransferRoute
+                    fromName={account.name || 'Unknown'}
+                    fromAddress={account.addr}
+                    toName={recipientName() || 'Unknown'}
+                    toAddress={toAddress}
+                />
+                <div class="transaction-section">
+                    <div class="section-header">
+                        <span class="section-title">{$_('confirm.transaction')}</span>
+                        <button class="edit-button" onclick={() => push('/transfer')}>
+                            <span>{$_('confirm.edit')}</span>
+                            <EditIcon />
+                        </button>
+                    </div>
+                    <div class="gas-options">
+                        {#if gasOptions.length > 0}
+                            {#each gasOptions as option (option.speed)}
+                                <GasOption
+                              label={$_(option.label)}
+                                    time={option.time}
+                                    fee={option.fee}
+                                    fiatFee={option.fiatFee}
+                                    selected={selectedSpeed === option.speed}
+                                    expanded={expandedSpeed === option.speed}
+                                    onselect={() => handleSpeedSelect(option.speed)}
+                                >
+                                    {#each option.details as detail (detail.label)}
+                                        <GasDetailRow label={detail.label} value={detail.value} />
+                                    {/each}
+                                </GasOption>
+                            {/each}
+                        {/if}
+                    </div>
                 </div>
+            </main>
 
-                <div class="gas-options">
-                    <GasOption
-                  label="Low"
-                        time="~2 min"
-                        fee="0.000004"
-                        fiatFee="0.00...0001 BTC"
-                        selected={selectedSpeed === GasSpeed.Low}
-                        expanded={expandedSpeed === GasSpeed.Low}
-                        onselect={() => handleSpeedSelect(GasSpeed.Low)}
-                    >
-                        <GasDetailRow label="Estimated Gas" value="21000" />
-                        <GasDetailRow label="Gas Price" value="0.20 Gwei" />
-                        <GasDetailRow label="Base Fee" value="0.18 Gwei" />
-                        <GasDetailRow label="Priority Fee" value="100000" />
-                        <GasDetailRow label="Max Fee" value="100000" />
-                    </GasOption>
-
-                    <GasOption
-                  label="Market"
-                        time="~1 min"
-                        fee="0.000004"
-                        fiatFee="0.00...0001 BTC"
-                        selected={selectedSpeed === GasSpeed.Market}
-                        expanded={expandedSpeed === GasSpeed.Market}
-                        onselect={() => handleSpeedSelect(GasSpeed.Market)}
-                    >
-                        <GasDetailRow label="Estimated Gas" value="21000" />
-                        <GasDetailRow label="Gas Price" value="0.26 Gwei" />
-                        <GasDetailRow label="Base Fee" value="0.22 Gwei" />
-                        <GasDetailRow label="Priority Fee" value="125132" />
-                        <GasDetailRow label="Max Fee" value="123125" />
-                    </GasOption>
-
-                    <GasOption
-                  label="Aggressive"
-                        time="~24 sec"
-                        fee="0.000004"
-                        fiatFee="0.00...0001 BTC"
-                        selected={selectedSpeed === GasSpeed.Aggressive}
-                        expanded={expandedSpeed === GasSpeed.Aggressive}
-                        onselect={() => handleSpeedSelect(GasSpeed.Aggressive)}
-                    >
-                        <GasDetailRow label="Estimated Gas" value="21000" />
-                        <GasDetailRow label="Gas Price" value="0.35 Gwei" />
-                        <GasDetailRow label="Base Fee" value="0.28 Gwei" />
-                        <GasDetailRow label="Priority Fee" value="150000" />
-                        <GasDetailRow label="Max Fee" value="150000" />
-                    </GasOption>
-                </div>
-            </div>
-        </main>
-
-        <footer class="footer">
-            <Button variant="outline" onclick={handleReject}>
-                {$_('confirm.reject')}
-            </Button>
-            <Button onclick={handleConfirm}>
-                {$_('confirm.confirm')}
-            </Button>
-        </footer>
-    </div>
+            <footer class="footer">
+                <Button variant="outline" onclick={handleReject} disabled={isLoading}>
+                    {$_('confirm.reject')}
+                </Button>
+                <Button onclick={handleConfirm} disabled={isLoading || gasOptions.length === 0}>
+                    {$_('confirm.confirm')}
+                </Button>
+            </footer>
+        </div>
+    {/if}
 </svelte:boundary>
 
 <style lang="scss">
@@ -278,11 +252,20 @@
         gap: 12px;
     }
 
+    .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
     .footer {
+        margin-top: auto;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
         padding: 16px;
         background: var(--color-neutral-background-base);
+        border-top: 1px solid var(--color-cards-regular-border-default);
     }
 </style>
