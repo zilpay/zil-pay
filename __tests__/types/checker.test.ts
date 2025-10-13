@@ -1,5 +1,5 @@
+import { TypeOf } from "lib/types";
 import { describe, expect, it } from "vitest";
-import { TypeOf } from "lib/types/checker.ts";
 
 describe("TypeOf", () => {
   it("should correctly identify arrays", () => {

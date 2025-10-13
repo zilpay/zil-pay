@@ -3,9 +3,9 @@ import {
   toChecksumHexAddress,
   toChecksumBytesAddress,
 } from "../../lib/zilliqa/checksum";
-import { fromZilPubKey } from "../../lib/zilliqa/pubkey.ts";
 import { utils } from "aes-js";
 import { toBech32Address, fromBech32Address } from "../../lib/zilliqa/bech32";
+import { fromZilPubKey } from "lib/zilliqa/pubkey";
 
 describe("Address Conversion Tests", () => {
   describe("toChecksumAddress", () => {
