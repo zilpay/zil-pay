@@ -34,10 +34,9 @@ const createV4Storage = (): Record<string, unknown> => ({
 });
 
 describe("migrateToV4", () => {
-  // Test case 1: Storage already at version 4
   it("should return BackgroundState with unchanged storage if already version 4", () => {
     const storageV4 = createV4Storage();
-    const result = migrateToV4(storageV4);
+    const result = migrateToV4(storageV4 as any);
 
     expect(result).toBeInstanceOf(BackgroundState);
     expect(result.storageVersion).toBe(4);
@@ -52,7 +51,7 @@ describe("migrateToV4", () => {
 
   // Test case 2: Migration from version 2
   it("should correctly migrate from version 2", () => {
-    const result = migrateToV4(STORAGE_V2);
+    const result = migrateToV4(STORAGE_V2 as any);
 
     // Top-level BackgroundState properties
     expect(result).toBeInstanceOf(BackgroundState);
@@ -150,7 +149,7 @@ describe("migrateToV4", () => {
 
   // Test case 3: Migration from version 3
   it("should correctly migrate from version 3", () => {
-    const result = migrateToV4(STORAGE_V3);
+    const result = migrateToV4(STORAGE_V3 as any);
 
     // Top-level BackgroundState properties
     expect(result.storageVersion).toBe(4);
@@ -235,7 +234,7 @@ describe("migrateToV4", () => {
   });
 
   it("test migrate and decrypt storage v2", async () => {
-    const result = migrateToV4(STORAGE_V2);
+    const result = migrateToV4(STORAGE_V2 as any);
     const wallet = result.wallets[0];
     const password = utils.utf8.toBytes(PASSWORD);
     const decrypted = await wallet.decrypt(password);
@@ -255,7 +254,7 @@ describe("migrateToV4", () => {
   });
 
   it("test migrate and decrypt storage v3", async () => {
-    const result = migrateToV4(STORAGE_V3);
+    const result = migrateToV4(STORAGE_V3 as any);
     const wallet = result.wallets[0];
     const password = utils.utf8.toBytes(PASSWORD);
     const decrypted = await wallet.decrypt(password);
