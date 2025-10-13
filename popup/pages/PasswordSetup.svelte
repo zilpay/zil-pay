@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
-  import { HashTypes, type Bip32Account, type IWalletSettingsState } from 'background/storage';
+  import { type Bip32Account, type IWalletSettingsState } from 'background/storage';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
@@ -17,7 +17,8 @@
   import { RatesApiOptions } from 'config/api';
   import CryptModal from '../modals/CryptSetup.svelte';
   import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
-    import { GasSpeed } from 'config/gas';
+  import { GasSpeed } from 'config/gas';
+  import { HashTypes } from 'config/argon2';
 
   let password = $state('');
   let confirmPassword = $state('');

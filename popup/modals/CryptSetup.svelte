@@ -1,13 +1,13 @@
 <script lang="ts">
     import type { IWalletSettingsState, IWalletHashParams } from 'background/storage';
     import { CipherOrders } from 'crypto/keychain';
-    import { HashTypes } from 'background/storage/argon';
     import { ShaAlgorithms } from 'config/pbkdf2';
     import { _ } from '../i18n';
     import RadioOption, { type OptionData } from '../components/RadioOption.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import Dropdown, { type DropdownOption } from '../components/Dropdown.svelte';
     import DownIcon from '../components/icons/Down.svelte';
+    import { HashTypes } from 'config/argon2';
 
     let {
         walletSettings,
