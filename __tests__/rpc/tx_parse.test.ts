@@ -107,8 +107,16 @@ describe("Transaction Parse Functions", () => {
       hash: "ce924ea2d0dca2c76af0b8c7858d0401a95f6528122c8f3cd1da11d22b2bb01a",
       amount: "10000000000000",
       senderPubKey: "0x1234567890123456789012345678901234567890",
+      senderAddr: "zil1qsqa0l28av62z49c23nthg3ceecech2y34hpx5",
       toAddr: "zil1g0n2tsqwyht7xafsmdgq2zrwwt7nnz5arcp2xw",
-      receipt: { success: false, accepted: false } as any,
+      receipt: { 
+        success: false, 
+        accepted: false,
+        gas_used: "0",
+        cumulative_gas_used: "0",
+        cumulative_gas: "0",
+        epoch_num: "12345"
+      },
       gasLimit: "50000",
       gasPrice: "2000000000",
       signature:
@@ -127,44 +135,44 @@ describe("Transaction Parse Functions", () => {
       },
       scilla: scillaTx,
     });
+};
+
+const createEvmHistoricalTransaction = (): HistoricalTransaction => {
+  const evmTx: TransactionReceiptEVM = {
+    transactionHash:
+      "0x9a65c7bd4b028cf6e24a184c2a35589c7287358926a1d4492e90c844eb6f37d3",
+    from: "0x7d3034d6281900Af5Ac0b2615E3051884012AF1B",
+    to: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
+    type: "0x2",
+    value: "1000000000000000000",
+    nonce: "1",
+    status: "0x0",
+    blockHash: "",
+    blockNumber: "",
+    contractAddress: null,
+    cumulativeGasUsed: "0",
+    effectiveGasPrice: "0",
+    gasUsed: "0",
+    logs: [],
+    logsBloom: "",
+    transactionIndex: "",
   };
 
-  // NEW: Creates a mock HistoricalTransaction for EVM tests
-  const createEvmHistoricalTransaction = (): HistoricalTransaction => {
-    const evmTx: TransactionReceiptEVM = {
-      transactionHash:
-        "0x9a65c7bd4b028cf6e24a184c2a35589c7287358926a1d4492e90c844eb6f37d3",
-      from: "0x7d3034d6281900Af5Ac0b2615E3051884012AF1B",
-      to: "0x7693F0eC4d80fbe8BeFA31aE845CDE344043dD6e",
-      status: "0x0",
-      blockHash: "",
-      blockNumber: "",
-      contractAddress: null,
-      cumulativeGasUsed: "0",
-      effectiveGasPrice: "0",
-      gasUsed: "0",
-      logs: [],
-      logsBloom: "",
-      transactionIndex: "",
-      type: "0x2",
-    };
-
-    return new HistoricalTransaction({
-      status: TransactionStatus.Pending,
-      timestamp: Math.floor(Date.now() / 1000) - 60,
-      scilla: undefined,
-      metadata: {
-        chainHash: BSC_CONFIG.hash(),
-        token: {} as any,
-      },
-      evm: evmTx,
-    });
-  };
+  return new HistoricalTransaction({
+    status: TransactionStatus.Pending,
+    timestamp: Math.floor(Date.now() / 1000) - 60,
+    scilla: undefined,
+    metadata: {
+      chainHash: BSC_CONFIG.hash(),
+      token: {} as any,
+    },
+    evm: evmTx,
+  });
+};;
 
   describe("buildSendSignedTxRequest", () => {
     it("should build request for Zilliqa transaction", async () => {
       const tx = await createZilTransactionReceipt();
-      tx.metadata.hash = "some_hash"; // required by fromReceipt
       const request = await buildSendSignedTxRequest(tx);
 
       expect(request.method).toBe(ZilMethods.CreateTransaction);
@@ -260,7 +268,7 @@ describe("Transaction Parse Functions", () => {
       expect(tx.scilla!.gasLimit).toBe("50");
       expect(tx.scilla!.gasPrice).toBe("2000000016");
       expect(tx.scilla!.nonce).toBe("1275");
-      expect(tx.scilla!.receipt.success).toBe(true);
+      expect(tx.scilla!.receipt?.success).toBe(true);
       expect(tx.scilla!.senderAddr).toBe(
         "zil1wl38cwww2u3g8wzgutxlxtxwwc0rf7jf27zace",
       );
@@ -284,7 +292,7 @@ describe("Transaction Parse Functions", () => {
 
       expect(tx.status).toBe(TransactionStatus.Failed);
       expect(tx.scilla).toBeDefined();
-      expect(tx.scilla!.receipt.success).toBe(false);
+      expect(tx.scilla!.receipt?.success).toBe(false);
     });
 
     it("should handle Zilliqa transaction timeout (by becoming Failed)", async () => {
@@ -357,7 +365,6 @@ describe("Transaction Parse Functions", () => {
 
     it("should handle RPC error response for a recent tx (remain pending)", async () => {
       const tx = createZilHistoricalTransaction();
-      // Timestamp is recent, so it should not be marked as failed
       tx.timestamp = Math.floor(Date.now() / 1000);
 
       const response = {
