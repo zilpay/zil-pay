@@ -16,7 +16,7 @@ import { uint8ArrayToUtf8, utf8ToUint8Array } from "../../lib/utils/utf8";
 import { uint8ArrayToHex } from "../../lib/utils/hex";
 
 test("decrypt Storage v3 AES-v3", async () => {
-  const salt = utf8ToUint8Array(EXTENSION_ID);
+  const salt = utf8ToUint8Array(EXTENSION_ID) as BufferSource;
   const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(":");
   const vaultBase64 = STORAGE_V3.vault;
   const vaultBytes = base64ToUint8Array(vaultBase64);
@@ -35,7 +35,7 @@ test("decrypt Storage v3 AES-v3", async () => {
 });
 
 test("decrypt accounts Storage v3 AES-v3", async () => {
-  const salt = utf8ToUint8Array(EXTENSION_ID);
+  const salt = utf8ToUint8Array(EXTENSION_ID) as BufferSource;
   const [algorithm, iteractions] = STORAGE_V3["guard-configuration"].split(":");
   const passwordBytes = utf8ToUint8Array(PASSWORD);
   const key = await pbkdf2(
