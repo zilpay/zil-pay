@@ -40,7 +40,7 @@ export function calculateGasFee(
     gasEstimate: RequiredTxParams,
     nativeToken: IFTokenState,
 ): GasOptionDetails[] {
-    const isEIP1559 = gasEstimate.feeHistory.baseFee > 0n;
+    const isEIP1559 = gasEstimate.feeHistory.priorityFee > 0n;
 
     const gasLevels = {
         [GasSpeed.Low]: {

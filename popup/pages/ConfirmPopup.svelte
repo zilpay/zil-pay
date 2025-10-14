@@ -17,7 +17,7 @@
     import GasDetailRow from '../components/GasDetailRow.svelte';
     import Button from '../components/Button.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
-    import { getGlobalState } from 'popup/background/wallet';
+    import { getGlobalState, setGlobalState } from 'popup/background/wallet';
 
     let selectedSpeed = $state<GasSpeed>(GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
@@ -76,8 +76,49 @@
         if (wallet && !isLoading) {
             isLoading = true;
             try {
-                const signedTx = await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-                console.log(signedTx);
+                const state = $globalStore;
+                const confirm = state.wallets[state.selectedWallet].confirm[confirmLastIndex];
+
+                if (!confirm || !gasEstimate) throw new Error('');
+
+                let multiplierNumer = 10n;
+                switch (selectedSpeed) {
+                    case GasSpeed.Low:
+                        multiplierNumer = 5n;
+                        break;
+                    case GasSpeed.Market:
+                        multiplierNumer = 10n;
+                        break;
+                    case GasSpeed.Aggressive:
+                        multiplierNumer = 15n;
+                        break;
+                }
+                const gasPrice = (gasEstimate.gasPrice * multiplierNumer) / 10n;
+
+                if (confirm?.evm) {
+                    confirm.evm.gasLimit = Number(gasEstimate?.txEstimateGas) ?? undefined;
+                    confirm.evm.nonce = gasEstimate.nonce;
+
+                    if (gasEstimate.feeHistory.priorityFee > 0n) {
+                        const baseFee = gasEstimate.feeHistory.baseFee;
+                        const priorityFee = (gasEstimate.feeHistory.priorityFee * multiplierNumer) / 10n;
+                        const maxFee = (baseFee * 2n) + priorityFee;
+
+                        confirm.evm.maxFeePerGas = maxFee.toString();
+                        confirm.evm.maxPriorityFeePerGas = priorityFee.toString();
+                    } else {
+                        confirm.evm.gasPrice = gasEstimate.gasPrice.toString();
+                    }
+                } else if (confirm?.scilla) {
+                    confirm.scilla.nonce = gasEstimate.nonce;
+                    confirm.scilla.gasLimit = gasEstimate.txEstimateGas.toString();
+                    confirm.scilla.gasPrice = gasPrice.toString();
+                }
+
+                await setGlobalState();
+
+                await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+                push('/history');
             } catch (error) {
                 console.error("signTx fail", error);
             } finally {

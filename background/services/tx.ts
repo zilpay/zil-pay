@@ -25,23 +25,30 @@ export class TransactionService {
       const wallet = this.#state.wallets[walletIndex];
       const account = wallet.accounts[accountIndex];
       const confirm= wallet .confirm[confirmIndex];
+
       const chainConfig = this.#state.getChain(account.chainHash)!;
+      const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
+
       const provider = new NetworkProvider(chainConfig);
       const metadata  = confirm.metadata!; 
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const evm = confirm.evm;
       const txReq = new TransactionRequest(metadata, scilla, evm);
-      const keyPair = await wallet.revealKeypair(accountIndex, chainConfig);
+      const keyPair = await wallet.revealKeypair(accountIndex, defaultChainConfig);
       const signedTx = await txReq.sign(keyPair);
 
       await signedTx.verify();
 
-      const history = await provider.broadcastSignedTransactions([signedTx]);
+      const [history] = await provider.broadcastSignedTransactions([signedTx]);
+
+      this.#state.wallets[walletIndex].history.push(history);
+      await this.#state.sync();
 
       sendResponse({
         resolve: history,
       });
     } catch (err) {
+      console.error(err);
       sendResponse({ reject: String(err) });
     }
   }

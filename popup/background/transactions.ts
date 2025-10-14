@@ -6,6 +6,7 @@ import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import globalStore from "popup/store/global";
 import type { RequiredTxParams } from "types/gas";
+import type { IHistoricalTransactionState } from "background/rpc/history_tx";
 
 export async function buildTokenTransfer(params: BuildTokenTransferParams) {
   const data = await new Message<SendResponseParams>({
@@ -53,7 +54,7 @@ export async function signConfrimTx(confirmIndex: number, walletIndex: number, a
     },
   }).send();
 
-  const resolve = warpMessage(data) as string;
+  const resolve = warpMessage(data) as IHistoricalTransactionState;
 
   return resolve;
 }
