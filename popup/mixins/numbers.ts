@@ -7,8 +7,8 @@ export function abbreviateNumber(value: number | string, decimals: number = 0): 
 
     if (num < 1000 && num > -1000) {
         return new Intl.NumberFormat(undefined, {
-            minimumFractionDigits: 4,
-            maximumFractionDigits: 4,
+            minimumFractionDigits: 6,
+            maximumFractionDigits: 6,
             useGrouping: false
         }).format(num);
     }

@@ -88,11 +88,11 @@
         if (confirmLastIndex === -1) return;
 
         const updateGas = async () => {
-            if (wallet) {
+            if (wallet && !isLoading) {
                 isLoadingGasFetch = true;
                 try {
                     gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-                    console.log(gasEstimate);
+                    // console.log(gasEstimate);
                 } catch (error) {
                     console.error("Gas estimation failed:", error);
                 } finally {

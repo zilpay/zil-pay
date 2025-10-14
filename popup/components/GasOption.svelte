@@ -177,6 +177,7 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
+        align-items: start;
     }
 
     .label {
