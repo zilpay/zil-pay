@@ -16,7 +16,7 @@ import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
 import { EvmMethods } from 'config/jsonrpc';
 import type { EVMBlock } from './block';
-import { type HistoricalTransaction } from './history_tx';
+import { HistoricalTransaction } from './history_tx';
 import { buildPayloadTxReceipt, buildSendSignedTxRequest, processTxSendResponse } from './tx_parse';
 import { AddressType } from 'config/wallet';
 import type { GasFeeHistory, RequiredTxParams } from 'types/gas';
@@ -212,7 +212,7 @@ export class NetworkProvider {
     }));
   }
 
-  async broadcastSignedTransactions(txns: SignedTransaction[]): Promise<SignedTransaction[]> {
+  async broadcastSignedTransactions(txns: SignedTransaction[]): Promise<HistoricalTransaction[]> {
     const allRequests: JsonRPCRequest[] = [];
 
     for (const tx of txns) {
@@ -225,12 +225,13 @@ export class NetworkProvider {
     const provider = new RpcProvider(this.config);
     const responses = await provider.req<JsonRPCResponse<unknown>[]>(allRequests);
 
-    responses.forEach((response, index) => {
+    const historyList = responses.map((response, index) => {
       const tx = txns[index];
-      processTxSendResponse(response, tx);
+      const hash = processTxSendResponse(response, tx);
+      return HistoricalTransaction.fromSignedTransaction(tx, hash);
     });
   
-    return txns;
+    return Promise.all(historyList);
   }
 
   async updateBalances(tokens: FToken[], keys: Uint8Array[]): Promise<void> {

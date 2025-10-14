@@ -8,7 +8,6 @@ import { AddressType } from "config/wallet";
 import { generateErc20TransferData, NetworkProvider } from "background/rpc";
 import { TransactionRequest } from "crypto/tx";
 import { ZILTransactionRequest } from "crypto/zilliqa_tx";
-import { Transaction } from "micro-eth-signer";
 import { Address } from "crypto/address";
 import { hexToUint8Array } from "lib/utils/hex";
 import { ETHEREUM } from "config/slip44";
@@ -19,6 +18,32 @@ export class TransactionService {
 
   constructor(state: BackgroundState) {
     this.#state = state;
+  }
+
+  async signTxAndbroadcastJsonRPC(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const confirm= wallet .confirm[confirmIndex];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const metadata  = confirm.metadata!; 
+      const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
+      const evm = confirm.evm;
+      const txReq = new TransactionRequest(metadata, scilla, evm);
+      const keyPair = await wallet.revealKeypair(accountIndex, chainConfig);
+      const signedTx = await txReq.sign(keyPair);
+
+      await signedTx.verify();
+
+      const history = await provider.broadcastSignedTransactions([signedTx]);
+
+      sendResponse({
+        resolve: history,
+      });
+    } catch (err) {
+      sendResponse({ reject: String(err) });
+    }
   }
 
   async buildTokenTransfer(payload: BuildTokenTransferParams, sendResponse: StreamResponse) {

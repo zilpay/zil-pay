@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { get } from 'svelte/store';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain } from 'popup/mixins/chains';
     import { push } from 'popup/router/navigation';
-    import { estimateGas, rejectConfirm } from 'popup/background/transactions';
+    import { estimateGas, rejectConfirm, signConfrimTx } from 'popup/background/transactions';
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { GasSpeed } from 'config/gas';
     import type { RequiredTxParams } from 'types/gas';
@@ -73,9 +72,18 @@
         }
     }
 
-    function handleConfirm() {
-        console.log(confirmTx);
-        // Confirm logic goes here
+    async function handleConfirm() {
+        if (wallet && !isLoading) {
+            isLoading = true;
+            try {
+                const signedTx = await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+                console.log(signedTx);
+            } catch (error) {
+                console.error("signTx fail", error);
+            } finally {
+                isLoading = false;
+            }
+        }
     }
 
     $effect(() => {

@@ -43,6 +43,21 @@ export async function estimateGas(confirmIndex: number, walletIndex: number, acc
   } as RequiredTxParams;
 }
 
+export async function signConfrimTx(confirmIndex: number, walletIndex: number, accountIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.SIGN_TX_AND_SEND,
+    payload: {
+      confirmIndex,
+      walletIndex,
+      accountIndex,
+    },
+  }).send();
+
+  const resolve = warpMessage(data) as string;
+
+  return resolve;
+}
+
 
 export async function rejectConfirm(index: number, walletIndex: number) {
   const data = await new Message<SendResponseParams>({

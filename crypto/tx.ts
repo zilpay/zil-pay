@@ -75,4 +75,14 @@ export class SignedTransaction {
 
     throw new Error("Invalid tx type");
   }
+
+  async toString() {
+    if (this.scilla) {
+      return JSON.stringify(await this.scilla.toJSON());
+    } else if (this.evm) {
+      return this.evm.toHex();
+    }
+
+    throw new Error("Invalid tx type");
+  }
 }
