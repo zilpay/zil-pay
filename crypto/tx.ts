@@ -2,40 +2,60 @@ import { ZILTransactionRequest, ZILTransactionReceipt } from "./zilliqa_tx";
 import { Transaction } from "micro-eth-signer";
 import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
-import { convertBigIntsToHex } from "lib/utils/hex";
-import type { TransactionMetadata } from "types/tx";
-import type { TxType } from "micro-eth-signer/core/tx-internal";
+import { bigintToHex } from "lib/utils/hex";
+import type { TransactionMetadata, TransactionRequestEVM } from "types/tx";
+import type { TxCoder, TxType } from "micro-eth-signer/core/tx-internal";
+import { Address } from "./address";
 
 export class TransactionRequest {
   constructor(
     public metadata: TransactionMetadata,
     public scilla?: ZILTransactionRequest,
-    public evm?: Transaction<TxType>,
+    public evm?: TransactionRequestEVM,
   ) {}
 
   async sign(keypair: KeyPair) {
     if (this.scilla) {
       const receipt = await this.scilla.sign(keypair);
-
       return new SignedTransaction(this.metadata, receipt);
     } else if (this.evm) {
+      const txType = 'eip1559';
+      const rawTxData = {
+        type: txType,
+        to: await Address.fromStr(this.evm.to).toEthChecksum(),
+        value: BigInt(this.evm.value ?? 0),
+        data: this.evm.data ?? '0x',
+        nonce: BigInt(this.evm.nonce ?? 0),
+        gasLimit: BigInt(this.evm.gasLimit ?? 21000),
+        maxFeePerGas: BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n),
+        maxPriorityFeePerGas: BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n), 
+        chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n, 
+        accessList: this.evm.accessList ?? [], 
+      };
+
+      const tx = new Transaction(txType, rawTxData, false, false);
       const entropy = randomBytes(128);
-      const receipt = this.evm.signBy(keypair.privateKey, entropy);
+      const receipt = tx.signBy(keypair.privateKey, entropy);
 
       return new SignedTransaction(this.metadata, undefined, receipt);
     }
 
-    throw new Error("Invlid tx type");
+    throw new Error("Invalid tx type");
   }
 
   toJSON() {
     if (this.scilla) {
       return this.scilla.toJSON();
     } else if (this.evm) {
-      return convertBigIntsToHex(this.evm.raw);
+      return {
+        from: this.evm.from,
+        to: this.evm.to,
+        value: bigintToHex(this.evm.value ? BigInt(this.evm.value) : 0n),
+        data: this.evm.data,
+      };
     }
 
-    throw new Error("Invlid tx type");
+    throw new Error("Invalid tx type");
   }
 }
 
@@ -53,6 +73,6 @@ export class SignedTransaction {
       return this.evm.verifySignature();
     }
 
-    throw new Error("Invlid tx type");
+    throw new Error("Invalid tx type");
   }
 }

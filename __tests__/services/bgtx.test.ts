@@ -5,23 +5,21 @@ import { BrowserStorage } from "../../lib/storage";
 import '../setupTests';
 import { messageManager } from "../setupTests";
 import type { IKeyPair, WalletFromPrivateKeyParams } from "types/wallet";
-import { BASE_SETTINGS, createZilliqaConfig, createZilliqaTestnetConfig, IMPORTED_KEY, PASSWORD, ZLP } from "__tests__/data";
-import { ZILLIQA } from "config/slip44";
+import { BASE_SETTINGS, createBscTestNetConfig, createZilliqaConfig, createZilliqaTestnetConfig, IMPORTED_KEY, PASSWORD, ZLP } from "__tests__/data";
+import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { FToken, WalletSettings } from "background/storage";
 import { getGlobalState, setGlobalState, walletFromPrivateKey } from "popup/background/wallet";
 import type { BuildTokenTransferParams } from "types/tx";
 import { buildTokenTransfer, estimateGas, rejectConfirm } from "popup/background/transactions";
+import { KeyPair } from "crypto/keypair";
+import { hexToUint8Array } from "lib/utils/hex";
+import { ftBalanceUpdate } from "popup/background/provider";
 
-describe("WalletService through background messaging with tx service", () => {
+describe("WalletService through background messaging with tx service", async () => {
   let globalState: GlobalState;
-    const keyPairZilliqa: IKeyPair = {
-      privateKey: IMPORTED_KEY,
-      publicKey:
-        "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
-      address: "zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43",
-      slip44: ZILLIQA,
-    };
-
+  const privateKey = hexToUint8Array(IMPORTED_KEY);
+  const zilliqaKeyPair: IKeyPair = await (await KeyPair.fromPrivateKey(privateKey, ZILLIQA)).toJSON();
+  const bscKeyPair: IKeyPair = await (await KeyPair.fromPrivateKey(privateKey, ETHEREUM)).toJSON();
 
   beforeEach(async () => {
     await BrowserStorage.clear();
@@ -30,11 +28,11 @@ describe("WalletService through background messaging with tx service", () => {
     startBackground(globalState);
   });
 
-  describe("transaction service", () => {
+  describe("transaction service ZIlliqa network", () => {
     it("test build scilla tx transfer", async () => {
       const zilConfig = createZilliqaTestnetConfig();
       const params: WalletFromPrivateKeyParams = {
-        key: keyPairZilliqa,
+        key: zilliqaKeyPair,
         walletName: "ZIL Wallet",
         accountName: "ZIL 0",
         chain: zilConfig,
@@ -99,12 +97,12 @@ describe("WalletService through background messaging with tx service", () => {
     });
 
     it("testing fetch evm gas token trasnfer ERC20 Legacy", async () => {
-      const zilConfig = createZilliqaConfig();
+      const ZIL_CONFIG = createZilliqaConfig();
       const params: WalletFromPrivateKeyParams = {
-        key: keyPairZilliqa,
+        key: zilliqaKeyPair,
         walletName: "ZIL Wallet",
         accountName: "ZIL 0",
-        chain: zilConfig,
+        chain: ZIL_CONFIG,
         password: PASSWORD,
         settings: new WalletSettings(BASE_SETTINGS),
       };
@@ -121,7 +119,7 @@ describe("WalletService through background messaging with tx service", () => {
         rate: 0,
         default_: false,
         native: false,
-        chainHash: zilConfig.hash(),
+        chainHash: ZIL_CONFIG.hash(),
       });
 
       state.wallets[0].tokens.push(gZIL);
@@ -135,6 +133,7 @@ describe("WalletService through background messaging with tx service", () => {
         amount: '1',
       };
       await buildTokenTransfer(txParams);
+      await ftBalanceUpdate(0);
       state = await getGlobalState();
       const nativeTransferGas = await estimateGas(0, 0,0);
 
@@ -143,7 +142,7 @@ describe("WalletService through background messaging with tx service", () => {
       expect(nativeTransferGas.feeHistory.priorityFee).toBe(0n);
       expect(nativeTransferGas.nonce).toBe(0);
       expect(nativeTransferGas.gasPrice).toBe(4761904800000n);
-      expect(nativeTransferGas.txEstimateGas).toBe(21640n);
+      expect(nativeTransferGas.txEstimateGas).toBe(21512n);
       expect(nativeTransferGas.maxPriorityFee).toBe(0n);
 
       await rejectConfirm(0, 0);
@@ -165,8 +164,59 @@ describe("WalletService through background messaging with tx service", () => {
       expect(gzilTransferGas.feeHistory.priorityFee).toBe(0n);
       expect(gzilTransferGas.nonce).toBe(0);
       expect(gzilTransferGas.gasPrice).toBe(4761904800000n);
-      expect(gzilTransferGas.txEstimateGas).toBe(49654n);
+      expect(gzilTransferGas.txEstimateGas).toBe(49371n);
       expect(gzilTransferGas.maxPriorityFee).toBe(0n);
+    });
+  });
+
+  describe("transaction service binance network", () => {
+    it("testing fetch evm gas token trasnfer ERC20 Legacy", async () => {
+      const BSC_CONFIG = createBscTestNetConfig();
+      const params: WalletFromPrivateKeyParams = {
+        key: bscKeyPair,
+        walletName: "BSC Wallet",
+        accountName: "BSC 0",
+        chain: BSC_CONFIG,
+        password: PASSWORD,
+        settings: new WalletSettings(BASE_SETTINGS),
+      };
+
+      let state = await walletFromPrivateKey(params);
+
+      const BUSD = new FToken({
+        name: 'Binance USD',
+        symbol: 'BUSD',
+        decimals: 18,
+        addr: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
+        addrType: 1,
+        logo: '',
+        balances: {},
+        rate: 0,
+        default_: false,
+        native: false,
+        chainHash: BSC_CONFIG.hash(),
+      });
+      const txParamsBUSD: BuildTokenTransferParams = {
+        walletIndex: 0,
+        accountIndex: 0,
+        tokenAddr: BUSD.addr,
+        to: '0xEC6bB19886c9D5f5125DfC739362Bf54AA23d51F',
+        amount: '100',
+      };
+
+      state.wallets[0].tokens.push(BUSD);
+      await setGlobalState();
+
+      await buildTokenTransfer(txParamsBUSD);
+      await ftBalanceUpdate(0);
+      state = await getGlobalState();
+      const gasBUSD = await estimateGas(0, 0,0);
+
+      expect(gasBUSD.feeHistory.baseFee).toBe(0n);
+      expect(gasBUSD.nonce).toBe(1);
+      expect(gasBUSD.gasPrice).toBe(100000000n);
+      expect(gasBUSD.txEstimateGas).toBe(59808n);
+      expect(gasBUSD.maxPriorityFee).toBe(100000000n);
     });
   });
 

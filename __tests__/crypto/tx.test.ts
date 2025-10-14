@@ -8,7 +8,7 @@ import { ZILLIQA, ETHEREUM } from "../../config/slip44";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { Transaction, weieth, weigwei } from "micro-eth-signer";
 import { hexToUint8Array } from "../../lib/utils/hex";
-import type { TransactionMetadata } from "../../types/tx";
+import type { TransactionMetadata, TransactionRequestEVM } from "../../types/tx";
 import { createEthConfig } from "__tests__/data";
 
 
@@ -48,12 +48,12 @@ describe("TransactionRequest and TransactionReceipt", () => {
 
   it("should correctly sign and verify an EVM transaction", async () => {
     const keypair = await KeyPair.generate(ETHEREUM);
-    const evmTx = Transaction.prepare({
+    const evmTx: TransactionRequestEVM = {
       to: "0xAEC7595CA9A57be828493bb73f07fA335a85B41d",
-      value: weieth.decode("1.1"),
-      maxFeePerGas: weigwei.decode("100"),
-      nonce: 0n,
-    });
+      value: weieth.decode("1.1").toString(),
+      maxFeePerGas: weigwei.decode("100").toString(),
+      nonce: 0,
+    };
     const request = new TransactionRequest(metadata, undefined, evmTx);
     const receipt = await request.sign(keypair);
 
@@ -69,12 +69,12 @@ describe("TransactionRequest and TransactionReceipt", () => {
     const keypair = await KeyPair.generate(ETHEREUM);
     const request = new TransactionRequest(metadata, undefined, undefined);
 
-    await expect(request.sign(keypair)).rejects.toThrow("Invlid tx type");
+    await expect(request.sign(keypair)).rejects.toThrow("Invalid tx type");
   });
 
   it("should throw an error when verifying an invalid transaction type", async () => {
     const receipt = new SignedTransaction(metadata, undefined, undefined);
 
-    await expect(receipt.verify()).rejects.toThrow("Invlid tx type");
+    await expect(receipt.verify()).rejects.toThrow("Invalid tx type");
   });
 });

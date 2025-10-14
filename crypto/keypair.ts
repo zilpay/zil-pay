@@ -10,6 +10,7 @@ import { Signature } from "@noble/secp256k1";
 import { randomBytes } from "./random";
 import { Address } from "./address";
 import { AddressType } from "config/wallet";
+import type { IKeyPair } from "types/wallet";
 
 export class KeyPair {
   #privateKey: Uint8Array;
@@ -134,7 +135,7 @@ export class KeyPair {
     }
   }
 
-  async toJSON() {
+  async toJSON(): Promise<IKeyPair> {
     return {
       address: await (await this.address()).autoFormat(),
       privateKey: uint8ArrayToHex(this.#privateKey),

@@ -47,6 +47,7 @@
     "chain": "BNB",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
+      "https://bsc-testnet.public.blastapi.io",
       "https://bsc-testnet-dataseed.bnbchain.org",
       "https://bsc-testnet.bnbchain.org",
       "https://bsc-prebsc-dataseed.bnbchain.org"

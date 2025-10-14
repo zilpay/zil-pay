@@ -48,7 +48,7 @@ export interface TransactionReceiptScilla extends TransactionRequestScilla {
 export interface TransactionRequestEVM {
   nonce?: number;
   from?: string;
-  to?: string;
+  to: string;
   value?: string;
   gasLimit?: number;
   data?: string;

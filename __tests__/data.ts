@@ -274,6 +274,26 @@ export const createZilliqaTestnetConfig = (): ChainConfig =>
     diffBlockTime: 1,
   });
 
+export const createBscTestNetConfig = (): ChainConfig =>
+  new ChainConfig({
+    ...testnetChains[1],
+    features: testnetChains[1].features.map((n) =>Number(n.replace("EIP", ""))),
+    explorers: [],
+    fallbackEnabled: true,
+    testnet: true,
+    ftokens: testnetChains[1].ftokens.map((t) => new FToken({
+      ...t,
+      default_: true,
+      balances: {},
+      rate: 0,
+      addrType: AddressType.EthCheckSum,
+      chainHash: hashChainConfig(testnetChains[1].chainIds, testnetChains[1].slip44, testnetChains[1].chain),
+    })),
+    chainId: testnetChains[1].chainIds[0],
+    ens: null,
+    diffBlockTime: 1,
+  });
+
 export const BASE_SETTINGS = {
   gasOption: GasSpeed.Market,
   cipherOrders: [1],

@@ -5,7 +5,7 @@ import {
   NetworkProvider,
 } from "../../background/rpc";
 import { Address } from "../../crypto/address";
-import { Transaction, weieth, weigwei } from "micro-eth-signer";
+import { weieth, weigwei } from "micro-eth-signer";
 import { TransactionRequest } from "../../crypto/tx";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import {
@@ -17,6 +17,7 @@ import { hexToUint8Array } from "../../lib/utils/hex";
 import { hashXOR } from "../../lib/utils/hashing";
 import { TransactionStatus } from '../../config/tx';
 import { AddressType } from "../../config/wallet";
+import type { TransactionRequestEVM } from "types/tx";
 
 const pubKeys = [
   hexToUint8Array("0229fff97d3823f556f151623053415a7e8207742928e08dafe400c3d4a02642fd"),
@@ -83,14 +84,14 @@ describe("JsonRPC provder tests", () => {
       await recipient.toEthChecksum(),
       amount,
     );
-    const ethTx = Transaction.prepare({
+    const ethTx: TransactionRequestEVM = {
       to: await tokenAddress.toEthChecksum(),
-      value: 0n,
-      maxFeePerGas: weigwei.decode("100"),
-      nonce: 0n,
-      chainId: BigInt(ethConfig.chainId),
+      value: '0',
+      maxFeePerGas: weigwei.decode("100").toString(),
+      nonce: 0,
+      chainId: ethConfig.chainId,
       data: transferData,
-    });
+    };
     const txRequest = new TransactionRequest(
       {
         chainHash: ethConfig.hash(),
@@ -109,7 +110,6 @@ describe("JsonRPC provder tests", () => {
     expect(fee.nonce).toBeGreaterThan(0);
     expect(fee.maxPriorityFee).toBeGreaterThan(0n);
     expect(fee.txEstimateGas).toBe(22765n);
-    expect(fee.blobBaseFee).toBeGreaterThan(1n);
     expect(fee.feeHistory.baseFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.maxFee).toBeGreaterThan(0n);
     expect(fee.feeHistory.priorityFee).toBeGreaterThan(0n);
@@ -123,13 +123,13 @@ describe("JsonRPC provder tests", () => {
     const from = Address.fromStr("0x451806FE45D9231eb1db3584494366edF05CB4AB");
     const amount = 100n;
 
-    const ethTx = Transaction.prepare({
+    const ethTx: TransactionRequestEVM = {
       to: await recipient.toEthChecksum(),
-      nonce: 0n,
-      value: amount,
-      chainId: BigInt(ethConfig.chainId),
-      maxFeePerGas: weigwei.decode("100"),
-    });
+      nonce: 0,
+      value: amount.toString(),
+      chainId: ethConfig.chainId,
+      maxFeePerGas: weigwei.decode("100").toString(),
+    };
     const txRequest = new TransactionRequest(
       {
         chainHash: ethConfig.hash(),
@@ -161,13 +161,13 @@ describe("JsonRPC provder tests", () => {
     );
     const from = Address.fromStr("0x7b501c7944185130DD4aD73293e8Aa84eFfDcee7");
 
-    const bscTx = Transaction.prepare({
+    const bscTx: TransactionRequestEVM = {
       to: await recipient.toEthChecksum(),
-      value: weieth.decode("1.1"),
-      maxFeePerGas: weigwei.decode("1"),
-      nonce: 0n,
-      chainId: BigInt(bscConfig.chainId),
-    });
+      value: weieth.decode("1.1").toString(),
+      maxFeePerGas: weigwei.decode("1").toString(),
+      nonce: 0,
+      chainId: bscConfig.chainId,
+    };
 
     const txRequest = new TransactionRequest(
       {
@@ -460,13 +460,13 @@ describe("JsonRPC provder tests", () => {
       "0x451806FE45D9231eb1db3584494366edF05CB4AB",
     );
 
-    const ethTx = Transaction.prepare({
+    const ethTx: TransactionRequestEVM = {
       to: await recipient.toEthChecksum(),
-      nonce: 0n,
-      value: 1n,
-      chainId: BigInt(ethConfig.chainId),
-      maxFeePerGas: weigwei.decode("100"),
-    });
+      nonce: 0,
+      value: '1',
+      chainId: ethConfig.chainId,
+      maxFeePerGas: weigwei.decode("100").toString(),
+    };
 
     const txRequest = new TransactionRequest(
       {

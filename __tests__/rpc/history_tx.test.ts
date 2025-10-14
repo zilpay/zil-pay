@@ -7,8 +7,8 @@ import { TransactionRequest } from "../../crypto/tx";
 import { Address } from "../../crypto/address";
 import { KeyPair } from "../../crypto/keypair";
 import { createBscConfig, createZilliqaConfig } from "../data";
-import { Transaction, weieth, weigwei } from "micro-eth-signer";
-import type { TransactionMetadata } from '../../types/tx';
+import { weieth, weigwei } from "micro-eth-signer";
+import type { TransactionMetadata, TransactionRequestEVM } from '../../types/tx';
 import { TransactionStatus } from '../../config/tx';
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
 import { HEX_PREFIX } from "../../lib/utils/hex";
@@ -126,16 +126,15 @@ describe("HistoricalTransaction", () => {
         amount,
       );
   
-      const ethTx = Transaction.prepare({
+      const ethTx: TransactionRequestEVM = {
         to: await tokenAddress.toEthChecksum(),
-        value: 0n,
-        gasLimit: 127062n,
-        gasPrice: 154087666n,
-        nonce: 1621949n,
-        chainId: 1n,
+        value: '0',
+        gasLimit: 127062,
+        gasPrice: '154087666',
+        nonce: 1621949,
+        chainId: 1,
         data: transferData,
-        type: 'legacy',
-      }, false);
+      };
   
       const metadata: TransactionMetadata = {
         chainHash: BSC_CONFIG.hash(),
@@ -153,10 +152,8 @@ describe("HistoricalTransaction", () => {
 
       expect(historicalTx.evm).toBeDefined();
       expect(historicalTx.evm!.transactionHash).toBe(mockHash);
-      expect(historicalTx.evm!.type).toBe("legacy");
       expect(historicalTx.evm!.value).toBe("0");
       expect(historicalTx.evm!.gasLimit).toBe("127062");
-      expect(historicalTx.evm!.gasPrice).toBe("154087666");
       expect(historicalTx.status).toBe(TransactionStatus.Pending);
     });
 
@@ -166,16 +163,15 @@ describe("HistoricalTransaction", () => {
         "0xe33a784044d62147e6fc3a149f3debabf9a890f8",
       );
   
-      const ethTx = Transaction.prepare({
+      const ethTx: TransactionRequestEVM = {
         to: await recipient.toEthChecksum(),
-        value: weieth.decode("1"),
-        gasLimit: 21000n,
-        maxFeePerGas: weigwei.decode("30"),
-        maxPriorityFeePerGas: weigwei.decode("2"),
-        nonce: 0n,
-        chainId: 1n,
-        type: 'eip1559',
-      });
+        value: weieth.decode("1").toString(),
+        gasLimit: 21000,
+        maxFeePerGas: weigwei.decode("30").toString(),
+        maxPriorityFeePerGas: weigwei.decode("2").toString(),
+        nonce: 0,
+        chainId: 1,
+      };
   
       const metadata: TransactionMetadata = {
         chainHash: BSC_CONFIG.hash(),

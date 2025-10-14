@@ -12,13 +12,14 @@ import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
 import { utf8ToUint8Array } from "../../lib/utils/utf8";
 import { Address } from "../../crypto/address";
 import { KeyPair } from "../../crypto/keypair";
-import { Transaction, weieth, weigwei } from "micro-eth-signer";
+import { weieth, weigwei } from "micro-eth-signer";
 import { generateErc20TransferData } from "../../background/rpc/ft_parser";
 import { createBscConfig, createZilliqaConfig } from "../data";
 import { TransactionStatus } from "../../config/tx";
 import type {
   TransactionReceiptEVM,
   TransactionReceiptScilla,
+  TransactionRequestEVM,
 } from "../../types/tx";
 
 describe("Transaction Parse Functions", () => {
@@ -81,16 +82,16 @@ describe("Transaction Parse Functions", () => {
       amount,
     );
 
-    const ethTx = Transaction.prepare({
+    const ethTx: TransactionRequestEVM = {
       to: await tokenAddress.toEthChecksum(),
-      value: 0n,
-      maxFeePerGas: weigwei.decode("1"),
-      gasLimit: 24000n,
-      maxPriorityFeePerGas: 10n,
-      nonce: 0n,
-      chainId: BigInt(BSC_CONFIG.chainId),
+      value: '0',
+      maxFeePerGas: weigwei.decode("1").toString(),
+      gasLimit: 24000,
+      maxPriorityFeePerGas: '10',
+      nonce: 0,
+      chainId: BSC_CONFIG.chainId,
       data: transferData,
-    });
+    };
 
     const metadata = {
       chainHash: BSC_CONFIG.hash(),
