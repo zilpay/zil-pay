@@ -84,13 +84,13 @@
                 let multiplierNumer = 10n;
                 switch (selectedSpeed) {
                     case GasSpeed.Low:
-                        multiplierNumer = 5n;
-                        break;
-                    case GasSpeed.Market:
                         multiplierNumer = 10n;
                         break;
-                    case GasSpeed.Aggressive:
+                    case GasSpeed.Market:
                         multiplierNumer = 15n;
+                        break;
+                    case GasSpeed.Aggressive:
+                        multiplierNumer = 20n;
                         break;
                 }
                 const gasPrice = (gasEstimate.gasPrice * multiplierNumer) / 10n;
