@@ -43,7 +43,6 @@ export async function buildBatchGasRequest(
   tx: TransactionRequest,
   blockCount: number,
   percentiles: number[],
-  features: number[],
   sender: Address,
 ): Promise<JsonRPCRequest[]> {
     const requests: JsonRPCRequest[] = [];

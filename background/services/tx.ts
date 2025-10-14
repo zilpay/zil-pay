@@ -49,7 +49,6 @@ export class TransactionService {
         resolve: history,
       });
     } catch (err) {
-      console.error(err);
       sendResponse({ reject: String(err) });
     }
   }
@@ -189,6 +188,12 @@ export class TransactionService {
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const sender = await Address.fromPubKeyType(hexToUint8Array(account.pubKey), confirm.metadata!.token.addrType);
       const evm = confirm.evm;
+
+      if (evm && confirm.evm?.to) {
+        const addr = Address.fromStr(confirm.evm?.to);
+        evm.to = await addr.toEthChecksum();
+      }
+
       const txReq = new TransactionRequest(metadata, scilla, evm);
       const gas = await provider.estimateGasParamsBatch(txReq, sender, 4, null);
 

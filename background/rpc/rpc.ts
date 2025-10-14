@@ -85,7 +85,6 @@ export class NetworkProvider {
       tx,
       blockCount,
       percentilesToUse,
-      this.config.features,
       sender
     );
     const provider = new RpcProvider(this.config);
@@ -107,7 +106,7 @@ export class NetworkProvider {
     let txEstimateGas = BigInt(tx.evm?.gasLimit ?? tx.scilla?.gasLimit ?? 0);
 
     if (responses[2]?.error) {
-      throw new Error(`RPC Error: ${responses[2]?.error}`);
+      throw new Error(`RPC Error: ${JSON.stringify(responses[2]?.error)}`);
     } else if (responses[2]?.result) {
       txEstimateGas = hexToBigInt(responses[2].result);
     }
