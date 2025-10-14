@@ -9,7 +9,7 @@
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { GasSpeed } from 'config/gas';
     import type { RequiredTxParams } from 'types/gas';
-    import { calculateGasFee, type GasOptionDetails } from '../mixins/gas';
+    import { calculateGasFee, createDefaultGasOption, type GasOptionDetails } from '../mixins/gas';
     
     import RoundImageButton from '../components/RoundImageButton.svelte';
     import TransferSummary from '../components/TransferSummary.svelte';
@@ -24,6 +24,7 @@
     let expandedSpeed = $state<GasSpeed | null>(null);
     let gasEstimate = $state<RequiredTxParams | null>(null);
     let isLoading = $state(false);
+    let isLoadingGasFetch = $state(true);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
@@ -49,7 +50,7 @@
         return null;
     });
 
-    const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken) : []);
+    const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken) : [createDefaultGasOption()]);
 
     function handleSpeedSelect(speed: GasSpeed) {
         if (selectedSpeed === speed) {
@@ -85,15 +86,17 @@
 
     $effect(() => {
         if (confirmLastIndex === -1) return;
-        console.log(confirmTx);
 
         const updateGas = async () => {
             if (wallet) {
+                isLoadingGasFetch = true;
                 try {
                     gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
                     console.log(gasEstimate);
                 } catch (error) {
                     console.error("Gas estimation failed:", error);
+                } finally {
+                    isLoadingGasFetch = false;
                 }
             }
         };
@@ -139,23 +142,22 @@
                     </button>
                 </div>
                 <div class="gas-options">
-                    {#if gasOptions.length > 0}
-                        {#each gasOptions as option (option.speed)}
-                            <GasOption
-                          label={$_(option.label)}
-                                time={option.time}
-                                fee={option.fee}
-                                fiatFee={option.fiatFee}
-                                selected={selectedSpeed === option.speed}
-                                expanded={expandedSpeed === option.speed}
-                                onselect={() => handleSpeedSelect(option.speed)}
-                            >
-                                {#each option.details as detail (detail.label)}
-                                    <GasDetailRow label={detail.label} value={detail.value} />
-                                {/each}
-                            </GasOption>
-                        {/each}
-                    {/if}
+                    {#each gasOptions as option (option.speed)}
+                        <GasOption
+                      label={$_(option.label)}
+                            time={option.time}
+                            fee={option.fee}
+                            fiatFee={option.fiatFee}
+                            loading={isLoadingGasFetch}
+                            selected={selectedSpeed === option.speed}
+                            expanded={expandedSpeed === option.speed}
+                            onselect={() => handleSpeedSelect(option.speed)}
+                        >
+                            {#each option.details as detail (detail.label)}
+                                <GasDetailRow label={detail.label} value={detail.value} />
+                            {/each}
+                        </GasOption>
+                    {/each}
                 </div>
             </div>
         </main>

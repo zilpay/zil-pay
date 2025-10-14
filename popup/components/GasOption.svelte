@@ -9,6 +9,7 @@
         fiatFee,
         selected = false,
         expanded = false,
+        loading = false,
         onselect,
         children = undefined
     }: {
@@ -18,12 +19,13 @@
         fiatFee: string;
         selected?: boolean;
         expanded?: boolean;
+        loading?: boolean;
         onselect: () => void;
         children?: any;
     } = $props();
 </script>
 
-<button class="gas-option" class:selected class:expanded onclick={onselect}>
+<button class="gas-option" class:selected class:expanded class:loading onclick={onselect} disabled={loading}>
     <div class="main-row">
         <div class="left-section">
             <div class="selector" class:active={selected}>
@@ -59,6 +61,7 @@
 
 <style lang="scss">
     .gas-option {
+        position: relative;
         width: 100%;
         padding: 12px;
         background: var(--color-cards-regular-base-default);
@@ -69,10 +72,65 @@
         flex-direction: column;
         gap: 8px;
         transition: all 0.2s ease;
+        overflow: hidden;
 
         &.selected {
             background: var(--color-cards-regular-base-selected);
             border-color: var(--color-neutral-tag-purple-border);
+        }
+
+        &.loading {
+            border-color: transparent;
+            cursor: not-allowed;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(
+                    from 180deg at 50% 50%,
+                    var(--color-content-text-purple) 0%,
+                    var(--color-button-regular-primary-default) 50%,
+                    var(--color-content-text-purple) 100%
+                );
+                transform: translate(-50%, -50%);
+                animation: spin 2s linear infinite;
+                z-index: 0;
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 1px;
+                left: 1px;
+                right: 1px;
+                bottom: 1px;
+                background: var(--color-cards-regular-base-default);
+                border-radius: 11px;
+                z-index: 1;
+            }
+
+            .main-row,
+            .details {
+                position: relative;
+                z-index: 2;
+            }
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
         }
     }
 

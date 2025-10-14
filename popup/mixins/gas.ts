@@ -18,6 +18,17 @@ export interface GasOptionDetails {
 
 const GWEI_DECIMALS = 9;
 
+export function createDefaultGasOption(): GasOptionDetails {
+    return {
+        speed: GasSpeed.Market,
+        label: '',
+        time: '-',
+        fee: '-',
+        fiatFee: '-',
+        details: []
+    };
+}
+
 function formatGwei(value: bigint): string {
     if (value === 0n) return '0 Gwei';
 
