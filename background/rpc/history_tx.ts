@@ -73,7 +73,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
 
       const historicalScilla: TransactionReceiptScilla = {
         ...scillaData,
-        hash: HEX_PREFIX + hash,
+        hash,
         senderPubKey,
         senderAddr: await senderAddr.toZilBech32(),
         version: String(scillaData.version),

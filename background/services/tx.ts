@@ -42,6 +42,7 @@ export class TransactionService {
       const [history] = await provider.broadcastSignedTransactions([signedTx]);
 
       this.#state.wallets[walletIndex].history.push(history);
+      this.#state.wallets[walletIndex].confirm.splice(confirmIndex, 1);
       await this.#state.sync();
 
       sendResponse({

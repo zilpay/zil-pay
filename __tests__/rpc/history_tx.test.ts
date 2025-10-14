@@ -72,7 +72,7 @@ describe("HistoricalTransaction", () => {
       const txReq = new TransactionRequest(metadata, zilTx);
       const signedTx = await txReq.sign(keypair);
   
-      const mockHash = "d0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7";
+      const mockHash = "0xd0b318e0f5f9b1f1d03010b582488e6c0e463c94c315ec0cbeca839d0f3184e7";
       const historicalTx = await HistoricalTransaction.fromSignedTransaction(
         signedTx,
         mockHash

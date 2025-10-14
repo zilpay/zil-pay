@@ -110,15 +110,18 @@
                         confirm.evm.gasPrice = gasEstimate.gasPrice.toString();
                     }
                 } else if (confirm?.scilla) {
-                    confirm.scilla.nonce = gasEstimate.nonce;
+                    confirm.scilla.nonce = gasEstimate.nonce + 1;
                     confirm.scilla.gasLimit = gasEstimate.txEstimateGas.toString();
                     confirm.scilla.gasPrice = gasPrice.toString();
                 }
 
                 await setGlobalState();
-
                 await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-                push('/history');
+
+                if (wallet.confirm.length == 1) {
+                    await getGlobalState();
+                    push('/history');
+                }
             } catch (error) {
                 console.error("signTx fail", error);
             } finally {
