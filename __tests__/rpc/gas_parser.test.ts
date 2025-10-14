@@ -160,7 +160,7 @@ describe("Gas Parser Utilities", () => {
         mockEvmSender,
       );
 
-      expect(requests.length).toBe(3);
+      expect(requests.length).toBe(6);
       expect(requests[0].method).toBe(EvmMethods.GetTransactionCount);
       expect(requests[0].params).toEqual([
         "0x0000000000000000000000000000000000000000",
@@ -191,7 +191,7 @@ describe("Gas Parser Utilities", () => {
         mockEvmSender,
       );
 
-      expect(requests.length).toBe(5);
+      expect(requests.length).toBe(6);
       const methods = requests.map((r) => r.method);
       expect(methods).toContain(EvmMethods.MaxPriorityFeePerGas);
       expect(methods).toContain(EvmMethods.FeeHistory);
@@ -217,7 +217,7 @@ describe("Gas Parser Utilities", () => {
         mockEvmSender,
       );
 
-      expect(requests.length).toBe(4);
+      expect(requests.length).toBe(6);
       expect(requests.map((r) => r.method)).toContain(EvmMethods.BlobBaseFee);
     });
 

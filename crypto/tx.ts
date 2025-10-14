@@ -4,7 +4,7 @@ import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
 import { bigintToHex } from "lib/utils/hex";
 import type { TransactionMetadata, TransactionRequestEVM } from "types/tx";
-import type { TxCoder, TxType } from "micro-eth-signer/core/tx-internal";
+import type { TxType } from "micro-eth-signer/core/tx-internal";
 import { Address } from "./address";
 
 export class TransactionRequest {

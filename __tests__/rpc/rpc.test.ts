@@ -484,7 +484,7 @@ describe("JsonRPC provder tests", () => {
 
     await expect(
       provider.broadcastSignedTransactions([signedTx]),
-    ).rejects.toThrow(/insufficient funds|nonce too low/);
+    ).rejects.toThrow("insufficient funds for gas * price + value: balance 0, tx cost 2100000000000001, overshot 2100000000000001");
   }, 20000);
 
   it("should broadcast a signed Scilla transaction", async () => {

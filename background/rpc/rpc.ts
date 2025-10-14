@@ -11,7 +11,7 @@ import {
   type RequestType
 } from './ft_parser';
 import type { SignedTransaction, TransactionRequest } from 'crypto/tx';
-import { buildBatchGasRequest, EIP1559, EIP4844, processParseFeeHistoryRequest } from './gas_parse';
+import { buildBatchGasRequest, processParseFeeHistoryRequest } from './gas_parse';
 import { processNonceResponse } from './nonce_parser';
 import { bigintToHex, hexToBigInt } from 'lib/utils/hex';
 import { EvmMethods } from 'config/jsonrpc';
@@ -89,15 +89,7 @@ export class NetworkProvider {
       sender
     );
     const provider = new RpcProvider(this.config);
-    const responses = await provider.req<JsonRPCResponse<any>[]>(requests);
-
-    if (responses.every(res => res.error)) {
-        const allErrors = responses
-            .map(res => res.error?.message)
-            .filter(Boolean)
-            .join(', ');
-        throw new Error(`RPC Error: ${allErrors}`);
-    }
+    const responses = await provider.req<JsonRPCResponse<any>[]>(requests, false);
 
     let nonce = 0;
     if (responses[0] && !responses[0].error) {
@@ -112,30 +104,17 @@ export class NetworkProvider {
       gasPrice = BigInt(responses[1]?.result ?? 0);
     }
 
-    const txEstimateGas = responses[2]?.result ? hexToBigInt(responses[2].result) : BigInt(tx.evm?.gasLimit ?? tx.scilla?.gasLimit ?? 0);
+    let txEstimateGas = BigInt(tx.evm?.gasLimit ?? tx.scilla?.gasLimit ?? 0);
 
-    let maxPriorityFee = 0n;
-    let feeHistory: GasFeeHistory = { maxFee: 0n, priorityFee: 0n, baseFee: 0n };
-    let blobBaseFee = 0n;
-
-    let responseIndex = 3;
-
-    if (this.config.features.includes(EIP1559)) {
-        if (responses[responseIndex] && responses[responseIndex].result) {
-            maxPriorityFee = hexToBigInt(responses[responseIndex].result);
-        }
-        responseIndex++;
-        if (responses[responseIndex] && responses[responseIndex].result) {
-            feeHistory = processParseFeeHistoryRequest(responses[responseIndex].result);
-        }
-        responseIndex++;
+    if (responses[2]?.error) {
+      throw new Error(`RPC Error: ${responses[2]?.error}`);
+    } else if (responses[2]?.result) {
+      txEstimateGas = hexToBigInt(responses[2].result);
     }
 
-    if (this.config.features.includes(EIP4844)) {
-        if (responses[responseIndex] && responses[responseIndex].result) {
-             blobBaseFee = hexToBigInt(responses[responseIndex].result);
-        }
-    }
+    const maxPriorityFee = responses[3]?.result ? hexToBigInt(responses[3]?.result) : 0n;
+    const feeHistory: GasFeeHistory = processParseFeeHistoryRequest(responses[4]?.result);
+    const blobBaseFee = responses[5]?.result ? hexToBigInt(responses[5]?.result) : 0n;
     
     return {
       nonce,

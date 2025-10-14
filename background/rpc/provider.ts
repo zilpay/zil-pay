@@ -46,7 +46,7 @@ export class RpcProvider {
     };
   }
 
-  public async req<T>(payload: JsonRPCRequest | JsonRPCRequest[]): Promise<T> {
+  public async req<T>(payload: JsonRPCRequest | JsonRPCRequest[], jsonRPCError = true): Promise<T> {
     const client = {
       timeout: 5000,
     };
@@ -55,7 +55,7 @@ export class RpcProvider {
     const allNodes = this.network.rpc;
 
     if (allNodes.length === 0) {
-      throw new RpcError('No RPC nodes available in the network configuration.', -32000);
+      throw new RpcError('No RPC nodes', -32000);
     }
 
     const batchSize = 3;
@@ -92,20 +92,22 @@ export class RpcProvider {
           const json: JsonRPCResponse<T> | JsonRPCResponse<T>[] = JSON.parse(text);
 
           if (Array.isArray(json)) {
-            const errors = json
-              .map((res) => res.error)
-              .filter((err): err is NonNullable<typeof err> => !!err);
-            if (errors.length > 0) {
-              const firstError = errors[0];
-              lastError = new RpcError(
-                firstError.message,
-                firstError.code,
-                firstError.data,
-              );
-              failedNodesInBatch.push(url);
-              continue;
+            if (jsonRPCError) {
+              const errors = json
+                .map((res) => res.error)
+                .filter((err): err is NonNullable<typeof err> => !!err);
+              if (errors.length > 0) {
+                const firstError = errors[0];
+                lastError = new RpcError(
+                  firstError.message,
+                  firstError.code,
+                  firstError.data,
+                );
+                failedNodesInBatch.push(url);
+                continue;
+              }
             }
-          } else if (json.error) {
+          } else if (json.error && jsonRPCError) {
             lastError = new RpcError(
               json.error.message,
               json.error.code,

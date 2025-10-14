@@ -61,14 +61,10 @@ export async function buildBatchGasRequest(
         const requestEstimateGas = RpcProvider.buildPayload(EvmMethods.EstimateGas, [tx.toJSON()]);
         requests.push(requestEstimateGas);
 
-        if (features.includes(EIP1559)) {
-            requests.push(RpcProvider.buildPayload(EvmMethods.MaxPriorityFeePerGas, []));
-            requests.push(buildFeeHistoryRequest(blockCount, percentiles));
-        }
+        requests.push(RpcProvider.buildPayload(EvmMethods.MaxPriorityFeePerGas, []));
+        requests.push(buildFeeHistoryRequest(blockCount, percentiles));
 
-        if (features.includes(EIP4844)) {
-            requests.push(RpcProvider.buildPayload(EvmMethods.BlobBaseFee, []));
-        }
+        requests.push(RpcProvider.buildPayload(EvmMethods.BlobBaseFee, []));
 
         return requests;
     }
@@ -76,7 +72,15 @@ export async function buildBatchGasRequest(
     throw new TransactionError('unsupported transaction.');
 }
 
-export function processParseFeeHistoryRequest(feeHistoryValue: FeeHistoryResult): GasFeeHistory {
+export function processParseFeeHistoryRequest(feeHistoryValue?: FeeHistoryResult): GasFeeHistory {
+    if (!feeHistoryValue) {
+        return {
+            maxFee: 0n,
+            priorityFee: 0n,
+            baseFee: 0n,
+        };
+    }
+
     const lastBaseFeeStr = feeHistoryValue.baseFeePerGas[feeHistoryValue.baseFeePerGas.length - 1];
     if (!lastBaseFeeStr) {
         throw new Error('baseFeePerGas not found or empty in fee history');

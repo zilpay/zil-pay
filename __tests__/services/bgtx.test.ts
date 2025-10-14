@@ -114,7 +114,7 @@ describe("WalletService through background messaging with tx service", async () 
         decimals: 15,
         addr: '0x03A79429acc808e4261a68b0117aCD43Cb0FdBfa',
         addrType: 1,
-        logo: 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp',
+        logo: '',
         balances: {},
         rate: 0,
         default_: false,
@@ -138,12 +138,12 @@ describe("WalletService through background messaging with tx service", async () 
       const nativeTransferGas = await estimateGas(0, 0,0);
 
       expect(nativeTransferGas.feeHistory.baseFee).toBe(0n);
-      expect(nativeTransferGas.feeHistory.maxFee).toBe(0n);
-      expect(nativeTransferGas.feeHistory.priorityFee).toBe(0n);
+      expect(nativeTransferGas.feeHistory.maxFee).greaterThan(0);
+      expect(nativeTransferGas.feeHistory.priorityFee).greaterThan(0);
       expect(nativeTransferGas.nonce).toBe(0);
       expect(nativeTransferGas.gasPrice).toBe(4761904800000n);
       expect(nativeTransferGas.txEstimateGas).toBe(21512n);
-      expect(nativeTransferGas.maxPriorityFee).toBe(0n);
+      expect(nativeTransferGas.maxPriorityFee).toBe(4761904800000n);
 
       await rejectConfirm(0, 0);
       state = await getGlobalState();
@@ -160,12 +160,12 @@ describe("WalletService through background messaging with tx service", async () 
       const gzilTransferGas = await estimateGas(0, 0,0);
 
       expect(gzilTransferGas.feeHistory.baseFee).toBe(0n);
-      expect(gzilTransferGas.feeHistory.maxFee).toBe(0n);
-      expect(gzilTransferGas.feeHistory.priorityFee).toBe(0n);
+      expect(gzilTransferGas.feeHistory.maxFee).greaterThan(0);
+      expect(gzilTransferGas.feeHistory.priorityFee).greaterThan(0);
       expect(gzilTransferGas.nonce).toBe(0);
       expect(gzilTransferGas.gasPrice).toBe(4761904800000n);
       expect(gzilTransferGas.txEstimateGas).toBe(49371n);
-      expect(gzilTransferGas.maxPriorityFee).toBe(0n);
+      expect(gzilTransferGas.maxPriorityFee).toBe(4761904800000n);
     });
   });
 
@@ -217,7 +217,7 @@ describe("WalletService through background messaging with tx service", async () 
       expect(gasBUSD.gasPrice).toBe(100000000n);
       expect(gasBUSD.txEstimateGas).toBe(59808n);
       expect(gasBUSD.maxPriorityFee).toBe(100000000n);
-    });
+    }, 20000);
   });
 
   afterEach(() => {

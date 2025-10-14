@@ -18,6 +18,7 @@
     import GasDetailRow from '../components/GasDetailRow.svelte';
     import Button from '../components/Button.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
+    import { getGlobalState } from 'popup/background/wallet';
 
     let selectedSpeed = $state<GasSpeed>(GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
@@ -64,6 +65,7 @@
         isLoading = true;
         try {
             await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
+            await getGlobalState();
             push('/');
         } finally {
             isLoading = false;
@@ -89,6 +91,7 @@
             if (wallet) {
                 try {
                     gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+                    console.log(gasEstimate);
                 } catch (error) {
                     console.error("Gas estimation failed:", error);
                 }
@@ -102,79 +105,71 @@
     });
 </script>
 
-<svelte:boundary onerror={async () => {
-    const store = get(globalStore);
-    const currentWallet = store.wallets[store.selectedWallet];
-    if (currentWallet && currentWallet.confirm.length > 0) {
-        await rejectConfirm(currentWallet.confirm.length - 1, store.selectedWallet);
-    }
-}}>
-    {#if !token || !chain || !account}
-        <div class="loading-container"></div>
-    {:else}
-        <div class="page-container">
-            <header class="header">
-                <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
-                <RoundImageButton
-                    imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
-                    alt={chain.name}
-                    disabled={true}
-                />
-            </header>
+{#if !token || !chain || !account}
+    <div class="loading-container"></div>
+{:else}
+    <div class="page-container">
+        <header class="header">
+            <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
+            <RoundImageButton
+                imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
+                alt={chain.name}
+                disabled={true}
+            />
+        </header>
 
-            <main class="content">
-                <TransferSummary
-                    amount={abbreviateNumber(tokenAmount, token.decimals)}
-                    symbol={token.symbol}
-                    fiatValue="-"
-                />
-                <TransferRoute
-                    fromName={account.name || 'Unknown'}
-                    fromAddress={account.addr}
-                    toName={recipientName() || 'Unknown'}
-                    toAddress={toAddress}
-                />
-                <div class="transaction-section">
-                    <div class="section-header">
-                        <span class="section-title">{$_('confirm.transaction')}</span>
-                        <button class="edit-button" onclick={() => push('/transfer')}>
-                            <span>{$_('confirm.edit')}</span>
-                            <EditIcon />
-                        </button>
-                    </div>
-                    <div class="gas-options">
-                        {#if gasOptions.length > 0}
-                            {#each gasOptions as option (option.speed)}
-                                <GasOption
-                              label={$_(option.label)}
-                                    time={option.time}
-                                    fee={option.fee}
-                                    fiatFee={option.fiatFee}
-                                    selected={selectedSpeed === option.speed}
-                                    expanded={expandedSpeed === option.speed}
-                                    onselect={() => handleSpeedSelect(option.speed)}
-                                >
-                                    {#each option.details as detail (detail.label)}
-                                        <GasDetailRow label={detail.label} value={detail.value} />
-                                    {/each}
-                                </GasOption>
-                            {/each}
-                        {/if}
-                    </div>
+        <main class="content">
+            <TransferSummary
+                amount={abbreviateNumber(tokenAmount, token.decimals)}
+                symbol={token.symbol}
+                fiatValue="-"
+            />
+            <TransferRoute
+                fromName={account.name || 'Unknown'}
+                fromAddress={account.addr}
+                toName={recipientName() || 'Unknown'}
+                toAddress={toAddress}
+            />
+            <div class="transaction-section">
+                <div class="section-header">
+                    <span class="section-title">{$_('confirm.transaction')}</span>
+                    <button class="edit-button" onclick={() => push('/transfer')}>
+                        <span>{$_('confirm.edit')}</span>
+                        <EditIcon />
+                    </button>
                 </div>
-            </main>
+                <div class="gas-options">
+                    {#if gasOptions.length > 0}
+                        {#each gasOptions as option (option.speed)}
+                            <GasOption
+                          label={$_(option.label)}
+                                time={option.time}
+                                fee={option.fee}
+                                fiatFee={option.fiatFee}
+                                selected={selectedSpeed === option.speed}
+                                expanded={expandedSpeed === option.speed}
+                                onselect={() => handleSpeedSelect(option.speed)}
+                            >
+                                {#each option.details as detail (detail.label)}
+                                    <GasDetailRow label={detail.label} value={detail.value} />
+                                {/each}
+                            </GasOption>
+                        {/each}
+                    {/if}
+                </div>
+            </div>
+        </main>
 
-            <footer class="footer">
-                <Button variant="outline" onclick={handleReject} disabled={isLoading}>
-                    {$_('confirm.reject')}
-                </Button>
-                <Button onclick={handleConfirm} disabled={isLoading || gasOptions.length === 0}>
-                    {$_('confirm.confirm')}
-                </Button>
-            </footer>
-        </div>
-    {/if}
-</svelte:boundary>
+        <footer class="footer">
+            <Button variant="outline" onclick={handleReject} disabled={isLoading}>
+                {$_('confirm.reject')}
+            </Button>
+            <Button onclick={handleConfirm} disabled={isLoading || gasOptions.length === 0}>
+                {$_('confirm.confirm')}
+            </Button>
+        </footer>
+    </div>
+{/if}
 
 <style lang="scss">
     .page-container {

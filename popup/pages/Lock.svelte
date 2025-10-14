@@ -37,7 +37,6 @@
     function getWalletLogo(wallet: IWalletState): string {
         const chain = $globalStore.chains.find((c) => {
             const hash = hashChainConfig(c.chainIds, c.slip44, c.chain);
-            console.log(hash, wallet);
             return hash === wallet.defaultChainHash;
         });
 
