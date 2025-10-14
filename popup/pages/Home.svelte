@@ -137,7 +137,6 @@
                         <TokenCard
                             {token}
                             loading={tokensloading}
-                            disabled={tokensloading}
                             tokensRow={tokensRow || tokens.length === 1}
                             account={currentAccount}
                             hide={hideBalance}
@@ -259,6 +258,8 @@
         &:not(.row-mode) {
             justify-content: flex-start;
             align-content: flex-start;
+            margin: 0 auto;
+            max-width: calc(148px * 2 + 12px);
 
             > :global(*) {
                 flex: 0 0 148px;
