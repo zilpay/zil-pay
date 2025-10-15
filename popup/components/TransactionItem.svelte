@@ -4,30 +4,15 @@
     import { processTokenLogo } from 'lib/popup/url';
     import globalStore from 'popup/store/global';
     import FastImg from './FastImg.svelte';
-    import DownRightIcon from './icons/DownRight.svelte';
     import UpRightIcon from './icons/UpRight.svelte';
-    import SwapIcon from './icons/Swap.svelte';
     import type { IHistoricalTransactionState } from 'background/rpc/history_tx';
     import { TransactionStatus } from 'config/tx';
 
     let {
         transaction,
-        loading = false
     }: {
         transaction: IHistoricalTransactionState;
-        loading?: boolean;
     } = $props();
-
-    const transactionType = $derived(() => {
-        const title = transaction.metadata.title?.toLowerCase() ?? '';
-        if (title.includes('receive')) return 'receive';
-        if (title.includes('sent') || title.includes('send')) return 'sent';
-        if (title.includes('swap')) return 'swap';
-        if (title.includes('call')) return 'call';
-        return 'sent';
-    });
-
-    const isPositive = $derived(transactionType() === 'receive');
 
     const amount = $derived(() => {
         const value = transaction.metadata.token.value ?? 
@@ -50,7 +35,7 @@
         if (transaction.metadata.token.recipient) {
             return transaction.metadata.token.recipient;
         }
-        return transaction.evm?.to ?? transaction.scilla?.toAddr ?? 'Unknown';
+        return transaction.evm?.to ?? transaction.scilla?.toAddr ?? '';
     });
 
     const iconSrc = $derived(() => {
@@ -83,8 +68,8 @@
     </div>
 
     <div class="amount-section">
-        <div class="amount" class:positive={isPositive} class:negative={!isPositive}>
-            {isPositive ? '+' : '-'}{amount()} {transaction.metadata.token.symbol}
+        <div class="amount">
+            -{amount()} {transaction.metadata.token.symbol}
         </div>
         <div class="date">{formattedDate}</div>
     </div>
@@ -158,13 +143,14 @@
     }
 
     .icon-wrapper {
+        padding: 5px;
         width: 44px;
         height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: var(--color-button-regular-quaternary-default);
-        border-radius: 12px;
+        border-radius: 100%;
         flex-shrink: 0;
         overflow: hidden;
 
@@ -217,14 +203,8 @@
         font-size: 16px;
         font-weight: 700;
         line-height: 22px;
-
-        &.positive {
-            color: var(--color-positive-text-primary, var(--color-notification-positive-content));
-        }
-
-        &.negative {
-            color: var(--color-content-text-inverted);
-        }
+        color: var(--color-content-text-inverted);
+        white-space: nowrap;
     }
 
     .date {
@@ -233,5 +213,6 @@
         line-height: 16px;
         color: var(--color-content-text-secondary);
         text-align: right;
+        white-space: nowrap;
     }
 </style>

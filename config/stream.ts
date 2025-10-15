@@ -25,4 +25,5 @@ export const MTypePopup = {
   REJECT_CONFIRM: `@/${app}/reject-confirm`,
   ESTIMATE_GAS: `@/${app}/estimate-gas`,
   SIGN_TX_AND_SEND: `@/${app}/sign-tx-and-send-jsonRPC`,
+  CHECK_TRANSACTIONS_HISTORY: `@/${app}/check-transactions-history`,
 };

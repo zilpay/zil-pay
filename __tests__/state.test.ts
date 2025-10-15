@@ -22,10 +22,8 @@ import { utf8ToUint8Array } from "../lib/utils/utf8";
 import { ChainConfig } from "../background/storage/chain";
 import { WalletSettings } from "../background/storage/settings";
 import { WORD_LIST } from "./crypto/word_list";
-import {
-  HistoricalTransaction,
-} from "../background/rpc/history_tx";
-import { GasSpeed } from '../config/gas';
+import { HistoricalTransaction } from "../background/rpc/history_tx";
+import { GasSpeed } from "../config/gas";
 import { TransactionStatus } from "../config/tx";
 import { HashTypes } from "config/argon2";
 
@@ -120,7 +118,8 @@ describe("test bg state with empty storage", () => {
         chainHash: bscConfig.hash(),
       },
       evm: {
-        transactionHash: "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
+        transactionHash:
+          "0x1c38e47758ae1c69b8b339211261706fd16e93e1f84fecbd33b3b7cc9d1fefa1",
         from: "0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d",
       } as any,
       timestamp: new Date().getSeconds(),

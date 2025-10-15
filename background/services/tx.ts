@@ -11,13 +11,38 @@ import { ZILTransactionRequest } from "crypto/zilliqa_tx";
 import { Address } from "crypto/address";
 import { hexToUint8Array } from "lib/utils/hex";
 import { ETHEREUM } from "config/slip44";
+import type { WorkerService } from "./worker";
+import { TransactionStatus } from "config/tx";
 
 
 export class TransactionService {
   #state: BackgroundState;
 
-  constructor(state: BackgroundState) {
+  constructor(state: BackgroundState, _worker: WorkerService) {
     this.#state = state;
+  }
+
+  async updateTransactionsHistory(walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chainConfig = this.#state.getChain(account.chainHash)!;
+      const provider = new NetworkProvider(chainConfig);
+      const pendingTransactions = wallet.history.filter(
+        (tx) => (tx.status === TransactionStatus.Pending && tx.metadata.chainHash == account.chainHash)
+      );
+
+      await provider.updateTransactionsHistory(pendingTransactions);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: wallet.history,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
   }
 
   async signTxAndbroadcastJsonRPC(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {

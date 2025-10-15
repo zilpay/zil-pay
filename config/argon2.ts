@@ -9,4 +9,3 @@ export enum HashTypes {
   Argon2,
   Pbkdf2,
 }
-

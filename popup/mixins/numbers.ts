@@ -5,18 +5,28 @@ export function abbreviateNumber(value: number | string, decimals: number = 0): 
         return '0';
     }
 
-    if (num < 1000 && num > -1000) {
+    if (Math.abs(num) >= 1000) {
         return new Intl.NumberFormat(undefined, {
-            minimumFractionDigits: 6,
+            notation: 'compact',
+            compactDisplay: 'short',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }).format(num);
+    }
+
+    if (Math.abs(num) < 0.01 && num !== 0) {
+        return new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 0,
             maximumFractionDigits: 6,
             useGrouping: false
         }).format(num);
     }
 
-    return new Intl.NumberFormat(undefined, {
-        notation: 'compact',
-        compactDisplay: 'short',
+    const formatted = new Intl.NumberFormat(undefined, {
         minimumFractionDigits: 0,
-        maximumFractionDigits: 2
+        maximumFractionDigits: 2,
+        useGrouping: true
     }).format(num);
+
+    return formatted;
 }

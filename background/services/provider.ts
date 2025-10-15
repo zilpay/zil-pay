@@ -3,12 +3,15 @@ import type { BackgroundState } from "background/storage";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
 import { hexToUint8Array } from "lib/utils/hex";
+import type { WorkerService } from "./worker";
 
 export class ProviderService {
   #state: BackgroundState;
+  #worker: WorkerService;
 
-  constructor(state: BackgroundState) {
+  constructor(state: BackgroundState, worker: WorkerService) {
     this.#state = state;
+    this.#worker = worker;
   }
 
   async swichNetwork(walletIndex: number, chainIndex: number, sendResponse: StreamResponse) {
@@ -27,6 +30,8 @@ export class ProviderService {
         account.addrType = addr.type;
         return account;
       }));
+      await this.#worker.stop();
+      await this.#worker.start();
       await this.#state.sync();
 
       sendResponse({

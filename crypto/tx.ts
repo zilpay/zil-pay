@@ -19,18 +19,20 @@ export class TransactionRequest {
       const receipt = await this.scilla.sign(keypair);
       return new SignedTransaction(this.metadata, receipt);
     } else if (this.evm) {
-      const txType = 'eip1559';
+      const txType = "eip1559";
       const rawTxData = {
         type: txType,
         to: await Address.fromStr(this.evm.to).toEthChecksum(),
         value: BigInt(this.evm.value ?? 0),
-        data: this.evm.data ?? '0x',
+        data: this.evm.data ?? "0x",
         nonce: BigInt(this.evm.nonce ?? 0),
         gasLimit: BigInt(this.evm.gasLimit ?? 21000),
         maxFeePerGas: BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n),
-        maxPriorityFeePerGas: BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n), 
-        chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n, 
-        accessList: this.evm.accessList ?? [], 
+        maxPriorityFeePerGas: BigInt(
+          this.evm.maxPriorityFeePerGas ?? 1_000_000_000n,
+        ),
+        chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
+        accessList: this.evm.accessList ?? [],
       };
 
       const tx = new Transaction(txType, rawTxData, false, false);

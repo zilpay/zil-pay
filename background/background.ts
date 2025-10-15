@@ -88,10 +88,26 @@ export function startBackground(core: GlobalState) {
         core.transaction.buildTokenTransfer(msg.payload, sendResponse);
         return true;
       case MTypePopup.ESTIMATE_GAS:
-        core.transaction.estimateGas(msg.payload.confirmIndex, msg.payload.walletIndex, msg.payload.accountIndex, sendResponse);
+        core.transaction.estimateGas(
+          msg.payload.confirmIndex,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          sendResponse,
+        );
         return true;
       case MTypePopup.SIGN_TX_AND_SEND:
-        core.transaction.signTxAndbroadcastJsonRPC(msg.payload.confirmIndex, msg.payload.walletIndex, msg.payload.accountIndex, sendResponse);
+        core.transaction.signTxAndbroadcastJsonRPC(
+          msg.payload.confirmIndex,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          sendResponse,
+        );
+        return true;
+      case MTypePopup.CHECK_TRANSACTIONS_HISTORY:
+        core.transaction.updateTransactionsHistory(
+          msg.payload.walletIndex,
+          sendResponse,
+        );
         return true;
       case MTypePopup.REJECT_CONFIRM:
         core.transaction.reject(

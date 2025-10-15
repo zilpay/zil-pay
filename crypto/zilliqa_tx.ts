@@ -40,7 +40,10 @@ export class ZILTransactionRequest {
     const gasLimit = BigInt(payload.gasLimit ?? 0);
     const amount = BigInt(payload.amount);
 
-    const address = new Address(hexToUint8Array(payload.toAddr), AddressType.Bech32);
+    const address = new Address(
+      hexToUint8Array(payload.toAddr),
+      AddressType.Bech32,
+    );
     const toAddr = address.bytes;
 
     const code = payload.code

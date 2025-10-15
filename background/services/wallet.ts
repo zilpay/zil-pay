@@ -10,12 +10,15 @@ import { randomBytes } from "crypto/random";
 import { Bip39 } from "crypto/bip39";
 import { ConfirmState } from "background/storage/confirm";
 import { Session } from "background/secure";
+import { WorkerService } from "./worker";
 
 export class WalletService {
   #state: BackgroundState;
+  #worker: WorkerService;
 
-  constructor(state: BackgroundState) {
+  constructor(state: BackgroundState, worker: WorkerService) {
     this.#state = state;
+    this.#worker = worker;
   }
 
   async addLedgerWallet() {}
@@ -139,6 +142,7 @@ export class WalletService {
       this.#state.wallets.push(wallet);
       this.#state.selectedWallet = this.#state.wallets.length - 1;
       await this.#state.sync();
+      await this.#worker.start();
 
       sendResponse({
         resolve: this.#state
@@ -169,6 +173,7 @@ export class WalletService {
       this.#state.wallets.push(wallet);
       this.#state.selectedWallet = this.#state.wallets.length - 1;
       await this.#state.sync();
+      await this.#worker.start();
 
       sendResponse({
         resolve: this.#state
@@ -286,6 +291,7 @@ export class WalletService {
 
       await wallet.unlock(passwordBytes);
       this.#state.wallets.splice(walletIndex, 1);
+      await this.#worker.stop();
       await this.#state.sync();
 
       sendResponse({
@@ -306,6 +312,7 @@ export class WalletService {
       await wallet.unlock(passwordBytes);
       this.#state.selectedWallet = walletIndex;
       await Session.setActiveWallet(walletIndex);
+      await this.#worker.start();
 
       sendResponse({
         resolve: this.#state
@@ -325,6 +332,7 @@ export class WalletService {
         await wallet.clearSession();
         this.#state.selectedWallet = -1;
         await this.#state.sync();
+        await this.#worker.stop();
       }
 
       sendResponse({

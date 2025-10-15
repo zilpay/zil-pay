@@ -44,6 +44,19 @@ export async function estimateGas(confirmIndex: number, walletIndex: number, acc
   } as RequiredTxParams;
 }
 
+export async function checkTransactionsHistory(walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.CHECK_TRANSACTIONS_HISTORY,
+    payload: {
+      walletIndex,
+    },
+  }).send();
+
+  const resolve = warpMessage(data) as IHistoricalTransactionState[];
+
+  return resolve;
+}
+
 export async function signConfrimTx(confirmIndex: number, walletIndex: number, accountIndex: number) {
   const data = await new Message<SendResponseParams>({
     type: MTypePopup.SIGN_TX_AND_SEND,

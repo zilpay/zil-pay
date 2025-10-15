@@ -63,7 +63,6 @@ export class Address {
     }
   }
 
-
   static async fromPrivateKey(privateKey: Uint8Array, slip44: number) {
     const keypair = await KeyPair.fromPrivateKey(privateKey, slip44);
     const addressType = keypair.addressType();

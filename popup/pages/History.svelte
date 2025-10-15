@@ -7,18 +7,32 @@
     import BottomTabs from '../components/BottomTabs.svelte';
     import TransactionItem from '../components/TransactionItem.svelte';
     import type { IHistoricalTransactionState } from 'background/rpc/history_tx';
+    import { checkTransactionsHistory } from 'popup/background/transactions';
+
+    const MILLISECONDS_PER_DAY = 86400000;
+
+    let errorMessage = $state<string | null>(null);
+    let isRefreshing = $state(false);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
-    const history = $derived(currentWallet?.history ?? []);
+    const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
+    
+    const filteredHistory = $derived(() => {
+        if (!currentWallet || !currentAccount) return [];
+        
+        return currentWallet.history.filter(
+            tx => tx.metadata.chainHash === currentAccount.chainHash
+        ).reverse();
+    });
 
     const groupedTransactions = $derived(() => {
         const groups = new Map<string, IHistoricalTransactionState[]>();
+        const now = Date.now();
         
-        history.forEach(transaction => {
-            const date = new Date(transaction.timestamp);
-            const now = new Date();
-            const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+        filteredHistory().forEach(transaction => {
+            const txDate = new Date(transaction.timestamp * 1000);
+            const diffInDays = Math.floor((now - txDate.getTime()) / MILLISECONDS_PER_DAY);
             
             let groupKey: string;
             
@@ -30,10 +44,13 @@
                 groupKey = $_('history.thisWeek');
             } else if (diffInDays < 30) {
                 groupKey = $_('history.thisMonth');
-            } else if (date.getFullYear() === now.getFullYear()) {
-                groupKey = date.toLocaleDateString(undefined, { month: 'long' });
+            } else if (txDate.getFullYear() === new Date(now).getFullYear()) {
+                groupKey = txDate.toLocaleDateString($globalStore.locale, { month: 'long' });
             } else {
-                groupKey = date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                groupKey = txDate.toLocaleDateString($globalStore.locale, { 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
             }
             
             if (!groups.has(groupKey)) {
@@ -46,7 +63,39 @@
     });
 
     function handleClearAll() {
+        // TODO: implement clear all history
     }
+
+    async function handleCheckTransactionsHistory() {
+        if (isRefreshing) return;
+        
+        isRefreshing = true;
+        errorMessage = null;
+
+        try {
+            const history = await checkTransactionsHistory($globalStore.selectedWallet);
+            
+            globalStore.update(state => {
+                const newWallets = [...state.wallets];
+                newWallets[$globalStore.selectedWallet] = {
+                    ...newWallets[$globalStore.selectedWallet],
+                    history
+                };
+                return {
+                    ...state,
+                    wallets: newWallets
+                };
+            });
+        } catch (err) {
+            errorMessage = String(err);
+            console.error('Failed to check transaction history:', err);
+        } finally {
+            isRefreshing = false;
+        }
+    }
+
+    $effect(() => {
+    });
 </script>
 
 <div class="page-container">
@@ -56,34 +105,43 @@
             network: currentChain,
             theme: $globalStore.appearances
         })}
-        networkImageAlt={currentChain?.name || 'Network'}
+        networkImageAlt={currentChain?.name ?? ''}
+        onRefresh={handleCheckTransactionsHistory}
+        refreshDisabled={isRefreshing}
     />
 
     <main class="content">
+        {#if errorMessage}
+            <div class="error-banner">
+                <span class="error-text">{errorMessage}</span>
+                <button class="error-close" onclick={() => errorMessage = null}>×</button>
+            </div>
+        {/if}
+
         <div class="header-section">
             <h1 class="title">{$_('history.title')}</h1>
-            {#if history.length > 0}
+            {#if filteredHistory().length > 0}
                 <button class="clear-button" onclick={handleClearAll}>
                     {$_('history.clearAll')}
                 </button>
             {/if}
         </div>
 
-        {#if history.length === 0}
+        {#if filteredHistory().length === 0}
             <div class="empty-state">
                 <p class="empty-text">{$_('history.noTransactions')}</p>
             </div>
         {:else}
             <div class="transactions-container">
-                {#each groupedTransactions() as [groupName, transactions]}
-                    <div class="transaction-group">
+                {#each groupedTransactions() as [groupName, transactions] (groupName)}
+                    <section class="transaction-group">
                         <h2 class="group-title">{groupName}</h2>
                         <div class="transactions-list">
                             {#each transactions as transaction (transaction.timestamp)}
                                 <TransactionItem {transaction} />
                             {/each}
                         </div>
-                    </div>
+                    </section>
                 {/each}
             </div>
         {/if}
@@ -108,6 +166,45 @@
         padding: 0;
         overflow-y: auto;
         min-height: 0;
+    }
+
+    .error-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px var(--padding-side);
+        background: var(--color-error-background);
+        border-bottom: 1px solid var(--color-negative-border-primary);
+    }
+
+    .error-text {
+        flex: 1;
+        color: var(--color-error-text);
+        font-size: 14px;
+        line-height: 20px;
+        word-break: break-word;
+    }
+
+    .error-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        line-height: 1;
+        color: var(--color-error-text);
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background: color-mix(in srgb, var(--color-negative-border-primary) 20%, transparent);
+        }
     }
 
     .header-section {
@@ -144,6 +241,10 @@
         &:hover {
             background: var(--color-button-regular-quaternary-hover);
         }
+
+        &:active {
+            transform: scale(0.98);
+        }
     }
 
     .empty-state {
@@ -158,12 +259,13 @@
         color: var(--color-content-text-secondary);
         font-size: 16px;
         text-align: center;
+        margin: 0;
     }
 
     .transactions-container {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 32px;
         padding: 0 var(--padding-side) 24px;
     }
 
@@ -174,12 +276,13 @@
     }
 
     .group-title {
-        font-size: 14px;
+        font-size: 18px;
         font-weight: 600;
-        line-height: 20px;
-        color: var(--color-content-text-secondary);
+        line-height: 24px;
+        color: var(--color-content-text-inverted);
         margin: 0;
         padding: 0 4px;
+        text-transform: capitalize;
     }
 
     .transactions-list {

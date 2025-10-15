@@ -1,9 +1,9 @@
 import { FToken } from "../background/storage/ftoken";
 import { ChainConfig } from "../background/storage/chain";
-import { hashChainConfig } from '../lib/utils/hashing';
+import { hashChainConfig } from "../lib/utils/hashing";
 import { AddressType } from "../config/wallet";
-import mainnetChains from '../public/chains/mainnet.json';
-import testnetChains from '../public/chains/testnet.json';
+import mainnetChains from "../public/chains/mainnet.json";
+import testnetChains from "../public/chains/testnet.json";
 import { GasSpeed } from "../config/gas";
 import { ShaAlgorithms } from "../config/pbkdf2";
 import { HashTypes } from "../config/argon2";
@@ -196,18 +196,27 @@ export const ZERO_ADDR_HEX = "0x0000000000000000000000000000000000000000";
 export const createZilliqaConfig = (): ChainConfig =>
   new ChainConfig({
     ...mainnetChains[2],
-    features: mainnetChains[2].features.map((n) =>Number(n.replace("EIP", ""))),
+    features: mainnetChains[2].features.map((n) =>
+      Number(n.replace("EIP", "")),
+    ),
     explorers: [],
     fallbackEnabled: true,
     testnet: true,
-    ftokens: mainnetChains[2].ftokens.map((t) => new FToken({
-      ...t,
-      default_: true,
-      balances: {},
-      rate: 0,
-      addrType: AddressType.EthCheckSum,
-      chainHash: hashChainConfig(mainnetChains[2].chainIds, mainnetChains[2].slip44, mainnetChains[2].chain),
-    })),
+    ftokens: mainnetChains[2].ftokens.map(
+      (t) =>
+        new FToken({
+          ...t,
+          default_: true,
+          balances: {},
+          rate: 0,
+          addrType: AddressType.EthCheckSum,
+          chainHash: hashChainConfig(
+            mainnetChains[2].chainIds,
+            mainnetChains[2].slip44,
+            mainnetChains[2].chain,
+          ),
+        }),
+    ),
     chainId: mainnetChains[2].chainIds[0],
     ens: null,
     diffBlockTime: 1,
@@ -216,18 +225,27 @@ export const createZilliqaConfig = (): ChainConfig =>
 export const createBscConfig = (): ChainConfig =>
   new ChainConfig({
     ...mainnetChains[0],
-    features: mainnetChains[0].features.map((n) =>Number(n.replace("EIP", ""))),
+    features: mainnetChains[0].features.map((n) =>
+      Number(n.replace("EIP", "")),
+    ),
     explorers: [],
     fallbackEnabled: true,
     testnet: true,
-    ftokens: mainnetChains[0].ftokens.map((t) => new FToken({
-      ...t,
-      default_: true,
-      balances: {},
-      rate: 0,
-      addrType: AddressType.EthCheckSum,
-      chainHash: hashChainConfig(mainnetChains[0].chainIds, mainnetChains[0].slip44, mainnetChains[0].chain),
-    })),
+    ftokens: mainnetChains[0].ftokens.map(
+      (t) =>
+        new FToken({
+          ...t,
+          default_: true,
+          balances: {},
+          rate: 0,
+          addrType: AddressType.EthCheckSum,
+          chainHash: hashChainConfig(
+            mainnetChains[0].chainIds,
+            mainnetChains[0].slip44,
+            mainnetChains[0].chain,
+          ),
+        }),
+    ),
     chainId: mainnetChains[0].chainIds[0],
     ens: null,
     diffBlockTime: 1,
@@ -236,39 +254,58 @@ export const createBscConfig = (): ChainConfig =>
 export const createEthConfig = (): ChainConfig =>
   new ChainConfig({
     ...mainnetChains[1],
-    features: mainnetChains[1].features.map((n) =>Number(n.replace("EIP", ""))),
+    features: mainnetChains[1].features.map((n) =>
+      Number(n.replace("EIP", "")),
+    ),
     explorers: [],
     fallbackEnabled: true,
     testnet: true,
-    ftokens: mainnetChains[1].ftokens.map((t) => new FToken({
-      ...t,
-      default_: true,
-      balances: {},
-      rate: 0,
-      addrType: AddressType.EthCheckSum,
-      chainHash: hashChainConfig(mainnetChains[1].chainIds, mainnetChains[1].slip44, mainnetChains[1].chain),
-    })),
+    ftokens: mainnetChains[1].ftokens.map(
+      (t) =>
+        new FToken({
+          ...t,
+          default_: true,
+          balances: {},
+          rate: 0,
+          addrType: AddressType.EthCheckSum,
+          chainHash: hashChainConfig(
+            mainnetChains[1].chainIds,
+            mainnetChains[1].slip44,
+            mainnetChains[1].chain,
+          ),
+        }),
+    ),
     chainId: mainnetChains[1].chainIds[0],
     ens: null,
     diffBlockTime: 1,
   });
 
-  
 export const createZilliqaTestnetConfig = (): ChainConfig =>
   new ChainConfig({
     ...testnetChains[0],
-    features: testnetChains[0].features.map((n) =>Number(n.replace("EIP", ""))),
+    features: testnetChains[0].features.map((n) =>
+      Number(n.replace("EIP", "")),
+    ),
     explorers: [],
     fallbackEnabled: true,
     testnet: true,
-    ftokens: testnetChains[0].ftokens.map((t) => new FToken({
-      ...t,
-      default_: true,
-      balances: {},
-      rate: 0,
-      addrType: t.addr.startsWith(HRP) ? AddressType.Bech32 : AddressType.EthCheckSum,
-      chainHash: hashChainConfig(testnetChains[0].chainIds, testnetChains[0].slip44, testnetChains[0].chain),
-    })),
+    ftokens: testnetChains[0].ftokens.map(
+      (t) =>
+        new FToken({
+          ...t,
+          default_: true,
+          balances: {},
+          rate: 0,
+          addrType: t.addr.startsWith(HRP)
+            ? AddressType.Bech32
+            : AddressType.EthCheckSum,
+          chainHash: hashChainConfig(
+            testnetChains[0].chainIds,
+            testnetChains[0].slip44,
+            testnetChains[0].chain,
+          ),
+        }),
+    ),
     chainId: testnetChains[0].chainIds[0],
     ens: null,
     diffBlockTime: 1,
@@ -277,18 +314,27 @@ export const createZilliqaTestnetConfig = (): ChainConfig =>
 export const createBscTestNetConfig = (): ChainConfig =>
   new ChainConfig({
     ...testnetChains[1],
-    features: testnetChains[1].features.map((n) =>Number(n.replace("EIP", ""))),
+    features: testnetChains[1].features.map((n) =>
+      Number(n.replace("EIP", "")),
+    ),
     explorers: [],
     fallbackEnabled: true,
     testnet: true,
-    ftokens: testnetChains[1].ftokens.map((t) => new FToken({
-      ...t,
-      default_: true,
-      balances: {},
-      rate: 0,
-      addrType: AddressType.EthCheckSum,
-      chainHash: hashChainConfig(testnetChains[1].chainIds, testnetChains[1].slip44, testnetChains[1].chain),
-    })),
+    ftokens: testnetChains[1].ftokens.map(
+      (t) =>
+        new FToken({
+          ...t,
+          default_: true,
+          balances: {},
+          rate: 0,
+          addrType: AddressType.EthCheckSum,
+          chainHash: hashChainConfig(
+            testnetChains[1].chainIds,
+            testnetChains[1].slip44,
+            testnetChains[1].chain,
+          ),
+        }),
+    ),
     chainId: testnetChains[1].chainIds[0],
     ens: null,
     diffBlockTime: 1,
@@ -316,18 +362,16 @@ export const BASE_SETTINGS = {
   sessionTime: 60,
 };
 
-
 export const ZLP = new FToken({
-  name: 'ZilPay wallet',
-  symbol: 'ZLP',
+  name: "ZilPay wallet",
+  symbol: "ZLP",
   decimals: 18,
-  addr: 'zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4',
+  addr: "zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4",
   addrType: 0,
-  logo: '',
+  logo: "",
   balances: {},
   rate: 0,
   default_: false,
   native: false,
-  chainHash: 208425510
+  chainHash: 208425510,
 });
-

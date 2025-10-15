@@ -83,17 +83,17 @@ export interface TransactionReceiptEVM {
   nonce: string;
   data?: string;
   chainId?: string;
-  
+
   gas?: string;
   gasLimit?: string;
   gasPrice?: string;
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
-  
+
   r?: string;
   s?: string;
   yParity?: string;
-  
+
   blockHash?: string;
   blockNumber?: string;
   status?: string;
