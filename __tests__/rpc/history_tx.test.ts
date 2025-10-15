@@ -79,7 +79,7 @@ describe("HistoricalTransaction", () => {
       );
 
       expect(historicalTx.scilla).toBeDefined();
-      expect(historicalTx.scilla!.hash).toBe(HEX_PREFIX + mockHash);
+      expect(historicalTx.scilla!.hash).toBe(mockHash);
       expect(historicalTx.scilla!.nonce).toBe("1274");
       expect(historicalTx.scilla!.gasLimit).toBe("5000");
       expect(historicalTx.scilla!.gasPrice).toBe("2000000016");

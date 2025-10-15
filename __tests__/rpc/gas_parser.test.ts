@@ -4,8 +4,6 @@ import {
   buildEvmEstimateGasRequest,
   buildBatchGasRequest,
   processParseFeeHistoryRequest,
-  EIP1559,
-  EIP4844,
 } from "../../background/rpc/gas_parse";
 import { TransactionRequest } from "../../crypto/tx";
 import { Address } from "../../crypto/address";
@@ -129,7 +127,7 @@ describe("Gas Parser Utilities", () => {
         mockScillaTx as any,
         undefined,
       );
-      const requests = await buildBatchGasRequest(tx, 0, [], [], mockZilSender);
+      const requests = await buildBatchGasRequest(tx, 0, [], mockZilSender);
 
       expect(requests.length).toBe(2);
       expect(requests[0].method).toBe(ZilMethods.GetBalance);
@@ -155,7 +153,6 @@ describe("Gas Parser Utilities", () => {
       const requests = await buildBatchGasRequest(
         tx,
         10,
-        [],
         [],
         mockEvmSender,
       );
@@ -187,7 +184,6 @@ describe("Gas Parser Utilities", () => {
         tx,
         10,
         [25, 75],
-        [EIP1559],
         mockEvmSender,
       );
 
@@ -213,7 +209,6 @@ describe("Gas Parser Utilities", () => {
         tx,
         10,
         [],
-        [EIP4844],
         mockEvmSender,
       );
 
@@ -230,7 +225,7 @@ describe("Gas Parser Utilities", () => {
           },
       }, undefined, undefined);
       await expect(
-        buildBatchGasRequest(tx, 10, [], [], mockEvmSender),
+        buildBatchGasRequest(tx, 10, [], mockEvmSender),
       ).rejects.toThrow("unsupported transaction.");
     });
   });

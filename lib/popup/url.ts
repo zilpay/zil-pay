@@ -1,6 +1,7 @@
 import type { IExplorerState, IChainConfigState, IFTokenState } from "background/storage";
 import { Themes } from "config/theme";
 import { themeDetect } from "popup/mixins/theme";
+import type { FTState } from "types/tx";
 
 function selectVariant(theme: Themes, options: string[]): string {
   if (options.length === 0) return '';
@@ -48,7 +49,7 @@ export function processTokenLogo({
   shortName,
   theme,
 }: {
-  token: IFTokenState;
+  token: IFTokenState | FTState;
   shortName?: string;
   theme: Themes;
 }): string {
