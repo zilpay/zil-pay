@@ -7,7 +7,7 @@ import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import { themeDetect } from "popup/mixins/theme";
 import globalStore from "popup/store/global";
-import type { IKeyPair, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
+import type { IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
  
 export async function getGlobalState() {
   const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
@@ -35,6 +35,18 @@ export async function generateKeyPair(slip44: number) {
     },
   }).send();
   let resolve = warpMessage(data) as IKeyPair;
+  return resolve;
+}
+
+export async function getAllAddressesByChain(walletIndex: number, accountIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.GET_ALL_ACCOUNTS_BY_CHAIN,
+    payload: {
+      walletIndex,
+      accountIndex,
+    },
+  }).send();
+  let resolve = warpMessage(data) as WalletAddressInfo[];
   return resolve;
 }
 

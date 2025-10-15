@@ -26,4 +26,5 @@ export const MTypePopup = {
   ESTIMATE_GAS: `@/${app}/estimate-gas`,
   SIGN_TX_AND_SEND: `@/${app}/sign-tx-and-send-jsonRPC`,
   CHECK_TRANSACTIONS_HISTORY: `@/${app}/check-transactions-history`,
+  GET_ALL_ACCOUNTS_BY_CHAIN: `@/${app}/get-all-accounts-by-chain`,
 };

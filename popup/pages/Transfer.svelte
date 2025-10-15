@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
     import type { BuildTokenTransferParams } from 'types/tx';
+    import type { WalletAddressInfo } from 'types/wallet';
     import * as dn from 'dnum';
     
     import NavBar from '../components/NavBar.svelte';
@@ -10,18 +11,24 @@
     import AmountInput from '../components/AmountInput.svelte';
     import Modal from '../components/Modal.svelte';
     import TokenSelector from '../modals/TokenSelectorModal.svelte';
+    import AddressSelector from '../modals/AddressSelector.svelte';
+
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { currentParams } from 'popup/store/route';
     import { hashXORHex } from 'lib/utils/hashing';
     import { buildTokenTransfer } from 'popup/background/transactions';
+    import { getAllAddressesByChain } from 'popup/background/wallet';
     import { push } from 'popup/router/navigation';
 
+    let showAddressModal = $state(false);
     let recipientAddress = $state('');
     let amount = $state('');
     let selectedToken = $state<IFTokenState | undefined>(undefined);
     let showTokenModal = $state(false);
     let isLoading = $state(false);
+    let potentialAddresses = $state<WalletAddressInfo[]>([]);
+    let addressesLoading = $state(false);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
@@ -63,6 +70,12 @@
     });
 
     $effect(() => {
+        if (currentAccount && !addressesLoading && potentialAddresses.length === 0) {
+            fetchPotentialAddresses();
+        }
+    });
+
+    $effect(() => {
         if ($currentParams.addr) {
             recipientAddress = $currentParams.addr as string;
         }
@@ -88,6 +101,21 @@
         }
     });
 
+    async function fetchPotentialAddresses() {
+        if (addressesLoading || !currentAccount) return;
+        
+        addressesLoading = true;
+        try {
+            const addresses = await getAllAddressesByChain($globalStore.selectedWallet, currentWallet.selectedAccount);
+            potentialAddresses = addresses;
+        } catch (error) {
+            console.error('Failed to fetch addresses:', error);
+            potentialAddresses = [];
+        } finally {
+            addressesLoading = false;
+        }
+    }
+
     function handleTokenSelect(token: IFTokenState) {
         selectedToken = token;
         showTokenModal = false;
@@ -104,6 +132,17 @@
         const rawBalance = selectedToken.balances[hashXORHex(currentAccount.pubKey)] ?? '0';
         const maxDnum: dn.Dnum = [BigInt(rawBalance), selectedToken.decimals];
         amount = dn.toString(maxDnum);
+    }
+
+    function handleContactsClick() {
+        if (!addressesLoading && potentialAddresses.length > 0) {
+            showAddressModal = true;
+        }
+    }
+
+    function handleAddressSelect(address: string) {
+        recipientAddress = address;
+        showAddressModal = false;
     }
 
     async function handleContinue() {
@@ -130,6 +169,18 @@
     }
 </script>
 
+
+<Modal
+    bind:show={showAddressModal}
+    title={$_('addressSelector.title')}
+    onClose={() => (showAddressModal = false)}
+>
+    <AddressSelector
+        addresses={potentialAddresses}
+        currentAddress={currentAccount?.addr ?? ''}
+        onSelect={handleAddressSelect}
+    />
+</Modal>
 <div class="page-container">
     <NavBar title={$_('tokenTransfer.title')} />
     <main class="content">
@@ -151,7 +202,13 @@
                 showToggle={false}
             >
                 {#snippet rightAction()}
-                    <button type="button" class="contacts-button" aria-label="Contacts">
+                    <button 
+                        type="button" 
+                        class="contacts-button" 
+                        aria-label="Contacts"
+                        onclick={handleContactsClick}
+                        disabled={addressesLoading}
+                    >
                         <ContactsIcon />
                     </button>
                 {/snippet}

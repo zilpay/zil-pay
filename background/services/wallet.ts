@@ -2,7 +2,7 @@ import { Account, ChainConfig, FToken, Wallet, WalletSettings, type BackgroundSt
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-import type { SetPasswordPayload, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
+import { type SetPasswordPayload, type WalletAddressInfo, type WalletFromBip39Params, type WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";
@@ -11,6 +11,7 @@ import { Bip39 } from "crypto/bip39";
 import { ConfirmState } from "background/storage/confirm";
 import { Session } from "background/secure";
 import { WorkerService } from "./worker";
+import { AddressCategory } from "config/common";
 
 export class WalletService {
   #state: BackgroundState;
@@ -393,5 +394,48 @@ export class WalletService {
     await this.#state.sync();
     
     return newChain;
+  }
+
+  async getAllAddressesByChain(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const chainHash = account.chainHash;
+      const addresses: WalletAddressInfo[] = [];
+
+      this.#state.book.forEach((bookEntry) => {
+        addresses.push({
+          addr: bookEntry.address,
+          accountName: bookEntry.name,
+          walletIndex: -1,
+          walletName: '',
+          addrType: bookEntry.addrType,
+          category: AddressCategory.AddressBook
+        });
+      });
+
+      this.#state.wallets.forEach((w, walletIndex) => {
+        w.accounts.forEach((account) => {
+          if (account.chainHash === chainHash) {
+            addresses.push({
+              addr: account.addr,
+              accountName: account.name,
+              walletIndex: walletIndex,
+              walletName: w.walletName,
+              addrType: account.addrType,
+              category: AddressCategory.Wallet
+            });
+          }
+        });
+      });
+
+      sendResponse({
+        resolve: addresses,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
   }
 }

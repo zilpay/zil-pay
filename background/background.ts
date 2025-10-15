@@ -63,6 +63,13 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.LOG_OUT:
         core.wallet.logoutWallet(msg.payload.walletIndex, sendResponse);
         return true;
+      case MTypePopup.GET_ALL_ACCOUNTS_BY_CHAIN:
+        core.wallet.getAllAddressesByChain(
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          sendResponse,
+        );
+        return true;
 
       // provider
       case MTypePopup.WALLET_BALANCE_UPDATE:

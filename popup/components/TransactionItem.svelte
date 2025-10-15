@@ -4,7 +4,6 @@
     import { processTokenLogo } from 'lib/popup/url';
     import globalStore from 'popup/store/global';
     import FastImg from './FastImg.svelte';
-    import UpRightIcon from './icons/UpRight.svelte';
     import type { IHistoricalTransactionState } from 'background/rpc/history_tx';
     import { TransactionStatus } from 'config/tx';
 
@@ -47,18 +46,12 @@
             theme: $globalStore.appearances
         });
     });
-
-    const DefaultIcon = $derived(() => {
-        return UpRightIcon;
-    });
 </script>
 
 <div class="transaction-card" class:loading={transaction.status == TransactionStatus.Pending}>
     <div class="icon-wrapper">
         {#if transaction.metadata.icon || transaction.metadata.token}
             <FastImg src={iconSrc()} alt={transaction.metadata.title} />
-        {:else}
-            <DefaultIcon />
         {/if}
     </div>
 
