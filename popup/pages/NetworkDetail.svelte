@@ -52,8 +52,42 @@
         await setGlobalState();
     }
 
-    function handleRpcSelect(index: number) {
-        // selectedRpcIndex = index;
+    async function handleRpcSelect(index: number) {
+        if (!chain || chainIndex < 0 || index === 0) return;
+        
+        globalStore.update(state => {
+            const chains = [...state.chains];
+            const rpcList = [...chains[chainIndex].rpc];
+            const [selected] = rpcList.splice(index, 1);
+            rpcList.unshift(selected);
+            
+            chains[chainIndex] = {
+                ...chains[chainIndex],
+                rpc: rpcList
+            };
+            return { ...state, chains };
+        });
+        
+        await setGlobalState();
+    }
+
+    async function handleExplorerSelect(index: number) {
+        if (!chain || chainIndex < 0 || index === 0) return;
+        
+        globalStore.update(state => {
+            const chains = [...state.chains];
+            const explorerList = [...chains[chainIndex].explorers];
+            const [selected] = explorerList.splice(index, 1);
+            explorerList.unshift(selected);
+            
+            chains[chainIndex] = {
+                ...chains[chainIndex],
+                explorers: explorerList
+            };
+            return { ...state, chains };
+        });
+        
+        await setGlobalState();
     }
 
     async function handleRpcDelete(index: number) {
@@ -116,7 +150,7 @@
                 <div class="toggle-row">
                     <span class="toggle-label">{$_('networkDetails.batchRequest')}</span>
                     <Switch
-                        checked={true}
+                        checked={chain.batchRequest}
                         variant="default"
                         onChange={toggleBatchRequest}
                     />
@@ -135,8 +169,20 @@
                     </div>
                     
                     <div class="list-items">
-                        {#each chain.explorers as explorer}
-                            <div class="explorer-item">
+                        {#each chain.explorers as explorer, index}
+                            <div
+                                class="explorer-item"
+                                class:selected={index === 0}
+                                role="button"
+                                tabindex="0"
+                                onclick={() => handleExplorerSelect(index)}
+                                onkeydown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handleExplorerSelect(index);
+                                    }
+                                }}
+                            >
                                 <div class="explorer-icon">
                                     {#if explorer.icon}
                                         <FastImg src={explorer.icon} alt={explorer.name} />
@@ -162,6 +208,7 @@
                         {#each chain.rpc as rpc, index}
                             <div
                                 class="rpc-item"
+                                class:selected={index === 0}
                                 role="button"
                                 tabindex="0"
                                 onclick={() => handleRpcSelect(index)}
@@ -356,7 +403,24 @@
         gap: 8px;
         padding: 12px;
         background: var(--color-cards-regular-base-default);
+        border: 1px solid transparent;
         border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: var(--color-cards-regular-border-hover);
+        }
+
+        &.selected {
+            background: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 10%, transparent);
+            border-color: var(--color-neutral-tag-purple-border);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-inputs-border-focus);
+            outline-offset: 2px;
+        }
     }
 
     .explorer-icon {
@@ -406,6 +470,11 @@
 
         &:hover {
             border-color: var(--color-cards-regular-border-hover);
+        }
+
+        &.selected {
+            background: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 10%, transparent);
+            border-color: var(--color-neutral-tag-purple-border);
         }
 
         &:focus-visible {
