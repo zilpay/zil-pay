@@ -2,6 +2,7 @@ import { FToken, type IFTokenState } from './ftoken';
 import { Explorer, type IExplorerState } from './explorer';
 import { KeyPair } from 'crypto/keypair';
 import { hashChainConfig } from 'lib/utils/hashing';
+import { TypeOf } from 'lib/types';
 
 export interface IChainConfigState {
   name: string;
@@ -55,8 +56,8 @@ export class ChainConfig implements IChainConfigState {
     this.explorers = (data.explorers).map(
       (e) => new Explorer(e)
     );
-    this.fallbackEnabled = data.fallbackEnabled ?? true;
-    this.batchRequest = data.batchRequest ?? true;
+    this.fallbackEnabled = TypeOf.isUndefined(data.fallbackEnabled) ? true : !!data.fallbackEnabled;
+    this.batchRequest = TypeOf.isUndefined(data.batchRequest) ? true : !!data.batchRequest;
     this.testnet = data.testnet ?? null;
     this.ftokens = (data.ftokens).map(
       (t) => new FToken({
