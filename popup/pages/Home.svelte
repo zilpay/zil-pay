@@ -14,6 +14,7 @@
     import HideIcon from '../components/icons/Hide.svelte';
     import EyeIcon from '../components/icons/Eye.svelte';
     import GridIcon from '../components/icons/Grid.svelte';
+    import CloseIcon from '../components/icons/Close.svelte';
     import RowIcon from '../components/icons/Row.svelte';
     import FilterIcon from '../components/icons/Filter.svelte';
     import { setGlobalState } from 'popup/background/wallet';
@@ -29,6 +30,10 @@
 
     let tokensloading = $state(false);
     let error = $state<string | null>(null);
+
+    function dismissError() {
+        error = null;
+    }
 
     function handleAccountClick() {
         push('/accounts');
@@ -132,6 +137,17 @@
                         </button>
                     </div>
                 </div>
+                {#if error}
+                    <div class="error-banner">
+                        <div class="error-header">
+                            <span class="error-title">{$_('home.error.title')}</span>
+                            <button class="error-close" onclick={dismissError} type="button" aria-label="Close error">
+                                <CloseIcon />
+                            </button>
+                        </div>
+                        <p class="error-message">{error}</p>
+                    </div>
+                {/if}
                 <div class="tokens-grid" class:row-mode={tokensRow || tokens.length === 1}>
                     {#each tokens as token, index (index)}
                         <TokenCard
@@ -277,5 +293,63 @@
                 max-width: 100%;
             }
         }
+    }
+
+    .error-banner {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+        margin: 0 8px 12px 8px;
+        background: var(--color-notification-negative-background);
+        border: 1px solid var(--color-negative-border-primary);
+        border-radius: 12px;
+        flex-shrink: 0;
+    }
+
+    .error-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .error-title {
+        color: var(--color-content-text-inverted);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+    }
+
+    .error-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: none;
+        border: none;
+        color: var(--color-content-text-inverted);
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        padding: 0;
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--color-negative-border-primary) 20%, transparent);
+        }
+
+        :global(svg > path) {
+            stroke: var(--color-content-text-inverted);
+        }
+    }
+
+    .error-message {
+        color: var(--color-content-text-inverted);
+        font-size: 12px;
+        line-height: 16px;
+        margin: 0;
+        word-break: break-word;
     }
 </style>
