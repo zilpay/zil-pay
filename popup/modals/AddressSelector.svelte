@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { WalletAddressInfo } from 'types/wallet';
     import { _ } from 'popup/i18n';
+    import { AddressCategory } from 'config/common';
     import SmartInput from '../components/SmartInput.svelte';
     import SearchIcon from '../components/icons/Search.svelte';
     import Jazzicon from '../components/Jazzicon.svelte';
@@ -18,11 +19,30 @@
 
     let searchTerm = $state('');
 
+    const sortedAddresses = $derived(() => {
+        const sorted = [...addresses].sort((a, b) => {
+            if (a.category === AddressCategory.ZILExchangeLegacy) return -1;
+            if (b.category === AddressCategory.ZILExchangeLegacy) return 1;
+            if (a.category === AddressCategory.Wallet && b.category === AddressCategory.AddressBook) return -1;
+            if (a.category === AddressCategory.AddressBook && b.category === AddressCategory.Wallet) return 1;
+            return 0;
+        });
+        return sorted;
+    });
+
     const groupedAddresses = $derived(() => {
         const groups = new Map<string, WalletAddressInfo[]>();
         
-        addresses.forEach(addr => {
-            const key = addr.walletName || 'My accounts';
+        sortedAddresses().forEach(addr => {
+            let key: string;
+            if (addr.category === AddressCategory.ZILExchangeLegacy) {
+                key = 'ZIL Exchange';
+            } else if (addr.category === AddressCategory.AddressBook) {
+                key = 'Address Book';
+            } else {
+                key = addr.walletName || 'My accounts';
+            }
+            
             if (!groups.has(key)) {
                 groups.set(key, []);
             }
@@ -85,8 +105,8 @@
                                 <div class="address-value">{truncate(addr.addr, 6, 6)}</div>
                             </div>
                             <div class="address-tags">
-                                {#if addr.addr.toLowerCase() === currentAddress.toLowerCase()}
-                                    <span class="tag tag-sender">{$_('addressSelector.sender')}</span>
+                                {#if addr.category === AddressCategory.ZILExchangeLegacy}
+                                    <span class="tag tag-evm">EVM</span>
                                 {/if}
                             </div>
                         </button>
@@ -154,7 +174,7 @@
 
         &:hover:not(.current) {
             border-color: var(--color-cards-regular-border-hover);
-            background: var(--color-cards-regular-base-hover);
+            background: var(--color-cards-regular-base-selected-hover);
         }
 
         &:active:not(.current) {
@@ -204,7 +224,11 @@
         flex-shrink: 0;
     }
 
-    .tag-sender {
+    .tag-evm {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
         background: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 12%, transparent);
         border: 1px solid var(--color-neutral-tag-purple-border);
         color: var(--color-neutral-tag-purple-text);

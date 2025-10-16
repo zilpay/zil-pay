@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import type { IAccountState, IFTokenState } from 'background/storage';
     import type { BuildTokenTransferParams } from 'types/tx';
     import type { WalletAddressInfo } from 'types/wallet';
@@ -69,8 +70,8 @@
         }
     });
 
-    $effect(() => {
-        if (currentAccount && !addressesLoading && potentialAddresses.length === 0) {
+    onMount(() => {
+        if (currentAccount) {
             fetchPotentialAddresses();
         }
     });
@@ -106,10 +107,9 @@
         
         addressesLoading = true;
         try {
-            const addresses = await getAllAddressesByChain($globalStore.selectedWallet, currentWallet.selectedAccount);
-            potentialAddresses = addresses;
-        } catch (error) {
-            console.error('Failed to fetch addresses:', error);
+            potentialAddresses = await getAllAddressesByChain($globalStore.selectedWallet, currentWallet.selectedAccount);
+            console.log(potentialAddresses);
+        } catch (_) {
             potentialAddresses = [];
         } finally {
             addressesLoading = false;

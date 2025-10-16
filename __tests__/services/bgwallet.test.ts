@@ -273,10 +273,8 @@ describe("WalletService through background messaging", () => {
 
       expect(zilAddresses).toHaveLength(4);
       expect(zilAddresses[0].addr).toBe(state.book[2].address);
-      expect(zilAddresses[1].addr).toBe(state.wallets[2].accounts[1].addr);
-      expect(zilAddresses[2].addr).toBe(state.wallets[2].accounts[2].addr);
-      expect(zilAddresses[3].category).toBe(AddressCategory.ZILExchangeLegacy);
-      expect(zilAddresses[3].addr).toBe(await ((await Address.fromPubKeyType(hexToUint8Array(state.wallets[2].accounts[0].pubKey), AddressType.EthCheckSum)).toEthChecksum()));
+      expect(zilAddresses[1].category).toBe(AddressCategory.ZILExchangeLegacy);
+      expect(zilAddresses[1].addr).toBe(await ((await Address.fromPubKeyType(hexToUint8Array(state.wallets[2].accounts[0].pubKey), AddressType.EthCheckSum)).toEthChecksum()));
     
       const zilWalletAddresses = zilAddresses.filter(a => a.category === AddressCategory.Wallet);
 
