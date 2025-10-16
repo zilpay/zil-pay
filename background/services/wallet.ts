@@ -12,6 +12,7 @@ import { ConfirmState } from "background/storage/confirm";
 import { Session } from "background/secure";
 import { WorkerService } from "./worker";
 import { AddressCategory } from "config/common";
+import { AddressType } from "config/wallet";
 
 export class WalletService {
   #state: BackgroundState;
@@ -404,25 +405,27 @@ export class WalletService {
       const addresses: WalletAddressInfo[] = [];
 
       this.#state.book.forEach((bookEntry) => {
-        addresses.push({
-          addr: bookEntry.address,
-          accountName: bookEntry.name,
-          walletIndex: -1,
-          walletName: '',
-          addrType: bookEntry.addrType,
-          category: AddressCategory.AddressBook
-        });
+        if (bookEntry.addrType == account.addrType) {
+          addresses.push({
+            addr: bookEntry.address,
+            accountName: bookEntry.name,
+            walletIndex: -1,
+            walletName: '',
+            addrType: bookEntry.addrType,
+            category: AddressCategory.AddressBook
+          });
+        }
       });
 
       this.#state.wallets.forEach((w, walletIndex) => {
-        w.accounts.forEach((account) => {
-          if (account.chainHash === chainHash) {
+        w.accounts.forEach((a) => {
+          if (a.chainHash === chainHash && a.addrType == account.addrType) {
             addresses.push({
-              addr: account.addr,
-              accountName: account.name,
+              addr: a.addr,
+              accountName: a.name,
               walletIndex: walletIndex,
               walletName: w.walletName,
-              addrType: account.addrType,
+              addrType: a.addrType,
               category: AddressCategory.Wallet
             });
           }

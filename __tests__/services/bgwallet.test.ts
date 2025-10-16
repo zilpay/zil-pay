@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   generateBip39Words,
   generateKeyPair,
+  getAllAddressesByChain,
   logout,
+  setGlobalState,
   unlockWallet,
   validateBip39Checksum,
   walletFromBip39Mnemonic,
@@ -14,13 +16,16 @@ import { BrowserStorage } from "../../lib/storage";
 import {
     BASE_SETTINGS,
   CHAINS,
+  createBscConfig,
+  createEthConfig,
+  createZilliqaTestnetConfig,
   IMPORTED_KEY,
   PASSWORD,
   WORDS,
 } from "../data";
 import { WORD_LIST } from '../crypto/word_list';
 import { ZILLIQA, ETHEREUM } from "../../config/slip44";
-import { WalletTypes } from "../../config/wallet";
+import { AddressType, WalletTypes } from "../../config/wallet";
 import type {
   IKeyPair,
   WalletFromBip39Params,
@@ -29,6 +34,7 @@ import type {
 import { WalletSettings } from "../../background/storage";
 import '../setupTests';
 import { messageManager } from "../setupTests";
+import { AddressCategory } from "config/common";
 
 describe("WalletService through background messaging", () => {
   let globalState: GlobalState;
@@ -148,6 +154,161 @@ describe("WalletService through background messaging", () => {
       expect(state.chains[0].slip44).toBe(313);
       expect(state.chains[0].chainIds).toEqual([32769, 1]);
       expect(state.chains[0].chainId).toBe(32769);
+    });
+  });
+
+  describe("getAllAddressesByChain", () => {
+    it("should retrieve all addresses for the same chain across multiple wallets and address book", async () => {
+      const settings = new WalletSettings(BASE_SETTINGS);
+  
+      const bscChain = createBscConfig();
+      const ethChain = createEthConfig();
+      const zilChain = createZilliqaTestnetConfig();
+  
+      let state = await walletFromBip39Mnemonic({
+        mnemonic: await generateBip39Words(12, WORD_LIST),
+        bip39WordList: WORD_LIST,
+        walletName: "BSC Wallet",
+        accounts: [
+          { index: 0, name: "BSC Account 1" },
+          { index: 1, name: "BSC Account 2" },
+          { index: 2, name: "BSC Account 3" }
+        ],
+        verifyCheckSum: true,
+        chain: bscChain,
+        password: PASSWORD,
+        settings,
+      });
+
+      state = await walletFromBip39Mnemonic({
+        mnemonic: await generateBip39Words(12, WORD_LIST),
+        bip39WordList: WORD_LIST,
+        walletName: "ETH Wallet",
+        accounts: [
+          { index: 0, name: "ETH Account 1" },
+          { index: 1, name: "ETH Account 2" },
+          { index: 2, name: "ETH Account 3" }
+        ],
+        verifyCheckSum: true,
+        chain: ethChain,
+        password: PASSWORD,
+        settings,
+      });
+
+      state = await walletFromBip39Mnemonic({
+        mnemonic: await generateBip39Words(12, WORD_LIST),
+        bip39WordList: WORD_LIST,
+        walletName: "ZIL Wallet",
+        accounts: [
+          { index: 0, name: "ZIL Account 1" },
+          { index: 1, name: "ZIL Account 2" },
+          { index: 2, name: "ZIL Account 3" }
+        ],
+        verifyCheckSum: true,
+        chain: zilChain,
+        password: PASSWORD,
+        settings,
+      });
+
+      state.book.push(
+        {
+          name: "BSC Friend",
+          address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+          addrType: AddressType.EthCheckSum
+        },
+        {
+          name: "ETH Contact",
+          address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          addrType: AddressType.EthCheckSum
+        },
+        {
+          name: "ZIL Contact",
+          address: "zil1v9xf3hvy72gwx5c27h7u43qpvj69xnrzl0fc2z",
+          addrType: AddressType.Bech32
+        }
+      );
+      await setGlobalState();
+
+      expect(state.wallets).toHaveLength(3);
+
+      const bscAddresses = await getAllAddressesByChain(0, 0);
+      expect(bscAddresses).toHaveLength(5);
+
+      bscAddresses.forEach((acc) => {
+        expect(acc.addrType).toBe(AddressType.EthCheckSum);
+      });
+    
+      const bscWalletAddresses = bscAddresses.filter(a => a.category === AddressCategory.Wallet);
+
+      bscWalletAddresses.forEach((acc) => {
+        expect(acc.walletName).toBe(state.wallets[0].walletName);
+      });
+    
+      const bscBookEntry = bscAddresses.filter(a => a.category === AddressCategory.AddressBook);
+      expect(bscBookEntry).toHaveLength(2);
+      expect(bscBookEntry[0].addr).toEqual(state.book[0].address);
+      expect(bscBookEntry[1].addr).toEqual(state.book[1].address);
+
+      const ethAddresses = await getAllAddressesByChain(1, 0);
+      expect(ethAddresses).toHaveLength(5);
+
+      ethAddresses.forEach((acc) => {
+        expect(acc.addrType).toBe(AddressType.EthCheckSum);
+      });
+
+      const ethAddressesAddresses = ethAddresses.filter(a => a.category === AddressCategory.Wallet);
+
+      ethAddressesAddresses.forEach((acc) => {
+        expect(acc.walletName).toBe(state.wallets[1].walletName);
+      });
+
+      const ethBookEntry = ethAddresses.filter(a => a.category === AddressCategory.AddressBook);
+      expect(ethBookEntry).toHaveLength(2);
+      expect(ethBookEntry[0].addr).toEqual(state.book[0].address);
+      expect(ethBookEntry[1].addr).toEqual(state.book[1].address);
+    
+      const zilAddresses = await getAllAddressesByChain(2, 0);
+
+      expect(zilAddresses).toHaveLength(4);
+      zilAddresses.forEach((acc) => {
+        expect(acc.addrType).toBe(AddressType.Bech32);
+      });
+    
+      const zilWalletAddresses = zilAddresses.filter(a => a.category === AddressCategory.Wallet);
+
+      expect(zilWalletAddresses).toHaveLength(3);
+      zilWalletAddresses.forEach((acc) => {
+        expect(acc.walletName).toBe(state.wallets[2].walletName);
+      });
+
+      const zilBookEntry = zilAddresses.filter(a => a.category === AddressCategory.AddressBook);
+      expect(zilBookEntry).toHaveLength(1);
+      expect(zilBookEntry[0].addr).toEqual(state.book[2].address);
+    });
+
+    it("should filter addresses by chain hash and address type", async () => {
+      const settings = new WalletSettings(BASE_SETTINGS);
+      const zilChain = createZilliqaTestnetConfig();
+  
+      await walletFromBip39Mnemonic({
+        mnemonic: WORDS,
+        bip39WordList: WORD_LIST,
+        walletName: "ZIL Test Wallet",
+        accounts: [
+          { index: 0, name: "Main" },
+          { index: 1, name: "Secondary" },
+          { index: 2, name: "Tertiary" }
+        ],
+        verifyCheckSum: true,
+        chain: zilChain,
+        password: PASSWORD,
+        settings,
+      });
+
+      const addresses = await getAllAddressesByChain(0, 0);
+      const account = globalState.state.wallets[0].accounts[0];
+  
+      expect(addresses.every(a => a.addrType === account.addrType)).toBe(true);
     });
   });
 
