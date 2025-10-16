@@ -9,6 +9,7 @@ export const MTypePopup = {
   GEN_KEYPAIR: `@/${app}/gen-key-pair`,
   FROM_PRIV_KEY: `@/${app}/keypair-from-private-key`,
   DESTROY_WALLET: `@/${app}/destroy-wallet`,
+  ADD_NEXT_BIP39_ACCOUNT: `@/${app}/add-next-bip39-account`,
 
   WALLET_FROM_PRIVATE_KEY: `@/${app}/create-wallet-from-private-key`,
   WALLET_FROM_BIP39: `@/${app}/create-wallet-from-bip39`,

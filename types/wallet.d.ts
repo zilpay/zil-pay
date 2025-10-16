@@ -1,5 +1,4 @@
 import type { IChainConfigState } from "background/storage";
-import type { Bip32Account } from "background/storage";
 import type { AddressCategory } from "config/common";
 
 export interface SetPasswordPayload {
@@ -29,6 +28,16 @@ export interface WalletFromBip39Params {
   password: string;
   passphrase?: string;
   settings: IWalletSettingsState;
+}
+
+export interface Bip32Account {
+  name: string;
+  index: number;
+}
+
+export interface AccountFromBip39Params {
+  account: Bip32Account;
+  walletIndex: number;
 }
 
 export interface IKeyPair {

@@ -2,7 +2,7 @@ import { Account, ChainConfig, FToken, Wallet, WalletSettings, type BackgroundSt
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-import { type SetPasswordPayload, type WalletAddressInfo, type WalletFromBip39Params, type WalletFromPrivateKeyParams } from "types/wallet";
+import { type AccountFromBip39Params, type SetPasswordPayload, type WalletAddressInfo, type WalletFromBip39Params, type WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";
@@ -23,8 +23,6 @@ export class WalletService {
     this.#state = state;
     this.#worker = worker;
   }
-
-  async addLedgerWallet() {}
 
   async genBip39Words(count: number, wordList: string[], sendResponse: StreamResponse) {
     try {
@@ -188,6 +186,24 @@ export class WalletService {
     }
   }
 
+  async addAccountFromBip39(payload: AccountFromBip39Params, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[payload.walletIndex];
+      const chain = this.#state.getChain(wallet.defaultChainHash)!;
+
+      await wallet.addAccountBip39(payload.account, chain);
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: this.#state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async exportbip39Words(password: string, walletIndex: number, sendResponse: StreamResponse) {
     try {
       const passwordBytes = utf8ToUint8Array(password);
@@ -266,27 +282,6 @@ export class WalletService {
     } 
   }
 
-  async removeAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
-    try {
-      if (accountIndex == 0) {
-        throw new Error(`invalid account index: ${accountIndex}`);
-      }
-
-      const wallet = this.#state.wallets[walletIndex];
-
-      wallet.accounts.splice(accountIndex, 1);
-      await this.#state.sync();
-
-      sendResponse({
-        resolve: true,
-      });
-    } catch (err) {
-      sendResponse({
-        reject: String(err),
-      });
-    }
-  }
-
   async removeWallet(walletIndex: number, password: string, sendResponse: StreamResponse) {
     try {
       const passwordBytes = utf8ToUint8Array(password);
@@ -340,41 +335,6 @@ export class WalletService {
 
       sendResponse({
         resolve: this.#state
-      });
-    } catch (err) {
-      sendResponse({
-        reject: String(err),
-      });
-    }
-  }
-
-  async setAccountName(walletIndex: number, accountIndex: number, name: string, sendResponse: StreamResponse) {
-    try {
-      const wallet = this.#state.wallets[walletIndex];
-      const account = wallet.accounts[accountIndex];
-
-      account.name = name;
-
-      sendResponse({
-        resolve: true,
-      });
-    } catch (err) {
-      sendResponse({
-        reject: String(err),
-      });
-    }
-  }
-
-  async selectAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
-    try {
-      const wallet = this.#state.wallets[walletIndex];
-
-      if (accountIndex <= wallet.accounts.length - 1 && accountIndex >= 0) {
-        wallet.selectedAccount = accountIndex;
-      }
-
-      sendResponse({
-        resolve: true,
       });
     } catch (err) {
       sendResponse({

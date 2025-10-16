@@ -1,4 +1,4 @@
-import type { Bip32Account, IAccountState } from './account';
+import type { IAccountState } from './account';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../../crypto/b64';
 import { generateSalt } from '../../lib/runtime';
 import { Account } from './account';
@@ -14,6 +14,7 @@ import { uint8ArrayToUtf8, utf8ToUint8Array } from 'lib/utils/utf8';
 import { HistoricalTransaction, type IHistoricalTransactionState } from 'background/rpc/history_tx';
 import { ConfirmState, type IConfirmState } from './confirm';
 import { AuthMethod, WalletTypes } from 'config/wallet';
+import type { Bip32Account } from 'types/wallet';
 
 export interface IWalletState {
   uuid: string;
@@ -179,6 +180,19 @@ export class Wallet implements IWalletState {
       case WalletTypes.SecretKey:
         const privateKey = await this.#session.getVault();
         return KeyPair.fromPrivateKey(privateKey, chain.slip44);
+      default:
+        throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
+    }
+  }
+
+  async addAccountBip39(bip32Accounts: Bip32Account, chain: ChainConfig) {
+    switch (this.walletType) {
+      case WalletTypes.SecretPhrase:
+        const seed = await this.#session.getVault();
+        const nextAccount = await Account.fromBip39(bip32Accounts, chain, seed);
+
+        this.accounts.push(nextAccount);
+        break;
       default:
         throw new Error(`Invalid wallet type ${WalletTypes[this.walletType]}`);
     }

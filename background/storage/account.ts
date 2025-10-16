@@ -2,11 +2,7 @@ import { utils } from 'aes-js';
 import { ChainConfig } from './chain';
 import { KeyPair } from 'crypto/keypair';
 import type { AddressType } from 'config/wallet';
-
-export interface Bip32Account {
-  name: string;
-  index: number;
-}
+import type { Bip32Account } from 'types/wallet';
 
 export interface IAccountState {
   addr: string;

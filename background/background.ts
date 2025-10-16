@@ -23,6 +23,12 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case MTypePopup.ADD_NEXT_BIP39_ACCOUNT:
+        core.wallet.addAccountFromBip39(
+          msg.payload,
+          sendResponse,
+        );
+        return true;
       case MTypePopup.DESTROY_WALLET:
         core.wallet.removeWallet(
           msg.payload.walletIndex,
