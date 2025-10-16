@@ -144,11 +144,10 @@
                 isLoadingGasFetch = true;
                 try {
                     gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-                    // console.log(gasEstimate);
-                } catch (error) {
-                    console.error("Gas estimation failed:", error);
-                } finally {
                     isLoadingGasFetch = false;
+                } catch (error) {
+                    isLoadingGasFetch = true;
+                    console.error("Gas estimation failed:", error);
                 }
             }
         };

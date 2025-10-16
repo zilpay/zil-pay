@@ -12,7 +12,7 @@
     import SearchIcon from '../components/icons/Search.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
     import OptionCard from '../components/OptionCard.svelte';
-    import { pop } from 'popup/router/navigation';
+    import { pop, push } from 'popup/router/navigation';
     import { changeChainProvider } from 'popup/background/provider';
 
     type DisplayChain = IChainConfigState & { 
@@ -109,6 +109,13 @@
     }
 
     async function handleEdit(chain: DisplayChain) {
+        const chainIndex = $globalStore.chains.findIndex((c) => 
+            hashChainConfig(c.chainIds, c.slip44, c.chain) === chain.hash
+        );
+    
+        if (chainIndex >= 0) {
+            push(`/chain?index=${chainIndex}`);
+        }
     }
 
     async function handleSelect(chain: DisplayChain) {
@@ -172,7 +179,6 @@
                                         e.stopPropagation();
                                         handleEdit(chain);
                                     }}
-                                    aria-label={$_('networks.manageNetwork', { values: { name: chain.name } })}
                                 >
                                     <EditIcon />
                                 </button>
