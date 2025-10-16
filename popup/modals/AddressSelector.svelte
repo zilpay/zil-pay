@@ -32,23 +32,23 @@
 
     const groupedAddresses = $derived(() => {
         const groups = new Map<string, WalletAddressInfo[]>();
-        
+    
         sortedAddresses().forEach(addr => {
             let key: string;
             if (addr.category === AddressCategory.ZILExchangeLegacy) {
-                key = 'ZIL Exchange';
+                key = $_('addressSelector.zilExchange');
             } else if (addr.category === AddressCategory.AddressBook) {
-                key = 'Address Book';
+                key = $_('addressSelector.addressBook');
             } else {
-                key = addr.walletName || 'My accounts';
+                key = addr.walletName || $_('addressSelector.myAccounts');
             }
-            
+        
             if (!groups.has(key)) {
                 groups.set(key, []);
             }
             groups.get(key)!.push(addr);
         });
-        
+    
         return Array.from(groups.entries());
     });
 

@@ -108,7 +108,6 @@
         addressesLoading = true;
         try {
             potentialAddresses = await getAllAddressesByChain($globalStore.selectedWallet, currentWallet.selectedAccount);
-            console.log(potentialAddresses);
         } catch (_) {
             potentialAddresses = [];
         } finally {
