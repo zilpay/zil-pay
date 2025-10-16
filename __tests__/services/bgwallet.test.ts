@@ -35,6 +35,8 @@ import { WalletSettings } from "../../background/storage";
 import '../setupTests';
 import { messageManager } from "../setupTests";
 import { AddressCategory } from "config/common";
+import { Address } from "crypto/address";
+import { hexToUint8Array } from "lib/utils/hex";
 
 describe("WalletService through background messaging", () => {
   let globalState: GlobalState;
@@ -232,7 +234,7 @@ describe("WalletService through background messaging", () => {
       expect(state.wallets).toHaveLength(3);
 
       const bscAddresses = await getAllAddressesByChain(0, 0);
-      expect(bscAddresses).toHaveLength(5);
+      expect(bscAddresses).toHaveLength(4);
 
       bscAddresses.forEach((acc) => {
         expect(acc.addrType).toBe(AddressType.EthCheckSum);
@@ -250,7 +252,7 @@ describe("WalletService through background messaging", () => {
       expect(bscBookEntry[1].addr).toEqual(state.book[1].address);
 
       const ethAddresses = await getAllAddressesByChain(1, 0);
-      expect(ethAddresses).toHaveLength(5);
+      expect(ethAddresses).toHaveLength(4);
 
       ethAddresses.forEach((acc) => {
         expect(acc.addrType).toBe(AddressType.EthCheckSum);
@@ -270,13 +272,15 @@ describe("WalletService through background messaging", () => {
       const zilAddresses = await getAllAddressesByChain(2, 0);
 
       expect(zilAddresses).toHaveLength(4);
-      zilAddresses.forEach((acc) => {
-        expect(acc.addrType).toBe(AddressType.Bech32);
-      });
+      expect(zilAddresses[0].addr).toBe(state.book[2].address);
+      expect(zilAddresses[1].addr).toBe(state.wallets[2].accounts[1].addr);
+      expect(zilAddresses[2].addr).toBe(state.wallets[2].accounts[2].addr);
+      expect(zilAddresses[3].category).toBe(AddressCategory.ZILExchangeLegacy);
+      expect(zilAddresses[3].addr).toBe(await ((await Address.fromPubKeyType(hexToUint8Array(state.wallets[2].accounts[0].pubKey), AddressType.EthCheckSum)).toEthChecksum()));
     
       const zilWalletAddresses = zilAddresses.filter(a => a.category === AddressCategory.Wallet);
 
-      expect(zilWalletAddresses).toHaveLength(3);
+      expect(zilWalletAddresses).toHaveLength(2);
       zilWalletAddresses.forEach((acc) => {
         expect(acc.walletName).toBe(state.wallets[2].walletName);
       });
@@ -284,31 +288,6 @@ describe("WalletService through background messaging", () => {
       const zilBookEntry = zilAddresses.filter(a => a.category === AddressCategory.AddressBook);
       expect(zilBookEntry).toHaveLength(1);
       expect(zilBookEntry[0].addr).toEqual(state.book[2].address);
-    });
-
-    it("should filter addresses by chain hash and address type", async () => {
-      const settings = new WalletSettings(BASE_SETTINGS);
-      const zilChain = createZilliqaTestnetConfig();
-  
-      await walletFromBip39Mnemonic({
-        mnemonic: WORDS,
-        bip39WordList: WORD_LIST,
-        walletName: "ZIL Test Wallet",
-        accounts: [
-          { index: 0, name: "Main" },
-          { index: 1, name: "Secondary" },
-          { index: 2, name: "Tertiary" }
-        ],
-        verifyCheckSum: true,
-        chain: zilChain,
-        password: PASSWORD,
-        settings,
-      });
-
-      const addresses = await getAllAddressesByChain(0, 0);
-      const account = globalState.state.wallets[0].accounts[0];
-  
-      expect(addresses.every(a => a.addrType === account.addrType)).toBe(true);
     });
   });
 

@@ -13,6 +13,7 @@ import { Session } from "background/secure";
 import { WorkerService } from "./worker";
 import { AddressCategory } from "config/common";
 import { AddressType } from "config/wallet";
+import { Address } from "crypto/address";
 
 export class WalletService {
   #state: BackgroundState;
@@ -405,21 +406,39 @@ export class WalletService {
       const addresses: WalletAddressInfo[] = [];
 
       this.#state.book.forEach((bookEntry) => {
-        if (bookEntry.addrType == account.addrType) {
-          addresses.push({
-            addr: bookEntry.address,
-            accountName: bookEntry.name,
-            walletIndex: -1,
-            walletName: '',
-            addrType: bookEntry.addrType,
-            category: AddressCategory.AddressBook
-          });
+        if (bookEntry.addrType !== account.addrType || account.addr.includes(bookEntry.address)) {
+          return;
         }
+
+        addresses.push({
+          addr: bookEntry.address,
+          accountName: bookEntry.name,
+          walletIndex: -1,
+          walletName: '',
+          addrType: bookEntry.addrType,
+          category: AddressCategory.AddressBook
+        });
       });
 
-      this.#state.wallets.forEach((w, walletIndex) => {
-        w.accounts.forEach((a) => {
-          if (a.chainHash === chainHash && a.addrType == account.addrType) {
+      this.#state.wallets.forEach(async (w, walletIndex) => {
+        w.accounts.forEach(async (a) => {
+          if (a.chainHash !== chainHash || a.addrType !== account.addrType) {
+            return;
+          }
+
+          if (a.addrType === AddressType.Bech32 && a.addr.includes(account.addr)) {
+            const pubKey = hexToUint8Array(a.pubKey);
+            const addrEVM = await Address.fromPubKeyType(pubKey, AddressType.EthCheckSum);
+
+            addresses.push({
+              addr: await addrEVM.toEthChecksum(),
+              accountName: a.name,
+              walletIndex: walletIndex,
+              walletName: w.walletName,
+              addrType: AddressType.EthCheckSum,
+              category: AddressCategory.ZILExchangeLegacy,
+            });
+          } else if (!a.addr.includes(account.addr)) {
             addresses.push({
               addr: a.addr,
               accountName: a.name,
