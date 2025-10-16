@@ -45,7 +45,7 @@
         gap: 8px;
         width: 100%;
         padding: 8px;
-        background: var(--color-cards-regular-base-default);
+        background: transparent;
         border-radius: 12px;
         border: none;
         outline: 1px solid var(--color-neutral-border-default);
