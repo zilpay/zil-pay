@@ -17,6 +17,7 @@ export interface IChainConfigState {
   ens: string | null;
   explorers: IExplorerState[];
   fallbackEnabled: boolean;
+  batchRequest: boolean;
   testnet: boolean | null;
   ftokens: IFTokenState[];
 }
@@ -35,6 +36,7 @@ export class ChainConfig implements IChainConfigState {
   ens: string | null;
   explorers: Explorer[];
   fallbackEnabled: boolean;
+  batchRequest: boolean;
   testnet: boolean | null;
   ftokens: FToken[];
 
@@ -54,6 +56,7 @@ export class ChainConfig implements IChainConfigState {
       (e) => new Explorer(e)
     );
     this.fallbackEnabled = data.fallbackEnabled ?? true;
+    this.batchRequest = data.batchRequest ?? true;
     this.testnet = data.testnet ?? null;
     this.ftokens = (data.ftokens).map(
       (t) => new FToken({
@@ -86,6 +89,7 @@ export class ChainConfig implements IChainConfigState {
       ens: this.ens,
       explorers: this.explorers.map(e => e.toJSON()),
       fallbackEnabled: this.fallbackEnabled,
+      batchRequest: this.batchRequest,
       testnet: this.testnet,
       ftokens: this.ftokens.map(t => t.toJSON())
     };

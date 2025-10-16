@@ -201,6 +201,7 @@ export const createZilliqaConfig = (): ChainConfig =>
     ),
     explorers: [],
     fallbackEnabled: true,
+    batchRequest: true,
     testnet: true,
     ftokens: mainnetChains[2].ftokens.map(
       (t) =>
@@ -230,6 +231,7 @@ export const createBscConfig = (): ChainConfig =>
     ),
     explorers: [],
     fallbackEnabled: true,
+    batchRequest: true,
     testnet: true,
     ftokens: mainnetChains[0].ftokens.map(
       (t) =>
@@ -259,6 +261,7 @@ export const createEthConfig = (): ChainConfig =>
     ),
     explorers: [],
     fallbackEnabled: true,
+    batchRequest: true,
     testnet: true,
     ftokens: mainnetChains[1].ftokens.map(
       (t) =>
@@ -288,6 +291,7 @@ export const createZilliqaTestnetConfig = (): ChainConfig =>
     ),
     explorers: [],
     fallbackEnabled: true,
+    batchRequest: true,
     testnet: true,
     ftokens: testnetChains[0].ftokens.map(
       (t) =>
@@ -319,6 +323,7 @@ export const createBscTestNetConfig = (): ChainConfig =>
     ),
     explorers: [],
     fallbackEnabled: true,
+    batchRequest: true,
     testnet: true,
     ftokens: testnetChains[1].ftokens.map(
       (t) =>

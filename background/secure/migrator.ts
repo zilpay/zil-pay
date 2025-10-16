@@ -102,6 +102,7 @@ const ZILLIQA_MAINNET_CHAIN = new ChainConfig({
     diffBlockTime: 30,
     ens: null,
     fallbackEnabled: false,
+    batchRequest: false,
     testnet: false
 });
 

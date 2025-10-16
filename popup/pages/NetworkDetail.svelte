@@ -13,7 +13,6 @@
     import DeleteIcon from '../components/icons/Delete.svelte';
 
     let showAdvanced = $state(false);
-    let selectedRpcIndex = $state(0);
 
     const chainIndex = $derived(Number($currentParams.index ?? 0));
     const chain = $derived<IChainConfigState | undefined>(
@@ -41,11 +40,20 @@
 
     async function toggleBatchRequest() {
         if (!chain || chainIndex < 0) return;
+
+        globalStore.update(state => {
+            const chains = [...state.chains];
+            chains[chainIndex] = {
+                ...chains[chainIndex],
+                batchRequest: !chains[chainIndex].batchRequest
+            };
+            return { ...state, chains };
+        });
         await setGlobalState();
     }
 
     function handleRpcSelect(index: number) {
-        selectedRpcIndex = index;
+        // selectedRpcIndex = index;
     }
 
     async function handleRpcDelete(index: number) {
@@ -154,7 +162,6 @@
                         {#each chain.rpc as rpc, index}
                             <div
                                 class="rpc-item"
-                                class:selected={index === selectedRpcIndex}
                                 role="button"
                                 tabindex="0"
                                 onclick={() => handleRpcSelect(index)}
@@ -399,11 +406,6 @@
 
         &:hover {
             border-color: var(--color-cards-regular-border-hover);
-        }
-
-        &.selected {
-            background: color-mix(in srgb, var(--color-neutral-tag-purple-fg) 10%, transparent);
-            border-color: var(--color-neutral-tag-purple-border);
         }
 
         &:focus-visible {
