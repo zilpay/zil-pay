@@ -39,6 +39,7 @@
     }
 
     function handleAddAccount() {
+        push('/add-account');
     }
 </script>
 

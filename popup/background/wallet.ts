@@ -7,7 +7,7 @@ import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import { themeDetect } from "popup/mixins/theme";
 import globalStore from "popup/store/global";
-import type { IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
+import type { AccountFromBip39Params, IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
  
 export async function getGlobalState() {
   const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
@@ -115,6 +115,18 @@ export async function walletFromBip39Mnemonic(payload: WalletFromBip39Params) {
   const data =    await new Message<SendResponseParams>({
     payload,
     type: MTypePopup.WALLET_FROM_BIP39,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
+export async function addNextBip39Account(payload: AccountFromBip39Params) {
+  const data =    await new Message<SendResponseParams>({
+    payload,
+    type: MTypePopup.ADD_NEXT_BIP39_ACCOUNT,
   }).send();
   let resolve = warpMessage(data) as BackgroundState;
 

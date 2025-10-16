@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
-  import { type Bip32Account, type IWalletSettingsState } from 'background/storage';
+  import type { Bip32Account, WalletFromBip39Params, WalletFromPrivateKeyParams } from 'types/wallet';
+  import { type IWalletSettingsState } from 'background/storage';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import SmartInput from '../components/SmartInput.svelte';
