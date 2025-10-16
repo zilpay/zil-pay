@@ -8,7 +8,8 @@
     import { logout } from 'popup/background/wallet';
     import { push } from '../router/navigation';
     import globalStore from 'popup/store/global';
-    import { linksExpand } from 'popup/mixins/links';
+    import { linksExpand, openAddressInExplorer } from 'popup/mixins/links';
+    import { hashChainConfig } from 'lib/utils/hashing';
 
 
     let {
@@ -22,10 +23,8 @@
         showLock = true,
         expandDisabled = false,
         refreshDisabled = false,
-        settingsDisabled = false,
         lockDisabled = false,
         onRefresh = () => {},
-        onSettings = () => {},
         left = undefined
     }: {
         showNetworkButton?: boolean;
@@ -38,10 +37,8 @@
         showLock?: boolean;
         expandDisabled?: boolean;
         refreshDisabled?: boolean;
-        settingsDisabled?: boolean;
         lockDisabled?: boolean;
         onRefresh?: () => void;
-        onSettings?: () => void;
         left?: Snippet;
     } = $props();
 
@@ -57,6 +54,18 @@
 
   function onExpand() {
       linksExpand();
+  };
+
+  function onSettings() {
+      const wallet = $globalStore.wallets[$globalStore.selectedWallet];
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chain = $globalStore.chains.find
+          ((c) => account.chainHash == hashChainConfig(c.chainIds, c.slip44, c.chain)
+      );
+
+      if (chain) {
+          openAddressInExplorer(account.addr, chain);
+      }
   };
 </script>
 
@@ -103,10 +112,7 @@
         {#if showSettings}
             <button
                 class="system-button"
-                class:disabled={settingsDisabled}
-                onclick={settingsDisabled ? undefined : onSettings}
-                disabled={settingsDisabled}
-                aria-label="Explorer Link"
+                onclick={onSettings}
             >
                 <LinkIcon />
             </button>
