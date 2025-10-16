@@ -1,21 +1,30 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import type { SvelteComponent } from 'svelte';
 
     let {
         label,
         Icon,
-        onclick = () => {}
+        onclick = () => {},
+        rightComponent = undefined
     }: {
         label: string;
         Icon: new (...args: any) => SvelteComponent;
         onclick?: () => void;
+        rightComponent?: Snippet;
     } = $props();
 </script>
 
 <button class="settings-item" {onclick}>
     <span class="label">{label}</span>
-    <div class="icon-wrapper">
-        <Icon />
+    <div class="right-content">
+        {#if rightComponent}
+            {@render rightComponent()}
+        {:else}
+            <div class="icon-wrapper">
+                <Icon />
+            </div>
+        {/if}
     </div>
 </button>
 
@@ -38,6 +47,12 @@
         font-family: Geist;
         font-weight: 400;
         line-height: 20px;
+    }
+
+    .right-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .icon-wrapper {

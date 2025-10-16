@@ -4,11 +4,14 @@
     import globalStore from 'popup/store/global';
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain, getWalletChain } from 'popup/mixins/chains';
+    import { setGlobalState } from 'popup/background/wallet';
     import WalletInfoCard from '../components/WalletInfoCard.svelte';
 
     import Header from '../components/Header.svelte';
     import BottomTabs from '../components/BottomTabs.svelte';
     import SettingsItem from '../components/SettingsItem.svelte';
+    import ActionCard from '../components/ActionCard.svelte';
+    import Switch from '../components/Switch.svelte';
 
     import CurrencyIcon from '../components/icons/Currency.svelte';
     import AppearanceIcon from '../components/icons/Appearance.svelte';
@@ -25,7 +28,6 @@
     const generalSettings = [
         { id: 'currency', labelKey: 'settings.currency', Icon: CurrencyIcon, path: '/currency' },
         { id: 'appearance', labelKey: 'settings.appearance', Icon: AppearanceIcon, path: '/appearance' },
-        { id: 'notifications', labelKey: 'settings.notifications', Icon: NotificationIcon, path: '/settings/notifications' },
         { id: 'address_book', labelKey: 'settings.addressBook', Icon: ContactsIcon, path: '/addressbook' }
     ];
 
@@ -52,6 +54,14 @@
         } else {
             push(path);
         }
+    }
+
+    async function handleNotificationToggle() {
+        globalStore.update(state => {
+            return { ...state, notificationsGlobalEnabled: !$globalStore.notificationsGlobalEnabled };
+        });
+
+        await setGlobalState();
     }
 </script>
 
@@ -81,6 +91,20 @@
         {/if}
 
         <div class="settings-group">
+            <div class="item-wrapper" class:no-divider={false}>
+                <SettingsItem 
+                    label={$_('settings.notifications')}
+                    Icon={NotificationIcon}
+                >
+                    {#snippet rightComponent()}
+                        <Switch
+                            checked={$globalStore.notificationsGlobalEnabled}
+                            variant="default"
+                            onChange={handleNotificationToggle}
+                        />
+                    {/snippet}
+                </SettingsItem>
+            </div>
             {#each generalSettings as item, index (item.id)}
                 <div class="item-wrapper" class:no-divider={index === generalSettings.length - 1}>
                     <SettingsItem 
