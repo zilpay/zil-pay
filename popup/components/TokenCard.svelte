@@ -5,6 +5,7 @@
     import { processTokenLogo } from 'lib/popup/url';
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { hashXORHex } from 'lib/utils/hashing';
+    import { getCurrencySymbol } from 'config/currencies';
 
     let {
         token,
@@ -24,14 +25,28 @@
         onSelect?: () => void;
     } = $props();
 
-    const balance = $derived(hide ? '******' : abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals));
-    // TODO: add token rate.
-    const convertedBalance = $derived(hide ? '******' : token.rate ?? 0);
+    const balance = $derived(() => {
+        if (hide) {
+            return '******';
+        }
+
+        const humanBalance = abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals);
+        const symbol = getCurrencySymbol(token.symbol);
+
+        return `${humanBalance} ${symbol}`;
+    });
+    
+    const convertedBalance = $derived(() => {
+        if (hide) return '******';
+        const rate = token.rate ?? 0;
+        const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
+        return rate > 0 ? `${currencySymbol}${rate}` : '-';
+    });
+    
     const logo = $derived(processTokenLogo({
         token,
         theme: $globalStore.appearances,
     }));
-
 
     function handleClick() {
         if (!disabled && !loading) {
@@ -50,25 +65,25 @@
 >
     {#if !tokensRow}
         <div class="grid-header">
-            <span class="symbol">{token.symbol}</span>
+            <span class="symbol">{token.name}</span>
             <div class="token-icon">
                 <FastImg src={logo} class="icon-image" />
             </div>
         </div>
         <div class="balance-group">
-            <div class="balance">{balance}</div>
-            <div class="converted">{convertedBalance}</div>
+            <div class="balance">{balance()}</div>
+            <div class="converted">{convertedBalance()}</div>
         </div>
     {:else}
         <div class="info-group">
             <div class="token-icon">
                 <FastImg src={logo} class="icon-image" />
             </div>
-            <span class="symbol">{token.symbol}</span>
+            <span class="token-name">{token.name}</span>
         </div>
         <div class="balance-group">
-            <div class="balance">{balance}</div>
-            <div class="converted">{convertedBalance}</div>
+            <div class="balance">{balance()}</div>
+            <div class="converted">{convertedBalance()}</div>
         </div>
     {/if}
 </button>
@@ -149,7 +164,28 @@
         overflow: hidden;
     }
 
-    .symbol,
+    .symbol {
+        color: var(--color-content-text-inverted);
+        font-size: 16px;
+        font-family: Geist, monospace;
+        font-weight: 700;
+        line-height: 22px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .token-name {
+        color: var(--color-content-text-inverted);
+        font-size: 16px;
+        font-family: Geist;
+        font-weight: 700;
+        line-height: 22px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .balance {
         color: var(--color-content-text-inverted);
         font-size: 16px;
@@ -191,7 +227,7 @@
             gap: 8px;
         }
 
-        .symbol {
+        .token-name {
             font-weight: 400;
         }
 
@@ -208,5 +244,3 @@
         }
     }
 </style>
-
-
