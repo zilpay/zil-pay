@@ -1,5 +1,3 @@
-// zil-pay/lib/notify.ts
-
 import { Runtime } from "lib/runtime";
 import { TransactionStatus } from "config/tx";
 import type { IHistoricalTransactionState } from "background/rpc/history_tx";

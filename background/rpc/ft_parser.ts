@@ -1,5 +1,5 @@
 import { createContract } from 'micro-eth-signer/advanced/abi.js';
-import { RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
+import { RpcError, RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
 import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address } from 'crypto/address';
@@ -65,14 +65,19 @@ export interface ZilSmartContractSubStateResponse {
   };
 }
 
-function validateResponse<T>(response: JsonRPCResponse<T>): T {
+function validateResponse<T>(response: JsonRPCResponse<T>, ignore: number[] = []): T {
   if (response.error) {
-    throw new Error(
-      `RPC Error (code: ${response.error.code}): ${response.error.message}`,
+    if (ignore.includes(response.error.code)) {
+      return null as T;
+    }
+    throw new RpcError(
+      response.error.message,
+      response.error.code,
+      response.error.data,
     );
   }
   if (TypeOf.isUndefined(response.result)) {
-    throw new Error('RPC Error: Response missing result field');
+    throw new RpcError('Bad Res', -32603);
   }
 
   return response.result as T;
@@ -299,16 +304,20 @@ export async function processZilBalanceResponse(
   account: Address,
   isNative: boolean,
 ): Promise<bigint> {
-  try {
-    const result = validateResponse(response);
-    if (isNative) {
-      return BigInt((result as ZilBalanceResponse).balance || '0');
-    } else {
-      const addr = (await account.toZilChecksum()).toLowerCase();
-      const balances = (result as ZilSmartContractSubStateResponse).balances;
-      return BigInt(balances?.[addr] || '0');
-    }
-  } catch (error) {
+  const IGNORE_CODES = [
+    -5, // ignore account is not created
+  ];
+  const result = validateResponse(response, IGNORE_CODES);
+
+  if (!result) {
     return 0n;
+  }
+
+  if (isNative) {
+    return BigInt((result as ZilBalanceResponse).balance || '0');
+  } else {
+    const addr = (await account.toZilChecksum()).toLowerCase();
+    const balances = (result as ZilSmartContractSubStateResponse).balances;
+    return BigInt(balances?.[addr] || '0');
   }
 }

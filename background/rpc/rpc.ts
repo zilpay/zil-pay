@@ -261,7 +261,7 @@ export class NetworkProvider {
 
     const provider = new RpcProvider(this.config);
     const payloads = allRequests.map(r => r.payload);
-    const responses = await provider.req<JsonRPCResponse<any>[]>(payloads);
+    const responses = await provider.req<JsonRPCResponse<any>[]>(payloads, false);
 
     for (let i = 0; i < allRequests.length; i++) {
       const requestInfo = allRequests[i];

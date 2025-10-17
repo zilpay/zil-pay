@@ -2,7 +2,7 @@ import { Account, ChainConfig, FToken, Wallet, WalletSettings, type BackgroundSt
 import type { StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-import { type AccountFromBip39Params, type SetPasswordPayload, type WalletAddressInfo, type WalletFromBip39Params, type WalletFromPrivateKeyParams } from "types/wallet";
+import type { AccountFromBip39Params, SetPasswordPayload, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";

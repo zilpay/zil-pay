@@ -46,7 +46,7 @@ export class RpcProvider {
     };
   }
 
-  public async req<T>(payload: JsonRPCRequest | JsonRPCRequest[], jsonRPCError = true): Promise<T> {
+  public async req<T>(payload: JsonRPCRequest | JsonRPCRequest[], jsonRPCError = true, ignore: number[] = []): Promise<T> {
     const client = {
       timeout: 5000,
     };
@@ -95,7 +95,7 @@ export class RpcProvider {
             if (jsonRPCError) {
               const errors = json
                 .map((res) => res.error)
-                .filter((err): err is NonNullable<typeof err> => !!err);
+                .filter((err): err is NonNullable<typeof err> => !!err && !ignore.includes(err.code));
               if (errors.length > 0) {
                 const firstError = errors[0];
                 lastError = new RpcError(
@@ -107,7 +107,7 @@ export class RpcProvider {
                 continue;
               }
             }
-          } else if (json.error && jsonRPCError) {
+          } else if (json.error && jsonRPCError && !ignore.includes(json.error.code)) {
             lastError = new RpcError(
               json.error.message,
               json.error.code,
