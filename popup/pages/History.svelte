@@ -8,6 +8,7 @@
     import TransactionItem from '../components/TransactionItem.svelte';
     import type { IHistoricalTransactionState } from 'background/rpc/history_tx';
     import { checkTransactionsHistory } from 'popup/background/transactions';
+    import { setGlobalState } from 'popup/background/wallet';
 
     const MILLISECONDS_PER_DAY = 86400000;
 
@@ -62,8 +63,20 @@
         return Array.from(groups.entries());
     });
 
-    function handleClearAll() {
-        // TODO: implement clear all history
+    async function handleClearAll() {
+        globalStore.update(state => {
+            const newWallets = [...state.wallets];
+            newWallets[state.selectedWallet] = {
+                ...newWallets[state.selectedWallet],
+                history: []
+            };
+            return { 
+                ...state, 
+                wallets: newWallets 
+            };
+        });
+
+        await setGlobalState();
     }
 
     async function handleCheckTransactionsHistory() {

@@ -1,8 +1,9 @@
-import type { BackgroundState } from "background/storage";
+import type { BackgroundState, IChainConfigState } from "background/storage";
 import { NetworkProvider } from "background/rpc";
 import { TransactionStatus } from "config/tx";
 import { Runtime } from "lib/runtime";
 import { TransactionNotifier } from "lib/runtime/notify";
+import type { Locales } from "config/locale";
 
 const WORKER_ALARM_NAME = "transaction-worker";
 
@@ -65,8 +66,12 @@ export class WorkerService {
 
     this.#isRunning = true;
 
+    await this.enableNotifier(this.#state.locale, chainConfig);
+  }
+
+  async enableNotifier(locale: Locales, chainConfig: IChainConfigState) {
     if (this.#state.notificationsGlobalEnabled) {
-      this.#notifier = await TransactionNotifier.init(this.#state.locale, chainConfig);
+      this.#notifier = await TransactionNotifier.init(locale, chainConfig);
     }
   }
 
