@@ -17,9 +17,11 @@ import { TransactionStatus } from "config/tx";
 
 export class TransactionService {
   #state: BackgroundState;
+  #worker: WorkerService;
 
-  constructor(state: BackgroundState, _worker: WorkerService) {
+  constructor(state: BackgroundState, worker: WorkerService) {
     this.#state = state;
+    this.#worker = worker;
   }
 
   async updateTransactionsHistory(walletIndex: number, sendResponse: StreamResponse) {
@@ -32,7 +34,7 @@ export class TransactionService {
         (tx) => (tx.status === TransactionStatus.Pending && tx.metadata.chainHash == account.chainHash)
       );
 
-      await provider.updateTransactionsHistory(pendingTransactions);
+      await provider.updateTransactionsHistory(pendingTransactions, this.#worker.notifier);
       await this.#state.sync();
 
       sendResponse({

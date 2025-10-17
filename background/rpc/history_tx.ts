@@ -163,7 +163,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
         ? TransactionStatus.Success 
         : TransactionStatus.Failed;
     } else if (this.evm) {
-      const data = result as any;
+      const data = result as TransactionReceiptEVM;
     
       this.evm = {
         ...this.evm,

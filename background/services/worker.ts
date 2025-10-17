@@ -2,12 +2,18 @@ import type { BackgroundState } from "background/storage";
 import { NetworkProvider } from "background/rpc";
 import { TransactionStatus } from "config/tx";
 import { Runtime } from "lib/runtime";
+import { TransactionNotifier } from "lib/runtime/notify";
 
 const WORKER_ALARM_NAME = "transaction-worker";
 
 export class WorkerService {
   #state: BackgroundState;
   #isRunning: boolean = false;
+  #notifier?: TransactionNotifier;
+
+  get notifier() {
+    return this.#notifier;
+  }
 
   constructor(state: BackgroundState) {
     this.#state = state;
@@ -58,6 +64,10 @@ export class WorkerService {
     });
 
     this.#isRunning = true;
+
+    if (this.#state.notificationsGlobalEnabled) {
+      this.#notifier = await TransactionNotifier.init(this.#state.locale, chainConfig);
+    }
   }
 
   async stop(): Promise<void> {
@@ -102,7 +112,8 @@ export class WorkerService {
 
     try {
       const provider = new NetworkProvider(chainConfig);
-      await provider.updateTransactionsHistory(pendingTransactions);
+
+      await provider.updateTransactionsHistory(pendingTransactions, this.#notifier);
       await this.#state.sync();
     } catch (error) {
       console.error('Transaction update failed:', error);

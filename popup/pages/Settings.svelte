@@ -10,7 +10,6 @@
     import Header from '../components/Header.svelte';
     import BottomTabs from '../components/BottomTabs.svelte';
     import SettingsItem from '../components/SettingsItem.svelte';
-    import ActionCard from '../components/ActionCard.svelte';
     import Switch from '../components/Switch.svelte';
 
     import CurrencyIcon from '../components/icons/Currency.svelte';

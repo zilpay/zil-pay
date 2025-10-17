@@ -1,2 +1,8 @@
 {
+  "notify": {
+    "tx.success.title": "✅ Transaction Confirmed",
+    "tx.success.message": "{symbol} transfer completed successfully\n{hash}",
+    "tx.failed.title": "❌ Transaction Failed",
+    "tx.failed.message": "{symbol} transfer failed\n{hash}"
+  }
 }

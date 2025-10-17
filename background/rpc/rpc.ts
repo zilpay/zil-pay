@@ -20,6 +20,7 @@ import { HistoricalTransaction } from './history_tx';
 import { buildPayloadTxReceipt, buildSendSignedTxRequest, processTxSendResponse } from './tx_parse';
 import { AddressType } from 'config/wallet';
 import type { GasFeeHistory, RequiredTxParams } from 'types/gas';
+import type { TransactionNotifier } from 'lib/runtime/notify';
 
 export class NetworkProvider {
   config: ChainConfig;
@@ -196,7 +197,7 @@ export class NetworkProvider {
     throw new Error("unsupported contract");
   }
 
-  async updateTransactionsHistory(txns: HistoricalTransaction[]): Promise<void> {
+  async updateTransactionsHistory(txns: HistoricalTransaction[], notifier?: TransactionNotifier): Promise<void> {
     if (txns.length === 0) {
       return;
     }
@@ -209,6 +210,12 @@ export class NetworkProvider {
       const tx = txns[index];
       return tx.updateFromJsonRPCResult(res.result);
     }));
+
+    if (notifier) {
+      for (const tx of txns) {
+        await notifier.notifyTransactionStatus(tx);
+      }
+    }
   }
 
   async broadcastSignedTransactions(txns: SignedTransaction[]): Promise<HistoricalTransaction[]> {
