@@ -9,6 +9,7 @@
     import SmartInput from '../components/SmartInput.svelte';
     import SearchIcon from '../components/icons/Search.svelte';
     import FastImg from '../components/FastImg.svelte';
+    import { getCurrencySymbol } from 'config/currencies';
 
     let {
         tokens = [],
@@ -65,11 +66,11 @@
                             alt={token.symbol}
                         />
                     </div>
-                    <span class="token-symbol">{token.symbol}</span>
+                    <span class="token-symbol">{token.name}</span>
                 </div>
                 <div class="token-balances">
                     <span class="balance">
-                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals)}
+                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals)} {getCurrencySymbol(token.symbol)}
                     </span>
                     <span class="fiat-balance">
                         {token.rate ?? 0}
