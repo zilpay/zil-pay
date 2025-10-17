@@ -35,8 +35,7 @@ export class TransactionNotifier {
       const response = await fetch(url);
       const data = await response.json();
       return data.notify || {};
-    } catch (error) {
-      console.error(error);
+    } catch (_) {
       return {};
     }
   }

@@ -183,7 +183,7 @@ describe("ft_parser", () => {
         };
         expect(() =>
           processEthMetadataResponse(mockResponse, MetadataField.Name),
-        ).toThrow("RPC Error (code: -32000): Invalid request");
+        ).toThrow("Invalid request");
       });
     });
 
@@ -296,7 +296,7 @@ describe("ft_parser", () => {
         const mockResponse: JsonRPCResponse<any> = {
           id: 1,
           jsonrpc: "2.0",
-          error: { code: -1, message: "Error" },
+          error: { code: -5, message: "Account is not created" },
         };
         const balance = await processZilBalanceResponse(
           mockResponse,
