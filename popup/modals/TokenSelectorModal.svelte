@@ -36,6 +36,18 @@
                 token.symbol.toLowerCase().includes(lowercasedFilter)
         );
     });
+
+    function getConvertedBalance(token: IFTokenState): string {
+        const rate = token.rate ?? 0;
+        if (rate <= 0) return '-';
+
+        const rawBalance = token.balances[hashXORHex(account.pubKey)] ?? 0;
+        const numericBalance = Number(rawBalance) / (10 ** token.decimals);
+        const convertedValue = numericBalance * rate;
+        const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
+
+        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}`;
+    }
 </script>
 
 <div class="token-selector-content">
@@ -70,10 +82,10 @@
                 </div>
                 <div class="token-balances">
                     <span class="balance">
-                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals)} {getCurrencySymbol(token.symbol)}
+                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals)} {token.symbol}
                     </span>
                     <span class="fiat-balance">
-                        {token.rate ?? 0}
+                        {getConvertedBalance(token)}
                     </span>
                 </div>
             </button>
