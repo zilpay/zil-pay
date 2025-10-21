@@ -8,7 +8,6 @@ import { ETHEREUM, ZILLIQA } from 'config/slip44';
 import { hashXOR } from 'lib/utils/hashing';
 import { AddressType } from 'config/wallet';
 
-// ERC721 ABI
 const ERC721_ABI = [
   { name: 'name', type: 'function', outputs: [{ type: 'string' }] },
   { name: 'symbol', type: 'function', outputs: [{ type: 'string' }] },
@@ -33,7 +32,6 @@ const ERC721_ABI = [
   },
 ] as const;
 
-// ERC1155 ABI
 const ERC1155_ABI = [
   {
     name: 'balanceOf',
@@ -64,7 +62,6 @@ const ERC1155_ABI = [
 export enum NFTStandard {
   ERC721 = 'ERC721',
   ERC1155 = 'ERC1155',
-  ZRC1 = 'ZRC1',
   ZRC6 = 'ZRC6',
   Unknown = 'Unknown',
 }
@@ -96,7 +93,9 @@ type ERC1155FunctionArgs = {
 export type NFTRequestType =
   | { type: 'Metadata'; field: NFTMetadataField; standard: NFTStandard }
   | { type: 'Balance'; address: Address; pubKeyHash: number; standard: NFTStandard; tokenId?: bigint }
-  | { type: 'Standard' };
+  | { type: 'TokenOwners'; standard: NFTStandard }
+  | { type: 'TokenUris'; standard: NFTStandard }
+  | { type: 'BaseUri'; standard: NFTStandard };
 
 export interface ZRC6Init {
   vname: string;
@@ -113,15 +112,22 @@ export interface NFTMetadata {
   symbol: string;
   totalSupply?: string;
   standard: NFTStandard;
-  balances: Record<number, string>;
+  balances: Record<number, Record<string, NFTTokenInfo>>;
   contractAddress: string;
   baseURI?: string;
-  tokens?: Record<number, Record<string, NFTTokenInfo>>;
 }
+
 
 export interface NFTTokenInfo {
   id: string;
   url?: string;
+  meta?: NFTTokenMetadata;
+}
+
+export interface NFTTokenMetadata {
+  image?: string;
+  name?: string;
+  attributes?: any[];
 }
 
 function validateResponse<T>(response: JsonRPCResponse<T>, ignore: number[] = []): T {
@@ -255,7 +261,6 @@ export class ERC1155Helper {
   }
 }
 
-// Detect NFT standard
 async function detectNFTStandard(
   contract: Address,
   provider: RpcProvider,
@@ -322,7 +327,7 @@ export async function buildNFTRequests(
   const requests: { payload: JsonRPCRequest; requestType: NFTRequestType }[] = [];
 
   if (contract.type === AddressType.Bech32) {
-    await buildZilNFTRequests(contract, pubKeys, requests);
+    await buildZilNFTRequests(contract, requests);
   } else if (contract.type === AddressType.EthCheckSum) {
     await buildEthNFTRequests(contract, pubKeys, provider, requests);
   }
@@ -332,38 +337,41 @@ export async function buildNFTRequests(
 
 async function buildZilNFTRequests(
   contract: Address,
-  pubKeys: Uint8Array[],
   requests: { payload: JsonRPCRequest; requestType: NFTRequestType }[],
 ): Promise<void> {
   const base16Contract = contract.toBase16();
   
-  // Получаем весь state контракта
   requests.push({
     payload: RpcProvider.buildPayload(ZilMethods.GetSmartContractInit, [base16Contract]),
     requestType: { type: 'Metadata', field: NFTMetadataField.Name, standard: NFTStandard.ZRC6 },
   });
 
-  // Получаем owned_token_count для каждого аккаунта
-  for (const pubKey of pubKeys) {
-    const addr = await Address.fromPubKey(pubKey, ZILLIQA);
-    const base16Account = (await addr.toZilChecksum()).toLowerCase();
-    
-    const payload = RpcProvider.buildPayload(ZilMethods.GetSmartContractSubState, [
+  requests.push({
+    payload: RpcProvider.buildPayload(ZilMethods.GetSmartContractSubState, [
       base16Contract,
-      'owned_token_count',
-      [base16Account],
-    ]);
-    
-    requests.push({
-      payload,
-      requestType: {
-        type: 'Balance',
-        address: addr,
-        pubKeyHash: hashXOR(pubKey),
-        standard: NFTStandard.ZRC6,
-      },
-    });
-  }
+      'token_owners',
+      []
+    ]),
+    requestType: { type: 'TokenOwners', standard: NFTStandard.ZRC6 },
+  });
+
+  requests.push({
+    payload: RpcProvider.buildPayload(ZilMethods.GetSmartContractSubState, [
+      base16Contract,
+      'token_uris',
+      []
+    ]),
+    requestType: { type: 'TokenUris', standard: NFTStandard.ZRC6 },
+  });
+
+  requests.push({
+    payload: RpcProvider.buildPayload(ZilMethods.GetSmartContractSubState, [
+      base16Contract,
+      'base_uri',
+      []
+    ]),
+    requestType: { type: 'BaseUri', standard: NFTStandard.ZRC6 },
+  });
 }
 
 async function buildEthNFTRequests(
@@ -374,7 +382,6 @@ async function buildEthNFTRequests(
 ): Promise<void> {
   const contractAddr = await contract.toEthChecksum();
   
-  // Detect standard first
   const standard = await detectNFTStandard(contract, provider);
   
   const buildEthCall = (data: string): JsonRPCRequest => {
@@ -387,7 +394,6 @@ async function buildEthNFTRequests(
   if (standard === NFTStandard.ERC721) {
     const erc721 = new ERC721Helper();
     
-    // Metadata requests
     const nameData = erc721.encodeFunctionCall('name', []);
     requests.push({
       payload: buildEthCall(nameData),
@@ -406,7 +412,6 @@ async function buildEthNFTRequests(
       requestType: { type: 'Metadata', field: NFTMetadataField.TotalSupply, standard },
     });
     
-    // Balance requests
     for (const pubKey of pubKeys) {
       const addr = await Address.fromPubKey(pubKey, ETHEREUM);
       const ethAddress = await addr.toEthChecksum();
@@ -425,13 +430,9 @@ async function buildEthNFTRequests(
   } else if (standard === NFTStandard.ERC1155) {
     const erc1155 = new ERC1155Helper();
     
-    // ERC1155 doesn't have name/symbol in standard, but we try
-    // Balance requests (need tokenId for ERC1155)
     for (const pubKey of pubKeys) {
       const addr = await Address.fromPubKey(pubKey, ETHEREUM);
       const ethAddress = await addr.toEthChecksum();
-      // For ERC1155, we typically need to know tokenId
-      // This is a simplified version - you might want to fetch owned token IDs first
       const balanceData = erc1155.encodeFunctionCall('balanceOf', [ethAddress, 0n]);
       
       requests.push({
@@ -470,7 +471,7 @@ export function processEthNFTMetadataResponse(
 
 export function processZilNFTMetadataResponse(
   response: JsonRPCResponse<ZRC6Init[]>,
-): { name: string; symbol: string; baseURI?: string } {
+): { name: string; symbol: string } {
   const initData = validateResponse(response);
 
   const getField = (fieldName: string): string => {
@@ -480,9 +481,15 @@ export function processZilNFTMetadataResponse(
 
   const name = getField('name');
   const symbol = getField('symbol');
-  const baseURI = getField('base_uri');
 
-  return { name, symbol, baseURI };
+  return { name, symbol };
+}
+
+export function processZilBaseUriResponse(
+  response: JsonRPCResponse<{ base_uri?: string }>,
+): string | undefined {
+  const result = validateResponse(response, [-5]);
+  return result?.base_uri;
 }
 
 export function processEthNFTBalanceResponse(
@@ -494,37 +501,48 @@ export function processEthNFTBalanceResponse(
 }
 
 export async function processZilNFTBalanceResponse(
-  response: JsonRPCResponse<{ [key: string]: any }>,
-  account: Address,
-): Promise<{ balance: bigint; tokens?: Record<string, NFTTokenInfo> }> {
-  const IGNORE_CODES = [-5];
-  const result = validateResponse(response, IGNORE_CODES);
+  tokenOwnersResponse: JsonRPCResponse<{ token_owners?: Record<string, string> }>,
+  tokenUrisResponse: JsonRPCResponse<{ token_uris?: Record<string, string> }>,
+  baseURI: string | undefined,
+  pubKeys: Uint8Array[],
+): Promise<{ balances: Record<number, Record<string, NFTTokenInfo>> }> {
+  const tokenOwners = validateResponse(tokenOwnersResponse)?.token_owners || {};
+  const tokenUris = validateResponse(tokenUrisResponse)?.token_uris || {};
 
-  if (!result) {
-    return { balance: 0n };
+  const balances: Record<number, Record<string, NFTTokenInfo>> = {};
+
+  let cleanBaseUri: string | undefined;
+  if (baseURI) {
+    cleanBaseUri = baseURI.endsWith('/') ? baseURI.slice(0, -1) : baseURI;
   }
 
-  const addr = (await account.toZilChecksum()).toLowerCase();
-  
-  if (typeof result[addr] === 'string') {
-    return { balance: BigInt(result[addr] || '0') };
-  }
-  
-  if (typeof result[addr] === 'object') {
-    const tokensMap = result[addr] as Record<string, string>;
-    const tokens: Record<string, NFTTokenInfo> = {};
+  for (let i = 0; i < pubKeys.length; i++) {
+    const pubKey = pubKeys[i];
+    const addr = await Address.fromPubKey(pubKey, ZILLIQA);
+    const base16Account = (await addr.toZilChecksum()).toLowerCase();
+    const pubKeyHash = hashXOR(pubKey);
     
-    for (const [tokenId] of Object.entries(tokensMap)) {
-      tokens[tokenId] = {
-        id: tokenId,
-      };
+    const userTokens: Record<string, NFTTokenInfo> = {};
+
+    for (const tokenId in tokenOwners) {
+      const owner = String(tokenOwners[tokenId]).toLowerCase();
+      
+      if (owner === base16Account) {
+        let url = tokenUris[tokenId];
+        
+        if (!url && cleanBaseUri) {
+          url = `${cleanBaseUri}/${tokenId}`;
+        }
+
+        userTokens[tokenId] = {
+          id: tokenId,
+          url,
+        };
+      }
     }
-    
-    return { 
-      balance: BigInt(Object.keys(tokens).length),
-      tokens 
-    };
+
+    balances[pubKeyHash] = userTokens;
   }
 
-  return { balance: 0n };
+  return { balances };
 }

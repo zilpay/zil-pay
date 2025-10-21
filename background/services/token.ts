@@ -1,5 +1,5 @@
 import { RpcProvider } from "background/rpc";
-import { buildNFTRequests, NFTMetadataField, NFTStandard, processEthNFTBalanceResponse, processEthNFTMetadataResponse, processZilNFTBalanceResponse, processZilNFTMetadataResponse, type NFTMetadata } from "background/rpc/nft_parser";
+import { buildNFTRequests, NFTMetadataField, NFTStandard, processEthNFTBalanceResponse, processEthNFTMetadataResponse, processZilBaseUriResponse, processZilNFTBalanceResponse, processZilNFTMetadataResponse, type NFTMetadata, type NFTTokenInfo } from "background/rpc/nft_parser";
 import type { BackgroundState } from "background/storage";
 import { RatesApiOptions } from "config/api";
 import { AddressType } from "config/wallet";
@@ -47,34 +47,31 @@ export class TokenService {
       );
 
       const payloads = requestsWithTypes.map((r) => r.payload);
-      const responses = await provider.req<any[]>(payloads, false, [-32000]);
+      const responses = await provider.req<any[]>(payloads);
 
-      const balances: Record<number, string> = {};
       let name = "";
       let symbol = "";
       let totalSupply: string | undefined;
       let standard = NFTStandard.Unknown;
       let baseURI: string | undefined;
+      let balances: Record<number, Record<string, NFTTokenInfo>> = {};
 
       if (contractAddr.type === AddressType.Bech32) {
         const metadata = processZilNFTMetadataResponse(responses[0]);
         name = metadata.name;
         symbol = metadata.symbol;
-        baseURI = metadata.baseURI;
         standard = NFTStandard.ZRC6;
 
-        for (let i = 1; i < responses.length; i++) {
-          const reqWithType = requestsWithTypes[i];
+        baseURI = processZilBaseUriResponse(responses[3]);
 
-          if (reqWithType.requestType.type === "Balance") {
-            const addr = reqWithType.requestType.address;
-            const balance = await processZilNFTBalanceResponse(
-              responses[i],
-              addr
-            );
-            balances[reqWithType.requestType.pubKeyHash] = balance.toString();
-          }
-        }
+        const result = await processZilNFTBalanceResponse(
+          responses[1],
+          responses[2],
+          baseURI,
+          pubKeys
+        );
+      
+        balances = result.balances;
       } else if (contractAddr.type === AddressType.EthCheckSum) {
         let responseIterator = 0;
 
@@ -103,16 +100,22 @@ export class TokenService {
           requestsWithTypes.slice(3).forEach((reqWithType, index) => {
             if (reqWithType.requestType.type === "Balance") {
               const response = responses[responseIterator + index];
-              const balance = processEthNFTBalanceResponse(response, standard);
-              balances[reqWithType.requestType.pubKeyHash] = balance.toString();
+              const balance = processEthNFTBalanceResponse(response);
+            
+              if (balance > 0n) {
+                balances[reqWithType.requestType.pubKeyHash] = {};
+              }
             }
           });
         } else if (standard === NFTStandard.ERC1155) {
           requestsWithTypes.forEach((reqWithType, index) => {
             if (reqWithType.requestType.type === "Balance") {
               const response = responses[index];
-              const balance = processEthNFTBalanceResponse(response, standard);
-              balances[reqWithType.requestType.pubKeyHash] = balance.toString();
+              const balance = processEthNFTBalanceResponse(response);
+            
+              if (balance > 0n) {
+                balances[reqWithType.requestType.pubKeyHash] = {};
+              }
             }
           });
         }

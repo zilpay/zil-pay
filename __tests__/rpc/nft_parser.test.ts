@@ -7,6 +7,7 @@ import {
   processZilNFTMetadataResponse,
   processEthNFTBalanceResponse,
   processZilNFTBalanceResponse,
+  processZilBaseUriResponse,
   NFTMetadataField,
   NFTStandard,
   type ZRC6Init,
@@ -72,7 +73,11 @@ describe("nft_parser", () => {
       const mockProvider = {} as any;
       const requests = await buildNFTRequests(contract, pubKeys, mockProvider);
 
+      expect(requests.length).toBe(4);
       expect(requests[0].payload.method).toBe(ZilMethods.GetSmartContractInit);
+      expect(requests[1].payload.method).toBe(ZilMethods.GetSmartContractSubState);
+      expect(requests[2].payload.method).toBe(ZilMethods.GetSmartContractSubState);
+      expect(requests[3].payload.method).toBe(ZilMethods.GetSmartContractSubState);
     });
   });
 
@@ -111,8 +116,7 @@ describe("nft_parser", () => {
       const mockInitData: ZRC6Init[] = [
         { vname: "name", type: "String", value: "Test NFT" },
         { vname: "symbol", type: "String", value: "TNFT" },
-        { vname: "base_uri", type: "String", value: "https://test.com/" },
-        { vname: "token_owners", type: "Map", value: "{}" },
+        { vname: "initial_contract_owner", type: "ByStr20", value: "0x1234567890123456789012345678901234567890" },
       ];
       const mockResponse: JsonRPCResponse<ZRC6Init[]> = {
         id: 1,
@@ -120,11 +124,36 @@ describe("nft_parser", () => {
         result: mockInitData,
       };
 
-      const { name, symbol, baseURI } = processZilNFTMetadataResponse(mockResponse);
+      const { name, symbol } = processZilNFTMetadataResponse(mockResponse);
 
       expect(name).toBe("Test NFT");
       expect(symbol).toBe("TNFT");
-      expect(baseURI).toBe("https://test.com/");
+    });
+  });
+
+  describe("processZilBaseUriResponse", () => {
+    it("should process base_uri", () => {
+      const mockResponse: JsonRPCResponse<{ base_uri?: string }> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: {
+          base_uri: "https://test.com/"
+        },
+      };
+
+      const baseUri = processZilBaseUriResponse(mockResponse);
+      expect(baseUri).toBe("https://test.com/");
+    });
+
+    it("should return undefined if base_uri not present", () => {
+      const mockResponse: JsonRPCResponse<{ base_uri?: string }> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: {},
+      };
+
+      const baseUri = processZilBaseUriResponse(mockResponse);
+      expect(baseUri).toBeUndefined();
     });
   });
 
@@ -151,58 +180,127 @@ describe("nft_parser", () => {
   });
 
   describe("processZilNFTBalanceResponse", () => {
-    it("should process ZRC6 balance count", async () => {
+    it("should process ZRC6 balance with token owners and uris", async () => {
       const keypair = await KeyPair.generate(ZILLIQA);
       const mockAccount = await keypair.address();
       const checksumAddress = (await mockAccount.toZilChecksum()).toLowerCase();
 
-      const mockResponse: JsonRPCResponse<{ [key: string]: string }> = {
+      const tokenOwnersResponse: JsonRPCResponse<{ token_owners?: Record<string, string> }> = {
         id: 1,
         jsonrpc: "2.0",
         result: {
-          [checksumAddress]: "5",
+          token_owners: {
+            "1": checksumAddress,
+            "2": checksumAddress,
+            "3": "0x0000000000000000000000000000000000000000",
+          }
         },
       };
 
-      const result = await processZilNFTBalanceResponse(mockResponse, mockAccount);
-      expect(result.balance).toBe(5n);
-      expect(result.tokens).toBeUndefined();
+      const tokenUrisResponse: JsonRPCResponse<{ token_uris?: Record<string, string> }> = {
+        id: 2,
+        jsonrpc: "2.0",
+        result: {
+          token_uris: {
+            "1": "https://example.com/1.json",
+            "2": "https://example.com/2.json",
+          }
+        },
+      };
+
+      const baseUri = "https://base.com/";
+      const pubKeys = [keypair.pubKey];
+
+      const result = await processZilNFTBalanceResponse(
+        tokenOwnersResponse,
+        tokenUrisResponse,
+        baseUri,
+        pubKeys
+      );
+
+      const pubKeyHash = Number(Object.keys(result.balances)[0]);
+      const userTokens = result.balances[pubKeyHash];
+
+      expect(Object.keys(userTokens).length).toBe(2);
+      expect(userTokens["1"].id).toBe("1");
+      expect(userTokens["1"].url).toBe("https://example.com/1.json");
+      expect(userTokens["2"].id).toBe("2");
+      expect(userTokens["2"].url).toBe("https://example.com/2.json");
     });
 
-    it("should process ZRC6 tokens with IDs", async () => {
+    it("should use baseUri when token_uri is missing", async () => {
       const keypair = await KeyPair.generate(ZILLIQA);
       const mockAccount = await keypair.address();
       const checksumAddress = (await mockAccount.toZilChecksum()).toLowerCase();
 
-      const mockResponse: JsonRPCResponse<{ [key: string]: any }> = {
+      const tokenOwnersResponse: JsonRPCResponse<{ token_owners?: Record<string, string> }> = {
         id: 1,
         jsonrpc: "2.0",
         result: {
-          [checksumAddress]: {
-            "123": "0",
-            "456": "1",
-            "789": "0",
-          },
+          token_owners: {
+            "10": checksumAddress,
+          }
         },
       };
 
-      const result = await processZilNFTBalanceResponse(mockResponse, mockAccount);
-      expect(result.balance).toBe(3n);
-      expect(result.tokens).toBeDefined();
-      expect(result.tokens!["123"].id).toBe("123");
-      expect(result.tokens!["456"].id).toBe("456");
-      expect(result.tokens!["789"].id).toBe("789");
+      const tokenUrisResponse: JsonRPCResponse<{ token_uris?: Record<string, string> }> = {
+        id: 2,
+        jsonrpc: "2.0",
+        result: {
+          token_uris: {}
+        },
+      };
+
+      const baseUri = "https://base.com/nft/";
+      const pubKeys = [keypair.pubKey];
+
+      const result = await processZilNFTBalanceResponse(
+        tokenOwnersResponse,
+        tokenUrisResponse,
+        baseUri,
+        pubKeys
+      );
+
+      const pubKeyHash = Number(Object.keys(result.balances)[0]);
+      const userTokens = result.balances[pubKeyHash];
+
+      expect(userTokens["10"].url).toBe("https://base.com/nft/10");
     });
 
-    it("should return 0 if error", async () => {
-      const mockAccount = await createZilAddress();
-      const mockResponse: JsonRPCResponse<any> = {
+    it("should return empty balances for account with no tokens", async () => {
+      const keypair = await KeyPair.generate(ZILLIQA);
+
+      const tokenOwnersResponse: JsonRPCResponse<{ token_owners?: Record<string, string> }> = {
         id: 1,
         jsonrpc: "2.0",
-        error: { code: -5, message: "Account is not created" },
+        result: {
+          token_owners: {
+            "1": "0x0000000000000000000000000000000000000000",
+          }
+        },
       };
-      const result = await processZilNFTBalanceResponse(mockResponse, mockAccount);
-      expect(result.balance).toBe(0n);
+
+      const tokenUrisResponse: JsonRPCResponse<{ token_uris?: Record<string, string> }> = {
+        id: 2,
+        jsonrpc: "2.0",
+        result: {
+          token_uris: {}
+        },
+      };
+
+      const pubKeys = [keypair.pubKey];
+
+      const result = await processZilNFTBalanceResponse(
+        tokenOwnersResponse,
+        tokenUrisResponse,
+        undefined,
+        pubKeys
+      );
+
+      const pubKeyHash = Number(Object.keys(result.balances)[0]);
+      const userTokens = result.balances[pubKeyHash];
+
+      expect(Object.keys(userTokens).length).toBe(0);
     });
   });
 });
