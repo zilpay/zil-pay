@@ -1,17 +1,18 @@
 <script lang="ts">
+    import type { IKeyPair } from 'types/wallet';
     import { _ } from 'popup/i18n';
-    import { pop } from 'popup/router/navigation';
     import { currentParams } from 'popup/store/route';
     import globalStore from 'popup/store/global';
-    import { unlockWallet } from 'popup/background/wallet';
+    import { exportKeyPair, exportbip39Words } from 'popup/background/wallet';
     import { WalletTypes } from 'config/wallet';
     
-    import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';
     import Button from '../components/Button.svelte';
     import WarningIcon from '../components/icons/Warning.svelte';
     import MnemonicWord from '../components/MnemonicWord.svelte';
     import HexKey from '../components/HexKey.svelte';
+    import CopyButton from '../components/CopyButton.svelte';
+    import AccountCard from '../components/AccountCard.svelte';
 
     const REVEAL_STAGE = {
         PASSWORD: 0,
@@ -24,13 +25,15 @@
     
     let password = $state('');
     let stage: number = $state(REVEAL_STAGE.PASSWORD);
-    let countdown = $state(60);
+    let countdown = $state(10);
     let error = $state<string | null>(null);
     let isLoading = $state(false);
     let revealedData = $state<string[]>([]);
+    let keyPair = $state<IKeyPair | null>(null);
     let intervalId: number | null = null;
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
+    const currentAccount = $derived(wallet?.accounts[wallet.selectedAccount]);
     const title = $derived(isPhrase ? $_('reveal.phraseTitle') : $_('reveal.keyTitle'));
     const warningText = $derived(
         isPhrase 
@@ -46,16 +49,14 @@
         error = null;
 
         try {
-            // await unlockWallet(password, $globalStore.selectedWallet);
-            
-            // if (isPhrase && wallet.walletType === WalletTypes.SecretPhrase) {
-            //     revealedData = wallet.phrase || [];
-            // } else if (!isPhrase) {
-            //     const account = wallet.accounts[wallet.selectedAccount];
-            //     revealedData = [account.privKey];
-            // }
+            if (isPhrase && wallet.walletType === WalletTypes.SecretPhrase) {
+                const mnemonic = await exportbip39Words(password, $globalStore.selectedWallet);
+                revealedData = mnemonic.split(" ");
+            } else if (!isPhrase) {
+                keyPair = await exportKeyPair(password, $globalStore.selectedWallet, wallet.selectedAccount);
+            }
 
-            // stage = REVEAL_STAGE.COUNTDOWN;
+            stage = REVEAL_STAGE.COUNTDOWN;
             startCountdown();
         } catch (err) {
             error = $_('reveal.invalidPassword');
@@ -92,8 +93,6 @@
 </script>
 
 <div class="page-container">
-    <NavBar {title} />
-
     <main class="content">
         {#if stage === REVEAL_STAGE.PASSWORD}
             <div class="warning-banner">
@@ -128,6 +127,16 @@
                 </div>
             </form>
         {:else if stage === REVEAL_STAGE.COUNTDOWN}
+            <div class="warning-banner">
+                <div class="warning-icon">
+                    <WarningIcon />
+                </div>
+                <div class="warning-content">
+                    <div class="warning-title">{$_('reveal.scamAlert')}</div>
+                    <div class="warning-text">{warningText}</div>
+                </div>
+            </div>
+
             <div class="countdown-container">
                 <div class="countdown-circle">
                     <svg class="countdown-svg" viewBox="0 0 200 200">
@@ -142,7 +151,7 @@
                             cx="100"
                             cy="100"
                             r="90"
-                            style="stroke-dashoffset: {565 * (countdown / 60)}"
+                            style="stroke-dashoffset: {565 * (countdown / 10)}"
                         />
                     </svg>
                     <div class="countdown-time">{formatTime(countdown)}</div>
@@ -154,6 +163,15 @@
                 </div>
             </div>
         {:else if stage === REVEAL_STAGE.REVEALED}
+            {#if currentAccount}
+                <AccountCard
+                    name={currentAccount.name}
+                    address={currentAccount.addr}
+                    selected={false}
+                    onclick={() => {}}
+                />
+            {/if}
+
             {#if isPhrase}
                 <div class="phrase-container">
                     <div class="phrase-grid">
@@ -162,17 +180,25 @@
                         {/each}
                     </div>
                 </div>
-            {:else}
+            {:else if keyPair}
                 <div class="key-container">
-                    <HexKey hexKey={revealedData[0] || ''} title={$_('reveal.privateKey')} />
+                    <div class="key-section">
+                        <div class="key-header">
+                            <span class="key-label">{$_('reveal.privateKey')}</span>
+                            <CopyButton label={$_('reveal.copy')} value={keyPair.privateKey} />
+                        </div>
+                        <HexKey hexKey={keyPair.privateKey} title="" />
+                    </div>
+
+                    <div class="key-section">
+                        <div class="key-header">
+                            <span class="key-label">{$_('reveal.publicKey')}</span>
+                            <CopyButton label={$_('reveal.copy')} value={keyPair.publicKey} />
+                        </div>
+                        <div class="public-key-value">{keyPair.publicKey}</div>
+                    </div>
                 </div>
             {/if}
-
-            <div class="revealed-actions">
-                <Button onclick={pop}>
-                    {$_('reveal.done')}
-                </Button>
-            </div>
         {/if}
     </main>
 </div>
@@ -341,13 +367,43 @@
     }
 
     .key-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .key-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
         background: var(--color-cards-regular-base-default);
         border: 1px solid var(--color-cards-regular-border-default);
         border-radius: 16px;
         padding: 16px;
     }
 
-    .revealed-actions {
-        margin-top: auto;
+    .key-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .key-label {
+        color: var(--color-content-text-inverted);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+    }
+
+    .public-key-value {
+        color: var(--color-content-text-inverted);
+        font-size: 12px;
+        font-family: 'Courier New', monospace;
+        line-height: 18px;
+        word-break: break-all;
+        padding: 12px;
+        background: var(--color-neutral-background-container);
+        border-radius: 8px;
     }
 </style>

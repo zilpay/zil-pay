@@ -234,10 +234,7 @@ export class WalletService {
       const keyPair = await wallet.revealKeypair(accountIndex, chain);
 
       sendResponse({
-        resolve: {
-          privKey: uint8ArrayToHex(keyPair.privateKey),
-          pubKey: uint8ArrayToHex(keyPair.pubKey),
-        }
+        resolve: await keyPair.toJSON(),
       });
     } catch (err) {
       sendResponse({

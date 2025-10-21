@@ -190,9 +190,7 @@ export async function exportbip39Words(password: string, walletIndex: number) {
     },
     type: MTypePopup.REVEAL_BIP39,
   }).send();
-  let resolve = warpMessage(data) as BackgroundState;
-
-  globalStore.set(resolve);
+  let resolve = warpMessage(data) as string;
 
   return resolve;
 }
@@ -206,9 +204,7 @@ export async function exportKeyPair(password: string, walletIndex: number, accou
     },
     type: MTypePopup.REVEAL_KEY,
   }).send();
-  let resolve = warpMessage(data) as BackgroundState;
-
-  globalStore.set(resolve);
+  let resolve = warpMessage(data) as IKeyPair;
 
   return resolve;
 }
