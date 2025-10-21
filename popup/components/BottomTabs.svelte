@@ -1,16 +1,16 @@
 <script lang="ts">
     import { currentRoute } from '../store/route';
     import { push } from '../router/navigation';
-    import HomeIcon from './icons/Home.svelte';
+    import WalletIcon from './icons/Wallet.svelte';
     import GridIcon from './icons/Grid.svelte';
-    import ArrowDownIcon from './icons/ArrowDown.svelte';
+    import SwapIcon from './icons/Swap.svelte';
     import HistoryIcon from './icons/History.svelte';
     import SettingsIcon from './icons/Settings.svelte';
 
     const tabs = [
-        { path: '/', component: HomeIcon, },
+        { path: '/', component: WalletIcon, },
         { path: '/collect', component: GridIcon, },
-        { path: '/swap', component: ArrowDownIcon, },
+        { path: '/swap', component: SwapIcon, },
         { path: '/history', component: HistoryIcon, },
         { path: '/settings', component: SettingsIcon, }
     ];
