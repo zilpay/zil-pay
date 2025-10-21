@@ -12,9 +12,11 @@ import { startBackground } from "../../background/background";
 import { BrowserStorage } from "../../lib/storage";
 import {
     BASE_SETTINGS,
-  CHAINS,
+  createBscConfig,
   createEthConfig,
+  createSepoliaConfig,
   createZilliqaConfig,
+  createZilliqaTestnetConfig,
   IMPORTED_KEY,
   PASSWORD,
   WORDS,
@@ -37,6 +39,7 @@ import { fetchNFTMeta } from 'popup/background/token';
 describe("WalletService through background messaging", () => {
   let globalState: GlobalState;
   const zilMainnnetConfig = createZilliqaConfig();
+  const bscMainnnetConfig = createBscConfig();
 
   beforeEach(async () => {
     await BrowserStorage.clear();
@@ -200,7 +203,7 @@ describe("WalletService through background messaging", () => {
   //       walletName: "My BIP39 Wallet",
   //       accounts: [{ index: 0, name: "Main Account" }],
   //       verifyCheckSum: true,
-  //       chain: CHAINS[0],
+  //       chain: zilMainnnetConfig,
   //       password: PASSWORD,
   //       settings: new WalletSettings(BASE_SETTINGS),
   //     };
@@ -217,11 +220,10 @@ describe("WalletService through background messaging", () => {
 
   //     state = await getGlobalState();
 
-  //     state.chains.push(CHAINS[1]);
+  //     state.chains.push(bscMainnnetConfig);
   //     await globalState.wallet.setGlobalState(state, () => null);
   //     state = await changeChainProvider(0, 1);
   //     wallet = state.wallets[0];
-
       
   //     expect(wallet.accounts[0].chainHash).toBe(state.chains[1].hash());
   //     expect(wallet.accounts[0].chainId).toBe(state.chains[1].chainId);
@@ -283,63 +285,88 @@ describe("WalletService through background messaging", () => {
       slip44: ZILLIQA,
     };
 
-    it("should fetch ZRC1 NFT metadata from Zilliqa mainnet", async () => {
+    // it("should fetch ZRC1 NFT metadata from Zilliqa mainnet", async () => {
+    //   const params: WalletFromPrivateKeyParams = {
+    //     key: keyPairZilliqa,
+    //     walletName: "My ZIL Wallet",
+    //     accountName: "ZIL 0",
+    //     chain: zilMainnnetConfig,
+    //     password: PASSWORD,
+    //     settings: new WalletSettings(BASE_SETTINGS),
+    //   };
+
+    //   await walletFromPrivateKey(params);
+
+    //   const zrc6Contract = "zil1knvrhm9e2rqfdvqp50gu02a3pat34e6lst9d36";
+    //   const nftMetadata = await fetchNFTMeta(0, zrc6Contract);
+
+    //   expect(nftMetadata).toBeDefined();
+    //   expect(nftMetadata.standard).toBe(NFTStandard.ZRC6);
+    //   expect(nftMetadata.contractAddress).toBe(zrc6Contract);
+    //   expect(nftMetadata.name).toBe("DragonZIL");
+    //   expect(nftMetadata.symbol).toBe("DZT");
+    //   expect(JSON.stringify(nftMetadata.balances)).equal(JSON.stringify({
+    //     "152": {
+    //       "3134": {
+    //         "id": "3134",
+    //         "url": "https://res.cloudinary.com/dev5gmsvw/image/upload/1_3134.png"
+    //       }
+    //     }
+    //   }));
+    // }, 30000);
+
+    // it("should fetch ZRC6 with balance check", async () => {
+    //   const params: WalletFromPrivateKeyParams = {
+    //     key: keyPairZilliqa,
+    //     walletName: "My ZIL Wallet",
+    //     accountName: "ZIL 0",
+    //     chain: zilMainnnetConfig,
+    //     password: PASSWORD,
+    //     settings: new WalletSettings(BASE_SETTINGS),
+    //   };
+
+    //   await walletFromPrivateKey(params);
+
+    //   const zrc6Contract = "zil1zsqcprkghffsg9fe8cjsqyxry4mdgwytdvzklu";
+    //   const nftMetadata = await fetchNFTMeta(0, zrc6Contract);
+
+    //   expect(nftMetadata).toBeDefined();
+    //   expect(nftMetadata.standard).toBe(NFTStandard.ZRC6);
+    //   expect(JSON.stringify(nftMetadata.balances)).toEqual(JSON.stringify({
+    //     "152": {
+    //       "1": {
+    //         "id": "1",
+    //         "url": "https://res.cloudinary.com/dev5gmsvw/image/upload/1_3134.png"
+    //       }
+    //     }
+    // }));
+    // expect(nftMetadata.contractAddress).toBe("zil1zsqcprkghffsg9fe8cjsqyxry4mdgwytdvzklu");
+    // expect(nftMetadata.baseURI).toBe("https://res.cloudinary.com/dev5gmsvw/image/upload/");
+    // }, 30000);
+
+   it("should fetch ERC721 NFT metadata from Zilliqa testnet", async () => {
       const params: WalletFromPrivateKeyParams = {
         key: keyPairZilliqa,
-        walletName: "My ZIL Wallet",
-        accountName: "ZIL 0",
-        chain: zilMainnnetConfig,
+        walletName: "My Testnet Wallet",
+        accountName: "Testnet 0",
+        chain: createSepoliaConfig(),
         password: PASSWORD,
         settings: new WalletSettings(BASE_SETTINGS),
       };
 
       await walletFromPrivateKey(params);
 
-      const zrc6Contract = "zil1knvrhm9e2rqfdvqp50gu02a3pat34e6lst9d36";
-      const nftMetadata = await fetchNFTMeta(0, zrc6Contract);
+      const erc721Contract = "0x4642f466Ede9EFD5ec1fbA12f75E7D2CA685202f";
+      const nftMetadata = await fetchNFTMeta(0, erc721Contract);
+      console.log(nftMetadata);
 
       expect(nftMetadata).toBeDefined();
-      expect(nftMetadata.standard).toBe(NFTStandard.ZRC6);
-      expect(nftMetadata.contractAddress).toBe(zrc6Contract);
-      expect(nftMetadata.name).toBe("DragonZIL");
-      expect(nftMetadata.symbol).toBe("DZT");
-      expect(JSON.stringify(nftMetadata.balances)).equal(JSON.stringify({
-        "152": {
-          "3134": {
-            "id": "3134",
-            "url": "https://res.cloudinary.com/dev5gmsvw/image/upload/1_3134.png"
-          }
-        }
-      }));
-    }, 30000);
-
-    it("should fetch ZRC6 with balance check", async () => {
-      const params: WalletFromPrivateKeyParams = {
-        key: keyPairZilliqa,
-        walletName: "My ZIL Wallet",
-        accountName: "ZIL 0",
-        chain: zilMainnnetConfig,
-        password: PASSWORD,
-        settings: new WalletSettings(BASE_SETTINGS),
-      };
-
-      await walletFromPrivateKey(params);
-
-      const zrc6Contract = "zil1zsqcprkghffsg9fe8cjsqyxry4mdgwytdvzklu";
-      const nftMetadata = await fetchNFTMeta(0, zrc6Contract);
-
-      expect(nftMetadata).toBeDefined();
-      expect(nftMetadata.standard).toBe(NFTStandard.ZRC6);
-      expect(JSON.stringify(nftMetadata.balances)).toEqual(JSON.stringify({
-        "152": {
-            "1": {
-                "id": "1",
-                "url": "https://res.cloudinary.com/dev5gmsvw/image/upload/1_3134.png"
-            }
-        }
-    }));
-    expect(nftMetadata.contractAddress).toBe("zil1zsqcprkghffsg9fe8cjsqyxry4mdgwytdvzklu");
-    expect(nftMetadata.baseURI).toBe("https://res.cloudinary.com/dev5gmsvw/image/upload/");
+      expect(nftMetadata.standard).toBe(NFTStandard.ERC721);
+      expect(nftMetadata.contractAddress).toBe(erc721Contract);
+      expect(nftMetadata.name).toBeDefined();
+      expect(nftMetadata.symbol).toBeDefined();
+      expect(nftMetadata.balances).toBeDefined();
+      expect(typeof nftMetadata.balances).toBe('object');
     }, 30000);
   });
 

@@ -283,6 +283,36 @@ export const createEthConfig = (): ChainConfig =>
     diffBlockTime: 1,
   });
 
+export const createSepoliaConfig = (): ChainConfig =>
+  new ChainConfig({
+    ...mainnetChains[2],
+    features: mainnetChains[2].features.map((n) =>
+      Number(n.replace("EIP", "")),
+    ),
+    explorers: [],
+    fallbackEnabled: true,
+    batchRequest: true,
+    testnet: true,
+    ftokens: mainnetChains[2].ftokens.map(
+      (t) =>
+        new FToken({
+          ...t,
+          default_: true,
+          balances: {},
+          rate: 0,
+          addrType: AddressType.EthCheckSum,
+          chainHash: hashChainConfig(
+            mainnetChains[2].chainIds,
+            mainnetChains[2].slip44,
+            mainnetChains[2].chain,
+          ),
+        }),
+    ),
+    chainId: mainnetChains[2].chainIds[0],
+    ens: null,
+    diffBlockTime: 1,
+  });
+
 export const createZilliqaTestnetConfig = (): ChainConfig =>
   new ChainConfig({
     ...testnetChains[0],
