@@ -11,7 +11,7 @@
     import FastImg from '../components/FastImg.svelte';
     import CopyButton from '../components/CopyButton.svelte';
     import SuccessIcon from '../components/icons/Success.svelte';
-    import ClockIcon from '../components/icons/Close.svelte';
+    import HistoryIcon from '../components/icons/History.svelte';
     import WarningIcon from '../components/icons/Warning.svelte';
 
     let {
@@ -52,26 +52,26 @@
         switch (transaction.status) {
             case TransactionStatus.Success:
                 return {
-                    label: $_('txDetails.status.confirmed'),
+                    label: $_('txDetails.status.success'),
                     icon: SuccessIcon,
                     color: 'success'
                 };
             case TransactionStatus.Pending:
                 return {
                     label: $_('txDetails.status.pending'),
-                    icon: ClockIcon,
+                    icon: HistoryIcon,
                     color: 'pending'
                 };
             case TransactionStatus.Failed:
                 return {
-                    label: $_('txDetails.status.rejected'),
+                    label: $_('txDetails.status.failed'),
                     icon: WarningIcon,
                     color: 'error'
                 };
             default:
                 return {
                     label: $_('txDetails.status.unknown'),
-                    icon: ClockIcon,
+                    icon: HistoryIcon,
                     color: 'secondary'
                 };
         }

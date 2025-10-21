@@ -6,6 +6,8 @@
     import Header from '../components/Header.svelte';
     import BottomTabs from '../components/BottomTabs.svelte';
     import TransactionItem from '../components/TransactionItem.svelte';
+    import Modal from '../components/Modal.svelte';
+    import TransactionDetails from '../modals/TransactionDetails.svelte';
     import type { IHistoricalTransactionState } from 'background/rpc/history_tx';
     import { checkTransactionsHistory } from 'popup/background/transactions';
     import { setGlobalState } from 'popup/background/wallet';
@@ -14,6 +16,8 @@
 
     let errorMessage = $state<string | null>(null);
     let isRefreshing = $state(false);
+    let showTxModal = $state(false);
+    let selectedTransaction = $state<IHistoricalTransactionState | null>(null);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
@@ -107,8 +111,10 @@
         }
     }
 
-    $effect(() => {
-    });
+    function handleTransactionClick(transaction: IHistoricalTransactionState) {
+        selectedTransaction = transaction;
+        showTxModal = true;
+    }
 </script>
 
 <div class="page-container">
@@ -151,7 +157,12 @@
                         <h2 class="group-title">{groupName}</h2>
                         <div class="transactions-list">
                             {#each transactions as transaction (transaction.timestamp)}
-                                <TransactionItem {transaction} />
+                                <button 
+                                    class="transaction-button" 
+                                    onclick={() => handleTransactionClick(transaction)}
+                                >
+                                    <TransactionItem {transaction} />
+                                </button>
                             {/each}
                         </div>
                     </section>
@@ -162,6 +173,12 @@
 
     <BottomTabs />
 </div>
+
+{#if selectedTransaction}
+    <Modal bind:show={showTxModal} title={$_('txDetails.title')}>
+        <TransactionDetails transaction={selectedTransaction} />
+    </Modal>
+{/if}
 
 <style lang="scss">
     .page-container {
@@ -302,5 +319,20 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+    }
+
+    .transaction-button {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        text-align: left;
+
+        &:focus-visible {
+            outline: 2px solid var(--color-inputs-border-focus);
+            outline-offset: 2px;
+            border-radius: 12px;
+        }
     }
 </style>
