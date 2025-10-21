@@ -18,6 +18,7 @@
     import DeleteIcon from '../components/icons/Delete.svelte';
     import DestroyWallet from '../modals/DestroyWallet.svelte';
     import RevealModal from '../modals/RevealModal.svelte';
+    import { linksExpand } from 'popup/mixins/links';
 
     let showDeleteModal = $state(false);
     let showBackupModal = $state(false);
@@ -67,11 +68,11 @@
     }
 
     function handleRevealPhrase() {
-        console.log('Reveal phrase');
+        linksExpand('/reveal?mode=phrase');
     }
 
     function handleExportKeys() {
-        console.log('Export keys');
+        linksExpand('/reveal?mode=key');
     }
 </script>
 

@@ -14,11 +14,13 @@ export async function getGlobalState() {
   let resolve = warpMessage(data) as BackgroundState;
 
   try {
+    let theme = resolve.appearances;
+
     if (resolve.appearances == Themes.System) {
-      resolve.appearances = themeDetect();
+      theme = themeDetect();
     }
 
-    document.body.setAttribute("theme", resolve.appearances);
+    document.body.setAttribute("theme", theme);
     globalStore.set(resolve);
   } catch {
     ///
@@ -172,6 +174,37 @@ export async function logout(walletIndex: number) {
       walletIndex,
     },
     type: MTypePopup.LOG_OUT,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
+export async function exportbip39Words(password: string, walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      password,
+    },
+    type: MTypePopup.REVEAL_BIP39,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
+export async function exportKeyPair(password: string, walletIndex: number, accountIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      password,
+      accountIndex,
+    },
+    type: MTypePopup.REVEAL_KEY,
   }).send();
   let resolve = warpMessage(data) as BackgroundState;
 

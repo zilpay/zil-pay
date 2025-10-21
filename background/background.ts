@@ -69,6 +69,12 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.LOG_OUT:
         core.wallet.logoutWallet(msg.payload.walletIndex, sendResponse);
         return true;
+      case MTypePopup.REVEAL_BIP39:
+        core.wallet.exportbip39Words(msg.payload.password, msg.payload.walletIndex, sendResponse);
+        return true;
+      case MTypePopup.REVEAL_KEY:
+        core.wallet.exportKeyPair(msg.payload.password, msg.payload.walletIndex, msg.payload.accountIndex, sendResponse);
+        return true;
       case MTypePopup.GET_ALL_ACCOUNTS_BY_CHAIN:
         core.wallet.getAllAddressesByChain(
           msg.payload.walletIndex,

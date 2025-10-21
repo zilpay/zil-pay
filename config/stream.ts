@@ -16,6 +16,8 @@ export const MTypePopup = {
 
   UNLOCK_WALLET: `@/${app}/unlock-wallet`,
   LOG_OUT: `@/${app}/logout`,
+  REVEAL_BIP39: `@/${app}/reveal-bip39`,
+  REVEAL_KEY: `@/${app}/reveal-key`,
 
   WALLET_BALANCE_UPDATE: `@/${app}/wallet-balance-update`,
   FT_GET_META: `@/${app}/get-ft-meta`,
