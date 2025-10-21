@@ -4,7 +4,6 @@
     import { formatDate } from 'popup/i18n';
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { processTokenLogo } from 'lib/popup/url';
-    import { truncate } from 'popup/mixins/address';
     import globalStore from 'popup/store/global';
     import { _ } from 'popup/i18n';
     
@@ -13,6 +12,7 @@
     import SuccessIcon from '../components/icons/Success.svelte';
     import HistoryIcon from '../components/icons/History.svelte';
     import WarningIcon from '../components/icons/Warning.svelte';
+    import { truncate } from 'popup/mixins/address';
 
     let {
         transaction
@@ -48,32 +48,29 @@
         })
     );
 
-    const statusConfig = $derived(() => {
+    const statusLabel = $derived(() => {
         switch (transaction.status) {
             case TransactionStatus.Success:
-                return {
-                    label: $_('txDetails.status.success'),
-                    icon: SuccessIcon,
-                    color: 'success'
-                };
+                return $_('txDetails.status.success');
             case TransactionStatus.Pending:
-                return {
-                    label: $_('txDetails.status.pending'),
-                    icon: HistoryIcon,
-                    color: 'pending'
-                };
+                return $_('txDetails.status.pending');
             case TransactionStatus.Failed:
-                return {
-                    label: $_('txDetails.status.failed'),
-                    icon: WarningIcon,
-                    color: 'error'
-                };
+                return $_('txDetails.status.failed');
             default:
-                return {
-                    label: $_('txDetails.status.unknown'),
-                    icon: HistoryIcon,
-                    color: 'secondary'
-                };
+                return $_('txDetails.status.unknown');
+        }
+    });
+
+    const statusColor = $derived(() => {
+        switch (transaction.status) {
+            case TransactionStatus.Success:
+                return 'success';
+            case TransactionStatus.Pending:
+                return 'pending';
+            case TransactionStatus.Failed:
+                return 'error';
+            default:
+                return 'secondary';
         }
     });
 
@@ -126,11 +123,17 @@
         </div>
         <div class="header-info">
             <h3 class="tx-title">{transaction.metadata.title}</h3>
-            <div class="status-badge" class:success={statusConfig().color === 'success'} 
-                                      class:pending={statusConfig().color === 'pending'} 
-                                      class:error={statusConfig().color === 'error'}>
-                <svelte:component this={statusConfig().icon} />
-                <span>{statusConfig().label}</span>
+            <div class="status-badge" class:success={statusColor() === 'success'} 
+                                      class:pending={statusColor() === 'pending'} 
+                                      class:error={statusColor() === 'error'}>
+                {#if transaction.status === TransactionStatus.Success}
+                    <SuccessIcon />
+                {:else if transaction.status === TransactionStatus.Failed}
+                    <WarningIcon />
+                {:else}
+                    <HistoryIcon />
+                {/if}
+                <span>{statusLabel()}</span>
             </div>
         </div>
     </div>
@@ -143,46 +146,37 @@
     </div>
 
     <div class="details-section">
-        <div class="detail-group">
+        <div class="detail-row">
             <span class="detail-label">{$_('txDetails.from')}</span>
-            <div class="detail-value-copy">
-                <span class="detail-value">{truncate(sender(), 8, 8)}</span>
-                <CopyButton label="" value={sender()} />
-            </div>
+            <CopyButton label={truncate(sender())} value={sender()} />
         </div>
 
-        <div class="detail-group">
+        <div class="detail-row">
             <span class="detail-label">{$_('txDetails.to')}</span>
-            <div class="detail-value-copy">
-                <span class="detail-value">{truncate(recipient(), 8, 8)}</span>
-                <CopyButton label="" value={recipient()} />
-            </div>
+            <CopyButton label={truncate(recipient())} value={recipient()} />
         </div>
 
         {#if txHash()}
-            <div class="detail-group">
+            <div class="detail-row">
                 <span class="detail-label">{$_('txDetails.hash')}</span>
-                <div class="detail-value-copy">
-                    <span class="detail-value hash">{truncate(txHash(), 10, 10)}</span>
-                    <CopyButton label="" value={txHash()} />
-                </div>
+                <CopyButton label={truncate(txHash())} value={txHash()} />
             </div>
         {/if}
 
         <div class="detail-divider"></div>
 
-        <div class="detail-group">
+        <div class="detail-row">
             <span class="detail-label">{$_('txDetails.gasUsed')}</span>
             <span class="detail-value">{gasUsed()}</span>
         </div>
 
-        <div class="detail-group">
+        <div class="detail-row">
             <span class="detail-label">{$_('txDetails.gasPrice')}</span>
             <span class="detail-value">{gasPrice()} Gwei</span>
         </div>
 
         {#if blockNumber() !== '-'}
-            <div class="detail-group">
+            <div class="detail-row">
                 <span class="detail-label">{$_('txDetails.block')}</span>
                 <span class="detail-value">{blockNumber()}</span>
             </div>
@@ -305,11 +299,12 @@
         gap: 16px;
     }
 
-    .detail-group {
+    .detail-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 12px;
+        min-height: 24px;
     }
 
     .detail-label {
@@ -325,17 +320,6 @@
         line-height: 20px;
         color: var(--color-content-text-inverted);
         text-align: right;
-
-        &.hash {
-            font-family: 'Courier New', monospace;
-        }
-    }
-
-    .detail-value-copy {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        min-width: 0;
     }
 
     .detail-divider {
