@@ -9,7 +9,7 @@
 
     const tabs = [
         { path: '/', component: WalletIcon, },
-        { path: '/collect', component: GridIcon, },
+        { path: '/collection', component: GridIcon, },
         { path: '/swap', component: SwapIcon, },
         { path: '/history', component: HistoryIcon, },
         { path: '/settings', component: SettingsIcon, }
