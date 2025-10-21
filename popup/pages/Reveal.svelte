@@ -34,7 +34,6 @@
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(wallet?.accounts[wallet.selectedAccount]);
-    const title = $derived(isPhrase ? $_('reveal.phraseTitle') : $_('reveal.keyTitle'));
     const warningText = $derived(
         isPhrase 
             ? $_('reveal.phraseWarning')
@@ -173,11 +172,17 @@
             {/if}
 
             {#if isPhrase}
-                <div class="phrase-container">
-                    <div class="phrase-grid">
-                        {#each revealedData as word, i (i)}
-                            <MnemonicWord index={i + 1} {word} />
-                        {/each}
+                <div class="phrase-section">
+                    <div class="phrase-header">
+                        <span class="phrase-label">{$_('reveal.secretPhrase')}</span>
+                        <CopyButton label={$_('reveal.copy')} value={revealedData.join(' ')} />
+                    </div>
+                    <div class="phrase-container">
+                        <div class="phrase-grid">
+                            {#each revealedData as word, i (i)}
+                                <MnemonicWord index={i + 1} {word} />
+                            {/each}
+                        </div>
                     </div>
                 </div>
             {:else if keyPair}
@@ -347,6 +352,27 @@
             margin: 0;
             max-width: 280px;
         }
+    }
+
+    .phrase-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .phrase-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 0 4px;
+    }
+
+    .phrase-label {
+        color: var(--color-content-text-inverted);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
     }
 
     .phrase-container {
