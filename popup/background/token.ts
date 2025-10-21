@@ -5,6 +5,7 @@ import { MTypePopup } from "config/stream";
 import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import globalStore from "popup/store/global";
+import type { NFTMetadata } from "background/rpc/nft_parser";
  
 
 export async function ftUpdateRates(walletIndex: number) {
@@ -28,3 +29,13 @@ export async function ftUpdateRates(walletIndex: number) {
   return resolve;
 }
 
+export async function fetchNFTMeta(walletIndex: number, contract: string) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.NFT_GET_META,
+    payload: { walletIndex, contract },
+  }).send();
+
+  const resolve = warpMessage(data) as NFTMetadata;
+
+  return resolve;
+}

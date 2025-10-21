@@ -111,6 +111,8 @@ describe("nft_parser", () => {
       const mockInitData: ZRC6Init[] = [
         { vname: "name", type: "String", value: "Test NFT" },
         { vname: "symbol", type: "String", value: "TNFT" },
+        { vname: "base_uri", type: "String", value: "https://test.com/" },
+        { vname: "token_owners", type: "Map", value: "{}" },
       ];
       const mockResponse: JsonRPCResponse<ZRC6Init[]> = {
         id: 1,
@@ -118,10 +120,11 @@ describe("nft_parser", () => {
         result: mockInitData,
       };
 
-      const { name, symbol } = processZilNFTMetadataResponse(mockResponse);
+      const { name, symbol, baseURI } = processZilNFTMetadataResponse(mockResponse);
 
       expect(name).toBe("Test NFT");
       expect(symbol).toBe("TNFT");
+      expect(baseURI).toBe("https://test.com/");
     });
   });
 
@@ -132,7 +135,7 @@ describe("nft_parser", () => {
         jsonrpc: "2.0",
         result: "0x0000000000000000000000000000000000000000000000000000000000000003",
       };
-      const balance = processEthNFTBalanceResponse(mockResponse, NFTStandard.ERC721);
+      const balance = processEthNFTBalanceResponse(mockResponse);
       expect(balance).toBe(3n);
     });
 
@@ -142,29 +145,53 @@ describe("nft_parser", () => {
         jsonrpc: "2.0",
         result: "0x",
       };
-      const balance = processEthNFTBalanceResponse(mockResponse, NFTStandard.ERC721);
+      const balance = processEthNFTBalanceResponse(mockResponse);
       expect(balance).toBe(0n);
     });
   });
 
   describe("processZilNFTBalanceResponse", () => {
-    it("should process ZRC6 balance", async () => {
+    it("should process ZRC6 balance count", async () => {
       const keypair = await KeyPair.generate(ZILLIQA);
       const mockAccount = await keypair.address();
       const checksumAddress = (await mockAccount.toZilChecksum()).toLowerCase();
 
-      const mockResponse: JsonRPCResponse<{ balances: Record<string, string> }> = {
+      const mockResponse: JsonRPCResponse<{ [key: string]: string }> = {
         id: 1,
         jsonrpc: "2.0",
         result: {
-          balances: {
-            [checksumAddress]: "5",
+          [checksumAddress]: "5",
+        },
+      };
+
+      const result = await processZilNFTBalanceResponse(mockResponse, mockAccount);
+      expect(result.balance).toBe(5n);
+      expect(result.tokens).toBeUndefined();
+    });
+
+    it("should process ZRC6 tokens with IDs", async () => {
+      const keypair = await KeyPair.generate(ZILLIQA);
+      const mockAccount = await keypair.address();
+      const checksumAddress = (await mockAccount.toZilChecksum()).toLowerCase();
+
+      const mockResponse: JsonRPCResponse<{ [key: string]: any }> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: {
+          [checksumAddress]: {
+            "123": "0",
+            "456": "1",
+            "789": "0",
           },
         },
       };
 
-      const balance = await processZilNFTBalanceResponse(mockResponse, mockAccount);
-      expect(balance).toBe(5n);
+      const result = await processZilNFTBalanceResponse(mockResponse, mockAccount);
+      expect(result.balance).toBe(3n);
+      expect(result.tokens).toBeDefined();
+      expect(result.tokens!["123"].id).toBe("123");
+      expect(result.tokens!["456"].id).toBe("456");
+      expect(result.tokens!["789"].id).toBe("789");
     });
 
     it("should return 0 if error", async () => {
@@ -174,8 +201,8 @@ describe("nft_parser", () => {
         jsonrpc: "2.0",
         error: { code: -5, message: "Account is not created" },
       };
-      const balance = await processZilNFTBalanceResponse(mockResponse, mockAccount);
-      expect(balance).toBe(0n);
+      const result = await processZilNFTBalanceResponse(mockResponse, mockAccount);
+      expect(result.balance).toBe(0n);
     });
   });
 });

@@ -14,6 +14,13 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.FT_UPDATE_RATES:
         core.token.updateRates(msg.payload.walletIndex, sendResponse);
         return true;
+      case MTypePopup.NFT_GET_META:
+        core.token.fetchNFTMetadata(
+          msg.payload.contract,
+          msg.payload.walletIndex,
+          sendResponse
+        );
+        return true;
 
       // wallet
       case MTypePopup.GET_GLOBAL_STATE:

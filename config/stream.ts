@@ -21,6 +21,7 @@ export const MTypePopup = {
 
   WALLET_BALANCE_UPDATE: `@/${app}/wallet-balance-update`,
   FT_GET_META: `@/${app}/get-ft-meta`,
+  NFT_GET_META: `@/${app}/get-nft-meta`,
 
   FT_UPDATE_RATES: `@/${app}/ft-rates-update`,
 

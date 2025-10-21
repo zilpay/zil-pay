@@ -88,6 +88,10 @@ export function hexToUint8Array(hexString: string): Uint8Array {
  * @throws {SyntaxError} if the string is not a valid hexadecimal number.
  */
 export function hexToBigInt(hexString: string): bigint {
+    if (hexString == HEX_PREFIX) {
+      return 0n;
+    }
+
     const cleanHex = hexString.startsWith(HEX_PREFIX) ? hexString : `${HEX_PREFIX}${hexString}`;
     return BigInt(cleanHex);
 }
