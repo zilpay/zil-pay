@@ -1,12 +1,13 @@
 <script lang="ts">
     import type { IAccountState, IFTokenState } from 'background/storage';
-    import { from, greaterThan, equal, type Dnum } from 'dnum';
+    import { from, greaterThan, equal, multiply, type Dnum } from 'dnum';
     import FastImg from './FastImg.svelte';
     import DownIcon from './icons/Down.svelte';
     import { hashXORHex } from 'lib/utils/hashing';
     import { processTokenLogo } from 'lib/popup/url';
     import globalStore from 'popup/store/global';
     import { abbreviateNumber } from 'popup/mixins/numbers';
+    import { getCurrencySymbol } from 'config/currencies';
 
     let {
         value = $bindable(''),
@@ -57,8 +58,20 @@
     });
 
     const approxDisplay = $derived(() => {
-        // TODO: add rates.
-        return "-";
+        if (!value.trim() || !token || token.rate <= 0) {
+            return "-";
+        }
+        
+        try {
+            const amount = inputAmount();
+            const rate = token.rate;
+            const convertedValue = multiply(amount, rate);
+            const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
+            
+            return `≈ ${currencySymbol}${abbreviateNumber(convertedValue[0].toString(), convertedValue[1])}`;
+        } catch {
+            return "-";
+        }
     });
     const canSelectToken = $derived(Boolean(onTokenSelect && token) && !disabled);
     const showMax = $derived(Boolean(onMax && token) && !disabled);

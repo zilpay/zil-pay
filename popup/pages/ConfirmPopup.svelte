@@ -9,6 +9,7 @@
     import { GasSpeed } from 'config/gas';
     import type { RequiredTxParams } from 'types/gas';
     import { calculateGasFee, createDefaultGasOption, type GasOptionDetails } from '../mixins/gas';
+    import { getCurrencySymbol } from 'config/currencies';
     
     import RoundImageButton from '../components/RoundImageButton.svelte';
     import TransferSummary from '../components/TransferSummary.svelte';
@@ -49,7 +50,17 @@
         return null;
     });
 
-    const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken) : [createDefaultGasOption()]);
+    const tokenFiatValue = $derived(() => {
+        if (!token || !token.rate || token.rate <= 0) return '-';
+        
+        const numericAmount = Number(tokenAmount) / (10 ** token.decimals);
+        const convertedValue = numericAmount * token.rate;
+        const currencySymbol = getCurrencySymbol(wallet?.settings?.currencyConvert ?? 'USD');
+        
+        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}`;
+    });
+
+    const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken, wallet.settings.currencyConvert) : [createDefaultGasOption()]);
 
     function handleSpeedSelect(speed: GasSpeed) {
         if (selectedSpeed === speed) {
@@ -176,7 +187,7 @@
             <TransferSummary
                 amount={abbreviateNumber(tokenAmount, token.decimals)}
                 symbol={token.symbol}
-                fiatValue="-"
+                fiatValue={tokenFiatValue()}
             />
             <TransferRoute
                 fromName={account.name || 'Unknown'}
@@ -205,7 +216,7 @@
                             onselect={() => handleSpeedSelect(option.speed)}
                         >
                             {#each option.details as detail (detail.label)}
-                                <GasDetailRow label={detail.label} value={detail.value} />
+                                <GasDetailRow label={$_(detail.label)} value={detail.value} />
                             {/each}
                         </GasOption>
                     {/each}

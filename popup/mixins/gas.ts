@@ -3,6 +3,7 @@ import { GasSpeed } from 'config/gas';
 import type { RequiredTxParams } from 'types/gas';
 import { format as dnumFormat, multiply as dnumMultiply, type Dnum } from 'dnum';
 import { abbreviateNumber } from './numbers';
+import { getCurrencySymbol } from 'config/currencies';
 
 export interface GasOptionDetails {
     speed: GasSpeed;
@@ -39,6 +40,7 @@ function formatGwei(value: bigint): string {
 export function calculateGasFee(
     gasEstimate: RequiredTxParams,
     nativeToken: IFTokenState,
+    currencyConvert: string,
 ): GasOptionDetails[] {
     const isEIP1559 = gasEstimate.feeHistory.priorityFee > 0n;
 
@@ -87,14 +89,20 @@ export function calculateGasFee(
         }
 
         const feeDnum: Dnum = [totalFee, nativeToken.decimals];
-        const fiatValue = dnumMultiply(feeDnum, nativeToken.rate);
+        let fiatFeeDisplay = '-';
+
+        if (nativeToken.rate > 0) {
+            const fiatValue = dnumMultiply(feeDnum, nativeToken.rate);
+            const currencySymbol = getCurrencySymbol(currencyConvert);
+            fiatFeeDisplay = `${currencySymbol}${abbreviateNumber(fiatValue[0].toString(), fiatValue[1])}`;
+        }
 
         return {
             speed,
             label: level.label,
             time: level.time,
             fee: `${abbreviateNumber(totalFee.toString(), nativeToken.decimals)} ${nativeToken.symbol}`,
-            fiatFee: dnumFormat(fiatValue),
+            fiatFee: fiatFeeDisplay,
             details
         };
     });

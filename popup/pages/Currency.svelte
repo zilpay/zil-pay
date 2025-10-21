@@ -45,6 +45,9 @@
                 index === walletIndex && wallet.settings
                     ? {
                         ...wallet,
+                        tokens: wallet.tokens.map((t) => ({
+                        ...t, rate: 0,
+                        })),
                         settings: {
                             ...wallet.settings,
                             currencyConvert: code

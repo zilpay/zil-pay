@@ -31,16 +31,21 @@
         }
 
         const humanBalance = abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals);
-        const symbol = getCurrencySymbol(token.symbol);
+        const symbol = token.symbol;
 
         return `${humanBalance} ${symbol}`;
     });
     
     const convertedBalance = $derived(() => {
         if (hide) return '******';
+        
         const rate = token.rate ?? 0;
+        const rawBalance = token.balances[hashXORHex(account.pubKey)] ?? 0;
+        const numericBalance = Number(rawBalance) / (10 ** token.decimals);
+        const convertedValue = numericBalance * rate;
         const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
-        return rate > 0 ? `${currencySymbol}${rate}` : '-';
+        
+        return rate > 0 ? `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}` : '-';
     });
     
     const logo = $derived(processTokenLogo({
