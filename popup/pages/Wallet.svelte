@@ -3,7 +3,7 @@
     import globalStore from 'popup/store/global';
     import { getWalletChain } from 'popup/mixins/chains';
     import { viewChain } from 'lib/popup/url';
-    import { setGlobalState, unlockWallet } from 'popup/background/wallet';
+    import { setGlobalState } from 'popup/background/wallet';
 
     import NavBar from '../components/NavBar.svelte';
     import FastImg from '../components/FastImg.svelte';
@@ -17,8 +17,10 @@
     import RepeatIcon from '../components/icons/Repeat.svelte';
     import DeleteIcon from '../components/icons/Delete.svelte';
     import DestroyWallet from '../modals/DestroyWallet.svelte';
+    import RevealModal from '../modals/RevealModal.svelte';
 
     let showDeleteModal = $state(false);
+    let showBackupModal = $state(false);
     let walletName = $state('');
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
@@ -58,12 +60,20 @@
     }
 
     function handleBackup() {
+        showBackupModal = true;
     }
 
     function handleManageConnections() {
     }
-</script>
 
+    function handleRevealPhrase() {
+        console.log('Reveal phrase');
+    }
+
+    function handleExportKeys() {
+        console.log('Export keys');
+    }
+</script>
 
 <Modal 
     bind:show={showDeleteModal} 
@@ -71,6 +81,17 @@
 >
     <DestroyWallet />
 </Modal>
+
+<Modal 
+    bind:show={showBackupModal} 
+    title={$_('walletSettings.backup')}
+>
+    <RevealModal 
+        onRevealPhrase={handleRevealPhrase}
+        onExportKeys={handleExportKeys}
+    />
+</Modal>
+
 <div class="page-container">
     <NavBar title={$_('walletSettings.title')} />
 
@@ -212,4 +233,3 @@
         margin-top: auto;
     }
 </style>
-
