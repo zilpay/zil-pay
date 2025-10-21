@@ -1,4 +1,5 @@
 import type { BackgroundState } from "background/storage";
+import { RatesApiOptions } from "config/api";
 import type { StreamResponse } from "lib/streem";
 
 interface CoinGeckoPrice {
@@ -16,7 +17,15 @@ export class TokenService {
     this.#state = state;
   }
 
-  async updateCoinGecko(walletIndex: number, sendResponse: StreamResponse) {
+  async updateRates(walletIndex: number, sendResponse: StreamResponse) {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (wallet.settings.ratesApiOptions == RatesApiOptions.CoinGecko) {
+        await this.#updateCoinGecko(walletIndex, sendResponse);
+      }
+  }
+
+  async #updateCoinGecko(walletIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
       const currency = wallet.settings.currencyConvert.toLowerCase();
@@ -31,7 +40,7 @@ export class TokenService {
         return;
       }
 
-      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${symbols}&vs_currencies=${currency}`;
+      const url = `https://api.coingecko.com/api/v3/simple/price?symbols=${symbols}&vs_currencies=${currency}`;
       const response = await fetch(url);
 
       if (!response.ok) {

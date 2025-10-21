@@ -20,6 +20,7 @@
     import { setGlobalState } from 'popup/background/wallet';
     import { ftBalanceUpdate } from 'popup/background/provider';
     import { getChainTokens } from 'popup/filters/tokens';
+    import { ftUpdateRates } from 'popup/background/token';
 
     const hideBalance = $derived($globalStore.hideBalance);
     const tokensRow = $derived($globalStore.tokensRow);
@@ -74,11 +75,13 @@
         
         try {
             await ftBalanceUpdate($globalStore.selectedWallet);
+            await ftUpdateRates($globalStore.selectedWallet);
         } catch (e) {
             error = String(e);
         } finally {
             tokensloading = false;
         }
+
     }
 </script>
 

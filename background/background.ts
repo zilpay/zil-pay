@@ -10,6 +10,12 @@ export function startBackground(core: GlobalState) {
     }
 
     switch (msg.type) {
+      // tokens
+      case MTypePopup.FT_UPDATE_RATES:
+        core.token.updateRates(msg.payload.walletIndex, sendResponse);
+        return true;
+
+      // wallet
       case MTypePopup.GET_GLOBAL_STATE:
         core.wallet.getGlobalState(sendResponse);
         return true;
