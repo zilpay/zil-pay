@@ -1,7 +1,7 @@
 import { createContract } from 'micro-eth-signer/advanced/abi.js';
 import { RpcError, RpcProvider, type JsonRPCRequest, type JsonRPCResponse } from './provider';
 import { EvmMethods, ZilMethods } from 'config/jsonrpc';
-import { hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
+import { HEX_PREFIX, hexToBigInt, hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { Address } from 'crypto/address';
 import { TypeOf } from 'lib/types';
 import { ETHEREUM, ZILLIQA } from 'config/slip44';
@@ -175,6 +175,7 @@ export class ERC721Helper {
 export async function buildNFTRequests(
   contract: Address,
   pubKeys: Uint8Array[],
+  provider: RpcProvider,
 ): Promise<{ payload: JsonRPCRequest; requestType: NFTRequestType }[]> {
   const requests: { payload: JsonRPCRequest; requestType: NFTRequestType }[] = [];
 
@@ -280,20 +281,15 @@ export function processEthNFTMetadataResponse(
   response: JsonRPCResponse<string>,
   field: NFTMetadataField,
 ): string {
-  try {
-    const resultHex = validateResponse(response);
-    
-    if (!resultHex) {
-      return '';
-    }
-    
-    const erc721 = new ERC721Helper();
-    const decoded = erc721.decodeFunctionOutput(field as ERC721FunctionName, resultHex);
-    return String(decoded);
-  } catch (err) {
-    console.warn(`Failed to decode ${field}:`, err);
+  const resultHex = validateResponse(response);
+  
+  if (!resultHex || resultHex === HEX_PREFIX) {
     return '';
   }
+  
+  const erc721 = new ERC721Helper();
+  const decoded = erc721.decodeFunctionOutput(field as ERC721FunctionName, resultHex);
+  return String(decoded);
 }
 
 export function processZilNFTMetadataResponse(
@@ -325,7 +321,7 @@ export function processEthNFTBalanceResponse(
   try {
     const resultHex = validateResponse(response);
     
-    if (!resultHex) {
+    if (!resultHex || resultHex === '0x') {
       return 0n;
     }
     
