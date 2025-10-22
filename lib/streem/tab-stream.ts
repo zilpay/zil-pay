@@ -33,25 +33,15 @@ export class TabStream {
         return new CustomEvent(to, { detail });
     }
 
-    /**
-     * Sends a signal message to the specified tab.
-     * @param tabId - The ID of the tab.
-     * @param message - The message to send.
-     */
     async sendSignalToTab(tabId: number, message: ReqBody): Promise<void> {
         try {
             await Runtime.tabs.sendMessage(tabId, message);
         } catch (error) {
             console.error(`Failed to send signal to tab ${tabId}:`, error);
-            throw error; // Re-throw the error to be handled by the caller
+            throw error; 
         }
     }
 
-    /**
-      * Sends message to all tabs except the excluded tabIds
-      * @param message
-      * @param excludedTabIds
-      */
     async sendToAllTabs(message: ReqBody, excludedTabIds: number[] = []): Promise<void> {
         try {
             const tabs = await Runtime.tabs.query({});
@@ -62,7 +52,7 @@ export class TabStream {
             }
         } catch (error) {
             console.error("Failed to send message to all tabs:", error);
-            throw error; // Re-throw the error
+            throw error; 
         }
     }
 }

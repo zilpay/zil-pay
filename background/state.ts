@@ -4,10 +4,12 @@ import { ProviderService } from "background/services";
 import { Session } from "./secure";
 import { WorkerService } from "./services/worker";
 import { TokenService } from "./services/token";
+import { ZilPayLegacyService } from "./services/zilpay-legacy";
 
 export class GlobalState {
   state: BackgroundState;
   readonly wallet: WalletService;
+  readonly zilpayLegacyWeb3: ZilPayLegacyService;
   readonly provider: ProviderService;
   readonly transaction: TransactionService;
   readonly worker: WorkerService;
@@ -26,6 +28,7 @@ export class GlobalState {
     this.provider = new ProviderService(this.state, this.worker);
     this.transaction = new TransactionService(this.state, this.worker);
     this.token = new TokenService(this.state);
+    this.zilpayLegacyWeb3 = new ZilPayLegacyService(this.state);
   }
 
   async sync() {

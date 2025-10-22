@@ -33,7 +33,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [ "inpage.js", "phishing.html" ],
+      "resources": [ "injects/zilpay.js", "phishing.html" ],
       "matches": [ "*://*/*" ]
     }
   ],

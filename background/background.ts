@@ -1,6 +1,7 @@
 import { MTypePopup } from "config/stream";
 import type { GlobalState } from "./state";
 import { Runtime } from "lib/runtime";
+import { LegacyZilliqaTabMsg } from "lib/streem";
 
 export function startBackground(core: GlobalState) {
   Runtime.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -154,6 +155,14 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+
+      // Legacy Web3
+      case LegacyZilliqaTabMsg.GET_WALLET_DATA:
+        core.zilpayLegacyWeb3.getData(
+          sendResponse,
+        );
+        return true;
+
       default:
         sendResponse(null);
         return true;
