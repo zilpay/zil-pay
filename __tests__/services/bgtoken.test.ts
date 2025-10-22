@@ -13,6 +13,7 @@ import { BrowserStorage } from "../../lib/storage";
 import {
     BASE_SETTINGS,
   createBscConfig,
+  createBscTestNetConfig,
   createEthConfig,
   createSepoliaConfig,
   createZilliqaConfig,
@@ -349,16 +350,15 @@ describe("WalletService through background messaging", () => {
         key: keyPairZilliqa,
         walletName: "My Testnet Wallet",
         accountName: "Testnet 0",
-        chain: createSepoliaConfig(),
+        chain: createEthConfig(),
         password: PASSWORD,
         settings: new WalletSettings(BASE_SETTINGS),
       };
 
       await walletFromPrivateKey(params);
 
-      const erc721Contract = "0x4642f466Ede9EFD5ec1fbA12f75E7D2CA685202f";
+      const erc721Contract = "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB";
       const nftMetadata = await fetchNFTMeta(0, erc721Contract);
-      console.log(nftMetadata);
 
       expect(nftMetadata).toBeDefined();
       expect(nftMetadata.standard).toBe(NFTStandard.ERC721);
