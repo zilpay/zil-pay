@@ -46,9 +46,7 @@ export class TokenService {
       );
 
       const payloads = requestsWithTypes.map((r) => r.payload);
-      console.log(JSON.stringify(payloads, null, 2));
       const responses = await provider.req<any[]>(payloads);
-      console.log(JSON.stringify(responses, null, 2));
 
       let name = "";
       let symbol = "";
