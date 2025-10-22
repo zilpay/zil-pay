@@ -13,7 +13,6 @@ import { BrowserStorage } from "../../lib/storage";
 import {
     BASE_SETTINGS,
   createBscConfig,
-  createBscTestNetConfig,
   createEthConfig,
   createSepoliaConfig,
   createZilliqaConfig,
@@ -345,20 +344,21 @@ describe("WalletService through background messaging", () => {
     // expect(nftMetadata.baseURI).toBe("https://res.cloudinary.com/dev5gmsvw/image/upload/");
     // }, 30000);
 
-   it("should fetch ERC721 NFT metadata from Zilliqa testnet", async () => {
+   it("should fetch ERC721 NFT metadata", async () => {
       const params: WalletFromPrivateKeyParams = {
         key: keyPairZilliqa,
         walletName: "My Testnet Wallet",
         accountName: "Testnet 0",
-        chain: createEthConfig(),
+        chain: createSepoliaConfig(),
         password: PASSWORD,
         settings: new WalletSettings(BASE_SETTINGS),
       };
 
       await walletFromPrivateKey(params);
 
-      const erc721Contract = "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB";
+      const erc721Contract = "0x4642f466Ede9EFD5ec1fbA12f75E7D2CA685202f";
       const nftMetadata = await fetchNFTMeta(0, erc721Contract);
+      console.log(nftMetadata);
 
       expect(nftMetadata).toBeDefined();
       expect(nftMetadata.standard).toBe(NFTStandard.ERC721);
