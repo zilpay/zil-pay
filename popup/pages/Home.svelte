@@ -195,7 +195,7 @@
         flex-direction: column;
         gap: 24px;
         flex-shrink: 0;
-        padding: 20px var(--padding-side) 24px var(--padding-side);
+        padding: 0 var(--padding-side) 24px var(--padding-side);
     }
 
     .actions-row {

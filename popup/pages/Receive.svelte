@@ -7,6 +7,7 @@
     import { processTokenLogo } from 'lib/popup/url';
     import { generateCryptoUrl } from '../mixins/qrcode';
     import { getAccountChain } from 'popup/mixins/chains';
+    import { truncate } from 'popup/mixins/address';
     import type { IFTokenState } from 'background/storage';
 
     import NavBar from '../components/NavBar.svelte';
@@ -15,10 +16,9 @@
     import InfoIcon from '../components/icons/Info.svelte';
     import DownIcon from '../components/icons/Down.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
-    import ShareIcon from '../components/icons/Share.svelte';
-    import Button from '../components/Button.svelte';
     import Modal from '../components/Modal.svelte';
     import TokenSelector from '../modals/TokenSelectorModal.svelte';
+    import CopyButton from '../components/CopyButton.svelte';
 
     let canvasElement: HTMLCanvasElement;
     let accountName = $state('');
@@ -36,13 +36,16 @@
     });
 
     const currentAddress = $derived(currentAccount?.addr ?? '');
+    const addresses = $derived(currentAddress.includes(':') ? currentAddress.split(':') : [currentAddress]);
+    const isMultiAddress = $derived(addresses.length > 1);
+    
     const logo = $derived(selectedToken ? processTokenLogo({
         token: selectedToken,
         theme: $globalStore.appearances,
     }) : '');
 
     const qrData = $derived(generateCryptoUrl({
-        address: currentAddress,
+        address: addresses[0],
         chain: currentChain?.chain.toLowerCase() ?? '',
         token: selectedToken?.addr,
     }));
@@ -61,33 +64,6 @@
     function handleTokenSelect(token: IFTokenState) {
         selectedToken = token;
         showTokenModal = false;
-    }
-
-    async function handleShare() {
-        if (!navigator.share || !qrData) {
-            return;
-        }
-
-        try {
-            if (navigator.canShare && navigator.canShare({ files: [] })) {
-                canvasElement.toBlob(async (blob) => {
-                    if (!blob) return;
-                    const file = new File([blob], 'qrcode.png', { type: 'image/png' });
-                    await navigator.share({
-                        files: [file],
-                        title: accountName,
-                        text: currentAddress,
-                    });
-                }, 'image/png');
-            } else {
-                await navigator.share({
-                    title: accountName,
-                    text: qrData
-                });
-            }
-        } catch (error) {
-            console.error('Error sharing', error);
-        }
     }
 
     async function handleInputWalletName(event: Event) {
@@ -141,7 +117,11 @@
             <div class="canvas-container">
                 <canvas bind:this={canvasElement}></canvas>
             </div>
-            <p class="address-text">{currentAddress}</p>
+            <div class="addresses-container" class:multi={isMultiAddress}>
+                {#each addresses as addr}
+                    <CopyButton value={addr} label={truncate(addr, 10, 10)} />
+                {/each}
+            </div>
         </div>
 
         <form onsubmit={handleInputWalletName}>
@@ -258,13 +238,16 @@
         }
     }
 
-    .address-text {
-        color: var(--color-content-text-secondary);
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 20px;
-        word-break: break-all;
-        text-align: center;
+    .addresses-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        
+        &.multi {
+            gap: 4px;
+        }
     }
 
     .edit-button {

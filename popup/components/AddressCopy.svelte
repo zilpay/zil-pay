@@ -13,7 +13,8 @@
         onclick?: () => void;
     } = $props();
 
-    const truncatedAddress = $derived(truncate(address, 6, 6));
+    const addresses = $derived(address.includes(':') ? address.split(':') : [address]);
+    const isMultiAddress = $derived(addresses.length > 1);
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -31,12 +32,16 @@
     aria-label={`Select account ${name}`}
 >
     <div class="icon-container">
-        <Jazzicon seed={address} diameter={48} onclick={() => {}} />
+        <Jazzicon seed={addresses[0]} diameter={48} onclick={() => {}} />
     </div>
 
     <div class="info-container">
         <div class="account-name">{name}</div>
-        <CopyButton value={address} label={truncatedAddress} />
+        <div class="addresses" class:multi={isMultiAddress}>
+            {#each addresses as addr}
+                <CopyButton value={addr} label={truncate(addr, 6, 6)} />
+            {/each}
+        </div>
     </div>
 </button>
 
@@ -80,5 +85,15 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .addresses {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        &.multi {
+            gap: 2px;
+        }
     }
 </style>

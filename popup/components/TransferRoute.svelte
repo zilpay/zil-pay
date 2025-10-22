@@ -18,14 +18,14 @@
 <div class="transfer-route">
     <div class="endpoint">
         <div class="name">{fromName}</div>
-        <div class="address">{truncate(fromAddress, 4, 4)}</div>
+        <div class="address">{truncate(fromAddress, 10, 4)}</div>
     </div>
     <div class="arrow-icon">
         <RightIcon />
     </div>
     <div class="endpoint">
         <div class="name">{toName}</div>
-        <div class="address">{truncate(toAddress, 4, 4)}</div>
+        <div class="address">{truncate(toAddress, 10, 4)}</div>
     </div>
 </div>
 
