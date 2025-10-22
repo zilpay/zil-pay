@@ -358,15 +358,17 @@ describe("WalletService through background messaging", () => {
 
       const erc721Contract = "0x4642f466Ede9EFD5ec1fbA12f75E7D2CA685202f";
       const nftMetadata = await fetchNFTMeta(0, erc721Contract);
-      console.log(nftMetadata);
 
       expect(nftMetadata).toBeDefined();
       expect(nftMetadata.standard).toBe(NFTStandard.ERC721);
       expect(nftMetadata.contractAddress).toBe(erc721Contract);
-      expect(nftMetadata.name).toBeDefined();
-      expect(nftMetadata.symbol).toBeDefined();
-      expect(nftMetadata.balances).toBeDefined();
-      expect(typeof nftMetadata.balances).toBe('object');
+      expect(nftMetadata.name).toBe("SimpleNFT");
+      expect(nftMetadata.symbol).toBe("SNFT");
+      expect(JSON.stringify(nftMetadata.balances)).toEqual(JSON.stringify({
+        '152': {}
+      }));
+      expect(nftMetadata.totalSupply).toBe('');
+      expect(nftMetadata.baseURI).toBeUndefined();
     }, 30000);
   });
 
