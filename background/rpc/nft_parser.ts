@@ -32,38 +32,9 @@ const ERC721_ABI = [
   },
 ] as const;
 
-const ERC1155_ABI = [
-  {
-    name: 'balanceOf',
-    type: 'function',
-    inputs: [
-      { name: 'account', type: 'address' },
-      { name: 'id', type: 'uint256' }
-    ],
-    outputs: [{ type: 'uint256' }],
-  },
-  {
-    name: 'balanceOfBatch',
-    type: 'function',
-    inputs: [
-      { name: 'accounts', type: 'address[]' },
-      { name: 'ids', type: 'uint256[]' }
-    ],
-    outputs: [{ type: 'uint256[]' }],
-  },
-  {
-    name: 'uri',
-    type: 'function',
-    inputs: [{ name: 'id', type: 'uint256' }],
-    outputs: [{ type: 'string' }],
-  },
-] as const;
-
 export enum NFTStandard {
   ERC721 = 'ERC721',
-  ERC1155 = 'ERC1155',
   ZRC6 = 'ZRC6',
-  Unknown = 'Unknown',
 }
 
 export enum NFTMetadataField {
@@ -73,7 +44,6 @@ export enum NFTMetadataField {
 }
 
 type ERC721FunctionName = 'name' | 'symbol' | 'totalSupply' | 'balanceOf' | 'ownerOf' | 'tokenURI';
-type ERC1155FunctionName = 'balanceOf' | 'balanceOfBatch' | 'uri';
 
 type ERC721FunctionArgs = {
   name: [];
@@ -84,19 +54,12 @@ type ERC721FunctionArgs = {
   tokenURI: [bigint];
 };
 
-type ERC1155FunctionArgs = {
-  balanceOf: [string, bigint];
-  balanceOfBatch: [string[], bigint[]];
-  uri: [bigint];
-};
-
 export type NFTRequestType =
   | { type: 'Metadata'; field: NFTMetadataField; standard: NFTStandard }
-  | { type: 'Balance'; address: Address; pubKeyHash: number; standard: NFTStandard; tokenId?: bigint }
+  | { type: 'Balance'; address: Address; pubKeyHash: number; standard: NFTStandard }
   | { type: 'TokenOwners'; standard: NFTStandard }
   | { type: 'TokenUris'; standard: NFTStandard }
-  | { type: 'BaseUri'; standard: NFTStandard }
-  | { type: 'DetectStandard' };
+  | { type: 'BaseUri'; standard: NFTStandard };
 
 export interface ZRC6Init {
   vname: string;
@@ -209,133 +172,16 @@ export class ERC721Helper {
   }
 }
 
-export class ERC1155Helper {
-  readonly #contract;
-
-  constructor() {
-    this.#contract = createContract(ERC1155_ABI);
-  }
-
-  encodeFunctionCall<T extends ERC1155FunctionName>(
-    functionName: T,
-    args: ERC1155FunctionArgs[T],
-  ): string {
-    let encodedData: Uint8Array;
-
-    switch (functionName) {
-      case 'balanceOf':
-        encodedData = this.#contract.balanceOf.encodeInput({
-          account: String(args[0]),
-          id: BigInt((args[1] as bigint) ?? 0),
-        });
-        break;
-      case 'balanceOfBatch':
-        encodedData = this.#contract.balanceOfBatch.encodeInput({
-          accounts: args[0] as string[],
-          ids: (args[1] as bigint[]).map(id => BigInt(id)),
-        });
-        break;
-      case 'uri':
-        encodedData = this.#contract.uri.encodeInput(BigInt((args[0] as bigint) ?? 0));
-        break;
-      default:
-        throw new Error(`Unsupported function: ${functionName}`);
-    }
-
-    return uint8ArrayToHex(encodedData, true);
-  }
-
-  decodeFunctionOutput(functionName: ERC1155FunctionName, data: string) {
-    const bytes = hexToUint8Array(data);
-
-    switch (functionName) {
-      case 'balanceOf':
-        return this.#contract.balanceOf.decodeOutput(bytes);
-      case 'balanceOfBatch':
-        return this.#contract.balanceOfBatch.decodeOutput(bytes);
-      case 'uri':
-        return this.#contract.uri.decodeOutput(bytes);
-      default:
-        throw new Error(`Unsupported function: ${functionName}`);
-    }
-  }
-}
-
-async function detectNFTStandard(
-  contract: Address,
-  provider: RpcProvider,
-): Promise<NFTStandard> {
-  try {
-    const contractAddr = await contract.toEthChecksum();
-    
-    const erc721InterfaceId = hexToUint8Array('0x80ac58cd');
-    const erc1155InterfaceId = hexToUint8Array('0xd9b67a26');
-    
-    const supportsInterfaceABI = [{
-      name: 'supportsInterface',
-      type: 'function',
-      inputs: [{ name: 'interfaceId', type: 'bytes4' }],
-      outputs: [{ type: 'bool' }],
-    }] as const;
-    
-    const contract721 = createContract(supportsInterfaceABI);
-    const encoded721 = contract721.supportsInterface.encodeInput(erc721InterfaceId);
-    const data721 = uint8ArrayToHex(encoded721, true);
-    
-    try {
-      const payload721 = RpcProvider.buildPayload(EvmMethods.Call, [
-        { to: contractAddr, data: data721 },
-        'latest',
-      ]);
-      const response721 = await provider.req<JsonRPCResponse<string>>(payload721, false, [-32000]);
-      
-      if (response721.result) {
-        const result = hexToBigInt(response721.result);
-        if (result === 1n) {
-          return NFTStandard.ERC721;
-        }
-      }
-    } catch (err) {
-      console.warn('Failed to check ERC721 interface:', err);
-    }
-    
-    const encoded1155 = contract721.supportsInterface.encodeInput(erc1155InterfaceId);
-    const data1155 = uint8ArrayToHex(encoded1155, true);
-    
-    try {
-      const payload1155 = RpcProvider.buildPayload(EvmMethods.Call, [
-        { to: contractAddr, data: data1155 },
-        'latest',
-      ]);
-      const response1155 = await provider.req<JsonRPCResponse<string>>(payload1155, false, [-32000]);
-      
-      if (response1155.result) {
-        const result = hexToBigInt(response1155.result);
-        if (result === 1n) {
-          return NFTStandard.ERC1155;
-        }
-      }
-    } catch (err) {
-      console.warn('Failed to check ERC1155 interface:', err);
-    }
-  } catch (err) {
-    console.error('Error detecting NFT standard:', err);
-  }
-  
-  return NFTStandard.Unknown;
-}
-
 export async function buildNFTRequests(
   contract: Address,
   pubKeys: Uint8Array[],
-  provider: RpcProvider,
 ): Promise<{ payload: JsonRPCRequest; requestType: NFTRequestType }[]> {
   const requests: { payload: JsonRPCRequest; requestType: NFTRequestType }[] = [];
 
   if (contract.type === AddressType.Bech32) {
     await buildZilNFTRequests(contract, requests);
   } else if (contract.type === AddressType.EthCheckSum) {
-    await buildEthNFTRequests(contract, pubKeys, provider, requests);
+    await buildEthNFTRequests(contract, pubKeys, requests);
   }
 
   return requests;
@@ -383,19 +229,10 @@ async function buildZilNFTRequests(
 async function buildEthNFTRequests(
   contract: Address,
   pubKeys: Uint8Array[],
-  provider: RpcProvider,
   requests: { payload: JsonRPCRequest; requestType: NFTRequestType }[],
 ): Promise<void> {
   const contractAddr = await contract.toEthChecksum();
-  
-  // Добавляем fallback для определения стандарта
-  let standard: NFTStandard;
-  try {
-    standard = await detectNFTStandard(contract, provider);
-  } catch (err) {
-    console.warn('Failed to detect NFT standard, defaulting to ERC721:', err);
-    standard = NFTStandard.ERC721; // Default fallback
-  }
+  const erc721 = new ERC721Helper();
   
   const buildEthCall = (data: string): JsonRPCRequest => {
     return RpcProvider.buildPayload(EvmMethods.Call, [
@@ -404,100 +241,59 @@ async function buildEthNFTRequests(
     ]);
   };
 
-  if (standard === NFTStandard.ERC721) {
-    const erc721 = new ERC721Helper();
+  const nameData = erc721.encodeFunctionCall('name', []);
+  requests.push({
+    payload: buildEthCall(nameData),
+    requestType: { type: 'Metadata', field: NFTMetadataField.Name, standard: NFTStandard.ERC721 },
+  });
+  
+  const symbolData = erc721.encodeFunctionCall('symbol', []);
+  requests.push({
+    payload: buildEthCall(symbolData),
+    requestType: { type: 'Metadata', field: NFTMetadataField.Symbol, standard: NFTStandard.ERC721 },
+  });
+  
+  const totalSupplyData = erc721.encodeFunctionCall('totalSupply', []);
+  requests.push({
+    payload: buildEthCall(totalSupplyData),
+    requestType: { type: 'Metadata', field: NFTMetadataField.TotalSupply, standard: NFTStandard.ERC721 },
+  });
+  
+  for (const pubKey of pubKeys) {
+    const addr = await Address.fromPubKey(pubKey, ETHEREUM);
+    const ethAddress = await addr.toEthChecksum();
+    const balanceData = erc721.encodeFunctionCall('balanceOf', [ethAddress]);
     
-    const nameData = erc721.encodeFunctionCall('name', []);
     requests.push({
-      payload: buildEthCall(nameData),
-      requestType: { type: 'Metadata', field: NFTMetadataField.Name, standard },
+      payload: buildEthCall(balanceData),
+      requestType: {
+        type: 'Balance',
+        address: addr,
+        pubKeyHash: hashXOR(pubKey),
+        standard: NFTStandard.ERC721,
+      },
     });
-    
-    const symbolData = erc721.encodeFunctionCall('symbol', []);
-    requests.push({
-      payload: buildEthCall(symbolData),
-      requestType: { type: 'Metadata', field: NFTMetadataField.Symbol, standard },
-    });
-    
-    const totalSupplyData = erc721.encodeFunctionCall('totalSupply', []);
-    requests.push({
-      payload: buildEthCall(totalSupplyData),
-      requestType: { type: 'Metadata', field: NFTMetadataField.TotalSupply, standard },
-    });
-    
-    for (const pubKey of pubKeys) {
-      const addr = await Address.fromPubKey(pubKey, ETHEREUM);
-      const ethAddress = await addr.toEthChecksum();
-      const balanceData = erc721.encodeFunctionCall('balanceOf', [ethAddress]);
-      
-      requests.push({
-        payload: buildEthCall(balanceData),
-        requestType: {
-          type: 'Balance',
-          address: addr,
-          pubKeyHash: hashXOR(pubKey),
-          standard,
-        },
-      });
-    }
-  } else if (standard === NFTStandard.ERC1155) {
-    const erc1155 = new ERC1155Helper();
-    
-    for (const pubKey of pubKeys) {
-      const addr = await Address.fromPubKey(pubKey, ETHEREUM);
-      const ethAddress = await addr.toEthChecksum();
-      const balanceData = erc1155.encodeFunctionCall('balanceOf', [ethAddress, 0n]);
-      
-      requests.push({
-        payload: buildEthCall(balanceData),
-        requestType: {
-          type: 'Balance',
-          address: addr,
-          pubKeyHash: hashXOR(pubKey),
-          standard,
-          tokenId: 0n,
-        },
-      });
-    }
-  } else if (standard === NFTStandard.Unknown) {
-    // Для Unknown стандарта пытаемся получить хотя бы базовую информацию
-    const erc721 = new ERC721Helper();
-    
-    try {
-      const nameData = erc721.encodeFunctionCall('name', []);
-      requests.push({
-        payload: buildEthCall(nameData),
-        requestType: { type: 'Metadata', field: NFTMetadataField.Name, standard: NFTStandard.ERC721 },
-      });
-    } catch (err) {
-      console.warn('Failed to build name request for unknown standard');
-    }
   }
 }
 
 export function processEthNFTMetadataResponse(
   response: JsonRPCResponse<string>,
   field: NFTMetadataField,
-  standard: NFTStandard,
 ): string {
-  const resultHex = validateResponse(response);
-  
-  if (!resultHex) {
-    return '';
-  }
-  
-  if (standard === NFTStandard.ERC721) {
-    try {
-      const erc721 = new ERC721Helper();
-      const decoded = erc721.decodeFunctionOutput(field as ERC721FunctionName, resultHex);
-      return String(decoded);
-    } catch (err) {
-      console.warn('Failed to decode ERC721 metadata:', err);
+  try {
+    const resultHex = validateResponse(response);
+    
+    if (!resultHex) {
       return '';
     }
+    
+    const erc721 = new ERC721Helper();
+    const decoded = erc721.decodeFunctionOutput(field as ERC721FunctionName, resultHex);
+    return String(decoded);
+  } catch (err) {
+    console.warn(`Failed to decode ${field}:`, err);
+    return '';
   }
-  
-  return '';
 }
 
 export function processZilNFTMetadataResponse(
@@ -526,13 +322,18 @@ export function processZilBaseUriResponse(
 export function processEthNFTBalanceResponse(
   response: JsonRPCResponse<string>,
 ): bigint {
-  const resultHex = validateResponse(response);
-  
-  if (!resultHex) {
+  try {
+    const resultHex = validateResponse(response);
+    
+    if (!resultHex) {
+      return 0n;
+    }
+    
+    return hexToBigInt(resultHex);
+  } catch (err) {
+    console.warn('Failed to decode balance:', err);
     return 0n;
   }
-  
-  return hexToBigInt(resultHex);
 }
 
 export async function processZilNFTBalanceResponse(

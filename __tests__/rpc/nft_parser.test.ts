@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import {
   ERC721Helper,
-  ERC1155Helper,
   buildNFTRequests,
   processEthNFTMetadataResponse,
   processZilNFTMetadataResponse,
@@ -37,15 +36,25 @@ describe("nft_parser", () => {
       const encoded = helper.encodeFunctionCall("balanceOf", [ownerAddress]);
       expect(encoded).toContain("0x70a08231");
     });
-  });
 
-  describe("ERC1155Helper", () => {
-    const helper = new ERC1155Helper();
-    const ownerAddress = "0x1234567890123456789012345678901234567890";
+    it('should correctly encode "symbol" function call', () => {
+      const encoded = helper.encodeFunctionCall("symbol", []);
+      expect(encoded).toBe("0x95d89b41");
+    });
 
-    it('should correctly encode "balanceOf" function call', () => {
-      const encoded = helper.encodeFunctionCall("balanceOf", [ownerAddress, 1n]);
-      expect(encoded).toContain("0x00fdd58e");
+    it('should correctly encode "totalSupply" function call', () => {
+      const encoded = helper.encodeFunctionCall("totalSupply", []);
+      expect(encoded).toBe("0x18160ddd");
+    });
+
+    it('should correctly encode "ownerOf" function call', () => {
+      const encoded = helper.encodeFunctionCall("ownerOf", [1n]);
+      expect(encoded).toContain("0x6352211e");
+    });
+
+    it('should correctly encode "tokenURI" function call', () => {
+      const encoded = helper.encodeFunctionCall("tokenURI", [1n]);
+      expect(encoded).toContain("0xc87b56dd");
     });
   });
 
@@ -53,31 +62,42 @@ describe("nft_parser", () => {
     it("should build requests for an ERC721 NFT", async () => {
       const contract = await createEthAddress();
       const pubKeys = [pubKeyBytes];
-      
-      const mockProvider = {
-        req: vi.fn().mockResolvedValue({
-          result: "0x0000000000000000000000000000000000000000000000000000000000000001"
-        })
-      } as any;
 
-      const requests = await buildNFTRequests(contract, pubKeys, mockProvider);
+      const requests = await buildNFTRequests(contract, pubKeys);
 
-      expect(requests.length).toBeGreaterThan(0);
+      expect(requests.length).toBe(4);
       expect(requests[0].payload.method).toBe(EvmMethods.Call);
+      expect(requests[0].requestType.type).toBe("Metadata");
+      expect(requests[0].requestType.standard).toBe(NFTStandard.ERC721);
+      expect(requests[1].requestType.type).toBe("Metadata");
+      expect(requests[2].requestType.type).toBe("Metadata");
+      expect(requests[3].requestType.type).toBe("Balance");
     });
 
     it("should build requests for a ZRC6 NFT", async () => {
       const contract = await createZilAddress();
       const pubKeys = [pubKeyBytes];
-      
-      const mockProvider = {} as any;
-      const requests = await buildNFTRequests(contract, pubKeys, mockProvider);
+
+      const requests = await buildNFTRequests(contract, pubKeys);
 
       expect(requests.length).toBe(4);
       expect(requests[0].payload.method).toBe(ZilMethods.GetSmartContractInit);
       expect(requests[1].payload.method).toBe(ZilMethods.GetSmartContractSubState);
       expect(requests[2].payload.method).toBe(ZilMethods.GetSmartContractSubState);
       expect(requests[3].payload.method).toBe(ZilMethods.GetSmartContractSubState);
+    });
+
+    it("should build balance requests for multiple accounts", async () => {
+      const contract = await createEthAddress();
+      const pubKey1 = hexToUint8Array("03b0194095e799a6a5f2e81a79fde0a927906c130520f050db263f0d9acbece1ba");
+      const pubKey2 = hexToUint8Array("02b0194095e799a6a5f2e81a79fde0a927906c130520f050db263f0d9acbece1bb");
+      const pubKeys = [pubKey1, pubKey2];
+
+      const requests = await buildNFTRequests(contract, pubKeys);
+
+      expect(requests.length).toBe(5);
+      const balanceRequests = requests.filter(r => r.requestType.type === "Balance");
+      expect(balanceRequests.length).toBe(2);
     });
   });
 
@@ -91,9 +111,21 @@ describe("nft_parser", () => {
       const name = processEthNFTMetadataResponse(
         mockResponse,
         NFTMetadataField.Name,
-        NFTStandard.ERC721,
       );
       expect(name).toBe("test");
+    });
+
+    it("should process symbol", () => {
+      const mockResponse: JsonRPCResponse<string> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003544e5400000000000000000000000000000000000000000000000000000000",
+      };
+      const symbol = processEthNFTMetadataResponse(
+        mockResponse,
+        NFTMetadataField.Symbol,
+      );
+      expect(symbol).toBe("TNT");
     });
 
     it("should handle empty response", () => {
@@ -105,7 +137,19 @@ describe("nft_parser", () => {
       const name = processEthNFTMetadataResponse(
         mockResponse,
         NFTMetadataField.Name,
-        NFTStandard.ERC721,
+      );
+      expect(name).toBe("");
+    });
+
+    it("should handle missing result", () => {
+      const mockResponse: JsonRPCResponse<string> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: "",
+      };
+      const name = processEthNFTMetadataResponse(
+        mockResponse,
+        NFTMetadataField.Name,
       );
       expect(name).toBe("");
     });
@@ -128,6 +172,22 @@ describe("nft_parser", () => {
 
       expect(name).toBe("Test NFT");
       expect(symbol).toBe("TNFT");
+    });
+
+    it("should handle missing fields", () => {
+      const mockInitData: ZRC6Init[] = [
+        { vname: "initial_contract_owner", type: "ByStr20", value: "0x1234567890123456789012345678901234567890" },
+      ];
+      const mockResponse: JsonRPCResponse<ZRC6Init[]> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: mockInitData,
+      };
+
+      const { name, symbol } = processZilNFTMetadataResponse(mockResponse);
+
+      expect(name).toBe("");
+      expect(symbol).toBe("");
     });
   });
 
@@ -155,6 +215,19 @@ describe("nft_parser", () => {
       const baseUri = processZilBaseUriResponse(mockResponse);
       expect(baseUri).toBeUndefined();
     });
+
+    it("should handle base_uri with trailing slash", () => {
+      const mockResponse: JsonRPCResponse<{ base_uri?: string }> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: {
+          base_uri: "ipfs://QmTest/"
+        },
+      };
+
+      const baseUri = processZilBaseUriResponse(mockResponse);
+      expect(baseUri).toBe("ipfs://QmTest/");
+    });
   });
 
   describe("processEthNFTBalanceResponse", () => {
@@ -176,6 +249,26 @@ describe("nft_parser", () => {
       };
       const balance = processEthNFTBalanceResponse(mockResponse);
       expect(balance).toBe(0n);
+    });
+
+    it("should handle zero balance", () => {
+      const mockResponse: JsonRPCResponse<string> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: "0x0000000000000000000000000000000000000000000000000000000000000000",
+      };
+      const balance = processEthNFTBalanceResponse(mockResponse);
+      expect(balance).toBe(0n);
+    });
+
+    it("should handle large balance", () => {
+      const mockResponse: JsonRPCResponse<string> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: "0x00000000000000000000000000000000000000000000000000000000000003e8",
+      };
+      const balance = processEthNFTBalanceResponse(mockResponse);
+      expect(balance).toBe(1000n);
     });
   });
 
@@ -301,6 +394,55 @@ describe("nft_parser", () => {
       const userTokens = result.balances[pubKeyHash];
 
       expect(Object.keys(userTokens).length).toBe(0);
+    });
+
+    it("should handle multiple accounts correctly", async () => {
+      const keypair1 = await KeyPair.generate(ZILLIQA);
+      const keypair2 = await KeyPair.generate(ZILLIQA);
+      const address1 = (await (await keypair1.address()).toZilChecksum()).toLowerCase();
+      const address2 = (await (await keypair2.address()).toZilChecksum()).toLowerCase();
+
+      const tokenOwnersResponse: JsonRPCResponse<{ token_owners?: Record<string, string> }> = {
+        id: 1,
+        jsonrpc: "2.0",
+        result: {
+          token_owners: {
+            "1": address1,
+            "2": address2,
+            "3": address1,
+          }
+        },
+      };
+
+      const tokenUrisResponse: JsonRPCResponse<{ token_uris?: Record<string, string> }> = {
+        id: 2,
+        jsonrpc: "2.0",
+        result: {
+          token_uris: {
+            "1": "https://example.com/1.json",
+            "2": "https://example.com/2.json",
+            "3": "https://example.com/3.json",
+          }
+        },
+      };
+
+      const pubKeys = [keypair1.pubKey, keypair2.pubKey];
+
+      const result = await processZilNFTBalanceResponse(
+        tokenOwnersResponse,
+        tokenUrisResponse,
+        undefined,
+        pubKeys
+      );
+
+      const balanceKeys = Object.keys(result.balances);
+      expect(balanceKeys.length).toBe(2);
+
+      const tokens1 = result.balances[Number(balanceKeys[0])];
+      const tokens2 = result.balances[Number(balanceKeys[1])];
+
+      const totalTokens = Object.keys(tokens1).length + Object.keys(tokens2).length;
+      expect(totalTokens).toBe(3);
     });
   });
 });

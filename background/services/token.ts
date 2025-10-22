@@ -43,7 +43,6 @@ export class TokenService {
       const requestsWithTypes = await buildNFTRequests(
         contractAddr,
         pubKeys,
-        provider
       );
 
       const payloads = requestsWithTypes.map((r) => r.payload);
@@ -52,7 +51,7 @@ export class TokenService {
       let name = "";
       let symbol = "";
       let totalSupply: string | undefined;
-      let standard = NFTStandard.Unknown;
+      let standard = NFTStandard.ERC721;
       let baseURI: string | undefined;
       let balances: Record<number, Record<string, NFTTokenInfo>> = {};
 
@@ -70,55 +69,32 @@ export class TokenService {
           baseURI,
           pubKeys
         );
-      
+    
         balances = result.balances;
       } else if (contractAddr.type === AddressType.EthCheckSum) {
-        let responseIterator = 0;
+        name = processEthNFTMetadataResponse(
+          responses[0],
+          NFTMetadataField.Name,
+        );
+        symbol = processEthNFTMetadataResponse(
+          responses[1],
+          NFTMetadataField.Symbol,
+        );
+        totalSupply = processEthNFTMetadataResponse(
+          responses[2],
+          NFTMetadataField.TotalSupply,
+        );
 
-        const firstReqType = requestsWithTypes[0].requestType;
-        if (firstReqType.type === "Metadata") {
-          standard = firstReqType.standard;
-        }
-
-        if (standard === NFTStandard.ERC721) {
-          name = processEthNFTMetadataResponse(
-            responses[responseIterator++],
-            NFTMetadataField.Name,
-            standard
-          );
-          symbol = processEthNFTMetadataResponse(
-            responses[responseIterator++],
-            NFTMetadataField.Symbol,
-            standard
-          );
-          totalSupply = processEthNFTMetadataResponse(
-            responses[responseIterator++],
-            NFTMetadataField.TotalSupply,
-            standard
-          );
-
-          requestsWithTypes.slice(3).forEach((reqWithType, index) => {
-            if (reqWithType.requestType.type === "Balance") {
-              const response = responses[responseIterator + index];
-              const balance = processEthNFTBalanceResponse(response);
-            
-              if (balance > 0n) {
-                balances[reqWithType.requestType.pubKeyHash] = {};
-              }
+        requestsWithTypes.slice(3).forEach((reqWithType, index) => {
+          if (reqWithType.requestType.type === "Balance") {
+            const response = responses[3 + index];
+            const balance = processEthNFTBalanceResponse(response);
+        
+            if (balance > 0n) {
+              balances[reqWithType.requestType.pubKeyHash] = {};
             }
-          });
-        } else if (standard === NFTStandard.ERC1155) {
-          requestsWithTypes.forEach((reqWithType, index) => {
-            if (reqWithType.requestType.type === "Balance") {
-              const response = responses[index];
-              const balance = processEthNFTBalanceResponse(response);
-            
-              if (balance > 0n) {
-                balances[reqWithType.requestType.pubKeyHash] = {};
-              }
-            }
-          });
-        }
+          }
+        });
       }
 
       const metadata: NFTMetadata = {
@@ -146,6 +122,10 @@ export class TokenService {
 
       if (wallet.settings.ratesApiOptions == RatesApiOptions.CoinGecko) {
         await this.#updateCoinGecko(walletIndex, sendResponse);
+      } else {
+        sendResponse({
+          resolve: wallet.tokens,
+        });
       }
   }
 

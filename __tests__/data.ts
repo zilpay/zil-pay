@@ -285,15 +285,15 @@ export const createEthConfig = (): ChainConfig =>
 
 export const createSepoliaConfig = (): ChainConfig =>
   new ChainConfig({
-    ...mainnetChains[2],
-    features: mainnetChains[2].features.map((n) =>
+    ...testnetChains[2],
+    features: testnetChains[2].features.map((n) =>
       Number(n.replace("EIP", "")),
     ),
     explorers: [],
     fallbackEnabled: true,
-    batchRequest: true,
+    batchRequest: false,
     testnet: true,
-    ftokens: mainnetChains[2].ftokens.map(
+    ftokens: testnetChains[2].ftokens.map(
       (t) =>
         new FToken({
           ...t,
@@ -302,13 +302,13 @@ export const createSepoliaConfig = (): ChainConfig =>
           rate: 0,
           addrType: AddressType.EthCheckSum,
           chainHash: hashChainConfig(
-            mainnetChains[2].chainIds,
-            mainnetChains[2].slip44,
-            mainnetChains[2].chain,
+            testnetChains[2].chainIds,
+            testnetChains[2].slip44,
+            testnetChains[2].chain,
           ),
         }),
     ),
-    chainId: mainnetChains[2].chainIds[0],
+    chainId: testnetChains[2].chainIds[0],
     ens: null,
     diffBlockTime: 1,
   });
