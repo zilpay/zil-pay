@@ -18,7 +18,7 @@ export function startBackground(core: GlobalState) {
         core.token.fetchNFTMetadata(
           msg.payload.contract,
           msg.payload.walletIndex,
-          sendResponse
+          sendResponse,
         );
         return true;
 
@@ -37,10 +37,7 @@ export function startBackground(core: GlobalState) {
         );
         return true;
       case MTypePopup.ADD_NEXT_BIP39_ACCOUNT:
-        core.wallet.addAccountFromBip39(
-          msg.payload,
-          sendResponse,
-        );
+        core.wallet.addAccountFromBip39(msg.payload, sendResponse);
         return true;
       case MTypePopup.DESTROY_WALLET:
         core.wallet.removeWallet(
@@ -83,10 +80,19 @@ export function startBackground(core: GlobalState) {
         core.wallet.logoutWallet(msg.payload.walletIndex, sendResponse);
         return true;
       case MTypePopup.REVEAL_BIP39:
-        core.wallet.exportbip39Words(msg.payload.password, msg.payload.walletIndex, sendResponse);
+        core.wallet.exportbip39Words(
+          msg.payload.password,
+          msg.payload.walletIndex,
+          sendResponse,
+        );
         return true;
       case MTypePopup.REVEAL_KEY:
-        core.wallet.exportKeyPair(msg.payload.password, msg.payload.walletIndex, msg.payload.accountIndex, sendResponse);
+        core.wallet.exportKeyPair(
+          msg.payload.password,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          sendResponse,
+        );
         return true;
       case MTypePopup.GET_ALL_ACCOUNTS_BY_CHAIN:
         core.wallet.getAllAddressesByChain(

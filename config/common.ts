@@ -15,6 +15,5 @@ export const ZERO_ZIL = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz";
 export enum AddressCategory {
   Wallet,
   ZILExchangeLegacy,
-  AddressBook
+  AddressBook,
 }
-

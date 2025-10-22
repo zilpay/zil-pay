@@ -55,4 +55,3 @@ export interface WalletAddressInfo {
   addrType: AddressType;
   category: AddressCategory;
 }
-

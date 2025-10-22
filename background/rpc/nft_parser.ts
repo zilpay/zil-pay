@@ -280,25 +280,19 @@ export function processEthNFTMetadataResponse(
   response: JsonRPCResponse<string>,
   field: NFTMetadataField,
 ): string {
-  try {
-    if (response.error) {
-      console.warn(`RPC error for ${field}:`, response.error.message);
-      return '';
-    }
-
-    const resultHex = response.result;
-    
-    if (!resultHex || resultHex === '0x') {
-      return '';
-    }
-    
-    const erc721 = new ERC721Helper();
-    const decoded = erc721.decodeFunctionOutput(field as ERC721FunctionName, resultHex);
-    return String(decoded);
-  } catch (err) {
-    console.warn(`Failed to decode ${field}:`, err);
+  if (response.error) {
     return '';
   }
+
+  const resultHex = response.result;
+  
+  if (!resultHex) {
+    return '';
+  }
+  
+  const erc721 = new ERC721Helper();
+  const decoded = erc721.decodeFunctionOutput(field as ERC721FunctionName, resultHex);
+  return String(decoded);
 }
 
 export function processZilNFTMetadataResponse(
@@ -327,23 +321,17 @@ export function processZilBaseUriResponse(
 export function processEthNFTBalanceResponse(
   response: JsonRPCResponse<string>,
 ): bigint {
-  try {
-    if (response.error) {
-      console.warn('RPC error for balance:', response.error.message);
-      return 0n;
-    }
-
-    const resultHex = response.result;
-    
-    if (!resultHex || resultHex === '0x') {
-      return 0n;
-    }
-    
-    return hexToBigInt(resultHex);
-  } catch (err) {
-    console.warn('Failed to decode balance:', err);
+  if (response.error) {
     return 0n;
   }
+
+  const resultHex = response.result;
+  
+  if (!resultHex) {
+    return 0n;
+  }
+  
+  return hexToBigInt(resultHex);
 }
 
 export async function processZilNFTBalanceResponse(
