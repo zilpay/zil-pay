@@ -5,7 +5,7 @@ import {
 import {
   WalletSettings,
 } from "../../background/storage/settings";
-import { AuthMethod, WalletTypes } from "../../config/wallet";
+import { AddressType, AuthMethod, WalletTypes } from "../../config/wallet";
 import { RatesApiOptions } from "../../config/api";
 import { ChainConfig } from "../../background/storage/chain";
 import { WORD_LIST } from "../crypto/word_list";
@@ -18,6 +18,7 @@ import { KeyPair } from "../../crypto/keypair";
 import { hexToUint8Array } from '../../lib/utils/hex';
 import { utf8ToUint8Array } from '../../lib/utils/utf8';
 import { GasSpeed } from '../../config/gas';
+import { Address } from "crypto/address";
 
 describe("Wallet", () => {
   const MNEMONIC =
@@ -239,8 +240,9 @@ describe("Wallet", () => {
       expect(account.name).toBe("Primary Account");
 
       const address = await keyPair.address();
+      const evmAddr = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
       
-      expect(account.addr).toBe(await address.toZilBech32());
+      expect(account.addr).toBe(`${await address.toZilBech32()}:${await evmAddr.toEthChecksum()}`);
     });
 
     it("fails to unlock and reveal keypair due to incorrect wallet type", async () => {

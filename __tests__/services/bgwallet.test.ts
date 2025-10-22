@@ -114,7 +114,9 @@ describe("WalletService through background messaging", () => {
       expect(wallet.walletType).toBe(WalletTypes.SecretKey);
       expect(wallet.accounts).toHaveLength(1);
       expect(wallet.accounts[0].name).toBe("Imported Account");
-      expect(wallet.accounts[0].addr).toBe(keyPairZilliqa.address);
+
+      const evmAddr = await Address.fromPubKeyType(hexToUint8Array(keyPairZilliqa.publicKey), AddressType.EthCheckSum);
+      expect(wallet.accounts[0].addr).toBe(`${keyPairZilliqa.address}:${await evmAddr.toEthChecksum()}`);
       expect(state.selectedWallet).toBe(0);
 
       state = await logout(0);
@@ -144,7 +146,7 @@ describe("WalletService through background messaging", () => {
       expect(wallet.accounts).toHaveLength(1);
       expect(wallet.accounts[0].name).toBe("Main Account");
       expect(wallet.accounts[0].addr).toBe(
-        "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y"
+        "zil1ntrynx04349sk6py7uyata03gka6qswg7um95y:0xA2484462BB8E1BA3603E4CC248a34a9D9ABBc251"
       );
       expect(wallet.accounts[0].slip44).toBe(state.chains[0].slip44);
       expect(wallet.accounts[0].chainId).toBe(state.chains[0].chainId);

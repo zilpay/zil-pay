@@ -1,8 +1,9 @@
 import { utils } from 'aes-js';
 import { ChainConfig } from './chain';
 import { KeyPair } from 'crypto/keypair';
-import type { AddressType } from 'config/wallet';
+import { AddressType } from 'config/wallet';
 import type { Bip32Account } from 'types/wallet';
+import { Address } from 'crypto/address';
 
 export interface IAccountState {
   addr: string;
@@ -39,7 +40,20 @@ export class Account implements IAccountState {
   static async fromBip39(bip32Account: Bip32Account, chain: ChainConfig, seed: Uint8Array): Promise<Account> {
     const keyPair = await KeyPair.fromSeed(seed, chain.slip44, bip32Account.index);
     const addrType = keyPair.addressType();
-    const addr = await (await keyPair.address()).autoFormat();
+    const pubKey = keyPair.pubKey;
+    let addr: string;
+
+    if (addrType == AddressType.Bech32) {
+      const address = await Address.fromPubKeyType(pubKey, AddressType.EthCheckSum);
+      const bech32 = await (await keyPair.address()).autoFormat();
+      const evmAddr = await address.toEthChecksum();
+
+      addr = `${bech32}:${evmAddr}`;
+    } else {
+      const address = await keyPair.address();
+      addr = await address.autoFormat();
+    }
+
     const account = new Account({
       addr,
       addrType,
@@ -57,14 +71,25 @@ export class Account implements IAccountState {
   static async fromPrivateKey(privateKey: Uint8Array, chain: ChainConfig, name: string): Promise<Account> {
     const keyPair = await KeyPair.fromPrivateKey(privateKey, chain.slip44);
     const addrType = keyPair.addressType();
-    const addr = await keyPair.address();
-    const formated = await addr.autoFormat();
+    const pubKey = keyPair.pubKey;
+    let addr: string;
+
+    if (addrType == AddressType.Bech32) {
+      const address = await Address.fromPubKeyType(pubKey, AddressType.EthCheckSum);
+      const bech32 = await (await keyPair.address()).autoFormat();
+      const evmAddr = await address.toEthChecksum();
+
+      addr = `${bech32}:${evmAddr}`;
+    } else {
+      const address = await keyPair.address();
+      addr = await address.autoFormat();
+    }
 
     const account = new Account({
+      addr,
       addrType,
       name: name,
       index: 0,
-      addr: formated,
       pubKey: utils.hex.fromBytes(keyPair.pubKey),
       chainHash: chain.hash(),
       slip44: chain.slip44,
