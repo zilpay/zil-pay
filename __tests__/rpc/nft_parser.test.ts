@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   ERC721Helper,
   buildNFTRequests,
@@ -8,7 +8,6 @@ import {
   processZilNFTBalanceResponse,
   processZilBaseUriResponse,
   NFTMetadataField,
-  NFTStandard,
   type ZRC6Init,
 } from "../../background/rpc/nft_parser";
 import { Address } from "../../crypto/address";
@@ -17,6 +16,7 @@ import { EvmMethods, ZilMethods } from "../../config/jsonrpc";
 import { ETHEREUM, ZILLIQA } from "../../config/slip44";
 import { hexToUint8Array } from "../../lib/utils/hex";
 import type { JsonRPCResponse } from "../../background/rpc/provider";
+import { NFTStandard } from "config/token";
 
 const pubKeyBytes = hexToUint8Array("03b0194095e799a6a5f2e81a79fde0a927906c130520f050db263f0d9acbece1ba");
 const createEthAddress = () => Address.fromPubKey(pubKeyBytes, ETHEREUM);

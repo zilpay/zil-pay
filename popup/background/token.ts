@@ -5,7 +5,7 @@ import { MTypePopup } from "config/stream";
 import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import globalStore from "popup/store/global";
-import type { NFTMetadata } from "background/rpc/nft_parser";
+import type { NFTMetadata } from "types/token";
  
 
 export async function ftUpdateRates(walletIndex: number) {

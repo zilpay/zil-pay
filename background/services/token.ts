@@ -1,11 +1,13 @@
 import { RpcProvider } from "background/rpc";
-import { buildNFTRequests, NFTMetadataField, NFTStandard, processEthNFTBalanceResponse, processEthNFTMetadataResponse, processZilBaseUriResponse, processZilNFTBalanceResponse, processZilNFTMetadataResponse, type NFTMetadata, type NFTTokenInfo } from "background/rpc/nft_parser";
+import { buildNFTRequests, NFTMetadataField, processEthNFTBalanceResponse, processEthNFTMetadataResponse, processZilBaseUriResponse, processZilNFTBalanceResponse, processZilNFTMetadataResponse, type NFTTokenInfo } from "background/rpc/nft_parser";
 import type { BackgroundState } from "background/storage";
 import { RatesApiOptions } from "config/api";
+import { NFTStandard } from "config/token";
 import { AddressType } from "config/wallet";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
 import { hexToUint8Array } from "lib/utils/hex";
+import type { NFTMetadata } from "types/token";
 
 interface CoinGeckoPrice {
   [currency: string]: number;

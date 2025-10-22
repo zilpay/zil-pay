@@ -177,6 +177,7 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         authType: AuthMethod.None,
         uuid: uuid(),
         accounts,
+        nft: [],
         selectedAccount: walletIdentities.selectedAddress,
         tokens: walletTokens, 
         settings: new WalletSettings({

@@ -15,6 +15,7 @@ import { HistoricalTransaction, type IHistoricalTransactionState } from 'backgro
 import { ConfirmState, type IConfirmState } from './confirm';
 import { AuthMethod, WalletTypes } from 'config/wallet';
 import type { Bip32Account } from 'types/wallet';
+import type { NFTMetadata } from 'types/token';
 
 export interface IWalletState {
   uuid: string;
@@ -24,6 +25,7 @@ export interface IWalletState {
   accounts: IAccountState[];
   selectedAccount: number;
   tokens: IFTokenState[];
+  nft: NFTMetadata[];
   history: IHistoricalTransactionState[];
   confirm: IConfirmState[];
   settings: IWalletSettingsState;
@@ -42,6 +44,7 @@ export class Wallet implements IWalletState {
   accounts: Account[];
   selectedAccount: number;
   tokens: FToken[];
+  nft: NFTMetadata[];
   history: HistoricalTransaction[];
   confirm: ConfirmState[];
   settings: WalletSettings;
@@ -61,6 +64,7 @@ export class Wallet implements IWalletState {
     this.settings = new WalletSettings(data.settings);
     this.defaultChainHash = data.defaultChainHash as number;
     this.uuid = data.uuid as string;
+    this.nft = data.nft ?? [];
     this.history = TypeOf.isArray(data.history) ? data.history.map((h) => new HistoricalTransaction(h)) : [];
     this.confirm = TypeOf.isArray(data.confirm) ? data.confirm.map((c) => new ConfirmState(c)) : [];
     this.#session = new Session(this.uuid);
@@ -84,6 +88,7 @@ export class Wallet implements IWalletState {
       walletType: WalletTypes.SecretKey,
       selectedAccount: 0,
       tokens: chain.ftokens,
+      nft: [],
       defaultChainHash: chain.hash(),
       uuid: uuid(),
       accounts: [account],
@@ -120,6 +125,7 @@ export class Wallet implements IWalletState {
       walletType: WalletTypes.SecretPhrase,
       selectedAccount: 0,
       tokens: chain.ftokens,
+      nft: [],
       defaultChainHash: chain.hash(),
       uuid: uuid(),
       accounts: [],
@@ -241,6 +247,7 @@ export class Wallet implements IWalletState {
       walletType: this.walletType,
       walletName: this.walletName,
       authType: this.authType,
+      nft: this.nft,
       accounts: this.accounts.map(a => a.toJSON()),
       selectedAccount: this.selectedAccount,
       tokens: this.tokens.map(t => t.toJSON()),

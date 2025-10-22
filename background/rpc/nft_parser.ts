@@ -7,6 +7,7 @@ import { TypeOf } from 'lib/types';
 import { ETHEREUM, ZILLIQA } from 'config/slip44';
 import { hashXOR } from 'lib/utils/hashing';
 import { AddressType } from 'config/wallet';
+import { NFTStandard } from 'config/token';
 
 const ERC721_ABI = [
   { name: 'name', type: 'function', outputs: [{ type: 'string' }] },
@@ -31,11 +32,6 @@ const ERC721_ABI = [
     outputs: [{ type: 'string' }],
   },
 ] as const;
-
-export enum NFTStandard {
-  ERC721 = 'ERC721',
-  ZRC6 = 'ZRC6',
-}
 
 export enum NFTMetadataField {
   Name = 'name',
@@ -69,16 +65,6 @@ export interface ZRC6Init {
 
 export interface ZilContractState {
   [key: string]: any;
-}
-
-export interface NFTMetadata {
-  name: string;
-  symbol: string;
-  totalSupply?: string;
-  standard: NFTStandard;
-  balances: Record<number, Record<string, NFTTokenInfo>>;
-  contractAddress: string;
-  baseURI?: string;
 }
 
 export interface NFTTokenInfo {
@@ -152,6 +138,10 @@ export class ERC721Helper {
 
   decodeFunctionOutput(functionName: ERC721FunctionName, data: string) {
     const bytes = hexToUint8Array(data);
+
+    if (bytes.length == 0) {
+      return '';
+    }
 
     switch (functionName) {
       case 'name':

@@ -16,7 +16,6 @@ import {
   createEthConfig,
   createSepoliaConfig,
   createZilliqaConfig,
-  createZilliqaTestnetConfig,
   IMPORTED_KEY,
   PASSWORD,
   WORDS,
@@ -33,8 +32,8 @@ import type {
 import { FToken, WalletSettings } from "../../background/storage";
 import '../setupTests';
 import { messageManager } from "../setupTests";
-import { NFTStandard } from 'background/rpc/nft_parser';
 import { fetchNFTMeta } from 'popup/background/token';
+import { NFTStandard } from 'config/token';
 
 describe("WalletService through background messaging", () => {
   let globalState: GlobalState;

@@ -41,6 +41,7 @@ describe("BackgroundState", () => {
             },
           ],
           selectedAccount: 0,
+          nft: [],
           tokens: [
             {
               name: "Zilliqa",
