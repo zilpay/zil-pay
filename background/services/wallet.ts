@@ -111,6 +111,7 @@ export class WalletService {
           currentWallet.accounts = wallet.accounts.map((a) => new Account(a));
           currentWallet.confirm = wallet.confirm.map((c) => new ConfirmState(c));
           currentWallet.history = wallet.history.map((h) =>  new HistoricalTransaction(h));
+          currentWallet.nft = wallet.nft;
           currentWallet.selectedAccount = wallet.selectedAccount;
           currentWallet.settings = new WalletSettings(wallet.settings);
           currentWallet.tokens = wallet.tokens.map((t) => new FToken(t));

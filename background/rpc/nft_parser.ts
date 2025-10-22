@@ -8,6 +8,7 @@ import { ETHEREUM, ZILLIQA } from 'config/slip44';
 import { hashXOR } from 'lib/utils/hashing';
 import { AddressType } from 'config/wallet';
 import { NFTStandard } from 'config/token';
+import type { NFTTokenInfo } from 'types/token';
 
 const ERC721_ABI = [
   { name: 'name', type: 'function', outputs: [{ type: 'string' }] },
@@ -65,18 +66,6 @@ export interface ZRC6Init {
 
 export interface ZilContractState {
   [key: string]: any;
-}
-
-export interface NFTTokenInfo {
-  id: string;
-  url?: string;
-  meta?: NFTTokenMetadata;
-}
-
-export interface NFTTokenMetadata {
-  image?: string;
-  name?: string;
-  attributes?: any[];
 }
 
 function validateResponse<T>(response: JsonRPCResponse<T>, ignore: number[] = []): T {

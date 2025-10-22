@@ -1,3 +1,15 @@
+export interface NFTTokenMetadata {
+  image?: string;
+  name?: string;
+  attributes?: any[];
+}
+
+export interface NFTTokenInfo {
+  id: string;
+  url?: string;
+  meta?: NFTTokenMetadata;
+}
+
 export interface NFTMetadata {
   name: string;
   symbol: string;
