@@ -6,6 +6,7 @@ import { Fields } from 'config/fields';
 import { migrateToV4 } from 'background/secure';
 import { Themes } from 'config/theme';
 import { Locales } from 'config/locale';
+import { Web3Connections, type IWeb3ConnectionsState } from './connections';
 
 export interface IBackgroundState {
   storageVersion: number;
@@ -19,6 +20,7 @@ export interface IBackgroundState {
   tokensRow: boolean;
   chains: IChainConfigState[];
   book: IAddressBookRecord[];
+  connections: IWeb3ConnectionsState;
 }
 
 export class BackgroundState implements IBackgroundState {
@@ -33,6 +35,7 @@ export class BackgroundState implements IBackgroundState {
   tokensRow: boolean;
   chains: ChainConfig[];
   book: IAddressBookRecord[];
+  connections: IWeb3ConnectionsState;
 
   static default() {
     return new BackgroundState({
@@ -47,6 +50,9 @@ export class BackgroundState implements IBackgroundState {
       chains: [],
       storageVersion: 4,
       book: [],
+      connections: {
+        list: [],
+      },
     });
   }
 
@@ -94,6 +100,7 @@ export class BackgroundState implements IBackgroundState {
     this.chains = (data.chains).map(
       (c) => new ChainConfig(c)
     );
+    this.connections = new Web3Connections(data.connections);
   }
 
   getChain(hash: number) {
@@ -122,6 +129,7 @@ export class BackgroundState implements IBackgroundState {
       tokensRow: this.tokensRow,
       book: this.book,
       chains: this.chains.map(c => c.toJSON()),
+      connections: this.connections,
     };
   }
 }

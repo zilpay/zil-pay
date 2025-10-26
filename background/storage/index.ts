@@ -6,4 +6,5 @@ export * from './explorer';
 export * from './ftoken';
 export * from './notification';
 export * from './settings';
+export * from './connections';
 export * from './wallet';

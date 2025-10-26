@@ -93,6 +93,9 @@ describe("BackgroundState", () => {
       book: [],
       selectedWallet: 0,
       storageVersion: 0,
+      connections: {
+        list: [],
+      },
     };
 
     const state = new BackgroundState(mockData);
@@ -122,6 +125,9 @@ describe("BackgroundState", () => {
       selectedWallet: 0,
       tokensRow: false,
       book: [],
+      connections: {
+        list: [],
+      },
     };
 
     const state = new BackgroundState(mockData);

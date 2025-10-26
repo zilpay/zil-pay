@@ -217,6 +217,9 @@ function migrateFromV2orV3(storage: Record<string, unknown>): BackgroundState {
         tokensRow: true,
         chains: [mainChain], 
         book: [],
+        connections: {
+          list: [],
+        }
     });
 
     return backgroundState;

@@ -16,5 +16,8 @@ export default writable<IBackgroundState>({
   tokensRow: true,
   chains: [],
   book: [],
+  connections: {
+    list: [],
+  }
 });
 
