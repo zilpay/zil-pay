@@ -24,7 +24,10 @@ export class Web3Connections implements IWeb3ConnectionsState {
   list: IWeb3ConnectionState[];
 
   constructor(state: IWeb3ConnectionsState) {
-    this.list = state.list || [];
+    this.list = [];
+    if (state && state.list) {
+      this.list = state.list;
+    }
   }
 
   #find(origin: string): IWeb3ConnectionState | undefined {
