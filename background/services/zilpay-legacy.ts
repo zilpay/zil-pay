@@ -50,15 +50,13 @@ export class ZilPayLegacyService {
       }
 
       sendResponse({
-        resolve: {
-          account,
-          network: chain.testnet ? "testnet" : "mainnet",
-          http: chain.rpc[0],
-          nativeHttp: chain.rpc[0],
-          isConnect: isConnected,
-          isEnable: isConnected,
-        }
-      });
+        account,
+        network: chain.testnet ? "testnet" : "mainnet",
+        http: chain.rpc[0],
+        nativeHttp: chain.rpc[0],
+        isConnect: isConnected,
+        isEnable: isConnected,
+      } as any);
     } catch (e) {
       sendResponse({ reject: String(e) });
     }
