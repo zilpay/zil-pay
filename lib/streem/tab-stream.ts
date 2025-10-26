@@ -18,7 +18,7 @@ export class TabStream {
         });
     }
 
-    send(data: ReqBody, to: string) {
+    send<T>(data: ReqBody<T>, to: string) {
         data.from = this.eventName;
         if (Object.values(MTypeTabContent).includes(to)) {
             this.#dispatch(JSON.stringify(data), to);

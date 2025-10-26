@@ -19,4 +19,3 @@ export interface NFTMetadata {
   contractAddress: string;
   baseURI?: string;
 }
-

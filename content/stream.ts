@@ -1,6 +1,10 @@
 import { MTypePopup } from "config/stream";
 import { Runtime } from "lib/runtime";
-import { LegacyZilliqaTabMsg, MTypeTabContent, type SendResponseParams } from "lib/streem";
+import {
+  LegacyZilliqaTabMsg,
+  MTypeTabContent,
+  type SendResponseParams,
+} from "lib/streem";
 import { Message, type ReqBody } from "lib/streem/message";
 import { TabStream } from "lib/streem/tab-stream";
 
@@ -12,7 +16,7 @@ export class ContentTabStream {
 
     Runtime.runtime.onMessage.addListener((req, sender, sendResponse) => {
       if (sender.id !== Runtime.runtime.id) {
-        return null
+        return null;
       }
 
       console.log(req, sender, sendResponse);
@@ -33,7 +37,10 @@ export class ContentTabStream {
   async #listener(msg?: ReqBody) {
     if (!msg) return;
 
+    msg.domain = window.location.hostname;
+
     const data = await new Message<SendResponseParams>(msg).send();
-    console.log(data);
+
+    this.#stream.send(data as ReqBody, MTypeTabContent.INJECTED);
   }
 }

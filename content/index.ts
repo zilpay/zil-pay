@@ -1,3 +1,3 @@
-import { startBrowserContent } from './content';
+import { startBrowserContent } from "./content";
 
 startBrowserContent();

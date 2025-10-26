@@ -35,7 +35,7 @@ export class BackgroundState implements IBackgroundState {
   tokensRow: boolean;
   chains: ChainConfig[];
   book: IAddressBookRecord[];
-  connections: IWeb3ConnectionsState;
+  connections: Web3Connections;
 
   static default() {
     return new BackgroundState({

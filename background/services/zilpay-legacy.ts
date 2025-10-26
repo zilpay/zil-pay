@@ -1,4 +1,5 @@
 import type { BackgroundState } from "background/storage";
+import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
 
 export class ZilPayLegacyService {
@@ -8,28 +9,54 @@ export class ZilPayLegacyService {
     this.#state = state;
   }
 
-  async getData(sendResponse: StreamResponse) {
+  async getData(domain: string, sendResponse: StreamResponse) {
     try {
+      const emptyResponse = {
+        account: null,
+        network: null,
+        http: null,
+        nativeHttp: null,
+        isConnect: false,
+        isEnable: false,
+      };
+
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+      if (!wallet) {
+        sendResponse({ resolve: emptyResponse });
+        return;
+      }
+
       const selectedAccount = wallet.accounts[wallet.selectedAccount];
+      if (!selectedAccount) {
+        sendResponse({ resolve: emptyResponse });
+        return;
+      }
+
+      const chain = this.#state.getChain(selectedAccount.chainHash);
+      if (!chain || !chain.rpc[0]) {
+        sendResponse({ resolve: emptyResponse });
+        return;
+      }
+
+      const isConnected = this.#state.connections.isConnected(domain);
       let account = null;
 
-      // if (has) {
-      //   account = {
-      //     base16: this.#core.account.selectedAccount.base16,
-      //     bech32: this.#core.account.selectedAccount.bech32
-      //   }
-      // }
-      
+      if (isConnected) {
+        const addr = Address.fromStr(selectedAccount.addr.split(":")[0]);
+        account = {
+          base16: await addr.toZilChecksum(),
+          bech32: await addr.toZilBech32(),
+        };
+      }
+
       sendResponse({
         resolve: {
           account,
-          // netwrok: this.#core.netwrok.selected,
-          // http: this.#core.netwrok.provider,
-          // nativeHttp: this.#core.netwrok.nativeHttp,
-          // isConnect: has,
-          // isEnable: this.#core.guard.isEnable,
-          // phishing: this.#core.apps.phishing
+          network: chain.testnet ? "testnet" : "mainnet",
+          http: chain.rpc[0],
+          nativeHttp: chain.rpc[0],
+          isConnect: isConnected,
+          isEnable: isConnected,
         }
       });
     } catch (e) {
