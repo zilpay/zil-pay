@@ -6,7 +6,7 @@ import {
 import { KeyPair } from "../../crypto/keypair";
 import { ZILLIQA, ETHEREUM } from "../../config/slip44";
 import { ZILTransactionRequest } from "../../crypto/zilliqa_tx";
-import { Transaction, weieth, weigwei } from "micro-eth-signer";
+import { weieth, weigwei } from "micro-eth-signer";
 import { hexToUint8Array } from "../../lib/utils/hex";
 import type { TransactionMetadata, TransactionRequestEVM } from "../../types/tx";
 import { createEthConfig } from "__tests__/data";
