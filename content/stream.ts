@@ -1,7 +1,5 @@
-import { MTypePopup } from "config/stream";
 import { Runtime } from "lib/runtime";
 import {
-  LegacyZilliqaTabMsg,
   MTypeTabContent,
   type SendResponseParams,
 } from "lib/streem";
@@ -12,8 +10,6 @@ export class ContentTabStream {
   readonly #stream: TabStream;
 
   static startStream() {
-    const tabStream = new ContentTabStream();
-
     Runtime.runtime.onMessage.addListener((req, sender, sendResponse) => {
       if (sender.id !== Runtime.runtime.id) {
         return null;
