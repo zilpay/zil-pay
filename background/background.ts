@@ -158,8 +158,10 @@ export function startBackground(core: GlobalState) {
 
       // Legacy Web3
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
-        console.log(msg);
         core.zilpayLegacyWeb3.getData(msg.domain, sendResponse);
+        return true;
+      case LegacyZilliqaTabMsg.CONNECT_APP:
+        core.zilpayLegacyWeb3.callConnect(msg, sendResponse);
         return true;
 
       default:

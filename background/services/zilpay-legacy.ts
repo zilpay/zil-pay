@@ -1,12 +1,30 @@
 import type { BackgroundState } from "background/storage";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
+import type { ConnectParams } from 'types/connect';
 
 export class ZilPayLegacyService {
   #state: BackgroundState;
 
   constructor(state: BackgroundState) {
     this.#state = state;
+  }
+
+  async callConnect(
+    payload: ConnectParams,
+    sendResponse: (response: any) => void
+  ): Promise<void> {
+    try {
+      const { domain } = payload;
+      const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+      if (!wallet) {
+        sendResponse({ reject: "wallet not enabled" });
+        return;
+      }
+    } catch (error) {
+      sendResponse({ error: String(error) });
+    }
   }
 
   async getData(domain: string, sendResponse: StreamResponse) {
@@ -50,13 +68,15 @@ export class ZilPayLegacyService {
       }
 
       sendResponse({
-        account,
-        network: chain.testnet ? "testnet" : "mainnet",
-        http: chain.rpc[0],
-        nativeHttp: chain.rpc[0],
-        isConnect: isConnected,
-        isEnable: isConnected,
-      } as any);
+        resolve: {
+          account,
+          network: chain.testnet ? "testnet" : "mainnet",
+          http: chain.rpc[0],
+          nativeHttp: chain.rpc[0],
+          isConnect: isConnected,
+          isEnable: isConnected,
+        }
+      });
     } catch (e) {
       sendResponse({ reject: String(e) });
     }

@@ -2,6 +2,6 @@ import { inject } from "./inject";
 import { ContentTabStream } from "./stream";
 
 export async function startBrowserContent() {
-  ContentTabStream.startStream();
+  new ContentTabStream();
   // inject('injects/zilpay.js');
 }
