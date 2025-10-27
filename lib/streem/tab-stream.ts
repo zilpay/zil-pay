@@ -1,6 +1,7 @@
 import type { ReqBody } from './message';
 import { Runtime } from "lib/runtime";
 import { MTypeTabContent } from './keys';
+import type { SendResponseParams } from '.';
 
 export class TabStream {
     constructor(public readonly eventName: string) {}
@@ -23,6 +24,10 @@ export class TabStream {
         if (Object.values(MTypeTabContent).includes(to)) {
             this.#dispatch(JSON.stringify(data), to);
         }
+    }
+
+    sendParams<T>(data: SendResponseParams<T>, to: string) {
+        this.#dispatch(JSON.stringify(data), to);
     }
 
     #dispatch(data: string, to: string) {

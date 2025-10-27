@@ -22,6 +22,7 @@ export class ZilPayLegacyService {
       const selectedAccount = wallet.accounts[wallet.selectedAccount];
       const chain = this.#state.getChain(selectedAccount.chainHash);
 
+      // TODO: add check unique
       wallet.confirm.push(new ConfirmState({
         uuid: payload.uuid,
         connect: payload,

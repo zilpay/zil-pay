@@ -36,14 +36,15 @@ export class ContentTabStream {
 
     switch (msg.type) {
       case LegacyZilliqaTabMsg.CONNECT_APP:
-        console.log(msg);
+        const connectApp = await new Message<SendResponseParams<ReqBody>>(msg).send();
+        this.#stream.sendParams(connectApp, MTypeTabContent.INJECTED);
         break;
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
-        const data = await new Message<SendResponseParams<ReqBody>>(msg).send();
-        if (data && data.resolve) {
+        const walltData = await new Message<SendResponseParams<ReqBody>>(msg).send();
+        if (walltData && walltData.resolve) {
           this.#stream.send({
             type: LegacyZilliqaTabMsg.GET_WALLET_DATA,
-            payload: data.resolve,
+            payload: walltData.resolve,
           }, MTypeTabContent.INJECTED);
         }
         return;
