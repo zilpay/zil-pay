@@ -1,3 +1,4 @@
+import { MTypePopup } from "config/stream";
 import { Runtime } from "lib/runtime";
 import {
     LegacyZilliqaTabMsg,
@@ -19,8 +20,13 @@ export class ContentTabStream {
       if (sender.id !== Runtime.runtime.id) {
         return null;
       }
+      const msg = req as ReqBody;
 
-      console.log(req, sender, sendResponse);
+      switch (msg.type) {
+        case MTypePopup.RESPONSE_TO_DAPP:
+          this.#stream.send(msg, MTypeTabContent.INJECTED);
+          break;
+      }
 
       sendResponse({});
     });
@@ -35,9 +41,8 @@ export class ContentTabStream {
     msg.domain = window.location.hostname;
 
     switch (msg.type) {
-      case LegacyZilliqaTabMsg.CONNECT_APP:
-        const connectApp = await new Message<SendResponseParams<ReqBody>>(msg).send();
-        this.#stream.sendParams(connectApp, MTypeTabContent.INJECTED);
+      case MTypePopup.CONNECT_APP:
+        await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
         const walltData = await new Message<SendResponseParams<ReqBody>>(msg).send();

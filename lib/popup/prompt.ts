@@ -13,7 +13,7 @@ export class PromptService {
     await this.#closeExistingPopups();
 
     const url = route 
-      ? `${Common.PROMT_PAGE}#${route}`
+      ? `${Common.PROMT_PAGE}#${route}?type=popup`
       : Common.PROMT_PAGE;
 
     return new Promise((resolve, reject) => {

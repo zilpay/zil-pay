@@ -156,12 +156,17 @@ export function startBackground(core: GlobalState) {
         );
         return true;
 
+      // connections
+      case MTypePopup.CONNECT_APP:
+        core.connect.callConnect(msg, sendResponse);
+        return true;
+      case MTypePopup.DISCONNECT_APP:
+        core.connect.rejectConnect(msg.payload.uuid, msg.payload.walletIndex, sendResponse);
+        return true;
+
       // Legacy Web3
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
         core.zilpayLegacyWeb3.getData(msg.domain, sendResponse);
-        return true;
-      case LegacyZilliqaTabMsg.CONNECT_APP:
-        core.zilpayLegacyWeb3.callConnect(msg, sendResponse);
         return true;
 
       default:

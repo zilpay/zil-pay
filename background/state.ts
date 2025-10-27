@@ -5,6 +5,7 @@ import { Session } from "./secure";
 import { WorkerService } from "./services/worker";
 import { TokenService } from "./services/token";
 import { ZilPayLegacyService } from "./services/zilpay-legacy";
+import { ConnectService } from "./services/connect";
 
 export class GlobalState {
   state: BackgroundState;
@@ -14,6 +15,7 @@ export class GlobalState {
   readonly transaction: TransactionService;
   readonly worker: WorkerService;
   readonly token: TokenService;
+  readonly connect: ConnectService;
 
   static async fromStorage() {
     const state = await BackgroundState.fromStorage();
@@ -29,6 +31,7 @@ export class GlobalState {
     this.transaction = new TransactionService(this.state, this.worker);
     this.token = new TokenService(this.state);
     this.zilpayLegacyWeb3 = new ZilPayLegacyService(this.state);
+    this.connect = new ConnectService(this.state);
   }
 
   async sync() {

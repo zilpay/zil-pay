@@ -1,9 +1,11 @@
 <script lang="ts">
     import { _ } from 'popup/i18n';
+    import { currentParams } from 'popup/store/route';
     import globalStore from 'popup/store/global';
     import { push } from 'popup/router/navigation';
     import type { IWeb3ConnectionPermissions } from 'background/storage/connections';
     import type { ConnectParams } from 'types/connect';
+    import { rejectConnect } from 'popup/background/connect';
     
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
@@ -56,9 +58,21 @@
         push('/');
     }
 
-    function handleCancel() {
-        push('/');
+    async function handleCancel() {
+        if (connectRequest) {
+            await rejectConnect(connectRequest.uuid, $globalStore.selectedWallet);
+        }
     }
+
+    $effect(() => {
+        if (!connectRequest) {
+            if ($currentParams?.type === 'popup') {
+                window.close();
+            } else {
+                push("/");
+            }
+        }
+    });
 </script>
 
 <div class="page-container">
@@ -178,6 +192,7 @@
         background: var(--color-neutral-background-base);
         padding: 0;
         box-sizing: border-box;
+        padding: 0;
     }
 
     .content {
@@ -185,7 +200,7 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        padding: var(--padding-side);
+        padding: var(--padding-side) 0;
         overflow-y: auto;
     }
 
@@ -360,7 +375,7 @@
     }
 
     .footer {
-        padding: var(--padding-side);
+        padding: var(--padding-side) 0;
         border-top: 1px solid var(--color-neutral-border-default);
         background: var(--color-neutral-background-base);
     }

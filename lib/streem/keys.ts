@@ -21,11 +21,6 @@ export const LegacyZilliqaTabMsg = {
   SING_MESSAGE_RES: `@/${app}/response-sign-message`,
 
   NEW_BLOCK: `@/${app}/new-block-created`,
-
-  CONNECT_APP: `@/${app}/request-to-connect-dapp`,
-  RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`,
-  DISCONNECT_APP: `@/${app}/request-to-disconnect-dapp`,
-
   WATCH_BLOCK: `@/${app}/request-watch_block`
 };
 

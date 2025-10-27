@@ -37,14 +37,6 @@ export class RouteGuard {
     if (wallet.confirm.length != 0) {
       const last = wallet.confirm[wallet.confirm.length - 1];
 
-      if (last.connect) {
-        this.navigate("connect");
-        return {
-          path: "/connect",
-          component: ConnectPage,
-        };
-      }
-
       if (last?.evm || last?.scilla) {
         this.navigate("confirm");
         return {
