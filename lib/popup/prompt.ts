@@ -7,20 +7,9 @@ export class PromptService {
   readonly #width: number = Common.POPUP_WIDTH;
   readonly #type = "popup";
 
-  #enabled: boolean;
   #currentPopupId?: number;
 
-  get enabled(): boolean {
-    return this.#enabled;
-  }
-
-  constructor(enabled: boolean) {
-    this.#enabled = enabled;
-  }
-
   async open(route?: string): Promise<number | undefined> {
-    if (!this.#enabled) return undefined;
-
     await this.#closeExistingPopups();
 
     const url = route 

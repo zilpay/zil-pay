@@ -1,10 +1,13 @@
 import type { BackgroundState } from "background/storage";
+import { ConfirmState } from "background/storage/confirm";
 import { Address } from "crypto/address";
+import { PromptService } from "lib/popup/prompt";
 import type { StreamResponse } from "lib/streem";
 import type { ConnectParams } from 'types/connect';
 
 export class ZilPayLegacyService {
   #state: BackgroundState;
+  #promptService: PromptService = new PromptService();
 
   constructor(state: BackgroundState) {
     this.#state = state;
@@ -15,13 +18,19 @@ export class ZilPayLegacyService {
     sendResponse: (response: any) => void
   ): Promise<void> {
     try {
-      const { domain } = payload;
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+      const selectedAccount = wallet.accounts[wallet.selectedAccount];
+      const chain = this.#state.getChain(selectedAccount.chainHash);
 
-      if (!wallet) {
-        sendResponse({ reject: "wallet not enabled" });
-        return;
-      }
+      wallet.confirm.push(new ConfirmState({
+        uuid: payload.uuid,
+        connect: payload,
+      }));
+
+      await this.#state.sync();
+      await this.#promptService.open("/connect");
+
+      sendResponse({ reject: "wallet not enabled" });
     } catch (error) {
       sendResponse({ error: String(error) });
     }

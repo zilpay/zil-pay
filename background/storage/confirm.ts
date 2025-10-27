@@ -1,3 +1,4 @@
+import type { ConnectParams } from "types/connect";
 import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM } from "types/tx";
 
 export interface IConfirmState {
@@ -8,6 +9,7 @@ export interface IConfirmState {
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: string;
   signTypedDataJsonEVM?: string;
+  connect?: ConnectParams;
 }
 
 export class ConfirmState implements IConfirmState {
@@ -18,6 +20,7 @@ export class ConfirmState implements IConfirmState {
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: string;
   signTypedDataJsonEVM?: string;
+  connect?: ConnectParams;
 
   constructor(data: IConfirmState) {
     this.uuid = data.uuid;
@@ -45,6 +48,10 @@ export class ConfirmState implements IConfirmState {
     if (data.signTypedDataJsonEVM) {
       this.signTypedDataJsonEVM = data.signTypedDataJsonEVM;
     }
+
+    if (data.connect) {
+      this.connect = data.connect;
+    }
   }
 
   toJSON(): IConfirmState {
@@ -55,7 +62,8 @@ export class ConfirmState implements IConfirmState {
       signMessageScilla: this.signMessageScilla,
       evm: this.evm,
       signPersonalMessageEVM: this.signPersonalMessageEVM,
-      signTypedDataJsonEVM: this.signTypedDataJsonEVM
+      signTypedDataJsonEVM: this.signTypedDataJsonEVM,
+      connect: this.connect,
     };
   }
 }

@@ -7,7 +7,6 @@ export interface ConnectParams {
   description: string;
   domain: string;
   icon: string;
-  payload: Record<string, unknown>;
   title: string;
   type: string;
   uuid: string;
