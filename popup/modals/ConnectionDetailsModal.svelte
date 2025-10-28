@@ -83,7 +83,9 @@
                     {#each Object.entries(connection.permissions) as [key, value]}
                         {#if value && permissionLabels[key]}
                             <div class="permission-item">
-                                <span class="permission-check">✓</span>
+                                <span class="permission-check">
+                                    <SuccessIcon />
+                                </span>
                                 <span class="permission-text">{permissionLabels[key]}</span>
                             </div>
                         {/if}
@@ -252,9 +254,12 @@
         background: var(--color-positive-text-primary);
         color: var(--color-neutral-background-base);
         border-radius: 50%;
-        font-size: 12px;
-        font-weight: 700;
         flex-shrink: 0;
+
+        :global(svg) {
+            width: 14px;
+            height: 14px;
+        }
     }
 
     .permission-text {
