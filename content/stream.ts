@@ -40,7 +40,6 @@ export class ContentTabStream {
 
     msg.domain = window.location.hostname;
 
-    console.log(msg);
     switch (msg.type) {
       case MTypePopup.CONNECT_APP:
         await new Message<SendResponseParams<ReqBody>>(msg).send();
@@ -52,7 +51,9 @@ export class ContentTabStream {
             uuid: msg.uuid,
             payload: proyxRes,
           }, MTypeTabContent.INJECTED);
-
+        break;
+      case LegacyZilliqaTabMsg.SIGN_MESSAGE:
+        await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
         const walltData = await new Message<SendResponseParams<ReqBody>>(msg).send();

@@ -41,6 +41,10 @@ export class ConfirmState implements IConfirmState {
       this.signPersonalMessageEVM = data.signPersonalMessageEVM;
     }
 
+    if (data.signMessageScilla) {
+      this.signMessageScilla = data.signMessageScilla;
+    }
+
     if (data.signPersonalMessageEVM) {
       this.signPersonalMessageEVM = data.signPersonalMessageEVM;
     }

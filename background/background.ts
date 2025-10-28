@@ -190,7 +190,7 @@ export function startBackground(core: GlobalState) {
           msg.domain,
           msg.payload.content,
           msg.payload.title,
-          msg.payload.icon,
+          msg.icon,
           sendResponse,
         );
         return true;

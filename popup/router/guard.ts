@@ -5,6 +5,7 @@ import StartPage from "../pages/Start.svelte";
 import LockPage from "../pages/Lock.svelte";
 import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
 import ConnectPage from "../pages/Connect.svelte";
+import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
 
 export class RouteGuard {
   private static navigate(path: string) {
@@ -48,6 +49,12 @@ export class RouteGuard {
         return {
           path: "/connect",
           component: ConnectPage,
+        };
+      } else if (last?.signMessageScilla && !window.location.hash.includes('sign-message')) {
+        this.navigate("sign-message");
+        return {
+          path: "/sign-message",
+          component: SignMessagePopupPage,
         };
       }
     }

@@ -53,7 +53,6 @@ export class ZilPayLegacyService {
         title,
         hash: uint8ArrayToHex(await sha256(messageBytes)),
       };
-
       wallet.confirm.push(new ConfirmState({
         uuid: uuid,
         signMessageScilla: messageScilla,
