@@ -1,12 +1,12 @@
 <script lang="ts">
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
-    import { setGlobalState } from 'popup/background/wallet';
     
     import NavBar from '../components/NavBar.svelte';
     import ConnectionItem from '../components/ConnectionItem.svelte';
     import ConnectionDetailsModal from '../modals/ConnectionDetailsModal.svelte';
     import type { IWeb3ConnectionState } from 'background/storage/connections';
+    import { disconnectWallet } from 'popup/background/connect';
 
     let connections = $derived($globalStore.connections.list);
     let selectedConnection = $state<IWeb3ConnectionState | null>(null);
@@ -20,14 +20,7 @@
     async function handleConfirmDelete() {
         if (!selectedConnection) return;
 
-        globalStore.update(state => {
-            state.connections.list = state.connections.list.filter(
-                conn => conn.domain !== selectedConnection?.domain
-            );
-            return state;
-        });
-
-        await setGlobalState();
+        await disconnectWallet(selectedConnection.domain, $globalStore.selectedWallet);
         
         showDetailsModal = false;
         selectedConnection = null;
