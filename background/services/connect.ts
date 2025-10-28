@@ -21,6 +21,13 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+      const isConnected = this.#state.connections.isConnected(payload.domain, wallet.selectedAccount);
+
+      if (isConnected) {
+        await this.#notifyDapp(wallet, payload.uuid, payload);
+        sendResponse({ resolve: true });
+        return;
+      }
 
       wallet.confirm.push(new ConfirmState({
         uuid: payload.uuid,
@@ -30,7 +37,7 @@ export class ConnectService {
       await this.#state.sync();
       new PromptService().open("/connect");
 
-      sendResponse({ reject: "wallet not enabled" });
+      sendResponse({ resolve: true });
     } catch (error) {
       sendResponse({ reject: String(error) });
     }
