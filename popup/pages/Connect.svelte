@@ -35,16 +35,6 @@
 
     let showAdvanced = $state(false);
 
-    function toggleAccount(index: number) {
-        const newSet = new Set(selectedAccountsSet);
-        if (newSet.has(index)) {
-            newSet.delete(index);
-        } else {
-            newSet.add(index);
-        }
-        selectedAccountsSet = newSet;
-    }
-
     function toggleAdvanced() {
         showAdvanced = !showAdvanced;
     }
@@ -105,7 +95,6 @@
                                 name={account.name}
                                 address={account.addr}
                                 selected={selectedAccountsSet.has(index)}
-                                onclick={() => toggleAccount(index)}
                             />
                         </div>
                     {/each}
