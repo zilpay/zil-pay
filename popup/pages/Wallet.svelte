@@ -129,7 +129,7 @@
                     <SettingsLinkItem 
                         label={$_('walletSettings.manageConnections')}
                         Icon={ConnectionIcon}
-                        value={2}
+                        value={$globalStore.connections.list.length}
                         onclick={handleManageConnections}
                     />
                 </div>
