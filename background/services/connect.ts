@@ -6,6 +6,8 @@ import { Address } from "crypto/address";
 import { PromptService } from "lib/popup/prompt";
 import type { StreamResponse } from "lib/streem";
 import { TabsMessage } from "lib/streem/tabs-message";
+import { hashXOR } from "lib/utils/hashing";
+import { hexToUint8Array } from "lib/utils/hex";
 import type { ConnectParams } from "types/connect";
 
 export class ConnectService {
@@ -98,13 +100,20 @@ export class ConnectService {
     connection.title = connect.title;
     connection.icon = connect.icon;
 
-    this.#addAccountToConnection(connection, wallet.selectedAccount);
-    this.#addChainToConnection(connection, wallet.defaultChainHash);
+    const selectedAccount = wallet.accounts[wallet.selectedAccount];
+
+    wallet.accounts.forEach((a) => {
+      this.#addAccountToConnection(connection, a);
+    });
+
+    this.#addChainToConnection(connection, selectedAccount.chainHash);
   }
 
-  #addAccountToConnection(connection: IWeb3ConnectionState, accountIndex: number): void {
-    if (!connection.connectedAccounts.includes(accountIndex)) {
-      connection.connectedAccounts.push(accountIndex);
+  #addAccountToConnection(connection: IWeb3ConnectionState, account: Account): void {
+    const pubkey = hexToUint8Array(account.pubKey);
+    const hash = hashXOR(pubkey);
+    if (!connection.connectedAccounts.includes(hash)) {
+      connection.connectedAccounts.push(hash);
     }
   }
 
