@@ -6,10 +6,10 @@ import globalStore from "popup/store/global";
 import type { IConfirmState } from "background/storage/confirm";
  
 
-export async function rejectConnect(uuid: string, walletIndex: number) {
+export async function responseToConnect(uuid: string, walletIndex: number, approve: boolean) {
   const data = await new Message<SendResponseParams>({
-    type: MTypePopup.DISCONNECT_APP,
-    payload: { uuid, walletIndex },
+    type: MTypePopup.RESPONSE_TO_DAPP,
+    payload: { uuid, walletIndex, approve },
   }).send();
   
   const resolve = warpMessage(data) as IConfirmState[];
@@ -26,3 +26,4 @@ export async function rejectConnect(uuid: string, walletIndex: number) {
 
   return resolve;
 }
+

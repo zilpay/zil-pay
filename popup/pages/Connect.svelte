@@ -5,7 +5,7 @@
     import { push } from 'popup/router/navigation';
     import type { IWeb3ConnectionPermissions } from 'background/storage/connections';
     import type { ConnectParams } from 'types/connect';
-    import { rejectConnect } from 'popup/background/connect';
+    import { responseToConnect } from 'popup/background/connect';
     
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
@@ -55,12 +55,14 @@
             return;
         }
 
-        push('/');
+        if (connectRequest) {
+            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true);
+        }
     }
 
     async function handleCancel() {
         if (connectRequest) {
-            await rejectConnect(connectRequest.uuid, $globalStore.selectedWallet);
+            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, false);
         }
     }
 

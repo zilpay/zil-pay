@@ -160,8 +160,13 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.CONNECT_APP:
         core.connect.callConnect(msg, sendResponse);
         return true;
-      case MTypePopup.DISCONNECT_APP:
-        core.connect.rejectConnect(msg.payload.uuid, msg.payload.walletIndex, sendResponse);
+      case MTypePopup.RESPONSE_TO_DAPP:
+        core.connect.responseConnect(
+          msg.payload.uuid,
+          msg.payload.walletIndex,
+          msg.payload.approve,
+          sendResponse
+        );
         return true;
 
       // Legacy Web3
