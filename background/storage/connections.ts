@@ -1,5 +1,4 @@
 export interface IWeb3ConnectionPermissions {
-  accounts: boolean;
   signTransactions: boolean;
   signMessages: boolean;
   readChainData: boolean;

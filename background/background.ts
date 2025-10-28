@@ -165,6 +165,7 @@ export function startBackground(core: GlobalState) {
           msg.payload.uuid,
           msg.payload.walletIndex,
           msg.payload.approve,
+          msg.payload.permissions,
           sendResponse
         );
         return true;

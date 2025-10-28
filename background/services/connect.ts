@@ -1,4 +1,4 @@
-import type { BackgroundState, IWeb3ConnectionState, Wallet } from "background/storage";
+import type { Account, BackgroundState, IWeb3ConnectionPermissions, IWeb3ConnectionState, Wallet } from "background/storage";
 import { ConfirmState } from "background/storage/confirm";
 import { ZILLIQA } from "config/slip44";
 import { MTypePopup } from "config/stream";
@@ -47,6 +47,7 @@ export class ConnectService {
     uuid: string,
     walletIndex: number,
     approve: boolean,
+    permissions: IWeb3ConnectionPermissions,    
     sendResponse: StreamResponse,
   ): Promise<void> {
     try {
@@ -56,7 +57,7 @@ export class ConnectService {
       this.#removeConfirmRequest(wallet, uuid);
 
       if (approve && confirmRequest?.connect) {
-        this.#handleConnection(wallet, confirmRequest.connect);
+        this.#handleConnection(wallet, confirmRequest.connect, permissions);
       }
 
       await this.#state.sync();
@@ -79,13 +80,13 @@ export class ConnectService {
     wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
   }
 
-  #handleConnection(wallet: Wallet, connect: ConnectParams): void {
+  #handleConnection(wallet: Wallet, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
     const connection = this.#findConnection(connect.domain);
 
     if (connection) {
       this.#updateConnection(connection, wallet, connect);
     } else {
-      this.#createConnection(wallet, connect);
+      this.#createConnection(wallet, connect, permissions);
     }
   }
 
@@ -114,28 +115,19 @@ export class ConnectService {
     }
   }
 
-  #createConnection(wallet: Wallet, connect: ConnectParams): void {
+  #createConnection(wallet: Wallet, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
     const chainIndex = this.#findChainIndex(wallet.defaultChainHash);
 
     this.#state.connections.add({
+      permissions,
       origin: connect.domain,
       domain: connect.domain,
       title: connect.title,
       icon: connect.icon,
-      permissions: this.#getDefaultPermissions(),
       connectedAccounts: [wallet.selectedAccount],
       connectedChains: chainIndex !== -1 ? [chainIndex] : [],
       connectedAt: Date.now(),
     });
-  }
-
-  #getDefaultPermissions() {
-    return {
-      accounts: true,
-      signTransactions: true,
-      signMessages: true,
-      readChainData: true,
-    };
   }
 
   #findChainIndex(chainHash: number): number {
@@ -154,7 +146,7 @@ export class ConnectService {
     }).send(connect.domain);
   }
 
-  async #buildDappPayload(uuid: string, selectedAccount: any) {
+  async #buildDappPayload(uuid: string, selectedAccount: Account) {
     let payload: object = { uuid };
 
     if (selectedAccount.slip44 === ZILLIQA) {

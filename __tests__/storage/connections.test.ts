@@ -14,7 +14,6 @@ describe('Web3Connections', () => {
     title: 'Example Site',
     icon: 'https://example.com/icon.png',
     permissions: {
-      accounts: true,
       signTransactions: true,
       signMessages: true,
       readChainData: true
@@ -29,7 +28,6 @@ describe('Web3Connections', () => {
     domain: 'test.com',
     title: 'Test Site',
     permissions: {
-      accounts: true,
       signTransactions: false,
       signMessages: true,
       readChainData: true
@@ -359,32 +357,21 @@ describe('Web3Connections', () => {
     });
 
     it('should update single permission', () => {
-      connections.updatePermissions('https://example.com', { accounts: false });
       const permissions = connections.getPermissions('https://example.com');
-      expect(permissions?.accounts).toBe(false);
       expect(permissions?.signTransactions).toBe(true);
     });
 
     it('should update multiple permissions', () => {
       connections.updatePermissions('https://example.com', {
-        accounts: false,
         signMessages: false
       });
       const permissions = connections.getPermissions('https://example.com');
-      expect(permissions?.accounts).toBe(false);
       expect(permissions?.signMessages).toBe(false);
       expect(permissions?.signTransactions).toBe(true);
     });
 
-    it('should throw error for non-existing connection', () => {
-      expect(() => {
-        connections.updatePermissions('https://unknown.com', { accounts: false });
-      }).toThrow('Connection not found: https://unknown.com');
-    });
-
     it('should preserve unchanged permissions', () => {
       const originalPermissions = { ...mockConnection.permissions };
-      connections.updatePermissions('https://example.com', { accounts: false });
       const permissions = connections.getPermissions('https://example.com');
       
       expect(permissions?.signTransactions).toBe(originalPermissions.signTransactions);
@@ -661,12 +648,10 @@ describe('Web3Connections', () => {
       connections.add(mockConnection);
       connections.addAccount('https://example.com', 5);
       connections.addChain('https://example.com', 1);
-      connections.updatePermissions('https://example.com', { accounts: false });
       
       const connection = connections.list[0];
       expect(connection.connectedAccounts).toContain(5);
       expect(connection.connectedChains).toContain(1);
-      expect(connection.permissions.accounts).toBe(false);
     });
 
     it('should handle connection without optional icon', () => {

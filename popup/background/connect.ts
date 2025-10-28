@@ -4,12 +4,18 @@ import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import globalStore from "popup/store/global";
 import type { IConfirmState } from "background/storage/confirm";
+import type { IWeb3ConnectionPermissions } from "background/storage";
  
 
-export async function responseToConnect(uuid: string, walletIndex: number, approve: boolean) {
+export async function responseToConnect(
+  uuid: string,
+  walletIndex: number,
+  approve: boolean,
+  permissions: IWeb3ConnectionPermissions,
+) {
   const data = await new Message<SendResponseParams>({
     type: MTypePopup.RESPONSE_TO_DAPP,
-    payload: { uuid, walletIndex, approve },
+    payload: { uuid, walletIndex, approve, permissions },
   }).send();
   
   const resolve = warpMessage(data) as IConfirmState[];

@@ -28,7 +28,6 @@
     });
 
     let permissions = $state<IWeb3ConnectionPermissions>({
-        accounts: true,
         signTransactions: true,
         signMessages: true,
         readChainData: true
@@ -56,13 +55,13 @@
         }
 
         if (connectRequest) {
-            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true);
+            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true, permissions);
         }
     }
 
     async function handleCancel() {
         if (connectRequest) {
-            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, false);
+            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, false, permissions);
         }
     }
 
@@ -121,17 +120,6 @@
 
                 {#if showAdvanced}
                     <div class="permissions-list">
-                        <div class="permission-item">
-                            <div class="permission-info">
-                                <span class="permission-label">{$_('connect.permission.accounts')}</span>
-                                <span class="permission-description">{$_('connect.permission.accounts_desc')}</span>
-                            </div>
-                            <Switch
-                                bind:checked={permissions.accounts}
-                                variant="default"
-                            />
-                        </div>
-
                         <div class="permission-item">
                             <div class="permission-info">
                                 <span class="permission-label">{$_('connect.permission.sign_transactions')}</span>
