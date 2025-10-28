@@ -156,3 +156,32 @@ Object.defineProperty(global.chrome.runtime, "sendMessage", {
 Object.defineProperty(global.chrome.runtime, "onMessage", {
   value: messageManager.onMessage,
 });
+
+const tabsManager = {
+  query: vi.fn(async (_queryInfo: chrome.tabs.QueryInfo) => {
+    const mockTab: chrome.tabs.Tab = {
+      id: 1,
+      index: 0,
+      pinned: false,
+      highlighted: false,
+      windowId: 1,
+      active: true,
+      incognito: false,
+      selected: true,
+      discarded: false,
+      autoDiscardable: false,
+      groupId: -1,
+      url: "https://test.example.com",
+      frozen: false,
+    };
+    return Promise.resolve([mockTab]);
+  }),
+  sendMessage: vi.fn(async (_tabId: number, _message: any) => {
+    return Promise.resolve();
+  }),
+};
+
+Object.defineProperty(global.chrome, "tabs", {
+  value: tabsManager,
+  writable: true,
+});
