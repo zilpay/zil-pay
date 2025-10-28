@@ -6,6 +6,7 @@ export interface ReqBody<T = unknown> {
     payload?: T;
     domain?: string;
     from?: string;
+    uuid?: string;
 }
 
 export class Message<T = unknown> {

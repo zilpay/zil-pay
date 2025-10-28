@@ -44,6 +44,15 @@ export class ContentTabStream {
       case MTypePopup.CONNECT_APP:
         await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
+      case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
+        const proyxRes = await new Message<SendResponseParams<ReqBody>>(msg).send();
+          this.#stream.send({
+            type: LegacyZilliqaTabMsg.CONTENT_PROXY_RESULT,
+            uuid: msg.uuid,
+            payload: proyxRes,
+          }, MTypeTabContent.INJECTED);
+
+        break;
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
         const walltData = await new Message<SendResponseParams<ReqBody>>(msg).send();
         if (walltData && walltData.resolve) {

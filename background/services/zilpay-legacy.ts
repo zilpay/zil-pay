@@ -1,3 +1,4 @@
+import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
 import type { BackgroundState } from "background/storage";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
@@ -7,6 +8,26 @@ export class ZilPayLegacyService {
 
   constructor(state: BackgroundState) {
     this.#state = state;
+  }
+
+  async jsonRPCProxy(domain: string, payload: JsonRPCRequest | JsonRPCRequest[], sendResponse: StreamResponse) {
+    try {
+      const isConnected = this.#state.connections.isConnected(domain);
+
+      if (!isConnected) {
+        throw new Error("wallet not connected");
+      }
+
+      const wallet = this.#state.wallets[this.#state.selectedWallet];
+      const selectedAccount = wallet.accounts[wallet.selectedAccount];
+      const chain = this.#state.getChain(selectedAccount.chainHash);
+      const provider = new NetworkProvider(chain!);
+      const res = await provider.proxyReq(payload);
+
+      sendResponse({ resolve: res, });
+    } catch (e) {
+      sendResponse({ reject: String(e) });
+    }
   }
 
   async getData(domain: string, sendResponse: StreamResponse) {

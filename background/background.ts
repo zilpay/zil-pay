@@ -174,6 +174,9 @@ export function startBackground(core: GlobalState) {
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
         core.zilpayLegacyWeb3.getData(msg.domain, sendResponse);
         return true;
+      case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
+        core.zilpayLegacyWeb3.jsonRPCProxy(msg.domain, msg.payload, sendResponse);
+        return true;
 
       default:
         sendResponse(null);
