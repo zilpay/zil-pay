@@ -123,3 +123,11 @@ export interface TransactionMetadata {
   title?: string;
   token: FTState;
 }
+
+export interface SignMesageReqScilla {
+  content: string;
+  title: string;
+  icon: string;
+  domain: string;
+  hash: string;
+}

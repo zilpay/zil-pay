@@ -184,6 +184,16 @@ export function startBackground(core: GlobalState) {
       case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
         core.zilpayLegacyWeb3.jsonRPCProxy(msg.domain, msg.payload, sendResponse);
         return true;
+      case LegacyZilliqaTabMsg.SIGN_MESSAGE:
+        core.zilpayLegacyWeb3.signMessage(
+          msg.uuid,
+          msg.domain,
+          msg.payload.content,
+          msg.payload.title,
+          msg.payload.icon,
+          sendResponse,
+        );
+        return true;
 
       default:
         sendResponse(null);
