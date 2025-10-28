@@ -4,7 +4,6 @@ import { type Route } from "./index";
 import StartPage from "../pages/Start.svelte";
 import LockPage from "../pages/Lock.svelte";
 import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
-import ConnectPage from "../pages/Connect.svelte";
 
 export class RouteGuard {
   private static navigate(path: string) {

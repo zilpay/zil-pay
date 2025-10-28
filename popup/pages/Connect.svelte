@@ -14,7 +14,7 @@
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const accounts = $derived(currentWallet?.accounts ?? []);
-    
+
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
     const connectRequest = $derived(
         confirmRequests.find(c => c.connect !== undefined)

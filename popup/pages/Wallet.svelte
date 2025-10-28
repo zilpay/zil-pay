@@ -19,6 +19,7 @@
     import DestroyWallet from '../modals/DestroyWallet.svelte';
     import RevealModal from '../modals/RevealModal.svelte';
     import { linksExpand } from 'popup/mixins/links';
+    import { push } from 'popup/router/navigation';
 
     let showDeleteModal = $state(false);
     let showBackupModal = $state(false);
@@ -65,6 +66,7 @@
     }
 
     function handleManageConnections() {
+        push('/connections');
     }
 
     function handleRevealPhrase() {
