@@ -126,17 +126,22 @@ export class ConnectService {
 
   #createConnection(wallet: Wallet, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
     const chainIndex = this.#findChainIndex(wallet.defaultChainHash);
-
-    this.#state.connections.add({
+    const connection = {
       permissions,
       origin: connect.domain,
       domain: connect.domain,
       title: connect.title,
       icon: connect.icon,
-      connectedAccounts: [wallet.selectedAccount],
+      connectedAccounts: [],
       connectedChains: chainIndex !== -1 ? [chainIndex] : [],
       connectedAt: Date.now(),
+    };
+
+    wallet.accounts.forEach((a) => {
+      this.#addAccountToConnection(connection, a);
     });
+
+    this.#state.connections.add(connection);
   }
 
   #findChainIndex(chainHash: number): number {

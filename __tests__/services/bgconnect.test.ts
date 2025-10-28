@@ -92,7 +92,7 @@ describe("ConnectService", () => {
     expect(state.connections.list[0].title).toBe(connectParams.title);
     expect(state.connections.list[0].icon).toBe(connectParams.icon);
     expect(state.connections.list[0].permissions).toEqual(permissions);
-    expect(state.connections.list[0].connectedAccounts).toEqual([0]);
+    expect(state.connections.list[0].connectedAccounts).toEqual([95]);
     expect(state.connections.list[0].connectedChains).toEqual([0]);
     expect(state.connections.list[0].connectedAt).toBeDefined();
     expect(typeof state.connections.list[0].connectedAt).toBe('number');
