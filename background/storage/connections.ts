@@ -29,16 +29,16 @@ export class Web3Connections implements IWeb3ConnectionsState {
     }
   }
 
-  #find(origin: string): IWeb3ConnectionState | undefined {
-    return this.list.find(c => c.origin === origin);
+  find(domain: string): IWeb3ConnectionState | undefined {
+    return this.list.find(c => c.domain === domain);
   }
 
-  #findIndex(origin: string): number {
-    return this.list.findIndex(c => c.origin === origin);
+  #findIndex(domain: string): number {
+    return this.list.findIndex(c => c.domain === domain);
   }
 
   isConnected(origin: string, accountIndex?: number): boolean {
-    const connection = this.#find(origin);
+    const connection = this.find(origin);
     if (!connection) return false;
     if (accountIndex !== undefined) {
       return connection.connectedAccounts.includes(accountIndex);
@@ -47,23 +47,23 @@ export class Web3Connections implements IWeb3ConnectionsState {
   }
 
   getConnectedAccounts(origin: string): number[] {
-    return this.#find(origin)?.connectedAccounts || [];
+    return this.find(origin)?.connectedAccounts || [];
   }
 
   getConnectedChains(origin: string): number[] {
-    return this.#find(origin)?.connectedChains || [];
+    return this.find(origin)?.connectedChains || [];
   }
 
   getPermissions(origin: string): IWeb3ConnectionPermissions | null {
-    return this.#find(origin)?.permissions || null;
+    return this.find(origin)?.permissions || null;
   }
 
   isAccountConnected(origin: string, accountIndex: number): boolean {
-    return this.#find(origin)?.connectedAccounts.includes(accountIndex) || false;
+    return this.find(origin)?.connectedAccounts.includes(accountIndex) || false;
   }
 
   isChainConnected(origin: string, chainIndex: number): boolean {
-    return this.#find(origin)?.connectedChains.includes(chainIndex) || false;
+    return this.find(origin)?.connectedChains.includes(chainIndex) || false;
   }
 
   add(payload: IWeb3ConnectionState): void {
@@ -75,34 +75,34 @@ export class Web3Connections implements IWeb3ConnectionsState {
     }
   }
 
-  remove(origin: string): void {
-    const idx = this.#findIndex(origin);
+  remove(domain: string): void {
+    const idx = this.#findIndex(domain);
     if (idx !== -1) {
       this.list.splice(idx, 1);
     }
   }
 
   addAccount(origin: string, accountIndex: number): void {
-    const connection = this.#find(origin);
+    const connection = this.find(origin);
     if (!connection) throw new Error(`Connection not found: ${origin}`);
     if (!connection.connectedAccounts.includes(accountIndex)) {
       connection.connectedAccounts.push(accountIndex);
     }
   }
 
-  removeAccount(origin: string, accountIndex: number): void {
-    const connection = this.#find(origin);
+  removeAccount(domain: string, accountHash: number): void {
+    const connection = this.find(domain);
     if (!connection) return;
     
-    connection.connectedAccounts = connection.connectedAccounts.filter(idx => idx !== accountIndex);
+    connection.connectedAccounts = connection.connectedAccounts.filter(idx => idx !== accountHash);
     
     if (connection.connectedAccounts.length === 0) {
-      this.remove(origin);
+      this.remove(domain);
     }
   }
 
   addChain(origin: string, chainIndex: number): void {
-    const connection = this.#find(origin);
+    const connection = this.find(origin);
     if (!connection) throw new Error(`Connection not found: ${origin}`);
     if (!connection.connectedChains.includes(chainIndex)) {
       connection.connectedChains.push(chainIndex);
@@ -110,13 +110,13 @@ export class Web3Connections implements IWeb3ConnectionsState {
   }
 
   removeChain(origin: string, chainIndex: number): void {
-    const connection = this.#find(origin);
+    const connection = this.find(origin);
     if (!connection) return;
     connection.connectedChains = connection.connectedChains.filter(idx => idx !== chainIndex);
   }
 
   updatePermissions(origin: string, permissions: Partial<IWeb3ConnectionPermissions>): void {
-    const connection = this.#find(origin);
+    const connection = this.find(origin);
     if (!connection) throw new Error(`Connection not found: ${origin}`);
     connection.permissions = { ...connection.permissions, ...permissions };
   }

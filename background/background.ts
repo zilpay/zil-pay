@@ -160,6 +160,13 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.CONNECT_APP:
         core.connect.callConnect(msg, sendResponse);
         return true;
+      case MTypePopup.DISCONNECT_WALLET:
+        core.connect.disconectWallet(
+          msg.payload.domain,
+          msg.payload.walletIndex,
+          sendResponse,
+        );
+        return true;
       case MTypePopup.RESPONSE_TO_DAPP:
         core.connect.responseConnect(
           msg.payload.uuid,

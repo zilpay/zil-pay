@@ -16,6 +16,7 @@ import type { WalletFromBip39Params } from "../../types/wallet";
 import { getGlobalState, walletFromBip39Mnemonic } from "../../popup/background/wallet";
 import type { ConnectParams } from "../../types/connect";
 import type { IWeb3ConnectionPermissions } from "../../background/storage";
+import { responseToConnect, disconnectWallet } from '../../popup/background/connect';
 
 describe("ConnectService", () => {
   let globalState: GlobalState;
@@ -32,7 +33,10 @@ describe("ConnectService", () => {
       mnemonic: WORDS,
       bip39WordList: WORD_LIST,
       walletName: "Test Wallet",
-      accounts: [{ index: 0, name: "Account 1" }],
+      accounts: [
+        { index: 0, name: "Account 1" },
+        { index: 1, name: "Account 2" },
+      ],
       verifyCheckSum: true,
       chain: CHAINS[0],
       password: PASSWORD,
@@ -74,15 +78,7 @@ describe("ConnectService", () => {
       readChainData: true,
     };
 
-    await new Promise<void>((resolve) => {
-      globalState.connect.responseConnect(
-        connectParams.uuid,
-        0,
-        true,
-        permissions,
-        () => resolve()
-      );
-    });
+    await responseToConnect(connectParams.uuid, 0, true, permissions);
 
     state = await getGlobalState();
     expect(state.wallets[0].confirm).toHaveLength(0);
@@ -92,10 +88,14 @@ describe("ConnectService", () => {
     expect(state.connections.list[0].title).toBe(connectParams.title);
     expect(state.connections.list[0].icon).toBe(connectParams.icon);
     expect(state.connections.list[0].permissions).toEqual(permissions);
-    expect(state.connections.list[0].connectedAccounts).toEqual([95]);
+    expect(state.connections.list[0].connectedAccounts).toEqual([95, 21]);
     expect(state.connections.list[0].connectedChains).toEqual([0]);
     expect(state.connections.list[0].connectedAt).toBeDefined();
     expect(typeof state.connections.list[0].connectedAt).toBe('number');
+
+    await disconnectWallet(connectParams.domain, 0);
+    state = await getGlobalState();
+    expect(state.connections.list).toHaveLength(0);
   });
 
   afterEach(() => {

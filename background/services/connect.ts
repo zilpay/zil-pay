@@ -45,6 +45,34 @@ export class ConnectService {
     }
   }
 
+  async disconectWallet(
+    domain: string,
+    walletIndex: number,
+    sendResponse: StreamResponse,
+  ): Promise<void> {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      wallet.accounts.forEach((a) => {
+        const pubkey = hexToUint8Array(a.pubKey);
+        const hash = hashXOR(pubkey);
+
+        this.#state.connections.removeAccount(domain, hash);
+      });
+      const connection = this.#state.connections.find(domain);
+
+      if (connection?.connectedAccounts.length == 0) {
+        this.#state.connections.remove(domain);
+      }
+
+      await this.#state.sync();
+
+      sendResponse({ resolve: this.#state.connections.list });
+    } catch (error) {
+      sendResponse({ reject: String(error) });
+    }
+  }
+
   async responseConnect(
     uuid: string,
     walletIndex: number,

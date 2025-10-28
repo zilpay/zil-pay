@@ -4,7 +4,7 @@ import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import globalStore from "popup/store/global";
 import type { IConfirmState } from "background/storage/confirm";
-import type { IWeb3ConnectionPermissions } from "background/storage";
+import type { IWeb3ConnectionPermissions, IWeb3ConnectionState } from "background/storage";
  
 
 export async function responseToConnect(
@@ -28,6 +28,31 @@ export async function responseToConnect(
         ? { ...wallet, confirm: resolve }
         : wallet
     )
+  });
+
+  return resolve;
+}
+
+export async function disconnectWallet(
+  domain: string,
+  walletIndex: number,
+) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.DISCONNECT_WALLET,
+    payload: {
+      domain,
+      walletIndex,
+    },
+  }).send();
+  
+  const resolve = warpMessage(data) as IWeb3ConnectionState[];
+  const currentState = get(globalStore);
+
+  globalStore.set({
+    ...currentState,
+    connections: {
+      list: resolve,
+    },
   });
 
   return resolve;
