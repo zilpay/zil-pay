@@ -220,7 +220,7 @@ export class Wallet implements IWalletState {
   }
 
   async setSession(wordsOrKey: string | Uint8Array) {
-    const sessionTime = 10; //this.settings.sessionTime;
+    const sessionTime = this.settings.sessionTime;
 
     if (TypeOf.isString(wordsOrKey)) {
       const seed = await Bip39.mnemonicToSeed(String(wordsOrKey));

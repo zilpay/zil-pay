@@ -1,5 +1,6 @@
 import type { Account, BackgroundState, IWeb3ConnectionPermissions, IWeb3ConnectionState, Wallet } from "background/storage";
 import { ConfirmState } from "background/storage/confirm";
+import { ConnectError } from "config/errors";
 import { ZILLIQA } from "config/slip44";
 import { MTypePopup } from "config/stream";
 import { Address } from "crypto/address";
@@ -23,6 +24,11 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
       await wallet.trhowSession();
       const isConnected = this.#state.connections.isConnected(payload.domain, wallet.selectedAccount);
 
@@ -42,6 +48,14 @@ export class ConnectService {
 
       sendResponse({ resolve: true });
     } catch (error) {
+      new TabsMessage({
+        type: MTypePopup.RESPONSE_TO_DAPP,
+        uuid: payload.uuid,
+        payload: {
+          reject: String(error) ,
+          uuid: payload.uuid,
+        },
+      }).send(payload.domain);
       sendResponse({ reject: String(error) });
     }
   }
@@ -53,6 +67,11 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
       await wallet.trhowSession();
 
       wallet.accounts.forEach((a) => {
@@ -84,6 +103,11 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
       await wallet.trhowSession();
       const confirmRequest = this.#findConfirmRequest(wallet, uuid);
 

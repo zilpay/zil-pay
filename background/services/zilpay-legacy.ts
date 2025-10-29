@@ -1,6 +1,7 @@
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
 import type { BackgroundState } from "background/storage";
 import { ConfirmState } from "background/storage/confirm";
+import { ConnectError } from "config/errors";
 import { Address } from "crypto/address";
 import { sha256 } from "crypto/sha256";
 import { PromptService } from "lib/popup/prompt";
@@ -22,10 +23,15 @@ export class ZilPayLegacyService {
       const isConnected = this.#state.connections.isConnected(domain);
 
       if (!isConnected) {
-        throw new Error("wallet not connected");
+        throw new Error(ConnectError.WalletNotConnected);
       }
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
       await wallet.trhowSession();
       const account = wallet.accounts[wallet.selectedAccount];
       const chain = this.#state.getChain(account.chainHash);
@@ -70,10 +76,15 @@ export class ZilPayLegacyService {
       const isConnected = this.#state.connections.isConnected(domain);
 
       if (!isConnected) {
-        throw new Error("wallet not connected");
+        throw new Error(ConnectError.WalletNotConnected);
       }
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
       const selectedAccount = wallet.accounts[wallet.selectedAccount];
       const chain = this.#state.getChain(selectedAccount.chainHash);
       const provider = new NetworkProvider(chain!);
@@ -90,10 +101,15 @@ export class ZilPayLegacyService {
       const isConnected = this.#state.connections.isConnected(domain);
 
       if (!isConnected) {
-        throw new Error("wallet not connected");
+        throw new Error(ConnectError.WalletNotConnected);
       }
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+      
       await wallet.trhowSession();
       const messageBytes = utf8ToUint8Array(content);
       const messageScilla: SignMesageReqScilla = {
@@ -126,6 +142,13 @@ export class ZilPayLegacyService {
   async signMessageRes(uuid: string, walletIndex: number, accountIndex: number, approve: boolean, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+
       const account = wallet.accounts[accountIndex];
       const scillaMessage = wallet.confirm.find((c) => c.uuid == uuid);
 
@@ -141,7 +164,7 @@ export class ZilPayLegacyService {
           type: LegacyZilliqaTabMsg.SING_MESSAGE_RES,
           uuid: scillaMessage.uuid,
           payload: {
-           reject: "User Rejected", 
+           reject: ConnectError.UserRejected, 
           },
         }).send(scillaMessage.signMessageScilla.domain);
       } else {
@@ -183,6 +206,11 @@ export class ZilPayLegacyService {
       };
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
       const isSession = await wallet.checkSession();
 
       if (!wallet || !isSession) {

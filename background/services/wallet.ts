@@ -86,6 +86,13 @@ export class WalletService {
   }
 
   async getGlobalState(sendResponse: StreamResponse) {
+    if (this.#state.selectedWallet != -1) {
+      const wallet = this.#state.wallets[this.#state.selectedWallet];
+      const isSession = await wallet.checkSession();
+
+      this.#state.selectedWallet = isSession ? this.#state.selectedWallet : -1;
+    }
+
     let payload = this.#state;
 
     sendResponse({
@@ -94,16 +101,7 @@ export class WalletService {
   }
 
   async setGlobalState(payload: IBackgroundState, sendResponse: StreamResponse) {
-
-    if (payload.selectedWallet != -1) {
-      const wallet = this.#state.wallets[this.#state.selectedWallet];
-      const isSession = await wallet.checkSession();
-
-      this.#state.selectedWallet = isSession ? payload.selectedWallet : -1;
-    } else {
-      this.#state.selectedWallet = payload.selectedWallet;
-    }
-
+    this.#state.selectedWallet = payload.selectedWallet;
     this.#state.abbreviatedNumber = payload.abbreviatedNumber;
     this.#state.appearances = payload.appearances;
     this.#state.hideBalance = payload.hideBalance;
