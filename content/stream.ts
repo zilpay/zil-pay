@@ -58,6 +58,9 @@ export class ContentTabStream {
       case LegacyZilliqaTabMsg.SIGN_MESSAGE:
         await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
+      case LegacyZilliqaTabMsg.CALL_TO_SIGN_TX:
+        await new Message<SendResponseParams<ReqBody>>(msg).send();
+        break;
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
         const walltData = await new Message<SendResponseParams<ReqBody>>(msg).send();
         if (walltData && walltData.resolve) {

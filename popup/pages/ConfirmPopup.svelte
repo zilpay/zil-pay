@@ -1,6 +1,8 @@
 <script lang="ts">
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
+    import { currentParams } from 'popup/store/route';
+
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain } from 'popup/mixins/chains';
     import { push } from 'popup/router/navigation';
@@ -143,7 +145,11 @@
 
     $effect(() => {
         if (!confirmTx || !confirmTx.metadata) {
-            push('/');
+            if ($currentParams?.type === 'popup') {
+                window.close();
+            } else {
+                push("/");
+            }
         }
     });
 

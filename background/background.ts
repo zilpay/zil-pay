@@ -194,6 +194,16 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case LegacyZilliqaTabMsg.CALL_TO_SIGN_TX:
+        core.zilpayLegacyWeb3.signTx(
+          msg.uuid,
+          msg.domain,
+          msg.payload,
+          msg.title,
+          msg.icon,
+          sendResponse,
+        );
+        return true;
       case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
         core.zilpayLegacyWeb3.signMessageRes(
                     msg.payload.uuid,

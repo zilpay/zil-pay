@@ -8,13 +8,53 @@ import { LegacyZilliqaTabMsg, type StreamResponse } from "lib/streem";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { utf8ToUint8Array } from "lib/utils/utf8";
-import type { SignMesageReqScilla } from "types/tx";
+import type { SignMesageReqScilla, TransactionRequestScilla } from "types/tx";
 
 export class ZilPayLegacyService {
   #state: BackgroundState;
 
   constructor(state: BackgroundState) {
     this.#state = state;
+  }
+
+  async signTx(uuid: string, domain: string, payload: TransactionRequestScilla, title: string, icon: string, sendResponse: StreamResponse) {
+    try {
+      const isConnected = this.#state.connections.isConnected(domain);
+
+      if (!isConnected) {
+        throw new Error("wallet not connected");
+      }
+
+      const wallet = this.#state.wallets[this.#state.selectedWallet];
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chain = this.#state.getChain(account.chainHash);
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: uuid,
+        scilla: {
+          ...payload,
+          chainId: chain!.chainIds[1],
+          gasLimit: Number(payload.gasLimit ?? 0),
+          gasPrice: Number(payload.gasPrice ?? 0),
+        },
+        metadata: {
+          title,
+          icon,
+          chainHash: account.chainHash,
+          token: {
+            ...chain!.ftokens[1],
+            balances: undefined,
+          },
+        }
+      }));
+      await this.#state.sync();
+      new PromptService().open("/confirm");
+
+      sendResponse({ resolve: true, });
+    } catch (e) {
+      // TODO: add hanlde reject message 
+      sendResponse({ reject: String(e) });
+    }
   }
 
   async jsonRPCProxy(domain: string, payload: JsonRPCRequest | JsonRPCRequest[], sendResponse: StreamResponse) {
@@ -106,6 +146,8 @@ export class ZilPayLegacyService {
           },
         }).send(scillaMessage.signMessageScilla.domain);
       }
+
+      await this.#state.sync();
 
       sendResponse({ resolve: wallet.confirm, });
     } catch (e) {
