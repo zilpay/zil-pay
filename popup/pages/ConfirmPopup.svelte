@@ -22,7 +22,7 @@
     import EditIcon from '../components/icons/Edit.svelte';
     import { getGlobalState, setGlobalState } from 'popup/background/wallet';
 
-    let selectedSpeed = $state<GasSpeed>(GasSpeed.Market);
+    let selectedSpeed = $state<GasSpeed>($globalStore.wallets[$globalStore.selectedWallet].settings.gasOption ?? GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
     let gasEstimate = $state<RequiredTxParams | null>(null);
     let isLoading = $state(false);
@@ -64,13 +64,27 @@
 
     const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken, wallet.settings.currencyConvert) : [createDefaultGasOption()]);
 
-    function handleSpeedSelect(speed: GasSpeed) {
+    async function handleSpeedSelect(speed: GasSpeed) {
         if (selectedSpeed === speed) {
             expandedSpeed = expandedSpeed === speed ? null : speed;
         } else {
             selectedSpeed = speed;
             expandedSpeed = speed;
         }
+
+        globalStore.update(state => {
+            const newWallets = [...state.wallets];
+            newWallets[$globalStore.selectedWallet] = {
+                ...newWallets[$globalStore.selectedWallet],
+                settings: {
+                    ...newWallets[$globalStore.selectedWallet].settings,
+                    gasOption: speed,
+                }
+            };
+            return { ...state, wallets: newWallets };
+        });
+
+        await setGlobalState();
     }
 
     async function handleReject() {
@@ -79,7 +93,12 @@
         try {
             await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
             await getGlobalState();
-            push('/');
+
+            if ($currentParams?.type == 'popup') {
+                window.close();
+            } else {
+                push("/history");
+            }
         } finally {
             isLoading = false;
         }
@@ -133,7 +152,12 @@
 
                 if (wallet.confirm.length == 1) {
                     await getGlobalState();
-                    push('/history');
+
+                    if ($currentParams?.type == 'popup') {
+                        window.close();
+                    } else {
+                        push("/history");
+                    }
                 }
             } catch (error) {
                 console.error("signTx fail", error);
@@ -142,16 +166,6 @@
             }
         }
     }
-
-    $effect(() => {
-        if (!confirmTx || !confirmTx.metadata) {
-            if ($currentParams?.type === 'popup') {
-                window.close();
-            } else {
-                push("/");
-            }
-        }
-    });
 
     $effect(() => {
         if (confirmLastIndex === -1) return;

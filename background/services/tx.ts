@@ -1,5 +1,5 @@
 import type { BackgroundState } from "background/storage";
-import type { StreamResponse } from "lib/streem";
+import { LegacyZilliqaTabMsg, type StreamResponse } from "lib/streem";
 import { ConfirmState, type IConfirmState } from "background/storage/confirm";
 import type { BuildTokenTransferParams, FTState, TransactionMetadata } from "types/tx";
 import { uuid } from "crypto/uuid";
@@ -13,6 +13,7 @@ import { hexToUint8Array } from "lib/utils/hex";
 import { ETHEREUM } from "config/slip44";
 import type { WorkerService } from "./worker";
 import { TransactionStatus } from "config/tx";
+import { TabsMessage } from "lib/streem/tabs-message";
 
 
 export class TransactionService {
@@ -51,7 +52,7 @@ export class TransactionService {
     try {
       const wallet = this.#state.wallets[walletIndex];
       const account = wallet.accounts[accountIndex];
-      const confirm= wallet .confirm[confirmIndex];
+      const confirm= wallet.confirm[confirmIndex];
 
       const chainConfig = this.#state.getChain(account.chainHash)!;
       const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
@@ -71,6 +72,16 @@ export class TransactionService {
       this.#state.wallets[walletIndex].history.push(history);
       this.#state.wallets[walletIndex].confirm.splice(confirmIndex, 1);
       await this.#state.sync();
+
+      if (confirm  && confirm.scilla && confirm.uuid && confirm.metadata?.domain) {
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.TX_RESULT,
+          uuid: confirm.uuid,
+          payload: {
+           resolve:  history.scilla,
+          },
+        }).send(confirm.metadata?.domain);
+      }
 
       sendResponse({
         resolve: history,
@@ -189,10 +200,20 @@ export class TransactionService {
   async reject(index: number, walletIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      const confirm = wallet.confirm[index];
 
       wallet.confirm.splice(index, 1);
       await this.#state.sync();
-      // TODO: sending response to Tab with uuid.
+
+      if (confirm  && confirm.scilla && confirm.uuid && confirm.metadata?.domain) {
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.TX_RESULT,
+          uuid: confirm.uuid,
+          payload: {
+           reject: "user rejected" 
+          },
+        }).send(confirm.metadata?.domain);
+      }
 
       sendResponse({
         resolve: true,

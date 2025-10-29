@@ -121,6 +121,7 @@ export interface TransactionMetadata {
   chainHash: number;
   icon?: string;
   title?: string;
+  domain?: string;
   token: FTState;
 }
 

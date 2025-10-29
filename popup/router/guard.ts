@@ -38,7 +38,7 @@ export class RouteGuard {
     if (wallet.confirm.length != 0) {
       const last = wallet.confirm[wallet.confirm.length - 1];
 
-      if (last?.evm || last?.scilla) {
+      if ((last?.evm || last?.scilla) && !window.location.hash.includes('confirm')) {
         this.navigate("confirm");
         return {
           path: "/confirm",

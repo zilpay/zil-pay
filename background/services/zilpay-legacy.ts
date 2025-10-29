@@ -40,6 +40,7 @@ export class ZilPayLegacyService {
         metadata: {
           title,
           icon,
+          domain,
           chainHash: account.chainHash,
           token: {
             ...chain!.ftokens[1],
@@ -52,7 +53,13 @@ export class ZilPayLegacyService {
 
       sendResponse({ resolve: true, });
     } catch (e) {
-      // TODO: add hanlde reject message 
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.TX_RESULT,
+          uuid,
+          payload: {
+           reject: String(e), 
+          },
+        }).send(domain);
       sendResponse({ reject: String(e) });
     }
   }
@@ -103,6 +110,13 @@ export class ZilPayLegacyService {
 
       sendResponse({ resolve: true, });
     } catch (e) {
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.SING_MESSAGE_RES,
+          uuid ,
+          payload: {
+           reject: String(e), 
+          },
+        }).send(domain);
       sendResponse({ reject: String(e) });
     }
   }

@@ -8,11 +8,11 @@
     import SettingsIcon from './icons/Settings.svelte';
 
     const tabs = [
-        { path: '/', component: WalletIcon, },
-        { path: '/collection', component: GridIcon, },
-        { path: '/swap', component: SwapIcon, },
-        { path: '/history', component: HistoryIcon, },
-        { path: '/settings', component: SettingsIcon, }
+        { path: '/', component: WalletIcon, disabled: false, },
+        { path: '/collection', component: GridIcon, disabled: false, },
+        { path: '/swap', component: SwapIcon, disabled: true, },
+        { path: '/history', component: HistoryIcon, disabled: false, },
+        { path: '/settings', component: SettingsIcon, disabled: false, }
     ];
 
     function navigate(path: string) {
@@ -26,6 +26,7 @@
     {#each tabs as tab (tab.path)}
         <button
             class="nav-button"
+            disabled={tab.disabled}
             class:active={$currentRoute?.path === tab.path}
             onclick={() => navigate(tab.path)}
             aria-current={$currentRoute?.path === tab.path ? 'page' : undefined}

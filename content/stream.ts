@@ -29,6 +29,9 @@ export class ContentTabStream {
         case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;
+        case LegacyZilliqaTabMsg.TX_RESULT:
+          this.#stream.send(msg, MTypeTabContent.INJECTED);
+          break;
       }
 
       sendResponse({});
