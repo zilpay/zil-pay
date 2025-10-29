@@ -43,7 +43,7 @@
     ensEnabled: true,
     tokensListFetcher: true,
     ratesApiOptions: RatesApiOptions.CoinGecko,
-    sessionTime: 3600,
+    sessionTime: 10800,
     gasOption: GasSpeed.Market,
   });
 

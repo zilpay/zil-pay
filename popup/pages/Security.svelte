@@ -2,53 +2,53 @@
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { setGlobalState } from 'popup/background/wallet';
-    
+
     import NavBar from '../components/NavBar.svelte';
     import ActionCard from '../components/ActionCard.svelte';
     import Switch from '../components/Switch.svelte';
     import TokensFetcherIcon from '../components/icons/Currency.svelte';
     import ENSIcon from '../components/icons/ENS.svelte';
+    import WordCountSelector from '../components/WordCountSelector.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const tokensListFetcher = $derived(currentWallet?.settings?.tokensListFetcher ?? false);
     const ensEnabled = $derived(currentWallet?.settings?.ensEnabled ?? false);
+    const sessionTime = $derived(currentWallet?.settings?.sessionTime ?? 10800);
 
-    async function handleTokensFetcherToggle() {
+    const hourOptions = [3, 6, 12, 24];
+    const selectedHours = $derived(() => {
+        const h = Math.round((sessionTime || 10800) / 3600);
+        return hourOptions.includes(h) ? h : 3;
+    });
+
+    async function updateSettings(patch: Record<string, any>) {
         const walletIndex = $globalStore.selectedWallet;
         if (walletIndex < 0 || !currentWallet) return;
 
         globalStore.update(state => {
-            const newWallets = [...state.wallets];
-            newWallets[walletIndex] = {
-                ...newWallets[walletIndex],
+            const wallets = [...state.wallets];
+            wallets[walletIndex] = {
+                ...wallets[walletIndex],
                 settings: {
-                    ...newWallets[walletIndex].settings,
-                    tokensListFetcher: !tokensListFetcher
+                    ...wallets[walletIndex].settings,
+                    ...patch
                 }
             };
-            return { ...state, wallets: newWallets };
+            return { ...state, wallets };
         });
-
         await setGlobalState();
     }
 
-    async function handleEnsToggle() {
-        const walletIndex = $globalStore.selectedWallet;
-        if (walletIndex < 0 || !currentWallet) return;
+    function handleTokensFetcherToggle() {
+        updateSettings({ tokensListFetcher: !tokensListFetcher });
+    }
 
-        globalStore.update(state => {
-            const newWallets = [...state.wallets];
-            newWallets[walletIndex] = {
-                ...newWallets[walletIndex],
-                settings: {
-                    ...newWallets[walletIndex].settings,
-                    ensEnabled: !ensEnabled
-                }
-            };
-            return { ...state, wallets: newWallets };
-        });
+    function handleEnsToggle() {
+        updateSettings({ ensEnabled: !ensEnabled });
+    }
 
-        await setGlobalState();
+    function handleSessionSelect(hours: number) {
+        updateSettings({ sessionTime: Math.max(0, hours * 3600) });
     }
 </script>
 
@@ -58,7 +58,7 @@
     <main class="content">
         <h3 class="section-title">{$_('security.networkPrivacy')}</h3>
 
-        <div class="settings-list">
+        <div class="cards">
             <ActionCard
                 title={$_('security.tokensFetcher.title')}
                 subtitle={$_('security.tokensFetcher.description')}
@@ -68,10 +68,7 @@
                     <TokensFetcherIcon />
                 {/snippet}
                 {#snippet right()}
-                    <Switch
-                        checked={tokensListFetcher}
-                        variant="default"
-                    />
+                    <Switch checked={tokensListFetcher} variant="default" />
                 {/snippet}
             </ActionCard>
 
@@ -84,13 +81,24 @@
                     <ENSIcon />
                 {/snippet}
                 {#snippet right()}
-                    <Switch
-                        checked={ensEnabled}
-                        variant="default"
-                    />
+                    <Switch checked={ensEnabled} variant="default" />
                 {/snippet}
             </ActionCard>
         </div>
+
+        <section class="session-card" aria-labelledby="sessionTitle">
+            <div id="sessionTitle" class="session-title">
+                {$_('security.session.title')}
+            </div>
+
+            <div class="session-controls">
+                <WordCountSelector
+                    wordCounts={hourOptions}
+                    selected={selectedHours()}
+                    onSelect={handleSessionSelect}
+                />
+            </div>
+        </section>
     </main>
 </div>
 
@@ -121,9 +129,33 @@
         margin: 0;
     }
 
-    .settings-list {
+    .cards {
         display: flex;
         flex-direction: column;
         gap: 12px;
+    }
+
+    .session-card {
+        background: var(--color-neutral-background-container);
+        border: 1px solid var(--color-cards-regular-border-default);
+        border-radius: 16px;
+        padding: 14px 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .session-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--color-content-text-primary);
+        text-align: left;
+    }
+
+    .session-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
 </style>
