@@ -5,40 +5,22 @@
     import { push } from 'popup/router/navigation';
     import type { SignMesageReqScilla } from 'types/tx';
     import { responseToSignMessageScilla } from 'popup/background/sign-message';
-    import { clipboardCopy } from 'lib/popup/clipboard';
-    
+
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
     import DAppInfo from '../components/DAppInfo.svelte';
-    import CopyIcon from '../components/icons/Copy.svelte';
-    import SuccessIcon from '../components/icons/Success.svelte';
+    import CopyButton from '../components/CopyButton.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
 
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
-    const signMessageRequest = $derived(
-        confirmRequests.find(c => c.signMessageScilla !== undefined)
-    );
+    const signMessageRequest = $derived(confirmRequests.find(c => c.signMessageScilla !== undefined));
     const signMessageData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
-
-    let isCopied = $state(false);
-
-    async function handleCopy() {
-        if (isCopied || !signMessageData) return;
-
-        const success = await clipboardCopy(signMessageData.content);
-        if (success) {
-            isCopied = true;
-            setTimeout(() => {
-                isCopied = false;
-            }, 1000);
-        }
-    }
 
     async function handleConfirm() {
         if (signMessageRequest) {
-            await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount,true);
+            await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
         }
     }
 
@@ -53,7 +35,7 @@
             if ($currentParams?.type === 'popup') {
                 window.close();
             } else {
-                push("/");
+                push('/');
             }
         }
     });
@@ -82,18 +64,9 @@
         <div class="message-card">
             <div class="message-header">
                 <span class="message-title">{$_('sign_message.message')}</span>
-                <button class="copy-button" type="button" onclick={handleCopy}>
-                    {#if isCopied}
-                        <SuccessIcon width="20" height="20" />
-                    {:else}
-                        <CopyIcon width="20" height="20" />
-                    {/if}
-                </button>
+                <CopyButton value={signMessageData.content} />
             </div>
-
-            <div class="message-content">
-                {signMessageData.content}
-            </div>
+            <div class="message-content">{signMessageData.content}</div>
         </div>
     </main>
 
@@ -115,7 +88,7 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        background: var(--color-cards-navigation-base-default);
+        background: var(--color-neutral-background-base);
         box-sizing: border-box;
     }
 
@@ -123,15 +96,17 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        padding: 16px;
+        gap: 16px;
+        padding: 16px var(--padding-side);
         overflow-y: auto;
+        min-height: 0;
     }
 
     .title-section {
         display: flex;
         flex-direction: column;
         gap: 4px;
+        padding: 0 4px;
     }
 
     .title {
@@ -155,14 +130,16 @@
         flex-direction: column;
         gap: 12px;
         padding: 12px;
-        background: var(--color-neutral-background-base);
+        background: var(--color-cards-regular-base-default);
+        border: 1px solid var(--color-cards-regular-border-default);
         border-radius: 12px;
     }
 
     .message-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        gap: 8px;
     }
 
     .message-title {
@@ -172,45 +149,24 @@
         color: var(--color-content-text-inverted);
     }
 
-    .copy-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-
-        &:hover {
-            background: var(--color-button-regular-quaternary-hover);
-        }
-
-        &:active {
-            transform: scale(0.95);
-        }
-
-        :global(svg) {
-            color: var(--color-content-icon-accent-secondary);
-        }
-    }
-
     .message-content {
         font-size: 14px;
-        font-weight: 400;
         line-height: 20px;
         color: var(--color-content-text-inverted);
-        word-break: break-word;
         white-space: pre-wrap;
-        max-height: 200px;
+        word-break: break-word;
+        background: var(--color-neutral-background-container);
+        border-radius: 8px;
+        padding: 12px;
+        max-height: 240px;
         overflow-y: auto;
+        font-family: Geist, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     .footer {
-        padding: 16px;
-        background: var(--color-cards-navigation-base-default);
-        border-top: 1px solid var(--color-neutral-border-default);
+        padding: 16px var(--padding-side) calc(16px + env(safe-area-inset-bottom));
+        background: var(--color-neutral-background-base);
+        border-top: 1px solid var(--color-cards-regular-border-default);
     }
 
     .action-buttons {

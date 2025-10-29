@@ -4,12 +4,12 @@
     import SuccessIcon from './icons/Success.svelte';
 
     let {
-        label,
+        label = '',
         value,
         disabled = false
     }: {
         value: string;
-        label: string;
+        label?: string;
         disabled?: boolean;
     } = $props();
 

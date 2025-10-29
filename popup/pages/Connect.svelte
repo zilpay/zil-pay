@@ -6,23 +6,21 @@
     import type { IWeb3ConnectionPermissions } from 'background/storage/connections';
     import type { ConnectParams } from 'types/connect';
     import { responseToConnect } from 'popup/background/connect';
-    
+
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
     import Switch from '../components/Switch.svelte';
     import DAppInfo from '../components/DAppInfo.svelte';
+    import DownIcon from '../components/icons/Down.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const accounts = $derived(currentWallet?.accounts ?? []);
-
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
-    const connectRequest = $derived(
-        confirmRequests.find(c => c.connect !== undefined)
-    );
+    const connectRequest = $derived(confirmRequests.find(c => c.connect !== undefined));
     const connectParams = $derived(connectRequest?.connect as ConnectParams | undefined);
 
     let selectedAccountsSet = $state<Set<number>>(new Set());
-    
+
     $effect(() => {
         selectedAccountsSet = new Set(accounts.map((_, index) => index));
     });
@@ -40,10 +38,7 @@
     }
 
     async function handleConnect() {
-        if (selectedAccountsSet.size === 0) {
-            return;
-        }
-
+        if (selectedAccountsSet.size === 0) return;
         if (connectRequest) {
             await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true, permissions);
         }
@@ -60,7 +55,7 @@
             if ($currentParams?.type === 'popup') {
                 window.close();
             } else {
-                push("/");
+                push('/');
             }
         }
     });
@@ -93,8 +88,8 @@
 
             <section class="permissions-section">
                 <button class="advanced-toggle" onclick={toggleAdvanced}>
-                    <span>{$_('connect.advanced_options')}</span>
-                    <span class="toggle-icon" class:expanded={showAdvanced}>▼</span>
+                    <span class="advanced-text">{$_('connect.advanced_options')}</span>
+                    <span class="arrow" class:rotated={showAdvanced}><DownIcon /></span>
                 </button>
 
                 {#if showAdvanced}
@@ -104,10 +99,7 @@
                                 <span class="permission-label">{$_('connect.permission.sign_transactions')}</span>
                                 <span class="permission-description">{$_('connect.permission.sign_transactions_desc')}</span>
                             </div>
-                            <Switch
-                                bind:checked={permissions.signTransactions}
-                                variant="default"
-                            />
+                            <Switch bind:checked={permissions.signTransactions} variant="default" />
                         </div>
 
                         <div class="permission-item">
@@ -115,10 +107,7 @@
                                 <span class="permission-label">{$_('connect.permission.sign_messages')}</span>
                                 <span class="permission-description">{$_('connect.permission.sign_messages_desc')}</span>
                             </div>
-                            <Switch
-                                bind:checked={permissions.signMessages}
-                                variant="default"
-                            />
+                            <Switch bind:checked={permissions.signMessages} variant="default" />
                         </div>
 
                         <div class="permission-item">
@@ -126,10 +115,7 @@
                                 <span class="permission-label">{$_('connect.permission.read_chain')}</span>
                                 <span class="permission-description">{$_('connect.permission.read_chain_desc')}</span>
                             </div>
-                            <Switch
-                                bind:checked={permissions.readChainData}
-                                variant="default"
-                            />
+                            <Switch bind:checked={permissions.readChainData} variant="default" />
                         </div>
                     </div>
                 {/if}
@@ -142,11 +128,7 @@
             <Button variant="outline" onclick={handleCancel}>
                 {$_('common.cancel')}
             </Button>
-            <Button
-                variant="primary"
-                onclick={handleConnect}
-                disabled={selectedAccountsSet.size === 0}
-            >
+            <Button variant="primary" onclick={handleConnect} disabled={selectedAccountsSet.size === 0}>
                 {$_('connect.connect')}
             </Button>
         </div>
@@ -167,7 +149,8 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        padding: var(--padding-side) 0;
+        padding: var(--padding-side);
+        padding-top: 12px;
         overflow-y: auto;
     }
 
@@ -178,9 +161,9 @@
     }
 
     .section-title {
-        font-size: 14px;
+        font-size: var(--font-size-large);
         font-weight: 600;
-        color: var(--color-content-text-primary);
+        color: var(--color-content-text-inverted);
         margin: 0;
     }
 
@@ -190,10 +173,8 @@
         gap: 8px;
     }
 
-    .account-item {
-        :global(.account-card) {
-            width: 100%;
-        }
+    .account-item :global(.account-card) {
+        width: 100%;
     }
 
     .permissions-section {
@@ -210,27 +191,33 @@
         padding: 12px 16px;
         background: var(--color-cards-regular-base-default);
         border: 1px solid var(--color-cards-regular-border-default);
-        border-radius: 8px;
+        border-radius: 12px;
         cursor: pointer;
-        transition: all 0.2s ease;
-        color: var(--color-content-text-primary);
-        font-size: 14px;
-        font-weight: 500;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        color: var(--color-content-text-inverted);
+    }
 
-        &:hover {
-            background: var(--color-cards-regular-base-selected-hover);
-            border-color: var(--color-cards-regular-border-hover);
-        }
+    .advanced-toggle:hover {
+        background: var(--color-cards-regular-base-selected-hover);
+        border-color: var(--color-cards-regular-border-hover);
+    }
 
-        .toggle-icon {
-            transition: transform 0.2s ease;
-            font-size: 12px;
-            color: var(--color-content-text-secondary);
+    .advanced-text {
+        font-size: var(--font-size-medium);
+        font-weight: 600;
+        color: var(--color-content-text-inverted);
+    }
 
-            &.expanded {
-                transform: rotate(180deg);
-            }
-        }
+    .arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+        color: var(--color-content-icon-secondary);
+    }
+
+    .arrow.rotated {
+        transform: rotate(180deg);
     }
 
     .permissions-list {
@@ -240,7 +227,7 @@
         padding: 12px;
         background: var(--color-cards-regular-base-default);
         border: 1px solid var(--color-cards-regular-border-default);
-        border-radius: 8px;
+        border-radius: 12px;
     }
 
     .permission-item {
@@ -249,10 +236,11 @@
         justify-content: space-between;
         gap: 12px;
         padding: 8px 0;
+        border-bottom: 1px solid var(--color-cards-regular-border-default);
+    }
 
-        &:not(:last-child) {
-            border-bottom: 1px solid var(--color-cards-regular-border-default);
-        }
+    .permission-item:last-child {
+        border-bottom: none;
     }
 
     .permission-info {
@@ -264,29 +252,30 @@
     }
 
     .permission-label {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--color-content-text-primary);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        color: var(--color-content-text-inverted);
     }
 
     .permission-description {
-        font-size: 12px;
+        font-size: var(--font-size-medium);
         color: var(--color-content-text-secondary);
         line-height: 1.4;
     }
 
     .footer {
-        padding: 16px;
+        padding: 16px var(--padding-side) calc(16px + env(safe-area-inset-bottom));
         background: var(--color-neutral-background-base);
-        border-top: 1px solid var(--color-neutral-border-default);
+        border-top: 1px solid var(--color-cards-regular-border-default);
     }
 
     .action-buttons {
         display: flex;
         gap: 8px;
+    }
 
-        :global(button) {
-            flex: 1;
-        }
+    .action-buttons :global(button) {
+        flex: 1;
+        max-height: 48px;
     }
 </style>
