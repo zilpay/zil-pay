@@ -4,6 +4,7 @@
     import Button from '../components/Button.svelte';
     import DeleteIcon from '../components/icons/Delete.svelte';
     import SuccessIcon from '../components/icons/Success.svelte';
+    import LinkIcon from '../components/icons/Link.svelte';
     import FastImg from '../components/FastImg.svelte';
     import Jazzicon from '../components/Jazzicon.svelte';
     import type { IWeb3ConnectionState } from 'background/storage/connections';
@@ -34,9 +35,7 @@
     }
 
     $effect(() => {
-        if (!show) {
-            resetConfirmState();
-        }
+        if (!show) resetConfirmState();
     });
 
     const permissionLabels: Record<string, string> = {
@@ -44,9 +43,22 @@
         signMessages: 'Sign Messages',
         readChainData: 'Read Chain Data'
     };
+
+    function normalizeDomain(domain?: string): string {
+        const raw = (domain ?? '').trim();
+        if (!raw) return '';
+        const url = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+        try {
+            return new URL(url).href;
+        } catch {
+            return '';
+        }
+    }
+
+    const siteUrl = $derived(normalizeDomain(connection?.domain));
 </script>
 
-<Modal bind:show title="">
+<Modal bind:show title={connection ? (connection.title || connection.domain) : ''}>
     {#if connection}
         <div class="connection-details-container">
             <div class="header-section">
@@ -58,7 +70,19 @@
                     {/if}
                 </div>
                 <h2 class="site-title">{connection.title || connection.domain}</h2>
-                <span class="site-domain">{connection.domain}</span>
+
+                {#if siteUrl}
+                    <a
+                        class="site-link"
+                        href={siteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Open website"
+                    >
+                        <LinkIcon />
+                        <span>{connection.domain}</span>
+                    </a>
+                {/if}
             </div>
 
             <div class="info-grid">
@@ -94,8 +118,8 @@
             </div>
 
             <div class="action-section">
-                <Button 
-                    variant={confirmDelete ? "primary" : "outline"} 
+                <Button
+                    variant={confirmDelete ? 'primary' : 'outline'}
                     onclick={handleDeleteClick}
                 >
                     {#if confirmDelete}
@@ -152,13 +176,40 @@
         color: var(--color-content-text-inverted);
         margin: 0;
         text-align: center;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    .site-domain {
-        font-size: 14px;
-        line-height: 20px;
-        color: var(--color-content-text-secondary);
-        text-align: center;
+    .site-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: var(--color-button-regular-quaternary-default);
+        border: 1px solid var(--color-cards-regular-border-default);
+        color: var(--color-content-text-inverted);
+        text-decoration: none;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+            background: var(--color-button-regular-quaternary-hover);
+            border-color: var(--color-cards-regular-border-hover);
+        }
+
+        :global(svg) {
+            width: 18px;
+            height: 18px;
+            color: var(--color-content-icon-secondary);
+        }
+
+        span {
+            font-size: var(--font-size-medium);
+            line-height: 16px;
+            color: var(--color-content-text-secondary);
+        }
     }
 
     .info-grid {
