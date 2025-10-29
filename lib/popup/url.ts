@@ -27,6 +27,10 @@ function processUrlTemplate({
 
   let processed = template;
 
+  if (theme === Themes.System) {
+    theme = themeDetect();
+  }
+
   const funcRegex = /%\{(\w+)\(([^)]+)\)\}%/g;
   processed = processed.replace(funcRegex, (_match, _, optionsStr) => {
     const options = optionsStr.split(',').map((s: string) => s.trim());
