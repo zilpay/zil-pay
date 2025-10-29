@@ -6,6 +6,8 @@
     import { processTokenLogo } from 'lib/popup/url';
     import globalStore from 'popup/store/global';
     import { _ } from 'popup/i18n';
+    import { hashChainConfig } from 'lib/utils/hashing';
+    import { openTxInExplorer } from 'popup/mixins/links';
     
     import FastImg from '../components/FastImg.svelte';
     import CopyButton from '../components/CopyButton.svelte';
@@ -19,6 +21,12 @@
     }: {
         transaction: IHistoricalTransactionState;
     } = $props();
+
+    const chain = $derived(
+        $globalStore.chains.find(
+            c => hashChainConfig(c.chainIds, c.slip44, c.chain) === transaction.metadata.chainHash
+        )
+    );
 
     const iconSrc = $derived(() => {
         if (transaction.metadata.icon) {
@@ -75,10 +83,10 @@
     });
 
     const recipient = $derived(() => {
-        if (transaction.metadata.token.recipient) {
-            return transaction.metadata.token.recipient;
-        }
-        return transaction.evm?.to ?? transaction.scilla?.toAddr ?? '';
+        return transaction.metadata.token.recipient ?? 
+               transaction.evm?.to ?? 
+               transaction.scilla?.toAddr ?? 
+               '';
     });
 
     const txHash = $derived(() => {
@@ -145,6 +153,22 @@
         <div class="amount-date">{formattedDate}</div>
     </div>
 
+    {#if chain && chain.explorers && txHash()}
+        <div class="explorers-container">
+            {#each chain.explorers as explorer}
+                <button
+                    class="explorer-button"
+                    onclick={() => openTxInExplorer(txHash(), explorer)}
+                    title={`{$_('txDetails.viewOn')} ${explorer.name}`}
+                >
+                    {#if explorer.icon}
+                        <FastImg src={explorer.icon} alt={explorer.name} />
+                    {/if}
+                </button>
+            {/each}
+        </div>
+    {/if}
+
     <div class="details-section">
         <div class="detail-row">
             <span class="detail-label">{$_('txDetails.from')}</span>
@@ -188,7 +212,7 @@
     .tx-details-container {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 20px;
         padding: 24px;
     }
 
@@ -293,6 +317,36 @@
         color: var(--color-content-text-secondary);
     }
 
+    .explorers-container {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .explorer-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--color-neutral-background-container);
+        border: 1px solid var(--color-neutral-border-default);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 8px;
+
+        &:hover {
+            border-color: var(--color-neutral-border-hover);
+        }
+
+        :global(img) {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
     .details-section {
         display: flex;
         flex-direction: column;
@@ -325,6 +379,6 @@
     .detail-divider {
         height: 1px;
         background: var(--color-cards-regular-border-default);
-        margin: 8px 0;
+        margin: 4px 0;
     }
 </style>
