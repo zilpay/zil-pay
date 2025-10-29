@@ -20,6 +20,8 @@
     import GasDetailRow from '../components/GasDetailRow.svelte';
     import Button from '../components/Button.svelte';
     import EditIcon from '../components/icons/Edit.svelte';
+    import WarningIcon from '../components/icons/Warning.svelte';
+    import CloseIcon from '../components/icons/Close.svelte';
     import { getGlobalState, setGlobalState } from 'popup/background/wallet';
 
     let selectedSpeed = $state<GasSpeed>($globalStore.wallets[$globalStore.selectedWallet].settings.gasOption ?? GasSpeed.Market);
@@ -27,6 +29,7 @@
     let gasEstimate = $state<RequiredTxParams | null>(null);
     let isLoading = $state(false);
     let isLoadingGasFetch = $state(true);
+    let errorMessage = $state<string | null>(null);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
@@ -35,7 +38,8 @@
     const confirmTx = $derived(confirmLastIndex !== -1 ? wallet.confirm[confirmLastIndex] : null);
     const book = $derived($globalStore.book || []);
     const nativeToken = $derived(wallet?.tokens.filter((t) => t.addrType == confirmTx?.metadata?.token.addrType).find(t => t.native));
-    
+    const accountIndex = $derived(wallet?.selectedAccount ?? 0);
+
     const token = $derived(confirmTx?.metadata?.token ?? nativeToken);
     const tokenAmount = $derived(confirmTx?.metadata?.token?.value ?? confirmTx?.evm?.value ?? confirmTx?.scilla?.amount ?? '0');
     const toAddress = $derived(confirmTx?.metadata?.token.recipient ?? confirmTx?.evm?.to ?? confirmTx?.scilla?.toAddr ?? "");
@@ -45,24 +49,50 @@
         const address = toAddress.toLowerCase();
         const bookEntry = book.find(entry => entry.address.toLowerCase() === address);
         if (bookEntry) return bookEntry.name;
-
         const walletAccount = wallet?.accounts.find(acc => acc.addr.toLowerCase() === address);
         if (walletAccount) return walletAccount.name;
-
         return null;
     });
 
     const tokenFiatValue = $derived(() => {
         if (!token || !token.rate || token.rate <= 0) return '-';
-        
         const numericAmount = Number(tokenAmount) / (10 ** token.decimals);
         const convertedValue = numericAmount * token.rate;
         const currencySymbol = getCurrencySymbol(wallet?.settings?.currencyConvert ?? 'USD');
-        
         return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}`;
     });
 
-    const gasOptions = $derived<GasOptionDetails[]>(gasEstimate && nativeToken ? calculateGasFee(gasEstimate, nativeToken, wallet.settings.currencyConvert) : [createDefaultGasOption()]);
+    const gasOptions = $derived<GasOptionDetails[]>(
+        gasEstimate && nativeToken
+            ? calculateGasFee(gasEstimate, nativeToken, wallet.settings.currencyConvert)
+            : [createDefaultGasOption()]
+    );
+
+    let fetchLock = false;
+    let gasInFlight = false;
+    let gasInterval: number | null = null;
+
+    function dismissError() {
+        errorMessage = null;
+    }
+
+    function gasMultiplier(speed: GasSpeed): bigint {
+        if (speed === GasSpeed.Aggressive) return 20n;
+        if (speed === GasSpeed.Market) return 15n;
+        return 10n;
+    }
+
+    function handleSessionError(e: unknown) {
+        if (String(e).includes('Session')) {
+            if ($currentParams?.type === 'popup') {
+                window.close();
+            } else {
+                push('/lock');
+            }
+            return true;
+        }
+        return false;
+    }
 
     async function handleSpeedSelect(speed: GasSpeed) {
         if (selectedSpeed === speed) {
@@ -88,8 +118,9 @@
     }
 
     async function handleReject() {
-        if (confirmLastIndex === -1) return;
+        if (confirmLastIndex === -1 || isLoading) return;
         isLoading = true;
+        fetchLock = true;
         try {
             await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
             await getGlobalState();
@@ -97,96 +128,113 @@
             if ($currentParams?.type == 'popup') {
                 window.close();
             } else {
-                push("/history");
+                push('/history');
+            }
+        } catch (e) {
+            if (!handleSessionError(e)) {
+                errorMessage = String(e);
             }
         } finally {
+            fetchLock = false;
             isLoading = false;
         }
     }
 
     async function handleConfirm() {
-        if (wallet && !isLoading) {
-            isLoading = true;
-            try {
-                const state = $globalStore;
-                const confirm = state.wallets[state.selectedWallet].confirm[confirmLastIndex];
+        if (!wallet || isLoading) return;
+        isLoading = true;
+        fetchLock = true;
+        try {
+            const state = $globalStore;
+            const confirm = state.wallets[state.selectedWallet].confirm[confirmLastIndex];
+            if (!confirm || !gasEstimate) throw new Error('Missing transaction or gas params');
 
-                if (!confirm || !gasEstimate) throw new Error('');
+            const m = gasMultiplier(selectedSpeed);
+            const gasPrice = (gasEstimate.gasPrice * m) / 10n;
 
-                let multiplierNumer = 10n;
-                switch (selectedSpeed) {
-                    case GasSpeed.Low:
-                        multiplierNumer = 10n;
-                        break;
-                    case GasSpeed.Market:
-                        multiplierNumer = 15n;
-                        break;
-                    case GasSpeed.Aggressive:
-                        multiplierNumer = 20n;
-                        break;
+            if (confirm?.evm) {
+                confirm.evm.gasLimit = Number(gasEstimate?.txEstimateGas) ?? undefined;
+                confirm.evm.nonce = gasEstimate.nonce;
+
+                if (gasEstimate.feeHistory.priorityFee > 0n) {
+                    const baseFee = gasEstimate.feeHistory.baseFee;
+                    const priorityFee = (gasEstimate.feeHistory.priorityFee * m) / 10n;
+                    const maxFee = (baseFee * 2n) + priorityFee;
+                    confirm.evm.maxFeePerGas = maxFee.toString();
+                    confirm.evm.maxPriorityFeePerGas = priorityFee.toString();
+                } else {
+                    confirm.evm.gasPrice = gasEstimate.gasPrice.toString();
                 }
-                const gasPrice = (gasEstimate.gasPrice * multiplierNumer) / 10n;
-
-                if (confirm?.evm) {
-                    confirm.evm.gasLimit = Number(gasEstimate?.txEstimateGas) ?? undefined;
-                    confirm.evm.nonce = gasEstimate.nonce;
-
-                    if (gasEstimate.feeHistory.priorityFee > 0n) {
-                        const baseFee = gasEstimate.feeHistory.baseFee;
-                        const priorityFee = (gasEstimate.feeHistory.priorityFee * multiplierNumer) / 10n;
-                        const maxFee = (baseFee * 2n) + priorityFee;
-
-                        confirm.evm.maxFeePerGas = maxFee.toString();
-                        confirm.evm.maxPriorityFeePerGas = priorityFee.toString();
-                    } else {
-                        confirm.evm.gasPrice = gasEstimate.gasPrice.toString();
-                    }
-                } else if (confirm?.scilla) {
-                    confirm.scilla.nonce = gasEstimate.nonce + 1;
-                    confirm.scilla.gasLimit = gasEstimate.txEstimateGas.toString();
-                    confirm.scilla.gasPrice = gasPrice.toString();
-                }
-
-                await setGlobalState();
-                await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-
-                if (wallet.confirm.length == 1) {
-                    await getGlobalState();
-
-                    if ($currentParams?.type == 'popup') {
-                        window.close();
-                    } else {
-                        push("/history");
-                    }
-                }
-            } catch (error) {
-                console.error("signTx fail", error);
-            } finally {
-                isLoading = false;
+            } else if (confirm?.scilla) {
+                confirm.scilla.nonce = gasEstimate.nonce + 1;
+                confirm.scilla.gasLimit = gasEstimate.txEstimateGas.toString();
+                confirm.scilla.gasPrice = gasPrice.toString();
             }
+
+            await setGlobalState();
+            await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+
+            if (wallet.confirm.length == 1) {
+                await getGlobalState();
+                if ($currentParams?.type == 'popup') {
+                    window.close();
+                } else {
+                    push('/history');
+                }
+            }
+        } catch (e) {
+            if (!handleSessionError(e)) {
+                errorMessage = String(e);
+            }
+        } finally {
+            fetchLock = false;
+            isLoading = false;
+        }
+    }
+
+    async function fetchGasOnce() {
+        if (confirmLastIndex === -1 || gasInFlight || fetchLock) return;
+        gasInFlight = true;
+        if (!gasEstimate) isLoadingGasFetch = true;
+        try {
+            const estimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, accountIndex);
+            gasEstimate = estimate;
+        } catch (error) {
+            if (!handleSessionError(error)) {
+                if (!errorMessage) {
+                    errorMessage = String(error);
+                }
+            }
+        } finally {
+            gasInFlight = false;
+            isLoadingGasFetch = false;
         }
     }
 
     $effect(() => {
-        if (confirmLastIndex === -1) return;
+        const idx = confirmLastIndex;
+        const acc = accountIndex;
 
-        const updateGas = async () => {
-            if (wallet && !isLoading) {
-                isLoadingGasFetch = true;
-                try {
-                    gasEstimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
-                    isLoadingGasFetch = false;
-                } catch (error) {
-                    isLoadingGasFetch = true;
-                    console.error("Gas estimation failed:", error);
-                }
-            }
+        if (idx === -1 || acc < 0) return;
+
+        let mounted = true;
+
+        const start = async () => {
+            await fetchGasOnce();
+            if (!mounted) return;
+            if (gasInterval) clearInterval(gasInterval);
+            gasInterval = window.setInterval(fetchGasOnce, 10000);
         };
 
-        updateGas();
-        const interval = setInterval(updateGas, 15000);
+        start();
 
-        return () => clearInterval(interval);
+        return () => {
+            mounted = false;
+            if (gasInterval) {
+                clearInterval(gasInterval);
+                gasInterval = null;
+            }
+        };
     });
 </script>
 
@@ -215,7 +263,22 @@
                 toName={recipientName() || 'Unknown'}
                 toAddress={toAddress}
             />
+
             <div class="transaction-section">
+                {#if errorMessage}
+                    <div class="error-banner" role="alert">
+                        <div class="error-left">
+                            <div class="error-icon">
+                                <WarningIcon />
+                            </div>
+                            <div class="error-text">{errorMessage}</div>
+                        </div>
+                        <button class="error-close" onclick={dismissError} aria-label="Dismiss error">
+                            <CloseIcon />
+                        </button>
+                    </div>
+                {/if}
+
                 <div class="section-header">
                     <span class="section-title">{$_('confirm.transaction')}</span>
                     <button class="edit-button" onclick={() => push('/transfer')}>
@@ -223,14 +286,15 @@
                         <EditIcon />
                     </button>
                 </div>
+
                 <div class="gas-options">
                     {#each gasOptions as option (option.speed)}
                         <GasOption
-                      label={$_(option.label)}
+                            label={$_(option.label)}
                             time={option.time}
                             fee={option.fee}
                             fiatFee={option.fiatFee}
-                            loading={isLoadingGasFetch}
+                            loading={isLoadingGasFetch && !gasEstimate}
                             selected={selectedSpeed === option.speed}
                             expanded={expandedSpeed === option.speed}
                             onselect={() => handleSpeedSelect(option.speed)}
@@ -296,6 +360,67 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
+    }
+
+    .error-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px;
+        background: var(--color-error-background);
+        border: 1px solid var(--color-negative-border-primary);
+        border-radius: 12px;
+    }
+
+    .error-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .error-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+            color: var(--color-negative-border-primary);
+        }
+    }
+
+    .error-text {
+        color: var(--color-error-text);
+        font-size: 14px;
+        line-height: 20px;
+        word-break: break-word;
+    }
+
+    .error-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: none;
+        border: none;
+        border-radius: 6px;
+        color: var(--color-error-text);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        :global(svg) {
+            width: 18px;
+            height: 18px;
+        }
+
+        &:hover {
+            background: color-mix(in srgb, var(--color-negative-border-primary) 20%, transparent);
+        }
     }
 
     .section-header {

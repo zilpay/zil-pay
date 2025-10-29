@@ -39,14 +39,34 @@
 
     async function handleConnect() {
         if (selectedAccountsSet.size === 0) return;
-        if (connectRequest) {
-            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true, permissions);
+        try {
+            if (connectRequest) {
+                await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true, permissions);
+            }
+        } catch (e) {
+            if (String(e).includes("Session")) {
+                if ($currentParams?.type === 'popup') {
+                    window.close();
+                } else {
+                    push('/lock');
+                }
+            }
         }
     }
 
     async function handleCancel() {
-        if (connectRequest) {
-            await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, false, permissions);
+        try {
+            if (connectRequest) {
+                await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, false, permissions);
+            }
+        } catch (e) {
+            if (String(e).includes("Session")) {
+                if ($currentParams?.type === 'popup') {
+                    window.close();
+                } else {
+                    push('/lock');
+                }
+            }
         }
     }
 

@@ -19,14 +19,34 @@
     const signMessageData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
 
     async function handleConfirm() {
-        if (signMessageRequest) {
-            await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+        try {
+            if (signMessageRequest) {
+                await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+            }
+        } catch(e) {
+            if (String(e).includes("Session")) {
+                if ($currentParams?.type === 'popup') {
+                    window.close();
+                } else {
+                    push('/lock');
+                }
+            }
         }
     }
 
     async function handleCancel() {
-        if (signMessageRequest) {
-            await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+        try {
+            if (signMessageRequest) {
+                await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+            }
+        } catch (e) {
+            if (String(e).includes("Session")) {
+                if ($currentParams?.type === 'popup') {
+                    window.close();
+                } else {
+                    push('/lock');
+                }
+            }
         }
     }
 
