@@ -51,6 +51,7 @@ export class TransactionService {
   async signTxAndbroadcastJsonRPC(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
       const account = wallet.accounts[accountIndex];
       const confirm= wallet.confirm[confirmIndex];
 
@@ -179,27 +180,10 @@ export class TransactionService {
     }
   }
 
-  async add(payload: IConfirmState, walletIndex: number, sendResponse: StreamResponse) {
-    try {
-      const wallet = this.#state.wallets[walletIndex];
-      const scillaTx = new ConfirmState(payload);
-
-      wallet.confirm.push(scillaTx);
-      await this.#state.sync();
-
-      sendResponse({
-        resolve: true,
-      });
-    } catch (err) {
-      sendResponse({
-        reject: String(err),
-      });
-    }
-  }
-
   async reject(index: number, walletIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
       const confirm = wallet.confirm[index];
 
       wallet.confirm.splice(index, 1);
@@ -228,6 +212,7 @@ export class TransactionService {
   async estimateGas(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
       const account = wallet.accounts[accountIndex];
       const confirm= wallet .confirm[confirmIndex];
       const chainConfig = this.#state.getChain(account.chainHash)!;

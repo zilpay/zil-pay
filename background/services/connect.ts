@@ -23,6 +23,7 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+      await wallet.trhowSession();
       const isConnected = this.#state.connections.isConnected(payload.domain, wallet.selectedAccount);
 
       if (isConnected) {
@@ -52,6 +53,7 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
 
       wallet.accounts.forEach((a) => {
         const pubkey = hexToUint8Array(a.pubKey);
@@ -82,6 +84,7 @@ export class ConnectService {
   ): Promise<void> {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
       const confirmRequest = this.#findConfirmRequest(wallet, uuid);
 
       this.#removeConfirmRequest(wallet, uuid);

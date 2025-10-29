@@ -86,12 +86,8 @@ describe("test bg state with empty storage", () => {
         hashSize: ShaAlgorithms.Sha512,
       },
       currencyConvert: "btc",
-      ipfsNode: null,
       ensEnabled: false,
       tokensListFetcher: false,
-      nodeRankingEnabled: false,
-      maxConnections: 10,
-      requestTimeoutSecs: 30,
       ratesApiOptions: RatesApiOptions.None,
       sessionTime: 3600,
     });
@@ -203,7 +199,6 @@ describe("test bg state with storagev2", () => {
     const { settings } = wallet;
     expect(settings.cipherOrders).toEqual([CipherOrders.AESCBC]);
     expect(settings.currencyConvert).toBe("usd");
-    expect(settings.requestTimeoutSecs).toBe(30);
 
     const { hashFnParams } = settings;
     expect(hashFnParams.hashType).toBe(HashTypes.Pbkdf2);

@@ -12,6 +12,8 @@
     import Switch from '../components/Switch.svelte';
     import DAppInfo from '../components/DAppInfo.svelte';
     import DownIcon from '../components/icons/Down.svelte';
+    import WarningIcon from '../components/icons/Warning.svelte';
+    import CloseIcon from '../components/icons/Close.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const accounts = $derived(currentWallet?.accounts ?? []);
@@ -20,9 +22,13 @@
     const connectParams = $derived(connectRequest?.connect as ConnectParams | undefined);
 
     let selectedAccountsSet = $state<Set<number>>(new Set());
+    let initializedSelection = $state(false);
 
     $effect(() => {
-        selectedAccountsSet = new Set(accounts.map((_, index) => index));
+        if (!initializedSelection && accounts.length > 0) {
+            selectedAccountsSet = new Set(accounts.map((_, index) => index));
+            initializedSelection = true;
+        }
     });
 
     let permissions = $state<IWeb3ConnectionPermissions>({
@@ -32,41 +38,67 @@
     });
 
     let showAdvanced = $state(false);
+    let isLoading = $state(false);
+    let errorMessage = $state<string | null>(null);
+
+    function dismissError() {
+        errorMessage = null;
+    }
 
     function toggleAdvanced() {
         showAdvanced = !showAdvanced;
     }
 
+    function toggleAccount(index: number) {
+        initializedSelection = true;
+
+        const next = new Set(selectedAccountsSet);
+        if (next.has(index)) next.delete(index);
+        else next.add(index);
+        selectedAccountsSet = next;
+    }
+
+    function handleSessionError(e: unknown): boolean {
+        if (String(e).includes('Session')) {
+            if ($currentParams?.type === 'popup') {
+                window.close();
+            } else {
+                push('/lock');
+            }
+            return true;
+        }
+        return false;
+    }
+
     async function handleConnect() {
-        if (selectedAccountsSet.size === 0) return;
+        if (selectedAccountsSet.size === 0 || isLoading) return;
+        isLoading = true;
         try {
             if (connectRequest) {
                 await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, true, permissions);
             }
         } catch (e) {
-            if (String(e).includes("Session")) {
-                if ($currentParams?.type === 'popup') {
-                    window.close();
-                } else {
-                    push('/lock');
-                }
+            if (!handleSessionError(e)) {
+                errorMessage = String(e);
             }
+        } finally {
+            isLoading = false;
         }
     }
 
     async function handleCancel() {
+        if (isLoading) return;
+        isLoading = true;
         try {
             if (connectRequest) {
                 await responseToConnect(connectRequest.uuid, $globalStore.selectedWallet, false, permissions);
             }
         } catch (e) {
-            if (String(e).includes("Session")) {
-                if ($currentParams?.type === 'popup') {
-                    window.close();
-                } else {
-                    push('/lock');
-                }
+            if (!handleSessionError(e)) {
+                errorMessage = String(e);
             }
+        } finally {
+            isLoading = false;
         }
     }
 
@@ -91,17 +123,31 @@
                 message={$_('connect.request_connection')}
             />
 
+            {#if errorMessage}
+                <div class="error-banner" role="alert">
+                    <div class="error-left">
+                        <div class="error-icon">
+                            <WarningIcon />
+                        </div>
+                        <div class="error-text">{errorMessage}</div>
+                    </div>
+                    <button class="error-close" onclick={dismissError} aria-label="Dismiss error">
+                        <CloseIcon />
+                    </button>
+                </div>
+            {/if}
+
             <section class="accounts-section">
                 <h3 class="section-title">{$_('connect.select_accounts')}</h3>
                 <div class="accounts-list">
                     {#each accounts as account, index (account.pubKey)}
-                        <div class="account-item">
+                        <button class="account-item" type="button" onclick={() => toggleAccount(index)}>
                             <AccountCard
                                 name={account.name}
                                 address={account.addr}
                                 selected={selectedAccountsSet.has(index)}
                             />
-                        </div>
+                        </button>
                     {/each}
                 </div>
             </section>
@@ -145,10 +191,10 @@
 
     <footer class="footer">
         <div class="action-buttons">
-            <Button variant="outline" onclick={handleCancel}>
+            <Button variant="outline" onclick={handleCancel} disabled={isLoading}>
                 {$_('common.cancel')}
             </Button>
-            <Button variant="primary" onclick={handleConnect} disabled={selectedAccountsSet.size === 0}>
+            <Button variant="primary" onclick={handleConnect} disabled={isLoading || selectedAccountsSet.size === 0}>
                 {$_('connect.connect')}
             </Button>
         </div>
@@ -174,6 +220,67 @@
         overflow-y: auto;
     }
 
+    .error-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px;
+        background: var(--color-error-background);
+        border: 1px solid var(--color-negative-border-primary);
+        border-radius: 12px;
+    }
+
+    .error-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .error-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+            color: var(--color-negative-border-primary);
+        }
+    }
+
+    .error-text {
+        color: var(--color-error-text);
+        font-size: 14px;
+        line-height: 20px;
+        word-break: break-word;
+    }
+
+    .error-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: none;
+        border: none;
+        border-radius: 6px;
+        color: var(--color-error-text);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        :global(svg) {
+            width: 18px;
+            height: 18px;
+        }
+
+        &:hover {
+            background: color-mix(in srgb, var(--color-negative-border-primary) 20%, transparent);
+        }
+    }
+
     .accounts-section {
         display: flex;
         flex-direction: column;
@@ -191,6 +298,14 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+    }
+
+    .account-item {
+        all: unset;
+        display: block;
+        width: 100%;
+        cursor: pointer;
+        border-radius: 12px;
     }
 
     .account-item :global(.account-card) {

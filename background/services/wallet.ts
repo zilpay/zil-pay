@@ -94,11 +94,20 @@ export class WalletService {
   }
 
   async setGlobalState(payload: IBackgroundState, sendResponse: StreamResponse) {
+
+    if (payload.selectedWallet != -1) {
+      const wallet = this.#state.wallets[this.#state.selectedWallet];
+      const isSession = await wallet.checkSession();
+
+      this.#state.selectedWallet = isSession ? payload.selectedWallet : -1;
+    } else {
+      this.#state.selectedWallet = payload.selectedWallet;
+    }
+
     this.#state.abbreviatedNumber = payload.abbreviatedNumber;
     this.#state.appearances = payload.appearances;
     this.#state.hideBalance = payload.hideBalance;
     this.#state.tokensRow = payload.tokensRow;
-    this.#state.selectedWallet = payload.selectedWallet;
     this.#state.locale = payload.locale;
     this.#state.book = payload.book;
     this.#state.chains = payload.chains.map((c) => new ChainConfig(c));

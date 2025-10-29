@@ -17,6 +17,7 @@ export class ProviderService {
   async swichNetwork(walletIndex: number, chainIndex: number, sendResponse: StreamResponse) {
     const chain = this.#state.chains[chainIndex];
     const wallet = this.#state.wallets[walletIndex];
+    await wallet.trhowSession();
 
     try {
       wallet.tokens = wallet.tokens.filter((t) => !t.native); 
@@ -47,6 +48,7 @@ export class ProviderService {
   async balanceUpdate(walletIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
       const account = wallet.accounts[wallet.selectedAccount];
       const tokens = wallet.tokens.filter((t) => t.chainHash === account.chainHash);
       const chainConfig = this.#state.getChain(account.chainHash)!;

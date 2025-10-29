@@ -32,6 +32,7 @@ export class TokenService {
     try {
       const contractAddr = Address.fromStr(contract);
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
       const account = wallet.accounts[wallet.selectedAccount];
       const chainConfig = this.#state.getChain(account.chainHash);
 
@@ -121,6 +122,7 @@ export class TokenService {
 
   async updateRates(walletIndex: number, sendResponse: StreamResponse) {
       const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
 
       if (wallet.settings.ratesApiOptions == RatesApiOptions.CoinGecko) {
         await this.#updateCoinGecko(walletIndex, sendResponse);

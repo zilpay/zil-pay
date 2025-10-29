@@ -220,7 +220,7 @@ export class Wallet implements IWalletState {
   }
 
   async setSession(wordsOrKey: string | Uint8Array) {
-    const sessionTime = this.settings.sessionTime;
+    const sessionTime = 10; //this.settings.sessionTime;
 
     if (TypeOf.isString(wordsOrKey)) {
       const seed = await Bip39.mnemonicToSeed(String(wordsOrKey));
@@ -230,6 +230,23 @@ export class Wallet implements IWalletState {
       await this.#session.setSession(sessionTime, wordsOrKey);
     } else {
       throw new Error("unk vault");
+    }
+  }
+
+  async checkSession(): Promise<boolean> {
+    try {
+      await this.#session.getVault();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async trhowSession(): Promise<void> {
+    const session = await this.#session.getVault();
+
+    if (!session || session.length == 0) {
+      throw new Error("Session expired");
     }
   }
 

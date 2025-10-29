@@ -26,6 +26,7 @@ export class ZilPayLegacyService {
       }
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+      await wallet.trhowSession();
       const account = wallet.accounts[wallet.selectedAccount];
       const chain = this.#state.getChain(account.chainHash);
 
@@ -93,6 +94,7 @@ export class ZilPayLegacyService {
       }
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
+      await wallet.trhowSession();
       const messageBytes = utf8ToUint8Array(content);
       const messageScilla: SignMesageReqScilla = {
         content,
@@ -181,7 +183,9 @@ export class ZilPayLegacyService {
       };
 
       const wallet = this.#state.wallets[this.#state.selectedWallet];
-      if (!wallet) {
+      const isSession = await wallet.checkSession();
+
+      if (!wallet || !isSession) {
         sendResponse({ resolve: emptyResponse });
         return;
       }
