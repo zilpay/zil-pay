@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { scale, fade, fly } from 'svelte/transition';
+    import { fly, fade } from 'svelte/transition';
+    import { cubicOut } from 'svelte/easing';
     import Close from './icons/Close.svelte';
 
     let {
@@ -20,7 +21,6 @@
     } = $props();
 
     let modalRef: HTMLElement | null = $state(null);
-    let isSmallScreen = $state(false);
 
     function handleClose() {
         show = false;
@@ -48,19 +48,6 @@
         }
     }
 
-    function checkScreenSize() {
-        isSmallScreen = window.innerWidth <= 480 || window.innerHeight <= 600;
-    }
-
-    $effect(() => {
-        checkScreenSize();
-        
-        window.addEventListener('resize', checkScreenSize);
-        return () => {
-            window.removeEventListener('resize', checkScreenSize);
-        };
-    });
-
     $effect(() => {
         if (show) {
             document.addEventListener('keydown', handleKeydown);
@@ -72,9 +59,7 @@
             const firstElement = focusableElements?.[0] as HTMLElement;
             const lastElement = focusableElements?.[focusableElements.length - 1] as HTMLElement;
 
-            if (firstElement) {
-                firstElement.focus();
-            }
+            firstElement?.focus();
 
             function handleTabKey(e: KeyboardEvent) {
                 if (e.key === 'Tab') {
@@ -107,8 +92,7 @@
     <div
         bind:this={modalRef}
         class="modal-overlay"
-        class:small-screen={isSmallScreen}
-        transition:fade={{ delay: 0, duration: 250 }}
+        transition:fade={{ duration: 250 }}
         onclick={handleOverlayClick}
         onkeydown={handleOverlayKeydown}
         role="dialog"
@@ -116,70 +100,34 @@
         aria-labelledby={title ? 'modal-title' : undefined}
         tabindex="-1"
     >
-        {#if isSmallScreen}
-            {#key show}
-                <div
-                    class="modal-content small-screen"
-                    in:fly={{ y: 300, duration: 300, opacity: 1 }}
-                    out:fly={{ y: 300, duration: 250, opacity: 1 }}
-                    role="document"
+        <div
+            class="modal-content"
+            style:--modal-width={width}
+            in:fly={{ y: 50, duration: 350, easing: cubicOut }}
+            role="document"
+        >
+            <div class="modal-header">
+                {#if title}
+                    <h2 id="modal-title" class="modal-title">
+                        {title}
+                    </h2>
+                {/if}
+                <button
+                    class="modal-close-button"
+                    onclick={handleClose}
+                    aria-label="Close modal"
+                    type="button"
                 >
-                    <div class="modal-header">
-                        {#if title}
-                            <h2 id="modal-title" class="modal-title">
-                                {title}
-                            </h2>
-                        {/if}
-                        <button
-                            class="modal-close-button"
-                            onclick={handleClose}
-                            aria-label="Close modal"
-                            type="button"
-                        >
-                            <Close width={24} height={24} />
-                        </button>
-                    </div>
+                    <Close width={24} height={24} />
+                </button>
+            </div>
 
-                    <div class="modal-body">
-                        {#if children}
-                            {@render children()}
-                        {/if}
-                    </div>
-                </div>
-            {/key}
-        {:else}
-            {#key show}
-                <div
-                    class="modal-content"
-                    style="max-width: {width}"
-                    in:scale={{ delay: 0, duration: 250 }}
-                    out:scale={{ delay: 0, duration: 200 }}
-                    role="document"
-                >
-                    <div class="modal-header">
-                        {#if title}
-                            <h2 id="modal-title" class="modal-title">
-                                {title}
-                            </h2>
-                        {/if}
-                        <button
-                            class="modal-close-button"
-                            onclick={handleClose}
-                            aria-label="Close modal"
-                            type="button"
-                        >
-                            <Close width={24} height={24} />
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        {#if children}
-                            {@render children()}
-                        {/if}
-                    </div>
-                </div>
-            {/key}
-        {/if}
+            <div class="modal-body">
+                {#if children}
+                    {@render children()}
+                {/if}
+            </div>
+        </div>
     </div>
 {/if}
 
@@ -199,11 +147,6 @@
         padding: 20px;
         box-sizing: border-box;
 
-        &.small-screen {
-            align-items: flex-end;
-            padding: 0;
-        }
-
         &:focus {
             outline: none;
         }
@@ -211,6 +154,7 @@
 
     .modal-content {
         width: 100%;
+        max-width: var(--modal-width);
         background: var(--color-cards-regular-base-default);
         border-radius: 16px;
         overflow: hidden;
@@ -218,13 +162,6 @@
         display: flex;
         flex-direction: column;
         border: 1px solid var(--color-cards-regular-border-default);
-
-        &.small-screen {
-            max-height: 85vh;
-            border-radius: 16px 16px 0 0;
-            margin: 0;
-            max-width: none !important;
-        }
 
         &:focus {
             outline: none;
@@ -235,40 +172,22 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 20px 24px;
+        gap: 16px;
+        padding: 16px 24px;
         border-bottom: 1px solid var(--color-navbar-backgrdound-border);
         background: var(--color-neutral-background-container);
         flex-shrink: 0;
-        position: relative;
-
-        .small-screen & {
-            padding: 16px 20px;
-            
-            &::before {
-                content: '';
-                position: absolute;
-                top: 8px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 36px;
-                height: 4px;
-                background: var(--color-content-icon-secondary);
-                opacity: 0.5;
-                border-radius: 2px;
-            }
-        }
     }
 
     .modal-title {
-        font-size: var(--font-size-xl);
-        font-weight: 600;
+        font-size: var(--font-size-large);
+        font-weight: 400;
         color: var(--color-content-text-inverted);
         margin: 0;
-        line-height: 1.3;
-
-        .small-screen & {
-            font-size: var(--font-size-large);
-        }
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .modal-close-button {
@@ -282,14 +201,14 @@
         border-radius: 8px;
         transition: all 0.2s ease;
         color: var(--color-content-icon-secondary);
+        flex-shrink: 0;
 
         &:hover {
             background-color: var(--color-button-regular-quaternary-hover);
         }
 
-        &:focus {
-            outline: none;
-            background-color: var(--color-button-regular-quaternary-pressed);
+        &:focus-visible {
+            outline: 2px solid var(--color-inputs-border-focus);
         }
 
         &:active {
@@ -301,10 +220,6 @@
         overflow-y: auto;
         flex: 1;
         min-height: 0;
-
-        .small-screen & {
-            padding-bottom: max(20px, env(safe-area-inset-bottom));
-        }
     }
 
     .modal-body::-webkit-scrollbar {
@@ -324,7 +239,7 @@
         }
     }
 
-    @media (max-width: 400px), (max-height: 600px) {
+    @media (max-width: 480px), (max-height: 600px) {
         .modal-overlay {
             align-items: flex-end;
             padding: 0;
@@ -332,27 +247,17 @@
 
         .modal-content {
             max-height: 90vh;
-            border-radius: 12px 12px 0 0;
+            border-radius: 16px 16px 0 0;
+            margin: 0;
+            max-width: 100%;
         }
 
         .modal-header {
-            padding: 12px 16px;
-
-            &::before {
-                top: 6px;
-                width: 32px;
-                height: 3px;
-            }
+            padding: 16px 20px;
         }
 
-        .modal-title {
-            font-size: var(--font-size-medium);
-        }
-    }
-
-    @media (max-width: 360px) {
-        .modal-header {
-            padding: 10px 14px;
+        .modal-body {
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
         }
     }
 </style>
