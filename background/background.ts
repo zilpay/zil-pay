@@ -194,6 +194,15 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
+        core.zilpayLegacyWeb3.signMessageRes(
+                    msg.payload.uuid,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          msg.payload.approve,
+          sendResponse,
+        );
+        return true;
 
       default:
         sendResponse(null);

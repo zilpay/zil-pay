@@ -4,8 +4,9 @@ import { ConfirmState } from "background/storage/confirm";
 import { Address } from "crypto/address";
 import { sha256 } from "crypto/sha256";
 import { PromptService } from "lib/popup/prompt";
-import type { StreamResponse } from "lib/streem";
-import { uint8ArrayToHex } from "lib/utils/hex";
+import { LegacyZilliqaTabMsg, type StreamResponse } from "lib/streem";
+import { TabsMessage } from "lib/streem/tabs-message";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import type { SignMesageReqScilla } from "types/tx";
 
@@ -61,6 +62,52 @@ export class ZilPayLegacyService {
       new PromptService().open("/sign-message");
 
       sendResponse({ resolve: true, });
+    } catch (e) {
+      sendResponse({ reject: String(e) });
+    }
+  }
+
+  async signMessageRes(uuid: string, walletIndex: number, accountIndex: number, approve: boolean, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
+      const scillaMessage = wallet.confirm.find((c) => c.uuid == uuid);
+
+
+      if (!scillaMessage || !scillaMessage.signMessageScilla) {
+        throw new Error(`not found ${uuid}`);
+      }
+
+      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
+
+      if (!approve) {
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.SING_MESSAGE_RES,
+          uuid: scillaMessage.uuid,
+          payload: {
+           reject: "User Rejected", 
+          },
+        }).send(scillaMessage.signMessageScilla.domain);
+      } else {
+        const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
+        const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
+        const hashBytes = hexToUint8Array(scillaMessage.signMessageScilla.hash);
+        const signature = await keyPair.signMessage(hashBytes);
+
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.SING_MESSAGE_RES,
+          uuid: scillaMessage.uuid,
+          payload: {
+           resolve: {
+             signature: uint8ArrayToHex(signature),
+              message: scillaMessage.signMessageScilla.content,
+              publicKey: uint8ArrayToHex(keyPair.pubKey),
+           }, 
+          },
+        }).send(scillaMessage.signMessageScilla.domain);
+      }
+
+      sendResponse({ resolve: wallet.confirm, });
     } catch (e) {
       sendResponse({ reject: String(e) });
     }

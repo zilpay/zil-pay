@@ -61,7 +61,7 @@ export class TransactionService {
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const evm = confirm.evm;
       const txReq = new TransactionRequest(metadata, scilla, evm);
-      const keyPair = await wallet.revealKeypair(accountIndex, defaultChainConfig);
+      const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
       const signedTx = await txReq.sign(keyPair);
 
       await signedTx.verify();

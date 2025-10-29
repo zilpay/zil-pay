@@ -228,11 +228,12 @@ export class WalletService {
     try {
       const passwordBytes = utf8ToUint8Array(password);
       const wallet = this.#state.wallets[walletIndex];
+      const account = wallet.accounts[accountIndex];
 
       await wallet.unlock(passwordBytes);
 
       const chain = this.#state.getChain(wallet.defaultChainHash)!;
-      const keyPair = await wallet.revealKeypair(accountIndex, chain);
+      const keyPair = await wallet.revealKeypair(account.index, chain);
 
       sendResponse({
         resolve: await keyPair.toJSON(),

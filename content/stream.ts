@@ -26,6 +26,9 @@ export class ContentTabStream {
         case MTypePopup.RESPONSE_TO_DAPP:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;
+        case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
+          this.#stream.send(msg, MTypeTabContent.INJECTED);
+          break;
       }
 
       sendResponse({});

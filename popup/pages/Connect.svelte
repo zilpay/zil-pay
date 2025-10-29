@@ -10,7 +10,7 @@
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
     import Switch from '../components/Switch.svelte';
-    import FastImg from '../components/FastImg.svelte';
+    import DAppInfo from '../components/DAppInfo.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const accounts = $derived(currentWallet?.accounts ?? []);
@@ -69,22 +69,12 @@
 <div class="page-container">
     <main class="content">
         {#if connectParams}
-            <div class="site-info">
-                <div class="site-header">
-                    {#if connectParams.icon}
-                        <div class="site-icon">
-                            <FastImg src={connectParams.icon} alt={connectParams.title} />
-                        </div>
-                    {/if}
-                    <div class="site-details">
-                        <h2 class="site-title">{connectParams.title}</h2>
-                        <p class="site-domain">{connectParams.domain}</p>
-                    </div>
-                </div>
-                <div class="connection-message">
-                    <p>{$_('connect.request_connection')}</p>
-                </div>
-            </div>
+            <DAppInfo
+                icon={connectParams.icon}
+                title={connectParams.title}
+                domain={connectParams.domain}
+                message={$_('connect.request_connection')}
+            />
 
             <section class="accounts-section">
                 <h3 class="section-title">{$_('connect.select_accounts')}</h3>
@@ -179,72 +169,6 @@
         gap: 20px;
         padding: var(--padding-side) 0;
         overflow-y: auto;
-    }
-
-    .site-info {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding: 16px;
-        background: var(--color-cards-regular-base-default);
-        border: 1px solid var(--color-cards-regular-border-default);
-        border-radius: 12px;
-    }
-
-    .site-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .site-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 8px;
-        overflow: hidden;
-        flex-shrink: 0;
-
-        :global(img) {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    }
-
-    .site-details {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .site-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--color-content-text-primary);
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .site-domain {
-        font-size: 14px;
-        color: var(--color-content-text-secondary);
-        margin: 4px 0 0 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .connection-message {
-        padding-top: 8px;
-        border-top: 1px solid var(--color-cards-regular-border-default);
-
-        p {
-            margin: 0;
-            font-size: 14px;
-            color: var(--color-content-text-secondary);
-            line-height: 1.5;
-        }
     }
 
     .accounts-section {
@@ -352,18 +276,17 @@
     }
 
     .footer {
-        padding: var(--padding-side) 0;
-        border-top: 1px solid var(--color-neutral-border-default);
+        padding: 16px;
         background: var(--color-neutral-background-base);
+        border-top: 1px solid var(--color-neutral-border-default);
     }
 
     .action-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        display: flex;
+        gap: 8px;
 
         :global(button) {
-            width: 100%;
+            flex: 1;
         }
     }
 </style>

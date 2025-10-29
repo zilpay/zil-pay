@@ -4,12 +4,14 @@
     import globalStore from 'popup/store/global';
     import { push } from 'popup/router/navigation';
     import type { SignMesageReqScilla } from 'types/tx';
+    import { responseToSignMessageScilla } from 'popup/background/sign-message';
+    import { clipboardCopy } from 'lib/popup/clipboard';
     
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
-    import InfoIcon from '../components/icons/Info.svelte';
+    import DAppInfo from '../components/DAppInfo.svelte';
     import CopyIcon from '../components/icons/Copy.svelte';
-    import FullScreenIcon from '../components/icons/FullScreen.svelte';
+    import SuccessIcon from '../components/icons/Success.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
@@ -20,29 +22,29 @@
     );
     const signMessageData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
 
-    let isExpanded = $state(false);
+    let isCopied = $state(false);
 
-    function toggleExpand() {
-        isExpanded = !isExpanded;
-    }
+    async function handleCopy() {
+        if (isCopied || !signMessageData) return;
 
-    async function handleCopy(text: string) {
-        try {
-            await navigator.clipboard.writeText(text);
-        } catch (e) {
-            console.error('Failed to copy:', e);
+        const success = await clipboardCopy(signMessageData.content);
+        if (success) {
+            isCopied = true;
+            setTimeout(() => {
+                isCopied = false;
+            }, 1000);
         }
     }
 
     async function handleConfirm() {
         if (signMessageRequest) {
-            // await responseToSignMessage(signMessageRequest.uuid, $globalStore.selectedWallet, true);
+            await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount,true);
         }
     }
 
     async function handleCancel() {
         if (signMessageRequest) {
-            // await responseToSignMessage(signMessageRequest.uuid, $globalStore.selectedWallet, false);
+            await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
         }
     }
 
@@ -60,66 +62,37 @@
 {#if signMessageData && selectedAccount}
 <div class="page-container">
     <main class="content">
-        <div class="account-section">
-            <AccountCard
-                name={selectedAccount.name}
-                address={selectedAccount.addr}
-                selected={false}
-            />
-        </div>
+        <AccountCard
+            name={selectedAccount.name}
+            address={selectedAccount.addr}
+            selected={false}
+        />
 
         <div class="title-section">
             <h1 class="title">{$_('sign_message.title')}</h1>
             <p class="subtitle">{$_('sign_message.subtitle')}</p>
         </div>
 
-        <div class="info-card">
-            <div class="info-row">
-                <div class="info-label">
-                    <span>{$_('sign_message.request_from')}</span>
-                    <button class="icon-button" type="button">
-                        <InfoIcon width="16" height="16" />
-                    </button>
-                </div>
-                <span class="info-value">{signMessageData.domain}</span>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">
-                    <span>{$_('sign_message.interacting_with')}</span>
-                    <button class="icon-button" type="button">
-                        <InfoIcon width="16" height="16" />
-                    </button>
-                </div>
-                <span class="info-value">{signMessageData.hash.slice(0, 10)}...{signMessageData.hash.slice(-6)}</span>
-            </div>
-        </div>
+        <DAppInfo
+            icon={signMessageData.icon}
+            title={signMessageData.title}
+            domain={signMessageData.domain}
+        />
 
         <div class="message-card">
             <div class="message-header">
                 <span class="message-title">{$_('sign_message.message')}</span>
-                <div class="message-actions">
-                    <button class="icon-button" type="button" onclick={() => handleCopy(signMessageData.content)}>
+                <button class="copy-button" type="button" onclick={handleCopy}>
+                    {#if isCopied}
+                        <SuccessIcon width="20" height="20" />
+                    {:else}
                         <CopyIcon width="20" height="20" />
-                    </button>
-                    <button class="icon-button" type="button" onclick={toggleExpand}>
-                        <FullScreenIcon width="20" height="20" />
-                    </button>
-                </div>
+                    {/if}
+                </button>
             </div>
 
-            <div class="message-details">
-                <div class="detail-row">
-                    <span class="detail-label">{$_('sign_message.primary_type')}:</span>
-                    <span class="detail-value">{signMessageData.title}</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">{$_('sign_message.content')}:</span>
-                    <span class="detail-value" class:expanded={isExpanded}>
-                        {signMessageData.content}
-                    </span>
-                </div>
+            <div class="message-content">
+                {signMessageData.content}
             </div>
         </div>
     </main>
@@ -151,16 +124,8 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        padding-top: 8px;
+        padding: 16px;
         overflow-y: auto;
-    }
-
-    .account-section {
-        background: var(--color-cards-regular-base-default);
-        border-radius: 12px;
-        padding: 8px;
-        outline: 1px solid var(--color-neutral-border-default);
-        outline-offset: -1px;
     }
 
     .title-section {
@@ -185,39 +150,6 @@
         margin: 0;
     }
 
-    .info-card {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px;
-        background: var(--color-neutral-background-base);
-        border-radius: 12px;
-    }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .info-label {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 20px;
-        color: var(--color-content-text-inverted);
-    }
-
-    .info-value {
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 20px;
-        color: var(--color-content-text-inverted);
-        text-align: right;
-    }
-
     .message-card {
         display: flex;
         flex-direction: column;
@@ -240,67 +172,39 @@
         color: var(--color-content-text-inverted);
     }
 
-    .message-actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .icon-button {
+    .copy-button {
         display: flex;
         align-items: center;
         justify-content: center;
         background: transparent;
         border: none;
         cursor: pointer;
-        padding: 0;
-        transition: opacity 0.2s ease;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
 
         &:hover {
-            opacity: 0.7;
+            background: var(--color-button-regular-quaternary-hover);
         }
 
         &:active {
-            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        :global(svg) {
+            color: var(--color-content-icon-accent-secondary);
         }
     }
 
-    .message-details {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .detail-label {
+    .message-content {
         font-size: 14px;
         font-weight: 400;
         line-height: 20px;
         color: var(--color-content-text-inverted);
-        flex-shrink: 0;
-    }
-
-    .detail-value {
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 20px;
-        color: var(--color-content-text-inverted);
-        text-align: right;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-
-        &.expanded {
-            display: block;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
+        word-break: break-word;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
     }
 
     .footer {
