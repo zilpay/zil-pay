@@ -8,4 +8,5 @@ export enum ConnectError {
   ChainNotFound = "Chain not found",
   InvalidParams = "Invalid params",
   RequestNotFound = "Request not found",
+  AddressMismatch = "Address mismatch",
 }

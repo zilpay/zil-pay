@@ -140,3 +140,11 @@ export interface SignPersonalMessageEVM {
   title: string;
   icon: string;
 }
+
+export interface SignTypedDataEVM {
+  typedData: string;
+  address: string;
+  domain: string;
+  title: string;
+  icon: string;
+}

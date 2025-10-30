@@ -3,33 +3,59 @@
     import { currentParams } from 'popup/store/route';
     import globalStore from 'popup/store/global';
     import { push } from 'popup/router/navigation';
-    import type { SignMesageReqScilla } from 'types/tx';
-    import type { SignPersonalMessageEVM } from 'types/tx';
-    import { responseToSignMessageScilla, responseToSignPersonalMessageEVM } from 'popup/background/sign-message';
+    import type { SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from 'types/tx';
+    import { responseToSignMessageScilla, responseToSignPersonalMessageEVM, responseToSignTypedDataEVM } from 'popup/background/sign-message';
 
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
     import DAppInfo from '../components/DAppInfo.svelte';
     import CopyButton from '../components/CopyButton.svelte';
+    import EIP712View from '../components/EIP712View.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
 
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
     const signMessageRequest = $derived(
-        confirmRequests.find(c => c.signMessageScilla !== undefined || c.signPersonalMessageEVM !== undefined)
+        confirmRequests.find(c => 
+            c.signMessageScilla !== undefined || 
+            c.signPersonalMessageEVM !== undefined ||
+            c.signTypedDataJsonEVM !== undefined
+        )
     );
     const signMessageScillaData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
     const signPersonalMessageEVMData = $derived(signMessageRequest?.signPersonalMessageEVM as SignPersonalMessageEVM | undefined);
+    const signTypedDataEVMData = $derived(signMessageRequest?.signTypedDataJsonEVM as SignTypedDataEVM | undefined);
 
-    const isEVM = $derived(!!signPersonalMessageEVMData);
     const isScilla = $derived(!!signMessageScillaData);
+    const isPersonalSign = $derived(!!signPersonalMessageEVMData);
+    const isTypedData = $derived(!!signTypedDataEVMData);
 
     const messageData = $derived({
-        icon: isEVM ? signPersonalMessageEVMData?.icon : signMessageScillaData?.icon,
-        title: isEVM ? signPersonalMessageEVMData?.title : signMessageScillaData?.title,
-        domain: isEVM ? signPersonalMessageEVMData?.domain : signMessageScillaData?.domain,
-        content: isEVM ? signPersonalMessageEVMData?.message : signMessageScillaData?.content,
+        icon: isScilla ? signMessageScillaData?.icon : 
+              isPersonalSign ? signPersonalMessageEVMData?.icon : 
+              signTypedDataEVMData?.icon,
+        title: isScilla ? signMessageScillaData?.title : 
+               isPersonalSign ? signPersonalMessageEVMData?.title : 
+               signTypedDataEVMData?.title,
+        domain: isScilla ? signMessageScillaData?.domain : 
+                isPersonalSign ? signPersonalMessageEVMData?.domain : 
+                signTypedDataEVMData?.domain,
+        content: isScilla ? signMessageScillaData?.content : 
+                 isPersonalSign ? signPersonalMessageEVMData?.message : 
+                 signTypedDataEVMData?.typedData,
+    });
+
+    const formattedContent = $derived(() => {
+        if (!messageData.content) return '';
+        if (isTypedData) {
+            try {
+                return JSON.stringify(JSON.parse(messageData.content), null, 2);
+            } catch {
+                return messageData.content;
+            }
+        }
+        return messageData.content;
     });
 
     async function handleConfirm() {
@@ -37,8 +63,10 @@
             if (signMessageRequest) {
                 if (isScilla) {
                     await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
-                } else if (isEVM) {
+                } else if (isPersonalSign) {
                     await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                } else if (isTypedData) {
+                    await responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
                 }
             }
         } catch(e) {
@@ -57,8 +85,10 @@
             if (signMessageRequest) {
                 if (isScilla) {
                     await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
-                } else if (isEVM) {
+                } else if (isPersonalSign) {
                     await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+                } else if (isTypedData) {
+                    await responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
                 }
             }
         } catch (e) {
@@ -103,13 +133,17 @@
             domain={messageData.domain ?? ""}
         />
 
-        <div class="message-card">
-            <div class="message-header">
-                <span class="message-title">{$_('sign_message.message')}</span>
-                <CopyButton value={messageData.content ?? ""} />
+        {#if isTypedData && messageData.content}
+            <EIP712View typedDataJson={messageData.content} />
+        {:else}
+            <div class="message-card">
+                <div class="message-header">
+                    <span class="message-title">{$_('sign_message.message')}</span>
+                    <CopyButton value={messageData.content ?? ""} />
+                </div>
+                <div class="message-content">{formattedContent()}</div>
             </div>
-            <div class="message-content">{messageData.content}</div>
-        </div>
+        {/if}
     </main>
 
     <footer class="footer">

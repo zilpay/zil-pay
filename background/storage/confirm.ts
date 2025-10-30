@@ -1,5 +1,5 @@
 import type { ConnectParams } from "types/connect";
-import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM, SignMesageReqScilla, SignPersonalMessageEVM } from "types/tx";
+import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM, SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from "types/tx";
 
 export interface IConfirmState {
   uuid: string;
@@ -8,7 +8,7 @@ export interface IConfirmState {
   signMessageScilla?: SignMesageReqScilla;
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: SignPersonalMessageEVM;
-  signTypedDataJsonEVM?: string;
+  signTypedDataJsonEVM?: SignTypedDataEVM;
   connect?: ConnectParams;
 }
 
@@ -19,7 +19,7 @@ export class ConfirmState implements IConfirmState {
   signMessageScilla?: SignMesageReqScilla;
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: SignPersonalMessageEVM;
-  signTypedDataJsonEVM?: string;
+  signTypedDataJsonEVM?: SignTypedDataEVM;
   connect?: ConnectParams;
 
   constructor(data: IConfirmState) {

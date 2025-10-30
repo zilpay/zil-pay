@@ -13,6 +13,7 @@ import { hashXORHex } from "lib/utils/hashing";
 import { ZILLIQA } from "config/slip44";
 import { ConfirmState } from "background/storage/confirm";
 import { PromptService } from "lib/popup/prompt";
+import { AddressType } from "config/wallet";
 
 
 export class EvmService {
@@ -66,6 +67,10 @@ export class EvmService {
 
         case 'personal_sign':
           await this.#handlePersonalSign(msg, wallet, sendResponse);
+          return;
+
+        case 'eth_signTypedData_v4':
+          await this.#handleSignTypedDataV4(msg, wallet, sendResponse);
           return;
 
         default:
@@ -129,6 +134,55 @@ export class EvmService {
     }
   }
 
+  async responseToSignTypedDataEVM(
+    uuid: string,
+    walletIndex: number,
+    accountIndex: number,
+    approve: boolean,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+
+      const account = wallet.accounts[accountIndex];
+      const evmTypedData = wallet.confirm.find((c) => c.uuid === uuid);
+
+      if (!evmTypedData || !evmTypedData.signTypedDataJsonEVM) {
+        throw new Error(`${ConnectError.RequestNotFound}: ${uuid}`);
+      }
+
+      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
+
+      if (!approve) {
+        this.#sendError(uuid, evmTypedData.signTypedDataJsonEVM.domain, ConnectError.UserRejected, 4001);
+      } else {
+        const chainConfig = this.#state.getChain(account.chainHash);
+        
+        if (!chainConfig) {
+          throw new Error(ConnectError.ChainNotFound);
+        }
+
+        const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+        const typedData = JSON.parse(evmTypedData.signTypedDataJsonEVM.typedData);
+        const signature = keyPair.signDataEIP712(typedData);
+        const signatureHex = uint8ArrayToHex(signature, true);
+
+        this.#sendSuccess(uuid, evmTypedData.signTypedDataJsonEVM.domain, signatureHex);
+      }
+
+      await this.#state.sync();
+      sendResponse({ resolve: wallet.confirm });
+    } catch (e) {
+      sendResponse({ reject: String(e) });
+    }
+  }
+
   async #handlePersonalSign(
     msg: ConnectParams<JsonRPCRequest>,
     wallet: Wallet,
@@ -158,6 +212,47 @@ export class EvmService {
         signPersonalMessageEVM: {
           message,
           address: currentAddress,
+          domain: msg.domain,
+          title: msg.title || msg.domain,
+          icon: msg.icon || '',
+        },
+      }));
+
+      await this.#state.sync();
+      new PromptService().open("/sign-message");
+
+      sendResponse({ resolve: true });
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4001);
+      sendResponse({ reject: String(error) });
+    }
+  }
+
+  async #handleSignTypedDataV4(
+    msg: ConnectParams<JsonRPCRequest>,
+    wallet: Wallet,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const params = msg.payload?.params;
+
+      if (!params) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const address = String(params[0]);
+      const typedDataJson = String(params[1]);
+      const account = wallet.accounts[wallet.selectedAccount];
+
+      if (!account.addr.toLowerCase().includes(address.toLowerCase())) {
+        throw new Error(ConnectError.AddressMismatch);
+      }
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: msg.uuid,
+        signTypedDataJsonEVM: {
+          typedData: typedDataJson,
+          address: account.addr,
           domain: msg.domain,
           title: msg.title || msg.domain,
           icon: msg.icon || '',
@@ -272,11 +367,16 @@ export class EvmService {
     this.#sendSuccess(msg.uuid, msg.domain, permissions);
   }
 
-  #getAddresses(wallet: Wallet, selectedAccount: Account): string[] {
-    return wallet.accounts
-      .slice()
-      .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
-      .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
+  #getAddresses(_wallet: Wallet, selectedAccount: Account): string[] {
+    if (selectedAccount.addrType === AddressType.Bech32) {
+      return [selectedAccount.addr.split(":")[1]];
+    } else {
+      return [selectedAccount.addr];
+    }
+    // return wallet.accounts
+    //   .slice()
+    //   .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
+    //   .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
   }
 
   #sendSuccess(uuid: string, domain: string, result: unknown): void {
