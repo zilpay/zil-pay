@@ -1,4 +1,3 @@
-import type { BackgroundState } from "background/storage";
 import type { Wallet } from "background/storage/wallet";
 import type { Account } from "background/storage/account";
 import { ConnectError } from "config/errors";
@@ -14,6 +13,8 @@ import { ZILLIQA } from "config/slip44";
 import { ConfirmState } from "background/storage/confirm";
 import { PromptService } from "lib/popup/prompt";
 import { AddressType } from "config/wallet";
+import type { TransactionRequestEVM, TransactionMetadata } from "types/tx";
+import type { BackgroundState } from "background/storage";
 
 
 export class EvmService {
@@ -71,6 +72,10 @@ export class EvmService {
 
         case 'eth_signTypedData_v4':
           await this.#handleSignTypedDataV4(msg, wallet, sendResponse);
+          return;
+
+        case 'eth_sendTransaction':
+          await this.#handleSendTransaction(msg, wallet, sendResponse);
           return;
 
         default:
@@ -269,6 +274,65 @@ export class EvmService {
     }
   }
 
+  async #handleSendTransaction(
+    msg: ConnectParams<JsonRPCRequest>,
+    wallet: Wallet,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const params = msg.payload?.params;
+
+      if (!params || params.length < 1) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const txParams = params[0] as TransactionRequestEVM;
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chainConfig = this.#state.getChain(account.chainHash);
+
+      if (!chainConfig) {
+        throw new Error(ConnectError.ChainNotFound);
+      }
+
+      const currentAddress = account.slip44 === ZILLIQA 
+        ? account.addr.split(":")[1]
+        : account.addr;
+
+      if (txParams.from && !currentAddress.toLowerCase().includes(txParams.from.toLowerCase())) {
+        throw new Error(ConnectError.AddressMismatch);
+      }
+
+      const metadata: TransactionMetadata = {
+        chainHash: account.chainHash,
+        domain: msg.domain,
+        title: msg.title || msg.domain,
+        icon: msg.icon,
+        token: {
+          ...chainConfig.ftokens[0],
+          balances: undefined,
+        }
+      };
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: msg.uuid,
+        metadata,
+        evm: {
+          ...txParams,
+          from: currentAddress,
+          chainId: chainConfig.chainId,
+        },
+      }));
+
+      await this.#state.sync();
+      new PromptService().open("/confirm");
+
+      sendResponse({ resolve: true });
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4001);
+      sendResponse({ reject: String(error) });
+    }
+  }
+
   async #proxyRequest(msg: ConnectParams<JsonRPCRequest>, account: Account) {
     try {
       const chainConfig = this.#state.getChain(account.chainHash);
@@ -373,10 +437,6 @@ export class EvmService {
     } else {
       return [selectedAccount.addr];
     }
-    // return wallet.accounts
-    //   .slice()
-    //   .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
-    //   .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
   }
 
   #sendSuccess(uuid: string, domain: string, result: unknown): void {

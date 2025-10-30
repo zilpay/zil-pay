@@ -14,6 +14,7 @@ import { ETHEREUM } from "config/slip44";
 import type { WorkerService } from "./worker";
 import { TransactionStatus } from "config/tx";
 import { TabsMessage } from "lib/streem/tabs-message";
+import { MTypePopup } from "config/stream";
 
 
 export class TransactionService {
@@ -74,12 +75,20 @@ export class TransactionService {
       this.#state.wallets[walletIndex].confirm.splice(confirmIndex, 1);
       await this.#state.sync();
 
-      if (confirm  && confirm.scilla && confirm.uuid && confirm.metadata?.domain) {
+      if (confirm && confirm.scilla && confirm.uuid && confirm.metadata?.domain) {
         new TabsMessage({
           type: LegacyZilliqaTabMsg.TX_RESULT,
           uuid: confirm.uuid,
           payload: {
            resolve:  history.scilla,
+          },
+        }).send(confirm.metadata?.domain);
+      } else if (confirm && confirm.evm && confirm.uuid && confirm.metadata?.domain) {
+        new TabsMessage({
+          type: MTypePopup.EVM_RESPONSE,
+          uuid: confirm.uuid,
+          payload: {
+            result: history.evm?.transactionHash,
           },
         }).send(confirm.metadata?.domain);
       }
