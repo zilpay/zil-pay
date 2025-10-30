@@ -35,7 +35,7 @@ export class ConnectService {
       const isConnected = this.#state.connections.isConnected(payload.domain, hash);
 
       if (isConnected) {
-        await this.#notifyDapp(wallet, payload.uuid, payload);
+        await this.#notifyDapp(wallet, payload.uuid, true, payload);
         sendResponse({ resolve: true });
         return;
       }
@@ -123,7 +123,7 @@ export class ConnectService {
       await this.#state.sync();
 
       if (confirmRequest?.connect) {
-        await this.#notifyDapp(wallet, uuid, confirmRequest.connect);
+        await this.#notifyDapp(wallet, uuid, approve, confirmRequest.connect);
       }
 
       sendResponse({ resolve: wallet.confirm });
@@ -205,11 +205,11 @@ export class ConnectService {
     return this.#state.chains.findIndex(c => c.hash() === chainHash);
   }
 
-  async #notifyDapp(wallet: Wallet, uuid: string, connect: ConnectParams): Promise<void> {
+  async #notifyDapp(wallet: Wallet, uuid: string, approved: boolean, connect: ConnectParams): Promise<void> {
     const selectedAccount = wallet.accounts[wallet.selectedAccount];
     if (!selectedAccount) return;
 
-    const payload = await this.#buildDappPayload(uuid, selectedAccount);
+    const payload = await this.#buildDappPayload(uuid, approved, selectedAccount);
 
     new TabsMessage({
       type: MTypePopup.RESPONSE_TO_DAPP,
@@ -217,10 +217,10 @@ export class ConnectService {
     }).send(connect.domain);
   }
 
-  async #buildDappPayload(uuid: string, selectedAccount: Account) {
+  async #buildDappPayload(uuid: string, approved: boolean, selectedAccount: Account) {
     let payload: object = { uuid };
 
-    if (selectedAccount.slip44 === ZILLIQA) {
+    if (approved && selectedAccount.slip44 === ZILLIQA) {
       const addresses = await this.#getZilliqaAddresses(selectedAccount.addr);
       payload = { ...payload, account: addresses };
     }
