@@ -202,6 +202,15 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case MTypePopup.EVM_RESPONSE_TYPED_MESSAGE:
+        core.evm.responseToSignTypedDataEVM(
+          msg.payload.uuid,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          msg.payload.approve,
+          sendResponse,
+        );
+        return true;
 
       // Legacy Web3
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:

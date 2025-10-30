@@ -56,8 +56,6 @@ export class ContentTabStream {
 
     msg.domain = window.location.hostname;
 
-    console.log(msg);
-
     switch (msg.type) {
       case MTypePopup.CONNECT_APP:
         await new Message<SendResponseParams<ReqBody>>(msg).send();
