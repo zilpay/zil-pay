@@ -7,7 +7,7 @@ import { Address } from "crypto/address";
 import { PromptService } from "lib/popup/prompt";
 import type { StreamResponse } from "lib/streem";
 import { TabsMessage } from "lib/streem/tabs-message";
-import { hashXOR } from "lib/utils/hashing";
+import { hashXOR, hashXORHex } from "lib/utils/hashing";
 import { hexToUint8Array } from "lib/utils/hex";
 import type { ConnectParams } from "types/connect";
 
@@ -30,7 +30,9 @@ export class ConnectService {
       }
 
       await wallet.trhowSession();
-      const isConnected = this.#state.connections.isConnected(payload.domain, wallet.selectedAccount);
+      const account = wallet.accounts[wallet.selectedAccount];
+      const hash = hashXORHex(account.pubKey);
+      const isConnected = this.#state.connections.isConnected(payload.domain, hash);
 
       if (isConnected) {
         await this.#notifyDapp(wallet, payload.uuid, payload);

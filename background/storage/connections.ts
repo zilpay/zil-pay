@@ -40,11 +40,11 @@ export class Web3Connections implements IWeb3ConnectionsState {
     return this.list.findIndex(c => c.domain === domain);
   }
 
-  isConnected(origin: string, accountIndex?: number): boolean {
+  isConnected(origin: string, accountHash?: number): boolean {
     const connection = this.find(origin);
     if (!connection) return false;
-    if (accountIndex !== undefined) {
-      return connection.connectedAccounts.includes(accountIndex);
+    if (accountHash !== undefined) {
+      return connection.connectedAccounts.includes(accountHash);
     }
     return connection.connectedAccounts.length > 0;
   }
@@ -61,8 +61,8 @@ export class Web3Connections implements IWeb3ConnectionsState {
     return this.find(origin)?.permissions || null;
   }
 
-  isAccountConnected(origin: string, accountIndex: number): boolean {
-    return this.find(origin)?.connectedAccounts.includes(accountIndex) || false;
+  isAccountConnected(origin: string, accountHash: number): boolean {
+    return this.find(origin)?.connectedAccounts.includes(accountHash) || false;
   }
 
   isChainConnected(origin: string, chainHash: number): boolean {
@@ -90,11 +90,11 @@ export class Web3Connections implements IWeb3ConnectionsState {
     }
   }
 
-  addAccount(origin: string, accountIndex: number): void {
+  addAccount(origin: string, accountHash: number): void {
     const connection = this.find(origin);
     if (!connection) throw new Error(`Connection not found: ${origin}`);
-    if (!connection.connectedAccounts.includes(accountIndex)) {
-      connection.connectedAccounts.push(accountIndex);
+    if (!connection.connectedAccounts.includes(accountHash)) {
+      connection.connectedAccounts.push(accountHash);
     }
   }
 
@@ -133,9 +133,9 @@ export class Web3Connections implements IWeb3ConnectionsState {
     return this.list;
   }
 
-  removeByAccount(accountIndex: number): void {
+  removeByAccount(accountHash: number): void {
     for (const connection of this.list) {
-      this.removeAccount(connection.origin, accountIndex);
+      this.removeAccount(connection.origin, accountHash);
     }
   }
 
@@ -145,8 +145,8 @@ export class Web3Connections implements IWeb3ConnectionsState {
     }
   }
 
-  getByAccount(accountIndex: number): IWeb3ConnectionState[] {
-    return this.list.filter(c => c.connectedAccounts.includes(accountIndex));
+  getByAccount(accountHash: number): IWeb3ConnectionState[] {
+    return this.list.filter(c => c.connectedAccounts.includes(accountHash));
   }
 
   getByChain(chainHash: number): IWeb3ConnectionState[] {
