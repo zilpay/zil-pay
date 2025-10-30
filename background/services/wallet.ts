@@ -1,5 +1,5 @@
 import { Account, ChainConfig, FToken, Wallet, WalletSettings, type BackgroundState, type IBackgroundState, type IChainConfigState } from "background/storage";
-import type { StreamResponse } from "lib/streem";
+import { LegacyZilliqaTabMsg, type StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array } from "lib/utils/hex";
 import type { AccountFromBip39Params, SetPasswordPayload, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
@@ -14,6 +14,9 @@ import { WorkerService } from "./worker";
 import { AddressCategory } from "config/common";
 import { AddressType } from "config/wallet";
 import { Address } from "crypto/address";
+import { ConnectError } from "config/errors";
+import { ZILLIQA } from "config/slip44";
+import { TabsMessage } from "lib/streem/tabs-message";
 
 export class WalletService {
   #state: BackgroundState;
@@ -338,6 +341,36 @@ export class WalletService {
         this.#state.selectedWallet = -1;
         await this.#state.sync();
         await this.#worker.stop();
+      }
+
+      sendResponse({
+        resolve: this.#state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async selectAccount(walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+      const account = wallet.accounts[accountIndex];
+
+      if (account.slip44 == ZILLIQA) {
+        const connections = this.#state.connections.getByChain();
+        new TabsMessage({
+          type: LegacyZilliqaTabMsg.ADDRESS_CHANGED,
+          payload: {
+          },
+        }).sendAll();
       }
 
       sendResponse({

@@ -81,6 +81,10 @@ describe("ConnectService", () => {
     await responseToConnect(connectParams.uuid, 0, true, permissions);
 
     state = await getGlobalState();
+    const wallet = state.wallets[state.selectedWallet];
+    const account = wallet.accounts[wallet.selectedAccount];
+    const chain = globalState.state.getChain(account.chainHash);
+
     expect(state.wallets[0].confirm).toHaveLength(0);
     expect(state.connections.list).toHaveLength(1);
     expect(state.connections.list[0].domain).toBe(connectParams.domain);
@@ -89,7 +93,7 @@ describe("ConnectService", () => {
     expect(state.connections.list[0].icon).toBe(connectParams.icon);
     expect(state.connections.list[0].permissions).toEqual(permissions);
     expect(state.connections.list[0].connectedAccounts).toEqual([95, 21]);
-    expect(state.connections.list[0].connectedChains).toEqual([0]);
+    expect(state.connections.list[0].connectedChains).toEqual([chain?.hash()]);
     expect(state.connections.list[0].connectedAt).toBeDefined();
     expect(typeof state.connections.list[0].connectedAt).toBe('number');
 

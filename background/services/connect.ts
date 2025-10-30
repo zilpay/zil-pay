@@ -110,11 +110,12 @@ export class ConnectService {
 
       await wallet.trhowSession();
       const confirmRequest = this.#findConfirmRequest(wallet, uuid);
+      const selectedAccount = wallet.accounts[wallet.selectedAccount];
 
       this.#removeConfirmRequest(wallet, uuid);
 
       if (approve && confirmRequest?.connect) {
-        this.#handleConnection(wallet, confirmRequest.connect, permissions);
+        this.#handleConnection(wallet, selectedAccount, confirmRequest.connect, permissions);
       }
 
       await this.#state.sync();
@@ -137,13 +138,13 @@ export class ConnectService {
     wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
   }
 
-  #handleConnection(wallet: Wallet, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
+  #handleConnection(wallet: Wallet, account: Account, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
     const connection = this.#findConnection(connect.domain);
 
     if (connection) {
       this.#updateConnection(connection, wallet, connect);
     } else {
-      this.#createConnection(wallet, connect, permissions);
+      this.#createConnection(wallet, account, connect, permissions);
     }
   }
 
@@ -179,8 +180,7 @@ export class ConnectService {
     }
   }
 
-  #createConnection(wallet: Wallet, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
-    const chainIndex = this.#findChainIndex(wallet.defaultChainHash);
+  #createConnection(wallet: Wallet, account: Account, connect: ConnectParams, permissions: IWeb3ConnectionPermissions): void {
     const connection = {
       permissions,
       origin: connect.domain,
@@ -188,7 +188,7 @@ export class ConnectService {
       title: connect.title,
       icon: connect.icon,
       connectedAccounts: [],
-      connectedChains: chainIndex !== -1 ? [chainIndex] : [],
+      connectedChains: [account.chainHash],
       connectedAt: Date.now(),
     };
 

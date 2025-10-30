@@ -25,7 +25,10 @@ export class Web3Connections implements IWeb3ConnectionsState {
   constructor(state: IWeb3ConnectionsState) {
     this.list = [];
     if (state && state.list) {
-      this.list = state.list;
+      this.list = state.list.map(connection => ({
+        ...connection,
+        connectedChains: Array.from(new Set(connection.connectedChains))
+      }));
     }
   }
 
@@ -62,16 +65,21 @@ export class Web3Connections implements IWeb3ConnectionsState {
     return this.find(origin)?.connectedAccounts.includes(accountIndex) || false;
   }
 
-  isChainConnected(origin: string, chainIndex: number): boolean {
-    return this.find(origin)?.connectedChains.includes(chainIndex) || false;
+  isChainConnected(origin: string, chainHash: number): boolean {
+    return this.find(origin)?.connectedChains.includes(chainHash) || false;
   }
 
   add(payload: IWeb3ConnectionState): void {
-    const idx = this.#findIndex(payload.origin);
+    const normalizedPayload = {
+      ...payload,
+      connectedChains: Array.from(new Set(payload.connectedChains))
+    };
+
+    const idx = this.#findIndex(normalizedPayload.origin);
     if (idx !== -1) {
-      this.list[idx] = payload;
+      this.list[idx] = normalizedPayload;
     } else {
-      this.list.push(payload);
+      this.list.push(normalizedPayload);
     }
   }
 
@@ -101,18 +109,18 @@ export class Web3Connections implements IWeb3ConnectionsState {
     }
   }
 
-  addChain(origin: string, chainIndex: number): void {
+  addChain(origin: string, chainHash: number): void {
     const connection = this.find(origin);
     if (!connection) throw new Error(`Connection not found: ${origin}`);
-    if (!connection.connectedChains.includes(chainIndex)) {
-      connection.connectedChains.push(chainIndex);
+    if (!connection.connectedChains.includes(chainHash)) {
+      connection.connectedChains.push(chainHash);
     }
   }
 
-  removeChain(origin: string, chainIndex: number): void {
+  removeChain(origin: string, chainHash: number): void {
     const connection = this.find(origin);
     if (!connection) return;
-    connection.connectedChains = connection.connectedChains.filter(idx => idx !== chainIndex);
+    connection.connectedChains = connection.connectedChains.filter(hash => hash !== chainHash);
   }
 
   updatePermissions(origin: string, permissions: Partial<IWeb3ConnectionPermissions>): void {
@@ -131,9 +139,9 @@ export class Web3Connections implements IWeb3ConnectionsState {
     }
   }
 
-  removeByChain(chainIndex: number): void {
+  removeByChain(chainHash: number): void {
     for (const connection of this.list) {
-      this.removeChain(connection.origin, chainIndex);
+      this.removeChain(connection.origin, chainHash);
     }
   }
 
@@ -141,8 +149,8 @@ export class Web3Connections implements IWeb3ConnectionsState {
     return this.list.filter(c => c.connectedAccounts.includes(accountIndex));
   }
 
-  getByChain(chainIndex: number): IWeb3ConnectionState[] {
-    return this.list.filter(c => c.connectedChains.includes(chainIndex));
+  getByChain(chainHash: number): IWeb3ConnectionState[] {
+    return this.list.filter(c => c.connectedChains.includes(chainHash));
   }
 
   toJSON(): IWeb3ConnectionsState {
