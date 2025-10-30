@@ -5,4 +5,5 @@ export enum ConnectError {
   InvalidPayload = "Payload not valid",
   InvalidPermissionRequest = "Invalid permission request",
   UnsupportedMethod = "Unsupported method",
+  ChainNotFound = "Chain not found",
 }

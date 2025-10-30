@@ -5,12 +5,13 @@ import { ConnectError } from "config/errors";
 import type { StreamResponse } from "lib/streem";
 import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
-import type { JsonRPCRequest } from "background/rpc";
+import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
 import { bigintToHex } from "lib/utils/hex";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
 import { ZILLIQA } from "config/slip44";
+
 
 export class EvmService {
   #state: BackgroundState;
@@ -62,15 +63,54 @@ export class EvmService {
           break;
 
         default:
-          this.#sendError(msg.uuid, msg.domain, ConnectError.UnsupportedMethod, 4200);
-          sendResponse({ reject: ConnectError.UnsupportedMethod });
-          return;
+          await this.#proxyRequest(msg, account);
+          break;
       }
 
       sendResponse({ resolve: true });
     } catch (err) {
       this.#sendError(msg.uuid, msg.domain, String(err), 4000);
       sendResponse({ reject: String(err) });
+    }
+  }
+
+  async #proxyRequest(msg: ConnectParams<JsonRPCRequest>, account: Account) {
+    try {
+      const chainConfig = this.#state.getChain(account.chainHash);
+
+      if (!chainConfig) {
+        this.#sendError(msg.uuid, msg.domain, 'Chain not found', 4100);
+        return;
+      }
+
+      const provider = new NetworkProvider(chainConfig);
+      let rpcPayload: JsonRPCRequest | JsonRPCRequest[];
+    
+      if (Array.isArray(msg.payload)) {
+        rpcPayload = msg.payload.map((p, index) => ({
+          jsonrpc: '2.0',
+          id: index + 1,
+          method: p.method,
+          params: p.params || []
+        }));
+      } else {
+        rpcPayload = {
+          jsonrpc: '2.0',
+          id: 1,
+          method: msg.payload!.method,
+          params: msg.payload!.params || []
+        };
+      }
+
+      const response = await provider.proxyReq(rpcPayload);
+
+      if (response.error) {
+        this.#sendError(msg.uuid, msg.domain, response.error.message, response.error.code);
+      } else {
+        this.#sendSuccess(msg.uuid, msg.domain, response.result);
+      }
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4000);
     }
   }
 
