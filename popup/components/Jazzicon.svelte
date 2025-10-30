@@ -1,13 +1,20 @@
 <script lang="ts">
+  type ShapeType = 'circle' | 'star' | 'star6' | 'star8' | 'triangle' | 'triangleDown' | 
+                   'square' | 'diamond' | 'pentagon' | 'hexagon' | 'octagon' | 
+                   'heart' | 'crescent' | 'cross' | 'plus';
+  
   type ShapeConfig = {
     color: string;
     transform: string;
+    type: ShapeType;
+    scale: number;
+    rotation: number;
   };
 
   let {
     diameter,
     seed,
-    shapeCount = 4,
+    shapeCount = 15,
     onclick = () => {}
   }: {
     diameter: number;
@@ -27,6 +34,12 @@
     'var(--color-button-regular-secondary-default)',
     'var(--color-positive-border-primary)',
     'var(--color-notification-positive-content)'
+  ];
+
+  const SHAPE_TYPES: ShapeType[] = [
+    'circle', 'star', 'star6', 'star8', 'triangle', 'triangleDown',
+    'square', 'diamond', 'pentagon', 'hexagon', 'octagon',
+    'heart', 'crescent', 'cross', 'plus'
   ];
 
   function generateSeedFromString(str: string): number {
@@ -49,15 +62,111 @@
     }
   }
 
+  function getStarPath(points: number = 5): string {
+    const angle = (Math.PI * 2) / points;
+    const outerRadius = 50;
+    const innerRadius = 20;
+    
+    let path = '';
+    for (let i = 0; i < points * 2; i++) {
+      const radius = i % 2 === 0 ? outerRadius : innerRadius;
+      const currentAngle = angle * i / 2 - Math.PI / 2;
+      const x = 50 + Math.cos(currentAngle) * radius;
+      const y = 50 + Math.sin(currentAngle) * radius;
+      path += `${i === 0 ? 'M' : 'L'} ${x} ${y} `;
+    }
+    return path + 'Z';
+  }
+
+  function getTrianglePath(): string {
+    return 'M 50 15 L 85 85 L 15 85 Z';
+  }
+
+  function getTriangleDownPath(): string {
+    return 'M 50 85 L 15 15 L 85 15 Z';
+  }
+
+  function getDiamondPath(): string {
+    return 'M 50 10 L 90 50 L 50 90 L 10 50 Z';
+  }
+
+  function getPentagonPath(): string {
+    const points = 5;
+    const angle = (Math.PI * 2) / points;
+    const radius = 45;
+    
+    let path = '';
+    for (let i = 0; i < points; i++) {
+      const currentAngle = angle * i - Math.PI / 2;
+      const x = 50 + Math.cos(currentAngle) * radius;
+      const y = 50 + Math.sin(currentAngle) * radius;
+      path += `${i === 0 ? 'M' : 'L'} ${x} ${y} `;
+    }
+    return path + 'Z';
+  }
+
+  function getHexagonPath(): string {
+    const points = 6;
+    const angle = (Math.PI * 2) / points;
+    const radius = 45;
+    
+    let path = '';
+    for (let i = 0; i < points; i++) {
+      const currentAngle = angle * i - Math.PI / 2;
+      const x = 50 + Math.cos(currentAngle) * radius;
+      const y = 50 + Math.sin(currentAngle) * radius;
+      path += `${i === 0 ? 'M' : 'L'} ${x} ${y} `;
+    }
+    return path + 'Z';
+  }
+
+  function getOctagonPath(): string {
+    const points = 8;
+    const angle = (Math.PI * 2) / points;
+    const radius = 45;
+    
+    let path = '';
+    for (let i = 0; i < points; i++) {
+      const currentAngle = angle * i - Math.PI / 2;
+      const x = 50 + Math.cos(currentAngle) * radius;
+      const y = 50 + Math.sin(currentAngle) * radius;
+      path += `${i === 0 ? 'M' : 'L'} ${x} ${y} `;
+    }
+    return path + 'Z';
+  }
+
+  function getHeartPath(): string {
+    return 'M 50 85 C 50 85 20 60 20 40 C 20 25 30 15 40 15 C 45 15 50 20 50 20 C 50 20 55 15 60 15 C 70 15 80 25 80 40 C 80 60 50 85 50 85 Z';
+  }
+
+  function getCrescentPath(): string {
+    return 'M 50 10 A 40 40 0 1 1 50 90 A 35 35 0 1 0 50 10 Z';
+  }
+
+  function getCrossPath(): string {
+    return 'M 35 15 L 65 15 L 65 35 L 85 35 L 85 65 L 65 65 L 65 85 L 35 85 L 35 65 L 15 65 L 15 35 L 35 35 Z';
+  }
+
+  function getPlusPath(): string {
+    return 'M 40 10 L 60 10 L 60 40 L 90 40 L 90 60 L 60 60 L 60 90 L 40 90 L 40 60 L 10 60 L 10 40 L 40 40 Z';
+  }
+
   const shapes = $derived(() => {
     if (!seed) return [];
     
     const random = mulberry32(generateSeedFromString(seed));
 
     function genColor(remainingColors: string[]): string {
-      if (remainingColors.length === 0) return THEME_COLORS[0];
+      if (remainingColors.length === 0) {
+        return THEME_COLORS[Math.floor(random() * THEME_COLORS.length)];
+      }
       const idx = Math.floor(random() * remainingColors.length);
       return remainingColors.splice(idx, 1)[0];
+    }
+
+    function genShapeType(): ShapeType {
+      const idx = Math.floor(random() * SHAPE_TYPES.length);
+      return SHAPE_TYPES[idx];
     }
     
     const shapeConfigs: ShapeConfig[] = [];
@@ -66,30 +175,46 @@
     const backgroundColor = genColor(remainingColors);
     shapeConfigs.push({
       color: backgroundColor,
-      transform: ''
+      transform: '',
+      type: 'circle',
+      scale: 1,
+      rotation: 0
     });
 
-    function genShape(i: number, total: number) {
+    function genShape(i: number, total: number): ShapeConfig {
       const center = diameter / 2;
+      const layer = Math.floor(i / (total / 3));
+      const maxDistance = diameter / 2;
+      const minDistance = diameter / 6;
+      
       const firstRot = random();
       const angle = 2 * Math.PI * firstRot;
-      const velocity = (diameter / total * random()) + (i * diameter / total);
+      
+      const distanceRange = maxDistance - minDistance;
+      const layerFactor = layer / 3;
+      const distance = minDistance + (distanceRange * random() * (0.5 + layerFactor * 0.5));
 
-      const tx = Math.cos(angle) * velocity;
-      const ty = Math.sin(angle) * velocity;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
 
       const secondRot = random();
       const rot = (firstRot * 360) + secondRot * 180;
+      const scale = 0.2 + random() * 0.6;
+      
       const transform = `
         translate(${tx.toFixed(3)}px, ${ty.toFixed(3)}px) 
         translate(${center}px, ${center}px) 
         rotate(${rot.toFixed(3)}deg) 
+        scale(${scale.toFixed(3)})
         translate(${-center}px, ${-center}px)
       `;
 
       return {
-          color: genColor(remainingColors),
-          transform
+        color: genColor(remainingColors),
+        transform,
+        type: genShapeType(),
+        scale,
+        rotation: rot
       };
     }
 
@@ -115,14 +240,44 @@
     style:height="{diameter}px"
   >
     {#each shapes() as shape, i}
-      <div 
-        class="shape"
-        style:background-color={shape.color}
-        style:transform={shape.transform}
-        style:border-radius={i === 0 ? '50%' : '0'}
-        style:width="{diameter}px"
-        style:height="{diameter}px"
-      ></div>
+      {#if i === 0}
+        <div 
+          class="shape shape-background"
+          style:background-color={shape.color}
+        ></div>
+      {:else if shape.type === 'circle' || shape.type === 'square' || shape.type === 'diamond'}
+        <div 
+          class="shape shape-{shape.type}"
+          style:background-color={shape.color}
+          style:transform={shape.transform}
+        ></div>
+      {:else}
+        <svg 
+          class="shape shape-svg"
+          style:transform={shape.transform}
+          width={diameter}
+          height={diameter}
+          viewBox="0 0 100 100"
+        >
+          <path 
+            d={
+              shape.type === 'star' ? getStarPath(5) :
+              shape.type === 'star6' ? getStarPath(6) :
+              shape.type === 'star8' ? getStarPath(8) :
+              shape.type === 'triangle' ? getTrianglePath() :
+              shape.type === 'triangleDown' ? getTriangleDownPath() :
+              shape.type === 'pentagon' ? getPentagonPath() :
+              shape.type === 'hexagon' ? getHexagonPath() :
+              shape.type === 'octagon' ? getOctagonPath() :
+              shape.type === 'heart' ? getHeartPath() :
+              shape.type === 'crescent' ? getCrescentPath() :
+              shape.type === 'cross' ? getCrossPath() :
+              getPlusPath()
+            } 
+            fill={shape.color} 
+          />
+        </svg>
+      {/if}
     {/each}
   </div>
 </button>
@@ -177,6 +332,8 @@
     position: relative;
     overflow: hidden;
     border-radius: 50%;
+    width: 100%;
+    height: 100%;
   }
 
   .shape {
@@ -185,5 +342,27 @@
     left: 0;
     width: 100%;
     height: 100%;
+    will-change: transform;
+  }
+
+  .shape-background {
+    border-radius: 50%;
+  }
+
+  .shape-circle {
+    border-radius: 50%;
+  }
+
+  .shape-square {
+    border-radius: 0;
+  }
+
+  .shape-diamond {
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  .shape-svg {
+    pointer-events: none;
   }
 </style>
