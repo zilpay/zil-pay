@@ -4,7 +4,8 @@
     import globalStore from 'popup/store/global';
     import { push } from 'popup/router/navigation';
     import type { SignMesageReqScilla } from 'types/tx';
-    import { responseToSignMessageScilla } from 'popup/background/sign-message';
+    import type { SignPersonalMessageEVM } from 'types/tx';
+    import { responseToSignMessageScilla, responseToSignPersonalMessageEVM } from 'popup/background/sign-message';
 
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
@@ -15,13 +16,30 @@
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
 
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
-    const signMessageRequest = $derived(confirmRequests.find(c => c.signMessageScilla !== undefined));
-    const signMessageData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
+    const signMessageRequest = $derived(
+        confirmRequests.find(c => c.signMessageScilla !== undefined || c.signPersonalMessageEVM !== undefined)
+    );
+    const signMessageScillaData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
+    const signPersonalMessageEVMData = $derived(signMessageRequest?.signPersonalMessageEVM as SignPersonalMessageEVM | undefined);
+
+    const isEVM = $derived(!!signPersonalMessageEVMData);
+    const isScilla = $derived(!!signMessageScillaData);
+
+    const messageData = $derived({
+        icon: isEVM ? signPersonalMessageEVMData?.icon : signMessageScillaData?.icon,
+        title: isEVM ? signPersonalMessageEVMData?.title : signMessageScillaData?.title,
+        domain: isEVM ? signPersonalMessageEVMData?.domain : signMessageScillaData?.domain,
+        content: isEVM ? signPersonalMessageEVMData?.message : signMessageScillaData?.content,
+    });
 
     async function handleConfirm() {
         try {
             if (signMessageRequest) {
-                await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                if (isScilla) {
+                    await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                } else if (isEVM) {
+                    await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                }
             }
         } catch(e) {
             if (String(e).includes("Session")) {
@@ -37,7 +55,11 @@
     async function handleCancel() {
         try {
             if (signMessageRequest) {
-                await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+                if (isScilla) {
+                    await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+                } else if (isEVM) {
+                    await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+                }
             }
         } catch (e) {
             if (String(e).includes("Session")) {
@@ -61,7 +83,7 @@
     });
 </script>
 
-{#if signMessageData && selectedAccount}
+{#if messageData && selectedAccount}
 <div class="page-container">
     <main class="content">
         <AccountCard
@@ -76,17 +98,17 @@
         </div>
 
         <DAppInfo
-            icon={signMessageData.icon}
-            title={signMessageData.title}
-            domain={signMessageData.domain}
+            icon={messageData.icon}
+            title={messageData.title ?? ""}
+            domain={messageData.domain ?? ""}
         />
 
         <div class="message-card">
             <div class="message-header">
                 <span class="message-title">{$_('sign_message.message')}</span>
-                <CopyButton value={signMessageData.content} />
+                <CopyButton value={messageData.content ?? ""} />
             </div>
-            <div class="message-content">{signMessageData.content}</div>
+            <div class="message-content">{messageData.content}</div>
         </div>
     </main>
 

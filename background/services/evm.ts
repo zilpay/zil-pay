@@ -6,11 +6,13 @@ import type { StreamResponse } from "lib/streem";
 import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
-import { bigintToHex } from "lib/utils/hex";
+import { bigintToHex, uint8ArrayToHex } from "lib/utils/hex";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
 import { ZILLIQA } from "config/slip44";
+import { ConfirmState } from "background/storage/confirm";
+import { PromptService } from "lib/popup/prompt";
 
 
 export class EvmService {
@@ -62,6 +64,10 @@ export class EvmService {
           this.#handleGetPermissions(msg, account);
           break;
 
+        case 'personal_sign':
+          await this.#handlePersonalSign(msg, wallet, sendResponse);
+          return;
+
         default:
           await this.#proxyRequest(msg, account);
           break;
@@ -74,12 +80,106 @@ export class EvmService {
     }
   }
 
+  async responseToSignPersonalMessageEVM(
+    uuid: string,
+    walletIndex: number,
+    accountIndex: number,
+    approve: boolean,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+
+      const account = wallet.accounts[accountIndex];
+      const evmMessage = wallet.confirm.find((c) => c.uuid === uuid);
+
+      if (!evmMessage || !evmMessage.signPersonalMessageEVM) {
+        throw new Error(`${ConnectError.RequestNotFound}: ${uuid}`);
+      }
+
+      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
+
+      if (!approve) {
+        this.#sendError(uuid, evmMessage.signPersonalMessageEVM.domain, ConnectError.UserRejected, 4001);
+      } else {
+        const chainConfig = this.#state.getChain(account.chainHash);
+        
+        if (!chainConfig) {
+          throw new Error(ConnectError.ChainNotFound);
+        }
+
+        const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+        const messageBytes = new TextEncoder().encode(evmMessage.signPersonalMessageEVM.message);
+        const signature = await keyPair.signMessage(messageBytes);
+        const signatureHex = uint8ArrayToHex(signature, true);
+
+        this.#sendSuccess(uuid, evmMessage.signPersonalMessageEVM.domain, signatureHex);
+      }
+
+      await this.#state.sync();
+      sendResponse({ resolve: wallet.confirm });
+    } catch (e) {
+      sendResponse({ reject: String(e) });
+    }
+  }
+
+  async #handlePersonalSign(
+    msg: ConnectParams<JsonRPCRequest>,
+    wallet: Wallet,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const params = msg.payload?.params;
+
+      if (!params || params.length < 2) {
+        throw new Error('Invalid params for personal_sign');
+      }
+
+      const message = String(params[0]);
+      const address = String(params[1]);
+
+      const account = wallet.accounts[wallet.selectedAccount];
+      const currentAddress = account.slip44 === ZILLIQA 
+        ? account.addr.split(":")[1]
+        : account.addr;
+
+      if (currentAddress.toLowerCase() !== address.toLowerCase()) {
+        throw new Error('Address mismatch');
+      }
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: msg.uuid,
+        signPersonalMessageEVM: {
+          message,
+          address: currentAddress,
+          domain: msg.domain,
+          title: msg.title || msg.domain,
+          icon: msg.icon || '',
+        },
+      }));
+
+      await this.#state.sync();
+      new PromptService().open("/sign-message");
+
+      sendResponse({ resolve: true });
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4001);
+      sendResponse({ reject: String(error) });
+    }
+  }
+
   async #proxyRequest(msg: ConnectParams<JsonRPCRequest>, account: Account) {
     try {
       const chainConfig = this.#state.getChain(account.chainHash);
 
       if (!chainConfig) {
-        this.#sendError(msg.uuid, msg.domain, 'Chain not found', 4100);
+        this.#sendError(msg.uuid, msg.domain, ConnectError.ChainNotFound, 4100);
         return;
       }
 

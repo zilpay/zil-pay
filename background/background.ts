@@ -193,6 +193,15 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.EVM_REQUEST:
         core.evm.handleRequest(msg, sendResponse);
         return true;
+      case MTypePopup.EVM_RESPONSE_PERSONAL_MESSAGE:
+        core.evm.responseToSignPersonalMessageEVM(
+          msg.payload.uuid,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          msg.payload.approve,
+          sendResponse,
+        );
+        return true;
 
       // Legacy Web3
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:

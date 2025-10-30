@@ -40,6 +40,8 @@ export const MTypePopup = {
   DISCONNECT_WALLET: `@/${app}/wallet-disconnect`,
 
   WEB3_GET_SLIP44: `@/${app}/web3-get-slip44`,
+
   EVM_REQUEST: `BEARBY_REQUEST`,
   EVM_RESPONSE: `BEARBY_RESPONSE`,
+  EVM_RESPONSE_PERSONAL_MESSAGE: `@/${app}/evm-response-personal-message`,
 };

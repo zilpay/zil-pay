@@ -132,3 +132,11 @@ export interface SignMesageReqScilla {
   domain: string;
   hash: string;
 }
+
+export interface SignPersonalMessageEVM {
+  message: string;
+  address: string;
+  domain: string;
+  title: string;
+  icon: string;
+}
