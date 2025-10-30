@@ -27,6 +27,9 @@ export class ContentTabStream {
         case MTypePopup.RESPONSE_TO_DAPP:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;
+        case MTypePopup.EVM_RESPONSE:
+          this.#stream.send(msg, MTypeTabContent.INJECTED);
+          break;
         case MTypePopup.WEB3_GET_SLIP44:
           injectBySlip44(Number(msg.payload));
           break;
@@ -53,8 +56,13 @@ export class ContentTabStream {
 
     msg.domain = window.location.hostname;
 
+    console.log(msg);
+
     switch (msg.type) {
       case MTypePopup.CONNECT_APP:
+        await new Message<SendResponseParams<ReqBody>>(msg).send();
+        break;
+      case MTypePopup.EVM_REQUEST:
         await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
       case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:

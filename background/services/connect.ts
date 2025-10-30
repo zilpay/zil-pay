@@ -35,7 +35,14 @@ export class ConnectService {
       const isConnected = this.#state.connections.isConnected(payload.domain, hash);
 
       if (isConnected) {
-        await this.#notifyDapp(wallet, payload.uuid, true, payload);
+        switch (payload.type) {
+          case MTypePopup.EVM_REQUEST:
+            await this.#notifyDappEVM(wallet, payload.uuid, true, payload);
+            break;
+          case MTypePopup.CONNECT_APP:
+            await this.#notifyDappLegacy(wallet, payload.uuid, true, payload);
+            break;
+        }
         sendResponse({ resolve: true });
         return;
       }
@@ -50,14 +57,31 @@ export class ConnectService {
 
       sendResponse({ resolve: true });
     } catch (error) {
-      new TabsMessage({
-        type: MTypePopup.RESPONSE_TO_DAPP,
-        uuid: payload.uuid,
-        payload: {
-          reject: String(error) ,
-          uuid: payload.uuid,
-        },
-      }).send(payload.domain);
+      switch (payload.type) {
+        case MTypePopup.EVM_REQUEST:
+          new TabsMessage({
+            type: MTypePopup.EVM_RESPONSE,
+            uuid: payload.uuid,
+            payload: {
+              error: {
+                message: String(error),
+                code: 4001,
+                data: null
+              }
+            },
+          }).send(payload.domain);
+          break;
+        case MTypePopup.CONNECT_APP:
+          new TabsMessage({
+            type: MTypePopup.RESPONSE_TO_DAPP,
+            uuid: payload.uuid,
+            payload: {
+              reject: String(error) ,
+              uuid: payload.uuid,
+            },
+          }).send(payload.domain);
+          break;
+      }
       sendResponse({ reject: String(error) });
     }
   }
@@ -123,7 +147,8 @@ export class ConnectService {
       await this.#state.sync();
 
       if (confirmRequest?.connect) {
-        await this.#notifyDapp(wallet, uuid, approve, confirmRequest.connect);
+        await this.#notifyDappLegacy(wallet, uuid, approve, confirmRequest.connect);
+        await this.#notifyDappEVM(wallet, uuid, approve, confirmRequest.connect);
       }
 
       sendResponse({ resolve: wallet.confirm });
@@ -205,7 +230,7 @@ export class ConnectService {
     return this.#state.chains.findIndex(c => c.hash() === chainHash);
   }
 
-  async #notifyDapp(wallet: Wallet, uuid: string, approved: boolean, connect: ConnectParams): Promise<void> {
+  async #notifyDappLegacy(wallet: Wallet, uuid: string, approved: boolean, connect: ConnectParams): Promise<void> {
     const selectedAccount = wallet.accounts[wallet.selectedAccount];
     if (!selectedAccount) return;
 
@@ -214,6 +239,40 @@ export class ConnectService {
     new TabsMessage({
       type: MTypePopup.RESPONSE_TO_DAPP,
       payload,
+    }).send(connect.domain);
+  }
+
+  async #notifyDappEVM(wallet: Wallet, uuid: string, approved: boolean, connect: ConnectParams): Promise<void> {
+    const selectedAccount = wallet.accounts[wallet.selectedAccount];
+    if (!selectedAccount) return;
+
+    if (!approved) {
+      new TabsMessage({
+        type: MTypePopup.EVM_RESPONSE,
+        uuid,
+        payload: {
+          error: {
+            message: ConnectError.UserRejected,
+            code: 4001,
+            data: null,
+          },
+        },
+      }).send(connect.domain);
+
+      return;
+    }
+
+    const addresses = wallet.accounts
+      .slice()
+      .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
+      .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
+
+    new TabsMessage({
+      type: MTypePopup.EVM_RESPONSE,
+      uuid,
+      payload: {
+        result: addresses,
+      },
     }).send(connect.domain);
   }
 

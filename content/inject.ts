@@ -1,4 +1,4 @@
-import { ZILLIQA } from "config/slip44";
+import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { Runtime } from "lib/runtime";
 
 const { document } = globalThis;
@@ -18,7 +18,11 @@ export function injectBySlip44(slip44?: number) {
   if (slip44) {
     switch (Number(slip44)) {
       case ZILLIQA:
+        inject('injects/evm-provider.js');
         inject('injects/zilpay.js');
+        break;
+      case ETHEREUM:
+        inject('injects/evm-provider.js');
         break;
       default:
         break;
