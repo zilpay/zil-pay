@@ -10,7 +10,7 @@ import globalStore from "popup/store/global";
 import type { AccountFromBip39Params, IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
  
 export async function getGlobalState() {
-  const data = await Message.signal(MTypePopup.GET_GLOBAL_STATE).send();
+  const data = await Message.signal<SendResponseParams>(MTypePopup.GET_GLOBAL_STATE).send();
   let resolve = warpMessage(data) as BackgroundState;
 
   try {
