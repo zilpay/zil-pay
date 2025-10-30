@@ -14,7 +14,7 @@
   let {
     diameter,
     seed,
-    shapeCount = 15,
+    shapeCount = 25,
     onclick = () => {}
   }: {
     diameter: number;
@@ -183,23 +183,24 @@
 
     function genShape(i: number, total: number): ShapeConfig {
       const center = diameter / 2;
-      const layer = Math.floor(i / (total / 3));
-      const maxDistance = diameter / 2;
-      const minDistance = diameter / 6;
+      const maxRadius = diameter / 2.2;
       
       const firstRot = random();
       const angle = 2 * Math.PI * firstRot;
       
-      const distanceRange = maxDistance - minDistance;
-      const layerFactor = layer / 3;
-      const distance = minDistance + (distanceRange * random() * (0.5 + layerFactor * 0.5));
+      const radiusRandom = random();
+      const distanceFromCenter = Math.pow(radiusRandom, 0.7) * maxRadius;
 
-      const tx = Math.cos(angle) * distance;
-      const ty = Math.sin(angle) * distance;
+      const tx = Math.cos(angle) * distanceFromCenter;
+      const ty = Math.sin(angle) * distanceFromCenter;
 
       const secondRot = random();
       const rot = (firstRot * 360) + secondRot * 180;
-      const scale = 0.2 + random() * 0.6;
+      
+      const scaleRandom = random();
+      const scaleBase = 0.25 + scaleRandom * 0.7;
+      const centerBoost = distanceFromCenter < maxRadius * 0.3 ? 1.2 : 1.0;
+      const scale = scaleBase * centerBoost;
       
       const transform = `
         translate(${tx.toFixed(3)}px, ${ty.toFixed(3)}px) 
