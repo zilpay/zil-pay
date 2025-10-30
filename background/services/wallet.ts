@@ -17,6 +17,7 @@ import { Address } from "crypto/address";
 import { ConnectError } from "config/errors";
 import { ZILLIQA } from "config/slip44";
 import { TabsMessage } from "lib/streem/tabs-message";
+import { MTypePopup } from "config/stream";
 
 export class WalletService {
   #state: BackgroundState;
@@ -216,6 +217,24 @@ export class WalletService {
     }
   }
 
+  async getCurrentSlip44(sendResponse: StreamResponse) {
+    try {
+      const account = this.#state.getCurrentAccount();
+
+      if (!account) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      sendResponse({
+        resolve: account.slip44,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async exportbip39Words(password: string, walletIndex: number, sendResponse: StreamResponse) {
     try {
       const passwordBytes = utf8ToUint8Array(password);
@@ -321,6 +340,15 @@ export class WalletService {
       this.#state.selectedWallet = walletIndex;
       await Session.setActiveWallet(walletIndex);
       await this.#worker.start();
+
+      const account = wallet.accounts[wallet.selectedAccount];
+
+      if (account) {
+        new TabsMessage({
+          type: MTypePopup.WEB3_GET_SLIP44,
+          payload: account.slip44,
+        }).sendAll();
+      }
 
       sendResponse({
         resolve: this.#state

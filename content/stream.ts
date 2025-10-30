@@ -7,6 +7,7 @@ import {
 } from "lib/streem";
 import { Message, type ReqBody } from "lib/streem/message";
 import { TabStream } from "lib/streem/tab-stream";
+import { injectBySlip44 } from "./inject";
 
 export class ContentTabStream {
   readonly #stream: TabStream;
@@ -25,6 +26,9 @@ export class ContentTabStream {
       switch (msg.type) {
         case MTypePopup.RESPONSE_TO_DAPP:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
+          break;
+        case MTypePopup.WEB3_GET_SLIP44:
+          injectBySlip44(Number(msg.payload));
           break;
         case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
           this.#stream.send(msg, MTypeTabContent.INJECTED);

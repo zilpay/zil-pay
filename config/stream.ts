@@ -38,4 +38,6 @@ export const MTypePopup = {
   CONNECT_APP: `@/${app}/request-to-connect-dapp`,
   RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`,
   DISCONNECT_WALLET: `@/${app}/wallet-disconnect`,
+
+  WEB3_GET_SLIP44: `@/${app}/web3-get-slip44`,
 };

@@ -163,6 +163,11 @@ export function startBackground(core: GlobalState) {
         );
         return true;
 
+      // content web3
+      case MTypePopup.WEB3_GET_SLIP44:
+        core.wallet.getCurrentSlip44(sendResponse);
+        return true;
+
       // connections
       case MTypePopup.CONNECT_APP:
         core.connect.callConnect(msg, sendResponse);

@@ -1,6 +1,5 @@
 import { Runtime } from "lib/runtime/extensionizer";
 
-
 export interface ReqBody<T = unknown> {
     type: string;
     payload?: T;
@@ -12,7 +11,7 @@ export interface ReqBody<T = unknown> {
 export class Message<T = unknown> {
     constructor(public readonly body: ReqBody<unknown>) {}
 
-    static signal(type: string): Message<object> {
+    static signal<T>(type: string): Message<T> {
         return new Message({ type });
     }
 

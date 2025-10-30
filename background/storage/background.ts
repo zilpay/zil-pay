@@ -7,6 +7,7 @@ import { migrateToV4 } from 'background/secure';
 import { Themes } from 'config/theme';
 import { Locales } from 'config/locale';
 import { Web3Connections, type IWeb3ConnectionsState } from './connections';
+import type { Account } from './account';
 
 export interface IBackgroundState {
   storageVersion: number;
@@ -105,6 +106,15 @@ export class BackgroundState implements IBackgroundState {
 
   getChain(hash: number) {
     return this.chains.find((c) => c.hash() == hash);
+  }
+
+  getCurrentWallet(): Wallet | undefined {
+    return this.wallets[this.selectedWallet];
+  }
+
+  getCurrentAccount(): Account | undefined {
+    const wallet = this.getCurrentWallet();
+    return wallet?.accounts[wallet.selectedAccount];
   }
 
   async sync() {
