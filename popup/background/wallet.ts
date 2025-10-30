@@ -1,4 +1,4 @@
-import type { BackgroundState } from "background/storage";
+import type { BackgroundState, IWalletState } from "background/storage";
 
 import { get } from "svelte/store";
 import { MTypePopup } from "config/stream";
@@ -205,6 +205,25 @@ export async function exportKeyPair(password: string, walletIndex: number, accou
     type: MTypePopup.REVEAL_KEY,
   }).send();
   let resolve = warpMessage(data) as IKeyPair;
+
+  return resolve;
+}
+
+export async function selectAccount(walletIndex: number, accountIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      accountIndex,
+    },
+    type: MTypePopup.SELECT_ACCOUNT,
+  }).send();
+  let resolve = warpMessage(data) as IWalletState[];
+  const currentState = get(globalStore);
+
+  globalStore.set({
+    ...currentState,
+    wallets: resolve,
+  });
 
   return resolve;
 }

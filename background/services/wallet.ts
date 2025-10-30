@@ -363,18 +363,28 @@ export class WalletService {
 
       await wallet.trhowSession();
       const account = wallet.accounts[accountIndex];
+      wallet.selectedAccount = accountIndex;
+      await this.#state.sync();
 
       if (account.slip44 == ZILLIQA) {
-        const connections = this.#state.connections.getByChain();
-        new TabsMessage({
-          type: LegacyZilliqaTabMsg.ADDRESS_CHANGED,
-          payload: {
-          },
-        }).sendAll();
+        const connections = this.#state.connections.getByChain(account.chainHash);
+        const addrBech32 = Address.fromStr(account.addr.split(":")[0]);
+
+        connections.forEach(async (c) => {
+          new TabsMessage({
+            type: LegacyZilliqaTabMsg.ADDRESS_CHANGED,
+            payload: {
+              account: {
+                base16: await addrBech32.toZilChecksum(),
+                bech32: await addrBech32.toZilBech32(),
+              }
+            },
+          }).send(c.domain);
+        });
       }
 
       sendResponse({
-        resolve: this.#state
+        resolve: this.#state.wallets,
       });
     } catch (err) {
       sendResponse({

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
-    import { setGlobalState } from 'popup/background/wallet';
+    import { selectAccount } from 'popup/background/wallet';
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain } from 'popup/mixins/chains';
 
@@ -24,17 +24,7 @@
         };
 
         const walletIndex = $globalStore.selectedWallet;
-        
-        globalStore.update(state => {
-            const newWallets = [...state.wallets];
-            newWallets[walletIndex] = {
-                ...newWallets[walletIndex],
-                selectedAccount: index
-            };
-            return { ...state, wallets: newWallets };
-        });
-
-        await setGlobalState();
+        await selectAccount(walletIndex, index);
         push("/");
     }
 

@@ -18,6 +18,7 @@ export const MTypePopup = {
   LOG_OUT: `@/${app}/logout`,
   REVEAL_BIP39: `@/${app}/reveal-bip39`,
   REVEAL_KEY: `@/${app}/reveal-key`,
+  SELECT_ACCOUNT: `@/${app}/select-account`,
 
   WALLET_BALANCE_UPDATE: `@/${app}/wallet-balance-update`,
   FT_GET_META: `@/${app}/get-ft-meta`,
