@@ -108,7 +108,7 @@
         "native": true,
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
         "addr": "0x0000000000000000000000000000000000000000",
-        "name": "Zilliqa",
+        "name": "EVM",
         "symbol": "ZIL",
         "decimals": 18
       },
@@ -116,7 +116,7 @@
         "native": true,
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
         "addr": "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
-        "name": "Zilliqa",
+        "name": "Scilla",
         "symbol": "ZIL",
         "decimals": 12
       }

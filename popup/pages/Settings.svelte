@@ -23,6 +23,7 @@
     import XLogo from '../components/icons/XLogo.svelte';
     import GithubLogo from '../components/icons/GithubLogo.svelte';
     import InfoIcon from '../components/icons/Info.svelte';
+    import { Runtime } from 'lib/runtime';
 
     const generalSettings = [
         { id: 'currency', labelKey: 'settings.currency', Icon: CurrencyIcon, path: '/currency' },
@@ -39,13 +40,21 @@
     const aboutSettings = [
         { id: 'telegram', labelKey: 'settings.telegram', Icon: TgLogo, path: 'https://t.me/zilpaychat' },
         { id: 'twitter', labelKey: 'settings.twitter', Icon: XLogo, path: 'https://x.com/pay_zil' },
-        { id: 'github', labelKey: 'settings.github', Icon: GithubLogo, path: 'https://github.com/zilpay/zil-pay' },
-        { id: 'about', labelKey: 'settings.about', Icon: InfoIcon, path: '/settings/about' }
+        { id: 'github', labelKey: 'settings.github', Icon: GithubLogo, path: 'https://github.com/zilpay/zil-pay' }
     ];
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
     const walletChain = $derived(getWalletChain($globalStore.selectedWallet));
+
+    const version = $derived(() => {
+        try {
+            const mf = Runtime.runtime.getManifest();
+            return mf?.version ?? '-';
+        } catch {
+            return '-';
+        }
+    });
 
     function handleNavigation(path: string) {
         if (path.startsWith('http')) {
@@ -138,6 +147,19 @@
                 </div>
             {/each}
         </div>
+
+        <div class="settings-group">
+            <div class="item-wrapper no-divider">
+                <SettingsItem 
+                    label={$_("settings.version")} 
+                    Icon={InfoIcon}
+                >
+                    {#snippet rightComponent()}
+                        <span class="version-text">{version()}</span>
+                    {/snippet}
+                </SettingsItem>
+            </div>
+        </div>
     </main>
 
     <BottomTabs />
@@ -177,5 +199,13 @@
 
     .item-wrapper.no-divider {
         border-bottom: none;
+    }
+
+    .version-text {
+        color: var(--color-content-text-inverted);
+        font-size: var(--font-size-large);
+        font-family: Geist, sans-serif;
+        font-weight: 400;
+        line-height: 20px;
     }
 </style>
