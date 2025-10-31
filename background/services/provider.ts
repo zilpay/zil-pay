@@ -2,8 +2,10 @@ import { NetworkProvider } from "background/rpc";
 import type { BackgroundState } from "background/storage";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
-import { hexToUint8Array } from "lib/utils/hex";
+import { HEX_PREFIX, hexToUint8Array } from "lib/utils/hex";
 import type { WorkerService } from "./worker";
+import { TabsMessage } from "lib/streem/tabs-message";
+import { MTypePopup } from "config/stream";
 
 export class ProviderService {
   #state: BackgroundState;
@@ -34,6 +36,7 @@ export class ProviderService {
       await this.#worker.stop();
       await this.#worker.start();
       await this.#state.sync();
+      this.#notifyChainChanged(chain.chainId);
 
       sendResponse({
         resolve: this.#state,
@@ -121,6 +124,21 @@ export class ProviderService {
       sendResponse({
         reject: String(err),
       });
+    }
+  }
+
+  #notifyChainChanged(chainId: number) {
+    const chainIdHex = HEX_PREFIX + chainId.toString(16);
+    const connections = this.#state.connections.getAll();
+
+    for (const connection of connections) {
+      new TabsMessage({
+        type: MTypePopup.EVM_EVENT,
+        payload: {
+          event: 'chainChanged',
+          data: chainIdHex,
+        },
+      }).send(connection.domain);
     }
   }
 }

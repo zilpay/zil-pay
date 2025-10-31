@@ -5,7 +5,7 @@ import type { StreamResponse } from "lib/streem";
 import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
-import { bigintToHex, uint8ArrayToHex } from "lib/utils/hex";
+import { bigintToHex, hexToBigInt, uint8ArrayToHex } from "lib/utils/hex";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
@@ -15,15 +15,18 @@ import { PromptService } from "lib/popup/prompt";
 import { AddressType } from "config/wallet";
 import type { TransactionRequestEVM, TransactionMetadata } from "types/tx";
 import type { BackgroundState } from "background/storage";
+import type { ProviderService } from "./provider";
 
 
 export class EvmService {
   #state: BackgroundState;
   #connectService: ConnectService;
+  #provider: ProviderService;
 
-  constructor(state: BackgroundState, connectService: ConnectService) {
+  constructor(state: BackgroundState, connectService: ConnectService, provider: ProviderService) {
     this.#state = state;
     this.#connectService = connectService;
+    this.#provider = provider;
   }
 
   async handleRequest(msg: ConnectParams<JsonRPCRequest>, sendResponse: StreamResponse) {
@@ -66,6 +69,10 @@ export class EvmService {
           this.#handleGetPermissions(msg, account);
           break;
 
+        case 'wallet_switchEthereumChain':
+          await this.#handleSwitchChain(msg,sendResponse);
+          return;
+
         case 'personal_sign':
           await this.#handlePersonalSign(msg, wallet, sendResponse);
           return;
@@ -88,6 +95,40 @@ export class EvmService {
       this.#sendError(msg.uuid, msg.domain, String(err), 4000);
       sendResponse({ reject: String(err) });
     }
+  }
+
+  async #handleSwitchChain(
+    msg: ConnectParams<JsonRPCRequest>,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      if (!msg.payload) {
+        throw new Error(ConnectError.InvalidPayload);
+      }
+
+      interface Params {
+        method: string;
+        params: { chainId: string; }[];
+      }
+
+      const { params } = msg.payload as Params;
+
+      if (!params || params.length == 0) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const chainIdHex = params[0].chainId;
+      const chainId = parseInt(chainIdHex, 16);
+      const chainIndex = this.#state.chains.findIndex((c) => c.chainId == chainId);
+
+      if (chainIndex == -1) {
+        throw new Error(ConnectError.ChainNotFound);
+      }
+
+      await this.#provider.swichNetwork(this.#state.selectedWallet, chainIndex, sendResponse);
+      } catch (error) {
+        this.#sendError(msg.uuid, msg.domain, String(error), 4902);
+      }
   }
 
   async responseToSignPersonalMessageEVM(

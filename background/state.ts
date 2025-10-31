@@ -34,7 +34,7 @@ export class GlobalState {
     this.token = new TokenService(this.state);
     this.zilpayLegacyWeb3 = new ZilPayLegacyService(this.state);
     this.connect = new ConnectService(this.state);
-    this.evm = new EvmService(this.state, this.connect);
+    this.evm = new EvmService(this.state, this.connect, this.provider);
   }
 
   async sync() {

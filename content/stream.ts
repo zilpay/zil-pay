@@ -27,6 +27,9 @@ export class ContentTabStream {
         case MTypePopup.RESPONSE_TO_DAPP:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;
+        case MTypePopup.EVM_EVENT:
+          this.#stream.send(msg, MTypeTabContent.INJECTED);
+          break;
         case MTypePopup.EVM_RESPONSE:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;

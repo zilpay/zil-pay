@@ -500,4 +500,14 @@ export class WalletService {
       });
     }
   }
+
+  #notifyAccountsChanged(accounts: string[], domain: string) {
+    new TabsMessage({
+      type: MTypePopup.EVM_EVENT,
+      payload: {
+        event: 'accountsChanged',
+        data: accounts,
+      },
+    }).send(domain);
+  }
 }
