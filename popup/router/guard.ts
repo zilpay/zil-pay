@@ -6,6 +6,7 @@ import LockPage from "../pages/Lock.svelte";
 import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
 import ConnectPage from "../pages/Connect.svelte";
 import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
+import AddChainPage from "../pages/AddChain.svelte";
 
 export class RouteGuard {
   private static navigate(path: string) {
@@ -55,6 +56,12 @@ export class RouteGuard {
         return {
           path: "/sign-message",
           component: SignMessagePopupPage,
+        };
+      } else if (last?.evmAddChainRequest && !window.location.hash.includes('add-chain')) {
+        this.navigate("add-chain");
+        return {
+          path: "/add-chain",
+          component: AddChainPage,
         };
       }
     }

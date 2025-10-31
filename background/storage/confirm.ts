@@ -74,6 +74,7 @@ export class ConfirmState implements IConfirmState {
       evm: this.evm,
       signPersonalMessageEVM: this.signPersonalMessageEVM,
       signTypedDataJsonEVM: this.signTypedDataJsonEVM,
+      evmAddChainRequest: this.evmAddChainRequest,
       connect: this.connect,
     };
   }
