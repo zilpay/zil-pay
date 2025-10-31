@@ -7,6 +7,7 @@
 
     import DAppInfo from '../components/DAppInfo.svelte';
     import Button from '../components/Button.svelte';
+    import CopyButton from '../components/CopyButton.svelte';
     import Dropdown, { type DropdownOption } from '../components/Dropdown.svelte';
     import WarningIcon from '../components/icons/Warning.svelte';
     import CloseIcon from '../components/icons/Close.svelte';
@@ -209,6 +210,11 @@
                         onSelect={(code) => (selectedRpc = code)}
                         width="100%"
                     />
+                    {#if selectedRpc}
+                        <div class="copy-wrapper">
+                            <CopyButton value={selectedRpc} />
+                        </div>
+                    {/if}
                 </div>
             </div>
 
