@@ -1,4 +1,4 @@
-import type { BackgroundState, IFTokenState } from "background/storage";
+import type { BackgroundState, IChainConfigState, IFTokenState } from "background/storage";
 
 import { get } from "svelte/store";
 import { MTypePopup } from "config/stream";
@@ -41,8 +41,6 @@ export async function fetchFTMeta(walletIndex: number, contract: string) {
   if (token) {
     resolve.logo = token.logo;
   }
-
-
   return resolve;
 }
 
@@ -59,4 +57,24 @@ export async function changeChainProvider(walletIndex: number, chainIndex: numbe
   return resolve;
 }
 
+export async function addEthereumChainResponse(
+  uuid: string,
+  walletIndex: number,
+  approve: boolean,
+) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.EVM_RESPONSE_ADD_ETHEREUM_CHAIN,
+    payload: { uuid, walletIndex, approve, },
+  }).send();
+  
+  const resolve = warpMessage(data) as IChainConfigState[];
+  const currentState = get(globalStore);
+
+  globalStore.set({
+    ...currentState,
+    chains: resolve,
+  });
+
+  return resolve;
+}
 

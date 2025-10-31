@@ -193,6 +193,14 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.EVM_REQUEST:
         core.evm.handleRequest(msg, sendResponse);
         return true;
+      case MTypePopup.EVM_RESPONSE_ADD_ETHEREUM_CHAIN:
+        core.evm.addEthereumChainResponse(
+          msg.payload.uuid,
+          msg.payload.walletIndex,
+          msg.payload.approve,
+          sendResponse,
+        );
+        return true;
       case MTypePopup.EVM_RESPONSE_PERSONAL_MESSAGE:
         core.evm.responseToSignPersonalMessageEVM(
           msg.payload.uuid,

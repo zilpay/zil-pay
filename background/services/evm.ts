@@ -9,14 +9,15 @@ import { bigintToHex, uint8ArrayToHex } from "lib/utils/hex";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
-import { ZILLIQA } from "config/slip44";
+import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { ConfirmState } from "background/storage/confirm";
 import { PromptService } from "lib/popup/prompt";
 import { AddressType } from "config/wallet";
 import type { TransactionRequestEVM, TransactionMetadata } from "types/tx";
-import type { BackgroundState } from "background/storage";
+import { ChainConfig, FToken, Explorer, type BackgroundState, type IChainConfigState } from "background/storage";
 import type { ProviderService } from "./provider";
 import type { EvmAddChainParams } from "types/chain";
+import { ZERO_EVM } from "config/common";
 
 
 export class EvmService {
@@ -99,6 +100,107 @@ export class EvmService {
     } catch (err) {
       this.#sendError(msg.uuid, msg.domain, String(err), 4000);
       sendResponse({ reject: String(err) });
+    }
+  }
+
+  async addEthereumChainResponse(
+    uuid: string,
+    walletIndex: number,
+    approve: boolean,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+
+      const confirmRequest = wallet.confirm.find((c) => c.uuid === uuid);
+      if (!confirmRequest || !confirmRequest.evmAddChainRequest) {
+        throw new Error(`${ConnectError.RequestNotFound}: ${uuid}`);
+      }
+
+      const { params: chainParams, domain } = confirmRequest.evmAddChainRequest;
+
+      wallet.confirm = wallet.confirm.filter((c) => c.uuid !== uuid);
+
+      if (!approve) {
+        this.#sendError(uuid, domain, ConnectError.UserRejected, 4001);
+      } else {
+        const chainId = parseInt(chainParams.chainId, 16);
+        const existingChain = this.#state.chains.find(
+          (c) => c.chainId === chainId
+        );
+
+        if (existingChain) {
+          if (chainParams.rpcUrls) {
+            existingChain.rpc = [
+              ...new Set([...existingChain.rpc, ...chainParams.rpcUrls]),
+            ];
+          }
+          if (chainParams.blockExplorerUrls) {
+            const existingExplorerUrls = new Set(existingChain.explorers.map(e => e.url));
+            const newExplorers = chainParams.blockExplorerUrls
+              .filter(url => !existingExplorerUrls.has(url))
+              .map(url => new Explorer({
+                name: new URL(url).hostname,
+                url,
+                icon: null,
+                standard: 3091
+              }));
+            existingChain.explorers.push(...newExplorers);
+          }
+        } else {
+          const newChainData = new ChainConfig({
+            name: chainParams.chainName,
+            chain: chainParams.nativeCurrency.symbol,
+            logo: chainParams.iconUrls?.[0] || '',
+            rpc: chainParams.rpcUrls,
+            features: [],
+            ftokens: [],
+            chainId: chainId,
+            chainIds: [chainId, 0],
+            shortName: chainParams.chainName.toLowerCase().replace(/\s/g, ''),
+            slip44: ETHEREUM,
+            explorers: chainParams.blockExplorerUrls?.map(url => (new Explorer({
+              name: new URL(url).hostname,
+              url,
+              icon: null,
+              standard: 3091
+            }))) || [],
+            diffBlockTime: 15,
+            ens: null,
+            fallbackEnabled: true,
+            batchRequest: true,
+            testnet: null
+          });
+          const token = new FToken({
+            native: true,
+            logo: "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{name}%/%{contract_address}%/%{dark,light}%.webp",
+            addr: '0x0000000000000000000000000000000000000000',
+            name: chainParams.nativeCurrency.name,
+            symbol: chainParams.nativeCurrency.symbol,
+            decimals: chainParams.nativeCurrency.decimals,
+            addrType: AddressType.EthCheckSum,
+            balances: {},
+            rate: 0,
+            default_: true,
+            chainHash: newChainData.hash(),
+          });
+          newChainData.ftokens.push(token);
+          this.#state.chains.push(newChainData);
+        }
+
+        this.#sendSuccess(uuid, domain, null);
+      }
+
+      await this.#state.sync();
+      sendResponse({ resolve: this.#state.chains });
+    } catch (e) {
+      sendResponse({ reject: String(e) });
     }
   }
 
@@ -397,15 +499,6 @@ export class EvmService {
 
       if (!chainParams.chainId || !chainParams.chainName || !chainParams.nativeCurrency || !chainParams.rpcUrls) {
         throw new Error(ConnectError.InvalidParams);
-      }
-
-      const chainId = parseInt(chainParams.chainId, 16);
-      const existingChain = this.#state.chains.find((c) => c.chainId === chainId);
-
-      if (existingChain) {
-        this.#sendSuccess(msg.uuid, msg.domain, null);
-        sendResponse({ resolve: true });
-        return;
       }
 
       wallet.confirm.push(new ConfirmState({
