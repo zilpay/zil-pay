@@ -5,7 +5,7 @@ import type { StreamResponse } from "lib/streem";
 import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
-import { bigintToHex, hexToBigInt, uint8ArrayToHex } from "lib/utils/hex";
+import { bigintToHex, uint8ArrayToHex } from "lib/utils/hex";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
@@ -85,6 +85,10 @@ export class EvmService {
           await this.#handleSendTransaction(msg, wallet, sendResponse);
           return;
 
+        case 'wallet_addEthereumChain':
+          console.log(JSON.stringify(msg, null, 2));
+          return;
+
         default:
           await this.#proxyRequest(msg, account);
           break;
@@ -126,9 +130,11 @@ export class EvmService {
       }
 
       await this.#provider.swichNetwork(this.#state.selectedWallet, chainIndex, sendResponse);
-      } catch (error) {
-        this.#sendError(msg.uuid, msg.domain, String(error), 4902);
-      }
+      this.#sendSuccess(msg.uuid, msg.domain, null);
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4902);
+      sendResponse({ reject: String(error) });
+    }
   }
 
   async responseToSignPersonalMessageEVM(

@@ -1,13 +1,12 @@
 import { MTypePopup } from "config/stream";
 import { Runtime } from "lib/runtime";
 import {
-    LegacyZilliqaTabMsg,
+  LegacyZilliqaTabMsg,
   MTypeTabContent,
   type SendResponseParams,
 } from "lib/streem";
 import { Message, type ReqBody } from "lib/streem/message";
 import { TabStream } from "lib/streem/tab-stream";
-import { injectBySlip44 } from "./inject";
 
 export class ContentTabStream {
   readonly #stream: TabStream;
@@ -64,12 +63,17 @@ export class ContentTabStream {
         await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
       case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
-        const proyxRes = await new Message<SendResponseParams<ReqBody>>(msg).send();
-          this.#stream.send({
+        const proyxRes = await new Message<SendResponseParams<ReqBody>>(
+          msg,
+        ).send();
+        this.#stream.send(
+          {
             type: LegacyZilliqaTabMsg.CONTENT_PROXY_RESULT,
             uuid: msg.uuid,
             payload: proyxRes,
-          }, MTypeTabContent.INJECTED);
+          },
+          MTypeTabContent.INJECTED,
+        );
         break;
       case LegacyZilliqaTabMsg.SIGN_MESSAGE:
         await new Message<SendResponseParams<ReqBody>>(msg).send();
@@ -78,16 +82,21 @@ export class ContentTabStream {
         await new Message<SendResponseParams<ReqBody>>(msg).send();
         break;
       case LegacyZilliqaTabMsg.GET_WALLET_DATA:
-        const walltData = await new Message<SendResponseParams<ReqBody>>(msg).send();
+        const walltData = await new Message<SendResponseParams<ReqBody>>(
+          msg,
+        ).send();
         if (walltData && walltData.resolve) {
-          this.#stream.send({
-            type: LegacyZilliqaTabMsg.GET_WALLET_DATA,
-            payload: walltData.resolve,
-          }, MTypeTabContent.INJECTED);
+          this.#stream.send(
+            {
+              type: LegacyZilliqaTabMsg.GET_WALLET_DATA,
+              payload: walltData.resolve,
+            },
+            MTypeTabContent.INJECTED,
+          );
         }
         return;
-        default:
-          break;
+      default:
+        break;
     }
   }
 }

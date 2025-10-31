@@ -1,3 +1,4 @@
+import type { EvmAddChainRequest } from "types/chain";
 import type { ConnectParams } from "types/connect";
 import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM, SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from "types/tx";
 
@@ -9,6 +10,7 @@ export interface IConfirmState {
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: SignPersonalMessageEVM;
   signTypedDataJsonEVM?: SignTypedDataEVM;
+  evmAddChainRequest?: EvmAddChainRequest;
   connect?: ConnectParams;
 }
 
@@ -20,6 +22,7 @@ export class ConfirmState implements IConfirmState {
   evm?: TransactionRequestEVM;
   signPersonalMessageEVM?: SignPersonalMessageEVM;
   signTypedDataJsonEVM?: SignTypedDataEVM;
+  evmAddChainRequest?: EvmAddChainRequest;
   connect?: ConnectParams;
 
   constructor(data: IConfirmState) {
@@ -51,6 +54,10 @@ export class ConfirmState implements IConfirmState {
 
     if (data.signTypedDataJsonEVM) {
       this.signTypedDataJsonEVM = data.signTypedDataJsonEVM;
+    }
+
+    if (data.evmAddChainRequest) {
+      this.evmAddChainRequest = data.evmAddChainRequest;
     }
 
     if (data.connect) {

@@ -262,16 +262,16 @@ export class ConnectService {
       return;
     }
 
-    const addresses = wallet.accounts
-      .slice()
-      .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
-      .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
+    // const addresses = wallet.accounts
+    //   .slice()
+    //   .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
+    //   .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
 
     new TabsMessage({
       type: MTypePopup.EVM_RESPONSE,
       uuid,
       payload: {
-        result: addresses,
+        result: [selectedAccount.addr],
       },
     }).send(connect.domain);
   }

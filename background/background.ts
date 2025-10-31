@@ -185,7 +185,7 @@ export function startBackground(core: GlobalState) {
           msg.payload.walletIndex,
           msg.payload.approve,
           msg.payload.permissions,
-          sendResponse
+          sendResponse,
         );
         return true;
 
@@ -217,7 +217,11 @@ export function startBackground(core: GlobalState) {
         core.zilpayLegacyWeb3.getData(msg.domain, sendResponse);
         return true;
       case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
-        core.zilpayLegacyWeb3.jsonRPCProxy(msg.domain, msg.payload, sendResponse);
+        core.zilpayLegacyWeb3.jsonRPCProxy(
+          msg.domain,
+          msg.payload,
+          sendResponse,
+        );
         return true;
       case LegacyZilliqaTabMsg.SIGN_MESSAGE:
         core.zilpayLegacyWeb3.signMessage(
@@ -241,7 +245,7 @@ export function startBackground(core: GlobalState) {
         return true;
       case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
         core.zilpayLegacyWeb3.signMessageRes(
-                    msg.payload.uuid,
+          msg.payload.uuid,
           msg.payload.walletIndex,
           msg.payload.accountIndex,
           msg.payload.approve,
