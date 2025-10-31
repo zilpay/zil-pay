@@ -33,9 +33,6 @@ export class ContentTabStream {
         case MTypePopup.EVM_RESPONSE:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;
-        case MTypePopup.WEB3_GET_SLIP44:
-          injectBySlip44(Number(msg.payload));
-          break;
         case LegacyZilliqaTabMsg.SING_MESSAGE_RES:
           this.#stream.send(msg, MTypeTabContent.INJECTED);
           break;

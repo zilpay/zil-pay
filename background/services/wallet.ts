@@ -15,7 +15,7 @@ import { AddressCategory } from "config/common";
 import { AddressType } from "config/wallet";
 import { Address } from "crypto/address";
 import { ConnectError } from "config/errors";
-import { ZILLIQA } from "config/slip44";
+import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 
@@ -207,6 +207,8 @@ export class WalletService {
       await wallet.addAccountBip39(payload.account, chain);
       await this.#state.sync();
 
+      // TODO: add if accounts enable so we just add it automaticly
+
       sendResponse({
         resolve: this.#state
       });
@@ -341,14 +343,7 @@ export class WalletService {
       await Session.setActiveWallet(walletIndex);
       await this.#worker.start();
 
-      const account = wallet.accounts[wallet.selectedAccount];
-
-      if (account) {
-        new TabsMessage({
-          type: MTypePopup.WEB3_GET_SLIP44,
-          payload: account.slip44,
-        }).sendAll();
-      }
+      this.#notifyAccountsChanged(wallet);
 
       sendResponse({
         resolve: this.#state
@@ -369,6 +364,7 @@ export class WalletService {
         this.#state.selectedWallet = -1;
         await this.#state.sync();
         await this.#worker.stop();
+        this.#notifyAccountsChanged(wallet, true);
       }
 
       sendResponse({
@@ -390,26 +386,10 @@ export class WalletService {
       }
 
       await wallet.trhowSession();
-      const account = wallet.accounts[accountIndex];
       wallet.selectedAccount = accountIndex;
       await this.#state.sync();
 
-      if (account.slip44 == ZILLIQA) {
-        const connections = this.#state.connections.getByChain(account.chainHash);
-        const addrBech32 = Address.fromStr(account.addr.split(":")[0]);
-
-        connections.forEach(async (c) => {
-          new TabsMessage({
-            type: LegacyZilliqaTabMsg.ADDRESS_CHANGED,
-            payload: {
-              account: {
-                base16: await addrBech32.toZilChecksum(),
-                bech32: await addrBech32.toZilBech32(),
-              }
-            },
-          }).send(c.domain);
-        });
-      }
+      this.#notifyAccountsChanged(wallet);
 
       sendResponse({
         resolve: this.#state.wallets,
@@ -501,13 +481,46 @@ export class WalletService {
     }
   }
 
-  #notifyAccountsChanged(accounts: string[], domain: string) {
-    new TabsMessage({
-      type: MTypePopup.EVM_EVENT,
-      payload: {
-        event: 'accountsChanged',
-        data: accounts,
-      },
-    }).send(domain);
+  #notifyAccountsChanged(wallet: Wallet, logout = false) {
+    const connections = this.#state.connections.getAll();
+    const selectedAccount = wallet.accounts[wallet.selectedAccount];
+
+    const sendLegacyZilPay = async (domain: string) => {
+      let account = null;
+
+      if (logout) {
+        const addrBech32 = Address.fromStr(selectedAccount.addr.split(":")[0]);
+        account = {
+          base16: await addrBech32.toZilChecksum(),
+          bech32: await addrBech32.toZilBech32(),
+        };
+      }
+
+      new TabsMessage({
+        type: LegacyZilliqaTabMsg.ADDRESS_CHANGED,
+        payload: {
+          account,
+        },
+      }).send(domain);
+    }
+
+    const sendEvmEvent = (domain: string) => {
+      new TabsMessage({
+        type: MTypePopup.EVM_EVENT,
+        payload: {
+          event: 'accountsChanged',
+          data: [logout ? null : selectedAccount.addr],
+        },
+      }).send(domain);
+    }
+
+    connections.forEach(async (c) => {
+      if (selectedAccount.slip44 == ZILLIQA) {
+        sendLegacyZilPay(c.domain);
+        sendEvmEvent(c.domain);
+      } else if (selectedAccount.slip44 == ETHEREUM) {
+        sendEvmEvent(c.domain);
+      }
+    });
   }
 }
