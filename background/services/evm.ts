@@ -16,6 +16,7 @@ import { AddressType } from "config/wallet";
 import type { TransactionRequestEVM, TransactionMetadata } from "types/tx";
 import type { BackgroundState } from "background/storage";
 import type { ProviderService } from "./provider";
+import type { EvmAddChainParams } from "types/chain";
 
 
 export class EvmService {
@@ -86,7 +87,7 @@ export class EvmService {
           return;
 
         case 'wallet_addEthereumChain':
-          console.log(JSON.stringify(msg, null, 2));
+          await this.#handleAddEthereumChain(msg, wallet, sendResponse);
           return;
 
         default:
@@ -372,6 +373,53 @@ export class EvmService {
 
       await this.#state.sync();
       new PromptService().open("/confirm");
+
+      sendResponse({ resolve: true });
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4001);
+      sendResponse({ reject: String(error) });
+    }
+  }
+
+  async #handleAddEthereumChain(
+    msg: ConnectParams<JsonRPCRequest>,
+    wallet: Wallet,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const params = msg.payload?.params;
+
+      if (!params || params.length < 1) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const chainParams = params[0] as EvmAddChainParams;
+
+      if (!chainParams.chainId || !chainParams.chainName || !chainParams.nativeCurrency || !chainParams.rpcUrls) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const chainId = parseInt(chainParams.chainId, 16);
+      const existingChain = this.#state.chains.find((c) => c.chainId === chainId);
+
+      if (existingChain) {
+        this.#sendSuccess(msg.uuid, msg.domain, null);
+        sendResponse({ resolve: true });
+        return;
+      }
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: msg.uuid,
+        evmAddChainRequest: {
+          params: chainParams,
+          domain: msg.domain,
+          title: msg.title || msg.domain,
+          icon: msg.icon || '',
+        },
+      }));
+
+      await this.#state.sync();
+      new PromptService().open("/add-chain");
 
       sendResponse({ resolve: true });
     } catch (error) {
