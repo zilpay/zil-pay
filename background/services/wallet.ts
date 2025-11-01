@@ -206,8 +206,7 @@ export class WalletService {
 
       await wallet.addAccountBip39(payload.account, chain);
       await this.#state.sync();
-
-      // TODO: add if accounts enable so we just add it automaticly
+      this.#notifyAccountsChanged(wallet);
 
       sendResponse({
         resolve: this.#state
