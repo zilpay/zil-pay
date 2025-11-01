@@ -14,10 +14,10 @@ import { ConfirmState } from "background/storage/confirm";
 import { PromptService } from "lib/popup/prompt";
 import { AddressType } from "config/wallet";
 import type { TransactionRequestEVM, TransactionMetadata } from "types/tx";
-import { ChainConfig, FToken, Explorer, type BackgroundState, type IChainConfigState } from "background/storage";
+import { ChainConfig, FToken, Explorer, type BackgroundState } from "background/storage";
 import type { ProviderService } from "./provider";
 import type { EvmAddChainParams } from "types/chain";
-import { ZERO_EVM } from "config/common";
+import type { ParamsWatchAsset } from "types/token";
 
 
 export class EvmService {
@@ -90,6 +90,9 @@ export class EvmService {
         case 'wallet_addEthereumChain':
           await this.#handleAddEthereumChain(msg, wallet, sendResponse);
           return;
+        case 'wallet_watchAsset':
+          await this.#handleWatchAsset(msg, wallet, sendResponse);
+          return;
 
         default:
           await this.#proxyRequest(msg, account);
@@ -157,7 +160,7 @@ export class EvmService {
           const newChainData = new ChainConfig({
             name: chainParams.chainName,
             chain: chainParams.nativeCurrency.symbol,
-            logo: chainParams.iconUrls?.[0] || '',
+            logo: chainParams.iconUrls?.[0] || 'https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg',
             rpc: chainParams.rpcUrls,
             features: [],
             ftokens: [],
@@ -237,6 +240,56 @@ export class EvmService {
     } catch (error) {
       this.#sendError(msg.uuid, msg.domain, String(error), 4902);
       sendResponse({ reject: String(error) });
+    }
+  }
+
+  async addEthereumWatchAssetResponse(
+    uuid: string,
+    walletIndex: number,
+    approve: boolean,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+
+      const confirmRequest = wallet.confirm.find((c) => c.uuid === uuid);
+      if (!confirmRequest || !confirmRequest.evmAddAssetRequest) {
+        throw new Error(`${ConnectError.RequestNotFound}: ${uuid}`);
+      }
+
+      const domain = confirmRequest.metadata!.domain!;
+      
+      wallet.confirm = wallet.confirm.filter((c) => c.uuid !== uuid);
+
+      if (approve) {
+        const [tokenToAdd] = confirmRequest.evmAddAssetRequest;
+
+        const tokenExists = wallet.tokens.some(
+          (token) =>
+            token.addr.toLowerCase() === tokenToAdd.addr.toLowerCase() &&
+            token.chainHash === tokenToAdd.chainHash
+        );
+
+        if (!tokenExists) {
+          wallet.tokens.push(tokenToAdd);
+        }
+        
+        this.#sendSuccess(uuid, domain, true);
+      } else {
+        this.#sendError(uuid, domain, ConnectError.UserRejected, 4001);
+      }
+
+      await this.#state.sync();
+      sendResponse({ resolve: wallet.confirm });
+
+    } catch (e) {
+      sendResponse({ reject: String(e) });
     }
   }
 
@@ -577,6 +630,81 @@ export class EvmService {
       this.#sendSuccess(msg.uuid, msg.domain, addresses);
     } else {
       this.#sendSuccess(msg.uuid, msg.domain, []);
+    }
+  }
+
+  async #handleWatchAsset(
+    msg: ConnectParams<JsonRPCRequest>,
+    wallet: Wallet,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      if (!msg.payload) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const params = msg.payload.params as unknown as ParamsWatchAsset;
+
+      if (!params || params.type !== 'ERC20' || !params.options) {
+        throw new Error(`${ConnectError.UnsupportedType} ${params?.type}`);
+      }
+
+      const { options } = params;
+      const account = wallet.accounts[wallet.selectedAccount];
+      const chainConfig = this.#state.getChain(account.chainHash);
+
+      if (!chainConfig) {
+        throw new Error(ConnectError.ChainNotFound);
+      }
+      
+      const tokenExists = wallet.tokens.some(
+        (token) =>
+          token.addr.toLowerCase() === options.address.toLowerCase() &&
+          token.chainHash === account.chainHash
+      );
+
+      if (tokenExists) {
+        this.#sendSuccess(msg.uuid, msg.domain, true);
+        sendResponse({ resolve: true });
+        return;
+      }
+
+      const newFToken = new FToken({
+        name: options.symbol,
+        symbol: options.symbol,
+        decimals: options.decimals,
+        addr: options.address,
+        addrType: AddressType.EthCheckSum,
+        logo: options.image || null,
+        balances: {},
+        rate: 0,
+        default_: false,
+        native: false,
+        chainHash: account.chainHash,
+      });
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: msg.uuid,
+        evmAddAssetRequest: [newFToken],
+        metadata: {
+          domain: msg.domain,
+          title: msg.title || msg.domain,
+          icon: msg.icon,
+          chainHash: account.chainHash,
+          token: {
+            ...newFToken,
+            balances: undefined,
+          }
+        }
+      }));
+      
+      await this.#state.sync();
+      new PromptService().open("/add-asset");
+      sendResponse({ resolve: true });
+
+    } catch (error) {
+      this.#sendError(msg.uuid, msg.domain, String(error), 4001);
+      sendResponse({ reject: String(error) });
     }
   }
 

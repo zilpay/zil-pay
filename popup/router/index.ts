@@ -35,6 +35,7 @@ import RevealPage from '../pages/Reveal.svelte';
 import CollectionsPage from '../pages/Collections.svelte';
 import ManageConnectionsPage from '../pages/ManageConnections.svelte';
 import AddChainPage from '../pages/AddChain.svelte';
+import AddAssetsPage from '../pages/AddAssets.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -72,6 +73,7 @@ export const protectedRoutes: Route[] = [
   { path: "/collection", component: CollectionsPage, isProtected: true },
   { path: "/connections", component: ManageConnectionsPage, isProtected: true },
   { path: "/add-chain", component: AddChainPage, isProtected: true },
+  { path: "/add-asset", component: AddAssetsPage, isProtected: true },
 ];
 
 export const publicRoutes: Route[] = [

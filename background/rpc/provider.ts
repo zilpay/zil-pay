@@ -1,10 +1,10 @@
 import type { ChainConfig } from "background/storage";
 
-export interface JsonRPCRequest {
+export interface JsonRPCRequest<T = unknown[]> {
   id: number;
   jsonrpc: string;
   method: string;
-  params: unknown[];
+  params: T;
 }
 
 export interface JsonRPCResponse<T> {

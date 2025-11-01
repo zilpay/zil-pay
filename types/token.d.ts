@@ -19,3 +19,14 @@ export interface NFTMetadata {
   contractAddress: string;
   baseURI?: string;
 }
+
+export interface ParamsWatchAsset {
+  type: string;
+  options: {
+    address: string;
+    symbol: string;
+    decimals: number;
+    image?: string;
+  };
+}
+

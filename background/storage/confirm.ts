@@ -1,6 +1,7 @@
 import type { EvmAddChainRequest } from "types/chain";
 import type { ConnectParams } from "types/connect";
 import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM, SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from "types/tx";
+import { FToken, type IFTokenState } from "./ftoken";
 
 export interface IConfirmState {
   uuid: string;
@@ -11,6 +12,7 @@ export interface IConfirmState {
   signPersonalMessageEVM?: SignPersonalMessageEVM;
   signTypedDataJsonEVM?: SignTypedDataEVM;
   evmAddChainRequest?: EvmAddChainRequest;
+  evmAddAssetRequest?: IFTokenState[];
   connect?: ConnectParams;
 }
 
@@ -23,6 +25,7 @@ export class ConfirmState implements IConfirmState {
   signPersonalMessageEVM?: SignPersonalMessageEVM;
   signTypedDataJsonEVM?: SignTypedDataEVM;
   evmAddChainRequest?: EvmAddChainRequest;
+  evmAddAssetRequest?: FToken[];
   connect?: ConnectParams;
 
   constructor(data: IConfirmState) {
@@ -60,6 +63,10 @@ export class ConfirmState implements IConfirmState {
       this.evmAddChainRequest = data.evmAddChainRequest;
     }
 
+    if (data.evmAddAssetRequest && data.evmAddAssetRequest.length > 0) {
+      this.evmAddAssetRequest = data.evmAddAssetRequest.map((t) => new FToken(t));
+    }
+
     if (data.connect) {
       this.connect = data.connect;
     }
@@ -75,6 +82,7 @@ export class ConfirmState implements IConfirmState {
       signPersonalMessageEVM: this.signPersonalMessageEVM,
       signTypedDataJsonEVM: this.signTypedDataJsonEVM,
       evmAddChainRequest: this.evmAddChainRequest,
+      evmAddAssetRequest: this.evmAddAssetRequest,
       connect: this.connect,
     };
   }

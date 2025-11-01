@@ -210,6 +210,14 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case MTypePopup.EVM_RESPONSE_WATCH_ASSET:
+        core.evm.addEthereumWatchAssetResponse(
+          msg.payload.uuid,
+          msg.payload.walletIndex,
+          msg.payload.approve,
+          sendResponse,
+        );
+        return true;
       case MTypePopup.EVM_RESPONSE_TYPED_MESSAGE:
         core.evm.responseToSignTypedDataEVM(
           msg.payload.uuid,

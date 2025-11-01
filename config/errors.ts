@@ -9,4 +9,5 @@ export enum ConnectError {
   InvalidParams = "Invalid params",
   RequestNotFound = "Request not found",
   AddressMismatch = "Address mismatch",
+  UnsupportedType = "Unsupported type",
 }
