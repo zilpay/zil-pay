@@ -675,7 +675,7 @@ export class EvmService {
         decimals: options.decimals,
         addr: options.address,
         addrType: AddressType.EthCheckSum,
-        logo: options.image || null,
+        logo: options.image ?? chainConfig.ftokens[0].logo ?? null,
         balances: {},
         rate: 0,
         default_: false,

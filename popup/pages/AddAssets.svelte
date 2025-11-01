@@ -6,7 +6,7 @@
     import type { IFTokenState } from 'background/storage';
     import { processTokenLogo } from 'lib/popup/url';
     import { truncate } from 'popup/mixins/address';
-    import { AddressType } from 'config/wallet';
+    import { addEthereumWatchAssetResponse } from 'popup/background/token';
     
     import DAppInfo from '../components/DAppInfo.svelte';
     import Button from '../components/Button.svelte';
@@ -42,12 +42,12 @@
     }
 
     async function handleConfirm() {
-        if (isLoading) return;
+        if (isLoading || !addAssetEnvelope) return;
         isLoading = true;
         errorMessage = null;
 
         try {
-            console.log('TODO: Implement asset addition confirmation', assetsToAdd);
+            await addEthereumWatchAssetResponse(addAssetEnvelope.uuid, $globalStore.selectedWallet, true);
             
             if ($currentParams?.type === 'popup') {
                 window.close();
@@ -64,12 +64,12 @@
     }
 
     async function handleReject() {
-        if (isLoading) return;
+        if (isLoading || !addAssetEnvelope) return;
         isLoading = true;
         errorMessage = null;
 
         try {
-            console.log('TODO: Implement asset addition rejection');
+            await addEthereumWatchAssetResponse(addAssetEnvelope.uuid, $globalStore.selectedWallet, false);
             
             if ($currentParams?.type === 'popup') {
                 window.close();
@@ -86,7 +86,6 @@
     }
 
     $effect(() => {
-      console.log(currentWallet);
         if (!currentWallet) return;
         if (addAssetEnvelope === undefined) return;
         

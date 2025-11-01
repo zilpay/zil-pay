@@ -39,3 +39,29 @@ export async function fetchNFTMeta(walletIndex: number, contract: string) {
 
   return resolve;
 }
+
+export async function addEthereumWatchAssetResponse(
+  uuid: string,
+  walletIndex: number,
+  approve: boolean,
+) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.EVM_RESPONSE_WATCH_ASSET,
+    payload: { uuid, walletIndex, approve, },
+  }).send();
+  
+  const resolve = warpMessage(data) as IFTokenState[];
+  const currentState = get(globalStore);
+
+  globalStore.set({
+    ...currentState,
+    wallets: currentState.wallets.map((wallet, index) => 
+      index === walletIndex 
+        ? { ...wallet, tokens: resolve }
+        : wallet
+    )
+  });
+
+  return resolve;
+}
+

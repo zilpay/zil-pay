@@ -271,7 +271,7 @@ export class ConnectService {
       type: MTypePopup.EVM_RESPONSE,
       uuid,
       payload: {
-        result: [selectedAccount.addr],
+        result: [selectedAccount.slip44 === ZILLIQA ? selectedAccount.addr.split(":")[1] : selectedAccount.addr],
       },
     }).send(connect.domain);
   }
