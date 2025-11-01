@@ -49,15 +49,15 @@
         gap: 12px;
         width: 100%;
         padding: 12px;
-        background: var(--color-neutral-background-container);
-        border: 1px solid var(--color-neutral-border-default);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 12px;
         cursor: pointer;
         transition: all 0.2s;
 
         &:hover {
-            border-color: var(--color-neutral-border-hover);
-            background: var(--color-button-regular-quaternary-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
         }
     }
 
@@ -95,8 +95,8 @@
     .title {
         font-family: Geist;
         font-size: var(--font-size-large);
-        font-weight: 500;
-        color: var(--color-content-text-inverted);
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -111,16 +111,18 @@
 
     .domain {
         font-family: Geist;
-        color: var(--color-content-text-secondary);
+        color: rgba(255, 255, 255, 0.7);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: 500;
     }
 
     .connected-date {
         font-family: Geist;
-        color: var(--color-content-text-tertiary);
+        color: rgba(255, 255, 255, 0.5);
         white-space: nowrap;
+        font-weight: 400;
     }
 
     .stats-row {
@@ -132,11 +134,12 @@
 
     .stat {
         font-family: Geist;
-        color: var(--color-content-text-tertiary);
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 400;
     }
 
     .separator {
-        color: var(--color-content-text-tertiary);
+        color: rgba(255, 255, 255, 0.4);
         font-size: var(--font-size-small);
     }
 </style>
