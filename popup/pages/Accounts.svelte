@@ -11,6 +11,7 @@
     import Button from '../components/Button.svelte';
     import PlusIcon from '../components/icons/Plus.svelte';
     import { push } from 'popup/router/navigation';
+    import { WalletTypes } from 'config/wallet';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const accounts = $derived(currentWallet?.accounts ?? []);
@@ -63,11 +64,14 @@
         </div>
     </main>
 
-    <footer class="footer">
-        <Button variant="outline" onclick={handleAddAccount}>
-            <PlusIcon />
-        </Button>
-    </footer>
+    
+    {#if currentWallet.walletType != WalletTypes.SecretKey}
+        <footer class="footer">
+            <Button variant="outline" onclick={handleAddAccount}>
+                <PlusIcon />
+            </Button>
+        </footer>
+    {/if}
 </div>
 
 <style lang="scss">
