@@ -90,8 +90,9 @@ export class WalletService {
   }
 
   async getGlobalState(sendResponse: StreamResponse) {
-    if (this.#state.selectedWallet != -1) {
-      const wallet = this.#state.wallets[this.#state.selectedWallet];
+    const wallet = this.#state.wallets[this.#state.selectedWallet];
+
+    if (wallet) {
       const isSession = await wallet.checkSession();
 
       this.#state.selectedWallet = isSession ? this.#state.selectedWallet : -1;
@@ -206,7 +207,8 @@ export class WalletService {
 
       await wallet.addAccountBip39(payload.account, chain);
       await this.#state.sync();
-      this.#notifyAccountsChanged(wallet);
+
+      // TODO: add if accounts enable so we just add it automaticly
 
       sendResponse({
         resolve: this.#state

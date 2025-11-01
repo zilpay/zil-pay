@@ -25,7 +25,11 @@
         try {
             await destroyWallet(password, walletIndexToDelete);
 
-            push("/lock");
+            if ($globalStore.wallets.length > 0) {
+                push("/lock");
+            } else {
+                window.close();
+            }
         } catch (err) {
             error = String(err);
         } finally {
