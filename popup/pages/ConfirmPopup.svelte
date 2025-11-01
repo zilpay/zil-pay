@@ -14,6 +14,7 @@
     import { getCurrencySymbol } from 'config/currencies';
     
     import RoundImageButton from '../components/RoundImageButton.svelte';
+    import GasEditor from '../modals/GasEditor.svelte';
     import TransferSummary from '../components/TransferSummary.svelte';
     import TransferRoute from '../components/TransferRoute.svelte';
     import GasOption from '../components/GasOption.svelte';
@@ -30,6 +31,7 @@
     let isLoading = $state(false);
     let isLoadingGasFetch = $state(true);
     let errorMessage = $state<string | null>(null);
+    let showGasEditor = $state(false);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
@@ -81,6 +83,14 @@
         if (speed === GasSpeed.Aggressive) return 20n;
         if (speed === GasSpeed.Market) return 15n;
         return 10n;
+    }
+
+    function handleGasEdit() {
+        showGasEditor = true;
+    }
+
+    function handleGasSave(params: RequiredTxParams) {
+        gasEstimate = params;
     }
 
     function handleSessionError(e: unknown) {
@@ -291,7 +301,7 @@
 
                 <div class="section-header">
                     <span class="section-title">{$_('confirm.transaction')}</span>
-                    <button class="edit-button" onclick={() => push('/transfer')}>
+                    <button class="edit-button" onclick={() => handleGasEdit()}>
                         <span>{$_('confirm.edit')}</span>
                         <EditIcon />
                     </button>
@@ -328,6 +338,12 @@
         </footer>
     </div>
 {/if}
+
+<GasEditor
+    bind:show={showGasEditor}
+    gasParams={gasEstimate}
+    onSave={handleGasSave}
+/>
 
 <style lang="scss">
     .page-container {
