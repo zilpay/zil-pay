@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { currentParams } from 'popup/store/route';
@@ -32,6 +33,8 @@
     let isLoadingGasFetch = $state(true);
     let errorMessage = $state<string | null>(null);
     let showGasEditor = $state(false);
+    let isManualGasEdit = $state(false);
+    let countdown = $state(10);
 
     const wallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const account = $derived(wallet?.accounts[wallet.selectedAccount]);
@@ -71,9 +74,17 @@
             : [createDefaultGasOption()]
     );
 
+    const CIRCUMFERENCE = 2 * Math.PI * 10;
+    
+    const strokeDashoffset = $derived.by(() => {
+        const progress = countdown / 10;
+        return CIRCUMFERENCE - (CIRCUMFERENCE * progress);
+    });
+
     let fetchLock = false;
     let gasInFlight = false;
     let gasInterval: number | null = null;
+    let countdownInterval: number | null = null;
 
     function dismissError() {
         errorMessage = null;
@@ -87,6 +98,8 @@
 
     function handleGasEdit() {
         showGasEditor = true;
+        isManualGasEdit = true;
+        stopPolling();
     }
 
     function handleGasSave(params: RequiredTxParams) {
@@ -126,6 +139,11 @@
         });
 
         await setGlobalState();
+
+        if (isManualGasEdit) {
+            isManualGasEdit = false;
+            startPolling();
+        }
     }
 
     async function handleReject() {
@@ -206,7 +224,7 @@
     }
 
     async function fetchGasOnce() {
-        if (confirmLastIndex === -1 || gasInFlight || fetchLock) return;
+        if (confirmLastIndex === -1 || gasInFlight || fetchLock || isManualGasEdit) return;
         gasInFlight = true;
         if (!gasEstimate) isLoadingGasFetch = true;
         try {
@@ -224,29 +242,42 @@
         }
     }
 
-    $effect(() => {
-        const idx = confirmLastIndex;
-        const acc = accountIndex;
+    function stopPolling() {
+        if (gasInterval) {
+            clearInterval(gasInterval);
+            gasInterval = null;
+        }
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+    }
 
-        if (idx === -1 || acc < 0) return;
+    function startPolling() {
+        stopPolling();
+        
+        countdown = 10;
+        fetchGasOnce();
 
-        let mounted = true;
+        countdownInterval = window.setInterval(() => {
+            countdown = countdown - 1;
+            if (countdown <= 0) {
+                countdown = 10;
+            }
+        }, 1000);
 
-        const start = async () => {
-            await fetchGasOnce();
-            if (!mounted) return;
-            if (gasInterval) clearInterval(gasInterval);
-            gasInterval = window.setInterval(fetchGasOnce, 10000);
-        };
+        gasInterval = window.setInterval(() => {
+            fetchGasOnce();
+        }, 10000);
+    }
 
-        start();
+    onMount(() => {
+        if (confirmLastIndex !== -1 && accountIndex >= 0 && !isManualGasEdit) {
+            startPolling();
+        }
 
         return () => {
-            mounted = false;
-            if (gasInterval) {
-                clearInterval(gasInterval);
-                gasInterval = null;
-            }
+            stopPolling();
         };
     });
 </script>
@@ -300,8 +331,41 @@
                 {/if}
 
                 <div class="section-header">
-                    <span class="section-title">{$_('confirm.transaction')}</span>
-                    <button class="edit-button" onclick={() => handleGasEdit()}>
+                    <div class="countdown-timer">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                fill="none"
+                                stroke="var(--color-neutral-border-default)"
+                                stroke-width="2"
+                            />
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                fill="none"
+                                stroke="var(--color-content-text-purple)"
+                                stroke-width="2"
+                                stroke-dasharray={CIRCUMFERENCE}
+                                stroke-dashoffset={strokeDashoffset}
+                                stroke-linecap="round"
+                                transform="rotate(-90 12 12)"
+                                class="progress-circle"
+                            />
+                            <text
+                                x="12"
+                                y="12"
+                                text-anchor="middle"
+                                dominant-baseline="central"
+                                class="countdown-text"
+                            >
+                                {countdown}
+                            </text>
+                        </svg>
+                    </div>
+                    <button class="edit-button" onclick={handleGasEdit}>
                         <span>{$_('confirm.edit')}</span>
                         <EditIcon />
                     </button>
@@ -479,11 +543,23 @@
         align-items: center;
     }
 
-    .section-title {
-        color: var(--color-content-text-inverted);
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 20px;
+    .countdown-timer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+
+        .progress-circle {
+            transition: stroke-dashoffset 0.3s linear;
+        }
+
+        .countdown-text {
+            font-family: Geist;
+            font-size: 10px;
+            font-weight: 600;
+            fill: var(--color-content-text-inverted);
+        }
     }
 
     .edit-button {
