@@ -57,6 +57,25 @@ export async function changeChainProvider(walletIndex: number, chainIndex: numbe
   return resolve;
 }
 
+export async function removeChainProvider(chainHash: number) {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.REMOVE_CHAIN,
+    payload: {
+      chainHash,
+    },
+  }).send();
+  
+  const resolve = warpMessage(data) as IChainConfigState[];
+  const currentState = get(globalStore);
+
+  globalStore.set({
+    ...currentState,
+    chains: resolve,
+  });
+
+  return resolve;
+}
+
 export async function addEthereumChainResponse(
   uuid: string,
   walletIndex: number,

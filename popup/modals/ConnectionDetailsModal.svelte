@@ -119,7 +119,7 @@
 
             <div class="action-section">
                 <Button
-                    variant={confirmDelete ? 'primary' : 'outline'}
+              variant={confirmDelete ? 'primary' : 'outline'}
                     onclick={handleDeleteClick}
                 >
                     {#if confirmDelete}

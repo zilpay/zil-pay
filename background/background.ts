@@ -128,6 +128,12 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case MTypePopup.REMOVE_CHAIN:
+        core.provider.removeChain(
+          msg.payload.chainHash,
+          sendResponse,
+        );
+        return true;
 
       // transactions
       case MTypePopup.BUILD_TOKEN_TRANSFER:

@@ -4,15 +4,23 @@
     import { setGlobalState } from 'popup/background/wallet';
     import type { IChainConfigState } from 'background/storage/chain';
     import { viewChain } from 'lib/popup/url';
+    import { removeChainProvider } from 'popup/background/provider';
     import { currentParams } from 'popup/store/route';
+    import { hashChainConfig } from 'lib/utils/hashing';
+    import { pop } from 'popup/router/navigation';
     
     import NavBar from '../components/NavBar.svelte';
     import FastImg from '../components/FastImg.svelte';
     import Switch from '../components/Switch.svelte';
+    import Button from '../components/Button.svelte';
     import DownIcon from '../components/icons/Down.svelte';
     import DeleteIcon from '../components/icons/Delete.svelte';
+    import SuccessIcon from '../components/icons/Success.svelte';
 
     let showAdvanced = $state(false);
+    let isDeleting = $state(false);
+    let confirmDelete = $state(false);
+    let errorMessage = $state<string | null>(null);
 
     const chainIndex = $derived(Number($currentParams.index ?? 0));
     const chain = $derived<IChainConfigState | undefined>(
@@ -22,6 +30,28 @@
     const chainIcon = $derived(
         chain ? viewChain({ network: chain, theme: $globalStore.appearances }) : ''
     );
+
+    const chainHash = $derived(
+        chain ? hashChainConfig(chain.chainIds, chain.slip44, chain.chain) : -1
+    );
+
+    const isDependency = $derived(() => {
+        if (!chain || chainHash === -1) return false;
+
+        for (const wallet of $globalStore.wallets) {
+            if (wallet.defaultChainHash === chainHash) {
+                return true;
+            }
+
+            for (const account of wallet.accounts) {
+                if (account.chainHash === chainHash) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    });
 
     async function toggleFallback() {
         if (!chain || chainIndex < 0) return;
@@ -103,6 +133,28 @@
         });
         
         await setGlobalState();
+    }
+
+    async function handleDeleteClick() {
+        if (!confirmDelete) {
+            confirmDelete = true;
+            return;
+        }
+
+        if (!chain || chainHash === -1 || isDeleting) return;
+
+        isDeleting = true;
+        errorMessage = null;
+
+        try {
+            await removeChainProvider(chainHash);
+            pop();
+        } catch (e) {
+            errorMessage = String(e);
+            confirmDelete = false;
+        } finally {
+            isDeleting = false;
+        }
     }
 </script>
 
@@ -234,7 +286,28 @@
                     </div>
                 </div>
             {/if}
+
+            <div class="spacer"></div>
         </div>
+
+        <footer class="footer">
+            {#if errorMessage}
+                <div class="error-message">{errorMessage}</div>
+            {/if}
+            <Button
+                variant={confirmDelete ? 'primary' : 'outline'}
+                onclick={handleDeleteClick}
+                disabled={isDependency() || isDeleting}
+            >
+                {#if confirmDelete}
+                    <SuccessIcon class="success-icon"/>
+                    {$_('networkDetails.confirmDelete')}
+                {:else}
+                    <DeleteIcon />
+                    {$_('networkDetails.deleteNetwork')}
+                {/if}
+            </Button>
+        </footer>
     {/if}
 </div>
 
@@ -254,7 +327,13 @@
         flex-direction: column;
         gap: 16px;
         padding: 24px var(--padding-side);
+        padding-bottom: 0;
         overflow-y: auto;
+    }
+
+    .spacer {
+        flex-shrink: 0;
+        height: 80px;
     }
 
     .info-card, .toggles-card, .section-card {
@@ -508,5 +587,30 @@
             height: 24px;
             color: var(--color-negative-border-primary);
         }
+    }
+
+    .footer {
+        position: sticky;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px;
+        background: var(--color-neutral-background-base);
+        border-top: 1px solid var(--color-cards-regular-border-default);
+    }
+
+    .error-message {
+        padding: 12px;
+        background: var(--color-error-background);
+        border: 1px solid var(--color-negative-border-primary);
+        border-radius: 8px;
+        color: var(--color-error-text);
+        font-size: 14px;
+        line-height: 20px;
+        text-align: center;
+    }
+    :global(.success-icon > path) {
+        stroke: var(--color-content-text-inverted);
     }
 </style>

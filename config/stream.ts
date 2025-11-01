@@ -27,6 +27,7 @@ export const MTypePopup = {
   FT_UPDATE_RATES: `@/${app}/ft-rates-update`,
 
   SWICH_CHAIN: `@/${app}/swich-chain`,
+  REMOVE_CHAIN: `@/${app}/remove-chain`,
 
   BUILD_TOKEN_TRANSFER: `@/${app}/build-token-transfer`,
   REJECT_CONFIRM: `@/${app}/reject-confirm`,

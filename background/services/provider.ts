@@ -48,6 +48,40 @@ export class ProviderService {
     }
   }
 
+  async removeChain(chainHash: number, sendResponse: StreamResponse) {
+    try {
+      const chain = this.#state.getChain(chainHash);
+
+      if (!chain) {
+        throw new Error(`Chain with hash ${chainHash} not found`);
+      }
+
+      for (const wallet of this.#state.wallets) {
+        if (wallet.defaultChainHash === chainHash) {
+          throw new Error(`"${wallet.walletName}" depends on`);
+        }
+
+        for (const account of wallet.accounts) {
+          if (account.chainHash === chainHash) {
+            throw new Error(`Account "${account.name}" in wallet "${wallet.walletName}" depends on`);
+          }
+        }
+      }
+
+      this.#state.chains = this.#state.chains.filter((c) => c.hash() !== chainHash);
+    
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: this.#state.chains,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async balanceUpdate(walletIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
