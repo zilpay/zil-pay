@@ -75,7 +75,10 @@
         
         try {
             await ftBalanceUpdate($globalStore.selectedWallet);
-            await ftUpdateRates($globalStore.selectedWallet);
+
+            if (!currentChain?.testnet) {
+                await ftUpdateRates($globalStore.selectedWallet);
+            }
         } catch (e) {
             error = String(e);
         } finally {
