@@ -10,8 +10,12 @@
     import EditIcon from '../components/icons/Edit.svelte';
     import { pop } from 'popup/router/navigation';
 
-    let accountName = $state($_('addAccount.defaultName', { values: { index: 1 } }));
-    let accountIndex = $state($globalStore.wallets[$globalStore.selectedWallet].accounts.length + 1);
+    let accountIndex = $state($globalStore.wallets[$globalStore.selectedWallet].accounts.length);
+    let accountName = $state($_('addAccount.defaultName', {
+        values: {
+            index: $globalStore.wallets[$globalStore.selectedWallet].accounts.length,
+        },
+    }));
     let isLoading = $state(false);
     let error = $state<string | null>(null);
 

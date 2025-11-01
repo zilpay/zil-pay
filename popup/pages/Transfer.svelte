@@ -13,6 +13,8 @@
     import Modal from '../components/Modal.svelte';
     import TokenSelector from '../modals/TokenSelectorModal.svelte';
     import AddressSelector from '../modals/AddressSelector.svelte';
+    import WarningIcon from '../components/icons/Warning.svelte';
+    import CloseIcon from '../components/icons/Close.svelte';
 
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
@@ -30,6 +32,7 @@
     let isLoading = $state(false);
     let potentialAddresses = $state<WalletAddressInfo[]>([]);
     let addressesLoading = $state(false);
+    let errorMessage = $state<string | null>(null);
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount] as IAccountState | undefined);
@@ -102,13 +105,18 @@
         }
     });
 
+    function dismissError() {
+        errorMessage = null;
+    }
+
     async function fetchPotentialAddresses() {
         if (addressesLoading || !currentAccount) return;
         
         addressesLoading = true;
         try {
             potentialAddresses = await getAllAddressesByChain($globalStore.selectedWallet, currentWallet.selectedAccount);
-        } catch (_) {
+        } catch (e) {
+            errorMessage = String(e);
             potentialAddresses = [];
         } finally {
             addressesLoading = false;
@@ -148,6 +156,7 @@
         if (isContinueDisabled() || isLoading || !selectedToken || !currentAccount) return;
 
         isLoading = true;
+        errorMessage = null;
 
         try {
             const params: BuildTokenTransferParams = {
@@ -160,14 +169,13 @@
 
             await buildTokenTransfer(params);
             push('/confirm');
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            errorMessage = String(e);
         } finally {
             isLoading = false;
         }
     }
 </script>
-
 
 <Modal
     bind:show={showAddressModal}
@@ -180,9 +188,24 @@
         onSelect={handleAddressSelect}
     />
 </Modal>
+
 <div class="page-container">
     <NavBar title={$_('tokenTransfer.title')} />
     <main class="content">
+        {#if errorMessage}
+            <div class="error-banner" role="alert">
+                <div class="error-left">
+                    <div class="error-icon">
+                        <WarningIcon />
+                    </div>
+                    <div class="error-text">{errorMessage}</div>
+                </div>
+                <button class="error-close" onclick={dismissError} aria-label="Dismiss error">
+                    <CloseIcon />
+                </button>
+            </div>
+        {/if}
+
         {#if selectedToken && currentAccount}
             <AmountInput
                 bind:value={amount}
@@ -192,6 +215,7 @@
                 onMax={handleMaxAmount}
             />
         {/if}
+        
         <div class="recipient-section">
             <span class="section-label">{$_('tokenTransfer.sendTo')}</span>
             <SmartInput
@@ -262,6 +286,67 @@
         padding: 24px var(--padding-side);
         overflow-y: auto;
         min-height: 0;
+    }
+
+    .error-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px;
+        background: var(--color-error-background);
+        border: 1px solid var(--color-negative-border-primary);
+        border-radius: 12px;
+    }
+
+    .error-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .error-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+            color: var(--color-negative-border-primary);
+        }
+    }
+
+    .error-text {
+        color: var(--color-error-text);
+        font-size: 14px;
+        line-height: 20px;
+        word-break: break-word;
+    }
+
+    .error-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: none;
+        border: none;
+        border-radius: 6px;
+        color: var(--color-error-text);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        :global(svg) {
+            width: 18px;
+            height: 18px;
+        }
+
+        &:hover {
+            background: color-mix(in srgb, var(--color-negative-border-primary) 20%, transparent);
+        }
     }
 
     .recipient-section {
