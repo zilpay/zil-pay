@@ -36,6 +36,7 @@
     const chain = $derived(getAccountChain($globalStore.selectedWallet));
     const confirmLastIndex = $derived(wallet ? wallet.confirm.length - 1 : -1);
     const confirmTx = $derived(confirmLastIndex !== -1 ? wallet.confirm[confirmLastIndex] : null);
+    const confirmCount = $derived(wallet?.confirm.length ?? 0);
     const book = $derived($globalStore.book || []);
     const nativeToken = $derived(wallet?.tokens.filter((t) => t.addrType == confirmTx?.metadata?.token.addrType).find(t => t.native));
     const accountIndex = $derived(wallet?.selectedAccount ?? 0);
@@ -125,10 +126,12 @@
             await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
             await getGlobalState();
 
-            if ($currentParams?.type == 'popup') {
-                window.close();
-            } else {
-                push('/history');
+            if (wallet.confirm.length === 0) {
+                if ($currentParams?.type === 'popup') {
+                    window.close();
+                } else {
+                    push('/history');
+                }
             }
         } catch (e) {
             if (!handleSessionError(e)) {
@@ -173,10 +176,10 @@
 
             await setGlobalState();
             await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+            await getGlobalState();
 
-            if (wallet.confirm.length == 1) {
-                await getGlobalState();
-                if ($currentParams?.type == 'popup') {
+            if (wallet.confirm.length === 0) {
+                if ($currentParams?.type === 'popup') {
                     window.close();
                 } else {
                     push('/history');
@@ -238,17 +241,24 @@
     });
 </script>
 
-{#if !token || !chain || !account}
+{#if !token || !chain || !account || confirmLastIndex === -1}
     <div class="loading-container"></div>
 {:else}
     <div class="page-container">
         <header class="header">
             <h1 class="title">{confirmTx?.metadata?.title ?? ''}</h1>
-            <RoundImageButton
-                imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
-                alt={chain.name}
-                disabled={true}
-            />
+            <div class="header-right">
+                {#if confirmCount > 1}
+                    <div class="confirm-counter">
+                        <span class="counter-text">{confirmCount}</span>
+                    </div>
+                {/if}
+                <RoundImageButton
+                    imageSrc={viewChain({ network: chain, theme: $globalStore.appearances })}
+                    alt={chain.name}
+                    disabled={true}
+                />
+            </div>
         </header>
 
         <main class="content">
@@ -344,6 +354,30 @@
         font-weight: 700;
         line-height: 30px;
         margin: 0;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .confirm-counter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+    }
+
+    .counter-text {
+        font-family: Geist;
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
     }
 
     .content {

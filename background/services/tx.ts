@@ -15,6 +15,7 @@ import type { WorkerService } from "./worker";
 import { TransactionStatus } from "config/tx";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
+import { ConnectError } from "config/errors";
 
 
 export class TransactionService {
@@ -203,7 +204,19 @@ export class TransactionService {
           type: LegacyZilliqaTabMsg.TX_RESULT,
           uuid: confirm.uuid,
           payload: {
-           reject: "user rejected" 
+           reject: ConnectError.UserRejected, 
+          },
+        }).send(confirm.metadata?.domain);
+      } else if (confirm && confirm.evm && confirm.uuid && confirm.metadata?.domain) {
+        new TabsMessage({
+          type: MTypePopup.EVM_RESPONSE,
+          uuid: confirm.uuid,
+          payload: {
+            error: {
+              message: ConnectError.UserRejected,
+              code: 4001,
+              data: null,
+            }
           },
         }).send(confirm.metadata?.domain);
       }

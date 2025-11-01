@@ -505,11 +505,12 @@ export class WalletService {
     }
 
     const sendEvmEvent = (domain: string) => {
+      const address = selectedAccount.addrType == AddressType.Bech32 ? selectedAccount.addr.split(":")[1] : selectedAccount.addr;
       new TabsMessage({
         type: MTypePopup.EVM_EVENT,
         payload: {
           event: 'accountsChanged',
-          data: [logout ? null : selectedAccount.addr],
+          data: [logout ? null : address],
         },
       }).send(domain);
     }
