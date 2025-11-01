@@ -15,33 +15,50 @@
     let searchError = $state<string | null>(null);
     let deletedTokens = $state<IFTokenState[]>([]);
 
-    const DELETED_TOKENS_KEY_PREFIX = 'deleted_tokens_';
+    const DELETED_TOKENS_KEY = 'deleted_tokens_cache';
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
-    const tokens = $derived(currentWallet?.tokens || []);
+    const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
+    const currentChainHash = $derived(currentAccount?.chainHash ?? -1);
+    const allTokens = $derived(currentWallet?.tokens || []);
+    
+    const tokens = $derived(allTokens.filter(t => t.chainHash === currentChainHash));
 
-    function getDeletedTokens(walletId: string): IFTokenState[] {
-        const key = `${DELETED_TOKENS_KEY_PREFIX}${walletId}`;
+    type DeletedTokensCache = Record<number, IFTokenState[]>;
+
+    function getDeletedTokensCache(): DeletedTokensCache {
         try {
-            const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : [];
+            const stored = localStorage.getItem(DELETED_TOKENS_KEY);
+            return stored ? JSON.parse(stored) : {};
         } catch (e) {
-            console.error('Failed to parse deleted tokens from LocalStorage', e);
-            return [];
+            console.error('Failed to parse deleted tokens cache from LocalStorage', e);
+            return {};
         }
     }
 
-    function saveDeletedTokens(walletId: string, tokens: IFTokenState[]) {
-        const key = `${DELETED_TOKENS_KEY_PREFIX}${walletId}`;
+    function saveDeletedTokensCache(cache: DeletedTokensCache) {
         try {
-            localStorage.setItem(key, JSON.stringify(tokens));
+            localStorage.setItem(DELETED_TOKENS_KEY, JSON.stringify(cache));
         } catch (e) {
-            console.error('Failed to save deleted tokens to LocalStorage', e);
+            console.error('Failed to save deleted tokens cache to LocalStorage', e);
         }
+    }
+
+    function getDeletedTokensForChain(chainHash: number): IFTokenState[] {
+        const cache = getDeletedTokensCache();
+        return cache[chainHash] || [];
+    }
+
+    function saveDeletedTokensForChain(chainHash: number, tokens: IFTokenState[]) {
+        const cache = getDeletedTokensCache();
+        cache[chainHash] = tokens;
+        saveDeletedTokensCache(cache);
     }
 
     $effect(() => {
-        if (currentWallet?.uuid) {
-            deletedTokens = getDeletedTokens(currentWallet.uuid);
+        if (currentChainHash !== -1) {
+            deletedTokens = getDeletedTokensForChain(currentChainHash);
+        } else {
+            deletedTokens = [];
         }
     });
 
@@ -112,7 +129,12 @@
         const walletIndex = $globalStore.selectedWallet;
         const originalWallet = $globalStore.wallets[walletIndex];
 
-        if (!originalWallet || !token) return;
+        if (!originalWallet || !token || currentChainHash === -1) return;
+
+        if (token.chainHash !== currentChainHash) {
+            searchError = $_('tokenManager.wrongChain');
+            return;
+        }
 
         const tokenAddress = token.addr.toLowerCase();
         const activeTokenIndex = originalWallet.tokens.findIndex(t => t.addr.toLowerCase() === tokenAddress);
@@ -125,15 +147,20 @@
             const removedToken = originalWallet.tokens[activeTokenIndex];
             newTokens = originalWallet.tokens.filter((_, index) => index !== activeTokenIndex);
             
-            const currentDeleted = getDeletedTokens(originalWallet.uuid);
-            saveDeletedTokens(originalWallet.uuid, [...currentDeleted, removedToken]);
-            deletedTokens = getDeletedTokens(originalWallet.uuid);
+            const currentDeleted = getDeletedTokensForChain(currentChainHash);
+            const updatedDeleted = currentDeleted.filter(t => 
+                t.addr.toLowerCase() !== tokenAddress
+            );
+            updatedDeleted.push(removedToken);
+            saveDeletedTokensForChain(currentChainHash, updatedDeleted);
+            deletedTokens = getDeletedTokensForChain(currentChainHash);
         } else if (isEnabled) {
             newTokens = [...originalWallet.tokens, token];
 
-            const updatedDeleted = deletedTokens.filter(t => t.addr.toLowerCase() !== tokenAddress);
-            saveDeletedTokens(originalWallet.uuid, updatedDeleted);
-            deletedTokens = updatedDeleted;
+            const currentDeleted = getDeletedTokensForChain(currentChainHash);
+            const updatedDeleted = currentDeleted.filter(t => t.addr.toLowerCase() !== tokenAddress);
+            saveDeletedTokensForChain(currentChainHash, updatedDeleted);
+            deletedTokens = getDeletedTokensForChain(currentChainHash);
             foundToken = null;
         } else {
             return;
