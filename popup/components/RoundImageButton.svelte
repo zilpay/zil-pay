@@ -6,11 +6,13 @@
         imageSrc = '',
         alt = '',
         disabled = false,
+        isTestnet = false,
         onclick = () => {}
     }: {
         imageSrc?: string;
         alt?: string;
         disabled?: boolean;
+        isTestnet?: boolean;
         onclick?: () => void;
     } = $props();
 
@@ -24,12 +26,13 @@
 <button
     class="round-image-button"
     class:disabled
+    class:testnet={isTestnet}
     onclick={handleClick}
     {disabled}
     aria-label={alt}
     type="button"
 >
-    <div class="image-container">
+    <div class="image-container" class:testnet={isTestnet}>
         {#if imageSrc}
             <FastImg src={imageSrc} {alt} class="button-image" />
         {/if}
@@ -67,6 +70,16 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
+
+        &.testnet {
+            border-color: var(--color-warning-text);
+            background: color-mix(in srgb, var(--color-warning-text) 5%, transparent);
+
+            &:hover:not(:disabled) {
+                border-color: var(--color-warning-text);
+                background: color-mix(in srgb, var(--color-warning-text) 10%, transparent);
+            }
+        }
     }
 
     .image-container {
@@ -79,6 +92,16 @@
         justify-content: center;
         background-color: var(--color-neutral-background-base);
         flex-shrink: 0;
+        position: relative;
+
+        &.testnet::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            border: 2px solid var(--color-warning-text);
+            pointer-events: none;
+        }
     }
 
     .image-container :global(.button-image) {

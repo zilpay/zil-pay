@@ -24,6 +24,7 @@
         expandDisabled = false,
         refreshDisabled = false,
         lockDisabled = false,
+        isTestnet = false,
         onRefresh = () => {},
         left = undefined
     }: {
@@ -38,6 +39,7 @@
         expandDisabled?: boolean;
         refreshDisabled?: boolean;
         lockDisabled?: boolean;
+        isTestnet?: boolean;
         onRefresh?: () => void;
         left?: Snippet;
     } = $props();
@@ -75,6 +77,7 @@
             <RoundImageButton
                 imageSrc={networkImageSrc}
                 alt={networkImageAlt}
+                isTestnet={isTestnet}
                 disabled={networkButtonDisabled}
                 onclick={onNetworkButton}
             />

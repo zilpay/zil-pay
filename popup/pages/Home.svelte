@@ -92,6 +92,7 @@
             network: currentChain,
             theme: $globalStore.appearances
         })}
+        isTestnet={Boolean(currentChain?.testnet)}
         networkImageAlt={currentChain?.name || 'Network'}
         onRefresh={handleTokensUpdate}
     />

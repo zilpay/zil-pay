@@ -16,7 +16,7 @@
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
         "addr": "0x0000000000000000000000000000000000000000",
         "name": "EVM",
-        "symbol": "ZIL",
+        "symbol": "tZIL",
         "decimals": 18
       },
       {
@@ -24,7 +24,7 @@
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/zilliqa/%{contract_address}%/%{dark,light}%.webp",
         "addr": "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
         "name": "Scilla",
-        "symbol": "ZIL",
+        "symbol": "tZIL",
         "decimals": 12
       }
     ],
@@ -63,7 +63,7 @@
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/bnbchain/%{contract_address}%/%{dark,light}%.webp",
         "addr": "0x0000000000000000000000000000000000000000",
         "name": "BinanceCoin",
-        "symbol": "BNB",
+        "symbol": "tBNB",
         "decimals": 18
       }
     ],
@@ -101,7 +101,7 @@
         "addr": "0x0000000000000000000000000000000000000000",
         "name": "Ethereum",
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/bnbchain/%{contract_address}%/%{dark,light}%.webp",
-        "symbol": "ETH",
+        "symbol": "tETH",
         "decimals": 18
       }
     ],
