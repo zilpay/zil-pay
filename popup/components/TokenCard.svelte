@@ -6,9 +6,6 @@
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { hashXORHex } from 'lib/utils/hashing';
     import { getCurrencySymbol } from 'config/currencies';
-    import { AddressType } from 'config/wallet';
-    import ScillaIcon from './icons/Scilla.svelte';
-    import SolidityIcon from './icons/Solidity.svelte';
 
     let {
         token,
@@ -17,33 +14,37 @@
         loading = false,
         disabled = false,
         tokensRow = true,
-        addrType = undefined as AddressType | undefined,
         onSelect = () => {}
     }: {
-        token: IFTokenState,
-        account: IAccountState,
-        hide: boolean;
+        token: IFTokenState;
+        account: IAccountState;
+        hide?: boolean;
         loading?: boolean;
         disabled?: boolean;
         tokensRow?: boolean;
-        addrType?: AddressType;
         onSelect?: () => void;
     } = $props();
 
     const balance = $derived(() => {
         if (hide) return '******';
-        const humanBalance = abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals);
+        const rawBalance = token.balances[hashXORHex(account.pubKey)] ?? 0;
+        const humanBalance = abbreviateNumber(rawBalance, token.decimals);
         return `${humanBalance} ${token.symbol}`;
     });
     
     const convertedBalance = $derived(() => {
         if (hide) return '******';
+        
         const rate = token.rate ?? 0;
+        if (rate <= 0) return '-';
+
         const rawBalance = token.balances[hashXORHex(account.pubKey)] ?? 0;
         const numericBalance = Number(rawBalance) / (10 ** token.decimals);
         const convertedValue = numericBalance * rate;
-        const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
-        return rate > 0 ? `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}` : '-';
+        const wallet = $globalStore.wallets[$globalStore.selectedWallet];
+        const currencySymbol = getCurrencySymbol(wallet?.settings?.currencyConvert ?? 'USD');
+        
+        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}`;
     });
     
     const logo = $derived(processTokenLogo({
@@ -51,10 +52,10 @@
         theme: $globalStore.appearances,
     }));
 
-    const typeToUse = $derived(() => addrType ?? token?.addrType);
-
     function handleClick() {
-        if (!disabled && !loading) onSelect();
+        if (!disabled && !loading) {
+            onSelect();
+        }
     }
 </script>
 
@@ -66,41 +67,23 @@
     onclick={handleClick}
     type="button"
 >
-    {#if !tokensRow}
-        <div class="grid-header">
-            <span class="symbol">{token.name}</span>
+    {#if tokensRow}
+        <div class="info-group">
             <div class="token-icon">
-                <FastImg src={logo} class="icon-image" />
-                {#if typeToUse() === AddressType.Bech32}
-                    <div class="address-type-badge">
-                        <ScillaIcon class="icon" />
-                    </div>
-                {:else if typeToUse() === AddressType.EthCheckSum}
-                    <div class="address-type-badge">
-                        <SolidityIcon class="icon" />
-                    </div>
-                {/if}
+                <FastImg src={logo} alt={token.name} />
             </div>
+            <span class="token-name">{token.name}</span>
         </div>
         <div class="balance-group">
             <div class="balance">{balance()}</div>
             <div class="converted">{convertedBalance()}</div>
         </div>
     {:else}
-        <div class="info-group">
+        <div class="grid-header">
+            <span class="symbol">{token.name}</span>
             <div class="token-icon">
-                <FastImg src={logo} class="icon-image" />
-                {#if typeToUse() === AddressType.Bech32}
-                    <div class="address-type-badge">
-                        <ScillaIcon class="icon" />
-                    </div>
-                {:else if typeToUse() === AddressType.EthCheckSum}
-                    <div class="address-type-badge">
-                        <SolidityIcon class="icon" />
-                    </div>
-                {/if}
+                <FastImg src={logo} alt={token.name} />
             </div>
-            <span class="token-name">{token.name}</span>
         </div>
         <div class="balance-group">
             <div class="balance">{balance()}</div>
@@ -127,7 +110,6 @@
         align-items: flex-start;
         gap: 16px;
         width: 148px;
-        align-self: start;
 
         &:hover:not(:disabled):not(.loading) {
             border-color: var(--color-button-regular-primary-default);
@@ -149,10 +131,40 @@
             transform: translateX(-100%);
             animation: shimmer 1.5s infinite;
         }
+
+        &.row {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+
+            .token-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .info-group {
+                flex: 1;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                min-width: 0;
+            }
+
+            .token-name {
+                font-weight: 400;
+            }
+
+            .balance-group {
+                flex: 1;
+                align-items: flex-end;
+                text-align: right;
+            }
+        }
     }
 
     .token-icon {
-        position: relative;
         width: 24px;
         height: 24px;
         border-radius: 50%;
@@ -162,28 +174,11 @@
         align-items: center;
         justify-content: center;
         background: var(--color-neutral-background-container);
-    }
 
-    .address-type-badge {
-        position: absolute;
-        bottom: -2px;
-        right: -2px;
-        width: 14px;
-        height: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--color-neutral-background-base);
-        border-radius: 50%;
-        border: 2px solid var(--color-neutral-background-base);
-
-        :global(svg) {
-            width: 10px;
-            height: 10px;
-        }
-
-        :global(.icon > path) {
-            fill: var(--color-content-text-secondary);
+        :global(img) {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     }
     
@@ -200,20 +195,10 @@
         flex-direction: column;
         align-items: flex-start;
         width: 100%;
-        overflow: hidden;
+        min-width: 0;
     }
 
-    .symbol {
-        color: var(--color-content-text-inverted);
-        font-size: 16px;
-        font-family: Geist, monospace;
-        font-weight: 700;
-        line-height: 22px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
+    .symbol,
     .token-name {
         color: var(--color-content-text-inverted);
         font-size: 16px;
@@ -245,46 +230,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .token-card.row {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-        width: 100%;
-
-        .token-icon {
-            width: 32px;
-            height: 32px;
-        }
-
-        .address-type-badge {
-            width: 16px;
-            height: 16px;
-
-            :global(svg) {
-                width: 12px;
-                height: 12px;
-            }
-        }
-
-        .info-group {
-            flex: 1 1 0;
-            flex-direction: row;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .token-name {
-            font-weight: 400;
-        }
-
-        .balance-group {
-            flex: 1 1 0;
-            align-items: flex-end;
-            text-align: right;
-        }
     }
 
     @keyframes shimmer {
