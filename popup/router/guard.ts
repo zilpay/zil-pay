@@ -8,6 +8,7 @@ import ConnectPage from "../pages/Connect.svelte";
 import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
 import AddChainPage from "../pages/AddChain.svelte";
 import AddAssetsPage from "../pages/AddAssets.svelte";
+import { linksExpand } from "popup/mixins/links";
 
 export class RouteGuard {
   private static navigate(path: string) {
@@ -20,6 +21,10 @@ export class RouteGuard {
     }
 
     const globalState = get(globalStore);
+
+    if (globalState.wallets.length == 0 && window.location.hash == '') {
+      linksExpand("/start");      
+    }
 
     if (globalState.wallets.length == 0) {
       this.navigate("/start");
