@@ -21,6 +21,7 @@ import { buildPayloadTxReceipt, buildSendSignedTxRequest, processTxSendResponse 
 import { AddressType } from 'config/wallet';
 import type { GasFeeHistory, RequiredTxParams } from 'types/gas';
 import type { TransactionNotifier } from 'lib/runtime/notify';
+import { TypeOf } from 'lib/types';
 
 export class NetworkProvider {
   config: ChainConfig;
@@ -262,6 +263,12 @@ export class NetworkProvider {
     const provider = new RpcProvider(this.config);
     const payloads = allRequests.map(r => r.payload);
     const responses = await provider.req<JsonRPCResponse<any>[]>(payloads, false);
+
+    if (!TypeOf.isArray(responses) && TypeOf.isObject(responses)) {
+      if ((responses as any).error) {
+        throw new Error((responses as any).error.message);
+      }
+    }
 
     for (let i = 0; i < allRequests.length; i++) {
       const requestInfo = allRequests[i];
