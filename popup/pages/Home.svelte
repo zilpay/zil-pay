@@ -31,6 +31,14 @@
 
     let tokensloading = $state(false);
     let error = $state<string | null>(null);
+    let mounted = $state(false);
+
+    $effect(() => {
+        if (!mounted) {
+            mounted = true;
+            handleTokensUpdate();
+        }
+    });
 
     function dismissError() {
         error = null;
@@ -96,7 +104,8 @@
             theme: $globalStore.appearances
         })}
         isTestnet={Boolean(currentChain?.testnet)}
-        networkImageAlt={currentChain?.name || 'Network'}
+        refreshDisabled={tokensloading}
+        networkImageAlt={currentChain?.name}
         onRefresh={handleTokensUpdate}
     />
     <main class="content-area">
