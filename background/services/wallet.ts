@@ -18,6 +18,7 @@ import { ConnectError } from "config/errors";
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
+import { hashXOR } from "lib/utils/hashing";
 
 export class WalletService {
   #state: BackgroundState;
@@ -233,10 +234,32 @@ export class WalletService {
       const wallet = this.#state.wallets[payload.walletIndex];
       const chain = this.#state.getChain(wallet.defaultChainHash)!;
 
-      await wallet.addAccountBip39(payload.account, chain);
-      await this.#state.sync();
+      const existingAccountHashes = wallet.accounts.map((acc) =>
+        hashXOR(hexToUint8Array(acc.pubKey))
+      );
 
-      // TODO: add if accounts enable so we just add it automaticly
+      await wallet.addAccountBip39(payload.account, chain);
+
+      const newAccount = wallet.accounts[wallet.accounts.length - 1];
+
+      if (newAccount) {
+        const newAccountPubKeyBytes = hexToUint8Array(newAccount.pubKey);
+        const newAccountHash = hashXOR(newAccountPubKeyBytes);
+
+        this.#state.connections.list.forEach((connection) => {
+          const isWalletConnected = connection.connectedAccounts.some((hash) =>
+            existingAccountHashes.includes(hash)
+          );
+
+          if (isWalletConnected) {
+            if (!connection.connectedAccounts.includes(newAccountHash)) {
+              connection.connectedAccounts.push(newAccountHash);
+            }
+          }
+        });
+      }
+
+      await this.#state.sync();
 
       sendResponse({
         resolve: this.#state
