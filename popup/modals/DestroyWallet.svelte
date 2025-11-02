@@ -6,16 +6,17 @@
     import Button from '../components/Button.svelte';
     import WarningIcon from '../components/icons/Warning.svelte';
     import { push } from 'popup/router/navigation';
+    import { WalletTypes } from 'config/wallet';
 
     let password = $state('');
     let isLoading = $state(false);
     let error = $state<string | null>(null);
 
-    const isValid = $derived(password.trim().length > 0);
+    const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
 
     async function handleDelete(e: SubmitEvent) {
         e.preventDefault();
-        if (!isValid || isLoading) return;
+        if (isLoading) return;
 
         isLoading = true;
         error = null;
@@ -59,17 +60,18 @@
     </p>
 
     <form class="form" onsubmit={handleDelete}>
-        <SmartInput
-            bind:value={password}
-            placeholder={$_('deleteWallet.passwordPlaceholder')}
-            disabled={isLoading}
-            hasError={!!error}
-            errorMessage={error || ''}
-            loading={isLoading}
-            autofocus
-            hide
-        />
-
+        {#if currentWallet.walletType == WalletTypes.SecretKey || currentWallet.walletType == WalletTypes.SecretPhrase}
+            <SmartInput
+                bind:value={password}
+                placeholder={$_('deleteWallet.passwordPlaceholder')}
+                disabled={isLoading}
+                hasError={!!error}
+                errorMessage={error || ''}
+                loading={isLoading}
+                autofocus
+                hide
+            />
+        {/if}
         <Button
       type="submit"
             variant="outline"

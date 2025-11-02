@@ -12,7 +12,7 @@ import { ConfirmState } from "background/storage/confirm";
 import { Session } from "background/secure";
 import { WorkerService } from "./worker";
 import { AddressCategory } from "config/common";
-import { AddressType } from "config/wallet";
+import { AddressType, WalletTypes } from "config/wallet";
 import { Address } from "crypto/address";
 import { ConnectError } from "config/errors";
 import { ETHEREUM, ZILLIQA } from "config/slip44";
@@ -344,10 +344,13 @@ export class WalletService {
 
   async removeWallet(walletIndex: number, password: string, sendResponse: StreamResponse) {
     try {
-      const passwordBytes = utf8ToUint8Array(password);
       const wallet = this.#state.wallets[walletIndex];
+      if (wallet.walletType == WalletTypes.SecretKey || wallet.walletType == WalletTypes.SecretPhrase) {
+        const passwordBytes = utf8ToUint8Array(password);
 
-      await wallet.unlock(passwordBytes);
+        await wallet.unlock(passwordBytes);
+      }
+
       this.#state.wallets.splice(walletIndex, 1);
       await this.#worker.stop();
       await this.#state.sync();

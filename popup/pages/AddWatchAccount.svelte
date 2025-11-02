@@ -52,6 +52,12 @@
   const isValidAddress = $derived(() => isBech32(address) || isEvm(address));
   const isFormValid = $derived(() => isValidAddress() && accountName.trim().length > 0 && !isLoading);
 
+  function generateDefaultWalletName(): string {
+    const chainName = $cacheStore.chain?.name;
+    const walletCount = $globalStore.wallets.length;
+    return `${chainName} ${walletCount + 1}`;
+  }
+
   async function handleConfirm(e: SubmitEvent) {
     e.preventDefault();
     if (!isFormValid()) return;
@@ -61,7 +67,7 @@
       await walletFromAccountWatched({
         address,
         accountName,
-        walletName: "",
+        walletName: generateDefaultWalletName(),
         chain: selectedChain!,
         settings: walletSettings,
       });

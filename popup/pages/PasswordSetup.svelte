@@ -29,7 +29,7 @@
   let isLoading = $state(false);
   let creationError = $state<string | null>(null);
   
-  let walletSettings = $state<IWalletSettingsState>({
+    let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
     hashFnParams: {
       memory: 6553,
@@ -48,7 +48,7 @@
   });
 
   function generateDefaultWalletName(): string {
-    const chainName = $cacheStore.chain?.name || 'Wallet';
+    const chainName = $cacheStore.chain?.name;
     const walletCount = $globalStore.wallets.length;
     return `${chainName} ${walletCount + 1}`;
   }

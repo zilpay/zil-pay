@@ -197,6 +197,10 @@ export class Wallet implements IWalletState {
   }
 
   async unlock(password: Uint8Array) {
+    if (this.walletType == WalletTypes.Watch || this.walletType == WalletTypes.Ledger) {
+      return;
+    }
+
     const wordsOrKey = await this.decrypt(password);
     await this.setSession(wordsOrKey);
   }
