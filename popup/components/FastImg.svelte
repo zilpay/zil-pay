@@ -19,6 +19,9 @@
             return;
         }
 
+        isLoading = true;
+        hasError = false;
+        
         const img = new Image();
         img.src = src;
         img.onload = () => isLoading = false;
@@ -57,17 +60,21 @@
     }
 
     .loading-spinner {
-        width: 24px;
-        height: 24px;
+        width: 75%;
+        aspect-ratio: 1;
+        max-width: 24px;
+        
         border: 3px solid color-mix(in srgb, var(--color-content-text-purple) 30%, transparent);
-        border-top: 3px solid var(--color-content-text-purple);
+        border-top-color: var(--color-content-text-purple);
         border-radius: 50%;
         animation: spin 1s linear infinite;
+        box-sizing: border-box;
     }
 
     .error-icon {
-        width: 24px;
-        height: 24px;
+        width: 75%;
+        max-width: 24px;
+        aspect-ratio: 1;
         color: var(--color-negative-border-primary);
     }
 
