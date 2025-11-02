@@ -365,6 +365,54 @@ export class WalletService {
     } 
   }
 
+  async removeAccountByAddress(addr: string, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      if (wallet.accounts.length <= 1) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const accountIndex = wallet.accounts.findIndex((acc) => acc.addr === addr);
+
+      if (accountIndex === -1) {
+        throw new Error(ConnectError.AddressMismatch);
+      }
+
+      const accountToRemove = wallet.accounts[accountIndex];
+      const accountPubKeyBytes = hexToUint8Array(accountToRemove.pubKey);
+      const accountHashToRemove = hashXOR(accountPubKeyBytes);
+
+      this.#state.connections.list.forEach((connection) => {
+        connection.connectedAccounts = connection.connectedAccounts.filter(
+          (hash) => hash !== accountHashToRemove
+        );
+      });
+
+      wallet.accounts.splice(accountIndex, 1);
+
+      if (wallet.selectedAccount === accountIndex) {
+        wallet.selectedAccount = 0;
+      } else if (wallet.selectedAccount > accountIndex) {
+        wallet.selectedAccount -= 1;
+      }
+
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: wallet,
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async removeWallet(walletIndex: number, password: string, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];

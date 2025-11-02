@@ -180,6 +180,26 @@ export async function destroyWallet(password: string, walletIndex: number) {
   return resolve;
 }
 
+export async function destroyAccount(addr: string, walletIndex: number) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      addr,
+    },
+    type: MTypePopup.DESTROY_ACCOUNT,
+  }).send();
+  let resolve = warpMessage(data) as IWalletState;
+  const currentState = get(globalStore);
+
+  currentState.wallets[walletIndex] = resolve;
+
+  globalStore.set({
+    ...currentState
+  });
+
+  return resolve;
+}
+
 export async function logout(walletIndex: number) {
   const data = await new Message<SendResponseParams>({
     payload: {

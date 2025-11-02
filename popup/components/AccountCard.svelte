@@ -1,33 +1,77 @@
 <script lang="ts">
     import Jazzicon from './Jazzicon.svelte';
     import CopyButton from './CopyButton.svelte';
+    import DeleteIcon from './icons/Delete.svelte';
+    import SuccessIcon from './icons/Success.svelte';
     import { truncate } from 'popup/mixins/address';
 
     let {
         name,
         address,
         selected = false,
-        onclick = () => {}
+        onclick = () => {},
+        showDelete = false,
+        disableDelete = false,
+        ondelete = () => {}
     }: {
         name: string;
         address: string;
         selected?: boolean;
         onclick?: () => void;
+        showDelete?: boolean;
+        disableDelete?: boolean;
+        ondelete?: () => void;
     } = $props();
 
     const addresses = $derived(address.includes(':') ? address.split(':') : [address]);
     const isMultiAddress = $derived(addresses.length > 1);
 
+    let confirmDelete = $state(false);
+    let confirmTimer: number | null = null;
+
     function handleClick() {
         onclick();
     }
+
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleClick();
+        }
+    }
+
+    function handleDeleteClick(event: MouseEvent) {
+        event.stopPropagation();
+        if (disableDelete) return;
+
+        if (!confirmDelete) {
+            confirmDelete = true;
+            if (confirmTimer) {
+                clearTimeout(confirmTimer);
+            }
+            confirmTimer = window.setTimeout(() => {
+                confirmDelete = false;
+                confirmTimer = null;
+            }, 2000);
+            return;
+        }
+
+        confirmDelete = false;
+        if (confirmTimer) {
+            clearTimeout(confirmTimer);
+            confirmTimer = null;
+        }
+        ondelete();
+    }
 </script>
 
-<button
+<div
     class="account-card"
     class:selected
     onclick={handleClick}
-    type="button"
+    onkeydown={handleKeyDown}
+    role="button"
+    tabindex="0"
 >
     <div class="icon-container">
         <Jazzicon seed={addresses[0]} diameter={48} onclick={() => {}} />
@@ -41,7 +85,26 @@
             {/each}
         </div>
     </div>
-</button>
+
+    {#if showDelete}
+        <div class="right-actions">
+            <button
+                class="delete-button"
+                class:confirm={confirmDelete}
+                disabled={disableDelete}
+                onclick={handleDeleteClick}
+                type="button"
+                aria-label={confirmDelete ? 'Confirm delete' : 'Delete'}
+            >
+                {#if confirmDelete}
+                    <SuccessIcon />
+                {:else}
+                    <DeleteIcon />
+                {/if}
+            </button>
+        </div>
+    {/if}
+</div>
 
 <style lang="scss">
     .account-card {
@@ -59,11 +122,11 @@
         text-align: left;
         transition: background 0.2s ease;
 
-        &:hover:not(.selected):not(:disabled) {
+        &:hover:not(.selected) {
             background: var(--color-cards-regular-base-hover);
         }
 
-        &:focus-visible:not(.selected):not(:disabled) {
+        &:focus-visible:not(.selected) {
             outline: 2px solid var(--color-inputs-border-focus);
             outline-offset: 2px;
         }
@@ -71,10 +134,6 @@
         &.selected {
             background: var(--color-cards-regular-base-selected);
             outline-color: var(--color-neutral-tag-purple-border);
-        }
-
-        &:disabled {
-            opacity: 1;
         }
     }
 
@@ -107,6 +166,47 @@
 
         &.multi {
             gap: 2px;
+        }
+    }
+
+    .right-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .delete-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        padding: 0;
+        color: var(--color-content-text-pink);
+        transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background-color: var(--color-button-regular-quaternary-hover);
+        }
+
+        &.confirm {
+            color: var(--color-positive-border-primary);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
         }
     }
 </style>

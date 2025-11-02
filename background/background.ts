@@ -54,6 +54,13 @@ export function startBackground(core: GlobalState) {
           sendResponse,
         );
         return true;
+      case MTypePopup.DESTROY_ACCOUNT:
+        core.wallet.removeAccountByAddress(
+          msg.payload.addr,
+          msg.payload.walletIndex,
+          sendResponse,
+        );
+        return true;
       case MTypePopup.VALIDATE_BIP39_CHECK_SUM:
         core.wallet.validateBip39CheckSum(
           msg.payload.phrase,

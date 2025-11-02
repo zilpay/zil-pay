@@ -1,7 +1,7 @@
 <script lang="ts">
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
-    import { selectAccount } from 'popup/background/wallet';
+    import { selectAccount, destroyAccount } from 'popup/background/wallet';
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain } from 'popup/mixins/chains';
 
@@ -32,6 +32,15 @@
     function handleAddAccount() {
         push('/add-account');
     }
+
+    async function handleDeleteAccount(index: number) {
+        try {
+            const account = accounts[index];
+            await destroyAccount(account.addr, $globalStore.selectedWallet);
+        } catch (e) {
+            console.error(e);
+        }
+    }
 </script>
 
 <div class="page-container">
@@ -59,12 +68,14 @@
                     address={account.addr}
                     selected={index === selectedAccountIndex}
                     onclick={() => handleAccountSelect(index)}
+                    showDelete={true}
+                    disableDelete={index === 0}
+                    ondelete={() => handleDeleteAccount(index)}
                 />
             {/each}
         </div>
     </main>
 
-    
     {#if currentWallet.walletType != WalletTypes.SecretKey}
         <footer class="footer">
             <Button variant="outline" onclick={handleAddAccount}>
