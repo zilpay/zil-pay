@@ -5,6 +5,10 @@
     import SmartInput from '../components/SmartInput.svelte';
     import FastImg from '../components/FastImg.svelte';
     import PlusIcon from '../components/icons/Plus.svelte';
+    import Bip39Icon from '../components/icons/BIP39.svelte';
+    import LedgerIcon from '../components/icons/Ledger.svelte';
+    import EyeIcon from '../components/icons/Eye.svelte';
+    import ShieldIcon from '../components/icons/Shield.svelte';
     import globalStore from 'popup/store/global';
     import { push } from '../router/navigation';
     import { hashChainConfig } from 'lib/utils/hashing';
@@ -13,23 +17,55 @@
     import { unlockWallet } from 'popup/background/wallet';
     import { truncate } from 'popup/mixins/address';
     import { linksExpand } from 'popup/mixins/links';
+    import { WalletTypes } from 'config/wallet';
+
+    const CACHE_KEY = 'zilpay_last_wallet_index';
+    const WALLET_TYPE_ICONS = {
+        [WalletTypes.SecretPhrase]: Bip39Icon,
+        [WalletTypes.SecretKey]: ShieldIcon,
+        [WalletTypes.Ledger]: LedgerIcon,
+        [WalletTypes.Watch]: EyeIcon
+    };
 
     let password = $state('');
     let isLoading = $state(false);
     let error = $state<string | null>(null);
-    let selectedWalletIndex = $state<number | null>(
-        $globalStore.wallets.length === 1 ? 0 : null,
-    );
+    let selectedWalletIndex = $state<number | null>(null);
 
     const wallets = $derived($globalStore.wallets);
     const currentTheme = $derived($globalStore.appearances);
     const isWalletSelected = $derived(selectedWalletIndex !== null);
+    const selectedWallet = $derived(selectedWalletIndex !== null ? wallets[selectedWalletIndex] : null);
+    const needsPassword = $derived(
+        selectedWallet && 
+        selectedWallet.walletType !== WalletTypes.Watch && 
+        selectedWallet.walletType !== WalletTypes.Ledger
+    );
+
+    function isPasswordlessWallet(walletType: WalletTypes): boolean {
+        return walletType === WalletTypes.Watch || walletType === WalletTypes.Ledger;
+    }
 
     $effect(() => {
-        if (isWalletSelected) {
+        const cachedIndex = localStorage.getItem(CACHE_KEY);
+        
+        if (cachedIndex !== null) {
+            const index = parseInt(cachedIndex, 10);
+            if (!isNaN(index) && index >= 0 && index < wallets.length) {
+                selectedWalletIndex = index;
+                return;
+            }
+        }
+
+        if (wallets.length === 1) {
+            selectedWalletIndex = 0;
+        }
+    });
+
+    $effect(() => {
+        if (isWalletSelected && needsPassword) {
             tick().then(() => {
-                const passwordInput = document.getElementById('password') as HTMLInputElement;
-                passwordInput?.focus();
+                document.getElementById('password')?.focus();
             });
         }
     });
@@ -40,14 +76,24 @@
             return hash === wallet.defaultChainHash;
         });
 
-        if (chain) {
-            return viewChain({
-                network: chain,
-                theme: currentTheme,
-            });
-        }
+        return chain ? viewChain({ network: chain, theme: currentTheme }) : '/assets/icons/default_chain.svg';
+    }
 
-        return '/assets/icons/default_chain.svg';
+    async function performUnlock(walletPassword: string, index: number) {
+        if (isLoading) return;
+
+        isLoading = true;
+        error = null;
+
+        try {
+            await unlockWallet(walletPassword, index);
+            localStorage.setItem(CACHE_KEY, index.toString());
+            push('/');
+        } catch (err) {
+            error = walletPassword ? `${$_('lockpage.invalidPassword')} ${err}` : String(err);
+        } finally {
+            isLoading = false;
+        }
     }
 
     async function handleWalletSelect(index: number) {
@@ -57,33 +103,42 @@
         password = '';
         error = null;
 
-        await tick();
+        const wallet = wallets[index];
+        
+        if (isPasswordlessWallet(wallet.walletType)) {
+            await performUnlock('', index);
+            return;
+        }
 
-        const passwordInput = document.getElementById('password') as HTMLInputElement;
-        passwordInput?.focus();
+        await tick();
+        document.getElementById('password')?.focus();
     }
 
     async function handleUnlock(e: SubmitEvent) {
         e.preventDefault();
-        if (!password.trim() || selectedWalletIndex === null || isLoading) return;
+        
+        if (selectedWalletIndex === null || isLoading) return;
 
-        isLoading = true;
-        error = null;
+        const wallet = wallets[selectedWalletIndex];
 
-        try {
-            await unlockWallet(password, selectedWalletIndex);
-            push('/');
-        } catch (err) {
-            error = `${$_('lockpage.invalidPassword')} ${err}`;
-        } finally {
-            isLoading = false;
+        if (isPasswordlessWallet(wallet.walletType)) {
+            await performUnlock('', selectedWalletIndex);
+            return;
         }
+
+        if (!password.trim()) return;
+
+        await performUnlock(password, selectedWalletIndex);
     }
 
     function handleAddWallet() {
-        if (isLoading) return;
+        if (!isLoading) linksExpand("/new-wallet-options");
+    }
 
-        linksExpand("/new-wallet-options");
+    function handleKeyDown(e: KeyboardEvent) {
+        if (e.key === 'Enter' && selectedWallet && !needsPassword) {
+            handleUnlock(e as any);
+        }
     }
 </script>
 
@@ -109,7 +164,11 @@
                         class="wallet-item" 
                         class:selected={selectedWalletIndex === index}
                         onclick={() => handleWalletSelect(index)}
+                        onkeydown={handleKeyDown}
                     >
+                        {#if wallet.confirm?.length > 0}
+                            <div class="badge">{wallet.confirm.length}</div>
+                        {/if}
                         <div class="selector">
                             {#if selectedWalletIndex === index}
                                 <div class="selector-inner"></div>
@@ -126,30 +185,48 @@
                             <div class="wallet-name">{wallet.walletName}</div>
                             <div class="wallet-address">{truncate(wallet.uuid)}</div>
                         </div>
+                        <div class="type-icon">
+                            {#snippet typeIcon()}
+                                {@const TypeIcon = WALLET_TYPE_ICONS[wallet.walletType] || ShieldIcon}
+                                <TypeIcon />
+                            {/snippet}
+                            {@render typeIcon()}
+                        </div>
                     </button>
                 {/each}
             </div>
         </div>
 
         <form class="form-section" onsubmit={handleUnlock}>
-            <SmartInput
-                id="password"
-                label=""
-                placeholder={isWalletSelected
-                    ? $_('lockpage.passwordPlaceholder')
-                    : $_('lockpage.selectWalletPlaceholder')}
-                bind:value={password}
-                hide={true}
-                disabled={isLoading || !isWalletSelected}
-                oninput={() => (error = null)}
-                hasError={!!error}
-                errorMessage={error || ''}
-                loading={isLoading}
-                width="100%" />
+            {#if needsPassword}
+                <SmartInput
+                    id="password"
+                    label=""
+                    placeholder={isWalletSelected
+                        ? $_('lockpage.passwordPlaceholder')
+                        : $_('lockpage.selectWalletPlaceholder')}
+                    bind:value={password}
+                    hide={true}
+                    disabled={isLoading || !isWalletSelected}
+                    oninput={() => (error = null)}
+                    hasError={!!error}
+                    errorMessage={error || ''}
+                    loading={isLoading}
+                    width="100%" />
+            {:else if isWalletSelected}
+                <div class="no-password-message">
+                    {#snippet messageIcon()}
+                        {@const Icon = selectedWallet?.walletType === WalletTypes.Watch ? EyeIcon : LedgerIcon}
+                        <Icon />
+                    {/snippet}
+                    {@render messageIcon()}
+                    <span>{$_(selectedWallet?.walletType === WalletTypes.Watch ? 'lockpage.watchWallet' : 'lockpage.ledgerWallet')}</span>
+                </div>
+            {/if}
 
             <Button
-          type="submit"
-                disabled={!password.trim() || !isWalletSelected}
+                type="submit"
+                disabled={needsPassword ? (!password.trim() || !isWalletSelected) : !isWalletSelected}
                 loading={isLoading}
                 width="100%"
                 height={48}>
@@ -165,7 +242,7 @@
         flex-direction: column;
         height: 100vh;
         width: 100%;
-        max-width: 340px;
+        max-width: var(--max-content-width);
         margin: 0 auto;
         background-color: var(--color-neutral-background-base);
         box-sizing: border-box;
@@ -270,6 +347,7 @@
         cursor: pointer;
         text-align: left;
         transition: all 0.2s ease;
+        position: relative;
 
         &:hover {
             outline-color: var(--color-cards-regular-border-hover);
@@ -313,6 +391,25 @@
         transition: all 0.2s ease;
     }
 
+    .badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background: var(--color-notification-negative-background);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 20px;
+        color: var(--color-content-text-inverted);
+        z-index: 1;
+    }
+
     .icon-container {
         width: 32px;
         height: 32px;
@@ -322,7 +419,7 @@
     }
 
     .info-container {
-        flex: 1 1 0;
+        flex: 1;
         min-width: 0;
     }
 
@@ -346,6 +443,21 @@
         text-overflow: ellipsis;
     }
 
+    .type-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-content-icon-secondary);
+        }
+    }
+
     .form-section {
         display: flex;
         flex-direction: column;
@@ -353,5 +465,29 @@
         flex-shrink: 0;
         margin-top: auto;
     }
-</style>
 
+    .no-password-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px;
+        background: var(--color-cards-regular-base-default);
+        border-radius: 12px;
+        outline: 1px solid var(--color-cards-regular-border-default);
+        outline-offset: -1px;
+
+        :global(svg) {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-content-icon-primary);
+        }
+
+        span {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            color: var(--color-content-text-inverted);
+        }
+    }
+</style>

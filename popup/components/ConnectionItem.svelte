@@ -49,15 +49,22 @@
         gap: 12px;
         width: 100%;
         padding: 12px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--color-cards-regular-base-default);
+        border: none;
+        outline: 1px solid var(--color-cards-regular-border-default);
+        outline-offset: -1px;
         border-radius: 12px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+        text-align: left;
 
         &:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.08);
+            outline-color: var(--color-cards-regular-border-hover);
+            background: var(--color-cards-regular-base-hover);
+        }
+
+        &:active {
+            transform: scale(0.98);
         }
     }
 
@@ -94,9 +101,10 @@
 
     .title {
         font-family: Geist;
-        font-size: var(--font-size-large);
+        font-size: 14px;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.95);
+        line-height: 20px;
+        color: var(--color-content-text-inverted);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -106,12 +114,13 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: var(--font-size-small);
+        font-size: 12px;
+        line-height: 16px;
     }
 
     .domain {
         font-family: Geist;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--color-content-text-secondary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -120,7 +129,7 @@
 
     .connected-date {
         font-family: Geist;
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--color-content-text-tertiary);
         white-space: nowrap;
         font-weight: 400;
     }
@@ -129,17 +138,18 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: var(--font-size-small);
+        font-size: 12px;
+        line-height: 16px;
     }
 
     .stat {
         font-family: Geist;
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--color-content-text-tertiary);
         font-weight: 400;
     }
 
     .separator {
-        color: rgba(255, 255, 255, 0.4);
-        font-size: var(--font-size-small);
+        color: var(--color-content-text-tertiary);
+        font-size: 12px;
     }
 </style>
