@@ -36,6 +36,7 @@ import CollectionsPage from '../pages/Collections.svelte';
 import ManageConnectionsPage from '../pages/ManageConnections.svelte';
 import AddChainPage from '../pages/AddChain.svelte';
 import AddAssetsPage from '../pages/AddAssets.svelte';
+import AddWatchAccountPage from '../pages/AddWatchAccount.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -90,6 +91,7 @@ export const publicRoutes: Route[] = [
   { path: "/restore-private-key", component: KeyPairRestorePage },
   { path: "/network-setup", component: NetworkSetupPage },
   { path: "/password-setup", component: PasswordSetupPage },
+  { path: "/add-watch-account", component: AddWatchAccountPage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];

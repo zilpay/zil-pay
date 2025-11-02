@@ -18,6 +18,14 @@ export interface WalletFromPrivateKeyParams {
   settings: IWalletSettingsState;
 }
 
+export interface WalletFromWatchAccountParams {
+  address: string;
+  walletName: string;
+  accountName: string;
+  chain: IChainConfigState;
+  settings: IWalletSettingsState;
+}
+
 export interface WalletFromBip39Params {
   mnemonic: string;
   bip39WordList: string[];

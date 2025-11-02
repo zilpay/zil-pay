@@ -8,6 +8,7 @@ export interface ICache {
   verifyCheckSum?: boolean;
   keyPair?: IKeyPair;
   chain?: IChainConfigState;
+  nextPage?: string;
 }
 
 export const cacheStore = writable<ICache>({});

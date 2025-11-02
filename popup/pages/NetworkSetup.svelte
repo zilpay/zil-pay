@@ -41,11 +41,15 @@
       ...$cacheStore,
       chain,
     });
-    push("/password-setup");
+    if ($cacheStore.nextPage) {
+      push($cacheStore.nextPage);
+    } else {
+      push("/password-setup");
+    }
   }
 
   $effect(() => {
-    if (!$cacheStore.keyPair && !$cacheStore.verifyPhrase) {
+    if (!$cacheStore.keyPair && !$cacheStore.verifyPhrase && !$cacheStore.nextPage) {
       return push("/start");
     }
     loadChains();

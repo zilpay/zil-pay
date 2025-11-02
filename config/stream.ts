@@ -12,6 +12,7 @@ export const MTypePopup = {
   ADD_NEXT_BIP39_ACCOUNT: `@/${app}/add-next-bip39-account`,
 
   WALLET_FROM_PRIVATE_KEY: `@/${app}/create-wallet-from-private-key`,
+  WALLET_FROM_WATCHED_ACCOUNT: `@/${app}/create-wallet-from-account-watached`,
   WALLET_FROM_BIP39: `@/${app}/create-wallet-from-bip39`,
 
   UNLOCK_WALLET: `@/${app}/unlock-wallet`,

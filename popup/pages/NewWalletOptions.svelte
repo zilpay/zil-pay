@@ -2,6 +2,8 @@
     import type { SvelteComponent } from 'svelte';
     import { _ } from 'popup/i18n';
     import { push } from 'popup/router/navigation';
+    import { cacheStore } from 'popup/store/cache';
+    
     import NavBar from '../components/NavBar.svelte';
     import OptionCard from '../components/OptionCard.svelte';
     import PlusIcon from '../components/icons/Plus.svelte';
@@ -42,7 +44,7 @@
             titleKey: 'newWalletOptions.watchAccount.title',
             descriptionKey: 'newWalletOptions.watchAccount.description',
             icon: EyeIcon,
-            disabled: true,
+            disabled: false,
             action: () => handleWatchAccount()
         }
     ];
@@ -60,7 +62,10 @@
     }
 
     function handleWatchAccount() {
-        push('/new-wallet/watch');
+        cacheStore.set({
+            nextPage: "/add-watch-account",
+        });
+        push('/network-setup');
     }
 </script>
 

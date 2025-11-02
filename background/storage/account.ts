@@ -99,6 +99,23 @@ export class Account implements IAccountState {
     return account;
   }
 
+  static async fromWatchAccount(address: Address, chain: ChainConfig, name: string): Promise<Account> {
+    let addr: string = await address.autoFormat();
+
+    const account = new Account({
+      addr,
+      addrType: address.type,
+      name: name,
+      index: 0,
+      pubKey: "",
+      chainHash: chain.hash(),
+      slip44: chain.slip44,
+      chainId: chain.chainId,
+    });
+
+    return account;
+  }
+
   toJSON(): IAccountState {
     return {
       addr: this.addr,

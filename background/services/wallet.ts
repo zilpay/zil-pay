@@ -2,7 +2,7 @@ import { Account, ChainConfig, FToken, Wallet, WalletSettings, type BackgroundSt
 import { LegacyZilliqaTabMsg, type StreamResponse } from "lib/streem";
 import { utf8ToUint8Array } from "lib/utils/utf8";
 import { hexToUint8Array } from "lib/utils/hex";
-import type { AccountFromBip39Params, SetPasswordPayload, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams } from "types/wallet";
+import type { AccountFromBip39Params, SetPasswordPayload, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams, WalletFromWatchAccountParams } from "types/wallet";
 import { TypeOf } from "lib/types";
 import { KeyPair } from "crypto/keypair";
 import { HistoricalTransaction } from "background/rpc/history_tx";
@@ -158,6 +158,34 @@ export class WalletService {
       this.#state.selectedWallet = this.#state.wallets.length - 1;
       await this.#state.sync();
       await this.#worker.start();
+
+      sendResponse({
+        resolve: this.#state
+      });
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async walletFromWatchAccount(payload: WalletFromWatchAccountParams, sendResponse: StreamResponse) {
+    try {
+      const chain = await this.addOrGetChain(payload.chain);
+      const address = Address.fromStr(payload.address);
+
+      const settings = new WalletSettings(payload.settings);
+      const wallet = await Wallet.fromWatchedAccount(
+        address,
+        payload.walletName,
+        payload.accountName,
+        settings,
+        chain,
+      );
+
+      this.#state.wallets.push(wallet);
+      this.#state.selectedWallet = this.#state.wallets.length - 1;
+      await this.#state.sync();
 
       sendResponse({
         resolve: this.#state

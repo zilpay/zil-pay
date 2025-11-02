@@ -189,7 +189,9 @@
         :global(svg) {
             width: 24px;
             height: 24px;
-            color: var(--color-content-icon-accent-secondary);
+        }
+        :global(svg > path) {
+            stroke: var(--color-content-icon-accent-secondary);
         }
     }
 

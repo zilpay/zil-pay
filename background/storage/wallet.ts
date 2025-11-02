@@ -16,6 +16,7 @@ import { ConfirmState, type IConfirmState } from './confirm';
 import { AuthMethod, WalletTypes } from 'config/wallet';
 import type { Bip32Account } from 'types/wallet';
 import type { NFTMetadata } from 'types/token';
+import type { Address } from 'crypto/address';
 
 export interface IWalletState {
   uuid: string;
@@ -99,6 +100,32 @@ export class Wallet implements IWalletState {
 
     await wallet.encrypt(passwordBytes, keyPair.privateKey);
     await wallet.setSession(keyPair.privateKey);
+
+    return wallet;
+  }
+
+  static async fromWatchedAccount(
+    address: Address,
+    walletName: string,
+    accountName: string,
+    settings: WalletSettings,
+    chain: ChainConfig,
+  ) {
+    const account = await Account.fromWatchAccount(address, chain, accountName);
+    const wallet = new Wallet({
+      settings,
+      walletName,
+      walletType: WalletTypes.Watch,
+      selectedAccount: 0,
+      tokens: chain.ftokens,
+      nft: [],
+      defaultChainHash: chain.hash(),
+      uuid: uuid(),
+      accounts: [account],
+      authType: AuthMethod.None,
+      history: [],
+      confirm: [],
+    });
 
     return wallet;
   }
@@ -220,6 +247,10 @@ export class Wallet implements IWalletState {
   }
 
   async setSession(wordsOrKey: string | Uint8Array) {
+    if (this.walletType == WalletTypes.Watch || this.walletType == WalletTypes.Ledger) {
+      return;
+    }
+
     const sessionTime = this.settings.sessionTime;
 
     if (TypeOf.isString(wordsOrKey)) {
@@ -234,6 +265,10 @@ export class Wallet implements IWalletState {
   }
 
   async checkSession(): Promise<boolean> {
+    if (this.walletType == WalletTypes.Watch || this.walletType == WalletTypes.Ledger) {
+      return true;
+    }
+
     try {
       await this.#session.getVault();
       return true;
@@ -243,6 +278,10 @@ export class Wallet implements IWalletState {
   }
 
   async trhowSession(): Promise<void> {
+    if (this.walletType == WalletTypes.Watch || this.walletType == WalletTypes.Ledger) {
+      return;
+    }
+
     const session = await this.#session.getVault();
 
     if (!session || session.length == 0) {

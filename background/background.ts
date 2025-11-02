@@ -74,6 +74,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.WALLET_FROM_PRIVATE_KEY:
         core.wallet.walletFromPrivateKey(msg.payload, sendResponse);
         return true;
+      case MTypePopup.WALLET_FROM_WATCHED_ACCOUNT:
+        core.wallet.walletFromWatchAccount(msg.payload, sendResponse);
+        return true;
       case MTypePopup.WALLET_FROM_BIP39:
         core.wallet.walletFromBip39(msg.payload, sendResponse);
         return true;
