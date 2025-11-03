@@ -3,6 +3,11 @@ export function writeInt32LE(arr: Uint8Array, value: number, offset = 0): void {
   view.setInt32(offset, value, true);
 }
 
+export function writeUInt16BE(arr: Uint8Array, value: number, offset = 0): void {
+  const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+  view.setUint16(offset, value, false);
+}
+
 export function readUInt16BE(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
   return view.getUint16(offset, false);

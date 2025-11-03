@@ -17,7 +17,7 @@ const SIG_BYTE_LEN = 64;
 const HASH_BYTE_LEN = 32;
 const BECH32_ADDR_LEN = 'zil'.length + 1 + 32 + 6;
 
-export class LedgerInterface {
+export class ScillaLedgerInterface {
   #transport: Transport;
 
   constructor(transport: Transport, scrambleKey = 'w0w') {

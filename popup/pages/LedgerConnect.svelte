@@ -4,6 +4,9 @@
     import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
     import { cacheStore } from 'popup/store/cache';
     import { push } from 'popup/router/navigation';
+    import { ScillaLedgerInterface } from 'ledger/scilla';
+    import Transport from 'ledger/transport';
+    import type { LedgerPublicAddress } from 'types/ledger';
 
     import NavBar from '../components/NavBar.svelte';
     import Button from '../components/Button.svelte';
@@ -23,6 +26,8 @@
     interface Account {
         name: string;
         address: string;
+        publicKey: string;
+        index: number;
     }
 
     let step = $state(STEP_SEARCHING);
@@ -30,6 +35,8 @@
     let selectedDevice = $state<HIDDevice | null>(null);
     let error = $state<string | null>(null);
     let isLoading = $state(false);
+    let ledgerTransport = $state<Transport | null>(null);
+    let ledgerInterface = $state<ScillaLedgerInterface | null>(null);
 
     let accountName = $state('');
     let accountCount = $state(1);
@@ -64,51 +71,97 @@
         }
     }
 
-    function handleDeviceSelect(device: HIDDevice) {
+    async function handleDeviceSelect(device: HIDDevice) {
         selectedDevice = device;
         accountName = `${device.productName} ${selectedChain?.name || ''}`;
-        step = STEP_CONFIGURING;
-    }
+        error = null;
+        isLoading = true;
 
-    function generateAddress(): string {
-        const chars = '0123456789abcdef';
-        let result = '0x';
-        for (let i = 0; i < 40; i++) {
-            result += chars[Math.floor(Math.random() * 16)];
+        try {
+            ledgerTransport = await Transport.create();
+            ledgerInterface = new ScillaLedgerInterface(ledgerTransport);
+
+            const versionInfo = await ledgerInterface.getVersion();
+            console.log('Ledger app version:', versionInfo.version);
+
+            step = STEP_CONFIGURING;
+        } catch (err) {
+            console.error(err);
+            error = String(err);
+            ledgerTransport = null;
+            ledgerInterface = null;
+        } finally {
+            isLoading = false;
         }
-        return result;
     }
 
     async function handleConnectAccounts() {
-        if (isConnectDisabled) return;
+        if (isConnectDisabled || !ledgerInterface) return;
         isLoading = true;
         error = null;
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            const accounts: Account[] = new Array(accountCount);
+            const accounts: Account[] = [];
+            
             for (let i = 0; i < accountCount; i++) {
-                accounts[i] = {
+                const result: LedgerPublicAddress = await ledgerInterface.getPublicAddress(i);
+                
+                accounts.push({
                     name: `${accountName} ${i + 1}`,
-                    address: generateAddress()
-                };
+                    address: result.pubAddr,
+                    publicKey: result.publicKey,
+                    index: i
+                });
             }
+            
             connectedAccounts = accounts;
         } catch (err) {
-            error = String(err);
+            if (err instanceof Error) {
+                if (err.message.includes('0x6985')) {
+                    error = $_('ledger.errors.user_rejected');
+                } else if (err.message.includes('0x6e00')) {
+                    error = $_('ledger.errors.app_not_open');
+                } else if (err.message.includes('0x5515')) {
+                    error = $_('ledger.errors.device_locked');
+                } else {
+                    error = err.message;
+                }
+            } else {
+                error = String(err);
+            }
         } finally {
             isLoading = false;
         }
     }
     
-    function resetToDeviceSelection() {
+    async function resetToDeviceSelection() {
+        if (ledgerTransport) {
+            try {
+                await ledgerTransport.close();
+            } catch (err) {
+                console.error('Error closing transport:', err);
+            }
+        }
+        
+        ledgerTransport = null;
+        ledgerInterface = null;
         selectedDevice = null;
         step = STEP_DEVICES_FOUND;
         error = null;
         accountCount = 1;
         accountName = '';
         connectedAccounts = [];
+    }
+
+    async function handleDone() {
+        if (ledgerTransport) {
+            try {
+                await ledgerTransport.close();
+            } catch (err) {
+                console.error('Error closing transport:', err);
+            }
+        }
+        push('/');
     }
 
     $effect(() => {
@@ -130,6 +183,12 @@
         if (!$cacheStore.chain) {
             return push("/start");
         }
+
+        return () => {
+            if (ledgerTransport) {
+                ledgerTransport.close().catch(console.error);
+            }
+        };
     });
 </script>
 
@@ -217,7 +276,11 @@
                             <h3 class="accounts-title">{$_('ledger.accounts.title')}</h3>
                             <div class="accounts-list">
                                 {#each connectedAccounts as account (account.address)}
-                                    <AccountCard name={account.name} address={account.address} onclick={() => {}} />
+                                    <AccountCard 
+                                        name={account.name} 
+                                        address={account.address} 
+                                        onclick={() => {}} 
+                                    />
                                 {/each}
                             </div>
                         </div>
@@ -225,7 +288,7 @@
                 </div>
 
                 <Button 
-                    onclick={hasAccounts ? () => push('/') : handleConnectAccounts} 
+                    onclick={hasAccounts ? handleDone : handleConnectAccounts} 
                     loading={isLoading} 
                     disabled={isConnectDisabled}
                 >
