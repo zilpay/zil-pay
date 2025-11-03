@@ -51,8 +51,8 @@ async function sendAPDU(
   apdu: Uint8Array,
   mtuSize: number
 ): Promise<void> {
-  const apduHex = Array.from(apdu).map(b => b.toString(16).padStart(2, '0')).join('');
-  console.log('[BLE] sendAPDU length:', apdu.length, 'hex:', apduHex, 'mtu:', mtuSize);
+  const toHex = (b: number) => b.toString(16).padStart(2, '0');
+  console.log('[BLE] sendAPDU length:', apdu.length, 'hex:', Array.from(apdu).map(toHex).join(''), 'mtu:', mtuSize);
 
   const chunks = createChunkedBuffers(apdu, i => mtuSize - (i === 0 ? 5 : 3)).map((buffer, i) => {
     const head = new Uint8Array(i === 0 ? 5 : 3);
@@ -70,8 +70,7 @@ async function sendAPDU(
 
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i];
-    const chunkHex = Array.from(chunk).map(b => b.toString(16).padStart(2, '0')).join('');
-    console.log('[BLE] => chunk', i, ':', chunkHex);
+    console.log('[BLE] => chunk', i, ':', Array.from(chunk).map(toHex).join(''));
     await write(chunk);
   }
 
@@ -123,15 +122,22 @@ function monitorCharacteristic(characteristic: BluetoothRemoteGATTCharacteristic
   return iterator;
 }
 
-async function receiveAPDU(notifyObservable: AsyncIterable<Uint8Array>): Promise<Uint8Array> {
+async function receiveAPDU(notifyObservable: AsyncIterableIterator<Uint8Array>): Promise<Uint8Array> {
+  const toHex = (b: number) => b.toString(16).padStart(2, '0');
   console.log('[BLE] receiveAPDU: waiting for data...');
   let notifiedIndex = 0;
   let notifiedDataLength = 0;
   let notifiedData = new Uint8Array(0);
 
-  for await (const value of notifyObservable) {
-    const valueHex = Array.from(value).map(b => b.toString(16).padStart(2, '0')).join('');
-    console.log('[BLE] <= received:', valueHex);
+  while (true) {
+    const result = await notifyObservable.next();
+    if (result.done) {
+      console.error('[BLE] Stream ended unexpectedly');
+      throw new TransportError('BLE stream ended unexpectedly', 'UnexpectedEnd');
+    }
+
+    const value = result.value;
+    console.log('[BLE] <= received:', Array.from(value).map(toHex).join(''));
     
     const tag = value[0];
     const chunkIndex = readUInt16BE(value, 1);
@@ -173,14 +179,10 @@ async function receiveAPDU(notifyObservable: AsyncIterable<Uint8Array>): Promise
     }
 
     if (notifiedData.length === notifiedDataLength) {
-      const resultHex = Array.from(notifiedData).map(b => b.toString(16).padStart(2, '0')).join('');
-      console.log('[BLE] receiveAPDU complete:', resultHex);
+      console.log('[BLE] receiveAPDU complete:', Array.from(notifiedData).map(toHex).join(''));
       return notifiedData;
     }
   }
-
-  console.error('[BLE] Stream ended unexpectedly');
-  throw new TransportError('BLE stream ended unexpectedly', 'UnexpectedEnd');
 }
 
 const transportsCache = new Map<string, TransportWebBLE>();
