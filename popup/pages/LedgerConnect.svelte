@@ -14,6 +14,7 @@
     import Counter from '../components/Counter.svelte';
     import Switch from '../components/Switch.svelte';
     import AccountCard from '../components/AccountCard.svelte';
+    import { ZILLIQA } from 'config/slip44';
 
     type Step = 'searching' | 'devices-found' | 'configuring' | 'accounts-listed';
 
@@ -34,7 +35,7 @@
     let connectedAccounts = $state<MockAccount[]>([]);
 
     const selectedChain = $derived($cacheStore.chain);
-    const isZilliqaChain = $derived(selectedChain?.chain.toLowerCase() === 'zilliqa');
+    const isZilliqaChain = $derived(selectedChain?.slip44 == ZILLIQA);
     const isConnectDisabled = $derived(!accountName.trim() || isLoading);
 
     async function findDevices() {
@@ -76,7 +77,6 @@
         error = null;
 
         try {
-            // TODO: Implement actual account fetching from Ledger
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             const mockAccounts: MockAccount[] = [];
@@ -178,7 +178,7 @@
 
         {:else if step === 'configuring' && selectedDevice}
             <div class="step-container" in:fly={{ y: 20 }}>
-                <div class="form-content">
+                <div class="configuration-box">
                     <SmartInput
                         bind:value={accountName}
                         label={$_('ledger.accountName.label')}
@@ -188,18 +188,21 @@
                     />
 
                     {#if isZilliqaChain}
-                        <div class="zilliqa-legacy-switch">
-                            <span>{$_('ledger.zilliqaLegacy.label')}</span>
+                        <div class="setting-row">
+                            <span class="setting-label">{$_('ledger.zilliqaLegacy.label')}</span>
                             <Switch bind:checked={isZilliqaLegacy} variant="default" />
                         </div>
                     {/if}
 
-                    <Counter
-                        bind:value={accountCount}
-                        title={$_('ledger.accountCount.label')}
-                        min={1}
-                        max={10}
-                    />
+                    <div class="counter-row">
+                        <span class="counter-label">{$_('ledger.accountCount.label')}</span>
+                        <Counter
+                            bind:value={accountCount}
+                            title=""
+                            min={1}
+                            max={255}
+                        />
+                    </div>
                 </div>
                 <Button onclick={handleConnectAccounts} loading={isLoading} disabled={isConnectDisabled}>
                     {$_('ledger.connect.button')}
@@ -227,7 +230,7 @@
         flex-direction: column;
         height: 100vh;
         background-color: var(--color-neutral-background-base);
-        padding: 0 16px;
+        padding: 0 var(--padding-side);
         box-sizing: border-box;
     }
 
@@ -328,26 +331,41 @@
         flex: 1;
     }
 
-    .form-content {
+    .configuration-box {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
+        padding: 20px;
+        background: var(--color-cards-regular-base-default);
+        border: 1px solid var(--color-cards-regular-border-default);
+        border-radius: 16px;
     }
     
-    .zilliqa-legacy-switch {
+    .setting-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px;
-        background: var(--color-neutral-background-container);
-        border-radius: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--color-neutral-border-default);
+    }
 
-        span {
-            font-size: var(--font-size-large);
-            font-weight: 500;
-            color: var(--color-content-text-inverted);
-        }
+    .setting-label {
+        font-size: var(--font-size-large);
+        font-weight: 500;
+        color: var(--color-content-text-inverted);
+    }
+
+    .counter-row {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .counter-label {
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        color: var(--color-content-text-inverted);
     }
 
     .accounts-list-content {
@@ -357,5 +375,4 @@
         gap: 12px;
         overflow-y: auto;
     }
-
 </style>
