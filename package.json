@@ -25,6 +25,7 @@
     "@types/bun": "latest",
     "@types/chrome": "^0.0.313",
     "@types/sinon-chrome": "^2.2.16",
+    "@types/w3c-web-hid": "^1.0.6",
     "prettier": "^3.6.2",
     "rollup": "^4.52.4",
     "rollup-plugin-copy": "^3.5.0",

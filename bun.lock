@@ -27,6 +27,7 @@
         "@types/bun": "latest",
         "@types/chrome": "^0.0.313",
         "@types/sinon-chrome": "^2.2.16",
+        "@types/w3c-web-hid": "^1.0.6",
         "prettier": "^3.6.2",
         "rollup": "^4.52.4",
         "rollup-plugin-copy": "^3.5.0",
@@ -284,6 +285,8 @@
     "@types/sinon-chrome": ["@types/sinon-chrome@2.2.16", "", { "dependencies": { "@types/chrome": "*", "@types/sinon": "*" } }, "sha512-gAaX/QaSMy6x7JyeGTDn1Bye7ZcM2xdkNdlCStVHsDfWPNQ9lN8FYVU5NRpbdxrFeqntfm0yxMx55VF8OEF66Q=="],
 
     "@types/sinonjs__fake-timers": ["@types/sinonjs__fake-timers@8.1.5", "", {}, "sha512-mQkU2jY8jJEF7YHjHvsQO8+3ughTL1mcnn96igfhONmR+fUPSKIkefQYpSe8bsly2Ep7oQbn/6VG5/9/0qcArQ=="],
+
+    "@types/w3c-web-hid": ["@types/w3c-web-hid@1.0.6", "", {}, "sha512-IWyssXmRDo6K7s31dxf+U+x/XUWuVsl9qUIYbJmpUHPcTv/COfBCKw/F0smI45+gPV34brjyP30BFcIsHgYWLA=="],
 
     "@vitest/expect": ["@vitest/expect@3.2.4", "", { "dependencies": { "@types/chai": "^5.2.2", "@vitest/spy": "3.2.4", "@vitest/utils": "3.2.4", "chai": "^5.2.0", "tinyrainbow": "^2.0.0" } }, "sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig=="],
 

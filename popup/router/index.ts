@@ -37,6 +37,7 @@ import ManageConnectionsPage from '../pages/ManageConnections.svelte';
 import AddChainPage from '../pages/AddChain.svelte';
 import AddAssetsPage from '../pages/AddAssets.svelte';
 import AddWatchAccountPage from '../pages/AddWatchAccount.svelte';
+import LedgerConnectPage from '../pages/LedgerConnect.svelte';
 
 
 export type ParamsRecord = Record<string, string | null>;
@@ -92,6 +93,7 @@ export const publicRoutes: Route[] = [
   { path: "/network-setup", component: NetworkSetupPage },
   { path: "/password-setup", component: PasswordSetupPage },
   { path: "/add-watch-account", component: AddWatchAccountPage },
+  { path: "/ledger-connect", component: LedgerConnectPage },
 ];
 
 export const routes = [...protectedRoutes, ...publicRoutes];

@@ -33,7 +33,7 @@
             titleKey: 'newWalletOptions.pairWithLedger.title',
             descriptionKey: 'newWalletOptions.pairWithLedger.description',
             icon: LedgerIcon,
-            disabled: true,
+            disabled: false,
             action: () => handlePairLedger()
         }
     ];
@@ -58,7 +58,10 @@
     }
 
     function handlePairLedger() {
-        push('/new-wallet/ledger');
+        cacheStore.set({
+            nextPage: "/ledger-connect",
+        });
+        push('/network-setup');
     }
 
     function handleWatchAccount() {

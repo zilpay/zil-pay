@@ -6,16 +6,18 @@
     let { 
         title = '',
         disabled = false,
-        right
+        right,
+        onback = pop
     }: {
         title?: string,
         disabled?: boolean,
-        right?: Snippet
+        right?: Snippet,
+        onback?: () => void
     } = $props();
 </script>
 
 <nav class="nav-bar">
-    <button class="back-button" onclick={pop} aria-label="Back" {disabled}>
+    <button class="back-button" onclick={onback} aria-label="Back" {disabled}>
         <LeftArrowIcon />
     </button>
     <h1 class="nav-title">{title}</h1>

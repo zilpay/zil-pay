@@ -26,7 +26,7 @@
       "config/*": ["./config/*"],
       "background/*": ["./background/*"]
     },
-    "types": ["svelte", "chrome"]
+    "types": ["svelte", "chrome", "w3c-web-hid"]
   },
   "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
   "include": [
