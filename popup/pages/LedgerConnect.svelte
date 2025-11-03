@@ -6,6 +6,7 @@
     import { push } from 'popup/router/navigation';
     import { ScillaLedgerInterface } from 'ledger/scilla';
     import TransportWebHID from 'ledger/webhid';
+    import TransportWebBLE from 'ledger/webble';
     import type { LedgerPublicAddress } from 'types/ledger';
 
     import NavBar from '../components/NavBar.svelte';
@@ -23,6 +24,13 @@
     const STEP_DEVICES_FOUND = 1;
     const STEP_CONFIGURING = 2;
 
+    interface Device {
+        id: string;
+        name: string;
+        type: 'usb' | 'bluetooth';
+        raw: any;
+    }
+
     interface Account {
         name: string;
         address: string;
@@ -31,11 +39,12 @@
     }
 
     let step = $state(STEP_SEARCHING);
-    let devices = $state<HIDDevice[]>([]);
-    let selectedDevice = $state<HIDDevice | null>(null);
+    let usbDevices = $state<Device[]>([]);
+    let bleDevices = $state<Device[]>([]);
+    let selectedDevice = $state<Device | null>(null);
     let error = $state<string | null>(null);
     let isLoading = $state(false);
-    let ledgerTransport = $state<TransportWebHID | null>(null);
+    let ledgerTransport = $state<TransportWebHID | TransportWebBLE | null>(null);
     let ledgerInterface = $state<ScillaLedgerInterface | null>(null);
 
     let accountName = $state('');
@@ -47,19 +56,75 @@
     const isZilliqaChain = $derived(selectedChain?.slip44 === ZILLIQA);
     const isConnectDisabled = $derived(!accountName.trim() || isLoading);
     const hasAccounts = $derived(connectedAccounts.length > 0);
+    const allDevices = $derived([...usbDevices, ...bleDevices]);
 
-    async function findDevices() {
-        isLoading = true;
-        error = null;
+    async function findUSBDevices() {
         try {
             await window.navigator.hid.requestDevice({
                 filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
             });
-            const permittedDevices = await window.navigator.hid.getDevices();
+            const permitted = await window.navigator.hid.getDevices();
+            const ledgers = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
             
-            devices = permittedDevices.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
+            return ledgers.map(d => ({
+                id: `usb-${d.productId}`,
+                name: d.productName || 'Ledger Device',
+                type: 'usb' as const,
+                raw: d
+            }));
+        } catch (err) {
+            console.error('USB scan error:', err);
+            return [];
+        }
+    }
 
-            if (devices.length > 0) {
+    async function findBLEDevices() {
+        try {
+            const isSupported = await TransportWebBLE.isSupported();
+            if (!isSupported) return [];
+
+            return new Promise<Device[]>((resolve) => {
+                const devices: Device[] = [];
+                const sub = TransportWebBLE.listen({
+                    next: (event) => {
+                        if (event.type === 'add') {
+                            const device = event.descriptor as any;
+                            devices.push({
+                                id: `ble-${device.id}`,
+                                name: device.name || 'Ledger Bluetooth',
+                                type: 'bluetooth',
+                                raw: device
+                            });
+                        }
+                    },
+                    error: () => {
+                        resolve([]);
+                    },
+                    complete: () => {
+                        resolve(devices);
+                    }
+                });
+            });
+        } catch (err) {
+            console.error('BLE scan error:', err);
+            return [];
+        }
+    }
+
+    async function findDevices() {
+        isLoading = true;
+        error = null;
+        
+        try {
+            const [usb, ble] = await Promise.all([
+                findUSBDevices(),
+                findBLEDevices()
+            ]);
+
+            usbDevices = usb;
+            bleDevices = ble;
+
+            if (allDevices.length > 0) {
                 step = STEP_DEVICES_FOUND;
             } else {
                 error = $_('ledger.errors.no_devices');
@@ -71,16 +136,20 @@
         }
     }
 
-    async function handleDeviceSelect(device: HIDDevice) {
+    async function handleDeviceSelect(device: Device) {
         selectedDevice = device;
-        accountName = `${device.productName} ${selectedChain?.name || ''}`;
+        accountName = `${device.name} ${selectedChain?.name || ''}`;
         error = null;
         isLoading = true;
 
         try {
-            ledgerTransport = await TransportWebHID.create();
-            ledgerInterface = new ScillaLedgerInterface(ledgerTransport);
+            if (device.type === 'usb') {
+                ledgerTransport = await TransportWebHID.openDevice(device.raw);
+            } else {
+                ledgerTransport = await TransportWebBLE.create();
+            }
 
+            ledgerInterface = new ScillaLedgerInterface(ledgerTransport);
             const versionInfo = await ledgerInterface.getVersion();
             console.log('Ledger app version:', versionInfo.version);
 
@@ -165,12 +234,17 @@
     }
 
     $effect(() => {
-        const getPermittedDevices = async () => {
+        const init = async () => {
             try {
                 const permitted = await window.navigator.hid.getDevices();
-                const ledgerDevices = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
-                if (ledgerDevices.length > 0) {
-                    devices = ledgerDevices;
+                const ledgers = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
+                if (ledgers.length > 0) {
+                    usbDevices = ledgers.map(d => ({
+                        id: `usb-${d.productId}`,
+                        name: d.productName || 'Ledger Device',
+                        type: 'usb' as const,
+                        raw: d
+                    }));
                     step = STEP_DEVICES_FOUND;
                 }
             } catch (err) {
@@ -178,7 +252,7 @@
             }
         };
 
-        getPermittedDevices();
+        init();
 
         if (!$cacheStore.chain) {
             return push("/start");
@@ -220,24 +294,44 @@
                 </Button>
             </div>
 
-        {:else if step === STEP_DEVICES_FOUND && devices.length > 0}
+        {:else if step === STEP_DEVICES_FOUND && allDevices.length > 0}
             <div class="step-container" in:fly={{ y: 20 }}>
                 <div class="header-with-action">
-                    <h2 class="list-title">{$_('ledger.found.title', { values: { count: devices.length } })}</h2>
+                    <h2 class="list-title">{$_('ledger.found.title', { values: { count: allDevices.length } })}</h2>
                     <button class="icon-button" onclick={findDevices} disabled={isLoading}>
                         <RefreshIcon />
                     </button>
                 </div>
                 <div class="device-list">
-                    {#each devices as device (device.productId)}
-                        <OptionCard
-                            title={device.productName}
-                            description={$_('ledger.vendorId') + `: 0x${device.vendorId.toString(16)}`}
-                            icon={LedgerIcon as any}
-                            showArrow={true}
-                            onclick={() => handleDeviceSelect(device)}
-                        />
-                    {/each}
+                    {#if usbDevices.length > 0}
+                        <div class="device-category">
+                            <h3 class="category-title">USB</h3>
+                            {#each usbDevices as device (device.id)}
+                                <OptionCard
+                                    title={device.name}
+                                    description={$_('ledger.vendorId') + `: 0x${device.raw.vendorId.toString(16)}`}
+                                    icon={LedgerIcon as any}
+                                    showArrow={true}
+                                    onclick={() => handleDeviceSelect(device)}
+                                />
+                            {/each}
+                        </div>
+                    {/if}
+
+                    {#if bleDevices.length > 0}
+                        <div class="device-category">
+                            <h3 class="category-title">Bluetooth</h3>
+                            {#each bleDevices as device (device.id)}
+                                <OptionCard
+                                    title={device.name}
+                                    description="Bluetooth"
+                                    icon={LedgerIcon as any}
+                                    showArrow={true}
+                                    onclick={() => handleDeviceSelect(device)}
+                                />
+                            {/each}
+                        </div>
+                    {/if}
                 </div>
             </div>
 
@@ -402,9 +496,23 @@
     .device-list {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 24px;
         overflow-y: auto;
         flex: 1;
+    }
+
+    .device-category {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .category-title {
+        font-size: var(--font-size-medium);
+        font-weight: 600;
+        color: var(--color-content-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .form-wrapper {

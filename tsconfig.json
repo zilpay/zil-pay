@@ -27,7 +27,7 @@
       "ledger/*": ["./ledger/*"],
       "background/*": ["./background/*"]
     },
-    "types": ["svelte", "chrome", "w3c-web-hid"]
+    "types": ["svelte", "chrome", "w3c-web-hid", "web-bluetooth"]
   },
   "exclude": ["node_modules/*", "__sapper__/*", "public/*", "dist"],
   "include": [

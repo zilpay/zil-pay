@@ -52,6 +52,7 @@
     "@hicaru/ntrup.js": "^0.0.10",
     "@ledgerhq/devices": "^8.6.1",
     "@noble/secp256k1": "^2.3.0",
+    "@types/web-bluetooth": "^0.0.21",
     "aes-js": "^3.1.2",
     "dnum": "^2.15.0",
     "js-md5": "^0.8.3",
