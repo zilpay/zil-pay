@@ -3,6 +3,11 @@ export function writeInt32LE(arr: Uint8Array, value: number, offset = 0): void {
   view.setInt32(offset, value, true);
 }
 
+export function readUInt16BE(arr: Uint8Array, offset = 0): number {
+  const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+  return view.getUint16(offset, false);
+}
+
 export function concatUint8Arrays(...arrays: Uint8Array[]): Uint8Array {
   const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
   const result = new Uint8Array(totalLength);
@@ -13,4 +18,3 @@ export function concatUint8Arrays(...arrays: Uint8Array[]): Uint8Array {
   }
   return result;
 }
-

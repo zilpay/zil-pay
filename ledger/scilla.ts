@@ -1,4 +1,4 @@
-import type Transport from '@ledgerhq/hw-transport';
+import Transport from './transport';
 import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import { writeInt32LE, concatUint8Arrays } from 'lib/utils/bytes';
