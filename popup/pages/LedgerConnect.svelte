@@ -16,14 +16,16 @@
     import AccountCard from '../components/AccountCard.svelte';
     import { ZILLIQA } from 'config/slip44';
 
-    type Step = 'searching' | 'devices-found' | 'configuring' | 'accounts-listed';
+    const STEP_SEARCHING = 0;
+    const STEP_DEVICES_FOUND = 1;
+    const STEP_CONFIGURING = 2;
 
-    interface MockAccount {
+    interface Account {
         name: string;
         address: string;
     }
 
-    let step: Step = $state('searching');
+    let step = $state(STEP_SEARCHING);
     let devices = $state<HIDDevice[]>([]);
     let selectedDevice = $state<HIDDevice | null>(null);
     let error = $state<string | null>(null);
@@ -32,11 +34,12 @@
     let accountName = $state('');
     let accountCount = $state(1);
     let isZilliqaLegacy = $state(false);
-    let connectedAccounts = $state<MockAccount[]>([]);
+    let connectedAccounts = $state<Account[]>([]);
 
     const selectedChain = $derived($cacheStore.chain);
-    const isZilliqaChain = $derived(selectedChain?.slip44 == ZILLIQA);
+    const isZilliqaChain = $derived(selectedChain?.slip44 === ZILLIQA);
     const isConnectDisabled = $derived(!accountName.trim() || isLoading);
+    const hasAccounts = $derived(connectedAccounts.length > 0);
 
     async function findDevices() {
         isLoading = true;
@@ -47,14 +50,10 @@
             });
             const permittedDevices = await window.navigator.hid.getDevices();
             
-            const foundDevices = permittedDevices.filter(
-                d => d.vendorId === LEDGER_USB_VENDOR_ID
-            );
-
-            devices = foundDevices;
+            devices = permittedDevices.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
 
             if (devices.length > 0) {
-                step = 'devices-found';
+                step = STEP_DEVICES_FOUND;
             } else {
                 error = $_('ledger.errors.no_devices');
             }
@@ -68,7 +67,16 @@
     function handleDeviceSelect(device: HIDDevice) {
         selectedDevice = device;
         accountName = `${device.productName} ${selectedChain?.name || ''}`;
-        step = 'configuring';
+        step = STEP_CONFIGURING;
+    }
+
+    function generateAddress(): string {
+        const chars = '0123456789abcdef';
+        let result = '0x';
+        for (let i = 0; i < 40; i++) {
+            result += chars[Math.floor(Math.random() * 16)];
+        }
+        return result;
     }
 
     async function handleConnectAccounts() {
@@ -79,15 +87,14 @@
         try {
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            const mockAccounts: MockAccount[] = [];
+            const accounts: Account[] = new Array(accountCount);
             for (let i = 0; i < accountCount; i++) {
-                mockAccounts.push({
+                accounts[i] = {
                     name: `${accountName} ${i + 1}`,
-                    address: `0x${[...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
-                });
+                    address: generateAddress()
+                };
             }
-            connectedAccounts = mockAccounts;
-            step = 'accounts-listed';
+            connectedAccounts = accounts;
         } catch (err) {
             error = String(err);
         } finally {
@@ -97,10 +104,11 @@
     
     function resetToDeviceSelection() {
         selectedDevice = null;
-        step = 'devices-found';
+        step = STEP_DEVICES_FOUND;
         error = null;
         accountCount = 1;
         accountName = '';
+        connectedAccounts = [];
     }
 
     $effect(() => {
@@ -110,7 +118,7 @@
                 const ledgerDevices = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
                 if (ledgerDevices.length > 0) {
                     devices = ledgerDevices;
-                    step = 'devices-found';
+                    step = STEP_DEVICES_FOUND;
                 }
             } catch (err) {
                 error = String(err);
@@ -126,10 +134,8 @@
 </script>
 
 <div class="page-container">
-    {#if step === 'configuring'}
+    {#if step === STEP_CONFIGURING}
         <NavBar title={$_('ledger.configure.title')} onback={resetToDeviceSelection} />
-    {:else if step === 'accounts-listed'}
-        <NavBar title={$_('ledger.accounts.title')} onback={resetToDeviceSelection} />
     {:else}
         <NavBar title={$_('ledger.connect.title')} />
     {/if}
@@ -141,7 +147,7 @@
             </div>
         {/if}
 
-        {#if step === 'searching'}
+        {#if step === STEP_SEARCHING}
             <div class="step-container" in:fly={{ y: 20 }}>
                 <div class="centered-content">
                     <div class="icon-wrapper">
@@ -155,7 +161,7 @@
                 </Button>
             </div>
 
-        {:else if step === 'devices-found' && devices.length > 0}
+        {:else if step === STEP_DEVICES_FOUND && devices.length > 0}
             <div class="step-container" in:fly={{ y: 20 }}>
                 <div class="header-with-action">
                     <h2 class="list-title">{$_('ledger.found.title', { values: { count: devices.length } })}</h2>
@@ -176,48 +182,54 @@
                 </div>
             </div>
 
-        {:else if step === 'configuring' && selectedDevice}
+        {:else if step === STEP_CONFIGURING && selectedDevice}
             <div class="step-container" in:fly={{ y: 20 }}>
-                <div class="configuration-box">
-                    <SmartInput
-                        bind:value={accountName}
-                        label={$_('ledger.accountName.label')}
-                        placeholder={$_('ledger.accountName.placeholder')}
-                        hide={false}
-                        showToggle={false}
-                    />
+                <div class="form-wrapper">
+                    <div class="configuration-box">
+                        <SmartInput
+                            bind:value={accountName}
+                            label={$_('ledger.accountName.label')}
+                            placeholder={$_('ledger.accountName.placeholder')}
+                            hide={false}
+                            showToggle={false}
+                        />
 
-                    {#if isZilliqaChain}
-                        <div class="setting-row">
-                            <span class="setting-label">{$_('ledger.zilliqaLegacy.label')}</span>
-                            <Switch bind:checked={isZilliqaLegacy} variant="default" />
+                        {#if isZilliqaChain}
+                            <div class="setting-row">
+                                <span class="setting-label">{$_('ledger.zilliqaLegacy.label')}</span>
+                                <Switch bind:checked={isZilliqaLegacy} variant="default" />
+                            </div>
+                        {/if}
+
+                        <div class="counter-row">
+                            <span class="counter-label">{$_('ledger.accountCount.label')}</span>
+                            <Counter
+                                bind:value={accountCount}
+                                title=""
+                                min={1}
+                                max={255}
+                            />
+                        </div>
+                    </div>
+
+                    {#if hasAccounts}
+                        <div class="accounts-section">
+                            <h3 class="accounts-title">{$_('ledger.accounts.title')}</h3>
+                            <div class="accounts-list">
+                                {#each connectedAccounts as account (account.address)}
+                                    <AccountCard name={account.name} address={account.address} onclick={() => {}} />
+                                {/each}
+                            </div>
                         </div>
                     {/if}
-
-                    <div class="counter-row">
-                        <span class="counter-label">{$_('ledger.accountCount.label')}</span>
-                        <Counter
-                            bind:value={accountCount}
-                            title=""
-                            min={1}
-                            max={255}
-                        />
-                    </div>
                 </div>
-                <Button onclick={handleConnectAccounts} loading={isLoading} disabled={isConnectDisabled}>
-                    {$_('ledger.connect.button')}
-                </Button>
-            </div>
 
-        {:else if step === 'accounts-listed'}
-            <div class="step-container" in:fly={{ y: 20 }}>
-                <div class="accounts-list-content">
-                    {#each connectedAccounts as account (account.address)}
-                        <AccountCard name={account.name} address={account.address} onclick={() => {}} />
-                    {/each}
-                </div>
-                <Button onclick={() => push('/')}>
-                    {$_('common.done')}
+                <Button 
+                    onclick={hasAccounts ? () => push('/') : handleConnectAccounts} 
+                    loading={isLoading} 
+                    disabled={isConnectDisabled}
+                >
+                    {hasAccounts ? $_('common.done') : $_('ledger.connect.button')}
                 </Button>
             </div>
         {/if}
@@ -246,8 +258,8 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         gap: 24px;
+        min-height: 0;
     }
 
     .centered-content {
@@ -287,6 +299,7 @@
         font-size: var(--font-size-medium);
         text-align: center;
         margin-bottom: 16px;
+        flex-shrink: 0;
     }
     
     .header-with-action {
@@ -331,8 +344,16 @@
         flex: 1;
     }
 
-    .configuration-box {
+    .form-wrapper {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .configuration-box {
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -340,6 +361,7 @@
         background: var(--color-cards-regular-base-default);
         border: 1px solid var(--color-cards-regular-border-default);
         border-radius: 16px;
+        flex-shrink: 0;
     }
     
     .setting-row {
@@ -368,11 +390,31 @@
         color: var(--color-content-text-inverted);
     }
 
-    .accounts-list-content {
+    .accounts-section {
         flex: 1;
         display: flex;
         flex-direction: column;
         gap: 12px;
+        min-height: 0;
         overflow-y: auto;
+    }
+
+    .accounts-title {
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        color: var(--color-content-text-inverted);
+        margin: 0;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        background: var(--color-neutral-background-base);
+        padding-bottom: 4px;
+        z-index: 1;
+    }
+
+    .accounts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
 </style>

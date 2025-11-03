@@ -14,7 +14,7 @@
   let {
     diameter,
     seed,
-    shapeCount = 25,
+    shapeCount = 15,
     onclick = () => {}
   }: {
     diameter: number;
