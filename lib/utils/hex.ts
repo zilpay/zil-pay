@@ -1,37 +1,20 @@
 import { TypeOf } from "lib/types";
 
+
 export const HEX_PREFIX = "0x";
 
-/**
- * Checks if a string starts with the '0x' prefix (case-insensitive).
- *
- * @param str The string to check.
- * @returns True if the string starts with '0x', false otherwise.
- */
 export function hasHexPrefix(str: string): boolean {
   return str.toLowerCase().startsWith(HEX_PREFIX);
 }
-
 
 export function stripHexPrefix(hex: string): string {
   return hasHexPrefix(hex) ? hex.slice(2) : hex;
 }
 
-/**
- * A lookup table for fast number-to-hex conversion.
- */
 const HEX_CHAR_TABLE: string[] = Array.from({ length: 256 }, (_, i) =>
     i.toString(16).padStart(2, '0')
 );
 
-/**
- * Efficiently converts a Uint8Array to a hexadecimal string.
- * This function uses a pre-computed lookup table for maximum performance.
- *
- * @param {Uint8Array} uint8Array The byte array (numbers 0-255) to convert.
- * @param {boolean} [prefix=false] Whether to include the '0x' prefix in the output.
- * @returns {string} The resulting hexadecimal string.
- */
 export function uint8ArrayToHex(uint8Array: Uint8Array, prefix: boolean = false): string {
     const hexParts = new Array(uint8Array.length);
     for (let i = 0; i < uint8Array.length; i++) {
@@ -42,15 +25,6 @@ export function uint8ArrayToHex(uint8Array: Uint8Array, prefix: boolean = false)
     return prefix ? HEX_PREFIX + hexString : hexString;
 }
 
-/**
- * Efficiently converts a hexadecimal string to a Uint8Array.
- * This function is optimized to minimize memory allocation and avoid
- * unnecessary intermediate conversions.
- *
- * @param {string} hexString The hexadecimal string (may start with '0x').
- * @returns {Uint8Array} A Uint8Array representing the hexadecimal data.
- * @throws {Error} if the string has an odd number of characters or contains invalid hex characters.
- */
 export function hexToUint8Array(hexString: string): Uint8Array {
     if (hexString == '' || hexString == HEX_PREFIX) {
         return new Uint8Array();
@@ -79,14 +53,6 @@ export function hexToUint8Array(hexString: string): Uint8Array {
 }
 
 
-/**
- * Converts a hexadecimal string to a BigInt.
- * This is the most direct and performant way to perform the conversion.
- *
- * @param {string} hexString The hexadecimal string (may start with '0x').
- * @returns {bigint} The BigInt representation of the hexadecimal string.
- * @throws {SyntaxError} if the string is not a valid hexadecimal number.
- */
 export function hexToBigInt(hexString: string): bigint {
     if (hexString == HEX_PREFIX) {
       return 0n;

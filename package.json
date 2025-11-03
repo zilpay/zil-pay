@@ -50,6 +50,7 @@
     "@hicaru/chacharand.js": "^0.0.3",
     "@hicaru/kuznechik.js": "^0.0.2",
     "@hicaru/ntrup.js": "^0.0.10",
+    "@ledgerhq/hw-transport": "^6.31.12",
     "@noble/secp256k1": "^2.3.0",
     "aes-js": "^3.1.2",
     "dnum": "^2.15.0",

@@ -36,6 +36,12 @@
     "explorers": [
       {
         "name": "Otterscan",
+        "icon": "https://testnet.zilliqa.blockscout.com/assets/favicon/apple-touch-icon-180x180.png",
+        "url": "https://testnet.zilliqa.blockscout.com/",
+        "standard": "EIP3091"
+      },
+      {
+        "name": "Otterscan",
         "icon": "https://otterscan.testnet.zilliqa.com/assets/otter-DYFeLtFi.png",
         "url": "https://otterscan.testnet.zilliqa.com/",
         "standard": "EIP3091"
