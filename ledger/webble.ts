@@ -51,9 +51,6 @@ async function sendAPDU(
   apdu: Uint8Array,
   mtuSize: number
 ): Promise<void> {
-  const toHex = (b: number) => b.toString(16).padStart(2, '0');
-  console.log('[BLE] sendAPDU length:', apdu.length, 'hex:', Array.from(apdu).map(toHex).join(''), 'mtu:', mtuSize);
-
   const chunks = createChunkedBuffers(apdu, i => mtuSize - (i === 0 ? 5 : 3)).map((buffer, i) => {
     const head = new Uint8Array(i === 0 ? 5 : 3);
     head[0] = TagId;
@@ -66,15 +63,9 @@ async function sendAPDU(
     return concatUint8Arrays(head, buffer);
   });
 
-  console.log('[BLE] sendAPDU chunks count:', chunks.length);
-
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    console.log('[BLE] => chunk', i, ':', Array.from(chunk).map(toHex).join(''));
+  for (const chunk of chunks) {
     await write(chunk);
   }
-
-  console.log('[BLE] sendAPDU complete');
 }
 
 function monitorCharacteristic(characteristic: BluetoothRemoteGATTCharacteristic) {
@@ -123,8 +114,6 @@ function monitorCharacteristic(characteristic: BluetoothRemoteGATTCharacteristic
 }
 
 async function receiveAPDU(notifyObservable: AsyncIterableIterator<Uint8Array>): Promise<Uint8Array> {
-  const toHex = (b: number) => b.toString(16).padStart(2, '0');
-  console.log('[BLE] receiveAPDU: waiting for data...');
   let notifiedIndex = 0;
   let notifiedDataLength = 0;
   let notifiedData = new Uint8Array(0);
@@ -132,26 +121,19 @@ async function receiveAPDU(notifyObservable: AsyncIterableIterator<Uint8Array>):
   while (true) {
     const result = await notifyObservable.next();
     if (result.done) {
-      console.error('[BLE] Stream ended unexpectedly');
       throw new TransportError('BLE stream ended unexpectedly', 'UnexpectedEnd');
     }
 
     const value = result.value;
-    console.log('[BLE] <= received:', Array.from(value).map(toHex).join(''));
-    
     const tag = value[0];
     const chunkIndex = readUInt16BE(value, 1);
     let chunkData = value.slice(3);
 
-    console.log('[BLE] receiveAPDU tag:', tag.toString(16), 'chunk:', chunkIndex, 'expected:', notifiedIndex, 'data len:', chunkData.length);
-
     if (tag !== TagId) {
-      console.error('[BLE] Invalid tag:', tag.toString(16), 'expected:', TagId.toString(16));
       throw new TransportError(`Invalid tag ${tag.toString(16)}`, 'InvalidTag');
     }
 
     if (notifiedIndex !== chunkIndex) {
-      console.error('[BLE] Invalid sequence:', chunkIndex, 'expected:', notifiedIndex);
       throw new TransportError(
         `Invalid sequence number. Received ${chunkIndex} but expected ${notifiedIndex}`,
         'InvalidSequence'
@@ -161,17 +143,13 @@ async function receiveAPDU(notifyObservable: AsyncIterableIterator<Uint8Array>):
     if (chunkIndex === 0) {
       notifiedDataLength = readUInt16BE(chunkData, 0);
       chunkData = chunkData.slice(2);
-      console.log('[BLE] First chunk, total length:', notifiedDataLength);
     }
 
     notifiedIndex++;
     const combined = concatUint8Arrays(notifiedData, chunkData);
     notifiedData = new Uint8Array(combined);
 
-    console.log('[BLE] Progress:', notifiedData.length, '/', notifiedDataLength);
-
     if (notifiedData.length > notifiedDataLength) {
-      console.error('[BLE] Too much data:', notifiedData.length, 'expected:', notifiedDataLength);
       throw new TransportError(
         `Received too much data. Got ${notifiedData.length} but expected ${notifiedDataLength}`,
         'BLETooMuchData'
@@ -179,7 +157,6 @@ async function receiveAPDU(notifyObservable: AsyncIterableIterator<Uint8Array>):
     }
 
     if (notifiedData.length === notifiedDataLength) {
-      console.log('[BLE] receiveAPDU complete:', Array.from(notifiedData).map(toHex).join(''));
       return notifiedData;
     }
   }
@@ -319,24 +296,17 @@ export default class TransportWebBLE extends Transport {
   }
 
   async inferMTU(): Promise<number> {
-    console.log('[BLE] inferMTU: start');
     let mtu = 23;
 
     await this.exchangeAtomicImpl(async () => {
       try {
-        console.log('[BLE] inferMTU: sending 0x08 command');
         await this.write(new Uint8Array([0x08, 0, 0, 0, 0]));
-        
-        console.log('[BLE] inferMTU: waiting for response');
         const result = await this.notifyObservable.next();
-        console.log('[BLE] inferMTU: received', result);
         
         if (!result.done && result.value[0] === 0x08) {
           mtu = result.value[5] + 3;
-          console.log('[BLE] inferMTU: calculated mtu', mtu);
         }
       } catch (e) {
-        console.error('[BLE] inferMTU: error', e);
         if (this.device.gatt) {
           this.device.gatt.disconnect();
         }
@@ -348,19 +318,16 @@ export default class TransportWebBLE extends Transport {
       this.mtuSize = mtu - 3;
     }
 
-    console.log('[BLE] inferMTU: final mtuSize', this.mtuSize);
     return this.mtuSize;
   }
 
   async exchange(apdu: Uint8Array): Promise<Uint8Array> {
-    console.log('[BLE] exchange: start');
     const result = await this.exchangeAtomicImpl(async () => {
       try {
         const responsePromise = receiveAPDU(this.notifyObservable);
         await sendAPDU(this.write, apdu, this.mtuSize);
         return await responsePromise;
       } catch (e) {
-        console.error('[BLE] exchange: error', e);
         if (this.notYetDisconnected && this.device.gatt) {
           this.device.gatt.disconnect();
         }
@@ -368,7 +335,6 @@ export default class TransportWebBLE extends Transport {
       }
     });
 
-    console.log('[BLE] exchange: complete');
     return result as Uint8Array;
   }
 
