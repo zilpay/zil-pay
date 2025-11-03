@@ -53,7 +53,7 @@ export class EthLedgerInterface {
 
   async getAppConfiguration(): Promise<AppConfiguration> {
     const response = await this.#transport.send(CLA, INS.GET_APP_CONFIGURATION, 0x00, 0x00);
-    
+
     const versionLength = response[1];
     const version = uint8ArrayToUtf8(response.subarray(2, 2 + versionLength));
 
@@ -62,12 +62,14 @@ export class EthLedgerInterface {
 
   async getAddress(path: string, boolDisplay = false, boolChaincode = false): Promise<LedgerEthAddress> {
     const pathBytes = bip32asUInt8Array(path);
+    const P1 = boolDisplay ? 0x01 : 0x00;
+    const P2 = boolChaincode ? 0x01 : 0x00;
 
     const response = await this.#transport.send(
       CLA,
       INS.GET_PUBLIC_KEY,
-      boolDisplay ? 0x01 : 0x00,
-      boolChaincode ? 0x01 : 0x00,
+      P1,
+      P2,
       pathBytes
     );
 

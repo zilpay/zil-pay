@@ -5,9 +5,10 @@
     import { cacheStore } from 'popup/store/cache';
     import { push } from 'popup/router/navigation';
     import { ScillaLedgerInterface } from 'ledger/scilla';
+    import { EthLedgerInterface } from 'ledger/eth';
     import TransportWebHID from 'ledger/webhid';
     import TransportWebBLE from 'ledger/webble';
-    import type { LedgerPublicAddress } from 'types/ledger';
+    import type { LedgerPublicAddress, LedgerEthAddress } from 'types/ledger';
 
     import NavBar from '../components/NavBar.svelte';
     import Button from '../components/Button.svelte';
@@ -18,7 +19,7 @@
     import Counter from '../components/Counter.svelte';
     import Switch from '../components/Switch.svelte';
     import AccountCard from '../components/AccountCard.svelte';
-    import { ZILLIQA } from 'config/slip44';
+    import { ZILLIQA, ETHEREUM } from 'config/slip44';
 
     const STEP_DEVICES_FOUND = 0;
     const STEP_CONFIGURING = 1;
@@ -46,7 +47,7 @@
     let isLoadingBle = $state(false);
     let isConnecting = $state(false);
     let ledgerTransport = $state<TransportWebHID | TransportWebBLE | null>(null);
-    let ledgerInterface = $state<ScillaLedgerInterface | null>(null);
+    let ledgerInterface = $state<ScillaLedgerInterface | EthLedgerInterface | null>(null);
     let bleSupported = $state(false);
     let usbSupported = $state(false);
 
@@ -57,6 +58,7 @@
 
     const selectedChain = $derived($cacheStore.chain);
     const isZilliqaChain = $derived(selectedChain?.slip44 === ZILLIQA);
+    const isEthChain = $derived(selectedChain?.slip44 === ETHEREUM);
     const isConnectDisabled = $derived(!accountName.trim() || isConnecting);
     const hasAccounts = $derived(connectedAccounts.length > 0);
     const allDevices = $derived([...usbDevices, ...bleDevices]);
@@ -146,8 +148,16 @@
                 ledgerTransport = await TransportWebBLE.create();
             }
 
-            ledgerInterface = new ScillaLedgerInterface(ledgerTransport);
-            await ledgerInterface.getVersion();
+            if (isZilliqaChain && isZilliqaLegacy) {
+                ledgerInterface = new ScillaLedgerInterface(ledgerTransport);
+                await ledgerInterface.getVersion();
+            } else if (isEthChain || (isZilliqaChain && !isZilliqaLegacy)) {
+                ledgerInterface = new EthLedgerInterface(ledgerTransport);
+                await ledgerInterface.getAppConfiguration();
+            } else {
+                throw new Error('Unsupported chain for Ledger');
+            }
+
             step = STEP_CONFIGURING;
         } catch (err) {
             error = String(err);
@@ -167,11 +177,26 @@
             const accounts: Account[] = [];
             
             for (let i = 0; i < accountCount; i++) {
-                const result: LedgerPublicAddress = await ledgerInterface.getPublicAddress(i);
+                let address: string;
+                let publicKey: string;
+
+                if (ledgerInterface instanceof EthLedgerInterface && selectedChain) {
+                    const path = `44'/60'/${i}'/0/0`;
+                    const result: LedgerEthAddress = await ledgerInterface.getAddress(path);
+                    address = result.address;
+                    publicKey = result.publicKey;
+                } else if (ledgerInterface instanceof ScillaLedgerInterface) {
+                    const result: LedgerPublicAddress = await ledgerInterface.getPublicAddress(i);
+                    address = result.pubAddr;
+                    publicKey = result.publicKey;
+                } else {
+                    continue;
+                }
+
                 accounts.push({
                     name: `${accountName} ${i + 1}`,
-                    address: result.pubAddr,
-                    publicKey: result.publicKey,
+                    address,
+                    publicKey,
                     index: i
                 });
             }
