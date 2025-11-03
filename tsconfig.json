@@ -24,6 +24,7 @@
       "lib/*": ["./lib/*"],
       "crypto/*": ["./crypto/*"],
       "config/*": ["./config/*"],
+      "ledger/*": ["./ledger/*"],
       "background/*": ["./background/*"]
     },
     "types": ["svelte", "chrome", "w3c-web-hid"]
@@ -36,6 +37,7 @@
     "background/**/*",
     "popup/**/*",
     "content/**/*",
+    "ledger/**/*",
     "types/**/*.d.ts",
     "__tests__/**/*.test.ts"
   ],
