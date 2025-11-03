@@ -5,7 +5,7 @@
     import { cacheStore } from 'popup/store/cache';
     import { push } from 'popup/router/navigation';
     import { ScillaLedgerInterface } from 'ledger/scilla';
-    import Transport from 'ledger/transport';
+    import TransportWebHID from 'ledger/webhid';
     import type { LedgerPublicAddress } from 'types/ledger';
 
     import NavBar from '../components/NavBar.svelte';
@@ -35,7 +35,7 @@
     let selectedDevice = $state<HIDDevice | null>(null);
     let error = $state<string | null>(null);
     let isLoading = $state(false);
-    let ledgerTransport = $state<Transport | null>(null);
+    let ledgerTransport = $state<TransportWebHID | null>(null);
     let ledgerInterface = $state<ScillaLedgerInterface | null>(null);
 
     let accountName = $state('');
@@ -78,7 +78,7 @@
         isLoading = true;
 
         try {
-            ledgerTransport = await Transport.create();
+            ledgerTransport = await TransportWebHID.create();
             ledgerInterface = new ScillaLedgerInterface(ledgerTransport);
 
             const versionInfo = await ledgerInterface.getVersion();

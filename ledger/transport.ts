@@ -1,11 +1,12 @@
 import { concatUint8Arrays, readUInt16BE } from 'lib/utils/bytes';
 import type { DeviceModel } from '@ledgerhq/devices';
-import {
-  TransportRaceCondition,
-  TransportError,
+import { 
   StatusCodes,
   TransportStatusError,
-} from './errors';
+  TransportRaceCondition,
+  TransportError
+} from '@ledgerhq/errors';
+
 
 export type Subscription = {
   unsubscribe: () => void;
