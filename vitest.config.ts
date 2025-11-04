@@ -13,6 +13,10 @@ export default defineConfig({
       'types/wallet': path.resolve(__dirname, 'types/wallet.d.ts'),
       'types/gas': path.resolve(__dirname, 'types/gas.d.ts'),
       'types/tx': path.resolve(__dirname, 'types/tx.d.ts'),
+      'micro-eth-signer/core/rlp': path.resolve(
+        __dirname,
+        './node_modules/micro-eth-signer/core/rlp.js'
+      ),
     }
   }
 });

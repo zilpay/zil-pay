@@ -1,10 +1,5 @@
 import type { IFTokenState } from "background/storage";
 
-declare module 'micro-eth-signer' {
-  import type { RLP as RlpType } from 'micro-eth-signer/core/rlp';
-  export const RLP: typeof RlpType;
-}
-
 export interface BuildTokenTransferParams {
   walletIndex: number;
   accountIndex: number;
