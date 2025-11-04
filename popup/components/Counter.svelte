@@ -9,7 +9,8 @@
         max = 10,
         disabled = false,
         decrementLabel = 'Decrease',
-        incrementLabel = 'Increase'
+        incrementLabel = 'Increase',
+        onInput = () => null,
     }: {
         title: string;
         value?: number;
@@ -18,18 +19,21 @@
         disabled?: boolean;
         decrementLabel?: string;
         incrementLabel?: string;
+        onInput?: (value: number) => void;
     } = $props();
 
     function handleDecrement() {
         if (value > min && !disabled) {
             value--;
         }
+        onInput(value);
     }
 
     function handleIncrement() {
         if (value < max && !disabled) {
             value++;
         }
+        onInput(value);
     }
 
     function handleInput(event: Event) {
@@ -47,6 +51,8 @@
                 value = newValue;
             }
         }
+
+        onInput(value);
     }
 
     function handleBlur(event: Event) {

@@ -1,5 +1,5 @@
 import Transport from './transport';
-import { uint8ArrayToHex } from 'lib/utils/hex';
+import { HEX_PREFIX, uint8ArrayToHex } from 'lib/utils/hex';
 import { writeUInt32BE, concatUint8Arrays } from 'lib/utils/bytes';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import type { EthSignature, AppConfiguration, LedgerPublicAddress } from 'types/ledger';
@@ -74,36 +74,29 @@ export class EthLedgerInterface {
     const P1 = boolDisplay ? 0x01 : 0x00;
     const P2 = 0x00;
 
-    try {
-      const response = await this.#transport.send(
-        CLA,
-        INS.GET_PUBLIC_KEY,
-        P1,
-        P2,
-        pathBytes
-      );
-      console.log(`[LEDGER-ETH] getAddress <-`, { response: uint8ArrayToHex(response) });
+    const response = await this.#transport.send(
+      CLA,
+      INS.GET_PUBLIC_KEY,
+      P1,
+      P2,
+      pathBytes
+    );
 
-      const publicKeyLength = response[0];
-      const publicKey = uint8ArrayToHex(response.subarray(1, 1 + publicKeyLength));
-      
-      const addressOffset = 1 + publicKeyLength;
-      const addressLength = response[addressOffset];
-      const address = uint8ArrayToUtf8(response.subarray(addressOffset + 1, addressOffset + 1 + addressLength));
+    const publicKeyLength = response[0];
+    const publicKey = uint8ArrayToHex(response.subarray(1, 1 + publicKeyLength));
   
-      const result: LedgerPublicAddress = {
-        publicKey,
-        pubAddr: address,
-        index,
-        name: '',
-      };
-      
-      return result;
+    const addressOffset = 1 + publicKeyLength;
+    const addressLength = response[addressOffset];
+    const address = HEX_PREFIX + uint8ArrayToUtf8(response.subarray(addressOffset + 1, addressOffset + 1 + addressLength));
 
-    } catch (err) {
-      console.error(`[LEDGER-ETH] getAddress <- ERR`, err);
-      throw err;
-    }
+    const result: LedgerPublicAddress = {
+      publicKey,
+      pubAddr: address,
+      index,
+      name: '',
+    };
+  
+    return result;
   }
   
   async signTransaction(path: string, rlp: Uint8Array): Promise<EthSignature> {

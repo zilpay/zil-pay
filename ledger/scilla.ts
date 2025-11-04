@@ -2,7 +2,7 @@ import Transport from './transport';
 import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import { writeInt32LE, concatUint8Arrays } from 'lib/utils/bytes';
-import type { LedgerVersion, LedgerPublicAddress, MessagePayload } from 'types/ledger';
+import type { LedgerPublicAddress, MessagePayload } from 'types/ledger';
 
 const CLA = 0xe0;
 const INS = {
@@ -29,19 +29,17 @@ export class ScillaLedgerInterface {
     );
   }
 
-  public async getVersion(): Promise<LedgerVersion> {
+  public async getVersion(): Promise<string> {
     const P1 = 0x00;
     const P2 = 0x00;
 
     const response = await this.#transport.send(CLA, INS.getVersion, P1, P2);
-    let version = 'v';
-    for (let i = 0; i < 3; ++i) {
-      version += parseInt('0x' + response[i], 10);
-      if (i !== 2) {
-        version += '.';
-      }
+
+    if (response[3] != 144 && response[4] != 0) {
+      throw new Error("invalid version");
     }
-    return { version };
+
+    return `v${response[0]}.${response[1]}.${response[2]}`;
   }
 
   public async getPublicKey(index: number): Promise<string> {

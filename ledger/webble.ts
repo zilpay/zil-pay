@@ -11,10 +11,11 @@ import { concatUint8Arrays, readUInt16BE } from 'lib/utils/bytes';
 
 const TagId = 0x05;
 
-const requiresBluetooth = () => {
-  const { bluetooth } = navigator as any;
-  if (!bluetooth) throw new TransportError('Web Bluetooth not supported', 'BluetoothNotSupported');
-  return bluetooth;
+const requiresBluetooth = (): Bluetooth => {
+  if (!navigator.bluetooth) {
+    throw new TransportError('Web Bluetooth not supported', 'BluetoothNotSupported');
+  }
+  return navigator.bluetooth;
 };
 
 const isSupported = (): Promise<boolean> => 
