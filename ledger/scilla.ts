@@ -67,7 +67,7 @@ export class ScillaLedgerInterface {
       response.subarray(PUB_KEY_BYTE_LEN, PUB_KEY_BYTE_LEN + BECH32_ADDR_LEN),
     );
     const publicKey = uint8ArrayToHex(response).slice(0, PUB_KEY_BYTE_LEN * 2);
-    return { pubAddr, publicKey };
+    return { pubAddr, publicKey, index, name: "" };
   }
 
   public async signHash(index: number, message: MessagePayload): Promise<string> {

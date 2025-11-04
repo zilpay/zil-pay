@@ -8,7 +8,7 @@
     import { EthLedgerInterface } from 'ledger/eth';
     import TransportWebHID from 'ledger/webhid';
     import TransportWebBLE from 'ledger/webble';
-    import type { LedgerPublicAddress, LedgerEthAddress } from 'types/ledger';
+    import type { LedgerPublicAddress } from 'types/ledger';
 
     import NavBar from '../components/NavBar.svelte';
     import Button from '../components/Button.svelte';
@@ -20,6 +20,12 @@
     import Switch from '../components/Switch.svelte';
     import AccountCard from '../components/AccountCard.svelte';
     import { ZILLIQA, ETHEREUM } from 'config/slip44';
+    import { walletFromLedger } from 'popup/background/wallet';
+    import { GasSpeed } from 'config/gas';
+    import { RatesApiOptions } from 'config/api';
+    import { ShaAlgorithms } from 'config/pbkdf2';
+    import { HashTypes } from 'config/argon2';
+    import type { IWalletSettingsState } from 'background/storage';
 
     const STEP_DEVICES_FOUND = 0;
     const STEP_CONFIGURING = 1;
@@ -31,13 +37,23 @@
         raw: any;
     }
 
-    interface Account {
-        name: string;
-        address: string;
-        publicKey: string;
-        index: number;
-    }
-
+    let walletSettings = $state<IWalletSettingsState>({
+        cipherOrders: [],
+        hashFnParams: {
+            memory: 6553,
+            threads: 4,
+            secret: "",
+            iterations: 3,
+            hashType: HashTypes.Argon2,
+            hashSize: ShaAlgorithms.Sha512,
+        },
+        currencyConvert: "BTC",
+        ensEnabled: true,
+        tokensListFetcher: true,
+        ratesApiOptions: RatesApiOptions.CoinGecko,
+        sessionTime: 0,
+        gasOption: GasSpeed.Market,
+    });
     let step = $state(STEP_DEVICES_FOUND);
     let usbDevices = $state<Device[]>([]);
     let bleDevices = $state<Device[]>([]);
@@ -51,15 +67,15 @@
     let bleSupported = $state(false);
     let usbSupported = $state(false);
 
-    let accountName = $state('');
+    let walletName = $state('');
     let accountCount = $state(1);
     let isZilliqaLegacy = $state(false);
-    let connectedAccounts = $state<Account[]>([]);
+    let connectedAccounts = $state<LedgerPublicAddress[]>([]);
 
     const selectedChain = $derived($cacheStore.chain);
     const isZilliqaChain = $derived(selectedChain?.slip44 === ZILLIQA);
     const isEthChain = $derived(selectedChain?.slip44 === ETHEREUM);
-    const isConnectDisabled = $derived(!accountName.trim() || isConnecting);
+    const isConnectDisabled = $derived(!walletName.trim() || isConnecting);
     const hasAccounts = $derived(connectedAccounts.length > 0);
     const allDevices = $derived([...usbDevices, ...bleDevices]);
     const isLoading = $derived(isLoadingUsb || isLoadingBle);
@@ -137,7 +153,7 @@
 
     async function handleDeviceSelect(device: Device) {
         selectedDevice = device;
-        accountName = `${device.name} ${selectedChain?.name || ''}`;
+        walletName = `${device.name} ${selectedChain?.name || ''}`;
         error = null;
         isConnecting = true;
 
@@ -174,29 +190,23 @@
         error = null;
 
         try {
-            const accounts: Account[] = [];
+            const accounts: LedgerPublicAddress[] = [];
             
             for (let i = 0; i < accountCount; i++) {
-                let address: string;
-                let publicKey: string;
+                let ledgerAccount: LedgerPublicAddress;
 
                 if (ledgerInterface instanceof EthLedgerInterface && selectedChain) {
-                    const path = `44'/60'/${i}'/0/0`;
-                    const result: LedgerEthAddress = await ledgerInterface.getAddress(path);
-                    address = result.address;
-                    publicKey = result.publicKey;
+                    const path = `44'/${ETHEREUM}'/${i}'/0/0`;
+                    ledgerAccount = await ledgerInterface.getAddress(path);
                 } else if (ledgerInterface instanceof ScillaLedgerInterface) {
-                    const result: LedgerPublicAddress = await ledgerInterface.getPublicAddress(i);
-                    address = result.pubAddr;
-                    publicKey = result.publicKey;
+                    ledgerAccount = await ledgerInterface.getPublicAddress(i);
                 } else {
                     continue;
                 }
 
                 accounts.push({
-                    name: `${accountName} ${i + 1}`,
-                    address,
-                    publicKey,
+                    ...ledgerAccount,
+                    name: `${selectedDevice?.name} ${i + 1}`,
                     index: i
                 });
             }
@@ -234,7 +244,7 @@
         step = STEP_DEVICES_FOUND;
         error = null;
         accountCount = 1;
-        accountName = '';
+        walletName = '';
         connectedAccounts = [];
     }
 
@@ -242,7 +252,16 @@
         if (ledgerTransport) {
             try {
                 await ledgerTransport.close();
-            } catch {}
+                await walletFromLedger({
+                    walletName,
+                    accounts: connectedAccounts,
+                    chain: selectedChain!,
+                    settings: walletSettings,
+                });
+            } catch (err) {
+                console.error(err);
+                error = String(err);
+            }
         }
         push('/');
     }
@@ -367,7 +386,7 @@
                 <div class="form-wrapper">
                     <div class="configuration-box">
                         <SmartInput
-                            bind:value={accountName}
+                            bind:value={walletName}
                             label={$_('ledger.accountName.label')}
                             placeholder={$_('ledger.accountName.placeholder')}
                             hide={false}
@@ -396,10 +415,10 @@
                         <div class="accounts-section">
                             <h3 class="accounts-title">{$_('ledger.accounts.title')}</h3>
                             <div class="accounts-list">
-                                {#each connectedAccounts as account (account.address)}
+                                {#each connectedAccounts as account (account.pubAddr)}
                                     <AccountCard 
                                         name={account.name} 
-                                        address={account.address} 
+                                        address={account.pubAddr} 
                                         onclick={() => {}} 
                                     />
                                 {/each}

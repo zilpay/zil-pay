@@ -29,7 +29,7 @@
   let isLoading = $state(false);
   let creationError = $state<string | null>(null);
   
-    let walletSettings = $state<IWalletSettingsState>({
+  let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
     hashFnParams: {
       memory: 6553,

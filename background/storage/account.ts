@@ -4,6 +4,9 @@ import { KeyPair } from 'crypto/keypair';
 import { AddressType } from 'config/wallet';
 import type { Bip32Account } from 'types/wallet';
 import { Address } from 'crypto/address';
+import { ETHEREUM, ZILLIQA } from 'config/slip44';
+import { uint8ArrayToHex } from 'lib/utils/hex';
+import type { LedgerPublicAddress } from 'types/ledger';
 
 export interface IAccountState {
   addr: string;
@@ -108,6 +111,25 @@ export class Account implements IAccountState {
       name: name,
       index: 0,
       pubKey: "",
+      chainHash: chain.hash(),
+      slip44: chain.slip44,
+      chainId: chain.chainId,
+    });
+
+    return account;
+  }
+
+  static async fromLedger(ledgerAccount: LedgerPublicAddress, chain: ChainConfig): Promise<Account> {
+    const address = Address.fromStr(ledgerAccount.pubAddr);
+    let addr = await address.autoFormat();
+    let addrType: AddressType = address.type;
+
+    const account = new Account({
+      addr,
+      addrType,
+      index: ledgerAccount.index,
+      name: ledgerAccount.name,
+      pubKey: ledgerAccount.publicKey,
       chainHash: chain.hash(),
       slip44: chain.slip44,
       chainId: chain.chainId,

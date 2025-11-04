@@ -5,16 +5,12 @@ export interface LedgerVersion {
 export interface LedgerPublicAddress {
   pubAddr: string;
   publicKey: string;
+  index: number;
+  name: string;
 }
 
 export interface MessagePayload {
   hash: string;
-}
-
-export interface LedgerEthAddress {
-  publicKey: string;
-  address: string;
-  chainCode?: string;
 }
 
 export interface EthSignature {

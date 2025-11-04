@@ -8,6 +8,7 @@ export const MTypePopup = {
   VALIDATE_BIP39_CHECK_SUM: `@/${app}/validate-bip39-checksum`,
   GEN_KEYPAIR: `@/${app}/gen-key-pair`,
   FROM_PRIV_KEY: `@/${app}/keypair-from-private-key`,
+  FROM_LEDGER_HW: `@/${app}/wallet-from-ledger-hw`,
   DESTROY_WALLET: `@/${app}/destroy-wallet`,
   DESTROY_ACCOUNT: `@/${app}/destroy-account`,
   ADD_NEXT_BIP39_ACCOUNT: `@/${app}/add-next-bip39-account`,

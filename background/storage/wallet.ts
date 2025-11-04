@@ -17,6 +17,7 @@ import { AuthMethod, WalletTypes } from 'config/wallet';
 import type { Bip32Account } from 'types/wallet';
 import type { NFTMetadata } from 'types/token';
 import type { Address } from 'crypto/address';
+import type { LedgerPublicAddress } from 'types/ledger';
 
 export interface IWalletState {
   uuid: string;
@@ -167,6 +168,34 @@ export class Wallet implements IWalletState {
     await wallet.encrypt(passwordBytes, wordsBytes);
     await wallet.setSession(words);
 
+
+    return wallet;
+  }
+
+  static async fromLedger(
+    walletName: string,
+    ledgerAccounts: LedgerPublicAddress[],
+    settings: WalletSettings,
+    chain: ChainConfig,
+  ) {
+    const wallet = new Wallet({
+      settings,
+      walletName,
+      walletType: WalletTypes.Ledger,
+      selectedAccount: 0,
+      tokens: chain.ftokens,
+      nft: [],
+      defaultChainHash: chain.hash(),
+      uuid: uuid(),
+      accounts: [],
+      authType: AuthMethod.None,
+      history: [],
+      confirm: [],
+    });
+
+    wallet.accounts = await Promise.all(
+      ledgerAccounts.map((acc) => Account.fromLedger(acc, chain))
+    );
 
     return wallet;
   }

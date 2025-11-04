@@ -7,7 +7,7 @@ import { warpMessage, type SendResponseParams } from "lib/popup/warp-message";
 import { Message } from "lib/streem/message";
 import { themeDetect } from "popup/mixins/theme";
 import globalStore from "popup/store/global";
-import type { AccountFromBip39Params, IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromPrivateKeyParams, WalletFromWatchAccountParams } from "types/wallet";
+import type { AccountFromBip39Params, IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromLedgerParams, WalletFromPrivateKeyParams, WalletFromWatchAccountParams } from "types/wallet";
  
 export async function getGlobalState() {
   const data = await Message.signal<SendResponseParams>(MTypePopup.GET_GLOBAL_STATE).send();
@@ -105,6 +105,18 @@ export async function walletFromPrivateKey(payload: WalletFromPrivateKeyParams) 
   const data =    await new Message<SendResponseParams>({
     payload,
     type: MTypePopup.WALLET_FROM_PRIVATE_KEY,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
+
+  return resolve;
+}
+
+export async function walletFromLedger(payload: WalletFromLedgerParams) {
+  const data =    await new Message<SendResponseParams>({
+    payload,
+    type: MTypePopup.FROM_LEDGER_HW,
   }).send();
   let resolve = warpMessage(data) as BackgroundState;
 

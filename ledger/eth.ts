@@ -2,7 +2,7 @@ import Transport from './transport';
 import { uint8ArrayToHex } from 'lib/utils/hex';
 import { writeUInt32BE, concatUint8Arrays } from 'lib/utils/bytes';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
-import type { LedgerEthAddress, EthSignature, AppConfiguration } from 'types/ledger';
+import type { EthSignature, AppConfiguration, LedgerPublicAddress } from 'types/ledger';
 
 const CLA = 0xe0;
 const INS = {
@@ -60,35 +60,50 @@ export class EthLedgerInterface {
     return { version };
   }
 
-  async getAddress(path: string, boolDisplay = false, boolChaincode = false): Promise<LedgerEthAddress> {
-    const pathBytes = bip32asUInt8Array(path);
-    const P1 = boolDisplay ? 0x01 : 0x00;
-    const P2 = boolChaincode ? 0x01 : 0x00;
-
-    const response = await this.#transport.send(
-      CLA,
-      INS.GET_PUBLIC_KEY,
-      P1,
-      P2,
-      pathBytes
-    );
-
-    const publicKeyLength = response[0];
-    const publicKey = uint8ArrayToHex(response.subarray(1, 1 + publicKeyLength));
-    
-    const addressOffset = 1 + publicKeyLength;
-    const addressLength = response[addressOffset];
-    const address = uint8ArrayToUtf8(response.subarray(addressOffset + 1, addressOffset + 1 + addressLength));
-
-    let result: LedgerEthAddress = { publicKey, address };
-
-    if (boolChaincode) {
-        const chainCodeOffset = addressOffset + 1 + addressLength;
-        const chainCode = uint8ArrayToHex(response.subarray(chainCodeOffset, chainCodeOffset + 32));
-        result = { ...result, chainCode };
+  async getAddress(path: string, boolDisplay = false): Promise<LedgerPublicAddress> {
+    const pathParts = path.split('/');
+    if (pathParts.length < 3) {
+      throw new Error(`Invalid BIP-32 path for extracting index: ${path}`);
+    }
+    const index = parseInt(pathParts[2], 10);
+    if (isNaN(index)) {
+      throw new Error(`Could not parse index from BIP-32 path: ${path}`);
     }
 
-    return result;
+    const pathBytes = bip32asUInt8Array(path);
+    const P1 = boolDisplay ? 0x01 : 0x00;
+    const P2 = 0x00;
+
+    try {
+      const response = await this.#transport.send(
+        CLA,
+        INS.GET_PUBLIC_KEY,
+        P1,
+        P2,
+        pathBytes
+      );
+      console.log(`[LEDGER-ETH] getAddress <-`, { response: uint8ArrayToHex(response) });
+
+      const publicKeyLength = response[0];
+      const publicKey = uint8ArrayToHex(response.subarray(1, 1 + publicKeyLength));
+      
+      const addressOffset = 1 + publicKeyLength;
+      const addressLength = response[addressOffset];
+      const address = uint8ArrayToUtf8(response.subarray(addressOffset + 1, addressOffset + 1 + addressLength));
+  
+      const result: LedgerPublicAddress = {
+        publicKey,
+        pubAddr: address,
+        index,
+        name: '',
+      };
+      
+      return result;
+
+    } catch (err) {
+      console.error(`[LEDGER-ETH] getAddress <- ERR`, err);
+      throw err;
+    }
   }
   
   async signTransaction(path: string, rlp: Uint8Array): Promise<EthSignature> {

@@ -1,5 +1,6 @@
 import type { IChainConfigState } from "background/storage";
 import type { AddressCategory } from "config/common";
+import type { LedgerPublicAddress } from "types/ledger";
 
 export interface SetPasswordPayload {
   cipherOrders: CipherOrders[];
@@ -35,6 +36,13 @@ export interface WalletFromBip39Params {
   chain: IChainConfigState;
   password: string;
   passphrase?: string;
+  settings: IWalletSettingsState;
+}
+
+export interface WalletFromLedgerParams {
+  walletName: string;
+  accounts: LedgerPublicAddress[];
+  chain: IChainConfigState;
   settings: IWalletSettingsState;
 }
 
