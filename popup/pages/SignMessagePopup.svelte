@@ -11,6 +11,8 @@
     import DAppInfo from '../components/DAppInfo.svelte';
     import CopyButton from '../components/CopyButton.svelte';
     import EIP712View from '../components/EIP712View.svelte';
+    import WarningIcon from '../components/icons/Warning.svelte';
+    import CloseIcon from '../components/icons/Close.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
@@ -58,6 +60,12 @@
         return messageData.content;
     });
 
+    let errorMessage = $state('');
+
+    function dismissError() {
+        errorMessage = '';
+    }
+
     async function handleConfirm() {
         try {
             if (signMessageRequest) {
@@ -76,6 +84,8 @@
                 } else {
                     push('/lock');
                 }
+            } else {
+                errorMessage = String(e);
             }
         }
     }
@@ -98,6 +108,8 @@
                 } else {
                     push('/lock');
                 }
+            } else {
+                errorMessage = String(e);
             }
         }
     }
@@ -132,6 +144,20 @@
             title={messageData.title ?? ""}
             domain={messageData.domain ?? ""}
         />
+
+        {#if errorMessage}
+            <div class="error-banner" role="alert">
+                <div class="error-left">
+                    <div class="error-icon">
+                        <WarningIcon />
+                    </div>
+                    <div class="error-text">{errorMessage}</div>
+                </div>
+                <button class="error-close" onclick={dismissError} aria-label="Dismiss error">
+                    <CloseIcon />
+                </button>
+            </div>
+        {/if}
 
         {#if isTypedData && messageData.content}
             <EIP712View typedDataJson={messageData.content} />
@@ -199,6 +225,56 @@
         line-height: 20px;
         color: var(--color-content-text-secondary);
         margin: 0;
+    }
+
+    .error-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        background: var(--color-error-background);
+        border: 1px solid var(--color-negative-border-primary);
+        border-radius: 12px;
+        gap: 12px;
+    }
+
+    .error-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .error-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        color: var(--color-error-text);
+    }
+
+    .error-text {
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--color-error-text);
+        word-break: break-word;
+    }
+
+    .error-close {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--color-error-text);
+        opacity: 0.7;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
     }
 
     .message-card {
