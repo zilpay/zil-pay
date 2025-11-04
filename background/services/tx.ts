@@ -50,6 +50,20 @@ export class TransactionService {
     }
   }
 
+  async genRLPTx(confirmIndex: number, walletIndex: number, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      await wallet.trhowSession();
+      const confirm= wallet.confirm[confirmIndex];
+      const metadata  = confirm.metadata!; 
+      const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
+      const evm = confirm.evm;
+      const txReq = new TransactionRequest(metadata, scilla, evm);
+    } catch (err) {
+      sendResponse({ reject: String(err) });
+    }
+  }
+
   async signTxAndbroadcastJsonRPC(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
