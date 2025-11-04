@@ -5,6 +5,7 @@
     import { push } from 'popup/router/navigation';
     import type { SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from 'types/tx';
     import { responseToSignMessageScilla, responseToSignPersonalMessageEVM, responseToSignTypedDataEVM } from 'popup/background/sign-message';
+    import { ledgerController } from 'ledger/controller';
 
     import AccountCard from '../components/AccountCard.svelte';
     import Button from '../components/Button.svelte';
@@ -13,9 +14,11 @@
     import EIP712View from '../components/EIP712View.svelte';
     import WarningIcon from '../components/icons/Warning.svelte';
     import CloseIcon from '../components/icons/Close.svelte';
+    import LedgerSignModal from '../modals/LedgerSignModal.svelte';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
+    const isLedgerWallet = $derived(currentWallet?.walletType === WalletTypes.Ledger);
 
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
     const signMessageRequest = $derived(
@@ -61,12 +64,56 @@
     });
 
     let errorMessage = $state('');
+    let showLedgerModal = $state(false);
+
+    const currentChain = $derived($globalStore.config.chains.find(c => c.hash === selectedAccount?.chainHash) ?? null);
 
     function dismissError() {
         errorMessage = '';
     }
 
+    async function handleLedgerSign(accountIndex: number): Promise<string> {
+        if (isScilla && signMessageScillaData) {
+            return await ledgerController.signMessage(signMessageScillaData.content, accountIndex);
+        } else if (isPersonalSign && signPersonalMessageEVMData) {
+            const sig = await ledgerController.signPersonalMessage(signPersonalMessageEVMData.message, accountIndex);
+            return `${sig.r}${sig.s}${sig.v.toString(16).padStart(2, '0')}`;
+        } else if (isTypedData && signTypedDataEVMData) {
+            const typedData = JSON.parse(signTypedDataEVMData.typedData);
+            const domainHash = typedData.domain_hash || '';
+            const messageHash = typedData.message_hash || '';
+            const sig = await ledgerController.signEIP712Message(domainHash, messageHash, accountIndex);
+            return `${sig.r}${sig.s}${sig.v.toString(16).padStart(2, '0')}`;
+        }
+        throw new Error('Unknown message type');
+    }
+
+    function handleLedgerSuccess(signature: string) {
+        if (!signMessageRequest) return;
+        
+        try {
+            if (isScilla) {
+                responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+            } else if (isPersonalSign) {
+                responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+            } else if (isTypedData) {
+                responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+            }
+        } catch (e) {
+            errorMessage = String(e);
+        }
+    }
+
+    function handleLedgerError(error: string) {
+        errorMessage = error;
+    }
+
     async function handleConfirm() {
+        if (isLedgerWallet) {
+            showLedgerModal = true;
+            return;
+        }
+
         try {
             if (signMessageRequest) {
                 if (isScilla) {
@@ -184,6 +231,15 @@
     </footer>
 </div>
 {/if}
+
+<LedgerSignModal
+    bind:show={showLedgerModal}
+    chain={currentChain}
+    accountIndex={currentWallet?.selectedAccount ?? 0}
+    signFunction={handleLedgerSign}
+    onSuccess={handleLedgerSuccess}
+    onError={handleLedgerError}
+/>
 
 <style lang="scss">
     .page-container {
