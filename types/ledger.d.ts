@@ -5,12 +5,6 @@ export interface LedgerPublicAddress {
   name: string;
 }
 
-export interface EthSignature {
-  v: number;
-  r: string;
-  s: string;
-}
-
 export interface AppConfiguration {
   version: string;
 }

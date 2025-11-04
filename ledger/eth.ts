@@ -2,7 +2,8 @@ import Transport from './transport';
 import { HEX_PREFIX, uint8ArrayToHex } from 'lib/utils/hex';
 import { writeUInt32BE, concatUint8Arrays } from 'lib/utils/bytes';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
-import type { EthSignature, AppConfiguration, LedgerPublicAddress } from 'types/ledger';
+import type { AppConfiguration, LedgerPublicAddress } from 'types/ledger';
+import { EthSignature } from './ethsig';
 
 const CLA = 0xe0;
 const INS = {
@@ -117,8 +118,8 @@ export class EthLedgerInterface {
     const v = response[0];
     const r = uint8ArrayToHex(response.subarray(1, 1 + 32));
     const s = uint8ArrayToHex(response.subarray(1 + 32, 1 + 32 + 32));
-  
-    return { v, r, s };
+
+    return new EthSignature(v, r, s);
   }
 
   async signPersonalMessage(path: string, message: Uint8Array): Promise<EthSignature> {
@@ -143,8 +144,8 @@ export class EthLedgerInterface {
     const v = response[0];
     const r = uint8ArrayToHex(response.subarray(1, 1 + 32));
     const s = uint8ArrayToHex(response.subarray(1 + 32, 1 + 32 + 32));
-  
-    return { v, r, s };
+
+    return new EthSignature(v, r, s);
   }
 
   async signEIP712Message(path: string, domainHash: Uint8Array, messageHash: Uint8Array): Promise<EthSignature> {
@@ -162,6 +163,6 @@ export class EthLedgerInterface {
     const r = uint8ArrayToHex(response.subarray(1, 1 + 32));
     const s = uint8ArrayToHex(response.subarray(1 + 32, 1 + 32 + 32));
 
-    return { v, r, s };
+    return new EthSignature(v, r, s);
   }
 }

@@ -79,25 +79,25 @@
             return await ledgerController.signMessage(signMessageScillaData.hash, accountIndex);
         } else if (isPersonalSign && signPersonalMessageEVMData) {
             const sig = await ledgerController.signPersonalMessage(signPersonalMessageEVMData.message, accountIndex);
-            return `${sig.r}${sig.s}${sig.v.toString(16).padStart(2, '0')}`;
+            return sig.toHex();
         } else if (isTypedData && signTypedDataEVMData) {
             const typedData = JSON.parse(signTypedDataEVMData.typedData);
             const domainHash = typedData.domain_hash || '';
             const messageHash = typedData.message_hash || '';
             const sig = await ledgerController.signEIP712Message(domainHash, messageHash, accountIndex);
-            return `${sig.r}${sig.s}${sig.v.toString(16).padStart(2, '0')}`;
+            return sig.toHex();
         }
         throw new Error('Unknown message type');
     }
 
     function handleLedgerSuccess(signature: string) {
         if (!signMessageRequest) return;
-        
+
         try {
             if (isScilla) {
                 responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isPersonalSign) {
-                responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isTypedData) {
                 responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
             }

@@ -12,12 +12,13 @@ import { hashXORHex } from "lib/utils/hashing";
 import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { ConfirmState } from "background/storage/confirm";
 import { PromptService } from "lib/popup/prompt";
-import { AddressType } from "config/wallet";
+import { AddressType, WalletTypes } from "config/wallet";
 import type { TransactionRequestEVM, TransactionMetadata } from "types/tx";
 import { ChainConfig, FToken, Explorer, type BackgroundState } from "background/storage";
 import type { ProviderService } from "./provider";
 import type { EvmAddChainParams } from "types/chain";
 import type { ParamsWatchAsset } from "types/token";
+import { eip191Signer } from "micro-eth-signer";
 
 
 export class EvmService {
@@ -298,7 +299,8 @@ export class EvmService {
     walletIndex: number,
     accountIndex: number,
     approve: boolean,
-    sendResponse: StreamResponse
+    sendResponse: StreamResponse,
+    sig?: string,
   ) {
     try {
       const wallet = this.#state.wallets[walletIndex];
@@ -325,12 +327,22 @@ export class EvmService {
           throw new Error(ConnectError.ChainNotFound);
         }
 
-        const keyPair = await wallet.revealKeypair(account.index, chainConfig);
-        const messageBytes = new TextEncoder().encode(evmMessage.signPersonalMessageEVM.message);
-        const signature = await keyPair.signMessage(messageBytes);
-        const signatureHex = uint8ArrayToHex(signature, true);
+        let signature: string;
 
-        this.#sendSuccess(uuid, evmMessage.signPersonalMessageEVM.domain, signatureHex);
+        if (wallet.walletType == WalletTypes.Ledger && sig) {
+          let verify = eip191Signer.verify(sig, evmMessage.signPersonalMessageEVM.message, account.addr);
+          if (!verify) {
+            throw new Error(ConnectError.InvalidSig);
+          }
+          signature = sig;
+        } else {
+          const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+          const messageBytes = new TextEncoder().encode(evmMessage.signPersonalMessageEVM.message);
+          const s = await keyPair.signMessage(messageBytes);
+          signature = uint8ArrayToHex(s, true);
+        }
+
+        this.#sendSuccess(uuid, evmMessage.signPersonalMessageEVM.domain, signature);
       }
 
       wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);

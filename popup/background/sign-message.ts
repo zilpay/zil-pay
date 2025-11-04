@@ -39,10 +39,11 @@ export async function responseToSignPersonalMessageEVM(
   walletIndex: number,
   accountIndex: number,
   approve: boolean,
+  signature?: string,
 ) {
   const data = await new Message<SendResponseParams>({
     type: MTypePopup.EVM_RESPONSE_PERSONAL_MESSAGE,
-    payload: { uuid, walletIndex, approve, accountIndex, },
+    payload: { uuid, walletIndex, approve, accountIndex, signature, },
   }).send();
   
   const resolve = warpMessage(data) as IConfirmState[];

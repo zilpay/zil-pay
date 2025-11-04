@@ -10,4 +10,5 @@ export enum ConnectError {
   RequestNotFound = "Request not found",
   AddressMismatch = "Address mismatch",
   UnsupportedType = "Unsupported type",
+  InvalidSig = "Invalid Sig",
 }

@@ -1,3 +1,4 @@
+import { Signature } from "@noble/secp256k1";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
 import type { BackgroundState } from "background/storage";
 import { ConfirmState } from "background/storage/confirm";
@@ -5,6 +6,7 @@ import { ConnectError } from "config/errors";
 import { WalletTypes } from "config/wallet";
 import { Address } from "crypto/address";
 import { sha256 } from "crypto/sha256";
+import { verify } from "crypto/zilliqa/schnorr";
 import { PromptService } from "lib/popup/prompt";
 import { LegacyZilliqaTabMsg, type StreamResponse } from "lib/streem";
 import { TabsMessage } from "lib/streem/tabs-message";
@@ -140,7 +142,14 @@ export class ZilPayLegacyService {
     }
   }
 
-  async signMessageRes(uuid: string, walletIndex: number, accountIndex: number, approve: boolean, sendResponse: StreamResponse, sig?: string) {
+  async signMessageRes(
+    uuid: string,
+    walletIndex: number,
+    accountIndex: number,
+    approve: boolean,
+    sendResponse: StreamResponse,
+    sig?: string,
+  ) {
     try {
       const wallet = this.#state.wallets[walletIndex];
 
@@ -169,6 +178,13 @@ export class ZilPayLegacyService {
         let signature: string;
 
         if (wallet.walletType == WalletTypes.Ledger && sig) {
+          const sigBytes = hexToUint8Array(sig);
+          const hash = hexToUint8Array(scillaMessage.signMessageScilla.hash);
+          const pubKeyBytes = hexToUint8Array(account.pubKey);
+          const isvalid = await verify(hash, pubKeyBytes, Signature.fromBytes(sigBytes))
+          if (!isvalid) {
+            throw new Error(ConnectError.InvalidSig);
+          }
           signature = sig;
         } else {
           const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
