@@ -1,13 +1,9 @@
 <script lang="ts">
     import { fade, fly } from 'svelte/transition';
     import { _ } from 'popup/i18n';
-    import { LEDGER_USB_VENDOR_ID } from 'config/ledger';
     import { cacheStore } from 'popup/store/cache';
     import { push } from 'popup/router/navigation';
-    import { ScillaLedgerInterface } from 'ledger/scilla';
-    import { EthLedgerInterface } from 'ledger/eth';
-    import TransportWebHID from 'ledger/webhid';
-    import TransportWebBLE from 'ledger/webble';
+    import { ledgerController, type LedgerDevice } from 'ledger/controller';
     import type { LedgerPublicAddress } from 'types/ledger';
 
     import NavBar from '../components/NavBar.svelte';
@@ -18,7 +14,6 @@
     import SmartInput from '../components/SmartInput.svelte';
     import Counter from '../components/Counter.svelte';
     import AccountCard from '../components/AccountCard.svelte';
-    import { ETHEREUM } from 'config/slip44';
     import { walletFromLedger } from 'popup/background/wallet';
     import { GasSpeed } from 'config/gas';
     import { RatesApiOptions } from 'config/api';
@@ -28,13 +23,6 @@
 
     const STEP_DEVICES_FOUND = 0;
     const STEP_CONFIGURING = 1;
-
-    interface Device {
-        id: string;
-        name: string;
-        type: 'usb' | 'bluetooth';
-        raw: HIDDevice | BluetoothDevice;
-    }
 
     let walletSettings = $state<IWalletSettingsState>({
         cipherOrders: [],
@@ -54,15 +42,13 @@
         gasOption: GasSpeed.Market,
     });
     let step = $state(STEP_DEVICES_FOUND);
-    let usbDevices = $state<Device[]>([]);
-    let bleDevices = $state<Device[]>([]);
-    let selectedDevice = $state<Device | null>(null);
+    let usbDevices = $state<LedgerDevice[]>([]);
+    let bleDevices = $state<LedgerDevice[]>([]);
+    let selectedDevice = $state<LedgerDevice | null>(null);
     let error = $state<string | null>(null);
     let isLoadingUsb = $state(false);
     let isLoadingBle = $state(false);
     let isConnecting = $state(false);
-    let ledgerTransport = $state<TransportWebHID | TransportWebBLE | null>(null);
-    let ledgerInterface = $state<ScillaLedgerInterface | EthLedgerInterface | null>(null);
     let bleSupported = $state(false);
     let usbSupported = $state(false);
 
@@ -78,15 +64,10 @@
 
     async function checkSupport() {
         try {
-            const [ble, usb] = await Promise.all([
-                TransportWebBLE.isSupported(),
-                TransportWebHID.isSupported()
-            ]);
-            bleSupported = ble;
-            usbSupported = usb;
-            console.log('[LEDGER-CONNECT:checkSupport]', { bleSupported: ble, usbSupported: usb });
+            const support = await ledgerController.checkSupport();
+            bleSupported = support.ble;
+            usbSupported = support.usb;
         } catch(err) {
-            console.error('[LEDGER-CONNECT:checkSupport] Error checking transport support', err);
             error = String(err);
         }
     }
@@ -95,29 +76,11 @@
         if (!usbSupported) return;
         isLoadingUsb = true;
         error = null;
-        console.log('[LEDGER-CONNECT:findUSBDevices] Starting USB device search...');
 
         try {
-            await window.navigator.hid.requestDevice({
-                filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
-            });
-            const permitted = await window.navigator.hid.getDevices();
-            const ledgers = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
-            console.log(`[LEDGER-CONNECT:findUSBDevices] Found ${ledgers.length} permitted Ledger devices.`);
-            
-            usbDevices = ledgers.map(d => ({
-                id: `usb-${d.productId}`,
-                name: d.productName || 'Ledger Device',
-                type: 'usb' as const,
-                raw: d
-            }));
-        } catch (err: any) {
-            if (!err.message?.includes('cancel')) {
-                console.error('[LEDGER-CONNECT:findUSBDevices] Error finding USB devices', err);
-                error = String(err);
-            } else {
-                console.log('[LEDGER-CONNECT:findUSBDevices] USB device request canceled by user.');
-            }
+            usbDevices = await ledgerController.findUSBDevices();
+        } catch (err: unknown) {
+            error = String(err);
         } finally {
             isLoadingUsb = false;
         }
@@ -127,146 +90,50 @@
         if (!bleSupported) return;
         isLoadingBle = true;
         error = null;
-        console.log('[LEDGER-CONNECT:findBLEDevices] Starting BLE device search...');
 
         try {
-            const devices: Device[] = await new Promise((resolve) => {
-                const found: Device[] = [];
-                TransportWebBLE.listen({
-                    next: (event) => {
-                        if (event.type === 'add') {
-                            const device = event.descriptor as BluetoothDevice;
-                            found.push({
-                                id: `ble-${device.id}`,
-                                name: device.name || 'Ledger Bluetooth',
-                                type: 'bluetooth',
-                                raw: device
-                            });
-                        }
-                    },
-                    error: (err) => {
-                        console.error('[LEDGER-CONNECT:findBLEDevices] BLE listen error', err);
-                        resolve([]);
-                    },
-                    complete: () => resolve(found)
-                });
-            });
-            console.log(`[LEDGER-CONNECT:findBLEDevices] Found ${devices.length} BLE devices.`);
-            bleDevices = devices;
-        } catch (err: any) {
-            if (!err.message?.includes('cancel')) {
-                console.error('[LEDGER-CONNECT:findBLEDevices] Error finding BLE devices', err);
-                error = String(err);
-            } else {
-                console.log('[LEDGER-CONNECT:findBLEDevices] BLE device request canceled by user.');
-            }
+            bleDevices = await ledgerController.findBLEDevices();
+        } catch (err: unknown) {
+            error = String(err);
         } finally {
             isLoadingBle = false;
         }
     }
 
-    async function handleDeviceSelect(device: Device) {
+    async function handleDeviceSelect(device: LedgerDevice) {
+        if (!selectedChain) return;
+        
         selectedDevice = device;
-        walletName = `${device.name} ${selectedChain?.name || ''}`;
+        walletName = `${device.name} ${selectedChain.name || ''}`;
         error = null;
         isConnecting = true;
-        console.log('[LEDGER-CONNECT:handleDeviceSelect] Selecting device:', { id: device.id, type: device.type });
-
-        let tempTransport: TransportWebHID | TransportWebBLE | null = null;
 
         try {
-            if (device.type === 'usb') {
-                tempTransport = await TransportWebHID.openDevice(device.raw as HIDDevice);
-            } else {
-                tempTransport = await TransportWebBLE.create();
-            }
-            console.log('[LEDGER-CONNECT:handleDeviceSelect] Transport created.');
-
-            let determinedInterface: ScillaLedgerInterface | EthLedgerInterface | null = null;
-
-            try {
-                console.log('[LEDGER-CONNECT:handleDeviceSelect] Attempt 1: Connecting to Zilliqa (Scilla) app...');
-                const scillaInterface = new ScillaLedgerInterface(tempTransport);
-                const scillaVersion = await scillaInterface.getVersion();
-                determinedInterface = scillaInterface;
-                console.log('[LEDGER-CONNECT:handleDeviceSelect] Success: Zilliqa (Scilla) app', scillaVersion);
-            } catch (scillaError: any) {
-                console.warn('[LEDGER-CONNECT:handleDeviceSelect] Attempt 1 Failed: Scilla app not responsive.', scillaError);
-
-                try {
-                    console.log('[LEDGER-CONNECT:handleDeviceSelect] Attempt 2: Connecting to Ethereum app...');
-                    const ethInterface = new EthLedgerInterface(tempTransport);
-                    await ethInterface.getAppConfiguration();
-                    determinedInterface = ethInterface;
-                    console.log('[LEDGER-CONNECT:handleDeviceSelect] Success: Ethereum app detected.');
-                } catch (ethError: any) {
-                    console.error('[LEDGER-CONNECT:handleDeviceSelect] Attempt 2 Failed: ETH app also not responsive.', ethError);
-                    throw new Error($_('ledger.errors.app_not_open_generic'));
-                }
-            }
-            
-            ledgerTransport = tempTransport;
-            ledgerInterface = determinedInterface;
+            await ledgerController.connect(device, selectedChain);
             step = STEP_CONFIGURING;
-
-        } catch (err: any) {
-            console.error('[LEDGER-CONNECT:handleDeviceSelect] Overall connection process failed.', { device: device.id, error: err });
-            
-            if (err?.message?.includes('0x5515')) {
-                error = $_('ledger.errors.device_locked');
-            } else {
-                error = err.message || $_('ledger.errors.connection_failed');
-            }
-
-            if (tempTransport) {
-                try {
-                    await tempTransport.close();
-                } catch (closeErr) {
-                    console.error('[LEDGER-CONNECT:handleDeviceSelect] Error closing transport after failure.', closeErr);
-                }
-            }
-            ledgerTransport = null;
-            ledgerInterface = null;
+        } catch (err: unknown) {
+            error = String(err);
             selectedDevice = null;
-
         } finally {
             isConnecting = false;
         }
     }
 
     async function handleConnectAccounts() {
-        if (isConnectDisabled || !ledgerInterface) return;
+        if (isConnectDisabled || !ledgerController.isConnected) return;
         isConnecting = true;
         error = null;
-        console.log('[LEDGER-CONNECT:handleConnectAccounts] Connecting accounts...', { count: accountCount });
 
         try {
-            const accounts: LedgerPublicAddress[] = [];
+            const accounts = await ledgerController.generateAccounts(accountCount, 0);
             
-            for (let i = 0; i < accountCount; i++) {
-                let ledgerAccount: LedgerPublicAddress;
+            connectedAccounts = accounts.map((acc, i) => ({
+                ...acc,
+                name: `${selectedDevice?.name} ${i + 1}`
+            }));
 
-                if (ledgerInterface instanceof EthLedgerInterface && selectedChain) {
-                    const path = `44'/${ETHEREUM}'/0'/0/${i}`;
-                    console.log(`[LEDGER-CONNECT:handleConnectAccounts] Getting ETH address for path: ${path}`);
-                    ledgerAccount = await ledgerInterface.getAddress(path);
-                } else if (ledgerInterface instanceof ScillaLedgerInterface) {
-                    console.log(`[LEDGER-CONNECT:handleConnectAccounts] Getting Scilla address for index: ${i}`);
-                    ledgerAccount = await ledgerInterface.getPublicAddress(i);
-                } else {
-                    console.warn('[LEDGER-CONNECT:handleConnectAccounts] Skipping account connection due to invalid ledger interface', { index: i });
-                    continue;
-                }
-
-                accounts.push({
-                    ...ledgerAccount,
-                    name: `${selectedDevice?.name} ${i + 1}`,
-                    index: i
-                });
-            }
             console.log('[LEDGER-CONNECT:handleConnectAccounts] Successfully fetched accounts:', accounts.map(a => a.pubAddr));
-            connectedAccounts = accounts;
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('[LEDGER-CONNECT:handleConnectAccounts] Error connecting accounts', { count: accountCount, error: err });
             if (err instanceof Error) {
                 if (err.message.includes('0x6985')) {
@@ -287,17 +154,12 @@
     }
     
     async function resetToDeviceSelection() {
-        if (ledgerTransport) {
-            try {
-                await ledgerTransport.close();
-                console.log('[LEDGER-CONNECT:resetToDeviceSelection] Transport closed.');
-            } catch (err){
-                console.error('[LEDGER-CONNECT:resetToDeviceSelection] Error closing transport', err);
-            }
+        try {
+            await ledgerController.disconnect();
+        } catch (err) {
+            console.error('[LEDGER-CONNECT:resetToDeviceSelection] Error disconnecting', err);
         }
         
-        ledgerTransport = null;
-        ledgerInterface = null;
         selectedDevice = null;
         step = STEP_DEVICES_FOUND;
         error = null;
@@ -307,23 +169,19 @@
     }
 
     async function handleDone() {
-        if (ledgerTransport) {
-            try {
-                await ledgerTransport.close();
-                await walletFromLedger({
-                    walletName,
-                    accounts: connectedAccounts,
-                    chain: selectedChain!,
-                    settings: walletSettings,
-                });
-                console.log('[LEDGER-CONNECT:handleDone] Wallet created from Ledger.');
-            } catch (err) {
-                console.error('[LEDGER-CONNECT:handleDone] Error finalizing wallet creation', err);
-                error = String(err);
-                return;
-            }
+        try {
+            await ledgerController.disconnect();
+            await walletFromLedger({
+                walletName,
+                accounts: connectedAccounts,
+                chain: selectedChain!,
+                settings: walletSettings,
+            });
+            push('/');
+        } catch (err) {
+            console.error('[LEDGER-CONNECT:handleDone] Error finalizing wallet creation', err);
+            error = String(err);
         }
-        push('/');
     }
 
     $effect(() => {
@@ -335,15 +193,9 @@
         checkSupport().then(async () => {
             if (usbSupported) {
                 try {
-                    const permitted = await window.navigator.hid.getDevices();
-                    const ledgers = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
-                    if (ledgers.length > 0) {
-                        usbDevices = ledgers.map(d => ({
-                            id: `usb-${d.productId}`,
-                            name: d.productName || 'Ledger Device',
-                            type: 'usb' as const,
-                            raw: d
-                        }));
+                    const devices = await ledgerController.getPermittedUSBDevices();
+                    if (devices.length > 0) {
+                        usbDevices = devices;
                     }
                 } catch (err) {
                     console.error('[LEDGER-CONNECT:init] Error getting permitted HID devices', err);
@@ -352,9 +204,9 @@
         });
 
         return () => {
-            if (ledgerTransport) {
-                ledgerTransport.close().catch((err) => {
-                    console.error('[LEDGER-CONNECT:cleanup] Error closing transport on component destroy', err);
+            if (ledgerController.isConnected) {
+                ledgerController.disconnect().catch((err) => {
+                    console.error('[LEDGER-CONNECT:cleanup] Error disconnecting on component destroy', err);
                 });
             }
         };
@@ -410,7 +262,9 @@
                                 {#each usbDevices as device (device.id)}
                                     <OptionCard
                                         title={device.name}
-                                        description={$_('ledger.vendorId') + `: 0x${(device.raw as HIDDevice).vendorId.toString(16)}`}
+                                        description={device.raw instanceof Object && 'vendorId' in device.raw ? 
+                                            $_('ledger.vendorId') + `: 0x${device.raw.vendorId.toString(16)}` : 
+                                            'USB Device'}
                                         icon={LedgerIcon as any}
                                         showArrow={true}
                                         onclick={() => handleDeviceSelect(device)}
