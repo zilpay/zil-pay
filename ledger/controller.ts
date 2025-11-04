@@ -7,6 +7,7 @@ import type { LedgerPublicAddress, EthSignature } from 'types/ledger';
 import { ETHEREUM } from 'config/slip44';
 import { hexToUint8Array } from 'lib/utils/hex';
 import type { IChainConfigState } from 'background/storage';
+import { utf8ToUint8Array } from 'lib/utils/utf8';
 
 export enum DeviceType {
     USB = 0,
@@ -186,7 +187,8 @@ class LedgerController {
         if (this.interface instanceof EthLedgerInterface) {
             const slip44 = this.currentChain.slip44 ?? ETHEREUM;
             const path = `44'/${slip44}'/0'/0/${accountIndex}`;
-            const messageBytes = hexToUint8Array(message);
+            const messageBytes = utf8ToUint8Array(message);
+            console.log(messageBytes);
             const signature = await this.interface.signPersonalMessage(path, messageBytes);
             return signature;
         } else {

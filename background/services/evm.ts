@@ -316,8 +316,6 @@ export class EvmService {
         throw new Error(`${ConnectError.RequestNotFound}: ${uuid}`);
       }
 
-      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
-
       if (!approve) {
         this.#sendError(uuid, evmMessage.signPersonalMessageEVM.domain, ConnectError.UserRejected, 4001);
       } else {
@@ -335,6 +333,7 @@ export class EvmService {
         this.#sendSuccess(uuid, evmMessage.signPersonalMessageEVM.domain, signatureHex);
       }
 
+      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
       await this.#state.sync();
       sendResponse({ resolve: wallet.confirm });
     } catch (e) {
