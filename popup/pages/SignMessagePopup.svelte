@@ -76,7 +76,7 @@
 
     async function handleLedgerSign(accountIndex: number): Promise<string> {
         if (isScilla && signMessageScillaData) {
-            return await ledgerController.signMessage(signMessageScillaData.content, accountIndex);
+            return await ledgerController.signMessage(signMessageScillaData.hash, accountIndex);
         } else if (isPersonalSign && signPersonalMessageEVMData) {
             const sig = await ledgerController.signPersonalMessage(signPersonalMessageEVMData.message, accountIndex);
             return `${sig.r}${sig.s}${sig.v.toString(16).padStart(2, '0')}`;
@@ -95,7 +95,7 @@
         
         try {
             if (isScilla) {
-                responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isPersonalSign) {
                 responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
             } else if (isTypedData) {

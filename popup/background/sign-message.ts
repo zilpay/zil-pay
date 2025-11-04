@@ -12,10 +12,11 @@ export async function responseToSignMessageScilla(
   walletIndex: number,
   accountIndex: number,
   approve: boolean,
+  signature?: string,
 ) {
   const data = await new Message<SendResponseParams>({
     type: LegacyZilliqaTabMsg.SING_MESSAGE_RES,
-    payload: { uuid, walletIndex, approve, accountIndex, },
+    payload: { uuid, walletIndex, approve, accountIndex, signature, },
   }).send();
   
   const resolve = warpMessage(data) as IConfirmState[];

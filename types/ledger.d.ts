@@ -5,10 +5,6 @@ export interface LedgerPublicAddress {
   name: string;
 }
 
-export interface MessagePayload {
-  hash: string;
-}
-
 export interface EthSignature {
   v: number;
   r: string;

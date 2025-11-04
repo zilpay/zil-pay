@@ -165,13 +165,13 @@ class LedgerController {
         return accounts;
     }
 
-    async signMessage(message: string, accountIndex: number): Promise<string> {
+    async signMessage(hash: string, accountIndex: number): Promise<string> {
         if (!this.interface || !this.currentChain) {
             throw new Error('Not connected');
         }
 
         if (this.interface instanceof ScillaLedgerInterface) {
-            const signature = await this.interface.signHash(accountIndex, { hash: message });
+            const signature = await this.interface.signHash(accountIndex, hash);
             return signature;
         } else {
             throw new Error('Scilla message signing not supported on Ethereum app');

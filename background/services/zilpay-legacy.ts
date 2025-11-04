@@ -2,6 +2,7 @@ import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
 import type { BackgroundState } from "background/storage";
 import { ConfirmState } from "background/storage/confirm";
 import { ConnectError } from "config/errors";
+import { WalletTypes } from "config/wallet";
 import { Address } from "crypto/address";
 import { sha256 } from "crypto/sha256";
 import { PromptService } from "lib/popup/prompt";
@@ -139,7 +140,7 @@ export class ZilPayLegacyService {
     }
   }
 
-  async signMessageRes(uuid: string, walletIndex: number, accountIndex: number, approve: boolean, sendResponse: StreamResponse) {
+  async signMessageRes(uuid: string, walletIndex: number, accountIndex: number, approve: boolean, sendResponse: StreamResponse, sig?: string) {
     try {
       const wallet = this.#state.wallets[walletIndex];
 
@@ -165,19 +166,27 @@ export class ZilPayLegacyService {
           },
         }).send(scillaMessage.signMessageScilla.domain);
       } else {
-        const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
-        const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
-        const hashBytes = hexToUint8Array(scillaMessage.signMessageScilla.hash);
-        const signature = await keyPair.signMessage(hashBytes);
+        let signature: string;
+
+        if (wallet.walletType == WalletTypes.Ledger && sig) {
+          signature = sig;
+        } else {
+          const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
+          const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
+          const hashBytes = hexToUint8Array(scillaMessage.signMessageScilla.hash);
+          const sig = await keyPair.signMessage(hashBytes);
+
+          signature = uint8ArrayToHex(sig);
+        }
 
         new TabsMessage({
           type: LegacyZilliqaTabMsg.SING_MESSAGE_RES,
           uuid: scillaMessage.uuid,
           payload: {
            resolve: {
-             signature: uint8ArrayToHex(signature),
+             signature: signature,
               message: scillaMessage.signMessageScilla.content,
-              publicKey: uint8ArrayToHex(keyPair.pubKey),
+              publicKey: account.pubKey,
            }, 
           },
         }).send(scillaMessage.signMessageScilla.domain);

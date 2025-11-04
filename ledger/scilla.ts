@@ -2,7 +2,7 @@ import Transport from './transport';
 import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import { writeInt32LE, concatUint8Arrays } from 'lib/utils/bytes';
-import type { LedgerPublicAddress, MessagePayload } from 'types/ledger';
+import type { LedgerPublicAddress } from 'types/ledger';
 
 const CLA = 0xe0;
 const INS = {
@@ -68,12 +68,12 @@ export class ScillaLedgerInterface {
     return { pubAddr, publicKey, index, name: "" };
   }
 
-  public async signHash(index: number, message: MessagePayload): Promise<string> {
+  public async signHash(index: number, hash: string): Promise<string> {
     const P1 = 0x00;
     const P2 = 0x00;
     const indexBytes = new Uint8Array(4);
     writeInt32LE(indexBytes, index);
-    const hashBytes = hexToUint8Array(message.hash);
+    const hashBytes = hexToUint8Array(hash);
     const hashLen = hashBytes.length;
 
     if (hashLen === 0) {
