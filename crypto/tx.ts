@@ -10,6 +10,7 @@ import { safeChunkTransaction } from "./rlp";
 
 export enum TransactionRequestErrors {
   InvalidTx = "Invalid tx type",
+  InvalidDerivePath = "Invalid Derive Path",
 }
 
 export class TransactionRequest {
@@ -19,77 +20,68 @@ export class TransactionRequest {
     public evm?: TransactionRequestEVM,
   ) {}
 
-  async toRLP(pubKey: Uint8Array, derivationPath: Uint8Array): Promise<Uint8Array[]> {
-    if (this.scilla) {
-      return [this.scilla.encode(pubKey)];
-    } else if (this.evm) {
-      const txType = "eip1559";
-      const rawTxData = {
-        type: txType,
-        to: await Address.fromStr(this.evm.to).toEthChecksum(),
-        value: BigInt(this.evm.value ?? 0),
-        data: this.evm.data ?? HEX_PREFIX,
-        nonce: BigInt(this.evm.nonce ?? 0),
-        gasLimit: BigInt(this.evm.gasLimit ?? 21000),
-        maxFeePerGas: BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n),
-        maxPriorityFeePerGas: BigInt(
-          this.evm.maxPriorityFeePerGas ?? 1_000_000_000n,
-        ),
-        chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
-        accessList: this.evm.accessList ?? [],
-      };
-
-      const tx = new Transaction(txType, rawTxData, false, false);
-      return safeChunkTransaction(tx.toBytes(), derivationPath, txType);
+  async #createEVMRawData() {
+    if (!this.evm) {
+      throw new Error(TransactionRequestErrors.InvalidTx);
     }
 
-    throw new Error(TransactionRequestErrors.InvalidTx);
+    return {
+      type: "eip1559" as const,
+      to: await Address.fromStr(this.evm.to).toEthChecksum(),
+      value: BigInt(this.evm.value ?? 0),
+      data: this.evm.data ?? HEX_PREFIX,
+      nonce: BigInt(this.evm.nonce ?? 0),
+      gasLimit: BigInt(this.evm.gasLimit ?? 21000),
+      maxFeePerGas: BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n),
+      maxPriorityFeePerGas: BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n),
+      chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
+      accessList: this.evm.accessList ?? [],
+    };
+  }
+
+  async toRLP(pubKey: Uint8Array, derivationPath?: Uint8Array): Promise<Uint8Array[]> {
+    if (this.scilla) {
+      return [this.scilla.encode(pubKey)];
+    }
+
+    if (!derivationPath) {
+      throw new Error(TransactionRequestErrors.InvalidDerivePath);
+    }
+
+    const rawTxData = await this.#createEVMRawData();
+    const tx = new Transaction(rawTxData.type, rawTxData, false, false);
+    return safeChunkTransaction(tx.toBytes(), derivationPath, rawTxData.type);
   }
 
   async sign(keypair: KeyPair) {
     if (this.scilla) {
       const receipt = await this.scilla.sign(keypair);
       return new SignedTransaction(this.metadata, receipt);
-    } else if (this.evm) {
-      const txType = "eip1559";
-      const rawTxData = {
-        type: txType,
-        to: await Address.fromStr(this.evm.to).toEthChecksum(),
-        value: BigInt(this.evm.value ?? 0),
-        data: this.evm.data ?? HEX_PREFIX,
-        nonce: BigInt(this.evm.nonce ?? 0),
-        gasLimit: BigInt(this.evm.gasLimit ?? 21000),
-        maxFeePerGas: BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n),
-        maxPriorityFeePerGas: BigInt(
-          this.evm.maxPriorityFeePerGas ?? 1_000_000_000n,
-        ),
-        chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
-        accessList: this.evm.accessList ?? [],
-      };
-
-      const tx = new Transaction(txType, rawTxData, false, false);
-      const entropy = randomBytes(128);
-      const receipt = tx.signBy(keypair.privateKey, entropy);
-
-      return new SignedTransaction(this.metadata, undefined, receipt);
     }
 
-    throw new Error(TransactionRequestErrors.InvalidTx);
+    const rawTxData = await this.#createEVMRawData();
+    const tx = new Transaction(rawTxData.type, rawTxData, false, false);
+    const entropy = randomBytes(128);
+    const receipt = tx.signBy(keypair.privateKey, entropy);
+
+    return new SignedTransaction(this.metadata, undefined, receipt);
   }
 
   toJSON() {
     if (this.scilla) {
       return this.scilla.toJSON();
-    } else if (this.evm) {
-      return {
-        from: this.evm.from,
-        to: this.evm.to,
-        value: bigintToHex(this.evm.value ? BigInt(this.evm.value) : 0n),
-        data: this.evm.data,
-      };
     }
 
-    throw new Error(TransactionRequestErrors.InvalidTx);
+    if (!this.evm) {
+      throw new Error(TransactionRequestErrors.InvalidTx);
+    }
+
+    return {
+      from: this.evm.from,
+      to: this.evm.to,
+      value: bigintToHex(this.evm.value ? BigInt(this.evm.value) : 0n),
+      data: this.evm.data,
+    };
   }
 }
 
@@ -103,7 +95,9 @@ export class SignedTransaction {
   async verify() {
     if (this.scilla) {
       return this.scilla.verify();
-    } else if (this.evm) {
+    }
+
+    if (this.evm) {
       return this.evm.verifySignature();
     }
 
@@ -113,7 +107,9 @@ export class SignedTransaction {
   async toString() {
     if (this.scilla) {
       return JSON.stringify(await this.scilla.toJSON());
-    } else if (this.evm) {
+    }
+
+    if (this.evm) {
       return this.evm.toHex();
     }
 
