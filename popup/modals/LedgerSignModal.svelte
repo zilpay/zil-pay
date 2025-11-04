@@ -6,7 +6,7 @@
     import OptionCard from '../components/OptionCard.svelte';
     import LedgerIcon from '../components/icons/Ledger.svelte';
     import RefreshIcon from '../components/icons/Refresh.svelte';
-    import Modal from 'popup/components/Modal.svelte';
+    import Modal from '../components/Modal.svelte';
     import type { IChainConfigState } from 'background/storage';
 
     let {

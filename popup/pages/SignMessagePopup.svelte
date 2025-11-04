@@ -15,6 +15,8 @@
     import WarningIcon from '../components/icons/Warning.svelte';
     import CloseIcon from '../components/icons/Close.svelte';
     import LedgerSignModal from '../modals/LedgerSignModal.svelte';
+    import { WalletTypes } from 'config/wallet';
+    import { getAccountChain } from 'popup/mixins/chains';
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const selectedAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
@@ -66,7 +68,7 @@
     let errorMessage = $state('');
     let showLedgerModal = $state(false);
 
-    const currentChain = $derived($globalStore.config.chains.find(c => c.hash === selectedAccount?.chainHash) ?? null);
+    const currentChain = $derived(getAccountChain($globalStore.selectedWallet));
 
     function dismissError() {
         errorMessage = '';
@@ -232,14 +234,16 @@
 </div>
 {/if}
 
-<LedgerSignModal
-    bind:show={showLedgerModal}
-    chain={currentChain}
-    accountIndex={currentWallet?.selectedAccount ?? 0}
-    signFunction={handleLedgerSign}
-    onSuccess={handleLedgerSuccess}
-    onError={handleLedgerError}
-/>
+{#if currentChain}
+    <LedgerSignModal
+        bind:show={showLedgerModal}
+        chain={currentChain}
+        accountIndex={currentWallet?.selectedAccount ?? 0}
+        signFunction={handleLedgerSign}
+        onSuccess={handleLedgerSuccess}
+        onError={handleLedgerError}
+    />
+{/if}
 
 <style lang="scss">
     .page-container {
