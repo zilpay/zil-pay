@@ -152,12 +152,9 @@ export class ZilPayLegacyService {
       const account = wallet.accounts[accountIndex];
       const scillaMessage = wallet.confirm.find((c) => c.uuid == uuid);
 
-
       if (!scillaMessage || !scillaMessage.signMessageScilla) {
         throw new Error(`not found ${uuid}`);
       }
-
-      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
 
       if (!approve) {
         new TabsMessage({
@@ -186,6 +183,7 @@ export class ZilPayLegacyService {
         }).send(scillaMessage.signMessageScilla.domain);
       }
 
+      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
       await this.#state.sync();
 
       sendResponse({ resolve: wallet.confirm, });
