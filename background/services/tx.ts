@@ -9,7 +9,7 @@ import { generateErc20TransferData, NetworkProvider } from "background/rpc";
 import { TransactionRequest } from "crypto/tx";
 import { ZILTransactionRequest } from "crypto/zilliqa_tx";
 import { Address } from "crypto/address";
-import { hexToUint8Array } from "lib/utils/hex";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
 import { ETHEREUM } from "config/slip44";
 import type { WorkerService } from "./worker";
 import { TransactionStatus } from "config/tx";
@@ -50,15 +50,22 @@ export class TransactionService {
     }
   }
 
-  async genRLPTx(confirmIndex: number, walletIndex: number, sendResponse: StreamResponse) {
+  async genRLPTx(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
       await wallet.trhowSession();
+      const account = wallet.accounts[accountIndex];
       const confirm= wallet.confirm[confirmIndex];
       const metadata  = confirm.metadata!; 
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const evm = confirm.evm;
       const txReq = new TransactionRequest(metadata, scilla, evm);
+      const pubKeyBytes = hexToUint8Array(account.pubKey);
+      const rlp = await txReq.toRLP(pubKeyBytes, Uint8Array.from([]));
+
+      sendResponse({
+        resolve: rlp,
+      });
     } catch (err) {
       sendResponse({ reject: String(err) });
     }
