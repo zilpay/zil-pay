@@ -129,6 +129,10 @@ export default class TransportWebHID extends Transport {
   }
 
   static async openDevice(device: HIDDevice) {
+    if (device.opened) {
+      await device.close();
+    }
+
     await device.open();
     const transport = new TransportWebHID(device);
     const onDisconnect = (e: HIDConnectionEvent) => {

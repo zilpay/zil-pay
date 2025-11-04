@@ -49,12 +49,23 @@ class LedgerController {
     }
 
     async findUSBDevices(): Promise<LedgerDevice[]> {
-        await window.navigator.hid.requestDevice({
-            filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
-        });
         const permitted = await window.navigator.hid.getDevices();
-        const ledgers = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
-        
+        let ledgers = permitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
+
+        if (ledgers.length === 0) {
+            await window.navigator.hid.requestDevice({
+                filters: [{ vendorId: LEDGER_USB_VENDOR_ID }]
+            });
+            const newPermitted = await window.navigator.hid.getDevices();
+            ledgers = newPermitted.filter(d => d.vendorId === LEDGER_USB_VENDOR_ID);
+        }
+
+        for (const device of ledgers) {
+            if (device.opened) {
+                await device.close();
+            }
+        }
+
         return ledgers.map(d => ({
             id: `usb-${d.productId}`,
             name: d.productName || 'Ledger Device',
