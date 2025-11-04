@@ -6,6 +6,7 @@ import { bigintToHex, HEX_PREFIX } from "lib/utils/hex";
 import type { TransactionMetadata, TransactionRequestEVM } from "types/tx";
 import type { TxType } from "micro-eth-signer/core/tx-internal";
 import { Address } from "./address";
+import { safeChunkTransaction } from "./rlp";
 
 export enum TransactionRequestErrors {
   InvalidTx = "Invalid tx type",
@@ -18,9 +19,9 @@ export class TransactionRequest {
     public evm?: TransactionRequestEVM,
   ) {}
 
-  async toRLP(pubKey: Uint8Array): Promise<Uint8Array> {
+  async toRLP(pubKey: Uint8Array, derivationPath: Uint8Array): Promise<Uint8Array[]> {
     if (this.scilla) {
-      return this.scilla.encode(pubKey);
+      return [this.scilla.encode(pubKey)];
     } else if (this.evm) {
       const txType = "eip1559";
       const rawTxData = {
@@ -39,7 +40,7 @@ export class TransactionRequest {
       };
 
       const tx = new Transaction(txType, rawTxData, false, false);
-      return tx.toBytes();
+      return safeChunkTransaction(tx.toBytes(), derivationPath, txType);
     }
 
     throw new Error(TransactionRequestErrors.InvalidTx);
