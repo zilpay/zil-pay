@@ -32,5 +32,16 @@
   },
   "networkSetup": {
     "title": "Select Network"
+  },
+  "generateWallet": {
+    "title": "Generate Wallet",
+    "bip39": {
+      "title": "BIP39 Seed Phrase",
+      "description": "Generate wallet with 12 or 24 word recovery phrase"
+    },
+    "privateKey": {
+      "title": "Private Key Pair",
+      "description": "Generate wallet from cryptographic key pair"
+    }
   }
 }
