@@ -73,6 +73,12 @@
       "instructions": "Enter the following words from your seed phrase to verify you saved it correctly",
       "placeholder": "Enter word",
       "button": "Verify"
+    },
+    "restore": {
+      "title": "Import Seed Phrase",
+      "checksumWarning": "Invalid checksum detected. Please verify your seed phrase is correct",
+      "bypassCheckbox": "I understand the risks and want to proceed anyway",
+      "restoreButton": "Import"
     }
   },
   "print": {
