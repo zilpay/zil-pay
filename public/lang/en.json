@@ -4,5 +4,10 @@
     "tx.success.message": "{symbol} transfer completed successfully\n{hash}",
     "tx.failed.title": "❌ Transaction Failed",
     "tx.failed.message": "{symbol} transfer failed\n{hash}"
+  },
+  "start": {
+    "name": "ZilPay",
+    "title": "Post-Quantum Cryptocurrency Wallet",
+    "btn": "Get Started"
   }
 }
