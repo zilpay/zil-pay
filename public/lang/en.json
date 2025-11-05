@@ -67,5 +67,51 @@
       "backupConfirm": "I have saved my seed phrase securely",
       "next": "Next"
     }
+  },
+  "print": {
+    "bip39": {
+      "title": "Seed Phrase Backup",
+      "header": {
+        "title": "ZilPay Seed Phrase",
+        "subtitle": "Keep this document safe and secure",
+        "generated": "Generated on"
+      },
+      "warning": {
+        "title": "Security Warning",
+        "secure": "Store this document in a secure location",
+        "access": "Anyone with access to this phrase can control your wallet",
+        "noOnline": "Never share or store this phrase online"
+      },
+      "phrase": {
+        "title": "Recovery Phrase",
+        "words": "words"
+      }
+    },
+    "keypair": {
+      "title": "Key Pair Backup",
+      "header": {
+        "title": "ZilPay Key Pair",
+        "subtitle": "Keep this document safe and secure",
+        "generated": "Generated on"
+      },
+      "warning": {
+        "title": "Security Warning",
+        "secure": "Store this document in a secure location",
+        "access": "Anyone with access to these keys can control your wallet",
+        "noOnline": "Never share or store these keys online"
+      },
+      "keys": {
+        "title": "Cryptographic Keys",
+        "privateKey": "Private Key",
+        "publicKey": "Public Key",
+        "address": "Address"
+      }
+    }
+  },
+  "secretKeyGenerator": {
+    "title": "Generate Key Pair",
+    "privateKey": "Private Key",
+    "backupCheckbox": "I have saved my private key securely",
+    "nextButton": "Next"
   }
 }
