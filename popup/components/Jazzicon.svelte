@@ -363,10 +363,6 @@
       border-color: var(--color-inputs-border-focus);
       box-shadow: 0 0 0 2px var(--color-neutral-background-base), 0 0 0 4px var(--color-inputs-border-focus);
     }
-
-    &:active {
-      transform: scale(0.96);
-    }
   }
 
   .jazzicon-container {
