@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext", "DOM"],
+    "lib": ["es2022", "DOM"],
     "target": "es2022",
     "module": "ESNext",
     "moduleDetection": "force",

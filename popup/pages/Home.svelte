@@ -330,7 +330,7 @@
     }
 
     .error-title {
-        color: var(--color-content-text-inverted);
+        color: var(--color-content-text-primary);
         font-size: 14px;
         font-weight: 600;
         line-height: 20px;
@@ -344,7 +344,7 @@
         height: 24px;
         background: none;
         border: none;
-        color: var(--color-content-text-inverted);
+        color: var(--color-content-text-primary);
         font-size: 24px;
         line-height: 1;
         cursor: pointer;

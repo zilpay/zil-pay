@@ -562,6 +562,8 @@ export class EvmService {
         },
       }));
 
+      console.log(wallet.confirm);
+
       await this.#state.sync();
       new PromptService().open("/confirm");
 
@@ -692,7 +694,7 @@ export class EvmService {
       if (!chainConfig) {
         throw new Error(ConnectError.ChainNotFound);
       }
-      
+
       const tokenExists = wallet.tokens.some(
         (token) =>
           token.addr.toLowerCase() === options.address.toLowerCase() &&

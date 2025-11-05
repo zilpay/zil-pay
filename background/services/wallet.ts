@@ -634,7 +634,7 @@ export class WalletService {
     }
 
     const sendEvmEvent = (domain: string) => {
-      const address = selectedAccount.addrType == AddressType.Bech32 ? selectedAccount.addr.split(":")[1] : selectedAccount.addr;
+      const address = selectedAccount.addr.split(":").at(-1) ?? selectedAccount.addr;
       new TabsMessage({
         type: MTypePopup.EVM_EVENT,
         payload: {

@@ -34,21 +34,6 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
     typescript({
       sourceMap: !production,
       inlineSources: !production,
-      compilerOptions: {
-        target: 'ES2020',
-        module: 'esnext',
-        moduleResolution: 'node',
-        lib: ['ES2020', 'DOM'],
-        allowSyntheticDefaultImports: true,
-        esModuleInterop: true,
-        skipLibCheck: true,
-        strict: false,
-        noFallthroughCasesInSwitch: false,
-        noEmit: false,
-        declaration: false,
-        declarationMap: false,
-        resolveJsonModule: true,
-      },
       include: ['**/*.ts', '**/*.tsx'],
       exclude: ['node_modules/**', '__tests__/**']
     }),
