@@ -448,5 +448,34 @@
     "session": {
       "title": "Auto-lock Timer (hours)"
     }
+  },
+  "locale": {
+    "title": "Language",
+    "system": "System Default",
+    "systemDesc": "Use device language settings"
+  },
+  "confirm": {
+    "edit": "Edit",
+    "reject": "Reject",
+    "confirm": "Confirm",
+    "gas": {
+      "low": "Low",
+      "market": "Market",
+      "aggressive": "Aggressive",
+      "estimated": "Estimated Gas",
+      "baseFee": "Base Fee",
+      "priorityFee": "Priority Fee",
+      "maxFee": "Max Fee",
+      "gasPrice": "Gas Price"
+    }
+  },
+  "gasEditor": {
+    "title": "Edit Gas Parameters",
+    "gasPrice": "Gas Price",
+    "maxPriorityFee": "Max Priority Fee",
+    "gasLimit": "Gas Limit",
+    "nonce": "Nonce",
+    "cancel": "Cancel",
+    "save": "Save"
   }
 }
