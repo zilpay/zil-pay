@@ -279,5 +279,10 @@
     "defaultTokens": "Default Tokens",
     "addedTokens": "Added Tokens",
     "deletedTokens": "Deleted Tokens"
+  },
+  "nft": {
+    "errorFetching": "Error fetching NFT metadata",
+    "searchPlaceholder": "Name, symbol or contract address",
+    "noResults": "No NFTs found"
   }
 }
