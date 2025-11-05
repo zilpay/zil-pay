@@ -346,5 +346,15 @@
     "incrementCount": "Increase count",
     "accountExists": "Account with index {index} already exists",
     "createButton": "Create Account"
+  },
+  "lockpage": {
+    "title": "Welcome Back",
+    "chooseWallet": "Choose a wallet to unlock",
+    "passwordPlaceholder": "Enter password",
+    "selectWalletPlaceholder": "Select a wallet first",
+    "invalidPassword": "Invalid password",
+    "watchWallet": "Watch-only wallet - no password",
+    "ledgerWallet": "Ledger wallet - no password",
+    "unlockButton": "Unlock"
   }
 }
