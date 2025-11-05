@@ -284,5 +284,30 @@
     "errorFetching": "Error fetching NFT metadata",
     "searchPlaceholder": "Name, symbol or contract address",
     "noResults": "No NFTs found"
+  },
+  "history": {
+    "title": "History",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "clearAll": "Clear All",
+    "noTransactions": "No transaction history"
+  },
+  "txDetails": {
+    "title": "Transaction Details",
+    "status": {
+      "success": "Success",
+      "pending": "Pending",
+      "failed": "Failed",
+      "unknown": "Unknown"
+    },
+    "viewOn": "View on",
+    "from": "From",
+    "to": "To",
+    "hash": "Transaction Hash",
+    "gasUsed": "Gas Used",
+    "gasPrice": "Gas Price",
+    "block": "Block Number"
   }
 }
