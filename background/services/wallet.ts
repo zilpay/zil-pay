@@ -556,12 +556,19 @@ export class WalletService {
       const account = wallet.accounts[accountIndex];
       const chainHash = account.chainHash;
       const addresses: WalletAddressInfo[] = [];
+      const seenAddresses = new Set<string>();
 
       this.#state.book.forEach((bookEntry) => {
         if ((bookEntry.addrType !== account.addrType) || account.addr.includes(bookEntry.address)) {
           return;
         }
 
+        const addrLower = bookEntry.address.toLowerCase();
+        if (seenAddresses.has(addrLower)) {
+          return;
+        }
+
+        seenAddresses.add(addrLower);
         addresses.push({
           addr: bookEntry.address,
           accountName: bookEntry.name,
@@ -574,7 +581,7 @@ export class WalletService {
 
       for (let walletIndex = 0; walletIndex < this.#state.wallets.length; walletIndex++) {
         const w = this.#state.wallets[walletIndex];
-  
+
         for (const a of w.accounts) {
           if (a.chainHash !== chainHash || a.addrType !== account.addrType) {
             continue;
@@ -583,24 +590,34 @@ export class WalletService {
           if (a.addrType === AddressType.Bech32 && a.addr === account.addr && w.walletType != WalletTypes.Ledger && w.walletType != WalletTypes.Watch) {
             const pubKey = hexToUint8Array(a.pubKey);
             const addrEVM = await Address.fromPubKeyType(pubKey, AddressType.EthCheckSum);
+            const evmAddr = await addrEVM.toEthChecksum();
+            const evmAddrLower = evmAddr.toLowerCase();
 
-            addresses.push({
-              addr: await addrEVM.toEthChecksum(),
-              accountName: a.name,
-              walletIndex,
-              walletName: w.walletName,
-              addrType: AddressType.EthCheckSum,
-              category: AddressCategory.ZILExchangeLegacy,
-            });
+            if (!seenAddresses.has(evmAddrLower)) {
+              seenAddresses.add(evmAddrLower);
+              addresses.push({
+                addr: evmAddr,
+                accountName: a.name,
+                walletIndex,
+                walletName: w.walletName,
+                addrType: AddressType.EthCheckSum,
+                category: AddressCategory.ZILExchangeLegacy,
+              });
+            }
           } else if (a.addr !== account.addr) {
-            addresses.push({
-              addr: a.addr,
-              accountName: a.name,
-              walletIndex,
-              walletName: w.walletName,
-              addrType: a.addrType,
-              category: AddressCategory.Wallet
-            });
+            const addrLower = a.addr.toLowerCase();
+          
+            if (!seenAddresses.has(addrLower)) {
+              seenAddresses.add(addrLower);
+              addresses.push({
+                addr: a.addr,
+                accountName: a.name,
+                walletIndex,
+                walletName: w.walletName,
+                addrType: a.addrType,
+                category: AddressCategory.Wallet
+              });
+            }
           }
         }
       }
