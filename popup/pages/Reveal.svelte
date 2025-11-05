@@ -117,7 +117,7 @@
 
                 <div class="submit-button">
                     <Button
-                        type="submit"
+                  type="submit"
                         disabled={!password.trim()}
                         loading={isLoading}
                     >

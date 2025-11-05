@@ -146,17 +146,19 @@
 
     <div class="header-right">
         {#if !isLoadingTab && tabOrigin}
-            <div
+            <button
                 class="connection-status"
                 class:connected={isConnected}
                 onclick={onConnectionClick}
+                type="button"
+                aria-label="Connections"
             >
                 {#if tabFavicon}
                     <FastImg src={tabFavicon} />
                 {:else}
                     <LinkIcon />
                 {/if}
-            </div>
+            </button>
         {/if}
         {#if showExpand}
             <button
