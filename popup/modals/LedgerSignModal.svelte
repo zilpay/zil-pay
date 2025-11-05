@@ -15,6 +15,7 @@
         accountIndex,
         signFunction,
         onSuccess,
+        onCancel,
         onError
     }: {
         show: boolean;
@@ -22,6 +23,7 @@
         accountIndex: number;
         signFunction: (index: number) => Promise<string>;
         onSuccess: (signature: string) => void;
+        onCancel: () => void;
         onError: (error: string) => void;
     } = $props();
 
@@ -104,6 +106,7 @@
     function handleClose() {
         if (!isSigning) {
             show = false;
+            onCancel();
         }
     }
 

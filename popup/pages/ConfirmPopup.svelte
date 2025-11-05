@@ -285,6 +285,11 @@
         startPolling();
     }
 
+    function handleLedgerCancel() {
+        isLoading = false;
+        startPolling();
+    }
+
     async function fetchGasOnce() {
         if (confirmLastIndex === -1 || gasInFlight || isLoading || isManualGasEdit) return;
         gasInFlight = true;
@@ -460,6 +465,7 @@
     <LedgerSignModal
         bind:show={showLedgerModal}
         chain={chain}
+        onCancel={handleLedgerCancel}
         accountIndex={accountIndex}
         signFunction={handleLedgerSign}
         onSuccess={handleLedgerSuccess}
