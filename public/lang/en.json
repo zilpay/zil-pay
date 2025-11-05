@@ -134,7 +134,8 @@
   },
   "common": {
     "confirm": "Confirm",
-    "done": "Done"
+    "done": "Done",
+    "cancel": "Cancel"
   },
   "ledger": {
     "connect": {
@@ -477,5 +478,19 @@
     "nonce": "Nonce",
     "cancel": "Cancel",
     "save": "Save"
+  },
+  "connect": {
+    "request_connection": "wants to connect to your wallet",
+    "select_accounts": "Select Accounts",
+    "advanced_options": "Advanced Options",
+    "connect": "Connect",
+    "permission": {
+      "sign_transactions": "Sign Transactions",
+      "sign_transactions_desc": "Allow this dApp to request transaction signatures",
+      "sign_messages": "Sign Messages",
+      "sign_messages_desc": "Allow this dApp to request message signatures",
+      "read_chain": "Read Blockchain Data",
+      "read_chain_desc": "Allow this dApp to read blockchain information"
+    }
   }
 }
