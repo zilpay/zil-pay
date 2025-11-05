@@ -14,6 +14,7 @@ export async function getGlobalState() {
   let resolve = warpMessage(data) as BackgroundState;
 
   try {
+    globalStore.set(resolve);
     let theme = resolve.appearances;
 
     if (resolve.appearances == Themes.System) {
@@ -21,7 +22,6 @@ export async function getGlobalState() {
     }
 
     document.body.setAttribute("theme", theme);
-    globalStore.set(resolve);
   } catch {
     ///
   }

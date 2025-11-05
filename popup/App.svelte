@@ -9,7 +9,7 @@
 
     $effect(() => {
         const initialize = async () => {
-            const { locale } = get<any>(globlSettingsStore);
+            const { locale } = get(globlSettingsStore);
             try {
                 if (locale === Locales.Auto) {
                     await setupI18n();
