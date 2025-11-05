@@ -309,5 +309,18 @@
     "gasUsed": "Gas Used",
     "gasPrice": "Gas Price",
     "block": "Block Number"
+  },
+  "settings": {
+    "notifications": "Notifications",
+    "currency": "Currency",
+    "appearance": "Appearance",
+    "addressBook": "Address Book",
+    "security": "Security",
+    "networks": "Networks",
+    "language": "Language",
+    "telegram": "Telegram",
+    "twitter": "Twitter",
+    "github": "GitHub",
+    "version": "Version"
   }
 }
