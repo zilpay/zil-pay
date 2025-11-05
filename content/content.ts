@@ -6,9 +6,9 @@ import type { SendResponseParams } from "lib/streem";
 
 export async function startBrowserContent() {
   new ContentTabStream();
-  const result = await Message.signal<SendResponseParams>(
+  const result = await Message.signal<SendResponseParams<number[]>>(
     MTypePopup.WEB3_GET_SLIP44,
   ).send();
 
-  injectBySlip44(Number(result.resolve));
+  injectBySlip44(result.resolve);
 }

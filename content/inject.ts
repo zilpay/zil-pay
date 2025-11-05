@@ -14,18 +14,20 @@ export function inject(name: string) {
   container.removeChild(scriptTag);
 }
 
-export function injectBySlip44(slip44?: number) {
-  if (slip44) {
-    switch (Number(slip44)) {
-      case ZILLIQA:
-        inject("injects/evm-provider.js");
-        inject("injects/zilpay.js");
-        break;
-      case ETHEREUM:
-        inject("injects/evm-provider.js");
-        break;
-      default:
-        break;
+export function injectBySlip44(slips?: number[]) {
+  slips?.forEach((slip44) => {
+    if (slip44) {
+      switch (Number(slip44)) {
+        case ZILLIQA:
+          inject("injects/evm-provider.js");
+          inject("injects/zilpay.js");
+          break;
+        case ETHEREUM:
+          inject("injects/evm-provider.js");
+          break;
+        default:
+          break;
+      }
     }
-  }
+  });
 }

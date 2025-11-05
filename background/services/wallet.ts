@@ -299,14 +299,19 @@ export class WalletService {
 
   async getCurrentSlip44(sendResponse: StreamResponse) {
     try {
+      const chains = this.#state.chains;
       const account = this.#state.getCurrentAccount();
 
-      if (!account) {
-        throw new Error(ConnectError.WalletNotFound);
+      let slips: number[] = [];
+
+      if (account) {
+        slips = [account.slip44];
+      } else {
+        slips = Array.from(new Set(chains.map((c) => c.slip44)));
       }
 
       sendResponse({
-        resolve: account.slip44,
+        resolve: slips,
       });
     } catch (err) {
       sendResponse({
