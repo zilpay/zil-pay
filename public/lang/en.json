@@ -266,6 +266,8 @@
     "title": "Select Address"
   },
   "receive": {
-    "selectTokenTitle": "Select Token"
+    "selectTokenTitle": "Select Token",
+    "title": "Receive",
+    "warning": "Only send {token} on {chain} network to this address"
   }
 }
