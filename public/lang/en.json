@@ -173,5 +173,80 @@
     "placeholder": "Enter your private key (hex format)",
     "previewTitle": "Key Preview",
     "restoreButton": "Import"
+  },
+  "passwordSetup": {
+    "title": "Create Password",
+    "subtitle": "Secure Your Wallet",
+    "description": "Create a strong password to encrypt and protect your wallet",
+    "walletNameLabel": "Wallet Name",
+    "walletNamePlaceholder": "Enter wallet name",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter password (min 8 characters)",
+    "confirmLabel": "Confirm Password",
+    "confirmPlaceholder": "Re-enter password",
+    "defaultAccountName": "Account",
+    "advanced": "Advanced Settings",
+    "advancedTitle": "Advanced Encryption Settings",
+    "securityNote": "This password encrypts your wallet locally. Keep it safe and never share it",
+    "createButton": "Create Wallet",
+    "errors": {
+      "mismatch": "Passwords do not match"
+    }
+  },
+  "modals": {
+    "cryptsetup": {
+      "encryption": {
+        "title": "Encryption Method",
+        "description": "Select your encryption strength level"
+      },
+      "hashing": {
+        "title": "Key Derivation",
+        "description": "Configure password hashing parameters",
+        "advancedMode": "Advanced Configuration"
+      },
+      "cipherPresets": {
+        "basic": {
+          "title": "Basic",
+          "subtitle": "AES-GCM 256",
+          "description": "Standard encryption with AES-256"
+        },
+        "enhanced": {
+          "title": "Enhanced",
+          "subtitle": "AES + Kuznyechik",
+          "description": "Dual-layer encryption with Russian GOST standard"
+        },
+        "quantumResistant": {
+          "title": "Quantum Resistant",
+          "subtitle": "AES + Kuznyechik + NTRU",
+          "description": "Triple-layer with post-quantum cryptography"
+        }
+      },
+      "memoryPresets": {
+        "low": {
+          "title": "Low",
+          "subtitle": "64 MB",
+          "description": "Faster but less secure"
+        },
+        "medium": {
+          "title": "Medium",
+          "subtitle": "650 MB",
+          "description": "Balanced security and performance"
+        },
+        "secure": {
+          "title": "Secure",
+          "subtitle": "6.5 GB",
+          "description": "Maximum security with high memory usage"
+        }
+      },
+      "advanced": {
+        "memory": "Memory (KB)",
+        "iterations": "Iterations",
+        "threads": "Threads",
+        "secret": {
+          "label": "Salt (Optional)",
+          "placeholder": "Additional secret for key derivation"
+        }
+      }
+    }
   }
 }
