@@ -263,7 +263,11 @@
     "continue": "Continue"
   },
   "addressSelector": {
-    "title": "Select Address"
+    "title": "Select Address",
+    "zilExchange": "ZIL Exchange",
+    "addressBook": "Address Book",
+    "myAccounts": "My Accounts",
+    "searchPlaceholder": "Search by name or address"
   },
   "receive": {
     "selectTokenTitle": "Select Token",
