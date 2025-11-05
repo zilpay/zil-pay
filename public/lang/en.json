@@ -388,5 +388,24 @@
     "search": "Search connections",
     "not_found": "No connections found",
     "empty": "No connected dApps"
+  },
+  "networks": {
+    "title": "Networks",
+    "searchPlaceholder": "Search networks",
+    "added": "Added Networks",
+    "available": "Available Networks"
+  },
+  "networkDetails": {
+    "title": "Network Details",
+    "chainId": "Chain ID",
+    "slip44": "SLIP44",
+    "blockTime": "Block Time",
+    "fallbackEnabled": "Fallback Enabled",
+    "batchRequest": "Batch Requests",
+    "advancedSettings": "Advanced Settings",
+    "explorers": "Explorers",
+    "rpcNodes": "RPC Nodes",
+    "deleteNetwork": "Delete Network",
+    "confirmDelete": "Confirm Delete"
   }
 }
