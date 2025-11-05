@@ -97,14 +97,10 @@ export class KeyPair {
   }
 
   signDataEIP712(typedData: TypedData<any, any>): Uint8Array {
-    switch (this.addressType()) {
-      case AddressType.EthCheckSum:
-        const entropy = randomBytes(120);
-        const signature = signTyped(typedData, this.privateKey, entropy);
-        return hexToUint8Array(signature);
-      default:
-        throw new Error("Unsupported");
-    }
+    // TODO: maybe need check types
+    const entropy = randomBytes(120);
+    const signature = signTyped(typedData, this.privateKey, entropy);
+    return hexToUint8Array(signature);
   }
 
   async verifyTypedEIP712(
@@ -112,15 +108,10 @@ export class KeyPair {
     typedData: TypedData<any, any>,
     address: Address,
   ): Promise<boolean> {
-    switch (this.addressType()) {
-      case AddressType.EthCheckSum:
-        const sigHex = uint8ArrayToHex(signature, true);
-        const ethChecsumAddr = await address.toEthChecksum();
+    const sigHex = uint8ArrayToHex(signature, true);
+    const ethChecsumAddr = await address.toEthChecksum();
 
-        return verifyTyped(sigHex, typedData, ethChecsumAddr);
-      default:
-        throw new Error("Unsupported");
-    }
+    return verifyTyped(sigHex, typedData, ethChecsumAddr);
   }
 
   async verifySig(msg: Uint8Array, sig: Uint8Array): Promise<boolean> {
