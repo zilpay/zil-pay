@@ -418,5 +418,16 @@
       "coingeckoDescription": "Real-time cryptocurrency price data",
       "noneDescription": "Disable price conversion"
     }
+  },
+  "appearance": {
+    "title": "Appearance",
+    "compactNumbers": "Compact Numbers",
+    "compactNumbersDesc": "Display numbers in abbreviated format (e.g., 1.2K)",
+    "deviceSettings": "Device Settings",
+    "deviceSettingsDesc": "Match your system theme preference",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Dark color scheme for better visibility at night",
+    "lightMode": "Light Mode",
+    "lightModeDesc": "Light color scheme for daytime use"
   }
 }
