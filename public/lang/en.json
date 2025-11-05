@@ -269,5 +269,15 @@
     "selectTokenTitle": "Select Token",
     "title": "Receive",
     "warning": "Only send {token} on {chain} network to this address"
+  },
+  "tokenManager": {
+    "title": "Manage Tokens",
+    "searchPlaceholder": "Search or paste token address",
+    "errorFetching": "Failed to fetch token information",
+    "wrongChain": "Token is on a different chain",
+    "foundTokenTitle": "Found Token",
+    "defaultTokens": "Default Tokens",
+    "addedTokens": "Added Tokens",
+    "deletedTokens": "Deleted Tokens"
   }
 }
