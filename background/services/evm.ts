@@ -432,11 +432,11 @@ export class EvmService {
 
       const account = wallet.accounts[wallet.selectedAccount];
       const currentAddress = account.slip44 === ZILLIQA 
-        ? account.addr.split(":")[1]
+        ? account.addr.split(":").at(-1)
         : account.addr;
 
-      if (currentAddress.toLowerCase() !== address.toLowerCase()) {
-        throw new Error('Address mismatch');
+      if (!currentAddress || currentAddress?.toLowerCase() !== address.toLowerCase()) {
+        throw new Error(ConnectError.AddressMismatch);
       }
 
       wallet.confirm.push(new ConfirmState({
@@ -534,10 +534,10 @@ export class EvmService {
       }
 
       const currentAddress = account.slip44 === ZILLIQA 
-        ? account.addr.split(":")[1]
+        ? account.addr.split(":").at(-1)
         : account.addr;
 
-      if (txParams.from && !currentAddress.toLowerCase().includes(txParams.from.toLowerCase())) {
+      if (txParams.from && !currentAddress?.toLowerCase().includes(txParams.from.toLowerCase())) {
         throw new Error(ConnectError.AddressMismatch);
       }
 
@@ -764,7 +764,7 @@ export class EvmService {
     }
 
     const address = account.slip44 === ZILLIQA 
-      ? account.addr.split(":")[1]
+      ? account.addr.split(":").at(-1)
       : account.addr;
 
     const permissions = [

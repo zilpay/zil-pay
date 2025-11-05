@@ -3,6 +3,7 @@ import { ConfirmState } from "background/storage/confirm";
 import { ConnectError } from "config/errors";
 import { ZILLIQA } from "config/slip44";
 import { MTypePopup } from "config/stream";
+import { WalletTypes } from "config/wallet";
 import { Address } from "crypto/address";
 import { PromptService } from "lib/popup/prompt";
 import type { StreamResponse } from "lib/streem";
@@ -266,12 +267,13 @@ export class ConnectService {
     //   .slice()
     //   .sort((a, _b) => a.addr === selectedAccount.addr ? -1 : 1)
     //   .map((a) => a.slip44 === ZILLIQA ? a.addr.split(":")[1] : a.addr);
+    let addr: string = selectedAccount.addr.split(":")[-1];
 
     new TabsMessage({
       type: MTypePopup.EVM_RESPONSE,
       uuid,
       payload: {
-        result: [selectedAccount.slip44 === ZILLIQA ? selectedAccount.addr.split(":")[1] : selectedAccount.addr],
+        result: [addr],
       },
     }).send(connect.domain);
   }

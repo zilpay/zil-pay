@@ -15,15 +15,15 @@
         accountIndex,
         signFunction,
         onSuccess,
-        onCancel,
-        onError
+        onError,
+        onCancel = () => null,
     }: {
         show: boolean;
         chain: IChainConfigState;
         accountIndex: number;
         signFunction: (index: number) => Promise<string>;
         onSuccess: (signature: string) => void;
-        onCancel: () => void;
+        onCancel?: () => void;
         onError: (error: string) => void;
     } = $props();
 

@@ -46,20 +46,17 @@ export function calculateGasFee(
 
     const gasLevels = {
         [GasSpeed.Low]: {
-            priorityFee: gasEstimate.maxPriorityFee > 0n ? gasEstimate.maxPriorityFee - gasEstimate.maxPriorityFee / 4n : 0n,
-            gasPrice: gasEstimate.gasPrice > 0n ? gasEstimate.gasPrice - gasEstimate.gasPrice / 4n : 0n,
+            multiplier: 10n,
             label: 'confirm.gas.low',
             time: '~45s'
         },
         [GasSpeed.Market]: {
-            priorityFee: gasEstimate.maxPriorityFee,
-            gasPrice: gasEstimate.gasPrice,
+            multiplier: 15n,
             label: 'confirm.gas.market',
             time: '~30s'
         },
         [GasSpeed.Aggressive]: {
-            priorityFee: gasEstimate.maxPriorityFee + gasEstimate.maxPriorityFee / 4n,
-            gasPrice: gasEstimate.gasPrice + gasEstimate.gasPrice / 4n,
+            multiplier: 20n,
             label: 'confirm.gas.aggressive',
             time: '~15s'
         }
@@ -71,20 +68,22 @@ export function calculateGasFee(
         let totalFee: bigint;
 
         if (isEIP1559) {
-            const maxFee = gasEstimate.feeHistory.baseFee * 2n + level.priorityFee;
-            totalFee = (gasEstimate.feeHistory.baseFee + level.priorityFee) * gasEstimate.txEstimateGas;
+            const adjustedPriorityFee = (gasEstimate.maxPriorityFee * level.multiplier) / 10n;
+            const maxFee = (gasEstimate.feeHistory.baseFee * 2n) + adjustedPriorityFee;
+            totalFee = (gasEstimate.feeHistory.baseFee + adjustedPriorityFee) * gasEstimate.txEstimateGas;
             
             details.push(
                 { label: 'confirm.gas.estimated', value: gasEstimate.txEstimateGas.toString() },
                 { label: 'confirm.gas.baseFee', value: formatGwei(gasEstimate.feeHistory.baseFee) },
-                { label: 'confirm.gas.priorityFee', value: formatGwei(level.priorityFee) },
+                { label: 'confirm.gas.priorityFee', value: formatGwei(adjustedPriorityFee) },
                 { label: 'confirm.gas.maxFee', value: formatGwei(maxFee) }
             );
         } else {
-            totalFee = level.gasPrice * gasEstimate.txEstimateGas;
+            const adjustedGasPrice = (gasEstimate.gasPrice * level.multiplier) / 10n;
+            totalFee = adjustedGasPrice * gasEstimate.txEstimateGas;
             details.push(
                 { label: 'confirm.gas.estimated', value: gasEstimate.txEstimateGas.toString() },
-                { label: 'confirm.gas.gasPrice', value: formatGwei(level.gasPrice) }
+                { label: 'confirm.gas.gasPrice', value: formatGwei(adjustedGasPrice) }
             );
         }
 
