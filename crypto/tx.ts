@@ -84,8 +84,8 @@ export class TransactionRequest {
     }
 
     if (sig) {
-      raw.r = BigInt(sig.r);
-      raw.s = BigInt(sig.s);
+      raw.r = BigInt(`${HEX_PREFIX}${sig.r}`);
+      raw.s = BigInt(`${HEX_PREFIX}${sig.s}`);
       raw.yParity = sig.v;
     }
 
