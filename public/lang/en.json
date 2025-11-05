@@ -433,5 +433,20 @@
     "darkModeDesc": "Dark color scheme for better visibility at night",
     "lightMode": "Light Mode",
     "lightModeDesc": "Light color scheme for daytime use"
+  },
+  "security": {
+    "title": "Security & Privacy",
+    "networkPrivacy": "Network Privacy",
+    "tokensFetcher": {
+      "title": "Auto-fetch Token List",
+      "description": "Automatically discover and add new tokens"
+    },
+    "ens": {
+      "title": "ENS Resolution",
+      "description": "Resolve Ethereum Name Service addresses"
+    },
+    "session": {
+      "title": "Auto-lock Timer (hours)"
+    }
   }
 }
