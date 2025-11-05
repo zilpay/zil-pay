@@ -43,5 +43,16 @@
       "title": "Private Key Pair",
       "description": "Generate wallet from cryptographic key pair"
     }
+  },
+  "restoreWallet": {
+    "title": "Import Wallet",
+    "bip39": {
+      "title": "BIP39 Seed Phrase",
+      "description": "Restore wallet using 12 or 24 word recovery phrase"
+    },
+    "privateKey": {
+      "title": "Private Key Pair",
+      "description": "Import wallet from existing private key"
+    }
   }
 }
