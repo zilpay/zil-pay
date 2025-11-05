@@ -47,6 +47,8 @@
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
     const walletChain = $derived(getWalletChain($globalStore.selectedWallet));
 
+    let versionClickCount = $state(0);
+
     const version = $derived(() => {
         try {
             const mf = Runtime.runtime.getManifest();
@@ -70,6 +72,15 @@
         });
 
         await setGlobalState();
+    }
+
+    function handleVersionClick() {
+        versionClickCount++;
+        
+        if (versionClickCount >= 10) {
+            localStorage.setItem('TESTNET_ENABLED', '1');
+            versionClickCount = 0;
+        }
     }
 </script>
 
@@ -153,6 +164,7 @@
                 <SettingsItem 
                     label={$_("settings.version")} 
                     Icon={InfoIcon}
+                    onclick={handleVersionClick}
                 >
                     {#snippet rightComponent()}
                         <span class="version-text">{version()}</span>

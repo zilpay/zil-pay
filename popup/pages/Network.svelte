@@ -24,6 +24,7 @@
 
     let searchTerm = $state('');
     let allAvailableChains = $state<ChainData>({ mainnet: [], testnet: [] });
+    let testnetEnabled = $state(localStorage.getItem('TESTNET_ENABLED') === '1');
 
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
@@ -40,21 +41,24 @@
     });
 
     const allChains = $derived(() => {
-        const added = addedChains.map<DisplayChain>(chain => {
-            const hash = hashChainConfig(chain.chainIds, chain.slip44, chain.chain);
-            return {
-                ...chain,
-                isTestnet: chain.testnet === true,
-                isAdded: true,
-                hash,
-                iconUrl: viewChain({ network: chain, theme: currentTheme })
-            };
-        });
+        const added = addedChains
+            .filter(chain => testnetEnabled || !chain.testnet)
+            .map<DisplayChain>(chain => {
+                const hash = hashChainConfig(chain.chainIds, chain.slip44, chain.chain);
+                return {
+                    ...chain,
+                    isTestnet: chain.testnet === true,
+                    isAdded: true,
+                    hash,
+                    iconUrl: viewChain({ network: chain, theme: currentTheme })
+                };
+            });
 
-        const available = [
-            ...allAvailableChains.mainnet,
-            ...allAvailableChains.testnet
-        ]
+        const availableChains = testnetEnabled 
+            ? [...allAvailableChains.mainnet, ...allAvailableChains.testnet]
+            : allAvailableChains.mainnet;
+
+        const available = availableChains
             .filter(chain => !chainHashMap().has(chain.chainIds.join()))
             .map<DisplayChain>(chain => {
                 const hash = hashChainConfig(chain.chainIds, chain.slip44, chain.chain);

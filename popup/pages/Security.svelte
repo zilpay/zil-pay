@@ -148,7 +148,7 @@
     .session-title {
         font-size: 16px;
         font-weight: 600;
-        color: var(--color-content-text-primary);
+        color: var(--color-content-text-inverted);
         text-align: left;
     }
 
