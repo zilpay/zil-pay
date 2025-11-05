@@ -17,6 +17,10 @@ export default defineConfig({
         __dirname,
         './node_modules/micro-eth-signer/core/rlp.js'
       ),
+      'micro-eth-signer/core/typed-data': path.resolve(
+        __dirname,
+        './node_modules/micro-eth-signer/core/typed-data.js'
+      ),
     }
   }
 });

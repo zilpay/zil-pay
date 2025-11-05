@@ -21,33 +21,72 @@ export class TransactionRequest {
     public evm?: TransactionRequestEVM,
   ) {}
 
-  async #createEVMRawData(sig?: EthSignature) {
+  #getTxType(): TxType {
+    if (!this.evm) {
+      throw new Error(TransactionRequestErrors.InvalidTx);
+    }
+    if (this.evm.authorizationList) {
+      return 'eip7702';
+    }
+    if (this.evm.maxFeePerBlobGas || this.evm.blobVersionedHashes) {
+      return 'eip4844';
+    }
+    if (this.evm.maxFeePerGas || this.evm.maxPriorityFeePerGas) {
+      return 'eip1559';
+    }
+    if (this.evm.accessList) {
+      return 'eip2930';
+    }
+    return 'legacy';
+  }
+
+  async #createEVMRawData(type: TxType, sig?: EthSignature): Promise<any> {
     if (!this.evm) {
       throw new Error(TransactionRequestErrors.InvalidTx);
     }
 
     const raw: any = {
-      type: "eip1559" as const,
+      type,
       to: await Address.fromStr(this.evm.to).toEthChecksum(),
       value: BigInt(this.evm.value ?? 0),
       data: this.evm.data ?? HEX_PREFIX,
       nonce: BigInt(this.evm.nonce ?? 0),
       gasLimit: BigInt(this.evm.gasLimit ?? 21000),
-      maxFeePerGas: BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n),
-      maxPriorityFeePerGas: BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n),
       chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
-      accessList: this.evm.accessList ?? [],
-      r: undefined,
-      s: undefined,
-      v: undefined,
-      yParity: undefined,
     };
+
+    switch (type) {
+      case 'legacy':
+        raw.gasPrice = BigInt(this.evm.gasPrice ?? 1_000_000_000n);
+        break;
+      case 'eip2930':
+        raw.gasPrice = BigInt(this.evm.gasPrice ?? 1_000_000_000n);
+        raw.accessList = this.evm.accessList ?? [];
+        break;
+      case 'eip1559':
+        raw.maxFeePerGas = BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n);
+        raw.maxPriorityFeePerGas = BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n);
+        raw.accessList = this.evm.accessList ?? [];
+        break;
+      case 'eip4844':
+        raw.maxFeePerGas = BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n);
+        raw.maxPriorityFeePerGas = BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n);
+        raw.accessList = this.evm.accessList ?? [];
+        raw.maxFeePerBlobGas = BigInt(this.evm.maxFeePerBlobGas ?? 1_000_000_000n);
+        raw.blobVersionedHashes = this.evm.blobVersionedHashes ?? [];
+        break;
+      case 'eip7702':
+        raw.maxFeePerGas = BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n);
+        raw.maxPriorityFeePerGas = BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n);
+        raw.accessList = this.evm.accessList ?? [];
+        raw.authorizationList = (this.evm as any).authorizationList ?? [];
+        break;
+    }
 
     if (sig) {
       raw.r = BigInt(sig.r);
       raw.s = BigInt(sig.s);
-      raw.v = sig.v;
-      raw.yParity = sig.v - 27;
+      raw.yParity = sig.v;
     }
 
     return raw;
@@ -62,26 +101,27 @@ export class TransactionRequest {
       throw new Error(TransactionRequestErrors.InvalidDerivePath);
     }
 
-    const rawTxData = await this.#createEVMRawData();
-    const tx = new Transaction(rawTxData.type, rawTxData, false, false);
-    return safeChunkTransaction(tx.toBytes(), derivationPath, rawTxData.type);
+    const type = this.#getTxType();
+    const rawTxData = await this.#createEVMRawData(type);
+    const tx = new Transaction(type, rawTxData, false);
+    return safeChunkTransaction(tx.toBytes(), derivationPath, type);
   }
 
   async withSignature(sig: string, pubKey: string) {
-    const sigBytes = hexToUint8Array(sig);
     if (this.scilla) {
+      const sigBytes = hexToUint8Array(sig);
       const pubKeyBytes = hexToUint8Array(pubKey);
       const proto = this.scilla.toProto(pubKeyBytes);
-      const zilTx = this.scilla.withSignature(sigBytes,proto, pubKeyBytes);
-
+      const zilTx = this.scilla.withSignature(sigBytes, proto, pubKeyBytes);
       return new SignedTransaction(this.metadata, zilTx, undefined);
     }
 
     const signature = EthSignature.fromHex(sig);
-    const rawTxData = await this.#createEVMRawData(signature);
-    const tx = new Transaction(rawTxData.type, rawTxData, false, false);
+    const type = this.#getTxType();
+    const rawTxData = await this.#createEVMRawData(type, signature);
+    const tx = new Transaction(type, rawTxData, false);
 
-    return new SignedTransaction(this.metadata, undefined, tx.raw);
+    return new SignedTransaction(this.metadata, undefined, tx);
   }
 
   async sign(keypair: KeyPair) {
@@ -90,12 +130,13 @@ export class TransactionRequest {
       return new SignedTransaction(this.metadata, receipt);
     }
 
-    const rawTxData = await this.#createEVMRawData();
-    const tx = new Transaction(rawTxData.type, rawTxData, false, false);
+    const type = this.#getTxType();
+    const rawTxData = await this.#createEVMRawData(type);
+    const tx = new Transaction(type, rawTxData, false);
     const entropy = randomBytes(128);
-    const receipt = tx.signBy(keypair.privateKey, entropy);
+    const signedTx = tx.signBy(keypair.privateKey, entropy);
 
-    return new SignedTransaction(this.metadata, undefined, receipt);
+    return new SignedTransaction(this.metadata, undefined, signedTx);
   }
 
   toJSON() {

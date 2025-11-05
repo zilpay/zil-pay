@@ -45,21 +45,33 @@ export interface TransactionReceiptScilla extends TransactionRequestScilla {
   };
 }
 
+export interface Authorization {
+  chainId: number | string;
+  address: string;
+  nonce: number | string;
+  yParity: number;
+  r: string;
+  s: string;
+}
+
 export interface TransactionRequestEVM {
+  type?: TxType;
   nonce?: number;
   from?: string;
   to: string;
   value?: string;
   gasLimit?: number;
   data?: string;
+  chainId?: number;
+  gasPrice?: string;
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
-  gasPrice?: string;
-  chainId?: number;
   accessList?: AccessListItem[];
   blobVersionedHashes?: string[];
   maxFeePerBlobGas?: string;
+  authorizationList?: Authorization[];
 }
+
 
 export interface Log {
   address: string;
