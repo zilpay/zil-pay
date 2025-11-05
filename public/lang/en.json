@@ -497,5 +497,12 @@
     "title": "Sign Message",
     "subtitle": "Review the message and confirm to sign",
     "message": "Message"
+  },
+  "addAssets": {
+    "title": "Add Assets",
+    "subtitle": "Add {count} token(s) to your wallet",
+    "tokensToAdd": "Tokens to Add",
+    "contract": "Contract",
+    "decimals": "Decimals"
   }
 }
