@@ -332,5 +332,19 @@
   },
   "deleteWallet": {
     "title": "Delete Wallet"
+  },
+  "accounts": {
+    "title": "Accounts"
+  },
+  "addAccount": {
+    "title": "Add Account",
+    "defaultName": "Account {index}",
+    "bip39Title": "BIP39 Account Index",
+    "namePlaceholder": "Account name",
+    "editName": "Edit name",
+    "decrementCount": "Decrease count",
+    "incrementCount": "Increase count",
+    "accountExists": "Account with index {index} already exists",
+    "createButton": "Create Account"
   }
 }
