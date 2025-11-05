@@ -213,7 +213,7 @@ class LedgerController {
         }
 
         if (this.interface instanceof EthLedgerInterface) {
-            const slip44 = this.currentChain.slip44 ?? ETHEREUM;
+            const slip44 = ETHEREUM; // for eth app works only 60.
             const path = `44'/${slip44}'/0'/0/${accountIndex}`;
             const hashStructMessageBytes = hexToUint8Array(hashStructMessage);
             const domainSeparatorBytes = hexToUint8Array(domainSeparator);

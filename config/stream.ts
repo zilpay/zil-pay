@@ -38,6 +38,7 @@ export const MTypePopup = {
   SIGN_TX_AND_SEND: `@/${app}/sign-tx-and-send-jsonRPC`,
   CHECK_TRANSACTIONS_HISTORY: `@/${app}/check-transactions-history`,
   GET_ALL_ACCOUNTS_BY_CHAIN: `@/${app}/get-all-accounts-by-chain`,
+  GEN_RLP_TX: `@/${app}/gen-rlp-tx`,
 
   CONNECT_APP: `@/${app}/request-to-connect-dapp`,
   RESPONSE_TO_DAPP: `@/${app}/response-dapp-connect`,

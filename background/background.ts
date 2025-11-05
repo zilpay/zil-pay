@@ -149,8 +149,14 @@ export function startBackground(core: GlobalState) {
         return true;
 
       // transactions
-      case MTypePopup.BUILD_TOKEN_TRANSFER:
-        core.transaction.buildTokenTransfer(msg.payload, sendResponse);
+      case MTypePopup.GEN_RLP_TX:
+        core.transaction.genRLPTx(
+          msg.payload.path,
+          msg.payload.confirmIndex,
+          msg.payload.walletIndex,
+          msg.payload.accountIndex,
+          sendResponse,
+        );
         return true;
       case MTypePopup.ESTIMATE_GAS:
         core.transaction.estimateGas(

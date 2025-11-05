@@ -16,6 +16,7 @@ import { TransactionStatus } from "config/tx";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { ConnectError } from "config/errors";
+import { bip32asUInt8Array } from "ledger/bip32";
 
 
 export class TransactionService {
@@ -50,7 +51,7 @@ export class TransactionService {
     }
   }
 
-  async genRLPTx(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+  async genRLPTx(path: string, confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
     try {
       const wallet = this.#state.wallets[walletIndex];
       await wallet.trhowSession();
@@ -61,7 +62,8 @@ export class TransactionService {
       const evm = confirm.evm;
       const txReq = new TransactionRequest(metadata, scilla, evm);
       const pubKeyBytes = hexToUint8Array(account.pubKey);
-      const rlp = await txReq.toRLP(pubKeyBytes, Uint8Array.from([]));
+      const derivationPath = bip32asUInt8Array(path);
+      const rlp = await txReq.toRLP(pubKeyBytes, derivationPath);
 
       sendResponse({
         resolve: rlp,
