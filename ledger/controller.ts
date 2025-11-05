@@ -177,7 +177,7 @@ class LedgerController {
                 accounts.push(account);
             }
         } else if (this.#interface instanceof EthLedgerInterface) {
-            const slip44 = this.#currentChain!.slip44 ?? ETHEREUM;
+            const slip44 = ETHEREUM;
             for (let i = 0; i < count; i++) {
                 const index = startIndex + i;
                 const path = buildBip44Path(slip44, index);

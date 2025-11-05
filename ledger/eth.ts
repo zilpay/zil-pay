@@ -41,9 +41,7 @@ export class EthLedgerInterface {
 
   async getAppConfiguration(): Promise<AppConfiguration> {
     const response = await this.#transport.send(CLA, INS.GET_APP_CONFIGURATION, 0x00, 0x00);
-
-    const versionLength = response[1];
-    const version = uint8ArrayToUtf8(response.subarray(2, 2 + versionLength));
+    const version = `v${response[1]}.${response[2]}.${response[3]}`;
 
     return { version };
   }

@@ -183,7 +183,7 @@ export class Wallet implements IWalletState {
       walletName,
       walletType: WalletTypes.Ledger,
       selectedAccount: 0,
-      tokens: chain.ftokens,
+      tokens: [],
       nft: [],
       defaultChainHash: chain.hash(),
       uuid: uuid(),
@@ -196,6 +196,7 @@ export class Wallet implements IWalletState {
     wallet.accounts = await Promise.all(
       ledgerAccounts.map((acc) => Account.fromLedger(acc, chain))
     );
+    wallet.tokens = chain.ftokens.filter((t) => t.addrType == wallet.accounts[0].addrType);
 
     return wallet;
   }
