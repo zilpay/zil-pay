@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import WordCountSelector from '../components/WordCountSelector.svelte';
   import MnemonicWordInput from '../components/MnemonicWordInput.svelte';

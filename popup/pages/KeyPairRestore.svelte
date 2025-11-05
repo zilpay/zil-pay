@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { IKeyPair } from 'types/wallet';
   import { _ } from '../i18n';
-  import { pop, push } from '../router/navigation';
+  import { push } from '../router/navigation';
   import NavBar from '../components/NavBar.svelte';
   import Button from '../components/Button.svelte';
   import HexKey from '../components/HexKey.svelte';

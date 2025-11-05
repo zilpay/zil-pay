@@ -160,5 +160,12 @@
       "app_not_open": "Please open the correct app on your Ledger",
       "device_locked": "Device is locked. Please unlock it"
     }
+  },
+  "restoreKeyPair": {
+    "title": "Import Private Key",
+    "inputLabel": "Private Key",
+    "placeholder": "Enter your private key (hex format)",
+    "previewTitle": "Key Preview",
+    "restoreButton": "Import"
   }
 }
