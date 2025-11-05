@@ -25,7 +25,7 @@
     
     let password = $state('');
     let stage: number = $state(REVEAL_STAGE.PASSWORD);
-    let countdown = $state(10);
+    let countdown = $state(3600);
     let error = $state<string | null>(null);
     let isLoading = $state(false);
     let revealedData = $state<string[]>([]);
@@ -150,7 +150,7 @@
                             cx="100"
                             cy="100"
                             r="90"
-                            style="stroke-dashoffset: {565 * (countdown / 10)}"
+                            style="stroke-dashoffset: {565 * (countdown / 3600)}"
                         />
                     </svg>
                     <div class="countdown-time">{formatTime(countdown)}</div>
