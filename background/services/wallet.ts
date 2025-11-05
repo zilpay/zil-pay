@@ -580,7 +580,7 @@ export class WalletService {
             continue;
           }
 
-          if (a.addrType === AddressType.Bech32 && a.addr === account.addr) {
+          if (a.addrType === AddressType.Bech32 && a.addr === account.addr && w.walletType != WalletTypes.Ledger && w.walletType != WalletTypes.Watch) {
             const pubKey = hexToUint8Array(a.pubKey);
             const addrEVM = await Address.fromPubKeyType(pubKey, AddressType.EthCheckSum);
 
