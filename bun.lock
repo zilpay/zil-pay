@@ -10,7 +10,6 @@
         "@hicaru/ntrup.js": "^0.0.10",
         "@ledgerhq/devices": "^8.6.1",
         "@noble/secp256k1": "^2.3.0",
-        "@types/web-bluetooth": "^0.0.21",
         "aes-js": "^3.1.2",
         "dnum": "^2.15.0",
         "js-md5": "^0.8.3",
@@ -19,6 +18,7 @@
         "svelte-i18n": "^4.0.1",
       },
       "devDependencies": {
+        "@rollup/plugin-alias": "^6.0.0",
         "@rollup/plugin-commonjs": "^28.0.6",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^16.0.3",
@@ -30,6 +30,7 @@
         "@types/chrome": "^0.0.313",
         "@types/sinon-chrome": "^2.2.16",
         "@types/w3c-web-hid": "^1.0.6",
+        "@types/web-bluetooth": "^0.0.21",
         "prettier": "^3.6.2",
         "rollup": "^4.52.4",
         "rollup-plugin-copy": "^3.5.0",
@@ -183,6 +184,8 @@
     "@parcel/watcher-win32-ia32": ["@parcel/watcher-win32-ia32@2.5.1", "", { "os": "win32", "cpu": "ia32" }, "sha512-c2KkcVN+NJmuA7CGlaGD1qJh1cLfDnQsHjE89E60vUEMlqduHGCdCLJCID5geFVM0dOtA3ZiIO8BoEQmzQVfpQ=="],
 
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.5.1", "", { "os": "win32", "cpu": "x64" }, "sha512-9lHBdJITeNR++EvSQVUcaZoWupyHfXe1jZvGZ06O/5MflPcuPLtEphScIBL+AiCWBO46tDSHzWyD0uDmmZqsgA=="],
+
+    "@rollup/plugin-alias": ["@rollup/plugin-alias@6.0.0", "", { "peerDependencies": { "rollup": ">=4.0.0" }, "optionalPeers": ["rollup"] }, "sha512-tPCzJOtS7uuVZd+xPhoy5W4vThe6KWXNmsFCNktaAh5RTqcLiSfT4huPQIXkgJ6YCOjJHvecOAzQxLFhPxKr+g=="],
 
     "@rollup/plugin-commonjs": ["@rollup/plugin-commonjs@28.0.6", "", { "dependencies": { "@rollup/pluginutils": "^5.0.1", "commondir": "^1.0.1", "estree-walker": "^2.0.2", "fdir": "^6.2.0", "is-reference": "1.2.1", "magic-string": "^0.30.3", "picomatch": "^4.0.2" }, "peerDependencies": { "rollup": "^2.68.0||^3.0.0||^4.0.0" }, "optionalPeers": ["rollup"] }, "sha512-XSQB1K7FUU5QP+3lOQmVCE3I0FcbbNvmNT4VJSj93iUjayaARrTQeoRdiYQoftAJBLrR9t2agwAd3ekaTgHNlw=="],
 

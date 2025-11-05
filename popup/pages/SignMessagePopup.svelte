@@ -99,7 +99,7 @@
             } else if (isPersonalSign) {
                 responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isTypedData) {
-                responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             }
         } catch (e) {
             errorMessage = String(e);

@@ -4,6 +4,7 @@ import { writeUInt32BE, concatUint8Arrays } from 'lib/utils/bytes';
 import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
 import type { AppConfiguration, LedgerPublicAddress } from 'types/ledger';
 import { EthSignature } from './ethsig';
+import { bip32asUInt8Array } from './bip32';
 
 const CLA = 0xe0;
 const INS = {
@@ -18,20 +19,6 @@ const P1_FIRST_APDU = 0x00;
 const P1_SUBSEQUENT_APDU = 0x80;
 
 const MAX_APDU_PAYLOAD_SIZE = 250;
-
-function bip32asUInt8Array(path: string): Uint8Array {
-  const parts = path.split('/');
-  const buffer = new Uint8Array(1 + parts.length * 4);
-  buffer[0] = parts.length;
-  parts.forEach((part, i) => {
-    let value = parseInt(part, 10);
-    if (part.endsWith("'")) {
-      value = 0x80000000 | (value & ~0x80000000);
-    }
-    writeUInt32BE(buffer, value, 1 + i * 4);
-  });
-  return buffer;
-}
 
 export class EthLedgerInterface {
   #transport: Transport;
@@ -100,19 +87,12 @@ export class EthLedgerInterface {
     return result;
   }
   
-  async signTransaction(path: string, rlp: Uint8Array): Promise<EthSignature> {
-    const pathBytes = bip32asUInt8Array(path);
-    const payload = concatUint8Arrays(pathBytes, rlp);
-
-    const chunks: Uint8Array[] = [];
-    for (let offset = 0; offset < payload.length; offset += MAX_APDU_PAYLOAD_SIZE) {
-      chunks.push(payload.subarray(offset, offset + MAX_APDU_PAYLOAD_SIZE));
-    }
-
+  async signTransaction(rlpChunks: Uint8Array[]): Promise<EthSignature> {
     let response: Uint8Array = new Uint8Array();
-    for (let i = 0; i < chunks.length; i++) {
+
+    for (let i = 0; i < rlpChunks.length; i++) {
         const p1 = i === 0 ? P1_FIRST_APDU : P1_SUBSEQUENT_APDU;
-        response = await this.#transport.send(CLA, INS.SIGN_TRANSACTION, p1, 0x00, chunks[i]);
+        response = await this.#transport.send(CLA, INS.SIGN_TRANSACTION, p1, 0x00, rlpChunks[i]);
     }
     
     const v = response[0];

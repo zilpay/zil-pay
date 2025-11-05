@@ -9,7 +9,7 @@ import { generateErc20TransferData, NetworkProvider } from "background/rpc";
 import { TransactionRequest } from "crypto/tx";
 import { ZILTransactionRequest } from "crypto/zilliqa_tx";
 import { Address } from "crypto/address";
-import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import { hexToUint8Array } from "lib/utils/hex";
 import { ETHEREUM } from "config/slip44";
 import type { WorkerService } from "./worker";
 import { TransactionStatus } from "config/tx";

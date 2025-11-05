@@ -245,6 +245,7 @@ export function startBackground(core: GlobalState) {
           msg.payload.accountIndex,
           msg.payload.approve,
           sendResponse,
+          msg.payload.signature,
         );
         return true;
 

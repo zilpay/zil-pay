@@ -11,6 +11,12 @@ import postcss from 'rollup-plugin-postcss';
 import { visualizer } from 'rollup-plugin-visualizer';
 import cssnano from 'cssnano';
 import { readFileSync } from 'fs';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 const production = !process.env.ROLLUP_WATCH;
@@ -45,6 +51,14 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
       },
       include: ['**/*.ts', '**/*.tsx'],
       exclude: ['node_modules/**', '__tests__/**']
+    }),
+    alias({
+      entries: [
+        {
+          find: 'micro-eth-signer/core/rlp',
+          replacement: path.resolve(__dirname, 'node_modules/micro-eth-signer/core/rlp.js')
+        }
+      ]
     }),
     resolve({
       browser: true,
@@ -173,4 +187,3 @@ export default [
   popup,
   background,
 ];
-

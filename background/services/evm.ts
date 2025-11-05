@@ -18,7 +18,7 @@ import { ChainConfig, FToken, Explorer, type BackgroundState } from "background/
 import type { ProviderService } from "./provider";
 import type { EvmAddChainParams } from "types/chain";
 import type { ParamsWatchAsset } from "types/token";
-import { eip191Signer } from "micro-eth-signer";
+import { eip191Signer, verifyTyped } from "micro-eth-signer";
 
 
 export class EvmService {
@@ -358,7 +358,8 @@ export class EvmService {
     walletIndex: number,
     accountIndex: number,
     approve: boolean,
-    sendResponse: StreamResponse
+    sendResponse: StreamResponse,
+    sig?: string,
   ) {
     try {
       const wallet = this.#state.wallets[walletIndex];
@@ -387,12 +388,23 @@ export class EvmService {
           throw new Error(ConnectError.ChainNotFound);
         }
 
-        const keyPair = await wallet.revealKeypair(account.index, chainConfig);
-        const typedData = JSON.parse(evmTypedData.signTypedDataJsonEVM.typedData);
-        const signature = keyPair.signDataEIP712(typedData);
-        const signatureHex = uint8ArrayToHex(signature, true);
+        let signature: string;
 
-        this.#sendSuccess(uuid, evmTypedData.signTypedDataJsonEVM.domain, signatureHex);
+        if (wallet.walletType == WalletTypes.Ledger && sig) {
+          const typedData = JSON.parse(evmTypedData.signTypedDataJsonEVM.typedData);
+          const verify = verifyTyped(sig, typedData, evmTypedData.signTypedDataJsonEVM.address);
+          if (!verify) {
+            throw new Error(ConnectError.InvalidSig);
+          }
+          signature = sig;
+        } else {
+          const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+          const typedData = JSON.parse(evmTypedData.signTypedDataJsonEVM.typedData);
+          const s = keyPair.signDataEIP712(typedData);
+          signature = uint8ArrayToHex(s, true);
+        }
+
+        this.#sendSuccess(uuid, evmTypedData.signTypedDataJsonEVM.domain, signature);
       }
 
       await this.#state.sync();

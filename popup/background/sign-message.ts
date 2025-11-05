@@ -65,10 +65,11 @@ export async function responseToSignTypedDataEVM(
   walletIndex: number,
   accountIndex: number,
   approve: boolean,
+  signature?: string,
 ) {
   const data = await new Message<SendResponseParams>({
     type: MTypePopup.EVM_RESPONSE_TYPED_MESSAGE,
-    payload: { uuid, walletIndex, approve, accountIndex, },
+    payload: { uuid, walletIndex, approve, accountIndex, signature, },
   }).send();
   
   const resolve = warpMessage(data) as IConfirmState[];
