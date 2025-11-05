@@ -5,7 +5,6 @@ import { Wallet } from '../storage/wallet';
 import { Account } from '../storage/account';
 import { WalletSettings } from '../storage/settings';
 import { WalletHashParams } from '../storage/argon';
-import { CipherOrders } from '../../crypto/keychain';
 import { ShaAlgorithms } from '../../config/pbkdf2';
 import { uuid } from 'crypto/uuid';
 import { Themes } from 'config/theme';
@@ -14,6 +13,7 @@ import { AddressType, AuthMethod, WalletTypes } from 'config/wallet';
 import { Locales } from 'config/locale';
 import { GasSpeed } from 'config/gas';
 import { HashTypes } from 'config/argon2';
+import { CipherOrders } from 'config/keychain';
 
 interface WalletIdentities {
   selectedAddress: number;

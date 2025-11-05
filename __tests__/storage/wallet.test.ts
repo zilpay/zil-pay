@@ -10,7 +10,6 @@ import { RatesApiOptions } from "../../config/api";
 import { ChainConfig } from "../../background/storage/chain";
 import { WORD_LIST } from "../crypto/word_list";
 import { CHAINS, PASSWORD } from "../data";
-import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { uint8ArrayToBase64 } from "../../crypto/b64";
 import { randomBytes } from "../../crypto/random";
@@ -19,6 +18,7 @@ import { hexToUint8Array } from '../../lib/utils/hex';
 import { utf8ToUint8Array } from '../../lib/utils/utf8';
 import { GasSpeed } from '../../config/gas';
 import { Address } from "crypto/address";
+import { CipherOrders } from "config/keychain";
 
 describe("Wallet", () => {
   const MNEMONIC =

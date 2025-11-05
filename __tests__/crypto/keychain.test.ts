@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
   KeyChain,
-  CipherOrders,
   AES_GCM_KEY_SIZE,
   KEYCHAIN_BYTES_SIZE,
   deriveKeyFromSeed,
@@ -13,8 +12,8 @@ import { randomBytes } from "../../crypto/random";
 import { NTRU_CONFIG } from "../../crypto/ntrup";
 import { utils } from "aes-js";
 import { PASSWORD, STORAGE_V2, WORDS } from "../data";
-import { sha256 } from "../../crypto/sha256";
 import { base64ToUint8Array } from "../../crypto/b64";
+import { CipherOrders } from "config/keychain";
 
 const LIGHT_ARGON2_CONFIG = new Config(
   APP_ID,

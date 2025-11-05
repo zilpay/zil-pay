@@ -8,13 +8,13 @@ import {
   Wallet,
 } from "../../background/storage/wallet";
 import { WalletTypes, AuthMethod, AddressType } from "../../config/wallet";
-import { CipherOrders } from "../../crypto/keychain";
 import { ShaAlgorithms } from "../../config/pbkdf2";
 import { describe, expect, it } from "vitest";
 import { CHAINS } from "../data";
 import { HashTypes } from "config/argon2";
 import { GasSpeed } from "config/gas";
 import { uuid } from "crypto/uuid";
+import { CipherOrders } from "config/keychain";
 
 describe("BackgroundState", () => {
   it("should initialize with correct properties", () => {

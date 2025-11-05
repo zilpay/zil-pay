@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { IWalletSettingsState, IWalletHashParams } from 'background/storage';
-    import { CipherOrders } from 'crypto/keychain';
     import { ShaAlgorithms } from 'config/pbkdf2';
     import { _ } from '../i18n';
     import RadioOption, { type OptionData } from '../components/RadioOption.svelte';
@@ -8,6 +7,7 @@
     import Dropdown, { type DropdownOption } from '../components/Dropdown.svelte';
     import DownIcon from '../components/icons/Down.svelte';
     import { HashTypes } from 'config/argon2';
+    import { CipherOrders } from 'config/keychain';
 
     let {
         walletSettings,

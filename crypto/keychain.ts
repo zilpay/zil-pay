@@ -19,6 +19,7 @@ import { pbkdf2 } from "./pbkdf2";
 import { ShaAlgorithms } from "../config/pbkdf2";
 import { uint8ArrayToHex } from "lib/utils/hex";
 import { utf8ToUint8Array } from "lib/utils/utf8";
+import { CipherOrders } from "config/keychain";
 
 export const PUBLICKEYS_BYTES = NTRU_CONFIG.PUBLICKEYS_BYTES;
 export const SECRETKEYS_BYTES = NTRU_CONFIG.SECRETKEYS_BYTES;
@@ -32,13 +33,6 @@ export async function deriveKeyFromSeed(
 ): Promise<Uint8Array> {
   const hasher = new Uint8Array([...seed, idx]);
   return sha256(hasher);
-}
-
-export enum CipherOrders {
-  AESCBC,
-  AESGCM256,
-  KUZNECHIK,
-  NTRUP761,
 }
 
 export class KeyChain {

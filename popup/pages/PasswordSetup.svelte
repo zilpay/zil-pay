@@ -12,13 +12,13 @@
   import { push } from '../router/navigation';
   import { cacheStore } from '../store/cache';
   import globalStore from '../store/global';
-  import { CipherOrders } from 'crypto/keychain';
   import { ShaAlgorithms } from 'config/pbkdf2';
   import { RatesApiOptions } from 'config/api';
   import CryptModal from '../modals/CryptSetup.svelte';
   import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
   import { GasSpeed } from 'config/gas';
   import { HashTypes } from 'config/argon2';
+  import { CipherOrders } from 'config/keychain';
 
   let password = $state('');
   let confirmPassword = $state('');

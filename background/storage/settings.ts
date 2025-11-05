@@ -1,7 +1,7 @@
 import { WalletHashParams, type IWalletHashParams } from './argon';
-import { CipherOrders } from '../../crypto/keychain';
 import type { RatesApiOptions } from 'config/api';
 import { GasSpeed } from 'config/gas';
+import type { CipherOrders } from 'config/keychain';
 
 export interface IWalletSettingsState {
   cipherOrders: CipherOrders[];
