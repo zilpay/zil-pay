@@ -367,6 +367,10 @@
       "addressPlaceholder": "Enter address",
       "namePlaceholder": "Enter name",
       "addButton": "Add Contact"
+    },
+    "empty": "No contacts in address book",
+    "add": {
+      "title": "Add Contact"
     }
   },
   "deleteWallet": {
