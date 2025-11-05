@@ -120,5 +120,45 @@
     "privateKey": "Private Key",
     "backupCheckbox": "I have saved my private key securely",
     "nextButton": "Next"
+  },
+  "watchAccount": {
+    "addressPlaceholder": "Enter address to watch",
+    "namePlaceholder": "Account name",
+    "invalidAddress": "Invalid address format"
+  },
+  "common": {
+    "confirm": "Confirm",
+    "done": "Done"
+  },
+  "ledger": {
+    "connect": {
+      "title": "Connect Ledger",
+      "button": "Connect Accounts"
+    },
+    "configure": {
+      "title": "Configure Ledger"
+    },
+    "noDevices": {
+      "title": "No Devices Found",
+      "description": "Connect your Ledger device and unlock it"
+    },
+    "vendorId": "Vendor ID",
+    "noUsbDevices": "No USB devices found. Click refresh to scan",
+    "noBleDevices": "No Bluetooth devices found. Click refresh to scan",
+    "accountName": {
+      "label": "Wallet Name",
+      "placeholder": "Enter wallet name"
+    },
+    "accountCount": {
+      "label": "Number of Accounts"
+    },
+    "accounts": {
+      "title": "Connected Accounts"
+    },
+    "errors": {
+      "user_rejected": "Transaction rejected by user on device",
+      "app_not_open": "Please open the correct app on your Ledger",
+      "device_locked": "Device is locked. Please unlock it"
+    }
   }
 }
