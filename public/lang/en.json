@@ -322,5 +322,15 @@
     "twitter": "Twitter",
     "github": "GitHub",
     "version": "Version"
+  },
+  "walletSettings": {
+    "title": "Wallet Settings",
+    "preferences": "Preferences",
+    "manageConnections": "Manage Connections",
+    "backup": "Backup Wallet",
+    "destroy": "Delete Wallet"
+  },
+  "deleteWallet": {
+    "title": "Delete Wallet"
   }
 }
