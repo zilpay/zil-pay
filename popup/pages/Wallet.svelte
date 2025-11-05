@@ -20,6 +20,7 @@
     import RevealModal from '../modals/RevealModal.svelte';
     import { linksExpand } from 'popup/mixins/links';
     import { push } from 'popup/router/navigation';
+    import { WalletTypes } from 'config/wallet';
 
     let showDeleteModal = $state(false);
     let showBackupModal = $state(false);
@@ -133,13 +134,15 @@
                         onclick={handleManageConnections}
                     />
                 </div>
-                <div class="item-wrapper no-divider">
-                    <SettingsLinkItem 
-                        label={$_('walletSettings.backup')}
-                        Icon={RepeatIcon}
-                        onclick={handleBackup}
-                    />
-                </div>
+                {#if wallet.walletType == WalletTypes.SecretKey || wallet.walletType == WalletTypes.SecretPhrase}
+                    <div class="item-wrapper no-divider">
+                        <SettingsLinkItem 
+                            label={$_('walletSettings.backup')}
+                            Icon={RepeatIcon}
+                            onclick={handleBackup}
+                        />
+                    </div>
+                {/if}
             </div>
         </div>
     </main>
