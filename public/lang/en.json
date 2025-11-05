@@ -492,5 +492,10 @@
       "read_chain": "Read Blockchain Data",
       "read_chain_desc": "Allow this dApp to read blockchain information"
     }
+  },
+  "sign_message": {
+    "title": "Sign Message",
+    "subtitle": "Review the message and confirm to sign",
+    "message": "Message"
   }
 }
