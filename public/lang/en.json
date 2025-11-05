@@ -29,5 +29,8 @@
       "description": "Track any address without private key access"
     },
     "otherOptions": "Other Options"
+  },
+  "networkSetup": {
+    "title": "Select Network"
   }
 }
