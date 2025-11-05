@@ -66,6 +66,13 @@
       "noWords": "No words generated",
       "backupConfirm": "I have saved my seed phrase securely",
       "next": "Next"
+    },
+    "verify": {
+      "title": "Verify Seed Phrase",
+      "subtitle": "Confirm Your Recovery Phrase",
+      "instructions": "Enter the following words from your seed phrase to verify you saved it correctly",
+      "placeholder": "Enter word",
+      "button": "Verify"
     }
   },
   "print": {
