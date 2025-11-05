@@ -122,6 +122,10 @@
             openAddressInExplorer(account.addr, chain);
         }
     };
+
+    function onConnectionClick() {
+        push('/connections');
+    };
 </script>
 
 <header class="system-header">
@@ -145,10 +149,10 @@
             <div
                 class="connection-status"
                 class:connected={isConnected}
-                title={isConnected ? `Connected to ${tabOrigin}` : `Not connected to ${tabOrigin}`}
+                onclick={onConnectionClick}
             >
                 {#if tabFavicon}
-                    <FastImg src={tabFavicon} alt="Site favicon" />
+                    <FastImg src={tabFavicon} />
                 {:else}
                     <LinkIcon />
                 {/if}
@@ -228,6 +232,7 @@
     }
 
     .connection-status {
+        cursor: pointer;
         width: 28px;
         height: 28px;
         padding: 3px;
