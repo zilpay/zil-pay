@@ -255,5 +255,17 @@
     "error": {
       "title": "Error"
     }
+  },
+  "tokenTransfer": {
+    "title": "Send Token",
+    "sendTo": "Send To",
+    "enterAddress": "Enter recipient address",
+    "continue": "Continue"
+  },
+  "addressSelector": {
+    "title": "Select Address"
+  },
+  "receive": {
+    "selectTokenTitle": "Select Token"
   }
 }

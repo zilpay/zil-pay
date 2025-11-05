@@ -117,7 +117,7 @@
                     onclick={handleAccountClick}
                 />
                 <div class="actions-row">
-                    <Button onclick={handleSend} variant="primary" height={40}>
+                    <Button onclick={() => handleSend()} variant="primary" height={40}>
                         {$_('home.send')}
                         <UpRightIcon class="rightup"/>
                     </Button>
