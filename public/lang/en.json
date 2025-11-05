@@ -353,8 +353,36 @@
     "passwordPlaceholder": "Enter password",
     "selectWalletPlaceholder": "Select a wallet first",
     "invalidPassword": "Invalid password",
-    "watchWallet": "Watch-only wallet - no password",
-    "ledgerWallet": "Ledger wallet - no password",
+    "watchWallet": "Watch-only wallet - no password required",
+    "ledgerWallet": "Ledger wallet - no password required",
     "unlockButton": "Unlock"
+  },
+  "addressBook": {
+    "modal": {
+      "description": "Add a new contact to your address book",
+      "addressPlaceholder": "Enter address",
+      "namePlaceholder": "Enter name",
+      "addButton": "Add Contact"
+    }
+  },
+  "deleteWallet": {
+    "title": "Delete Wallet",
+    "warning": "This action cannot be undone. Make sure you have backed up your wallet before proceeding",
+    "description": "Enter your password to confirm wallet deletion",
+    "passwordPlaceholder": "Enter password",
+    "confirmButton": "Delete Wallet"
+  },
+  "backup": {
+    "revealTitle": "Reveal Seed Phrase",
+    "revealDescription": "View your recovery phrase to back it up securely",
+    "reveal": "Reveal",
+    "privateKeysTitle": "Export Private Keys",
+    "privateKeysWarning": "Export individual account private keys",
+    "export": "Export"
+  },
+  "connections": {
+    "search": "Search connections",
+    "not_found": "No connections found",
+    "empty": "No connected dApps"
   }
 }
