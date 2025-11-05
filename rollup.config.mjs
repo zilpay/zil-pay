@@ -57,6 +57,10 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
         {
           find: 'micro-eth-signer/core/rlp',
           replacement: path.resolve(__dirname, 'node_modules/micro-eth-signer/core/rlp.js')
+        },
+        {
+          find: 'micro-eth-signer/core/typed-data',
+          replacement: path.resolve(__dirname, 'node_modules/micro-eth-signer/core/typed-data.js')
         }
       ]
     }),

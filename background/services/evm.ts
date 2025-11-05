@@ -19,6 +19,7 @@ import type { ProviderService } from "./provider";
 import type { EvmAddChainParams } from "types/chain";
 import type { ParamsWatchAsset } from "types/token";
 import { eip191Signer, verifyTyped } from "micro-eth-signer";
+import { encoder, getDomainType } from 'micro-eth-signer/core/typed-data';
 
 
 export class EvmService {
@@ -479,9 +480,21 @@ export class EvmService {
         throw new Error(ConnectError.AddressMismatch);
       }
 
+      const typedData = JSON.parse(typedDataJson);
+      const domainTypes = getDomainType(typedData.domain);
+      const types = {
+        EIP712Domain: domainTypes,
+        ...typedData.types
+      };
+      const enc = encoder(types, typedData.domain);
+      const hashStructMessage = enc.structHash(typedData.primaryType, typedData.message);
+      const domainSeparator = enc.structHash('EIP712Domain', typedData.domain);
+
       wallet.confirm.push(new ConfirmState({
         uuid: msg.uuid,
         signTypedDataJsonEVM: {
+          domainSeparator,
+          hashStructMessage,
           typedData: typedDataJson,
           address: account.addr,
           domain: msg.domain,

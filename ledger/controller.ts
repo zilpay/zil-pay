@@ -207,7 +207,7 @@ class LedgerController {
         }
     }
 
-    async signEIP712Message(domainHash: string, messageHash: string, accountIndex: number): Promise<EthSignature> {
+    async signEIP712Message(domainSeparator: string, hashStructMessage: string, accountIndex: number): Promise<EthSignature> {
         if (!this.interface || !this.currentChain) {
             throw new Error('Not connected');
         }
@@ -215,9 +215,9 @@ class LedgerController {
         if (this.interface instanceof EthLedgerInterface) {
             const slip44 = this.currentChain.slip44 ?? ETHEREUM;
             const path = `44'/${slip44}'/0'/0/${accountIndex}`;
-            const domainHashBytes = hexToUint8Array(domainHash);
-            const messageHashBytes = hexToUint8Array(messageHash);
-            const signature = await this.interface.signEIP712Message(path, domainHashBytes, messageHashBytes);
+            const hashStructMessageBytes = hexToUint8Array(hashStructMessage);
+            const domainSeparatorBytes = hexToUint8Array(domainSeparator);
+            const signature = await this.interface.signEIP712Message(path, domainSeparatorBytes, hashStructMessageBytes);
             return signature;
         } else {
             throw new Error('EIP712 signing not supported on Zilliqa app');

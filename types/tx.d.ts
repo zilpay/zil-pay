@@ -142,6 +142,8 @@ export interface SignPersonalMessageEVM {
 }
 
 export interface SignTypedDataEVM {
+  hashStructMessage: string;
+  domainSeparator: string;
   typedData: string;
   address: string;
   domain: string;

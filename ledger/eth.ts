@@ -128,15 +128,14 @@ export class EthLedgerInterface {
     return new EthSignature(v, r, s);
   }
 
-  async signEIP712Message(path: string, domainHash: Uint8Array, messageHash: Uint8Array): Promise<EthSignature> {
+  async signEIP712Message(path: string, domainSeparator: Uint8Array, hashStructMessage: Uint8Array): Promise<EthSignature> {
     const pathBytes = bip32asUInt8Array(path);
 
-    if (domainHash.length !== 32 || messageHash.length !== 32) {
-      throw new Error("Hashes must be 32 bytes");
+    if (hashStructMessage.length != 32 || domainSeparator.length != 32) {
+      throw new Error("hash must be 64 bytes");
     }
 
-    const payload = concatUint8Arrays(pathBytes, domainHash, messageHash);
-
+    const payload = concatUint8Arrays(pathBytes, domainSeparator, hashStructMessage);
     const response = await this.#transport.send(CLA, INS.SIGN_ETH_EIP_712, 0x00, 0x00, payload);
 
     const v = response[0];

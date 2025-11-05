@@ -81,10 +81,7 @@
             const sig = await ledgerController.signPersonalMessage(signPersonalMessageEVMData.message, accountIndex);
             return sig.toHex();
         } else if (isTypedData && signTypedDataEVMData) {
-            const typedData = JSON.parse(signTypedDataEVMData.typedData);
-            const domainHash = typedData.domain_hash || '';
-            const messageHash = typedData.message_hash || '';
-            const sig = await ledgerController.signEIP712Message(domainHash, messageHash, accountIndex);
+            const sig = await ledgerController.signEIP712Message(signTypedDataEVMData.domainSeparator, signTypedDataEVMData.hashStructMessage, accountIndex);
             return sig.toHex();
         }
         throw new Error('Unknown message type');

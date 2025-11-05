@@ -99,7 +99,8 @@ export class KeyPair {
   signDataEIP712(typedData: TypedData<any, any>): Uint8Array {
     switch (this.addressType()) {
       case AddressType.EthCheckSum:
-        const signature = signTyped(typedData, this.privateKey);
+        const entropy = randomBytes(120);
+        const signature = signTyped(typedData, this.privateKey, entropy);
         return hexToUint8Array(signature);
       default:
         throw new Error("Unsupported");
