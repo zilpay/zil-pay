@@ -54,5 +54,18 @@
       "title": "Private Key Pair",
       "description": "Import wallet from existing private key"
     }
+  },
+  "bip39": {
+    "create": {
+      "title": "Generate Seed Phrase",
+      "chooseWords": "Choose Word Count",
+      "phrase": "Your Seed Phrase",
+      "copy": "Copy",
+      "refresh": "Refresh",
+      "save": "Save",
+      "noWords": "No words generated",
+      "backupConfirm": "I have saved my seed phrase securely",
+      "next": "Next"
+    }
   }
 }
