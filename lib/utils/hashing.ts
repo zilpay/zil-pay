@@ -21,15 +21,17 @@ export function hashChainConfig(chainIds: number[], slip44: number, chain: strin
 }
 
 export function hashXOR(arr: Uint8Array): number {
-  let h = 0;
-  for (let i = 0; i < arr.length; i++) h ^= arr[i];
-  return h % 0x100000;
+  let h = 5381;
+  for (let byte of arr) {
+    h = ((h << 5) + h + byte) >>> 0;
+  }
+  return h;
 }
 
 export function hashXORHex(hex: string): number {
-  let h = 0;
+  let h = 5381;
   for (let i = 0; i < hex.length; i += 2) {
-    h ^= parseInt(hex.slice(i, i + 2), 16);
+    h = ((h << 5) + h + parseInt(hex.slice(i, i + 2), 16)) >>> 0;
   }
-  return h % 0x100000;
+  return h;
 }
