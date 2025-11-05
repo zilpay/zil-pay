@@ -200,16 +200,18 @@ class LedgerController {
         throw new Error(LedgerError.UnsupportedOnEthApp);
     }
 
-    async signTransaction(rlp: Uint8Array[], accountIndex: number): Promise<string> {
+    async signTransaction(rlp: string[], accountIndex: number): Promise<string> {
         this.#ensureConnected();
 
+        const rlpBytes = rlp.map((chunk) => hexToUint8Array(chunk));
+
         if (this.#interface instanceof EthLedgerInterface) {
-            const signature = await this.#interface.signTransaction(rlp);
+            const signature = await this.#interface.signTransaction(rlpBytes);
             return signature.toHex();
         }
         
         if (this.#interface instanceof ScillaLedgerInterface) {
-            return await this.#interface.signTxn(accountIndex, rlp[0]);
+            return await this.#interface.signTxn(accountIndex, rlpBytes[0]);
         }
         
         throw new Error(LedgerError.InvalidApp);

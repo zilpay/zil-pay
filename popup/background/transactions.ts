@@ -83,7 +83,7 @@ export async function genRLPTx(confirmIndex: number, walletIndex: number, accoun
     },
   }).send();
 
-  const resolve = warpMessage(data) as Uint8Array[];
+  const resolve = warpMessage(data) as string[];
 
   return resolve;
 }

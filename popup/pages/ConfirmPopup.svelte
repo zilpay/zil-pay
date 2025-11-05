@@ -194,12 +194,9 @@
             accountIndex,
             path,
         );
-        console.log(rlpTxData);
 
-        return '';
-
-        // const sig = await ledgerController.signTransaction(rlpTxData.rlpChunks);
-        // return sig.toHex();
+        const sig = await ledgerController.signTransaction(rlpTxData, accountIndex);
+        return sig;
     }
 
     function handleLedgerSuccess(signature: string) {
