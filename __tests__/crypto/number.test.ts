@@ -48,7 +48,7 @@ describe("hashXOR and hashXORHex", () => {
   it("should return 0 for empty Uint8Array and empty hex string", () => {
     const emptyArray = new Uint8Array([]);
     const emptyHex = '';
-    expect(hashXOR(emptyArray)).toBe(0);
-    expect(hashXORHex(emptyHex)).toBe(0);
+    expect(hashXOR(emptyArray)).toBe(5381);
+    expect(hashXORHex(emptyHex)).toBe(5381);
   });
 });

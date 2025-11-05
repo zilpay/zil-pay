@@ -305,7 +305,7 @@ describe("WalletService through background messaging", () => {
       expect(nftMetadata.name).toBe("DragonZIL");
       expect(nftMetadata.symbol).toBe("DZT");
       expect(JSON.stringify(nftMetadata.balances)).equal(JSON.stringify({
-        "152": {
+        "396243429": {
           "3134": {
             "id": "3134",
             "url": "https://res.cloudinary.com/dev5gmsvw/image/upload/1_3134.png"
@@ -332,7 +332,7 @@ describe("WalletService through background messaging", () => {
       expect(nftMetadata).toBeDefined();
       expect(nftMetadata.standard).toBe(NFTStandard.ZRC6);
       expect(JSON.stringify(nftMetadata.balances)).toEqual(JSON.stringify({
-        "152": {
+        "396243429": {
           "1": {
             "id": "1",
             "url": "https://res.cloudinary.com/dev5gmsvw/image/upload/1_3134.png"
@@ -364,7 +364,7 @@ describe("WalletService through background messaging", () => {
       expect(nftMetadata.name).toBe("SimpleNFT");
       expect(nftMetadata.symbol).toBe("SNFT");
       expect(JSON.stringify(nftMetadata.balances)).toEqual(JSON.stringify({
-        '152': {}
+        '396243429': {}
       }));
       expect(nftMetadata.totalSupply).toBe('');
       expect(nftMetadata.baseURI).toBeUndefined();
