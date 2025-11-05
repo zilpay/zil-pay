@@ -3,7 +3,7 @@
     import globalStore from 'popup/store/global';
     import { setGlobalState } from 'popup/background/wallet';
     import { RatesApiOptions } from 'config/api';
-    import { CURRENCIES, type Currency } from 'config/currencies';
+    import { CURRENCIES } from 'config/currencies';
 
     import NavBar from '../components/NavBar.svelte';
     import SmartInput from '../components/SmartInput.svelte';

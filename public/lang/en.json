@@ -407,5 +407,16 @@
     "rpcNodes": "RPC Nodes",
     "deleteNetwork": "Delete Network",
     "confirmDelete": "Confirm Delete"
+  },
+  "currency": {
+    "engineTitle": "Price Engine",
+    "engineSubtitle": "Select data source for currency rates",
+    "searchPlaceholder": "Search currency",
+    "engine": {
+      "title": "Select Price Engine",
+      "none": "None",
+      "coingeckoDescription": "Real-time cryptocurrency price data",
+      "noneDescription": "Disable price conversion"
+    }
   }
 }
