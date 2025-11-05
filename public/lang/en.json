@@ -9,5 +9,25 @@
     "name": "ZilPay",
     "title": "Post-Quantum Cryptocurrency Wallet",
     "btn": "Get Started"
+  },
+  "newWalletOptions": {
+    "title": "Add Wallet",
+    "newWallet": {
+      "title": "Create New Wallet",
+      "description": "Generate a new wallet with secure seed phrase"
+    },
+    "existingWallet": {
+      "title": "Import Existing Wallet",
+      "description": "Restore wallet using seed phrase or private key"
+    },
+    "pairWithLedger": {
+      "title": "Pair with Ledger",
+      "description": "Connect your Ledger hardware wallet"
+    },
+    "watchAccount": {
+      "title": "Watch Account",
+      "description": "Track any address without private key access"
+    },
+    "otherOptions": "Other Options"
   }
 }
