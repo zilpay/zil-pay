@@ -57,13 +57,19 @@ export async function checkTransactionsHistory(walletIndex: number) {
   return resolve;
 }
 
-export async function signConfrimTx(confirmIndex: number, walletIndex: number, accountIndex: number) {
+export async function signConfrimTx(
+  confirmIndex: number,
+  walletIndex: number,
+  accountIndex: number,
+  signature?: string,
+) {
   const data = await new Message<SendResponseParams>({
     type: MTypePopup.SIGN_TX_AND_SEND,
     payload: {
       confirmIndex,
       walletIndex,
       accountIndex,
+      signature,
     },
   }).send();
 

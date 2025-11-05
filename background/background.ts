@@ -149,6 +149,9 @@ export function startBackground(core: GlobalState) {
         return true;
 
       // transactions
+      case MTypePopup.BUILD_TOKEN_TRANSFER:
+        core.transaction.buildTokenTransfer(msg.payload, sendResponse);
+        return true;
       case MTypePopup.GEN_RLP_TX:
         core.transaction.genRLPTx(
           msg.payload.confirmIndex,
@@ -172,6 +175,7 @@ export function startBackground(core: GlobalState) {
           msg.payload.walletIndex,
           msg.payload.accountIndex,
           sendResponse,
+          msg.payload.signature,
         );
         return true;
       case MTypePopup.CHECK_TRANSACTIONS_HISTORY:

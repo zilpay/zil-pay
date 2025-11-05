@@ -4,9 +4,9 @@ import { ConfirmState, type IConfirmState } from "background/storage/confirm";
 import type { BuildTokenTransferParams, FTState, TransactionMetadata } from "types/tx";
 import { uuid } from "crypto/uuid";
 import { processTokenLogo } from "lib/popup/url";
-import { AddressType } from "config/wallet";
+import { AddressType, WalletTypes } from "config/wallet";
 import { generateErc20TransferData, NetworkProvider } from "background/rpc";
-import { TransactionRequest } from "crypto/tx";
+import { SignedTransaction, TransactionRequest } from "crypto/tx";
 import { ZILTransactionRequest } from "crypto/zilliqa_tx";
 import { Address } from "crypto/address";
 import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
@@ -69,11 +69,12 @@ export class TransactionService {
         resolve: rlp.map((chunk) => uint8ArrayToHex(chunk)),
       });
     } catch (err) {
+      console.error(err);
       sendResponse({ reject: String(err) });
     }
   }
 
-  async signTxAndbroadcastJsonRPC(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+  async signTxAndbroadcastJsonRPC(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse, sig?: string) {
     try {
       const wallet = this.#state.wallets[walletIndex];
       await wallet.trhowSession();
@@ -88,10 +89,16 @@ export class TransactionService {
       const scilla = confirm.scilla ? ZILTransactionRequest.from(confirm.scilla) : undefined;
       const evm = confirm.evm;
       const txReq = new TransactionRequest(metadata, scilla, evm);
-      const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
-      const signedTx = await txReq.sign(keyPair);
 
-      await signedTx.verify();
+      let signedTx: SignedTransaction;
+
+      if (wallet.walletType == WalletTypes.Ledger && sig) {
+        signedTx = await txReq.withSignature(sig, account.pubKey);
+        await signedTx.verify();
+      } else {
+        const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
+         signedTx = await txReq.sign(keyPair);
+      }
 
       const [history] = await provider.broadcastSignedTransactions([signedTx]);
 

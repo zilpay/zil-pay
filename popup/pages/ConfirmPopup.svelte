@@ -87,7 +87,6 @@
         return CIRCUMFERENCE - (CIRCUMFERENCE * progress);
     });
 
-    let fetchLock = false;
     let gasInFlight = false;
     let gasInterval: number | null = null;
     let countdownInterval: number | null = null;
@@ -155,7 +154,7 @@
     async function handleReject() {
         if (confirmLastIndex === -1 || isLoading) return;
         isLoading = true;
-        fetchLock = true;
+        stopPolling();
         try {
             await rejectConfirm(confirmLastIndex, $globalStore.selectedWallet);
             await getGlobalState();
@@ -172,80 +171,51 @@
                 errorMessage = String(e);
             }
         } finally {
-            fetchLock = false;
             isLoading = false;
         }
     }
 
-    async function handleLedgerSign(accountIndex: number): Promise<string> {
-        if (!chain || confirmLastIndex === -1) {
-            throw new Error('Missing transaction or chain');
-        }
+    async function updateTxParams() {
+        if (!wallet || !gasEstimate) throw new Error('Missing transaction or gas params');
+        
+        const confirm = $globalStore.wallets[$globalStore.selectedWallet].confirm[confirmLastIndex];
+        if (!confirm) throw new Error('Missing transaction data');
 
-        let path: string | undefined;
+        const m = gasMultiplier(selectedSpeed);
+        const gasPrice = (gasEstimate.gasPrice * m) / 10n;
 
-        if (ledgerController.isEthApp) {
-            path = buildBip44Path(ETHEREUM, accountIndex);
-        }
+        if (confirm.evm) {
+            confirm.evm.gasLimit = Number(gasEstimate.txEstimateGas) ?? undefined;
+            confirm.evm.nonce = gasEstimate.nonce;
 
-        const rlpTxData = await genRLPTx(
-            confirmLastIndex,
-            $globalStore.selectedWallet,
-            accountIndex,
-            path,
-        );
-
-        const sig = await ledgerController.signTransaction(rlpTxData, accountIndex);
-        return sig;
-    }
-
-    function handleLedgerSuccess(signature: string) {
-        showLedgerModal = false;
-    }
-
-    function handleLedgerError(error: string) {
-        errorMessage = error;
-    }
-
-    async function handleConfirm() {
-        if (!wallet || isLoading) return;
-
-        if (isLedgerWallet) {
-            showLedgerModal = true;
-            return;
-        }
-
-        isLoading = true;
-        fetchLock = true;
-        try {
-            const state = $globalStore;
-            const confirm = state.wallets[state.selectedWallet].confirm[confirmLastIndex];
-            if (!confirm || !gasEstimate) throw new Error('Missing transaction or gas params');
-
-            const m = gasMultiplier(selectedSpeed);
-            const gasPrice = (gasEstimate.gasPrice * m) / 10n;
-
-            if (confirm?.evm) {
-                confirm.evm.gasLimit = Number(gasEstimate?.txEstimateGas) ?? undefined;
-                confirm.evm.nonce = gasEstimate.nonce;
-
-                if (gasEstimate.feeHistory.priorityFee > 0n) {
-                    const baseFee = gasEstimate.feeHistory.baseFee;
-                    const priorityFee = (gasEstimate.feeHistory.priorityFee * m) / 10n;
-                    const maxFee = (baseFee * 2n) + priorityFee;
-                    confirm.evm.maxFeePerGas = maxFee.toString();
-                    confirm.evm.maxPriorityFeePerGas = priorityFee.toString();
-                } else {
-                    confirm.evm.gasPrice = gasEstimate.gasPrice.toString();
-                }
-            } else if (confirm?.scilla) {
-                confirm.scilla.nonce = gasEstimate.nonce + 1;
-                confirm.scilla.gasLimit = gasEstimate.txEstimateGas.toString();
-                confirm.scilla.gasPrice = gasPrice.toString();
+            if (gasEstimate.feeHistory.priorityFee > 0n) {
+                const baseFee = gasEstimate.feeHistory.baseFee;
+                const priorityFee = (gasEstimate.feeHistory.priorityFee * m) / 10n;
+                const maxFee = (baseFee * 2n) + priorityFee;
+                confirm.evm.maxFeePerGas = maxFee.toString();
+                confirm.evm.maxPriorityFeePerGas = priorityFee.toString();
+            } else {
+                confirm.evm.gasPrice = gasPrice.toString();
             }
+        } else if (confirm.scilla) {
+            confirm.scilla.nonce = gasEstimate.nonce + 1;
+            confirm.scilla.gasLimit = gasEstimate.txEstimateGas.toString();
+            confirm.scilla.gasPrice = gasPrice.toString();
+        }
+        await setGlobalState();
+    }
 
-            await setGlobalState();
-            await signConfrimTx(confirmLastIndex, $globalStore.selectedWallet, wallet.selectedAccount);
+    async function submitTransaction(signature?: string) {
+        isLoading = true;
+        errorMessage = null;
+
+        try {
+            await signConfrimTx(
+                confirmLastIndex,
+                $globalStore.selectedWallet,
+                wallet.selectedAccount,
+                signature
+            );
             await getGlobalState();
 
             if (wallet.confirm.length === 0) {
@@ -256,28 +226,75 @@
                 }
             }
         } catch (e) {
-            if (!handleSessionError(e)) {
-                errorMessage = String(e);
-            }
+            console.error(e);
+            if (!handleSessionError(e)) errorMessage = String(e);
+            startPolling();
         } finally {
-            fetchLock = false;
             isLoading = false;
         }
     }
+    
+    async function handleConfirm() {
+        if (isLoading) return;
+        isLoading = true;
+        stopPolling();
+        errorMessage = null;
+        
+        try {
+            await updateTxParams();
+            
+            if (isLedgerWallet) {
+                showLedgerModal = true;
+            } else {
+                await submitTransaction();
+            }
+        } catch (e) {
+            if (!handleSessionError(e)) errorMessage = String(e);
+            startPolling();
+        } finally {
+            if (!isLedgerWallet) isLoading = false;
+        }
+    }
+    
+    async function handleLedgerSign(accountIndex: number): Promise<string> {
+        if (!chain) throw new Error('Missing chain info');
+
+        let path: string | undefined;
+        if (ledgerController.isEthApp) {
+            path = buildBip44Path(ETHEREUM, accountIndex);
+        }
+
+        const rlpTxData = await genRLPTx(
+            confirmLastIndex,
+            $globalStore.selectedWallet,
+            accountIndex,
+            path
+        );
+
+        return await ledgerController.signTransaction(rlpTxData, accountIndex);
+    }
+    
+    function handleLedgerSuccess(signature: string) {
+        showLedgerModal = false;
+        submitTransaction(signature);
+    }
+
+    function handleLedgerError(error: string) {
+        errorMessage = error;
+        isLoading = false;
+        startPolling();
+    }
 
     async function fetchGasOnce() {
-        if (confirmLastIndex === -1 || gasInFlight || fetchLock || isManualGasEdit) return;
+        if (confirmLastIndex === -1 || gasInFlight || isLoading || isManualGasEdit) return;
         gasInFlight = true;
         if (!gasEstimate) isLoadingGasFetch = true;
+        
         try {
             const estimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, accountIndex);
             gasEstimate = estimate;
         } catch (error) {
-            if (!handleSessionError(error)) {
-                if (!errorMessage) {
-                    errorMessage = String(error);
-                }
-            }
+            if (!handleSessionError(error) && !errorMessage) errorMessage = String(error);
         } finally {
             gasInFlight = false;
             isLoadingGasFetch = false;
@@ -285,14 +302,10 @@
     }
 
     function stopPolling() {
-        if (gasInterval) {
-            clearInterval(gasInterval);
-            gasInterval = null;
-        }
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-        }
+        if (gasInterval) clearInterval(gasInterval);
+        if (countdownInterval) clearInterval(countdownInterval);
+        gasInterval = null;
+        countdownInterval = null;
     }
 
     function startPolling() {
@@ -302,25 +315,17 @@
         fetchGasOnce();
 
         countdownInterval = window.setInterval(() => {
-            countdown = countdown - 1;
-            if (countdown <= 0) {
-                countdown = 10;
-            }
+            countdown = countdown > 0 ? countdown - 1 : 10;
         }, 1000);
 
-        gasInterval = window.setInterval(() => {
-            fetchGasOnce();
-        }, 10000);
+        gasInterval = window.setInterval(fetchGasOnce, 10000);
     }
 
     onMount(() => {
         if (confirmLastIndex !== -1 && accountIndex >= 0 && !isManualGasEdit) {
             startPolling();
         }
-
-        return () => {
-            stopPolling();
-        };
+        return stopPolling;
     });
 </script>
 

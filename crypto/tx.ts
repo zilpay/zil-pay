@@ -2,11 +2,12 @@ import { ZILTransactionRequest, ZILTransactionReceipt } from "./zilliqa_tx";
 import { Transaction } from "micro-eth-signer";
 import { KeyPair } from "./keypair";
 import { randomBytes } from "./random";
-import { bigintToHex, HEX_PREFIX } from "lib/utils/hex";
+import { bigintToHex, HEX_PREFIX, hexToUint8Array } from "lib/utils/hex";
 import type { TransactionMetadata, TransactionRequestEVM } from "types/tx";
 import type { TxType } from "micro-eth-signer/core/tx-internal";
 import { Address } from "./address";
 import { safeChunkTransaction } from "./rlp";
+import { EthSignature } from "ledger/ethsig";
 
 export enum TransactionRequestErrors {
   InvalidTx = "Invalid tx type",
@@ -20,12 +21,12 @@ export class TransactionRequest {
     public evm?: TransactionRequestEVM,
   ) {}
 
-  async #createEVMRawData() {
+  async #createEVMRawData(sig?: EthSignature) {
     if (!this.evm) {
       throw new Error(TransactionRequestErrors.InvalidTx);
     }
 
-    return {
+    const raw: any = {
       type: "eip1559" as const,
       to: await Address.fromStr(this.evm.to).toEthChecksum(),
       value: BigInt(this.evm.value ?? 0),
@@ -36,7 +37,20 @@ export class TransactionRequest {
       maxPriorityFeePerGas: BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n),
       chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
       accessList: this.evm.accessList ?? [],
+      r: undefined,
+      s: undefined,
+      v: undefined,
+      yParity: undefined,
     };
+
+    if (sig) {
+      raw.r = BigInt(sig.r);
+      raw.s = BigInt(sig.s);
+      raw.v = sig.v;
+      raw.yParity = sig.v - 27;
+    }
+
+    return raw;
   }
 
   async toRLP(pubKey: Uint8Array, derivationPath?: Uint8Array): Promise<Uint8Array[]> {
@@ -51,6 +65,23 @@ export class TransactionRequest {
     const rawTxData = await this.#createEVMRawData();
     const tx = new Transaction(rawTxData.type, rawTxData, false, false);
     return safeChunkTransaction(tx.toBytes(), derivationPath, rawTxData.type);
+  }
+
+  async withSignature(sig: string, pubKey: string) {
+    const sigBytes = hexToUint8Array(sig);
+    if (this.scilla) {
+      const pubKeyBytes = hexToUint8Array(pubKey);
+      const proto = this.scilla.toProto(pubKeyBytes);
+      const zilTx = this.scilla.withSignature(sigBytes,proto, pubKeyBytes);
+
+      return new SignedTransaction(this.metadata, zilTx, undefined);
+    }
+
+    const signature = EthSignature.fromHex(sig);
+    const rawTxData = await this.#createEVMRawData(signature);
+    const tx = new Transaction(rawTxData.type, rawTxData, false, false);
+
+    return new SignedTransaction(this.metadata, undefined, tx.raw);
   }
 
   async sign(keypair: KeyPair) {

@@ -170,6 +170,7 @@
             await buildTokenTransfer(params);
             push('/confirm');
         } catch (e) {
+            console.error(e);
             errorMessage = String(e);
         } finally {
             isLoading = false;

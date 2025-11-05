@@ -15,7 +15,6 @@ import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
 import { Address } from "./address";
 import { AddressType } from "config/wallet";
 import type { TransactionRequestScilla } from "types/tx";
-import { ZILLIQA } from "config/slip44";
 
 const U128LEN = 16;
 
@@ -95,11 +94,7 @@ export class ZILTransactionRequest {
     return encodeProtoTransactionCoreInfo(proto);
   }
 
-  async sign(keypair: KeyPair) {
-    const proto = this.toProto(keypair.pubKey);
-    const bytes = encodeProtoTransactionCoreInfo(proto);
-    const sig = await keypair.signMessage(bytes);
-
+  withSignature(sig: Uint8Array, proto: ProtoTransactionCoreInfo, pubKey: Uint8Array) {
     return new ZILTransactionReceipt(
       proto.version ?? versionFromChainId(this.chainId),
       this.nonce,
@@ -107,12 +102,20 @@ export class ZILTransactionRequest {
       this.gasLimit,
       this.toAddr,
       bigIntToUint8ArrayBigEndian(this.amount, U128LEN),
-      keypair.pubKey,
+      pubKey,
       this.code,
       this.data,
-      sig!,
+      sig,
       false,
     );
+  }
+
+  async sign(keypair: KeyPair) {
+    const proto = this.toProto(keypair.pubKey);
+    const bytes = encodeProtoTransactionCoreInfo(proto);
+    const sig = await keypair.signMessage(bytes);
+
+    return this.withSignature(sig, proto, keypair.pubKey);
   }
 
   toJSON() {
