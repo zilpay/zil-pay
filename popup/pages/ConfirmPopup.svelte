@@ -7,15 +7,18 @@
     import { viewChain } from 'lib/popup/url';
     import { getAccountChain } from 'popup/mixins/chains';
     import { push } from 'popup/router/navigation';
-    import { estimateGas, rejectConfirm, signConfrimTx } from 'popup/background/transactions';
+    import { estimateGas, rejectConfirm, signConfrimTx, genRLPTx } from 'popup/background/transactions';
     import { abbreviateNumber } from 'popup/mixins/numbers';
     import { GasSpeed } from 'config/gas';
+    import { WalletTypes } from 'config/wallet';
     import type { RequiredTxParams } from 'types/gas';
     import { calculateGasFee, createDefaultGasOption, type GasOptionDetails } from '../mixins/gas';
     import { getCurrencySymbol } from 'config/currencies';
+    import { buildBip44Path, ledgerController } from 'ledger/controller';
     
     import RoundImageButton from '../components/RoundImageButton.svelte';
     import GasEditor from '../modals/GasEditor.svelte';
+    import LedgerSignModal from '../modals/LedgerSignModal.svelte';
     import TransferSummary from '../components/TransferSummary.svelte';
     import TransferRoute from '../components/TransferRoute.svelte';
     import GasOption from '../components/GasOption.svelte';
@@ -25,6 +28,7 @@
     import WarningIcon from '../components/icons/Warning.svelte';
     import CloseIcon from '../components/icons/Close.svelte';
     import { getGlobalState, setGlobalState } from 'popup/background/wallet';
+    import { ETHEREUM } from 'config/slip44';
 
     let selectedSpeed = $state<GasSpeed>($globalStore.wallets[$globalStore.selectedWallet].settings.gasOption ?? GasSpeed.Market);
     let expandedSpeed = $state<GasSpeed | null>(null);
@@ -33,6 +37,7 @@
     let isLoadingGasFetch = $state(true);
     let errorMessage = $state<string | null>(null);
     let showGasEditor = $state(false);
+    let showLedgerModal = $state(false);
     let isManualGasEdit = $state(false);
     let countdown = $state(10);
 
@@ -45,6 +50,7 @@
     const book = $derived($globalStore.book || []);
     const nativeToken = $derived(wallet?.tokens.filter((t) => t.addrType == confirmTx?.metadata?.token.addrType).find(t => t.native));
     const accountIndex = $derived(wallet?.selectedAccount ?? 0);
+    const isLedgerWallet = $derived(wallet?.walletType === WalletTypes.Ledger);
 
     const token = $derived(confirmTx?.metadata?.token ?? nativeToken);
     const tokenAmount = $derived(confirmTx?.metadata?.token?.value ?? confirmTx?.evm?.value ?? confirmTx?.scilla?.amount ?? '0');
@@ -171,8 +177,47 @@
         }
     }
 
+    async function handleLedgerSign(accountIndex: number): Promise<string> {
+        if (!chain || confirmLastIndex === -1) {
+            throw new Error('Missing transaction or chain');
+        }
+
+        let path: string | undefined;
+
+        if (ledgerController.isEthApp) {
+            path = buildBip44Path(ETHEREUM, accountIndex);
+        }
+
+        const rlpTxData = await genRLPTx(
+            confirmLastIndex,
+            $globalStore.selectedWallet,
+            accountIndex,
+            path,
+        );
+        console.log(rlpTxData);
+
+        return '';
+
+        // const sig = await ledgerController.signTransaction(rlpTxData.rlpChunks);
+        // return sig.toHex();
+    }
+
+    function handleLedgerSuccess(signature: string) {
+        showLedgerModal = false;
+    }
+
+    function handleLedgerError(error: string) {
+        errorMessage = error;
+    }
+
     async function handleConfirm() {
         if (!wallet || isLoading) return;
+
+        if (isLedgerWallet) {
+            showLedgerModal = true;
+            return;
+        }
+
         isLoading = true;
         fetchLock = true;
         try {
@@ -409,6 +454,17 @@
     onSave={handleGasSave}
 />
 
+{#if chain}
+    <LedgerSignModal
+        bind:show={showLedgerModal}
+        chain={chain}
+        accountIndex={accountIndex}
+        signFunction={handleLedgerSign}
+        onSuccess={handleLedgerSuccess}
+        onError={handleLedgerError}
+    />
+{/if}
+
 <style lang="scss">
     .page-container {
         display: flex;
@@ -526,14 +582,16 @@
         color: var(--color-error-text);
         cursor: pointer;
         transition: background-color 0.2s ease;
-
-        :global(svg) {
-            width: 18px;
-            height: 18px;
-        }
+        padding: 0;
+        flex-shrink: 0;
 
         &:hover {
-            background: color-mix(in srgb, var(--color-negative-border-primary) 20%, transparent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        :global(svg) {
+            width: 16px;
+            height: 16px;
         }
     }
 
@@ -541,37 +599,42 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 0 4px;
     }
 
     .countdown-timer {
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
+    }
 
-        .progress-circle {
-            transition: stroke-dashoffset 0.3s linear;
-        }
+    .countdown-text {
+        fill: var(--color-content-text-purple);
+        font-size: 10px;
+        font-weight: 600;
+    }
 
-        .countdown-text {
-            font-family: Geist;
-            font-size: 10px;
-            font-weight: 600;
-            fill: var(--color-content-text-inverted);
-        }
+    .progress-circle {
+        transition: stroke-dashoffset 1s linear;
     }
 
     .edit-button {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
+        padding: 6px 12px;
         background: none;
         border: none;
-        cursor: pointer;
-        color: var(--color-content-text-purple);
+        border-radius: 8px;
+        color: var(--color-content-text-secondary);
         font-size: 14px;
-        line-height: 20px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: var(--color-neutral-background-tertiary);
+            color: var(--color-content-text-inverted);
+        }
 
         :global(svg) {
             width: 16px;
@@ -582,23 +645,23 @@
     .gas-options {
         display: flex;
         flex-direction: column;
+        gap: 8px;
+    }
+
+    .footer {
+        display: flex;
         gap: 12px;
+        padding: 16px;
+        border-top: 1px solid var(--color-neutral-border-default);
+        background: var(--color-neutral-background-base);
+        flex-shrink: 0;
     }
 
     .loading-container {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
-    }
-
-    .footer {
-        margin-top: auto;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        padding: 16px;
+        height: 100vh;
         background: var(--color-neutral-background-base);
-        border-top: 1px solid var(--color-cards-regular-border-default);
     }
 </style>

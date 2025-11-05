@@ -15,6 +15,14 @@ export enum DeviceType {
     Bluetooth = 1
 }
 
+export enum LedgerError {
+    NotConnected = 'Not connected',
+    FailedToDetectApp = 'Failed to detect Ledger app',
+    UnsupportedOnScillaApp = 'Not supported on Zilliqa app',
+    UnsupportedOnEthApp = 'Not supported on Ethereum app',
+    InvalidApp = 'Invalid Ledger app'
+}
+
 export interface LedgerDevice {
     id: string;
     name: string;
@@ -34,11 +42,21 @@ function isHIDDevice(device: HIDDevice | BluetoothDevice): device is HIDDevice {
     return 'vendorId' in device;
 }
 
+export function buildBip44Path(slip44: number, accountIndex: number): string {
+    return `44'/${slip44}'/0'/0/${accountIndex}`;
+}
+
 class LedgerController {
-    private transport: LedgerTransport | null = null;
-    private interface: LedgerInterface | null = null;
-    private device: LedgerDevice | null = null;
-    private currentChain: IChainConfigState | null = null;
+    #transport: LedgerTransport | null = null;
+    #interface: LedgerInterface | null = null;
+    #device: LedgerDevice | null = null;
+    #currentChain: IChainConfigState | null = null;
+
+    #ensureConnected(): void {
+        if (!this.#interface || !this.#currentChain) {
+            throw new Error(LedgerError.NotConnected);
+        }
+    }
 
     async checkSupport(): Promise<LedgerSupport> {
         const [ble, usb] = await Promise.all([
@@ -108,16 +126,12 @@ class LedgerController {
     }
 
     async connect(device: LedgerDevice, chain: IChainConfigState): Promise<void> {
-        this.device = device;
-        this.currentChain = chain;
+        this.#device = device;
+        this.#currentChain = chain;
 
-        let tempTransport: LedgerTransport;
-
-        if (device.type === DeviceType.USB && isHIDDevice(device.raw)) {
-            tempTransport = await TransportWebHID.openDevice(device.raw);
-        } else {
-            tempTransport = await TransportWebBLE.create();
-        }
+        const tempTransport = device.type === DeviceType.USB && isHIDDevice(device.raw)
+            ? await TransportWebHID.openDevice(device.raw)
+            : await TransportWebBLE.create();
 
         let determinedInterface: LedgerInterface | null = null;
 
@@ -125,51 +139,49 @@ class LedgerController {
             const scillaInterface = new ScillaLedgerInterface(tempTransport);
             await scillaInterface.getVersion();
             determinedInterface = scillaInterface;
-        } catch (scillaError) {
+        } catch {
             try {
                 const ethInterface = new EthLedgerInterface(tempTransport);
                 await ethInterface.getAppConfiguration();
                 determinedInterface = ethInterface;
-            } catch (ethError) {
+            } catch {
                 await tempTransport.close();
-                throw new Error('Failed to detect Ledger app');
+                throw new Error(LedgerError.FailedToDetectApp);
             }
         }
 
-        this.transport = tempTransport;
-        this.interface = determinedInterface;
+        this.#transport = tempTransport;
+        this.#interface = determinedInterface;
     }
 
     async disconnect(): Promise<void> {
-        if (this.transport) {
-            await this.transport.close();
+        if (this.#transport) {
+            await this.#transport.close();
         }
-        this.transport = null;
-        this.interface = null;
-        this.device = null;
-        this.currentChain = null;
+        this.#transport = null;
+        this.#interface = null;
+        this.#device = null;
+        this.#currentChain = null;
     }
 
     async generateAccounts(count: number, startIndex: number = 0): Promise<LedgerPublicAddress[]> {
-        if (!this.interface || !this.currentChain) {
-            throw new Error('Not connected');
-        }
+        this.#ensureConnected();
 
         const accounts: LedgerPublicAddress[] = [];
 
-        if (this.interface instanceof ScillaLedgerInterface) {
+        if (this.#interface instanceof ScillaLedgerInterface) {
             for (let i = 0; i < count; i++) {
                 const index = startIndex + i;
-                const account = await this.interface.getPublicAddress(index);
+                const account = await this.#interface.getPublicAddress(index);
                 account.name = `Account ${index + 1}`;
                 accounts.push(account);
             }
-        } else if (this.interface instanceof EthLedgerInterface) {
-            const slip44 = this.currentChain.slip44 ?? ETHEREUM;
+        } else if (this.#interface instanceof EthLedgerInterface) {
+            const slip44 = this.#currentChain!.slip44 ?? ETHEREUM;
             for (let i = 0; i < count; i++) {
                 const index = startIndex + i;
-                const path = `44'/${slip44}'/0'/0/${index}`;
-                const account = await this.interface.getAddress(path, false);
+                const path = buildBip44Path(slip44, index);
+                const account = await this.#interface.getAddress(path, false);
                 account.name = `Account ${index + 1}`;
                 accounts.push(account);
             }
@@ -179,69 +191,73 @@ class LedgerController {
     }
 
     async signMessage(hash: string, accountIndex: number): Promise<string> {
-        if (!this.interface || !this.currentChain) {
-            throw new Error('Not connected');
-        }
+        this.#ensureConnected();
 
-        if (this.interface instanceof ScillaLedgerInterface) {
-            const signature = await this.interface.signHash(accountIndex, hash);
-            return signature;
-        } else {
-            throw new Error('Scilla message signing not supported on Ethereum app');
+        if (this.#interface instanceof ScillaLedgerInterface) {
+            return await this.#interface.signHash(accountIndex, hash);
         }
+        
+        throw new Error(LedgerError.UnsupportedOnEthApp);
+    }
+
+    async signTransaction(rlp: Uint8Array[], accountIndex: number): Promise<string> {
+        this.#ensureConnected();
+
+        if (this.#interface instanceof EthLedgerInterface) {
+            const signature = await this.#interface.signTransaction(rlp);
+            return signature.toHex();
+        }
+        
+        if (this.#interface instanceof ScillaLedgerInterface) {
+            return await this.#interface.signTxn(accountIndex, rlp[0]);
+        }
+        
+        throw new Error(LedgerError.InvalidApp);
     }
 
     async signPersonalMessage(message: string, accountIndex: number): Promise<EthSignature> {
-        if (!this.interface || !this.currentChain) {
-            throw new Error('Not connected');
-        }
+        this.#ensureConnected();
 
-        if (this.interface instanceof EthLedgerInterface) {
-            const slip44 = this.currentChain.slip44 ?? ETHEREUM;
-            const path = `44'/${slip44}'/0'/0/${accountIndex}`;
+        if (this.#interface instanceof EthLedgerInterface) {
+            const path = buildBip44Path(ETHEREUM, accountIndex);
             const messageBytes = utf8ToUint8Array(message);
-            const signature = await this.interface.signPersonalMessage(path, messageBytes);
-            return signature;
-        } else {
-            throw new Error('Personal message signing not supported on Zilliqa app');
+            return await this.#interface.signPersonalMessage(path, messageBytes);
         }
+        
+        throw new Error(LedgerError.UnsupportedOnScillaApp);
     }
 
     async signEIP712Message(domainSeparator: string, hashStructMessage: string, accountIndex: number): Promise<EthSignature> {
-        if (!this.interface || !this.currentChain) {
-            throw new Error('Not connected');
-        }
+        this.#ensureConnected();
 
-        if (this.interface instanceof EthLedgerInterface) {
-            const slip44 = ETHEREUM; // for eth app works only 60.
-            const path = `44'/${slip44}'/0'/0/${accountIndex}`;
+        if (this.#interface instanceof EthLedgerInterface) {
+            const path = buildBip44Path(ETHEREUM, accountIndex);
             const hashStructMessageBytes = hexToUint8Array(hashStructMessage);
             const domainSeparatorBytes = hexToUint8Array(domainSeparator);
-            const signature = await this.interface.signEIP712Message(path, domainSeparatorBytes, hashStructMessageBytes);
-            return signature;
-        } else {
-            throw new Error('EIP712 signing not supported on Zilliqa app');
+            return await this.#interface.signEIP712Message(path, domainSeparatorBytes, hashStructMessageBytes);
         }
+        
+        throw new Error(LedgerError.UnsupportedOnScillaApp);
     }
 
     get isConnected(): boolean {
-        return this.transport !== null && this.interface !== null;
+        return this.#transport !== null && this.#interface !== null;
     }
 
     get currentDevice(): LedgerDevice | null {
-        return this.device;
+        return this.#device;
     }
 
     get currentInterface(): LedgerInterface | null {
-        return this.interface;
+        return this.#interface;
     }
 
     get isScillaApp(): boolean {
-        return this.interface instanceof ScillaLedgerInterface;
+        return this.#interface instanceof ScillaLedgerInterface;
     }
 
     get isEthApp(): boolean {
-        return this.interface instanceof EthLedgerInterface;
+        return this.#interface instanceof EthLedgerInterface;
     }
 }
 

@@ -51,7 +51,7 @@ export class TransactionService {
     }
   }
 
-  async genRLPTx(path: string, confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse) {
+  async genRLPTx(confirmIndex: number, walletIndex: number, accountIndex: number, sendResponse: StreamResponse, path?: string) {
     try {
       const wallet = this.#state.wallets[walletIndex];
       await wallet.trhowSession();
@@ -62,7 +62,7 @@ export class TransactionService {
       const evm = confirm.evm;
       const txReq = new TransactionRequest(metadata, scilla, evm);
       const pubKeyBytes = hexToUint8Array(account.pubKey);
-      const derivationPath = bip32asUInt8Array(path);
+      const derivationPath = path ? bip32asUInt8Array(path) : undefined;
       const rlp = await txReq.toRLP(pubKeyBytes, derivationPath);
 
       sendResponse({

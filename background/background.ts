@@ -151,11 +151,11 @@ export function startBackground(core: GlobalState) {
       // transactions
       case MTypePopup.GEN_RLP_TX:
         core.transaction.genRLPTx(
-          msg.payload.path,
           msg.payload.confirmIndex,
           msg.payload.walletIndex,
           msg.payload.accountIndex,
           sendResponse,
+          msg.payload.path,
         );
         return true;
       case MTypePopup.ESTIMATE_GAS:
