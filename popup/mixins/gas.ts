@@ -93,7 +93,7 @@ export function calculateGasFee(
         if (nativeToken.rate > 0) {
             const fiatValue = dnumMultiply(feeDnum, nativeToken.rate);
             const currencySymbol = getCurrencySymbol(currencyConvert);
-            fiatFeeDisplay = `${currencySymbol}${abbreviateNumber(fiatValue[0].toString(), fiatValue[1])}`;
+            fiatFeeDisplay = `${currencySymbol}${abbreviateNumber(fiatValue[0].toString(), fiatValue[1], false)}`;
         }
 
         return {

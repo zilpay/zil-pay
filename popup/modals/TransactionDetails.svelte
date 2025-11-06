@@ -42,7 +42,7 @@
         const value = transaction.metadata.token.value ?? 
                      transaction.evm?.value ?? 
                      transaction.scilla?.amount ?? '0';
-        return abbreviateNumber(value, transaction.metadata.token.decimals);
+        return abbreviateNumber(value, transaction.metadata.token.decimals, $globalStore.abbreviatedNumber);
     });
 
     const formattedDate = $derived(

@@ -1,11 +1,11 @@
-export function abbreviateNumber(value: number | string, decimals: number = 0): string {
+export function abbreviateNumber(value: number | string, decimals: number, compact = true): string {
     const num = Number(value) / (10 ** decimals);
 
     if (isNaN(num)) {
         return '0';
     }
 
-    if (Math.abs(num) >= 1000) {
+    if (Math.abs(num) >= 1000 && compact) {
         return new Intl.NumberFormat(undefined, {
             notation: 'compact',
             compactDisplay: 'short',
@@ -14,7 +14,7 @@ export function abbreviateNumber(value: number | string, decimals: number = 0): 
         }).format(num);
     }
 
-    if (Math.abs(num) < 0.01 && num !== 0) {
+    if (Math.abs(num) < 0.01 && num !== 0 && compact) {
         return new Intl.NumberFormat(undefined, {
             minimumFractionDigits: 0,
             maximumFractionDigits: 6,

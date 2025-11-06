@@ -28,7 +28,7 @@
     const balance = $derived(() => {
         if (hide) return '******';
         const rawBalance = token.balances[hashXORHex(account.pubKey)] ?? 0;
-        const humanBalance = abbreviateNumber(rawBalance, token.decimals);
+        const humanBalance = abbreviateNumber(rawBalance, token.decimals, $globalStore.abbreviatedNumber);
         return `${humanBalance} ${token.symbol}`;
     });
     
@@ -44,7 +44,7 @@
         const wallet = $globalStore.wallets[$globalStore.selectedWallet];
         const currencySymbol = getCurrencySymbol(wallet?.settings?.currencyConvert ?? 'USD');
         
-        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}`;
+        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0, $globalStore.abbreviatedNumber)}`;
     });
     
     const logo = $derived(processTokenLogo({

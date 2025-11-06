@@ -46,7 +46,7 @@
         const convertedValue = numericBalance * rate;
         const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
 
-        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0)}`;
+        return `${currencySymbol}${abbreviateNumber(convertedValue.toString(), 0, $globalStore.abbreviatedNumber)}`;
     }
 </script>
 
@@ -82,7 +82,7 @@
                 </div>
                 <div class="token-balances">
                     <span class="balance">
-                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals)} {token.symbol}
+                        {abbreviateNumber(token.balances[hashXORHex(account.pubKey)] ?? 0, token.decimals), $globalStore.abbreviatedNumber} {token.symbol}
                     </span>
                     <span class="fiat-balance">
                         {getConvertedBalance(token)}

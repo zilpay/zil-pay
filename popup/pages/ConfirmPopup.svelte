@@ -356,7 +356,7 @@
 
         <main class="content">
             <TransferSummary
-                amount={abbreviateNumber(tokenAmount, token.decimals)}
+                amount={abbreviateNumber(tokenAmount, token.decimals, $globalStore.abbreviatedNumber)}
                 symbol={token.symbol}
                 fiatValue={tokenFiatValue()}
             />

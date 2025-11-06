@@ -35,7 +35,7 @@
         return [BigInt(rawBalance), token.decimals] as Dnum;
     });
     const availableDisplay = $derived(() => {
-        return abbreviateNumber(rawBalance, token.decimals);
+        return abbreviateNumber(rawBalance, token.decimals, $globalStore.abbreviatedNumber);
     });
 
     const inputAmount = $derived(() => {
@@ -68,7 +68,7 @@
             const convertedValue = multiply(amount, rate);
             const currencySymbol = getCurrencySymbol($globalStore.wallets[$globalStore.selectedWallet]?.settings?.currencyConvert ?? 'USD');
             
-            return `≈ ${currencySymbol}${abbreviateNumber(convertedValue[0].toString(), convertedValue[1])}`;
+            return `≈ ${currencySymbol}${abbreviateNumber(convertedValue[0].toString(), convertedValue[1], $globalStore.abbreviatedNumber)}`;
         } catch {
             return "-";
         }
