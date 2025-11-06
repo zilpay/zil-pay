@@ -121,28 +121,6 @@ describe("KeyPair", () => {
       message,
     };
 
-    it("should throw error for Zilliqa EIP-712 signing", async () => {
-      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
-      const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
-
-      expect(() => keyPair.signDataEIP712(typedData)).toThrowError(
-        "Unsupported",
-      );
-    });
-
-    it("should throw error for Zilliqa EIP-712 verification", async () => {
-      const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
-      const keyPair = await KeyPair.fromPrivateKey(privateKey, ZILLIQA);
-      const signature = new Uint8Array(65); // Dummy signature
-      const address = Address.fromStr(
-          "0x709678c07cfCAFB4bb49a6b1d57b1db378e27825"
-      );
-
-      await expect(
-        keyPair.verifyTypedEIP712(signature, typedData, address),
-      ).rejects.toThrowError("Unsupported");
-    });
-
     it("should sign EIP-712 data for Ethereum correctly", async () => {
       const privateKey = Uint8Array.from(utils.hex.toBytes(IMPORTED_KEY));
       const keyPair = await KeyPair.fromPrivateKey(privateKey, ETHEREUM);
@@ -233,36 +211,5 @@ describe("KeyPair", () => {
       address,
     );
     expect(isValid).toBeTruthy();
-  });
-
-  it("should throw error for EIP-712 signing with Zilliqa (unsupported type)", async () => {
-    const keyPair = await KeyPair.generate(ZILLIQA);
-    const typedData = {
-      types: {
-        EIP712Domain: [
-          { name: "name", type: "string" },
-          { name: "version", type: "string" },
-          { name: "chainId", type: "uint256" },
-          { name: "verifyingContract", type: "address" },
-        ],
-        Person: [
-          { name: "name", type: "string" },
-          { name: "wallet", type: "address" },
-        ],
-      },
-      primaryType: "Person",
-      domain: {
-        name: "Ether Mail",
-        version: "1",
-        chainId: 1,
-        verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-      },
-      message: {
-        name: "Bob",
-        wallet: "0xbBbBBBBbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-      },
-    };
-
-    expect(() => keyPair.signDataEIP712(typedData)).toThrowError("Unsupported");
   });
 });

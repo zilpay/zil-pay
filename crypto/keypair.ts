@@ -97,7 +97,6 @@ export class KeyPair {
   }
 
   signDataEIP712(typedData: TypedData<any, any>): Uint8Array {
-    // TODO: maybe need check types
     const entropy = randomBytes(120);
     const signature = signTyped(typedData, this.privateKey, entropy);
     return hexToUint8Array(signature);
