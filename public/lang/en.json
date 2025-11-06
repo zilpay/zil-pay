@@ -504,5 +504,21 @@
     "tokensToAdd": "Tokens to Add",
     "contract": "Contract",
     "decimals": "Decimals"
+  },
+  "reveal": {
+    "phraseWarning": "Never share your seed phrase. Anyone with this phrase can access your funds",
+    "keyWarning": "Never share your private key. Anyone with this key can access your funds",
+    "scamAlert": "⚠️ Security Warning",
+    "passwordPlaceholder": "Enter your password",
+    "submit": "Continue",
+    "invalidPassword": "Incorrect password",
+    "securityCheck": "Security Verification",
+    "waitMessage": "Please wait {time} before revealing your {type}",
+    "phrase": "seed phrase",
+    "key": "private key",
+    "secretPhrase": "Secret Recovery Phrase",
+    "privateKey": "Private Key",
+    "publicKey": "Public Key",
+    "copy": "Copy"
   }
 }
