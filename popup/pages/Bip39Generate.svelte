@@ -124,7 +124,7 @@
             <WordCountSelector bind:selected={wordCount} onSelect={handleCountChange} />
         </div>
 
-        <div class="section">
+        <div class="section scrollable-section">
             <div class="section-header">
                 <h3 class="section-title">{$_('bip39.create.phrase')}</h3>
                 <Dropdown 
@@ -199,14 +199,21 @@
         flex-direction: column;
         gap: 24px;
         padding: 24px 0;
-        overflow-y: auto;
         min-height: 0;
+        overflow: hidden;
     }
 
     .section {
         display: flex;
         flex-direction: column;
         gap: 16px;
+        flex-shrink: 0;
+    }
+
+    .scrollable-section {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
     }
 
     .section-label {
@@ -272,6 +279,9 @@
         border: 1px solid var(--color-cards-regular-border-default);
         border-radius: 16px;
         padding: 0 16px;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
     }
     
     .phrase-grid {
@@ -289,7 +299,7 @@
         flex-direction: column;
         gap: 24px;
         padding-top: 16px;
-        margin-top: auto;
+        flex-shrink: 0;
     }
 
     .checkbox-label {
@@ -328,4 +338,3 @@
         }
     }
 </style>
-
