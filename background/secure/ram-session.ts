@@ -1,3 +1,5 @@
+import { SESSION_ERRORS } from "./errors";
+
 export interface RAMStorageData {
   data: Uint8Array;
   mac: Uint8Array;
@@ -28,7 +30,7 @@ export class RAMStorage {
     const isValid = await this.#verifyMAC(entry.data, entry.mac, key);
     if (!isValid) {
       this.#storage.delete(key);
-      throw new Error('Data integrity check failed');
+      throw new Error(SESSION_ERRORS.DATA_INCOMPLETE);
     }
 
     return entry.data;

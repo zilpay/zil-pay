@@ -4,6 +4,7 @@ import { Session, SessionStorageKeys } from "../../background/secure/session";
 import { utils } from "aes-js";
 import { Runtime } from "../../lib/runtime";
 import { uuid } from "../../crypto/uuid";
+import { SESSION_ERRORS } from "background/secure/errors";
 
 describe("Session", () => {
   const vaultContent = utils.utf8.toBytes("test vault");
@@ -21,7 +22,7 @@ describe("Session", () => {
     const session = new Session(testUuid);
     await session.setSession(sessionTime, vaultContent);
     await session.clearSession();
-    await expect(session.getVault()).rejects.toThrow("Session does not exist");
+    await expect(session.getVault()).rejects.toThrow(SESSION_ERRORS.HAS_EXPIRED);
   });
 
   it("getVault throws error after session expires", async () => {

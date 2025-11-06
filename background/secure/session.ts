@@ -4,6 +4,8 @@ import { uint8ArrayToBase64, base64ToUint8Array } from '../../crypto/b64';
 import { randomBytes } from '../../crypto/random';
 import { getManifestVersion, Runtime } from '../../lib/runtime';
 import { ManifestVersions } from 'config/manifest';
+import { RAMStorage } from './ram-session';
+import { SESSION_ERRORS } from './errors';
 
 export enum SessionStorageKeys {
   EndSession = 'SESSION_END',
@@ -12,16 +14,28 @@ export enum SessionStorageKeys {
   ActiveWalletIndex = 'ACTIVE_WALLET_INDEX',
 }
 
+let ramStorage: RAMStorage | null = null;
+let activeWalletIndexRAM = -1;
+
 export class Session {
   #uuid: string;
+  #isV2: boolean;
 
   static async setActiveWallet(walletIndex: number): Promise<void> {
-    await Runtime.storage.session.set({
-      [SessionStorageKeys.ActiveWalletIndex]: walletIndex,
-    });
+    if (getManifestVersion() === ManifestVersions.V2) {
+      activeWalletIndexRAM = walletIndex;
+    } else {
+      await Runtime.storage.session.set({
+        [SessionStorageKeys.ActiveWalletIndex]: walletIndex,
+      });
+    }
   }
 
   static async getActiveWallet(): Promise<number> {
+    if (getManifestVersion() === ManifestVersions.V2) {
+      return TypeOf.isNumber(activeWalletIndexRAM) ? activeWalletIndexRAM : -1;
+    }
+
     const data = await Runtime.storage.session.get(SessionStorageKeys.ActiveWalletIndex);
     const index = data ? Number(data[SessionStorageKeys.ActiveWalletIndex]) : null;
 
@@ -29,7 +43,11 @@ export class Session {
   }
 
   constructor(uuid: string) {
-    if (getManifestVersion() === ManifestVersions.V3) {
+    this.#isV2 = getManifestVersion() === ManifestVersions.V2;
+
+    if (this.#isV2) {
+      ramStorage = ramStorage ?? new RAMStorage();
+    } else {
       Runtime.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
     }
 
@@ -41,23 +59,44 @@ export class Session {
   }
 
   async setSession(sessionTime: number, vaultContent: Uint8Array): Promise<void> {
-    const endSession = Date.now() + sessionTime * 1000;
     const key = randomBytes(32);
     const vaultCipher = AESCipherV3.encrypt(vaultContent, key);
 
-    const data = {
-      [this.getKey(SessionStorageKeys.EndSession)]: endSession,
-      [this.getKey(SessionStorageKeys.SessionKey)]: uint8ArrayToBase64(key),
-      [this.getKey(SessionStorageKeys.VaultCipher)]: uint8ArrayToBase64(vaultCipher),
-    };
-    await Runtime.storage.session.set(data);
+    if (this.#isV2 && ramStorage) {
+      const ttl = sessionTime * 1000;
+      await ramStorage.set(this.getKey(SessionStorageKeys.SessionKey), key, ttl);
+      await ramStorage.set(this.getKey(SessionStorageKeys.VaultCipher), vaultCipher, ttl);
+    } else {
+      const endSession = Date.now() + sessionTime * 1000;
+      const data = {
+        [this.getKey(SessionStorageKeys.EndSession)]: endSession,
+        [this.getKey(SessionStorageKeys.SessionKey)]: uint8ArrayToBase64(key),
+        [this.getKey(SessionStorageKeys.VaultCipher)]: uint8ArrayToBase64(vaultCipher),
+      };
+      await Runtime.storage.session.set(data);
+    }
   }
 
   async clearSession(): Promise<void> {
-    await Runtime.storage.session.clear();
+    if (this.#isV2 && ramStorage) {
+      ramStorage.clear();
+    } else {
+      await Runtime.storage.session.clear();
+    }
   }
 
   async getVault(): Promise<Uint8Array> {
+    if (this.#isV2 && ramStorage) {
+      const sessionKey = await ramStorage.get(this.getKey(SessionStorageKeys.SessionKey));
+      const vaultCipher = await ramStorage.get(this.getKey(SessionStorageKeys.VaultCipher));
+
+      if (!sessionKey || !vaultCipher) {
+        throw new Error(SESSION_ERRORS.HAS_EXPIRED);
+      }
+
+      return AESCipherV3.decrypt(vaultCipher, sessionKey);
+    }
+
     const data = await Runtime.storage.session.get([
       this.getKey(SessionStorageKeys.EndSession),
       this.getKey(SessionStorageKeys.SessionKey),
@@ -66,18 +105,18 @@ export class Session {
 
     const endSession = data[this.getKey(SessionStorageKeys.EndSession)];
     if (!endSession) {
-      throw new Error('Session does not exist');
+      throw new Error(SESSION_ERRORS.DOES_NOT_EXIST);
     }
     if (Date.now() > endSession) {
       await this.clearSession();
-      throw new Error('Session has expired');
+      throw new Error(SESSION_ERRORS.HAS_EXPIRED);
     }
 
     const sessionKeyBase64 = data[this.getKey(SessionStorageKeys.SessionKey)];
     const vaultCipherBase64 = data[this.getKey(SessionStorageKeys.VaultCipher)];
 
     if (!sessionKeyBase64 || !vaultCipherBase64) {
-      throw new Error('Session data is incomplete');
+      throw new Error(SESSION_ERRORS.DATA_INCOMPLETE);
     }
 
     const sessionKey = base64ToUint8Array(sessionKeyBase64);
