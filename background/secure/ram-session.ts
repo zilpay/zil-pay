@@ -1,11 +1,4 @@
-export enum SessionStorageKeys {
-  EndSession = 'SESSION_END',
-  SessionKey = 'SESSION_KEY',
-  VaultCipher = 'VAULT_CIPHER',
-  ActiveWalletIndex = 'ACTIVE_WALLET_INDEX',
-}
-
-interface RAMStorageData {
+export interface RAMStorageData {
   data: Uint8Array;
   mac: Uint8Array;
   timestamp: number;
