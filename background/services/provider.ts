@@ -107,6 +107,7 @@ export class ProviderService {
         resolve: tokens,
       });
     } catch (err) {
+      console.error(err);
       sendResponse({
         reject: String(err),
       });
