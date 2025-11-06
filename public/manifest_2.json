@@ -23,12 +23,10 @@
   },
   "permissions": [
     "storage",
+    "sessions",
     "notifications",
     "activeTab",
-    "alarms",
-    "https://api.zilliqa.com/",
-    "https://dev-api.zilliqa.com/",
-    "http://127.0.0.1/*"
+    "alarms"
   ],
   "content_scripts": [
     {

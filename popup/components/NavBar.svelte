@@ -28,7 +28,7 @@
 </script>
 
 <nav class="nav-bar">
-    <button class="back-button" onclick={handleBack} aria-label={canGoBack ? 'Back' : 'Close'} {disabled}>
+    <button class="back-button" onclick={handleBack} {disabled}>
         {#if canGoBack}
             <LeftArrowIcon />
         {:else}
