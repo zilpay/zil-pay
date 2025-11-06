@@ -392,7 +392,13 @@
   "connections": {
     "search": "Search connections",
     "not_found": "No connections found",
-    "empty": "No connected dApps"
+    "empty": "No connected dApps",
+    "connectedAccounts": "Connected Accounts",
+    "connectedChains": "Connected Chains",
+    "connectedAt": "Connected At",
+    "permissions": "Permissions",
+    "disconnect": "Disconnect",
+    "confirmDisconnect": "Confirm Disconnect"
   },
   "networks": {
     "title": "Networks",
@@ -520,5 +526,19 @@
     "privateKey": "Private Key",
     "publicKey": "Public Key",
     "copy": "Copy"
+  },
+  "settings": {
+    "notifications": "Notifications",
+    "currency": "Currency",
+    "appearance": "Appearance",
+    "addressBook": "Address Book",
+    "security": "Security",
+    "networks": "Networks",
+    "language": "Language",
+    "telegram": "Telegram",
+    "twitter": "Twitter",
+    "github": "GitHub",
+    "version": "Version",
+    "connections": "Connected dApps"
   }
 }

@@ -120,7 +120,7 @@
 
     .domain {
         font-family: Geist;
-        color: var(--color-content-text-secondary);
+        color: var(--color-content-text-pink);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -129,7 +129,7 @@
 
     .connected-date {
         font-family: Geist;
-        color: var(--color-content-text-tertiary);
+        color: var(--color-content-text-secondary);
         white-space: nowrap;
         font-weight: 400;
     }
@@ -144,12 +144,12 @@
 
     .stat {
         font-family: Geist;
-        color: var(--color-content-text-tertiary);
+        color: var(--color-content-text-secondary);
         font-weight: 400;
     }
 
     .separator {
-        color: var(--color-content-text-tertiary);
+        color: var(--color-content-text-secondary);
         font-size: 12px;
     }
 </style>
