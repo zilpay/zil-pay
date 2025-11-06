@@ -117,6 +117,27 @@
         return '-';
     });
 
+    const transactionFee = $derived(() => {
+        if (transaction.evm?.gasUsed && transaction.evm?.effectiveGasPrice) {
+            const fee = BigInt(transaction.evm.gasUsed) * BigInt(transaction.evm.effectiveGasPrice);
+            return abbreviateNumber(fee.toString(), 18);
+        }
+        
+        if (transaction.evm?.gasUsed && transaction.evm?.gasPrice) {
+            const fee = BigInt(transaction.evm.gasUsed) * BigInt(transaction.evm.gasPrice);
+            return abbreviateNumber(fee.toString(), 18);
+        }
+        
+        if (transaction.scilla?.receipt?.gas_used && transaction.scilla?.gasPrice) {
+            const fee = BigInt(transaction.scilla.receipt.gas_used) * BigInt(transaction.scilla.gasPrice);
+            return abbreviateNumber(fee.toString(), 12);
+        }
+        
+        return '-';
+    });
+
+    const nativeSymbol = $derived(chain?.ftokens[0]?.symbol ?? '');
+
     const blockNumber = $derived(() => {
         return transaction.evm?.blockNumber ?? 
                transaction.scilla?.receipt?.epoch_num ?? 
@@ -198,6 +219,13 @@
             <span class="detail-label">{$_('txDetails.gasPrice')}</span>
             <span class="detail-value">{gasPrice()} Gwei</span>
         </div>
+
+        {#if transactionFee() !== '-'}
+            <div class="detail-row">
+                <span class="detail-label">{$_('txDetails.transactionFee')}</span>
+                <span class="detail-value">{transactionFee()} {nativeSymbol}</span>
+            </div>
+        {/if}
 
         {#if blockNumber() !== '-'}
             <div class="detail-row">
