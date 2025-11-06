@@ -49,7 +49,6 @@
         flex-shrink: 0;
     }
 
-
     :global(.active > svg > path) {
         stroke: var(--color-navbar-icon-selected-default);
     }
@@ -69,12 +68,21 @@
         align-items: center;
         justify-content: center;
         color: var(--color-navbar-icon-default-default);
-        transition: color 0.2s ease;
+        transition: color 0.2s ease, opacity 0.2s ease;
         -webkit-tap-highlight-color: transparent;
 
         :global(svg) {
             width: 28px;
             height: 28px;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            :global(svg > path) {
+                width: 28px;
+                height: 28px;
+                opacity: 0.2;
+            }
         }
     }
 </style>
