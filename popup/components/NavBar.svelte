@@ -2,6 +2,7 @@
     import type { Snippet } from 'svelte';
     import { pop } from '../router/navigation';
     import LeftArrowIcon from './icons/LedftArrow.svelte';
+    import CloseIcon from './icons/Close.svelte';
 
     let { 
         title = '',
@@ -14,11 +15,25 @@
         right?: Snippet,
         onback?: () => void
     } = $props();
+
+    const canGoBack = $derived(window.history.length > 1);
+
+    function handleBack() {
+        if (canGoBack) {
+            onback();
+        } else {
+            window.close();
+        }
+    }
 </script>
 
 <nav class="nav-bar">
-    <button class="back-button" onclick={onback} aria-label="Back" {disabled}>
-        <LeftArrowIcon />
+    <button class="back-button" onclick={handleBack} aria-label={canGoBack ? 'Back' : 'Close'} {disabled}>
+        {#if canGoBack}
+            <LeftArrowIcon />
+        {:else}
+            <CloseIcon />
+        {/if}
     </button>
     <h1 class="nav-title">{title}</h1>
     <div class="right-container">

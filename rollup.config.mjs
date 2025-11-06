@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 const production = !process.env.ROLLUP_WATCH;
-const manifest = process.env.MANIFEST || 3;
+const manifest = process.env.MANIFEST || 2;
 
 const createConfig = (name, input, output, extraPlugins = []) => ({
   input,
