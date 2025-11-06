@@ -40,7 +40,7 @@
       "description": "Generate wallet with 12 or 24 word recovery phrase"
     },
     "privateKey": {
-      "title": "Private Key Pair",
+      "title": "Private Key",
       "description": "Generate wallet from cryptographic key pair"
     }
   },
@@ -51,7 +51,7 @@
       "description": "Restore wallet using 12 or 24 word recovery phrase"
     },
     "privateKey": {
-      "title": "Private Key Pair",
+      "title": "Private Key",
       "description": "Import wallet from existing private key"
     }
   },
@@ -460,7 +460,7 @@
   "locale": {
     "title": "Language",
     "system": "System Default",
-    "systemDesc": "Use device language settings"
+    "systemDesc": "System"
   },
   "confirm": {
     "edit": "Edit",
