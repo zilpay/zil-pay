@@ -54,6 +54,12 @@
         saveDeletedTokensCache(cache);
     }
 
+    function clearDeletedTokens() {
+        if (currentChainHash === -1) return;
+        saveDeletedTokensForChain(currentChainHash, []);
+        deletedTokens = [];
+    }
+
     $effect(() => {
         if (currentChainHash !== -1) {
             deletedTokens = getDeletedTokensForChain(currentChainHash);
@@ -245,7 +251,12 @@
 
         {#if filteredDeletedTokens().length > 0}
             <div class="token-group">
-                <span class="section-label">{$_('tokenManager.deletedTokens')}</span>
+                <div class="section-header">
+                    <span class="section-label">{$_('tokenManager.deletedTokens')}</span>
+                    <button class="clear-button" onclick={clearDeletedTokens}>
+                        {$_('tokenManager.clearDeleted')}
+                    </button>
+                </div>
                 {#each filteredDeletedTokens() as token (token.addr)}
                     <TokenToggleItem
                         {token}
@@ -310,10 +321,32 @@
         gap: 8px;
     }
 
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 4px;
+    }
+
     .section-label {
         font-size: var(--font-size-medium);
         color: var(--color-content-text-secondary);
         font-weight: 500;
         padding: 0 4px;
+    }
+
+    .clear-button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: var(--font-size-medium);
+        font-weight: 600;
+        color: var(--color-content-text-pink);
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
     }
 </style>

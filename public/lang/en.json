@@ -276,14 +276,15 @@
     "warning": "Only send {token} on {chain} network to this address"
   },
   "tokenManager": {
-    "title": "Manage Tokens",
-    "searchPlaceholder": "Search or paste token address",
-    "errorFetching": "Failed to fetch token information",
-    "wrongChain": "Token is on a different chain",
+    "title": "Token Manager",
+    "searchPlaceholder": "Search or paste address",
     "foundTokenTitle": "Found Token",
     "defaultTokens": "Default Tokens",
     "addedTokens": "Added Tokens",
-    "deletedTokens": "Deleted Tokens"
+    "deletedTokens": "Deleted Tokens",
+    "clearDeleted": "Clear",
+    "errorFetching": "Error fetching token",
+    "wrongChain": "Wrong chain"
   },
   "nft": {
     "errorFetching": "Error fetching NFT metadata",
