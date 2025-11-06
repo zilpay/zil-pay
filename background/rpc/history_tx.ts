@@ -60,7 +60,7 @@ export class HistoricalTransaction implements IHistoricalTransactionState {
     const commonData = {
       status: TransactionStatus.Pending,
       metadata: signedTx.metadata,
-      timestamp: Math.floor(Date.now() / 1000),
+      timestamp: Date.now(),
     };
 
     if (signedTx.scilla) {

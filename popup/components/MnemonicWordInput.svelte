@@ -4,23 +4,32 @@
         word = '',
         isEditable = false,
         hasError = false,
+        focus = false,
         onChanged = undefined
     }: {
         index: number;
         word: string;
         isEditable?: boolean;
         hasError?: boolean;
+        focus?: boolean;
         onChanged?: (index: number, value: string) => void;
     } = $props();
 
     let inputValue = $state(word);
     let shouldUpdateFromProps = $state(true);
+    let inputElement: HTMLInputElement | undefined = $state();
 
     $effect(() => {
         if (shouldUpdateFromProps && word !== inputValue) {
             inputValue = word;
         }
         shouldUpdateFromProps = true;
+    });
+
+    $effect(() => {
+        if (focus && inputElement && isEditable) {
+            inputElement.focus();
+        }
     });
 
     function handleInput(event: Event) {
@@ -42,6 +51,7 @@
         {index}
     </span>
     <input
+        bind:this={inputElement}
         type="text"
         value={inputValue}
         disabled={!isEditable}

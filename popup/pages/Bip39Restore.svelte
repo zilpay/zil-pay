@@ -191,6 +191,7 @@
     <div class="words-grid">
       {#each { length: count } as _, index}
         <MnemonicWordInput
+          focus={index == 0}
           index={index + 1}
           word={words[index] || ''}
           isEditable={true}
