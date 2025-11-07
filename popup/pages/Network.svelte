@@ -133,7 +133,7 @@
         try {
             await changeChainProvider(walletIndex, chainIndex);
         } catch (e) {
-            console.warn(e);
+            console.error(e);
         } finally {
             pop();
         }

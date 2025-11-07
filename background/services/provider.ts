@@ -25,13 +25,10 @@ export class ProviderService {
     try {
       wallet.tokens = wallet.tokens.filter((t) => !t.native); 
       wallet.tokens = [...chain.ftokens, ...wallet.tokens];
-
-      if (wallet.walletType == WalletTypes.Ledger || wallet.walletType == WalletTypes.Watch) {
-        wallet.tokens = chain.ftokens.filter((t) => t.addrType == wallet.accounts[0].addrType);
-      }
-      
       wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
         if (wallet.walletType === WalletTypes.Watch || wallet.walletType === WalletTypes.Ledger) {
+          account.chainHash = chain.hash();
+          account.chainId = chain.chainId;
           return account;
         } else {
           const pubKeyBytes = hexToUint8Array(account.pubKey);
@@ -54,6 +51,7 @@ export class ProviderService {
         account.slip44 = chain.slip44;
         return account;
       }));
+
       await this.#worker.stop();
       await this.#worker.start();
       await this.#state.sync();
@@ -63,6 +61,7 @@ export class ProviderService {
         resolve: this.#state,
       });
     } catch (err) {
+      console.error(err);
       sendResponse({
         reject: String(err),
       });
