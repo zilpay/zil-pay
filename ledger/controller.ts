@@ -189,6 +189,7 @@ class LedgerController {
         const path = buildBip44Path(slip44, index);
         const account = await this.#interface.getAddress(path, false);
         account.name = `Account ${index + 1}`;
+        account.index = index;
         accounts.push(account);
       }
     }

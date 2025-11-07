@@ -12,6 +12,7 @@ export const MTypePopup = {
   DESTROY_WALLET: `@/${app}/destroy-wallet`,
   DESTROY_ACCOUNT: `@/${app}/destroy-account`,
   ADD_NEXT_BIP39_ACCOUNT: `@/${app}/add-next-bip39-account`,
+  ADD_LEDGER_ACCOUNT: `@/${app}/add-next-ledger-account`,
 
   WALLET_FROM_PRIVATE_KEY: `@/${app}/create-wallet-from-private-key`,
   WALLET_FROM_WATCHED_ACCOUNT: `@/${app}/create-wallet-from-account-watached`,

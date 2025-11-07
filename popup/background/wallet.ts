@@ -8,6 +8,7 @@ import { Message } from "lib/streem/message";
 import { themeDetect } from "popup/mixins/theme";
 import globalStore from "popup/store/global";
 import type { AccountFromBip39Params, IKeyPair, WalletAddressInfo, WalletFromBip39Params, WalletFromLedgerParams, WalletFromPrivateKeyParams, WalletFromWatchAccountParams } from "types/wallet";
+import type { LedgerPublicAddress } from "types/ledger";
  
 export async function getGlobalState() {
   const data = await Message.signal<SendResponseParams>(MTypePopup.GET_GLOBAL_STATE).send();
@@ -268,6 +269,21 @@ export async function selectAccount(walletIndex: number, accountIndex: number) {
     ...currentState,
     wallets: resolve,
   });
+
+  return resolve;
+}
+
+export async function addLedgerAccount(walletIndex: number, account: LedgerPublicAddress) {
+  const data = await new Message<SendResponseParams>({
+    payload: {
+      walletIndex,
+      account,
+    },
+    type: MTypePopup.ADD_LEDGER_ACCOUNT,
+  }).send();
+  let resolve = warpMessage(data) as BackgroundState;
+
+  globalStore.set(resolve);
 
   return resolve;
 }

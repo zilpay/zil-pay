@@ -76,7 +76,7 @@
         </div>
     </main>
 
-    {#if currentWallet.walletType == WalletTypes.SecretPhrase}
+    {#if currentWallet.walletType == WalletTypes.SecretPhrase || currentWallet.walletType == WalletTypes.Ledger}
         <footer class="footer">
             <Button variant="outline" onclick={handleAddAccount}>
                 <PlusIcon />

@@ -40,6 +40,9 @@ export function startBackground(core: GlobalState) {
       case MTypePopup.ADD_NEXT_BIP39_ACCOUNT:
         core.wallet.addAccountFromBip39(msg.payload, sendResponse);
         return true;
+      case MTypePopup.ADD_LEDGER_ACCOUNT:
+        core.wallet.addLedgerAccount(msg.payload.walletIndex, msg.payload.account, sendResponse);
+        return true;
       case MTypePopup.SELECT_ACCOUNT:
         core.wallet.selectAccount(
           msg.payload.walletIndex,

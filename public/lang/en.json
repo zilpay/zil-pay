@@ -345,15 +345,30 @@
     "title": "Accounts"
   },
   "addAccount": {
-    "title": "Add Account",
-    "defaultName": "Account {index}",
-    "bip39Title": "BIP39 Account Index",
-    "namePlaceholder": "Account name",
-    "editName": "Edit name",
-    "decrementCount": "Decrease count",
-    "incrementCount": "Increase count",
-    "accountExists": "Account with index {index} already exists",
-    "createButton": "Create Account"
+    "bip39": {
+      "title": "Add BIP39 Account",
+      "description": "BIP39 Account Index",
+      "defaultName": "Account {index}",
+      "namePlaceholder": "Account name",
+      "editName": "Edit name",
+      "indexLabel": "Account Index",
+      "decrementCount": "Decrease count",
+      "incrementCount": "Increase count",
+      "accountExists": "Account with index {index} already exists",
+      "createButton": "Create Account"
+    },
+    "ledger": {
+      "title": "Add Ledger Account",
+      "description": "Add account from Ledger device",
+      "defaultName": "Ledger {index}",
+      "namePlaceholder": "Ledger account name",
+      "editName": "Edit name",
+      "indexLabel": "Ledger Account Index",
+      "decrementCount": "Decrease count",
+      "incrementCount": "Increase count",
+      "accountExists": "Ledger account with index {index} already exists",
+      "createButton": "Add Ledger Account"
+    }
   },
   "lockpage": {
     "title": "Welcome Back",

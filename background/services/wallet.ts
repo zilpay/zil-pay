@@ -19,6 +19,7 @@ import { ETHEREUM, ZILLIQA } from "config/slip44";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXOR } from "lib/utils/hashing";
+import type { LedgerPublicAddress } from "types/ledger";
 
 export class WalletService {
   #state: BackgroundState;
@@ -291,6 +292,49 @@ export class WalletService {
         resolve: this.#state
       });
     } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
+  async addLedgerAccount(walletIndex: number, ledgerAccount: LedgerPublicAddress, sendResponse: StreamResponse) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+      const chain = this.#state.getChain(wallet.defaultChainHash)!;
+
+      const existingAccountHashes = wallet.accounts.map((acc) =>
+        hashXOR(hexToUint8Array(acc.pubKey))
+      );
+
+      wallet.accounts.push(await Account.fromLedger(ledgerAccount, chain));
+      
+      const newAccount = wallet.accounts[wallet.accounts.length - 1];
+
+      if (newAccount) {
+        const newAccountPubKeyBytes = hexToUint8Array(newAccount.pubKey);
+        const newAccountHash = hashXOR(newAccountPubKeyBytes);
+
+        this.#state.connections.list.forEach((connection) => {
+          const isWalletConnected = connection.connectedAccounts.some((hash) =>
+            existingAccountHashes.includes(hash)
+          );
+
+          if (isWalletConnected) {
+            if (!connection.connectedAccounts.includes(newAccountHash)) {
+              connection.connectedAccounts.push(newAccountHash);
+            }
+          }
+        });
+      }
+
+      await this.#state.sync();
+
+      sendResponse({
+        resolve: this.#state
+      });
+    } catch (err) {
+      console.error(err);
       sendResponse({
         reject: String(err),
       });
