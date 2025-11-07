@@ -338,6 +338,10 @@ export class EvmService {
           signature = sig;
         } else {
           const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+          const addr = await (await keyPair.address()).autoFormat();
+          if (!account.addr.includes(addr)) {
+            throw new Error(ConnectError.AddressMismatch);
+          }
           const messageBytes = new TextEncoder().encode(evmMessage.signPersonalMessageEVM.message);
           const s = await keyPair.signMessage(messageBytes);
           signature = uint8ArrayToHex(s, true);
@@ -398,6 +402,10 @@ export class EvmService {
           signature = sig;
         } else {
           const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+          const addr = await (await keyPair.address()).autoFormat();
+          if (!account.addr.includes(addr)) {
+            throw new Error(ConnectError.AddressMismatch);
+          }
           const typedData = JSON.parse(evmTypedData.signTypedDataJsonEVM.typedData);
           const s = keyPair.signDataEIP712(typedData);
           signature = uint8ArrayToHex(s, true);

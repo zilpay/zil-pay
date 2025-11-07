@@ -97,7 +97,13 @@ export class TransactionService {
         await signedTx.verify();
       } else {
         const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
-         signedTx = await txReq.sign(keyPair);
+        const addr = await (await keyPair.address()).autoFormat();
+
+        if (!account.addr.includes(addr)) {
+          throw new Error(ConnectError.AddressMismatch);
+        }
+
+        signedTx = await txReq.sign(keyPair);
       }
 
       const [history] = await provider.broadcastSignedTransactions([signedTx]);

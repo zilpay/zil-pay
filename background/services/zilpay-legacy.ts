@@ -189,8 +189,13 @@ export class ZilPayLegacyService {
         } else {
           const defaultChainConfig = this.#state.getChain(wallet.defaultChainHash)!;
           const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
+          const addr = await (await keyPair.address()).autoFormat();
           const hashBytes = hexToUint8Array(scillaMessage.signMessageScilla.hash);
           const sig = await keyPair.signMessage(hashBytes);
+
+          if (!account.addr.includes(addr)) {
+            throw new Error(ConnectError.AddressMismatch);
+          }
 
           signature = uint8ArrayToHex(sig);
         }
