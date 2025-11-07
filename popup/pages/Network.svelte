@@ -111,6 +111,7 @@
             chains: [...state.chains, chain]
         }));
         await setGlobalState();
+        await handleSelect(chain);
     }
 
     async function handleEdit(chain: DisplayChain) {
