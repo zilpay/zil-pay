@@ -25,7 +25,8 @@
     "storage",
     "notifications",
     "activeTab",
-    "alarms"
+    "alarms",
+    "https://*/*"
   ],
   "content_scripts": [
     {
