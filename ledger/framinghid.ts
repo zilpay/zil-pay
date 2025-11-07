@@ -1,5 +1,9 @@
-import { TransportError } from '@ledgerhq/errors';
-import { writeUInt16BE, readUInt16BE, concatUint8Arrays } from 'lib/utils/bytes';
+import { TransportError } from "@ledgerhq/errors";
+import {
+  writeUInt16BE,
+  readUInt16BE,
+  concatUint8Arrays,
+} from "lib/utils/bytes";
 
 type ResponseAcc =
   | {
@@ -30,7 +34,10 @@ export default function hidFraming(channel: number, packetSize: number) {
       let data = concatUint8Arrays(asUInt16BE(apdu.length), apdu);
       const blockSize = packetSize - 5;
       const nbBlocks = Math.ceil(data.length / blockSize);
-      data = concatUint8Arrays(data, new Uint8Array(nbBlocks * blockSize - data.length + 1));
+      data = concatUint8Arrays(
+        data,
+        new Uint8Array(nbBlocks * blockSize - data.length + 1),
+      );
 
       const blocks: Uint8Array[] = [];
 
@@ -50,15 +57,15 @@ export default function hidFraming(channel: number, packetSize: number) {
       let { data, dataLength, sequence } = acc || initialAcc;
 
       if (readUInt16BE(chunk, 0) !== channel) {
-        throw new TransportError('Invalid channel', 'InvalidChannel');
+        throw new TransportError("Invalid channel", "InvalidChannel");
       }
 
       if (chunk[2] !== TAG) {
-        throw new TransportError('Invalid tag', 'InvalidTag');
+        throw new TransportError("Invalid tag", "InvalidTag");
       }
 
       if (readUInt16BE(chunk, 3) !== sequence) {
-        throw new TransportError('Invalid sequence', 'InvalidSequence');
+        throw new TransportError("Invalid sequence", "InvalidSequence");
       }
 
       if (!acc) {

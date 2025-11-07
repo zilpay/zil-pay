@@ -142,10 +142,7 @@ export function startBackground(core: GlobalState) {
         );
         return true;
       case MTypePopup.REMOVE_CHAIN:
-        core.provider.removeChain(
-          msg.payload.chainHash,
-          sendResponse,
-        );
+        core.provider.removeChain(msg.payload.chainHash, sendResponse);
         return true;
 
       // transactions

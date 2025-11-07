@@ -3,6 +3,7 @@ export interface LedgerPublicAddress {
   publicKey: string;
   index: number;
   name: string;
+  slip44: number;
 }
 
 export interface AppConfiguration {

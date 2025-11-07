@@ -1,8 +1,9 @@
-import Transport from './transport';
-import { hexToUint8Array, uint8ArrayToHex } from 'lib/utils/hex';
-import { uint8ArrayToUtf8 } from 'lib/utils/utf8';
-import { writeInt32LE, concatUint8Arrays } from 'lib/utils/bytes';
-import type { LedgerPublicAddress } from 'types/ledger';
+import Transport from "./transport";
+import { hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import { uint8ArrayToUtf8 } from "lib/utils/utf8";
+import { writeInt32LE, concatUint8Arrays } from "lib/utils/bytes";
+import type { LedgerPublicAddress } from "types/ledger";
+import { ZILLIQA } from "config/slip44";
 
 const CLA = 0xe0;
 const INS = {
@@ -15,17 +16,17 @@ const INS = {
 const PUB_KEY_BYTE_LEN = 33;
 const SIG_BYTE_LEN = 64;
 const HASH_BYTE_LEN = 32;
-const BECH32_ADDR_LEN = 'zil'.length + 1 + 32 + 6;
+const BECH32_ADDR_LEN = "zil".length + 1 + 32 + 6;
 
 export class ScillaLedgerInterface {
   #transport: Transport;
 
-  constructor(transport: Transport, scrambleKey = 'w0w') {
+  constructor(transport: Transport, scrambleKey = "w0w") {
     this.#transport = transport;
     transport.decorateAppAPIMethods(
       this,
-      ['getVersion', 'getPublicKey', 'getPublicAddress', 'signHash', 'signTxn'],
-      scrambleKey
+      ["getVersion", "getPublicKey", "getPublicAddress", "signHash", "signTxn"],
+      scrambleKey,
     );
   }
 
@@ -49,7 +50,13 @@ export class ScillaLedgerInterface {
     const payload = new Uint8Array(4);
     writeInt32LE(payload, index);
 
-    const response = await this.#transport.send(CLA, INS.getPublickKey, P1, P2, payload);
+    const response = await this.#transport.send(
+      CLA,
+      INS.getPublickKey,
+      P1,
+      P2,
+      payload,
+    );
     return uint8ArrayToHex(response).slice(0, PUB_KEY_BYTE_LEN * 2);
   }
 
@@ -60,12 +67,18 @@ export class ScillaLedgerInterface {
     const payload = new Uint8Array(4);
     writeInt32LE(payload, index);
 
-    const response = await this.#transport.send(CLA, INS.getPublicAddress, P1, P2, payload);
+    const response = await this.#transport.send(
+      CLA,
+      INS.getPublicAddress,
+      P1,
+      P2,
+      payload,
+    );
     const pubAddr = uint8ArrayToUtf8(
       response.subarray(PUB_KEY_BYTE_LEN, PUB_KEY_BYTE_LEN + BECH32_ADDR_LEN),
     );
     const publicKey = uint8ArrayToHex(response).slice(0, PUB_KEY_BYTE_LEN * 2);
-    return { pubAddr, publicKey, index, name: "" };
+    return { pubAddr, publicKey, index, name: "", slip44: ZILLIQA };
   }
 
   public async signHash(index: number, hash: string): Promise<string> {
@@ -80,12 +93,19 @@ export class ScillaLedgerInterface {
       throw new Error(`Hash length ${hashLen} is invalid`);
     }
 
-    const finalHashBytes = hashLen > HASH_BYTE_LEN
-      ? hashBytes.subarray(0, HASH_BYTE_LEN)
-      : hashBytes;
+    const finalHashBytes =
+      hashLen > HASH_BYTE_LEN
+        ? hashBytes.subarray(0, HASH_BYTE_LEN)
+        : hashBytes;
 
     const payload = concatUint8Arrays(indexBytes, finalHashBytes);
-    const result = await this.#transport.send(CLA, INS.signHash, P1, P2, payload);
+    const result = await this.#transport.send(
+      CLA,
+      INS.signHash,
+      P1,
+      P2,
+      payload,
+    );
     return uint8ArrayToHex(result).slice(0, SIG_BYTE_LEN * 2);
   }
 
@@ -117,13 +137,15 @@ export class ScillaLedgerInterface {
       indexBytes,
       hostBytesLeftBytes,
       txn1SizeBytes,
-      txn1Bytes
+      txn1Bytes,
     );
 
     const transport = this.#transport;
     return transport
       .send(CLA, INS.signTxn, P1, P2, payload)
-      .then(function cb(response: Uint8Array): Promise<Uint8Array> | Uint8Array {
+      .then(function cb(
+        response: Uint8Array,
+      ): Promise<Uint8Array> | Uint8Array {
         if (remainingBytes.length > 0) {
           let txnNBytes: Uint8Array;
           if (remainingBytes.length > STREAM_LEN) {
@@ -137,7 +159,11 @@ export class ScillaLedgerInterface {
           const txnNSizeBytes = new Uint8Array(4);
           writeInt32LE(txnNSizeBytes, txnNBytes.length);
           writeInt32LE(hostBytesLeftBytes, remainingBytes.length);
-          const payload = concatUint8Arrays(hostBytesLeftBytes, txnNSizeBytes, txnNBytes);
+          const payload = concatUint8Arrays(
+            hostBytesLeftBytes,
+            txnNSizeBytes,
+            txnNBytes,
+          );
           return transport.send(CLA, INS.signTxn, P1, P2, payload).then(cb);
         }
         return response;

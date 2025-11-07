@@ -72,7 +72,6 @@ export interface TransactionRequestEVM {
   authorizationList?: Authorization[];
 }
 
-
 export interface Log {
   address: string;
   blockHash: string;

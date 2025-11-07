@@ -1,12 +1,12 @@
-import { RLP } from 'micro-eth-signer/core/rlp';
-import type { TxType } from 'micro-eth-signer/core/tx-internal';
+import { RLP } from "micro-eth-signer/core/rlp";
+import type { TxType } from "micro-eth-signer/core/tx-internal";
 
 const MAX_CHUNK_SIZE = 255;
 
 export function safeChunkTransaction(
   transactionRlp: Uint8Array,
   derivationPath: Uint8Array,
-  transactionType: TxType
+  transactionType: TxType,
 ): Uint8Array[] {
   const payload = new Uint8Array([...derivationPath, ...transactionRlp]);
 
@@ -14,7 +14,7 @@ export function safeChunkTransaction(
     return [payload];
   }
 
-  if (transactionType === 'legacy') {
+  if (transactionType === "legacy") {
     const decoded = RLP.decode(transactionRlp) as Uint8Array[];
     const vrs = decoded.slice(decoded.length - 3);
 
@@ -32,7 +32,10 @@ export function safeChunkTransaction(
         }
 
         const newLastChunkLen = payload.length % proposedSize;
-        if (newLastChunkLen === 0 || newLastChunkLen > encodedVrsPayload.length) {
+        if (
+          newLastChunkLen === 0 ||
+          newLastChunkLen > encodedVrsPayload.length
+        ) {
           chunkSize = proposedSize;
           break;
         }

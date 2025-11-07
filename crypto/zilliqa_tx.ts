@@ -94,7 +94,11 @@ export class ZILTransactionRequest {
     return encodeProtoTransactionCoreInfo(proto);
   }
 
-  withSignature(sig: Uint8Array, proto: ProtoTransactionCoreInfo, pubKey: Uint8Array) {
+  withSignature(
+    sig: Uint8Array,
+    proto: ProtoTransactionCoreInfo,
+    pubKey: Uint8Array,
+  ) {
     return new ZILTransactionReceipt(
       proto.version ?? versionFromChainId(this.chainId),
       this.nonce,

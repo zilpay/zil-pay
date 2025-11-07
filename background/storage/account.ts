@@ -131,7 +131,7 @@ export class Account implements IAccountState {
       name: ledgerAccount.name,
       pubKey: ledgerAccount.publicKey,
       chainHash: chain.hash(),
-      slip44: chain.slip44,
+      slip44: ledgerAccount.slip44,
       chainId: chain.chainId,
     });
 

@@ -29,4 +29,3 @@ export interface ParamsWatchAsset {
     image?: string;
   };
 }
-

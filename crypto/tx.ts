@@ -26,18 +26,18 @@ export class TransactionRequest {
       throw new Error(TransactionRequestErrors.InvalidTx);
     }
     if (this.evm.authorizationList) {
-      return 'eip7702';
+      return "eip7702";
     }
     if (this.evm.maxFeePerBlobGas || this.evm.blobVersionedHashes) {
-      return 'eip4844';
+      return "eip4844";
     }
     if (this.evm.maxFeePerGas || this.evm.maxPriorityFeePerGas) {
-      return 'eip1559';
+      return "eip1559";
     }
     if (this.evm.accessList) {
-      return 'eip2930';
+      return "eip2930";
     }
-    return 'legacy';
+    return "legacy";
   }
 
   async #createEVMRawData(type: TxType, sig?: EthSignature): Promise<any> {
@@ -56,28 +56,36 @@ export class TransactionRequest {
     };
 
     switch (type) {
-      case 'legacy':
+      case "legacy":
         raw.gasPrice = BigInt(this.evm.gasPrice ?? 1_000_000_000n);
         break;
-      case 'eip2930':
+      case "eip2930":
         raw.gasPrice = BigInt(this.evm.gasPrice ?? 1_000_000_000n);
         raw.accessList = this.evm.accessList ?? [];
         break;
-      case 'eip1559':
+      case "eip1559":
         raw.maxFeePerGas = BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n);
-        raw.maxPriorityFeePerGas = BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n);
+        raw.maxPriorityFeePerGas = BigInt(
+          this.evm.maxPriorityFeePerGas ?? 1_000_000_000n,
+        );
         raw.accessList = this.evm.accessList ?? [];
         break;
-      case 'eip4844':
+      case "eip4844":
         raw.maxFeePerGas = BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n);
-        raw.maxPriorityFeePerGas = BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n);
+        raw.maxPriorityFeePerGas = BigInt(
+          this.evm.maxPriorityFeePerGas ?? 1_000_000_000n,
+        );
         raw.accessList = this.evm.accessList ?? [];
-        raw.maxFeePerBlobGas = BigInt(this.evm.maxFeePerBlobGas ?? 1_000_000_000n);
+        raw.maxFeePerBlobGas = BigInt(
+          this.evm.maxFeePerBlobGas ?? 1_000_000_000n,
+        );
         raw.blobVersionedHashes = this.evm.blobVersionedHashes ?? [];
         break;
-      case 'eip7702':
+      case "eip7702":
         raw.maxFeePerGas = BigInt(this.evm.maxFeePerGas ?? 1_000_000_000n);
-        raw.maxPriorityFeePerGas = BigInt(this.evm.maxPriorityFeePerGas ?? 1_000_000_000n);
+        raw.maxPriorityFeePerGas = BigInt(
+          this.evm.maxPriorityFeePerGas ?? 1_000_000_000n,
+        );
         raw.accessList = this.evm.accessList ?? [];
         raw.authorizationList = (this.evm as any).authorizationList ?? [];
         break;
@@ -92,7 +100,10 @@ export class TransactionRequest {
     return raw;
   }
 
-  async toRLP(pubKey: Uint8Array, derivationPath?: Uint8Array): Promise<Uint8Array[]> {
+  async toRLP(
+    pubKey: Uint8Array,
+    derivationPath?: Uint8Array,
+  ): Promise<Uint8Array[]> {
     if (this.scilla) {
       return [this.scilla.encode(pubKey)];
     }

@@ -1,12 +1,11 @@
-import { concatUint8Arrays, readUInt16BE } from 'lib/utils/bytes';
-import type { DeviceModel } from '@ledgerhq/devices';
-import { 
+import { concatUint8Arrays, readUInt16BE } from "lib/utils/bytes";
+import type { DeviceModel } from "@ledgerhq/devices";
+import {
   StatusCodes,
   TransportStatusError,
   TransportRaceCondition,
-  TransportError
-} from '@ledgerhq/errors';
-
+  TransportError,
+} from "@ledgerhq/errors";
 
 export type Subscription = {
   unsubscribe: () => void;
@@ -14,7 +13,7 @@ export type Subscription = {
 
 export type Device = unknown;
 
-export type DescriptorEventType = 'add' | 'remove';
+export type DescriptorEventType = "add" | "remove";
 
 export interface DescriptorEvent<Descriptor> {
   type: DescriptorEventType;
@@ -30,7 +29,8 @@ export type Observer<EventType, EventError = unknown> = Readonly<{
 }>;
 
 class EventEmitter {
-  private events: Map<string, Array<(...args: unknown[]) => unknown>> = new Map();
+  private events: Map<string, Array<(...args: unknown[]) => unknown>> =
+    new Map();
 
   on(eventName: string, cb: (...args: unknown[]) => unknown): void {
     if (!this.events.has(eventName)) {
@@ -52,7 +52,7 @@ class EventEmitter {
   emit(event: string, ...args: unknown[]): void {
     const listeners = this.events.get(event);
     if (listeners) {
-      listeners.forEach(cb => cb(...args));
+      listeners.forEach((cb) => cb(...args));
     }
   }
 }
@@ -64,17 +64,25 @@ export default class Transport {
 
   static readonly isSupported: () => Promise<boolean>;
   static readonly list: () => Promise<unknown[]>;
-  static readonly listen: (observer: Observer<DescriptorEvent<unknown>>) => Subscription;
-  static readonly open: (descriptor?: unknown, timeoutMs?: number) => Promise<Transport>;
+  static readonly listen: (
+    observer: Observer<DescriptorEvent<unknown>>,
+  ) => Subscription;
+  static readonly open: (
+    descriptor?: unknown,
+    timeoutMs?: number,
+  ) => Promise<Transport>;
 
   exchange(
     _apdu: Uint8Array,
     { abortTimeoutMs: _abortTimeoutMs }: { abortTimeoutMs?: number } = {},
   ): Promise<Uint8Array> {
-    throw new Error('exchange not implemented');
+    throw new Error("exchange not implemented");
   }
 
-  exchangeBulk(apdus: Uint8Array[], observer: Observer<Uint8Array>): Subscription {
+  exchangeBulk(
+    apdus: Uint8Array[],
+    observer: Observer<Uint8Array>,
+  ): Subscription {
     let unsubscribed = false;
     const unsubscribe = () => {
       unsubscribed = true;
@@ -95,7 +103,7 @@ export default class Transport {
 
     main().then(
       () => !unsubscribed && observer.complete(),
-      e => !unsubscribed && observer.error(e),
+      (e) => !unsubscribed && observer.error(e),
     );
 
     return { unsubscribe };
@@ -140,8 +148,8 @@ export default class Transport {
   ): Promise<Uint8Array> => {
     if (data.length >= 256) {
       throw new TransportError(
-        'data.length exceed 256 bytes limit. Got: ' + data.length,
-        'DataLengthTooBig',
+        "data.length exceed 256 bytes limit. Got: " + data.length,
+        "DataLengthTooBig",
       );
     }
 
@@ -149,30 +157,33 @@ export default class Transport {
       concatUint8Arrays(
         new Uint8Array([cla, ins, p1, p2]),
         new Uint8Array([data.length]),
-        data
+        data,
       ),
       { abortTimeoutMs },
     );
     const sw = readUInt16BE(response, response.length - 2);
 
-    if (!statusList.some(s => s === sw)) {
+    if (!statusList.some((s) => s === sw)) {
       throw new TransportStatusError(sw);
     }
 
     return response;
   };
 
-  static create(openTimeout = 3000, listenTimeout?: number): Promise<Transport> {
+  static create(
+    openTimeout = 3000,
+    listenTimeout?: number,
+  ): Promise<Transport> {
     return new Promise((resolve, reject) => {
       let found = false;
       const sub = this.listen({
-        next: e => {
+        next: (e) => {
           found = true;
           if (sub) sub.unsubscribe();
           if (listenTimeoutId) clearTimeout(listenTimeoutId);
           this.open(e.descriptor, openTimeout).then(resolve, reject);
         },
-        error: e => {
+        error: (e) => {
           if (listenTimeoutId) clearTimeout(listenTimeoutId);
           reject(e);
         },
@@ -180,14 +191,24 @@ export default class Transport {
           if (listenTimeoutId) clearTimeout(listenTimeoutId);
 
           if (!found) {
-            reject(new TransportError(this.ErrorMessage_NoDeviceFound, 'NoDeviceFound'));
+            reject(
+              new TransportError(
+                this.ErrorMessage_NoDeviceFound,
+                "NoDeviceFound",
+              ),
+            );
           }
         },
       });
       const listenTimeoutId = listenTimeout
         ? setTimeout(() => {
             sub.unsubscribe();
-            reject(new TransportError(this.ErrorMessage_ListenTimeout, 'ListenTimeout'));
+            reject(
+              new TransportError(
+                this.ErrorMessage_ListenTimeout,
+                "ListenTimeout",
+              ),
+            );
           }, listenTimeout)
         : null;
     });
@@ -198,12 +219,12 @@ export default class Transport {
   async exchangeAtomicImpl<O>(f: () => Promise<O>): Promise<O> {
     if (this.exchangeBusyPromise) {
       throw new TransportRaceCondition(
-        'An action was already pending on the Ledger device. Please deny or reconnect.',
+        "An action was already pending on the Ledger device. Please deny or reconnect.",
       );
     }
 
     let resolveBusy: (() => void) | undefined;
-    const busyPromise: Promise<void> = new Promise(r => {
+    const busyPromise: Promise<void> = new Promise((r) => {
       resolveBusy = r;
     });
     this.exchangeBusyPromise = busyPromise;
@@ -211,14 +232,14 @@ export default class Transport {
     let unresponsiveReached = false;
     const timeout = setTimeout(() => {
       unresponsiveReached = true;
-      this.emit('unresponsive');
+      this.emit("unresponsive");
     }, this.unresponsiveTimeout);
 
     try {
       const res = await f();
 
       if (unresponsiveReached) {
-        this.emit('responsive');
+        this.emit("responsive");
       }
 
       return res;
@@ -229,13 +250,17 @@ export default class Transport {
     }
   }
 
-  decorateAppAPIMethods(self: Record<string, any>, methods: string[], scrambleKey: string) {
+  decorateAppAPIMethods(
+    self: Record<string, any>,
+    methods: string[],
+    scrambleKey: string,
+  ) {
     for (const methodName of methods) {
       self[methodName] = this.decorateAppAPIMethod(
         methodName,
         self[methodName] as (...args: any[]) => Promise<any>,
         self,
-        scrambleKey
+        scrambleKey,
       );
     }
   }
@@ -253,7 +278,10 @@ export default class Transport {
 
       if (_appAPIlock) {
         return Promise.reject(
-          new TransportError('Ledger Device is busy (lock ' + _appAPIlock + ')', 'TransportLocked'),
+          new TransportError(
+            "Ledger Device is busy (lock " + _appAPIlock + ")",
+            "TransportLocked",
+          ),
         );
       }
 
@@ -267,6 +295,6 @@ export default class Transport {
     };
   }
 
-  static ErrorMessage_ListenTimeout = 'No Ledger device found (timeout)';
-  static ErrorMessage_NoDeviceFound = 'No Ledger device found';
+  static ErrorMessage_ListenTimeout = "No Ledger device found (timeout)";
+  static ErrorMessage_NoDeviceFound = "No Ledger device found";
 }
