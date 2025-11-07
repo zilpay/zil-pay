@@ -12,6 +12,6 @@
     />
     <path 
         d="M4.66669 16.3112H12.1667C14.9281 16.3112 17.1667 14.0726 17.1667 11.3112V6.66666M4.66669 16.3112L7.58335 19.1667M4.66669 16.3112L7.58335 13.4557" 
-        stroke="var(--color-content-icon-inverted)"
+        stroke="var(--color-content-icon-secondary)"
     />
 </svg>

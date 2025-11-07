@@ -6,12 +6,14 @@
         label,
         Icon,
         onclick = () => {},
-        rightComponent = undefined
+        rightComponent = undefined,
+        iconClass = ''
     }: {
         label: string;
         Icon: new (...args: any) => SvelteComponent;
         onclick?: () => void;
         rightComponent?: Snippet;
+        iconClass?: string;
     } = $props();
 </script>
 
@@ -21,7 +23,7 @@
         {#if rightComponent}
             {@render rightComponent()}
         {:else}
-            <div class="icon-wrapper">
+            <div class={`icon-wrapper ${iconClass}`}>
                 <Icon />
             </div>
         {/if}
@@ -61,7 +63,7 @@
         justify-content: center;
         width: 20px;
         height: 20px;
-        color: var(--color-content-icon-secondary);
+        color: var(--settings-icon-color, var(--color-content-icon-secondary));
 
         :global(svg) {
             width: 100%;

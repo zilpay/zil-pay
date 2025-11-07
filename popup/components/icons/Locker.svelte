@@ -7,7 +7,7 @@
 >
     <path 
         d="M5 13C5 11.8954 5.89543 11 7 11H17C18.1046 11 19 11.8954 19 13V19C19 20.1046 18.1046 21 17 21H7C5.89543 21 5 20.1046 5 19V13Z" 
-        stroke="var(--color-content-icon-inverted)"
+        stroke="var(--color-content-icon-secondary)"
         stroke-linecap="round"
     />
     <path 

@@ -7,14 +7,14 @@
 >
     <path 
         d="M2.09912 14.0753C4.19321 16.1392 7.84527 19 12.0003 19C16.1552 19 19.8066 16.1392 21.9007 14.0753C22.453 13.531 22.73 13.2579 22.9059 12.7235C23.0314 12.3422 23.0314 11.6579 22.9059 11.2766C22.73 10.7422 22.453 10.469 21.9007 9.92466C19.8066 7.86078 16.1552 5 12.0003 5C7.84527 5 4.19321 7.86078 2.09912 9.92466C1.54641 10.4694 1.27003 10.742 1.0941 11.2766C0.968632 11.6579 0.968632 12.3422 1.0941 12.7235C1.27003 13.2582 1.54641 13.5306 2.09912 14.0753Z" 
-        stroke="var(  --color-content-icon-secondary)"
+        stroke="var(--color-content-icon-secondary)"
         stroke-linecap="round" 
         stroke-linejoin="round"
     />
     <path 
         opacity="0.6" 
         d="M9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12Z" 
-        stroke="var(  --color-content-icon-secondary)"
+        stroke="var(--color-content-icon-secondary)"
         stroke-linecap="round" 
         stroke-linejoin="round"
     />

@@ -49,14 +49,6 @@
         flex-shrink: 0;
     }
 
-    :global(.active > svg > path) {
-        stroke: var(--color-navbar-icon-selected-default);
-    }
-
-    :global(svg > path) {
-        stroke: var(--color-navbar-icon-default-default);
-    }
-
     .nav-button {
         flex: 1;
         height: 100%;
@@ -74,6 +66,16 @@
         :global(svg) {
             width: 28px;
             height: 28px;
+        }
+
+        :global(svg > path) {
+            stroke: var(--color-navbar-icon-default-default);
+        }
+
+        &.active {
+            :global(svg > path) {
+                stroke: var(--color-navbar-icon-selected-default);
+            }
         }
 
         &:disabled {

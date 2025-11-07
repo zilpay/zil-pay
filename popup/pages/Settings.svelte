@@ -147,13 +147,14 @@
             {/each}
         </div>
 
-        <div class="settings-group">
+        <div class="settings-group social-group">
             {#each aboutSettings as item, index (item.id)}
                 <div class="item-wrapper" class:no-divider={index === aboutSettings.length - 1}>
                     <SettingsItem 
                         label={$_(item.labelKey)} 
                         Icon={item.Icon} 
-                        onclick={() => handleNavigation(item.path)} 
+                        onclick={() => handleNavigation(item.path)}
+                        iconClass="social-icon"
                     />
                 </div>
             {/each}
@@ -203,6 +204,10 @@
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
+
+        &.social-group {
+            --settings-icon-color: var(--color-content-icon-inverted);
+        }
     }
 
     .item-wrapper {
@@ -219,5 +224,9 @@
         font-family: Geist, sans-serif;
         font-weight: 400;
         line-height: 20px;
+    }
+
+    :global(.social-icon svg) {
+        color: var(--color-content-icon-inverted);
     }
 </style>

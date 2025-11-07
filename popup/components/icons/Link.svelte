@@ -7,7 +7,7 @@
 >
     <path 
         d="M21 3L7 17M21 3H13.16M21 3V10.84" 
-        stroke="var(--color-content-icon-inverted)" 
+        stroke="var(--color-content-icon-secondary)" 
         stroke-linecap="round"
     />
     <path 
