@@ -14,6 +14,7 @@
     import OptionCard from '../components/OptionCard.svelte';
     import { pop, push } from 'popup/router/navigation';
     import { changeChainProvider } from 'popup/background/provider';
+    import { AddressType, WalletTypes } from 'config/wallet';
 
     type DisplayChain = IChainConfigState & { 
         isTestnet: boolean;
@@ -167,6 +168,7 @@
                 <div class="card-grid">
                     {#each filteredChains().added as chain (chain.chainIds.join())}
                         <OptionCard
+                            disabled={currentWallet.walletType == WalletTypes.Watch || (currentWallet.walletType == WalletTypes.Ledger && currentAccount.slip44 != chain.slip44 && currentAccount.addrType == AddressType.Bech32) }
                             title={chain.name}
                             description={chain.chain}
                             icon={chain.iconUrl}
