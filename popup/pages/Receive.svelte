@@ -66,8 +66,7 @@
         showTokenModal = false;
     }
 
-    async function handleInputWalletName(event: Event) {
-        event.preventDefault();
+    async function handleAccountNameChange() {
         if (!currentAccount || !currentWallet) return;
         const newName = accountName.trim();
         if (!newName || newName === currentAccount.name) {
@@ -84,8 +83,6 @@
         });
 
         await setGlobalState();
-        const input = (event.target as HTMLFormElement).querySelector('input');
-        if (input) input.blur();
     }
 
     $effect(() => {
@@ -124,15 +121,15 @@
             </div>
         </div>
 
-        <form onsubmit={handleInputWalletName}>
-            <SmartInput bind:value={accountName} hide={false} showToggle={false}>
+        <div class="account-name-wrapper">
+            <SmartInput bind:value={accountName} hide={false} showToggle={false} onblur={handleAccountNameChange}>
                 {#snippet rightAction()}
-                    <button type="submit" class="edit-button">
+                    <div class="edit-icon">
                         <EditIcon />
-                    </button>
+                    </div>
                 {/snippet}
             </SmartInput>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -250,10 +247,11 @@
         }
     }
 
-    .edit-button {
-        background: none;
-        border: none;
-        cursor: pointer;
+    .account-name-wrapper {
+        width: 100%;
+    }
+
+    .edit-icon {
         display: flex;
         align-items: center;
         justify-content: center;

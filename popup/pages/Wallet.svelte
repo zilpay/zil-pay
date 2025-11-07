@@ -35,8 +35,7 @@
         }
     });
 
-    async function handleWalletNameChange(event: Event) {
-        event.preventDefault();
+    async function handleWalletNameChange() {
         if (!wallet) return;
 
         const newName = walletName.trim();
@@ -53,9 +52,6 @@
             globalStore.set(state);
 
             await setGlobalState();
-            const input = (event.target as HTMLFormElement).querySelector('input');
-            if (input) input.blur();
-
         } catch (error) {
             console.error('Failed to update wallet name:', error);
             walletName = wallet.walletName;
@@ -109,19 +105,20 @@
             {/if}
         </div>
 
-        <form class="wallet-name-form" onsubmit={handleWalletNameChange}>
+        <div class="wallet-name-wrapper">
             <SmartInput 
                 bind:value={walletName}
                 hide={false}
                 showToggle={false}
+                onblur={handleWalletNameChange}
             >
                 {#snippet rightAction()}
-                    <button type="submit" class="edit-button">
+                    <div class="edit-icon">
                         <EditIcon />
-                    </button>
+                    </div>
                 {/snippet}
             </SmartInput>
-        </form>
+        </div>
 
         <div class="preferences-section">
             <span class="section-title">{$_('walletSettings.preferences')}</span>
@@ -181,15 +178,11 @@
         background-color: var(--color-neutral-background-base);
     }
 
-    .wallet-name-form {
+    .wallet-name-wrapper {
         width: 100%;
     }
 
-    .edit-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
+    .edit-icon {
         display: flex;
         align-items: center;
         justify-content: center;

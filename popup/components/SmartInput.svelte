@@ -18,6 +18,7 @@
         ariaDescribedBy = '',
         loading = false,
         oninput = (_e: Event) => null,
+        onblur = (_e: FocusEvent) => null,
         leftIcon = undefined,
         rightAction = undefined,
         autofocus = false
@@ -36,6 +37,7 @@
         ariaDescribedBy?: string;
         loading?: boolean;
         oninput?: (e: Event) => unknown;
+        onblur?: (e: FocusEvent) => unknown;
         leftIcon?: Snippet;
         rightAction?: Snippet;
         autofocus?: boolean;
@@ -85,6 +87,7 @@
             bind:value={value}
             {id}
             oninput={oninput}
+            onblur={onblur}
             type={hide ? 'password' : 'text'}
             class="input-field"
             class:with-left-icon={leftIcon}
@@ -290,4 +293,3 @@
         font-weight: 500;
     }
 </style>
-
