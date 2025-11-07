@@ -466,7 +466,7 @@
         bind:show={showLedgerModal}
         chain={chain}
         onCancel={handleLedgerCancel}
-        accountIndex={accountIndex}
+        accountIndex={wallet.accounts[accountIndex].index}
         signFunction={handleLedgerSign}
         onSuccess={handleLedgerSuccess}
         onError={handleLedgerError}

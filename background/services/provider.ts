@@ -25,6 +25,11 @@ export class ProviderService {
     try {
       wallet.tokens = wallet.tokens.filter((t) => !t.native); 
       wallet.tokens = [...chain.ftokens, ...wallet.tokens];
+
+      if (wallet.walletType == WalletTypes.Ledger || wallet.walletType == WalletTypes.Watch) {
+        wallet.tokens = chain.ftokens.filter((t) => t.addrType == wallet.accounts[0].addrType);
+      }
+      
       wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
         if (wallet.walletType === WalletTypes.Watch || wallet.walletType === WalletTypes.Ledger) {
           return account;

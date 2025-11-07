@@ -235,7 +235,7 @@
     <LedgerSignModal
         bind:show={showLedgerModal}
         chain={currentChain}
-        accountIndex={currentWallet?.selectedAccount ?? 0}
+        accountIndex={selectedAccount.index}
         signFunction={handleLedgerSign}
         onSuccess={handleLedgerSuccess}
         onError={handleLedgerError}
