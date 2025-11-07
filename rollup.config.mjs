@@ -20,7 +20,9 @@ const __dirname = path.dirname(__filename);
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 const production = !process.env.ROLLUP_WATCH;
-const manifest = process.env.MANIFEST || 3;
+const manifest = process.env.MANIFEST || 2;
+
+const runtimeAPI = manifest === 2 || manifest === '2' ? 'globalThis.browser' : 'globalThis.chrome';
 
 const createConfig = (name, input, output, extraPlugins = []) => ({
   input,
@@ -84,6 +86,13 @@ const popup = createConfig(
   'popup/main.ts',
   'dist/bundle.js',
   [
+    replace({
+      preventAssignment: true,
+      delimiters: ['', ''],
+      values: {
+        'globalThis.chrome': runtimeAPI
+      }
+    }),
     svelte({
       compilerOptions: { runes: true },
       extensions: ['.svelte'],
@@ -126,7 +135,8 @@ const background = createConfig(
       values: {
         'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
         'global.': 'globalThis.',
-        'process.browser': 'true'
+        'process.browser': 'true',
+        'globalThis.chrome': runtimeAPI
       }
     }),
     copy({
@@ -166,7 +176,9 @@ const content = createConfig(
     replace({
       preventAssignment: true,
       delimiters: ['', ''],
-      values: {}
+      values: {
+        'globalThis.chrome': runtimeAPI
+      }
     })
   ]
 );

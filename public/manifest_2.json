@@ -40,7 +40,9 @@
     }
   ],
   "web_accessible_resources": [
-    "phishing.html"
+    "phishing.html",
+    "injects/zilpay.js",
+    "injects/zilpay.js"
   ],
   "browser_action": {
     "default_icon": {
