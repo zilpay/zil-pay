@@ -151,7 +151,7 @@
             disabled={isLoading}
             type="button"
         >
-            <PlusIcon />
+            <PlusIcon class="plus-icon" />
         </button>
     </div>
 
@@ -286,7 +286,9 @@
         :global(svg) {
             width: 24px;
             height: 24px;
-            stroke: var(--color-content-icon-primary);
+        }
+        :global(.plus-icon > path) {
+            stroke: var(--color-content-icon-inverted);
         }
 
         &:active:not(:disabled) {
