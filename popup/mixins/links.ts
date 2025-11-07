@@ -26,11 +26,12 @@ export function openAddressInExplorer(address: string, chainConfig: IChainConfig
     return;
   }
 
+  const addr = address.split(":").at(-1);
   const explorer = chainConfig.explorers[0];
   const baseUrl = explorer.url.endsWith('/') 
     ? explorer.url.slice(0, -1) 
     : explorer.url;
   
-  const url = `${baseUrl}/address/${address}`;
+  const url = `${baseUrl}/address/${addr}`;
   Runtime.tabs.create({ url });
 }
