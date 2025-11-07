@@ -6,7 +6,7 @@ import { HEX_PREFIX, hexToUint8Array } from "lib/utils/hex";
 import type { WorkerService } from "./worker";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
-import { WalletTypes } from "config/wallet";
+import { AddressType, WalletTypes } from "config/wallet";
 
 export class ProviderService {
   #state: BackgroundState;
@@ -26,19 +26,27 @@ export class ProviderService {
       wallet.tokens = wallet.tokens.filter((t) => !t.native); 
       wallet.tokens = [...chain.ftokens, ...wallet.tokens];
       wallet.accounts = await Promise.all(wallet.accounts.map(async (account) => {
-        let addr: Address;
-
         if (wallet.walletType === WalletTypes.Watch || wallet.walletType === WalletTypes.Ledger) {
-          addr = Address.fromStr(account.addr);
+          return account;
         } else {
           const pubKeyBytes = hexToUint8Array(account.pubKey);
-          addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
+          const addr = await Address.fromPubKey(pubKeyBytes, chain.slip44);
+
+          if (addr.type == AddressType.Bech32) {
+            const evmAddr = await Address.fromPubKeyType(pubKeyBytes, AddressType.EthCheckSum);
+            const bech32 = await addr.toZilBech32();
+            const base16 = await evmAddr.toEthChecksum();
+            account.addr = `${bech32}:${base16}`;
+          } else {
+            account.addr = await addr.autoFormat();
+          }
+
+          account.addrType = addr.type;
         }
 
         account.chainHash = chain.hash();
         account.chainId = chain.chainId;
-        account.addr = await addr.autoFormat();
-        account.addrType = addr.type;
+        account.slip44 = chain.slip44;
         return account;
       }));
       await this.#worker.stop();
