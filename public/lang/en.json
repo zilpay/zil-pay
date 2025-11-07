@@ -185,13 +185,15 @@
     "passwordPlaceholder": "Enter password (min 8 characters)",
     "confirmLabel": "Confirm Password",
     "confirmPlaceholder": "Re-enter password",
+    "defaultWalletName": "Wallet",
     "defaultAccountName": "Account",
     "advanced": "Advanced Settings",
     "advancedTitle": "Advanced Encryption Settings",
     "securityNote": "This password encrypts your wallet locally. Keep it safe and never share it",
     "createButton": "Create Wallet",
     "errors": {
-      "mismatch": "Passwords do not match"
+      "mismatch": "Passwords do not match",
+      "len": "Password must be at least 8 characters"
     }
   },
   "modals": {

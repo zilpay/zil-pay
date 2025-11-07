@@ -20,6 +20,8 @@
   import { HashTypes } from 'config/argon2';
   import { CipherOrders } from 'config/keychain';
 
+  const MIN_PASSWORD_LEN = 8;
+
   let password = $state('');
   let confirmPassword = $state('');
   let walletName = $state('');
@@ -28,6 +30,7 @@
   let showAdvancedModal = $state(false);
   let isLoading = $state(false);
   let creationError = $state<string | null>(null);
+  let passwordLengthError = $state('');
   
   let walletSettings = $state<IWalletSettingsState>({
     cipherOrders: [CipherOrders.AESGCM256, CipherOrders.KUZNECHIK, CipherOrders.NTRUP761],
@@ -48,13 +51,17 @@
   });
 
   function generateDefaultWalletName(): string {
-    const chainName = $cacheStore.chain?.name;
-    const walletCount = $globalStore.wallets.length;
-    return `${chainName} ${walletCount + 1}`;
+    return `${$_('passwordSetup.defaultWalletName')} ${$globalStore.wallets.length}`;
   }
 
   function updateValidation() {
-    const isPasswordValid = password.length >= 8 && password === confirmPassword;
+    if (password.length > 0 && password.length < MIN_PASSWORD_LEN) {
+      passwordLengthError = $_('passwordSetup.errors.len');
+    } else {
+      passwordLengthError = '';
+    }
+
+    const isPasswordValid = password.length >= MIN_PASSWORD_LEN && password === confirmPassword;
     isValid = isPasswordValid && walletName.trim().length > 0;
   }
 
@@ -143,6 +150,8 @@
           disabled={isLoading}
           hide
           required
+          hasError={passwordLengthError.length > 0}
+          errorMessage={passwordLengthError}
         />
         <SmartInput
           id="confirm-password"

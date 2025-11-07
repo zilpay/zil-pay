@@ -39,6 +39,9 @@
     }
 
     $effect(() => {
+        if (!currentWallet) {
+            window.close();
+        }
         if (password) {
             error = null;
         }
@@ -60,7 +63,7 @@
     </p>
 
     <form class="form" onsubmit={handleDelete}>
-        {#if currentWallet.walletType == WalletTypes.SecretKey || currentWallet.walletType == WalletTypes.SecretPhrase}
+        {#if currentWallet && currentWallet.walletType == WalletTypes.SecretKey || currentWallet.walletType == WalletTypes.SecretPhrase}
             <SmartInput
                 bind:value={password}
                 placeholder={$_('deleteWallet.passwordPlaceholder')}
