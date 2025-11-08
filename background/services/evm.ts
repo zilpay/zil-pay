@@ -570,8 +570,6 @@ export class EvmService {
         },
       }));
 
-      console.log(wallet.confirm);
-
       await this.#state.sync();
       new PromptService().open("/confirm");
 

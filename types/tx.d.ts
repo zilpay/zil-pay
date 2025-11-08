@@ -58,7 +58,7 @@ export interface TransactionRequestEVM {
   type?: TxType;
   nonce?: number;
   from?: string;
-  to: string;
+  to?: string;
   value?: string;
   gasLimit?: number;
   data?: string;

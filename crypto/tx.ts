@@ -8,6 +8,7 @@ import type { TxType } from "micro-eth-signer/core/tx-internal";
 import { Address } from "./address";
 import { safeChunkTransaction } from "./rlp";
 import { EthSignature } from "ledger/ethsig";
+import { ZERO_EVM } from "config/common";
 
 export enum TransactionRequestErrors {
   InvalidTx = "Invalid tx type",
@@ -47,13 +48,18 @@ export class TransactionRequest {
 
     const raw: any = {
       type,
-      to: await Address.fromStr(this.evm.to).toEthChecksum(),
       value: BigInt(this.evm.value ?? 0),
       data: this.evm.data ?? HEX_PREFIX,
       nonce: BigInt(this.evm.nonce ?? 0),
       gasLimit: BigInt(this.evm.gasLimit ?? 21000),
       chainId: this.evm.chainId ? BigInt(this.evm.chainId) : 1n,
     };
+
+    if (this.evm.to) {
+      raw.to = await Address.fromStr(this.evm.to).toEthChecksum();
+    } else {
+      raw.to = ZERO_EVM;
+    }
 
     switch (type) {
       case "legacy":

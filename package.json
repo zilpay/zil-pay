@@ -9,7 +9,6 @@
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "build": "rollup -c",
-    "build:v3": "rollup -c",
     "dev": "rollup -c -w",
     "format": "prettier --write ./**/*.{js,ts,test.ts}",
     "check": "svelte-check --tsconfig ./tsconfig.json"

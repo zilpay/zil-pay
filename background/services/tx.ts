@@ -134,6 +134,7 @@ export class TransactionService {
         resolve: history,
       });
     } catch (err) {
+      console.error(err);
       sendResponse({ reject: String(err) });
     }
   }
