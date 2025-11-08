@@ -188,7 +188,8 @@ Object.defineProperty(global.chrome, "tabs", {
   writable: true,
 });
 
-(globalThis as any).fetch = vi.fn((url: string) => {
+const nativeFetch = globalThis.fetch;
+(globalThis as any).fetch = vi.fn((url: string, options: any) => {
   if (url.endsWith("/chains/mainnet.json")) {
     return Promise.resolve({
       ok: true,
@@ -203,5 +204,5 @@ Object.defineProperty(global.chrome, "tabs", {
     } as Response);
   }
 
-  return Promise.reject(new Error(`Mocked fetch: URL not found - ${url}`));
+  return nativeFetch(url, options);
 });

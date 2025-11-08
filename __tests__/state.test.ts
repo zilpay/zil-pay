@@ -158,7 +158,7 @@ describe("test bg state with storagev2", () => {
     const [account0, account1] = wallet.accounts;
 
     expect(account0.name).toBe("Account 0");
-    expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y");
+    expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y:0xA2484462BB8E1BA3603E4CC248a34a9D9ABBc251");
     expect(account0.addrType).toBe(AddressType.Bech32);
     expect(account0.pubKey).toBe(
       "0316f2d913f13c6aa15ad5c80b58464d25b6363a1b9d997260e8061977a3f43e10",
@@ -166,39 +166,41 @@ describe("test bg state with storagev2", () => {
     expect(account0.index).toBe(0);
 
     expect(account1.name).toBe("Imported 0");
-    expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43");
+    expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43:0x709678c07cfCAFB4bb49a6b1d57b1db378e27825");
     expect(account1.addrType).toBe(AddressType.Bech32);
     expect(account1.pubKey).toBe(
       "0232970d0472220180c1779610f0ffae5a1ad79048b4f01f366c52d99317534024",
     );
     expect(account1.index).toBe(0);
 
-    expect(wallet.tokens.length).toBe(2);
-    const zilToken = wallet.tokens.find((t: FToken) => t.symbol === "ZIL");
-    const zlpToken = wallet.tokens.find((t: FToken) => t.symbol === "ZLP");
+    expect(wallet.tokens.length).toBe(3);
+    expect(wallet.tokens[0].addr).toBe("0x0000000000000000000000000000000000000000");
+    expect(wallet.tokens[0].name).toBe("EVM");
+    expect(wallet.tokens[0].symbol).toBe("ZIL");
+    expect(wallet.tokens[0].decimals).toBe(18);
+    expect(wallet.tokens[0].native).toBe(true);
+    expect(wallet.tokens[0].default_).toBe(true);
+    expect(wallet.tokens[0].chainHash).toBe(wallet.defaultChainHash);
 
-    expect(zilToken).toBeDefined();
-    expect(zilToken?.name).toBe("Zilliqa");
-    expect(zilToken?.decimals).toBe(12);
-    expect(zilToken?.addr).toBe("zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz");
-    expect(zilToken?.addrType).toBe(AddressType.Bech32);
-    expect(zilToken?.balances).toEqual({ "0": "0", "1": "0" });
-    expect(zilToken?.rate).toBe(1);
-    expect(zilToken?.default_).toBe(true);
-    expect(zilToken?.native).toBe(true);
+    expect(wallet.tokens[1].addr).toBe("zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz");
+    expect(wallet.tokens[1].name).toBe("Scilla");
+    expect(wallet.tokens[1].symbol).toBe("ZIL");
+    expect(wallet.tokens[1].decimals).toBe(12);
+    expect(wallet.tokens[1].native).toBe(true);
+    expect(wallet.tokens[1].default_).toBe(true);
+    expect(wallet.tokens[1].chainHash).toBe(wallet.defaultChainHash);
 
-    expect(zlpToken).toBeDefined();
-    expect(zlpToken?.name).toBe("ZilPay wallet");
-    expect(zlpToken?.decimals).toBe(18);
-    expect(zlpToken?.addr).toBe("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
-    expect(zlpToken?.balances).toEqual({ "0": "0", "1": "0" });
-    expect(zlpToken?.rate).toBe(2.7688998049);
-    expect(zlpToken?.default_).toBe(false);
-    expect(zlpToken?.native).toBe(false);
+    expect(wallet.tokens[2].addr).toBe("zil1l0g8u6f9g0fsvjuu74ctyla2hltefrdyt7k5f4");
+    expect(wallet.tokens[2].name).toBe("ZilPay wallet");
+    expect(wallet.tokens[2].symbol).toBe("ZLP");
+    expect(wallet.tokens[2].decimals).toBe(18);
+    expect(wallet.tokens[2].native).toBe(false);
+    expect(wallet.tokens[2].default_).toBe(false);
+    expect(wallet.tokens[2].chainHash).toBe(wallet.defaultChainHash);
 
     const { settings } = wallet;
     expect(settings.cipherOrders).toEqual([CipherOrders.AESCBC]);
-    expect(settings.currencyConvert).toBe("usd");
+    expect(settings.currencyConvert).toBe("BTC");
 
     const { hashFnParams } = settings;
     expect(hashFnParams.hashType).toBe(HashTypes.Pbkdf2);
@@ -243,17 +245,17 @@ describe("test bg state with storagev3", () => {
     const [account0, account1] = wallet.accounts;
 
     expect(account0.name).toBe("Account 0");
-    expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y");
+    expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y:0xA2484462BB8E1BA3603E4CC248a34a9D9ABBc251");
     expect(account1.name).toBe("Imported 0");
-    expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43");
+    expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43:0x709678c07cfCAFB4bb49a6b1d57b1db378e27825");
 
-    expect(wallet.tokens.length).toBe(3);
+    expect(wallet.tokens.length).toBe(4);
     const zilToken = wallet.tokens.find((t: FToken) => t.symbol === "ZIL");
     const zlpToken = wallet.tokens.find((t: FToken) => t.symbol === "ZLP");
     const stZilToken = wallet.tokens.find((t: FToken) => t.symbol === "stZIL");
 
     expect(zilToken).toBeDefined();
-    expect(zilToken?.rate).toBe(1);
+    expect(zilToken?.rate).toBe(0);
 
     expect(zlpToken).toBeDefined();
     expect(zlpToken?.rate).toBe(2.7915277475);
@@ -265,7 +267,7 @@ describe("test bg state with storagev3", () => {
 
     const { settings } = wallet;
     expect(settings.cipherOrders).toEqual([CipherOrders.AESGCM256]);
-    expect(settings.currencyConvert).toBe("btc");
+    expect(settings.currencyConvert).toBe("BTC");
 
     const { hashFnParams } = settings;
     expect(hashFnParams.hashType).toBe(HashTypes.Pbkdf2);
