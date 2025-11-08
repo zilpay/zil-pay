@@ -173,6 +173,9 @@
         font-weight: 600;
         line-height: 22px;
         color: var(--color-content-text-inverted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .subtitle {

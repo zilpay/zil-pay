@@ -58,7 +58,7 @@ export class TransactionRequest {
     if (this.evm.to) {
       raw.to = await Address.fromStr(this.evm.to).toEthChecksum();
     } else {
-      raw.to = ZERO_EVM;
+      raw.to = HEX_PREFIX;
     }
 
     switch (type) {
