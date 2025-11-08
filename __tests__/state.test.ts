@@ -141,21 +141,21 @@ describe("test bg state with storagev2", () => {
     const globalState = await GlobalState.fromStorage();
 
     expect(globalState.state.chains.length).toBe(1);
-    expect(globalState.state.wallets.length).toBe(1);
+    expect(globalState.state.wallets.length).toBe(2);
 
     const wallet: Wallet = globalState.state.wallets[0];
 
     expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
-    expect(wallet.walletName).toBe("Zilliqa Wallet");
+    expect(wallet.walletName).toBe("Account 0");
     expect(wallet.authType).toBe(AuthMethod.None);
-    expect(wallet.selectedAccount).toBe(1);
+    expect(wallet.selectedAccount).toBe(0);
     expect(wallet.defaultChainHash).toBe(208425510);
     expect(wallet.vault).toBe(
       "U2FsdGVkX19+DrC9DG/qvYEC6koZfMhpQl6K4eVH5GSE1qXyn4vENND7zZFNT5R4yZM/45MiWMTw+Olu2Va948mputTGoby3VfmNmIm1uiVgRYt6hycdMiUBFuWs0KqN",
     );
 
-    expect(wallet.accounts.length).toBe(2);
-    const [account0, account1] = wallet.accounts;
+    expect(wallet.accounts.length).toBe(1);
+    const [account0] = wallet.accounts;
 
     expect(account0.name).toBe("Account 0");
     expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y:0xA2484462BB8E1BA3603E4CC248a34a9D9ABBc251");
@@ -165,6 +165,8 @@ describe("test bg state with storagev2", () => {
     );
     expect(account0.index).toBe(0);
 
+    const wallet1 = globalState.state.wallets[1]; 
+    const account1 = wallet1.accounts[0]; 
     expect(account1.name).toBe("Imported 0");
     expect(account1.addr).toBe("zil14at57zaj4pe3tuy734usy2xnlquapkd4d0ne43:0x709678c07cfCAFB4bb49a6b1d57b1db378e27825");
     expect(account1.addrType).toBe(AddressType.Bech32);
@@ -228,22 +230,24 @@ describe("test bg state with storagev3", () => {
     const globalState = await GlobalState.fromStorage();
 
     expect(globalState.state.chains.length).toBe(1);
-    expect(globalState.state.wallets.length).toBe(1);
+    expect(globalState.state.wallets.length).toBe(2);
 
     const wallet: Wallet = globalState.state.wallets[0];
 
     expect(wallet.walletType).toBe(WalletTypes.SecretPhrase);
-    expect(wallet.walletName).toBe("Zilliqa Wallet");
+    expect(wallet.walletName).toBe("Account 0");
     expect(wallet.authType).toBe(AuthMethod.None);
-    expect(wallet.selectedAccount).toBe(1);
+    expect(wallet.selectedAccount).toBe(0);
     expect(wallet.defaultChainHash).toBe(208425510);
     expect(wallet.vault).toEqual(
       "ZGM1ODdhZGI0YWVhY2E3Njk4MDJlYTEyMzMxOGY5OGZlMjMxMzNhYzY1ZDc4ZTUzYjFiZmI0YTYxNDY5OTAzZGQ2NDAzNWFjZmQzNGVkODZjYzc3NTc0NWE4NjI4N2Y3NWI0OTdiYzk4OGFjMzg0MDM5MWY5MGJjY2FmMjllNmU4NmEyMjJkMy8zODIzZWMwNmEyMDA4ZDZhODcyMTY3MzAwMzlmZTBlYw==",
     );
 
-    expect(wallet.accounts.length).toBe(2);
-    const [account0, account1] = wallet.accounts;
+    expect(wallet.accounts.length).toBe(1);
+    const [account0] = wallet.accounts;
 
+    const wallet1: Wallet = globalState.state.wallets[1];
+    const account1 = wallet1.accounts[0];
     expect(account0.name).toBe("Account 0");
     expect(account0.addr).toBe("zil1ntrynx04349sk6py7uyata03gka6qswg7um95y:0xA2484462BB8E1BA3603E4CC248a34a9D9ABBc251");
     expect(account1.name).toBe("Imported 0");
