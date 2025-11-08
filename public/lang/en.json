@@ -310,6 +310,7 @@
       "failed": "Failed",
       "unknown": "Unknown"
     },
+    "transactionFee": "Fee",
     "viewOn": "View on",
     "from": "From",
     "to": "To",
