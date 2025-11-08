@@ -1,0 +1,36 @@
+# Makefile for building ZilPay browser extension for Manifest V2 and V3
+
+# Default target: build both versions
+all: clean build-mv2 hash-mv2 zip-mv2 clean build-mv3 hash-mv3 zip-mv3
+
+# Clean the dist directory
+clean:
+	rm -rf dist
+
+# Build for Manifest V2
+build-mv2:
+	mkdir -p dist
+	MANIFEST=2 npm run build
+
+# Compute SHA256 checksums for Manifest V2
+hash-mv2:
+	find dist -type f -exec sha256sum {} \; > shasummv2.sha
+
+# Zip the dist directory for Manifest V2
+zip-mv2:
+	zip -r mv2.zip dist
+
+# Build for Manifest V3
+build-mv3:
+	mkdir -p dist
+	MANIFEST=3 npm run build
+
+# Compute SHA256 checksums for Manifest V3
+hash-mv3:
+	find dist -type f -exec sha256sum {} \; > shasummv3.sha
+
+# Zip the dist directory for Manifest V3
+zip-mv3:
+	zip -r mv3.zip dist
+
+.PHONY: all clean build-mv2 hash-mv2 zip-mv2 build-mv3 hash-mv3 zip-mv3
