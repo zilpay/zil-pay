@@ -18,19 +18,21 @@ import { ZILLIQA } from 'config/slip44';
 import { Address } from 'crypto/address';
 import { hexToUint8Array } from 'lib/utils/hex';
 
+interface Identities {
+  name: string;
+  bech32: string;
+  index: number;
+  base16: string;
+  type: number;
+  pubKey: string;
+  privKey?: string;
+  zrc2: Record<string, string>;
+  nft: Record<string, unknown>;
+}
+
 interface WalletIdentities {
   selectedAddress: number;
-  identities: {
-    name: string;
-    bech32: string;
-    index: number;
-    base16: string;
-    type: number;
-    pubKey: string;
-    privKey?: string;
-    zrc2: Record<string, string>;
-    nft: Record<string, unknown>;
-  }[];
+  identities: Identities[];
 }
 
 interface TokenData {
@@ -90,8 +92,10 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
     if (!algorithm || (algorithm != ShaAlgorithms.sha256 && algorithm != ShaAlgorithms.Sha512)) {
       algorithm = ShaAlgorithms.sha256;
     }
+    const bip39WalletIdentities = walletIdentities.identities.filter((a) => a.type == 2);
+    const keyWalletIdentities = walletIdentities.identities.filter((a) => a.type == 1);
 
-    const promiseAccounts = walletIdentities.identities.map(async (identity) => {
+    const parseAccount = async (identity: Identities) => {
       const pubKeyBytes = hexToUint8Array(identity.pubKey);
       const addrBech32 = await Address.fromPubKeyType(pubKeyBytes, AddressType.Bech32);
       const addrEVM = await Address.fromPubKeyType(pubKeyBytes, AddressType.EthCheckSum);
@@ -106,54 +110,74 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
         slip44: mainnetZilliqaChain.slip44,
         index: identity.index,
       });
-    });
-    const accounts = await Promise.all(promiseAccounts);
+    }
 
-    const walletTokens = parsedTokens.map(({ ftoken, base16 }) => {
+    const settings = new WalletSettings({
+        cipherOrders: [cipher],
+        hashFnParams: new WalletHashParams({
+            memory: 1024,
+            iterations: Number(iteractions),
+            threads: 1,
+            secret: '',
+            hashType: HashTypes.Pbkdf2, 
+            hashSize: algorithm as ShaAlgorithms ?? ShaAlgorithms.sha256,
+        }),
+        currencyConvert: "BTC",
+        ensEnabled: false,
+        tokensListFetcher: false,
+        gasOption: GasSpeed.Market,
+        ratesApiOptions: RatesApiOptions.CoinGecko,
+        sessionTime: 3600,
+    }); 
+    const bip39Accounts = await Promise.all(bip39WalletIdentities.map(parseAccount));
+    const keyAccounts = await Promise.all(keyWalletIdentities.map(parseAccount));
+    const walletTokens = parsedTokens.map(({ ftoken }) => {
         const balances: Record<number, string> = {};
-        accounts.forEach((_, index) => {
-            const identity = walletIdentities.identities[index];
-            balances[index] = identity.zrc2[base16.toLowerCase()] || '0';
-        });
         return new FToken({ ...ftoken, balances });
     }).filter((t) => !t.native);
+    let wallets: Wallet[] = [];
+    const tokens = [...mainnetZilliqaChain.ftokens, ...walletTokens];
 
-    const wallet = new Wallet({
+    wallets.push(new Wallet({
         history: [],
         confirm: [],
         walletType: WalletTypes.SecretPhrase,
-        walletName: 'Zilliqa Wallet',
+        walletName: bip39Accounts[0].name,
         authType: AuthMethod.None,
         uuid: uuid(),
-        accounts,
+        accounts: bip39Accounts,
         nft: [],
-        selectedAccount: walletIdentities.selectedAddress,
-        tokens: [...mainnetZilliqaChain.ftokens, ...walletTokens], 
-        settings: new WalletSettings({
-            cipherOrders: [cipher],
-            hashFnParams: new WalletHashParams({
-                memory: 1024,
-                iterations: Number(iteractions),
-                threads: 1,
-                secret: '',
-                hashType: HashTypes.Pbkdf2, 
-                hashSize: algorithm as ShaAlgorithms ?? ShaAlgorithms.sha256,
-            }),
-            currencyConvert: "BTC",
-            ensEnabled: false,
-            tokensListFetcher: false,
-            gasOption: GasSpeed.Market,
-            ratesApiOptions: RatesApiOptions.CoinGecko,
-            sessionTime: 3600,
-        }),
+        selectedAccount: 0,
+        tokens,
+        settings,
         defaultChainHash: mainnetZilliqaChain.hash(),
         vault: String(storage.vault),
-    });
+    }));
+
+    if (keyAccounts.length > 0) {
+      keyWalletIdentities.forEach((a, index) => {
+        wallets.push(new Wallet({
+            history: [],
+            confirm: [],
+            walletType: WalletTypes.SecretKey,
+            walletName: keyAccounts[index].name,
+            authType: AuthMethod.None,
+            uuid: uuid(),
+            accounts: [keyAccounts[index]],
+            nft: [],
+            selectedAccount: 0,
+            tokens,
+            settings,
+            defaultChainHash: mainnetZilliqaChain.hash(),
+            vault: String(a.privKey),
+        }));
+      });
+    }
 
     const backgroundState = new BackgroundState({
+        wallets,
         storageVersion: 4,
-        wallets: [wallet],
-        selectedWallet: 0,
+        selectedWallet: -1,
         notificationsGlobalEnabled: true,
         locale: Locales.Auto,
         appearances: Themes.System,
