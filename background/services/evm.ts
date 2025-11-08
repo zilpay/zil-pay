@@ -103,6 +103,7 @@ export class EvmService {
 
       sendResponse({ resolve: true });
     } catch (err) {
+      console.error(err);
       this.#sendError(msg.uuid, msg.domain, String(err), 4000);
       sendResponse({ reject: String(err) });
     }

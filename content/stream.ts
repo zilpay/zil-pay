@@ -55,48 +55,53 @@ export class ContentTabStream {
 
     msg.domain = window.location.hostname;
 
-    switch (msg.type) {
-      case MTypePopup.CONNECT_APP:
-        await new Message<SendResponseParams<ReqBody>>(msg).send();
-        break;
-      case MTypePopup.EVM_REQUEST:
-        await new Message<SendResponseParams<ReqBody>>(msg).send();
-        break;
-      case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
-        const proyxRes = await new Message<SendResponseParams<ReqBody>>(
-          msg,
-        ).send();
-        this.#stream.send(
-          {
-            type: LegacyZilliqaTabMsg.CONTENT_PROXY_RESULT,
-            uuid: msg.uuid,
-            payload: proyxRes,
-          },
-          MTypeTabContent.INJECTED,
-        );
-        break;
-      case LegacyZilliqaTabMsg.SIGN_MESSAGE:
-        await new Message<SendResponseParams<ReqBody>>(msg).send();
-        break;
-      case LegacyZilliqaTabMsg.CALL_TO_SIGN_TX:
-        await new Message<SendResponseParams<ReqBody>>(msg).send();
-        break;
-      case LegacyZilliqaTabMsg.GET_WALLET_DATA:
-        const walltData = await new Message<SendResponseParams<ReqBody>>(
-          msg,
-        ).send();
-        if (walltData && walltData.resolve) {
+    try {
+      switch (msg.type) {
+        case MTypePopup.CONNECT_APP:
+          await new Message<SendResponseParams<ReqBody>>(msg).send();
+          break;
+        case MTypePopup.EVM_REQUEST:
+          await new Message<SendResponseParams<ReqBody>>(msg).send();
+          break;
+        case LegacyZilliqaTabMsg.CONTENT_PROXY_MEHTOD:
+          const proyxRes = await new Message<SendResponseParams<ReqBody>>(
+            msg,
+          ).send();
           this.#stream.send(
             {
-              type: LegacyZilliqaTabMsg.GET_WALLET_DATA,
-              payload: walltData.resolve,
+              type: LegacyZilliqaTabMsg.CONTENT_PROXY_RESULT,
+              uuid: msg.uuid,
+              payload: proyxRes,
             },
             MTypeTabContent.INJECTED,
           );
-        }
-        return;
-      default:
-        break;
+          break;
+        case LegacyZilliqaTabMsg.SIGN_MESSAGE:
+          await new Message<SendResponseParams<ReqBody>>(msg).send();
+          break;
+        case LegacyZilliqaTabMsg.CALL_TO_SIGN_TX:
+          await new Message<SendResponseParams<ReqBody>>(msg).send();
+          break;
+        case LegacyZilliqaTabMsg.GET_WALLET_DATA:
+          const walltData = await new Message<SendResponseParams<ReqBody>>(
+            msg,
+          ).send();
+          if (walltData && walltData.resolve) {
+            this.#stream.send(
+              {
+                type: LegacyZilliqaTabMsg.GET_WALLET_DATA,
+                payload: walltData.resolve,
+              },
+              MTypeTabContent.INJECTED,
+            );
+          }
+          return;
+        default:
+          break;
+      }
+    } catch (err) {
+      console.error(`${JSON.stringify(msg, null, 2)}, ${err}`);
     }
+
   }
 }

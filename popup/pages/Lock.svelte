@@ -282,6 +282,8 @@
         justify-content: center;
         transition: all 0.2s ease;
         padding: 0;
+        background-color: transparent;
+        border: 1px solid var(--color-content-icon-inverted);
 
         :global(svg) {
             width: 24px;
