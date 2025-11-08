@@ -3,17 +3,15 @@ import { GlobalState } from "background/state";
 import { Common } from "config/common";
 import { Runtime } from "lib/runtime";
 
+Runtime.runtime.onInstalled.addListener(async (details) => {
+  if (details.reason === Runtime.runtime.OnInstalledReason.INSTALL) {
+    const startPageUrl = Runtime.runtime.getURL(Common.PROMT_PAGE);
+    Runtime.tabs.create({ url: startPageUrl });
+  }
+});
+
 (async function () {
   const state = await GlobalState.fromStorage();
 
   startBackground(state);
-
-  Runtime.runtime.onInstalled.addListener(async (details) => {
-    if (details.reason === "install") {
-      if (state.state.wallets.length === 0) {
-        const startPageUrl = Runtime.runtime.getURL(Common.PROMT_PAGE);
-        Runtime.tabs.create({ url: startPageUrl });
-      }
-    }
-  });
 })();
