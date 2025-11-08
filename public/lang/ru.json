@@ -1,0 +1,547 @@
+{
+  "notify": {
+    "tx.success.title": "✅ Транзакция Подтверждена",
+    "tx.success.message": "Перевод {symbol} успешно завершен\n{hash}",
+    "tx.failed.title": "❌ Транзакция Не Удалась",
+    "tx.failed.message": "Перевод {symbol} не удался\n{hash}"
+  },
+  "start": {
+    "name": "ZilPay",
+    "title": "Постквантовый Криптовалютный Кошелек",
+    "btn": "Начать"
+  },
+  "newWalletOptions": {
+    "title": "Добавить Кошелек",
+    "newWallet": {
+      "title": "Создать Новый Кошелек",
+      "description": "Сгенерировать новый кошелек с защищенной seed-фразой"
+    },
+    "existingWallet": {
+      "title": "Импортировать Существующий Кошелек",
+      "description": "Восстановить кошелек используя seed-фразу или приватный ключ"
+    },
+    "pairWithLedger": {
+      "title": "Подключить Ledger",
+      "description": "Подключить аппаратный кошелек Ledger"
+    },
+    "watchAccount": {
+      "title": "Наблюдать за Аккаунтом",
+      "description": "Отслеживать любой адрес без доступа к приватному ключу"
+    },
+    "otherOptions": "Другие Опции"
+  },
+  "networkSetup": {
+    "title": "Выбрать Сеть"
+  },
+  "generateWallet": {
+    "title": "Создать Кошелек",
+    "bip39": {
+      "title": "BIP39 Seed-фраза",
+      "description": "Создать кошелек с фразой восстановления из 12 или 24 слов"
+    },
+    "privateKey": {
+      "title": "Приватный Ключ",
+      "description": "Создать кошелек из криптографической пары ключей"
+    }
+  },
+  "restoreWallet": {
+    "title": "Импортировать Кошелек",
+    "bip39": {
+      "title": "BIP39 Seed-фраза",
+      "description": "Восстановить кошелек используя фразу восстановления из 12 или 24 слов"
+    },
+    "privateKey": {
+      "title": "Приватный Ключ",
+      "description": "Импортировать кошелек из существующего приватного ключа"
+    }
+  },
+  "bip39": {
+    "create": {
+      "title": "Создать Seed-фразу",
+      "chooseWords": "Выберите Количество Слов",
+      "phrase": "Ваша Seed-фраза",
+      "copy": "Копировать",
+      "refresh": "Обновить",
+      "save": "Сохранить",
+      "noWords": "Слова не сгенерированы",
+      "backupConfirm": "Я надежно сохранил свою seed-фразу",
+      "next": "Далее"
+    },
+    "verify": {
+      "title": "Проверить Seed-фразу",
+      "subtitle": "Подтвердите Вашу Фразу Восстановления",
+      "instructions": "Введите следующие слова из вашей seed-фразы, чтобы подтвердить правильность сохранения",
+      "placeholder": "Введите слово",
+      "button": "Проверить"
+    },
+    "restore": {
+      "title": "Импортировать Seed-фразу",
+      "checksumWarning": "Обнаружена неверная контрольная сумма. Пожалуйста, проверьте правильность вашей seed-фразы",
+      "bypassCheckbox": "Я понимаю риски и хочу продолжить в любом случае",
+      "restoreButton": "Импортировать"
+    }
+  },
+  "print": {
+    "bip39": {
+      "title": "Резервная Копия Seed-фразы",
+      "header": {
+        "title": "ZilPay Seed-фраза",
+        "subtitle": "Храните этот документ в безопасности",
+        "generated": "Создано"
+      },
+      "warning": {
+        "title": "Предупреждение о Безопасности",
+        "secure": "Храните этот документ в надежном месте",
+        "access": "Любой, у кого есть доступ к этой фразе, может контролировать ваш кошелек",
+        "noOnline": "Никогда не делитесь и не храните эту фразу онлайн"
+      },
+      "phrase": {
+        "title": "Фраза Восстановления",
+        "words": "слов"
+      }
+    },
+    "keypair": {
+      "title": "Резервная Копия Пары Ключей",
+      "header": {
+        "title": "ZilPay Пара Ключей",
+        "subtitle": "Храните этот документ в безопасности",
+        "generated": "Создано"
+      },
+      "warning": {
+        "title": "Предупреждение о Безопасности",
+        "secure": "Храните этот документ в надежном месте",
+        "access": "Любой, у кого есть доступ к этим ключам, может контролировать ваш кошелек",
+        "noOnline": "Никогда не делитесь и не храните эти ключи онлайн"
+      },
+      "keys": {
+        "title": "Криптографические Ключи",
+        "privateKey": "Приватный Ключ",
+        "publicKey": "Публичный Ключ",
+        "address": "Адрес"
+      }
+    }
+  },
+  "secretKeyGenerator": {
+    "title": "Создать Пару Ключей",
+    "privateKey": "Приватный Ключ",
+    "backupCheckbox": "Я надежно сохранил свой приватный ключ",
+    "nextButton": "Далее"
+  },
+  "watchAccount": {
+    "addressPlaceholder": "Введите адрес для наблюдения",
+    "namePlaceholder": "Имя аккаунта",
+    "invalidAddress": "Неверный формат адреса"
+  },
+  "common": {
+    "confirm": "Подтвердить",
+    "done": "Готово",
+    "cancel": "Отмена"
+  },
+  "ledger": {
+    "connect": {
+      "title": "Подключить Ledger",
+      "button": "Подключить Аккаунты"
+    },
+    "configure": {
+      "title": "Настроить Ledger"
+    },
+    "noDevices": {
+      "title": "Устройства Не Найдены",
+      "description": "Подключите устройство Ledger и разблокируйте его"
+    },
+    "vendorId": "ID Производителя",
+    "noUsbDevices": "USB устройства не найдены. Нажмите обновить для сканирования",
+    "noBleDevices": "Bluetooth устройства не найдены. Нажмите обновить для сканирования",
+    "accountName": {
+      "label": "Имя Кошелька",
+      "placeholder": "Введите имя кошелька"
+    },
+    "accountCount": {
+      "label": "Количество Аккаунтов"
+    },
+    "accounts": {
+      "title": "Подключенные Аккаунты"
+    },
+    "errors": {
+      "user_rejected": "Транзакция отклонена пользователем на устройстве",
+      "app_not_open": "Пожалуйста, откройте соответствующее приложение на вашем Ledger",
+      "device_locked": "Устройство заблокировано. Пожалуйста, разблокируйте его"
+    }
+  },
+  "restoreKeyPair": {
+    "title": "Импортировать Приватный Ключ",
+    "inputLabel": "Приватный Ключ",
+    "placeholder": "Введите ваш приватный ключ (hex формат)",
+    "previewTitle": "Предпросмотр Ключа",
+    "restoreButton": "Импортировать"
+  },
+  "passwordSetup": {
+    "title": "Создать Пароль",
+    "subtitle": "Защитите Ваш Кошелек",
+    "description": "Создайте надежный пароль для шифрования и защиты вашего кошелька",
+    "walletNameLabel": "Имя Кошелька",
+    "walletNamePlaceholder": "Введите имя кошелька",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Введите пароль (минимум 8 символов)",
+    "confirmLabel": "Подтвердите Пароль",
+    "confirmPlaceholder": "Введите пароль повторно",
+    "defaultWalletName": "Кошелек",
+    "defaultAccountName": "Аккаунт",
+    "advanced": "Дополнительные Настройки",
+    "advancedTitle": "Расширенные Настройки Шифрования",
+    "securityNote": "Этот пароль шифрует ваш кошелек локально. Храните его в безопасности и никогда не делитесь им",
+    "createButton": "Создать Кошелек",
+    "errors": {
+      "mismatch": "Пароли не совпадают",
+      "len": "Пароль должен содержать минимум 8 символов"
+    }
+  },
+  "modals": {
+    "cryptsetup": {
+      "encryption": {
+        "title": "Метод Шифрования",
+        "description": "Выберите уровень стойкости шифрования"
+      },
+      "hashing": {
+        "title": "Деривация Ключа",
+        "description": "Настройте параметры хеширования пароля",
+        "advancedMode": "Расширенная Конфигурация"
+      },
+      "cipherPresets": {
+        "basic": {
+          "title": "Базовое",
+          "subtitle": "AES-GCM 256",
+          "description": "Стандартное шифрование с AES-256"
+        },
+        "enhanced": {
+          "title": "Усиленное",
+          "subtitle": "AES + Кузнечик",
+          "description": "Двухслойное шифрование с российским стандартом ГОСТ"
+        },
+        "quantumResistant": {
+          "title": "Квантово-Устойчивое",
+          "subtitle": "AES + Кузнечик + NTRU",
+          "description": "Трехслойное с постквантовой криптографией"
+        }
+      },
+      "memoryPresets": {
+        "low": {
+          "title": "Низкая",
+          "subtitle": "64 МБ",
+          "description": "Быстрее, но менее безопасно"
+        },
+        "medium": {
+          "title": "Средняя",
+          "subtitle": "650 МБ",
+          "description": "Сбалансированная безопасность и производительность"
+        },
+        "secure": {
+          "title": "Безопасная",
+          "subtitle": "6.5 ГБ",
+          "description": "Максимальная безопасность с высоким использованием памяти"
+        }
+      },
+      "advanced": {
+        "memory": "Память (КБ)",
+        "iterations": "Итерации",
+        "threads": "Потоки",
+        "secret": {
+          "label": "Соль (Опционально)",
+          "placeholder": "Дополнительный секрет для деривации ключа"
+        }
+      }
+    }
+  },
+  "home": {
+    "send": "Отправить",
+    "receive": "Получить",
+    "error": {
+      "title": "Ошибка"
+    }
+  },
+  "tokenTransfer": {
+    "title": "Отправить Токен",
+    "sendTo": "Кому",
+    "enterAddress": "Введите адрес получателя",
+    "continue": "Продолжить"
+  },
+  "addressSelector": {
+    "title": "Выбрать Адрес",
+    "zilExchange": "ZIL Биржа",
+    "addressBook": "Адресная Книга",
+    "myAccounts": "Мои Аккаунты",
+    "searchPlaceholder": "Поиск по имени или адресу"
+  },
+  "receive": {
+    "selectTokenTitle": "Выбрать Токен",
+    "title": "Получить",
+    "warning": "Отправляйте только {token} в сети {chain} на этот адрес"
+  },
+  "tokenManager": {
+    "title": "Менеджер Токенов",
+    "searchPlaceholder": "Поиск или вставить адрес",
+    "foundTokenTitle": "Найденный Токен",
+    "defaultTokens": "Токены по Умолчанию",
+    "addedTokens": "Добавленные Токены",
+    "deletedTokens": "Удаленные Токены",
+    "clearDeleted": "Очистить",
+    "errorFetching": "Ошибка получения токена",
+    "wrongChain": "Неправильная сеть"
+  },
+  "nft": {
+    "errorFetching": "Ошибка получения метаданных NFT",
+    "searchPlaceholder": "Имя, символ или адрес контракта",
+    "noResults": "NFT не найдены"
+  },
+  "history": {
+    "title": "История",
+    "today": "Сегодня",
+    "yesterday": "Вчера",
+    "thisWeek": "На Этой Неделе",
+    "thisMonth": "В Этом Месяце",
+    "clearAll": "Очистить Все",
+    "noTransactions": "Нет истории транзакций"
+  },
+  "txDetails": {
+    "title": "Детали Транзакции",
+    "status": {
+      "success": "Успешно",
+      "pending": "В Ожидании",
+      "failed": "Не Удалось",
+      "unknown": "Неизвестно"
+    },
+    "transactionFee": "Комиссия",
+    "viewOn": "Просмотреть на",
+    "from": "От",
+    "to": "Кому",
+    "hash": "Хеш Транзакции",
+    "gasUsed": "Использовано Gas",
+    "gasPrice": "Цена Gas",
+    "block": "Номер Блока"
+  },
+  "settings": {
+    "notifications": "Уведомления",
+    "currency": "Валюта",
+    "appearance": "Внешний Вид",
+    "addressBook": "Адресная Книга",
+    "security": "Безопасность",
+    "networks": "Сети",
+    "language": "Язык",
+    "telegram": "Telegram",
+    "twitter": "Twitter",
+    "github": "GitHub",
+    "version": "Версия",
+    "connections": "Подключенные dApps"
+  },
+  "walletSettings": {
+    "title": "Настройки Кошелька",
+    "preferences": "Предпочтения",
+    "manageConnections": "Управление Подключениями",
+    "backup": "Резервная Копия Кошелька",
+    "destroy": "Удалить Кошелек"
+  },
+  "deleteWallet": {
+    "title": "Удалить Кошелек",
+    "warning": "Это действие нельзя отменить. Убедитесь, что вы сделали резервную копию кошелька перед продолжением",
+    "description": "Введите ваш пароль для подтверждения удаления кошелька",
+    "passwordPlaceholder": "Введите пароль",
+    "confirmButton": "Удалить Кошелек"
+  },
+  "accounts": {
+    "title": "Аккаунты"
+  },
+  "addAccount": {
+    "bip39": {
+      "title": "Добавить BIP39 Аккаунт",
+      "description": "Индекс BIP39 Аккаунта",
+      "defaultName": "Аккаунт {index}",
+      "namePlaceholder": "Имя аккаунта",
+      "editName": "Изменить имя",
+      "indexLabel": "Индекс Аккаунта",
+      "decrementCount": "Уменьшить счетчик",
+      "incrementCount": "Увеличить счетчик",
+      "accountExists": "Аккаунт с индексом {index} уже существует",
+      "createButton": "Создать Аккаунт"
+    },
+    "ledger": {
+      "title": "Добавить Ledger Аккаунт",
+      "description": "Добавить аккаунт с устройства Ledger",
+      "defaultName": "Ledger {index}",
+      "namePlaceholder": "Имя Ledger аккаунта",
+      "editName": "Изменить имя",
+      "indexLabel": "Индекс Ledger Аккаунта",
+      "decrementCount": "Уменьшить счетчик",
+      "incrementCount": "Увеличить счетчик",
+      "accountExists": "Ledger аккаунт с индексом {index} уже существует",
+      "createButton": "Добавить Ledger Аккаунт"
+    }
+  },
+  "lockpage": {
+    "title": "С Возвращением",
+    "chooseWallet": "Выберите кошелек для разблокировки",
+    "passwordPlaceholder": "Введите пароль",
+    "selectWalletPlaceholder": "Сначала выберите кошелек",
+    "invalidPassword": "Неверный пароль",
+    "watchWallet": "Кошелек только для просмотра - пароль не требуется",
+    "ledgerWallet": "Ledger кошелек",
+    "unlockButton": "Разблокировать"
+  },
+  "addressBook": {
+    "modal": {
+      "description": "Добавить новый контакт в адресную книгу",
+      "addressPlaceholder": "Введите адрес",
+      "namePlaceholder": "Введите имя",
+      "addButton": "Добавить Контакт"
+    },
+    "empty": "Нет контактов в адресной книге",
+    "add": {
+      "title": "Добавить Контакт"
+    }
+  },
+  "backup": {
+    "revealTitle": "Показать Seed-фразу",
+    "revealDescription": "Просмотрите вашу фразу восстановления для безопасного резервного копирования",
+    "reveal": "Показать",
+    "privateKeysTitle": "Экспортировать Приватные Ключи",
+    "privateKeysWarning": "Экспортировать приватные ключи отдельных аккаунтов",
+    "export": "Экспортировать"
+  },
+  "connections": {
+    "search": "Поиск подключений",
+    "not_found": "Подключения не найдены",
+    "empty": "Нет подключенных dApps",
+    "connectedAccounts": "Подключенные Аккаунты",
+    "connectedChains": "Подключенные Сети",
+    "connectedAt": "Подключено",
+    "permissions": "Разрешения",
+    "disconnect": "Отключить",
+    "confirmDisconnect": "Подтвердить Отключение"
+  },
+  "networks": {
+    "title": "Сети",
+    "searchPlaceholder": "Поиск сетей",
+    "added": "Добавленные Сети",
+    "available": "Доступные Сети"
+  },
+  "networkDetails": {
+    "title": "Детали Сети",
+    "chainId": "Chain ID",
+    "slip44": "SLIP44",
+    "blockTime": "Время Блока",
+    "fallbackEnabled": "Резервный Режим Включен",
+    "batchRequest": "Пакетные Запросы",
+    "advancedSettings": "Расширенные Настройки",
+    "explorers": "Обозреватели",
+    "rpcNodes": "RPC Узлы",
+    "deleteNetwork": "Удалить Сеть",
+    "confirmDelete": "Подтвердить Удаление"
+  },
+  "currency": {
+    "engineTitle": "Движок Цен",
+    "engineSubtitle": "Выберите источник данных для курсов валют",
+    "searchPlaceholder": "Поиск валюты",
+    "engine": {
+      "title": "Выбрать Движок Цен",
+      "none": "Нет",
+      "coingeckoDescription": "Данные о ценах криптовалют в реальном времени",
+      "noneDescription": "Отключить конвертацию цен"
+    }
+  },
+  "appearance": {
+    "title": "Внешний Вид",
+    "compactNumbers": "Компактные Числа",
+    "compactNumbersDesc": "Отображать числа в сокращенном формате (например, 1.2K)",
+    "deviceSettings": "Настройки Устройства",
+    "deviceSettingsDesc": "Соответствовать системной теме",
+    "darkMode": "Темная Тема",
+    "darkModeDesc": "Темная цветовая схема для лучшей видимости ночью",
+    "lightMode": "Светлая Тема",
+    "lightModeDesc": "Светлая цветовая схема для дневного использования"
+  },
+  "security": {
+    "title": "Безопасность и Конфиденциальность",
+    "networkPrivacy": "Конфиденциальность Сети",
+    "tokensFetcher": {
+      "title": "Автоматическое Получение Списка Токенов",
+      "description": "Автоматически обнаруживать и добавлять новые токены"
+    },
+    "ens": {
+      "title": "Разрешение ENS",
+      "description": "Разрешать адреса Ethereum Name Service"
+    },
+    "session": {
+      "title": "Таймер Автоблокировки (часы)"
+    }
+  },
+  "locale": {
+    "title": "Язык",
+    "system": "Системный по Умолчанию",
+    "systemDesc": "Системный"
+  },
+  "confirm": {
+    "edit": "Изменить",
+    "reject": "Отклонить",
+    "confirm": "Подтвердить",
+    "gas": {
+      "low": "Низкая",
+      "market": "Рыночная",
+      "aggressive": "Агрессивная",
+      "estimated": "Расчетный Gas",
+      "baseFee": "Базовая Комиссия",
+      "priorityFee": "Приоритетная Комиссия",
+      "maxFee": "Максимальная Комиссия",
+      "gasPrice": "Цена Gas"
+    }
+  },
+  "gasEditor": {
+    "title": "Изменить Параметры Gas",
+    "gasPrice": "Цена Gas",
+    "maxPriorityFee": "Макс. Приоритетная Комиссия",
+    "gasLimit": "Лимит Gas",
+    "nonce": "Nonce",
+    "cancel": "Отмена",
+    "save": "Сохранить"
+  },
+  "connect": {
+    "request_connection": "хочет подключиться к вашему кошельку",
+    "select_accounts": "Выбрать Аккаунты",
+    "advanced_options": "Дополнительные Опции",
+    "connect": "Подключить",
+    "permission": {
+      "sign_transactions": "Подписывать Транзакции",
+      "sign_transactions_desc": "Разрешить этому dApp запрашивать подписи транзакций",
+      "sign_messages": "Подписывать Сообщения",
+      "sign_messages_desc": "Разрешить этому dApp запрашивать подписи сообщений",
+      "read_chain": "Читать Данные Блокчейна",
+      "read_chain_desc": "Разрешить этому dApp читать информацию блокчейна"
+    }
+  },
+  "sign_message": {
+    "title": "Подписать Сообщение",
+    "subtitle": "Проверьте сообщение и подтвердите для подписи",
+    "message": "Сообщение"
+  },
+  "addAssets": {
+    "title": "Добавить Активы",
+    "subtitle": "Добавить {count} токен(ов) в ваш кошелек",
+    "tokensToAdd": "Токены для Добавления",
+    "contract": "Контракт",
+    "decimals": "Десятичные"
+  },
+  "reveal": {
+    "phraseWarning": "Никогда не делитесь своей seed-фразой. Любой, у кого есть эта фраза, может получить доступ к вашим средствам",
+    "keyWarning": "Никогда не делитесь своим приватным ключом. Любой, у кого есть этот ключ, может получить доступ к вашим средствам",
+    "scamAlert": "⚠️ Предупреждение Безопасности",
+    "passwordPlaceholder": "Введите ваш пароль",
+    "submit": "Продолжить",
+    "invalidPassword": "Неверный пароль",
+    "securityCheck": "Проверка Безопасности",
+    "waitMessage": "Пожалуйста, подождите {time} перед раскрытием вашей {type}",
+    "phrase": "seed-фразы",
+    "key": "приватного ключа",
+    "secretPhrase": "Секретная Фраза Восстановления",
+    "privateKey": "Приватный Ключ",
+    "publicKey": "Публичный Ключ",
+    "copy": "Копировать"
+  }
+}

@@ -1,7 +1,7 @@
 export enum Locales {
   Auto = "auto",
-  EN = "en",
   RU = "ru",
+  EN = "en",
   JA = "ja",
   ZH = "zh",
 }

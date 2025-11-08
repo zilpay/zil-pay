@@ -1,0 +1,550 @@
+{
+  "notify": {
+    "tx.success.title": "✅ 交易已确认",
+    "tx.success.message": "{symbol} 转账成功完成\n{hash}",
+    "tx.failed.title": "❌ 交易失败",
+    "tx.failed.message": "{symbol} 转账失败\n{hash}"
+  },
+  "start": {
+    "name": "ZilPay",
+    "title": "后量子加密货币钱包",
+    "btn": "开始使用"
+  },
+  "newWalletOptions": {
+    "title": "添加钱包",
+    "newWallet": {
+      "title": "创建新钱包",
+      "description": "生成带有安全助记词的新钱包"
+    },
+    "existingWallet": {
+      "title": "导入现有钱包",
+      "description": "使用助记词或私钥恢复钱包"
+    },
+    "pairWithLedger": {
+      "title": "连接 Ledger",
+      "description": "连接您的 Ledger 硬件钱包"
+    },
+    "watchAccount": {
+      "title": "观察账户",
+      "description": "跟踪任何地址而无需私钥访问权限"
+    },
+    "otherOptions": "其他选项"
+  },
+  "networkSetup": {
+    "title": "选择网络"
+  },
+  "generateWallet": {
+    "title": "生成钱包",
+    "bip39": {
+      "title": "BIP39 助记词",
+      "description": "使用 12 或 24 个单词的恢复短语生成钱包"
+    },
+    "privateKey": {
+      "title": "私钥",
+      "description": "从加密密钥对生成钱包"
+    }
+  },
+  "restoreWallet": {
+    "title": "导入钱包",
+    "bip39": {
+      "title": "BIP39 助记词",
+      "description": "使用 12 或 24 个单词的恢复短语恢复钱包"
+    },
+    "privateKey": {
+      "title": "私钥",
+      "description": "从现有私钥导入钱包"
+    }
+  },
+  "bip39": {
+    "create": {
+      "title": "生成助记词",
+      "chooseWords": "选择单词数量",
+      "phrase": "您的助记词",
+      "copy": "复制",
+      "refresh": "刷新",
+      "save": "保存",
+      "noWords": "未生成单词",
+      "backupConfirm": "我已安全保存我的助记词",
+      "next": "下一步"
+    },
+    "verify": {
+      "title": "验证助记词",
+      "subtitle": "确认您的恢复短语",
+      "instructions": "输入助记词中的以下单词以验证您已正确保存",
+      "placeholder": "输入单词",
+      "button": "验证"
+    },
+    "restore": {
+      "title": "导入助记词",
+      "checksumWarning": "检测到无效校验和。请验证您的助记词是否正确",
+      "bypassCheckbox": "我了解风险并希望继续",
+      "restoreButton": "导入"
+    }
+  },
+  "print": {
+    "bip39": {
+      "title": "助记词备份",
+      "header": {
+        "title": "ZilPay 助记词",
+        "subtitle": "请妥善保管此文档",
+        "generated": "生成日期"
+      },
+      "warning": {
+        "title": "安全警告",
+        "secure": "将此文档存放在安全位置",
+        "access": "任何获得此助记词的人都可以控制您的钱包",
+        "noOnline": "切勿在线分享或存储此助记词"
+      },
+      "phrase": {
+        "title": "恢复短语",
+        "words": "个单词"
+      }
+    },
+    "keypair": {
+      "title": "密钥对备份",
+      "header": {
+        "title": "ZilPay 密钥对",
+        "subtitle": "请妥善保管此文档",
+        "generated": "生成日期"
+      },
+      "warning": {
+        "title": "安全警告",
+        "secure": "将此文档存放在安全位置",
+        "access": "任何获得这些密钥的人都可以控制您的钱包",
+        "noOnline": "切勿在线分享或存储这些密钥"
+      },
+      "keys": {
+        "title": "加密密钥",
+        "privateKey": "私钥",
+        "publicKey": "公钥",
+        "address": "地址"
+      }
+    }
+  },
+  "secretKeyGenerator": {
+    "title": "生成密钥对",
+    "privateKey": "私钥",
+    "backupCheckbox": "我已安全保存我的私钥",
+    "nextButton": "下一步"
+  },
+  "watchAccount": {
+    "addressPlaceholder": "输入要观察的地址",
+    "namePlaceholder": "账户名称",
+    "invalidAddress": "无效的地址格式"
+  },
+  "common": {
+    "confirm": "确认",
+    "done": "完成",
+    "cancel": "取消"
+  },
+  "ledger": {
+    "connect": {
+      "title": "连接 Ledger",
+      "button": "连接账户"
+    },
+    "configure": {
+      "title": "配置 Ledger"
+    },
+    "noDevices": {
+      "title": "未找到设备",
+      "description": "连接您的 Ledger 设备并解锁"
+    },
+    "vendorId": "供应商 ID",
+    "noUsbDevices": "未找到 USB 设备。点击刷新进行扫描",
+    "noBleDevices": "未找到蓝牙设备。点击刷新进行扫描",
+    "accountName": {
+      "label": "钱包名称",
+      "placeholder": "输入钱包名称"
+    },
+    "accountCount": {
+      "label": "账户数量"
+    },
+    "accounts": {
+      "title": "已连接账户"
+    },
+    "errors": {
+      "user_rejected": "用户在设备上拒绝了交易",
+      "app_not_open": "请在 Ledger 上打开正确的应用",
+      "device_locked": "设备已锁定。请解锁"
+    }
+  },
+  "restoreKeyPair": {
+    "title": "导入私钥",
+    "inputLabel": "私钥",
+    "placeholder": "输入您的私钥（十六进制格式）",
+    "previewTitle": "密钥预览",
+    "restoreButton": "导入"
+  },
+  "passwordSetup": {
+    "title": "创建密码",
+    "subtitle": "保护您的钱包",
+    "description": "创建强密码以加密和保护您的钱包",
+    "walletNameLabel": "钱包名称",
+    "walletNamePlaceholder": "输入钱包名称",
+    "passwordLabel": "密码",
+    "passwordPlaceholder": "输入密码（至少 8 个字符）",
+    "confirmLabel": "确认密码",
+    "confirmPlaceholder": "重新输入密码",
+    "defaultWalletName": "钱包",
+    "defaultAccountName": "账户",
+    "advanced": "高级设置",
+    "advancedTitle": "高级加密设置",
+    "securityNote": "此密码在本地加密您的钱包。请妥善保管，切勿分享",
+    "createButton": "创建钱包",
+    "errors": {
+      "mismatch": "密码不匹配",
+      "len": "密码至少需要 8 个字符"
+    }
+  },
+  "modals": {
+    "cryptsetup": {
+      "encryption": {
+        "title": "加密方法",
+        "description": "选择您的加密强度级别"
+      },
+      "hashing": {
+        "title": "密钥派生",
+        "description": "配置密码哈希参数",
+        "advancedMode": "高级配置"
+      },
+      "cipherPresets": {
+        "basic": {
+          "title": "基础",
+          "subtitle": "AES-GCM 256",
+          "description": "使用 AES-256 的标准加密"
+        },
+        "enhanced": {
+          "title": "增强",
+          "subtitle": "AES + Kuznyechik",
+          "description": "双层加密，采用俄罗斯 GOST 标准"
+        },
+        "quantumResistant": {
+          "title": "抗量子",
+          "subtitle": "AES + Kuznyechik + NTRU",
+          "description": "三层加密，采用后量子密码学"
+        }
+      },
+      "memoryPresets": {
+        "low": {
+          "title": "低",
+          "subtitle": "64 MB",
+          "description": "速度更快但安全性较低"
+        },
+        "medium": {
+          "title": "中等",
+          "subtitle": "650 MB",
+          "description": "平衡的安全性和性能"
+        },
+        "secure": {
+          "title": "安全",
+          "subtitle": "6.5 GB",
+          "description": "最高安全性，内存使用量大"
+        }
+      },
+      "advanced": {
+        "memory": "内存（KB）",
+        "iterations": "迭代次数",
+        "threads": "线程",
+        "secret": {
+          "label": "盐值（可选）",
+          "placeholder": "密钥派生的附加密钥"
+        }
+      }
+    }
+  },
+  "home": {
+    "send": "发送",
+    "receive": "接收",
+    "error": {
+      "title": "错误"
+    }
+  },
+  "tokenTransfer": {
+    "title": "发送代币",
+    "sendTo": "发送至",
+    "enterAddress": "输入接收地址",
+    "continue": "继续"
+  },
+  "addressSelector": {
+    "title": "选择地址",
+    "zilExchange": "ZIL 交易所",
+    "addressBook": "地址簿",
+    "myAccounts": "我的账户",
+    "searchPlaceholder": "按名称或地址搜索"
+  },
+  "receive": {
+    "selectTokenTitle": "选择代币",
+    "title": "接收",
+    "warning": "仅在 {chain} 网络上向此地址发送 {token}"
+  },
+  "tokenManager": {
+    "title": "代币管理器",
+    "searchPlaceholder": "搜索或粘贴地址",
+    "foundTokenTitle": "找到的代币",
+    "defaultTokens": "默认代币",
+    "addedTokens": "已添加的代币",
+    "deletedTokens": "已删除的代币",
+    "clearDeleted": "清除",
+    "errorFetching": "获取代币时出错",
+    "wrongChain": "错误的链"
+  },
+  "nft": {
+    "errorFetching": "获取 NFT 元数据时出错",
+    "searchPlaceholder": "名称、符号或合约地址",
+    "noResults": "未找到 NFT"
+  },
+  "history": {
+    "title": "历史记录",
+    "today": "今天",
+    "yesterday": "昨天",
+    "thisWeek": "本周",
+    "thisMonth": "本月",
+    "clearAll": "全部清除",
+    "noTransactions": "无交易历史"
+  },
+  "txDetails": {
+    "title": "交易详情",
+    "status": {
+      "success": "成功",
+      "pending": "待处理",
+      "failed": "失败",
+      "unknown": "未知"
+    },
+    "transactionFee": "手续费",
+    "viewOn": "查看于",
+    "from": "发送方",
+    "to": "接收方",
+    "hash": "交易哈希",
+    "gasUsed": "已使用 Gas",
+    "gasPrice": "Gas 价格",
+    "block": "区块号"
+  },
+  "settings": {
+    "notifications": "通知",
+    "currency": "货币",
+    "appearance": "外观",
+    "addressBook": "地址簿",
+    "security": "安全",
+    "networks": "网络",
+    "language": "语言",
+    "telegram": "Telegram",
+    "twitter": "Twitter",
+    "github": "GitHub",
+    "version": "版本",
+    "connections": "已连接的 dApp"
+  },
+  "walletSettings": {
+    "title": "钱包设置",
+    "preferences": "偏好设置",
+    "manageConnections": "管理连接",
+    "backup": "备份钱包",
+    "destroy": "删除钱包"
+  },
+  "deleteWallet": {
+    "title": "删除钱包"
+  },
+  "accounts": {
+    "title": "账户"
+  },
+  "addAccount": {
+    "bip39": {
+      "title": "添加 BIP39 账户",
+      "description": "BIP39 账户索引",
+      "defaultName": "账户 {index}",
+      "namePlaceholder": "账户名称",
+      "editName": "编辑名称",
+      "indexLabel": "账户索引",
+      "decrementCount": "减少数量",
+      "incrementCount": "增加数量",
+      "accountExists": "索引 {index} 的账户已存在",
+      "createButton": "创建账户"
+    },
+    "ledger": {
+      "title": "添加 Ledger 账户",
+      "description": "从 Ledger 设备添加账户",
+      "defaultName": "Ledger {index}",
+      "namePlaceholder": "Ledger 账户名称",
+      "editName": "编辑名称",
+      "indexLabel": "Ledger 账户索引",
+      "decrementCount": "减少数量",
+      "incrementCount": "增加数量",
+      "accountExists": "索引 {index} 的 Ledger 账户已存在",
+      "createButton": "添加 Ledger 账户"
+    }
+  },
+  "lockpage": {
+    "title": "欢迎回来",
+    "chooseWallet": "选择要解锁的钱包",
+    "passwordPlaceholder": "输入密码",
+    "selectWalletPlaceholder": "请先选择钱包",
+    "invalidPassword": "密码无效",
+    "watchWallet": "只读钱包 - 无需密码",
+    "ledgerWallet": "Ledger 钱包",
+    "unlockButton": "解锁"
+  },
+  "addressBook": {
+    "modal": {
+      "description": "向地址簿添加新联系人",
+      "addressPlaceholder": "输入地址",
+      "namePlaceholder": "输入名称",
+      "addButton": "添加联系人"
+    },
+    "empty": "地址簿中无联系人",
+    "add": {
+      "title": "添加联系人"
+    }
+  },
+  "deleteWallet": {
+    "title": "删除钱包",
+    "warning": "此操作无法撤销。在继续之前，请确保已备份您的钱包",
+    "description": "输入您的密码以确认删除钱包",
+    "passwordPlaceholder": "输入密码",
+    "confirmButton": "删除钱包"
+  },
+  "backup": {
+    "revealTitle": "显示助记词",
+    "revealDescription": "查看您的恢复短语以安全备份",
+    "reveal": "显示",
+    "privateKeysTitle": "导出私钥",
+    "privateKeysWarning": "导出单个账户私钥",
+    "export": "导出"
+  },
+  "connections": {
+    "search": "搜索连接",
+    "not_found": "未找到连接",
+    "empty": "无已连接的 dApp",
+    "connectedAccounts": "已连接账户",
+    "connectedChains": "已连接链",
+    "connectedAt": "连接时间",
+    "permissions": "权限",
+    "disconnect": "断开连接",
+    "confirmDisconnect": "确认断开连接"
+  },
+  "networks": {
+    "title": "网络",
+    "searchPlaceholder": "搜索网络",
+    "added": "已添加的网络",
+    "available": "可用网络"
+  },
+  "networkDetails": {
+    "title": "网络详情",
+    "chainId": "链 ID",
+    "slip44": "SLIP44",
+    "blockTime": "出块时间",
+    "fallbackEnabled": "已启用回退",
+    "batchRequest": "批量请求",
+    "advancedSettings": "高级设置",
+    "explorers": "浏览器",
+    "rpcNodes": "RPC 节点",
+    "deleteNetwork": "删除网络",
+    "confirmDelete": "确认删除"
+  },
+  "currency": {
+    "engineTitle": "价格引擎",
+    "engineSubtitle": "选择货币汇率的数据源",
+    "searchPlaceholder": "搜索货币",
+    "engine": {
+      "title": "选择价格引擎",
+      "none": "无",
+      "coingeckoDescription": "实时加密货币价格数据",
+      "noneDescription": "禁用价格转换"
+    }
+  },
+  "appearance": {
+    "title": "外观",
+    "compactNumbers": "紧凑数字",
+    "compactNumbersDesc": "以缩写格式显示数字（例如 1.2K）",
+    "deviceSettings": "设备设置",
+    "deviceSettingsDesc": "匹配您的系统主题偏好",
+    "darkMode": "深色模式",
+    "darkModeDesc": "深色配色方案，更适合夜间查看",
+    "lightMode": "浅色模式",
+    "lightModeDesc": "浅色配色方案，适合白天使用"
+  },
+  "security": {
+    "title": "安全与隐私",
+    "networkPrivacy": "网络隐私",
+    "tokensFetcher": {
+      "title": "自动获取代币列表",
+      "description": "自动发现和添加新代币"
+    },
+    "ens": {
+      "title": "ENS 解析",
+      "description": "解析以太坊名称服务地址"
+    },
+    "session": {
+      "title": "自动锁定计时器（小时）"
+    }
+  },
+  "locale": {
+    "title": "语言",
+    "system": "系统默认",
+    "systemDesc": "系统"
+  },
+  "confirm": {
+    "edit": "编辑",
+    "reject": "拒绝",
+    "confirm": "确认",
+    "gas": {
+      "low": "低",
+      "market": "市场",
+      "aggressive": "激进",
+      "estimated": "估计 Gas",
+      "baseFee": "基础费用",
+      "priorityFee": "优先费用",
+      "maxFee": "最高费用",
+      "gasPrice": "Gas 价格"
+    }
+  },
+  "gasEditor": {
+    "title": "编辑 Gas 参数",
+    "gasPrice": "Gas 价格",
+    "maxPriorityFee": "最高优先费用",
+    "gasLimit": "Gas 限制",
+    "nonce": "Nonce",
+    "cancel": "取消",
+    "save": "保存"
+  },
+  "connect": {
+    "request_connection": "想要连接到您的钱包",
+    "select_accounts": "选择账户",
+    "advanced_options": "高级选项",
+    "connect": "连接",
+    "permission": {
+      "sign_transactions": "签署交易",
+      "sign_transactions_desc": "允许此 dApp 请求交易签名",
+      "sign_messages": "签署消息",
+      "sign_messages_desc": "允许此 dApp 请求消息签名",
+      "read_chain": "读取区块链数据",
+      "read_chain_desc": "允许此 dApp 读取区块链信息"
+    }
+  },
+  "sign_message": {
+    "title": "签署消息",
+    "subtitle": "查看消息并确认签署",
+    "message": "消息"
+  },
+  "addAssets": {
+    "title": "添加资产",
+    "subtitle": "向您的钱包添加 {count} 个代币",
+    "tokensToAdd": "要添加的代币",
+    "contract": "合约",
+    "decimals": "小数位"
+  },
+  "reveal": {
+    "phraseWarning": "切勿分享您的助记词。任何获得此助记词的人都可以访问您的资金",
+    "keyWarning": "切勿分享您的私钥。任何获得此密钥的人都可以访问您的资金",
+    "scamAlert": "⚠️ 安全警告",
+    "passwordPlaceholder": "输入您的密码",
+    "submit": "继续",
+    "invalidPassword": "密码错误",
+    "securityCheck": "安全验证",
+    "waitMessage": "请等待 {time} 后再显示您的{type}",
+    "phrase": "助记词",
+    "key": "私钥",
+    "secretPhrase": "秘密恢复短语",
+    "privateKey": "私钥",
+    "publicKey": "公钥",
+    "copy": "复制"
+  }
+}
