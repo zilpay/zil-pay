@@ -66,7 +66,7 @@ export class BackgroundState implements IBackgroundState {
 
       if (oldRecords) {
         try {
-          state = migrateToV4(oldRecords);
+          state = await migrateToV4(oldRecords);
           await BrowserStorage.clear();
           await state.sync();
         } catch {

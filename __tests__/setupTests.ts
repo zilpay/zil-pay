@@ -1,6 +1,8 @@
 import { vi } from "vitest";
 import sinonChrome from "sinon-chrome";
 import { EXTENSION_ID } from "./data";
+import mainnetChains from "../public/chains/mainnet.json";
+import testnetChains from "../public/chains/testnet.json";
 
 global.chrome = sinonChrome as any;
 global.chrome.runtime.id = EXTENSION_ID;
@@ -184,4 +186,22 @@ const tabsManager = {
 Object.defineProperty(global.chrome, "tabs", {
   value: tabsManager,
   writable: true,
+});
+
+(globalThis as any).fetch = vi.fn((url: string) => {
+  if (url.endsWith("/chains/mainnet.json")) {
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(mainnetChains),
+    } as Response);
+  }
+
+  if (url.endsWith("/chains/testnet.json")) {
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(testnetChains),
+    } as Response);
+  }
+
+  return Promise.reject(new Error(`Mocked fetch: URL not found - ${url}`));
 });
