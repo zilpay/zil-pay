@@ -7,6 +7,10 @@
 
 ZilPay represents the inaugural quantum-resistant, multi-currency decentralized wallet, functioning as a browser extension compatible with the EVM-compatible networks. It empowers developers to integrate ZilPay into their websites for the creation of decentralized applications (dApps), leveraging post-quantum cryptography for enhanced security across multiple chains, including Ethereum, Binance Smart Chain, Polygon, Avalanche, Fantom, Arbitrum, and Optimism.
 
+<p align="center">
+  <a href="https://zilpay.io"><img src="https://raw.githubusercontent.com/zilpay/zil-pay/refs/heads/master/promo/privew.png"></a>
+</p>
+
 ## Links
 + [Website](https://zilpay.io/)
 + [X (Twitter)](https://x.com/pay_zil)
