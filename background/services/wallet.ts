@@ -654,7 +654,7 @@ export class WalletService {
             if (!seenAddresses.has(addrLower)) {
               seenAddresses.add(addrLower);
               addresses.push({
-                addr: a.addr,
+                addr: a.addr.split(":").at(-1) ?? a.addr,
                 accountName: a.name,
                 walletIndex,
                 walletName: w.walletName,
