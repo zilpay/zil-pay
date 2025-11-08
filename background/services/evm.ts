@@ -396,7 +396,7 @@ export class EvmService {
 
         if (wallet.walletType == WalletTypes.Ledger && sig) {
           const typedData = JSON.parse(evmTypedData.signTypedDataJsonEVM.typedData);
-          const verify = verifyTyped(sig, typedData, evmTypedData.signTypedDataJsonEVM.address);
+          const verify = verifyTyped(sig, typedData, account.addr);
           if (!verify) {
             throw new Error(ConnectError.InvalidSig);
           }

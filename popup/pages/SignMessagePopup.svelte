@@ -87,16 +87,16 @@
         throw new Error('Unknown message type');
     }
 
-    function handleLedgerSuccess(signature: string) {
+    async function handleLedgerSuccess(signature: string) {
         if (!signMessageRequest) return;
 
         try {
             if (isScilla) {
-                responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
+                await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isPersonalSign) {
-                responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
+                await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isTypedData) {
-                responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
+                await responseToSignTypedDataEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             }
         } catch (e) {
             errorMessage = String(e);
