@@ -15,6 +15,8 @@ import { GasSpeed } from 'config/gas';
 import { HashTypes } from 'config/argon2';
 import { CipherOrders } from 'config/keychain';
 import { ZILLIQA } from 'config/slip44';
+import { Address } from 'crypto/address';
+import { hexToUint8Array } from 'lib/utils/hex';
 
 interface WalletIdentities {
   selectedAddress: number;
@@ -89,8 +91,13 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
       algorithm = ShaAlgorithms.sha256;
     }
 
-    const accounts = walletIdentities.identities.map(identity => new Account({
-        addr: identity.bech32,
+    const promiseAccounts = walletIdentities.identities.map(async (identity) => {
+      const pubKeyBytes = hexToUint8Array(identity.pubKey);
+      const addrBech32 = await Address.fromPubKeyType(pubKeyBytes, AddressType.Bech32);
+      const addrEVM = await Address.fromPubKeyType(pubKeyBytes, AddressType.EthCheckSum);
+      const addr = `${await addrBech32.toZilBech32()}:${await addrEVM.toEthChecksum()}`;
+      return new Account({
+        addr: addr,
         addrType: AddressType.Bech32,
         name: identity.name,
         pubKey: identity.pubKey,
@@ -98,7 +105,9 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
         chainId: mainnetZilliqaChain.chainId,
         slip44: mainnetZilliqaChain.slip44,
         index: identity.index,
-    }));
+      });
+    });
+    const accounts = await Promise.all(promiseAccounts);
 
     const walletTokens = parsedTokens.map(({ ftoken, base16 }) => {
         const balances: Record<number, string> = {};
@@ -107,7 +116,7 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
             balances[index] = identity.zrc2[base16.toLowerCase()] || '0';
         });
         return new FToken({ ...ftoken, balances });
-    });
+    }).filter((t) => !t.native);
 
     const wallet = new Wallet({
         history: [],
@@ -119,7 +128,7 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
         accounts,
         nft: [],
         selectedAccount: walletIdentities.selectedAddress,
-        tokens: walletTokens, 
+        tokens: [...mainnetZilliqaChain.ftokens, ...walletTokens], 
         settings: new WalletSettings({
             cipherOrders: [cipher],
             hashFnParams: new WalletHashParams({
@@ -130,12 +139,12 @@ async function migrateFromV2orV3(storage: Record<string, unknown>): Promise<Back
                 hashType: HashTypes.Pbkdf2, 
                 hashSize: algorithm as ShaAlgorithms ?? ShaAlgorithms.sha256,
             }),
-            currencyConvert: String(storage['selected-currency']),
+            currencyConvert: "BTC",
             ensEnabled: false,
             tokensListFetcher: false,
             gasOption: GasSpeed.Market,
             ratesApiOptions: RatesApiOptions.CoinGecko,
-            sessionTime: Number(storage['time_before_lock']) || 3600,
+            sessionTime: 3600,
         }),
         defaultChainHash: mainnetZilliqaChain.hash(),
         vault: String(storage.vault),
