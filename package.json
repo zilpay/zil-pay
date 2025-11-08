@@ -47,12 +47,14 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@bearby/web3-evm": "^0.1.1",
     "@hicaru/argon2-pure.js": "^0.0.4",
     "@hicaru/chacharand.js": "^0.0.3",
     "@hicaru/kuznechik.js": "^0.0.2",
     "@hicaru/ntrup.js": "^0.0.10",
     "@ledgerhq/devices": "^8.6.1",
     "@noble/secp256k1": "^2.3.0",
+    "@zilpay/zilpay-web3": "^0.0.2",
     "aes-js": "^3.1.2",
     "dnum": "^2.15.0",
     "js-md5": "^0.8.3",
