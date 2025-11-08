@@ -146,8 +146,16 @@ const background = createConfig(
         { src: 'public/lang', dest: 'dist/' },
         { src: 'public/bip39', dest: 'dist/' },
         { src: 'public/chains', dest: 'dist/' },
-        { src: 'node_modules/@zilpay/zilpay-web3/dist/index.js', dest: 'dist/injects/zilpay.js' },
-        { src: 'node_modules/@bearby/web3-evm/dist/index.js', dest: 'dist/injects/evm-provider.js' },
+        { 
+          src: 'node_modules/@zilpay/zilpay-web3/dist/index.js', 
+          dest: 'dist/injects', 
+          rename: 'zilpay.js' 
+        },
+        { 
+          src: 'node_modules/@bearby/web3-evm/dist/index.js', 
+          dest: 'dist/injects', 
+          rename: 'evm-provider.js' 
+        },
         { src: 'public/imgs', dest: 'dist/' },
         { src: 'public/index.html', dest: 'dist/' },
         { src: 'public/phishing.html', dest: 'dist/' },
