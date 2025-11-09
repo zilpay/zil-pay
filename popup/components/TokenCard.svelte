@@ -29,7 +29,7 @@
         if (hide) return '******';
         const rawBalance = token.balances[hashXORHex(account.pubKey)] ?? 0;
         const humanBalance = abbreviateNumber(rawBalance, token.decimals, $globalStore.abbreviatedNumber);
-        return `${humanBalance} ${token.symbol}`;
+        return `${humanBalance} ${getCurrencySymbol(token.symbol)}`;
     });
     
     const convertedBalance = $derived(() => {
