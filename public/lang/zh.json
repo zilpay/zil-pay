@@ -21,12 +21,12 @@
       "description": "使用助记词或私钥恢复钱包"
     },
     "pairWithLedger": {
-      "title": "连接 Ledger",
+      "title": "配对 Ledger",
       "description": "连接您的 Ledger 硬件钱包"
     },
     "watchAccount": {
       "title": "观察账户",
-      "description": "跟踪任何地址而无需私钥访问权限"
+      "description": "跟踪任何地址而无需私钥访问"
     },
     "otherOptions": "其他选项"
   },
@@ -70,7 +70,7 @@
     "verify": {
       "title": "验证助记词",
       "subtitle": "确认您的恢复短语",
-      "instructions": "输入助记词中的以下单词以验证您已正确保存",
+      "instructions": "输入以下助记词单词以验证您已正确保存",
       "placeholder": "输入单词",
       "button": "验证"
     },
@@ -87,13 +87,13 @@
       "header": {
         "title": "ZilPay 助记词",
         "subtitle": "请妥善保管此文档",
-        "generated": "生成日期"
+        "generated": "生成于"
       },
       "warning": {
         "title": "安全警告",
         "secure": "将此文档存放在安全位置",
-        "access": "任何获得此助记词的人都可以控制您的钱包",
-        "noOnline": "切勿在线分享或存储此助记词"
+        "access": "任何获得此短语的人都可以控制您的钱包",
+        "noOnline": "切勿在线分享或存储此短语"
       },
       "phrase": {
         "title": "恢复短语",
@@ -105,7 +105,7 @@
       "header": {
         "title": "ZilPay 密钥对",
         "subtitle": "请妥善保管此文档",
-        "generated": "生成日期"
+        "generated": "生成于"
       },
       "warning": {
         "title": "安全警告",
@@ -130,7 +130,7 @@
   "watchAccount": {
     "addressPlaceholder": "输入要观察的地址",
     "namePlaceholder": "账户名称",
-    "invalidAddress": "无效的地址格式"
+    "invalidAddress": "地址格式无效"
   },
   "common": {
     "confirm": "确认",
@@ -150,8 +150,8 @@
       "description": "连接您的 Ledger 设备并解锁"
     },
     "vendorId": "供应商 ID",
-    "noUsbDevices": "未找到 USB 设备。点击刷新进行扫描",
-    "noBleDevices": "未找到蓝牙设备。点击刷新进行扫描",
+    "noUsbDevices": "未找到 USB 设备。点击刷新以扫描",
+    "noBleDevices": "未找到蓝牙设备。点击刷新以扫描",
     "accountName": {
       "label": "钱包名称",
       "placeholder": "输入钱包名称"
@@ -193,7 +193,7 @@
     "createButton": "创建钱包",
     "errors": {
       "mismatch": "密码不匹配",
-      "len": "密码至少需要 8 个字符"
+      "len": "密码必须至少 8 个字符"
     }
   },
   "modals": {
@@ -216,35 +216,35 @@
         "enhanced": {
           "title": "增强",
           "subtitle": "AES + Kuznyechik",
-          "description": "双层加密，采用俄罗斯 GOST 标准"
+          "description": "采用俄罗斯 GOST 标准的双层加密"
         },
         "quantumResistant": {
           "title": "抗量子",
           "subtitle": "AES + Kuznyechik + NTRU",
-          "description": "三层加密，采用后量子密码学"
+          "description": "采用后量子密码学的三层加密"
         }
       },
       "memoryPresets": {
         "low": {
           "title": "低",
           "subtitle": "64 MB",
-          "description": "速度更快但安全性较低"
+          "description": "更快但安全性较低"
         },
         "medium": {
-          "title": "中等",
+          "title": "中",
           "subtitle": "650 MB",
-          "description": "平衡的安全性和性能"
+          "description": "安全性和性能平衡"
         },
         "secure": {
           "title": "安全",
           "subtitle": "6.5 GB",
-          "description": "最高安全性，内存使用量大"
+          "description": "最大安全性，高内存使用"
         }
       },
       "advanced": {
-        "memory": "内存（KB）",
+        "memory": "内存 (KB)",
         "iterations": "迭代次数",
-        "threads": "线程",
+        "threads": "线程数",
         "secret": {
           "label": "盐值（可选）",
           "placeholder": "密钥派生的附加密钥"
@@ -282,8 +282,8 @@
     "searchPlaceholder": "搜索或粘贴地址",
     "foundTokenTitle": "找到的代币",
     "defaultTokens": "默认代币",
-    "addedTokens": "已添加的代币",
-    "deletedTokens": "已删除的代币",
+    "addedTokens": "已添加代币",
+    "deletedTokens": "已删除代币",
     "clearDeleted": "清除",
     "errorFetching": "获取代币时出错",
     "wrongChain": "错误的链"
@@ -310,8 +310,8 @@
       "failed": "失败",
       "unknown": "未知"
     },
-    "transactionFee": "手续费",
-    "viewOn": "查看于",
+    "transactionFee": "费用",
+    "viewOn": "在此查看",
     "from": "发送方",
     "to": "接收方",
     "hash": "交易哈希",
@@ -356,7 +356,7 @@
       "indexLabel": "账户索引",
       "decrementCount": "减少数量",
       "incrementCount": "增加数量",
-      "accountExists": "索引 {index} 的账户已存在",
+      "accountExists": "索引为 {index} 的账户已存在",
       "createButton": "创建账户"
     },
     "ledger": {
@@ -368,7 +368,7 @@
       "indexLabel": "Ledger 账户索引",
       "decrementCount": "减少数量",
       "incrementCount": "增加数量",
-      "accountExists": "索引 {index} 的 Ledger 账户已存在",
+      "accountExists": "索引为 {index} 的 Ledger 账户已存在",
       "createButton": "添加 Ledger 账户"
     }
   },
@@ -378,13 +378,13 @@
     "passwordPlaceholder": "输入密码",
     "selectWalletPlaceholder": "请先选择钱包",
     "invalidPassword": "密码无效",
-    "watchWallet": "只读钱包 - 无需密码",
+    "watchWallet": "仅观察钱包 - 无需密码",
     "ledgerWallet": "Ledger 钱包",
     "unlockButton": "解锁"
   },
   "addressBook": {
     "modal": {
-      "description": "向地址簿添加新联系人",
+      "description": "将新联系人添加到您的地址簿",
       "addressPlaceholder": "输入地址",
       "namePlaceholder": "输入名称",
       "addButton": "添加联系人"
@@ -397,7 +397,7 @@
   "deleteWallet": {
     "title": "删除钱包",
     "warning": "此操作无法撤销。在继续之前，请确保已备份您的钱包",
-    "description": "输入您的密码以确认删除钱包",
+    "description": "输入密码以确认删除钱包",
     "passwordPlaceholder": "输入密码",
     "confirmButton": "删除钱包"
   },
@@ -423,7 +423,7 @@
   "networks": {
     "title": "网络",
     "searchPlaceholder": "搜索网络",
-    "added": "已添加的网络",
+    "added": "已添加网络",
     "available": "可用网络"
   },
   "networkDetails": {
@@ -441,7 +441,7 @@
   },
   "currency": {
     "engineTitle": "价格引擎",
-    "engineSubtitle": "选择货币汇率的数据源",
+    "engineSubtitle": "选择货币汇率的数据来源",
     "searchPlaceholder": "搜索货币",
     "engine": {
       "title": "选择价格引擎",
@@ -457,16 +457,16 @@
     "deviceSettings": "设备设置",
     "deviceSettingsDesc": "匹配您的系统主题偏好",
     "darkMode": "深色模式",
-    "darkModeDesc": "深色配色方案，更适合夜间查看",
+    "darkModeDesc": "夜间更好可见性的深色配色方案",
     "lightMode": "浅色模式",
-    "lightModeDesc": "浅色配色方案，适合白天使用"
+    "lightModeDesc": "日间使用的浅色配色方案"
   },
   "security": {
     "title": "安全与隐私",
     "networkPrivacy": "网络隐私",
     "tokensFetcher": {
       "title": "自动获取代币列表",
-      "description": "自动发现和添加新代币"
+      "description": "自动发现并添加新代币"
     },
     "ens": {
       "title": "ENS 解析",
@@ -489,17 +489,17 @@
       "low": "低",
       "market": "市场",
       "aggressive": "激进",
-      "estimated": "估计 Gas",
+      "estimated": "预估 Gas",
       "baseFee": "基础费用",
       "priorityFee": "优先费用",
-      "maxFee": "最高费用",
+      "maxFee": "最大费用",
       "gasPrice": "Gas 价格"
     }
   },
   "gasEditor": {
     "title": "编辑 Gas 参数",
     "gasPrice": "Gas 价格",
-    "maxPriorityFee": "最高优先费用",
+    "maxPriorityFee": "最大优先费用",
     "gasLimit": "Gas 限制",
     "nonce": "Nonce",
     "cancel": "取消",
@@ -521,7 +521,7 @@
   },
   "sign_message": {
     "title": "签署消息",
-    "subtitle": "查看消息并确认签署",
+    "subtitle": "查看消息并确认签名",
     "message": "消息"
   },
   "addAssets": {
@@ -529,17 +529,35 @@
     "subtitle": "向您的钱包添加 {count} 个代币",
     "tokensToAdd": "要添加的代币",
     "contract": "合约",
-    "decimals": "小数位"
+    "decimals": "小数位",
+    "addTokens": "添加 {count} 个代币"
+  },
+  "addChain": {
+    "addTitle": "添加 {name}",
+    "updateTitle": "更新 {name}",
+    "subtitle": "允许此网站添加网络",
+    "updateSubtitle": "允许此网站更新网络设置",
+    "securityWarning": "仅当您信任此网站时才批准。恶意网络可能会窃取您的资产。",
+    "networkName": "网络名称",
+    "chainId": "链 ID",
+    "symbol": "符号",
+    "decimals": "小数位",
+    "rpcUrl": "RPC URL",
+    "selectRpc": "选择 RPC URL",
+    "explorer": "区块浏览器",
+    "selectExplorer": "选择浏览器",
+    "approve": "批准",
+    "update": "更新"
   },
   "reveal": {
-    "phraseWarning": "切勿分享您的助记词。任何获得此助记词的人都可以访问您的资金",
-    "keyWarning": "切勿分享您的私钥。任何获得此密钥的人都可以访问您的资金",
+    "phraseWarning": "切勿分享您的助记词。任何拥有此短语的人都可以访问您的资金",
+    "keyWarning": "切勿分享您的私钥。任何拥有此密钥的人都可以访问您的资金",
     "scamAlert": "⚠️ 安全警告",
     "passwordPlaceholder": "输入您的密码",
     "submit": "继续",
     "invalidPassword": "密码错误",
     "securityCheck": "安全验证",
-    "waitMessage": "请等待 {time} 后再显示您的{type}",
+    "waitMessage": "请等待 {time} 再显示您的{type}",
     "phrase": "助记词",
     "key": "私钥",
     "secretPhrase": "秘密恢复短语",

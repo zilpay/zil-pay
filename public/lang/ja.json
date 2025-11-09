@@ -1,8 +1,8 @@
 {
   "notify": {
-    "tx.success.title": "✅ トランザクション確認済み",
+    "tx.success.title": "✅ 取引が確認されました",
     "tx.success.message": "{symbol}の送金が正常に完了しました\n{hash}",
-    "tx.failed.title": "❌ トランザクション失敗",
+    "tx.failed.title": "❌ 取引が失敗しました",
     "tx.failed.message": "{symbol}の送金が失敗しました\n{hash}"
   },
   "start": {
@@ -13,11 +13,11 @@
   "newWalletOptions": {
     "title": "ウォレットを追加",
     "newWallet": {
-      "title": "新規ウォレット作成",
+      "title": "新しいウォレットを作成",
       "description": "安全なシードフレーズで新しいウォレットを生成"
     },
     "existingWallet": {
-      "title": "既存ウォレットをインポート",
+      "title": "既存のウォレットをインポート",
       "description": "シードフレーズまたは秘密鍵を使用してウォレットを復元"
     },
     "pairWithLedger": {
@@ -26,7 +26,7 @@
     },
     "watchAccount": {
       "title": "アカウントを監視",
-      "description": "秘密鍵なしでアドレスを追跡"
+      "description": "秘密鍵なしで任意のアドレスを追跡"
     },
     "otherOptions": "その他のオプション"
   },
@@ -34,10 +34,10 @@
     "title": "ネットワークを選択"
   },
   "generateWallet": {
-    "title": "ウォレット生成",
+    "title": "ウォレットを生成",
     "bip39": {
       "title": "BIP39シードフレーズ",
-      "description": "12または24単語の復元フレーズでウォレットを生成"
+      "description": "12語または24語の復元フレーズでウォレットを生成"
     },
     "privateKey": {
       "title": "秘密鍵",
@@ -48,7 +48,7 @@
     "title": "ウォレットをインポート",
     "bip39": {
       "title": "BIP39シードフレーズ",
-      "description": "12または24単語の復元フレーズを使用してウォレットを復元"
+      "description": "12語または24語の復元フレーズを使用してウォレットを復元"
     },
     "privateKey": {
       "title": "秘密鍵",
@@ -68,11 +68,11 @@
       "next": "次へ"
     },
     "verify": {
-      "title": "シードフレーズを確認",
+      "title": "シードフレーズを検証",
       "subtitle": "復元フレーズを確認",
       "instructions": "正しく保存したことを確認するために、シードフレーズから以下の単語を入力してください",
       "placeholder": "単語を入力",
-      "button": "確認"
+      "button": "検証"
     },
     "restore": {
       "title": "シードフレーズをインポート",
@@ -86,13 +86,13 @@
       "title": "シードフレーズのバックアップ",
       "header": {
         "title": "ZilPayシードフレーズ",
-        "subtitle": "このドキュメントを安全に保管してください",
+        "subtitle": "この文書を安全に保管してください",
         "generated": "生成日時"
       },
       "warning": {
         "title": "セキュリティ警告",
-        "secure": "このドキュメントを安全な場所に保管してください",
-        "access": "このフレーズにアクセスできる人は誰でもあなたのウォレットを制御できます",
+        "secure": "この文書を安全な場所に保管してください",
+        "access": "このフレーズにアクセスできる人は誰でもウォレットを制御できます",
         "noOnline": "このフレーズをオンラインで共有または保存しないでください"
       },
       "phrase": {
@@ -104,13 +104,13 @@
       "title": "鍵ペアのバックアップ",
       "header": {
         "title": "ZilPay鍵ペア",
-        "subtitle": "このドキュメントを安全に保管してください",
+        "subtitle": "この文書を安全に保管してください",
         "generated": "生成日時"
       },
       "warning": {
         "title": "セキュリティ警告",
-        "secure": "このドキュメントを安全な場所に保管してください",
-        "access": "これらの鍵にアクセスできる人は誰でもあなたのウォレットを制御できます",
+        "secure": "この文書を安全な場所に保管してください",
+        "access": "これらの鍵にアクセスできる人は誰でもウォレットを制御できます",
         "noOnline": "これらの鍵をオンラインで共有または保存しないでください"
       },
       "keys": {
@@ -163,7 +163,7 @@
       "title": "接続されたアカウント"
     },
     "errors": {
-      "user_rejected": "デバイスでユーザーによってトランザクションが拒否されました",
+      "user_rejected": "デバイスでユーザーによって取引が拒否されました",
       "app_not_open": "Ledgerで正しいアプリを開いてください",
       "device_locked": "デバイスがロックされています。ロックを解除してください"
     }
@@ -172,7 +172,7 @@
     "title": "秘密鍵をインポート",
     "inputLabel": "秘密鍵",
     "placeholder": "秘密鍵を入力（16進数形式）",
-    "previewTitle": "鍵プレビュー",
+    "previewTitle": "鍵のプレビュー",
     "restoreButton": "インポート"
   },
   "passwordSetup": {
@@ -183,13 +183,13 @@
     "walletNamePlaceholder": "ウォレット名を入力",
     "passwordLabel": "パスワード",
     "passwordPlaceholder": "パスワードを入力（最低8文字）",
-    "confirmLabel": "パスワード確認",
+    "confirmLabel": "パスワードを確認",
     "confirmPlaceholder": "パスワードを再入力",
     "defaultWalletName": "ウォレット",
     "defaultAccountName": "アカウント",
     "advanced": "詳細設定",
     "advancedTitle": "高度な暗号化設定",
-    "securityNote": "このパスワードはローカルでウォレットを暗号化します。安全に保管し、決して共有しないでください",
+    "securityNote": "このパスワードはウォレットをローカルで暗号化します。安全に保管し、決して共有しないでください",
     "createButton": "ウォレットを作成",
     "errors": {
       "mismatch": "パスワードが一致しません",
@@ -200,7 +200,7 @@
     "cryptsetup": {
       "encryption": {
         "title": "暗号化方式",
-        "description": "暗号化強度レベルを選択"
+        "description": "暗号化強度レベルを選択してください"
       },
       "hashing": {
         "title": "鍵導出",
@@ -209,17 +209,17 @@
       },
       "cipherPresets": {
         "basic": {
-          "title": "ベーシック",
+          "title": "基本",
           "subtitle": "AES-GCM 256",
           "description": "AES-256による標準暗号化"
         },
         "enhanced": {
-          "title": "エンハンスド",
+          "title": "強化",
           "subtitle": "AES + Kuznyechik",
-          "description": "ロシアGOST標準による二重層暗号化"
+          "description": "ロシアのGOST規格による二重層暗号化"
         },
         "quantumResistant": {
-          "title": "量子耐性",
+          "title": "耐量子性",
           "subtitle": "AES + Kuznyechik + NTRU",
           "description": "ポスト量子暗号による三重層暗号化"
         }
@@ -228,7 +228,7 @@
         "low": {
           "title": "低",
           "subtitle": "64 MB",
-          "description": "高速だがセキュリティは低い"
+          "description": "高速だがセキュリティが低い"
         },
         "medium": {
           "title": "中",
@@ -244,26 +244,26 @@
       "advanced": {
         "memory": "メモリ（KB）",
         "iterations": "反復回数",
-        "threads": "スレッド",
+        "threads": "スレッド数",
         "secret": {
           "label": "ソルト（オプション）",
-          "placeholder": "鍵導出用の追加シークレット"
+          "placeholder": "鍵導出のための追加シークレット"
         }
       }
     }
   },
   "home": {
     "send": "送信",
-    "receive": "受取",
+    "receive": "受信",
     "error": {
       "title": "エラー"
     }
   },
   "tokenTransfer": {
-    "title": "トークン送信",
+    "title": "トークンを送信",
     "sendTo": "送信先",
-    "enterAddress": "受取アドレスを入力",
-    "continue": "続行"
+    "enterAddress": "受信者のアドレスを入力",
+    "continue": "続ける"
   },
   "addressSelector": {
     "title": "アドレスを選択",
@@ -274,19 +274,19 @@
   },
   "receive": {
     "selectTokenTitle": "トークンを選択",
-    "title": "受取",
+    "title": "受信",
     "warning": "{chain}ネットワーク上の{token}のみをこのアドレスに送信してください"
   },
   "tokenManager": {
     "title": "トークンマネージャー",
     "searchPlaceholder": "検索またはアドレスを貼り付け",
-    "foundTokenTitle": "見つかったトークン",
+    "foundTokenTitle": "トークンが見つかりました",
     "defaultTokens": "デフォルトトークン",
     "addedTokens": "追加されたトークン",
     "deletedTokens": "削除されたトークン",
     "clearDeleted": "クリア",
     "errorFetching": "トークンの取得エラー",
-    "wrongChain": "間違ったチェーン"
+    "wrongChain": "誤ったチェーン"
   },
   "nft": {
     "errorFetching": "NFTメタデータの取得エラー",
@@ -300,10 +300,10 @@
     "thisWeek": "今週",
     "thisMonth": "今月",
     "clearAll": "すべてクリア",
-    "noTransactions": "トランザクション履歴はありません"
+    "noTransactions": "取引履歴なし"
   },
   "txDetails": {
-    "title": "トランザクション詳細",
+    "title": "取引詳細",
     "status": {
       "success": "成功",
       "pending": "保留中",
@@ -314,7 +314,7 @@
     "viewOn": "表示",
     "from": "送信元",
     "to": "送信先",
-    "hash": "トランザクションハッシュ",
+    "hash": "取引ハッシュ",
     "gasUsed": "使用ガス",
     "gasPrice": "ガス価格",
     "block": "ブロック番号"
@@ -330,8 +330,7 @@
     "telegram": "Telegram",
     "twitter": "Twitter",
     "github": "GitHub",
-    "version": "バージョン",
-    "connections": "接続されたdApps"
+    "version": "バージョン"
   },
   "walletSettings": {
     "title": "ウォレット設定",
@@ -341,11 +340,7 @@
     "destroy": "ウォレットを削除"
   },
   "deleteWallet": {
-    "title": "ウォレットを削除",
-    "warning": "この操作は元に戻せません。続行する前にウォレットをバックアップしていることを確認してください",
-    "description": "ウォレットの削除を確認するためにパスワードを入力してください",
-    "passwordPlaceholder": "パスワードを入力",
-    "confirmButton": "ウォレットを削除"
+    "title": "ウォレットを削除"
   },
   "accounts": {
     "title": "アカウント"
@@ -360,7 +355,7 @@
       "indexLabel": "アカウントインデックス",
       "decrementCount": "カウントを減らす",
       "incrementCount": "カウントを増やす",
-      "accountExists": "インデックス {index} のアカウントは既に存在します",
+      "accountExists": "インデックス{index}のアカウントは既に存在します",
       "createButton": "アカウントを作成"
     },
     "ledger": {
@@ -372,17 +367,17 @@
       "indexLabel": "Ledgerアカウントインデックス",
       "decrementCount": "カウントを減らす",
       "incrementCount": "カウントを増やす",
-      "accountExists": "インデックス {index} のLedgerアカウントは既に存在します",
+      "accountExists": "インデックス{index}のLedgerアカウントは既に存在します",
       "createButton": "Ledgerアカウントを追加"
     }
   },
   "lockpage": {
     "title": "おかえりなさい",
-    "chooseWallet": "ロック解除するウォレットを選択",
+    "chooseWallet": "ロックを解除するウォレットを選択",
     "passwordPlaceholder": "パスワードを入力",
-    "selectWalletPlaceholder": "まずウォレットを選択してください",
+    "selectWalletPlaceholder": "最初にウォレットを選択してください",
     "invalidPassword": "無効なパスワード",
-    "watchWallet": "監視専用ウォレット - パスワードは不要です",
+    "watchWallet": "監視専用ウォレット - パスワード不要",
     "ledgerWallet": "Ledgerウォレット",
     "unlockButton": "ロック解除"
   },
@@ -398,6 +393,13 @@
       "title": "連絡先を追加"
     }
   },
+  "deleteWallet": {
+    "title": "ウォレットを削除",
+    "warning": "この操作は元に戻せません。続行する前にウォレットをバックアップしていることを確認してください",
+    "description": "ウォレットの削除を確認するためにパスワードを入力してください",
+    "passwordPlaceholder": "パスワードを入力",
+    "confirmButton": "ウォレットを削除"
+  },
   "backup": {
     "revealTitle": "シードフレーズを表示",
     "revealDescription": "安全にバックアップするために復元フレーズを表示",
@@ -409,7 +411,7 @@
   "connections": {
     "search": "接続を検索",
     "not_found": "接続が見つかりません",
-    "empty": "接続されたdAppsはありません",
+    "empty": "接続されたdAppなし",
     "connectedAccounts": "接続されたアカウント",
     "connectedChains": "接続されたチェーン",
     "connectedAt": "接続日時",
@@ -449,14 +451,14 @@
   },
   "appearance": {
     "title": "外観",
-    "compactNumbers": "コンパクト数値",
-    "compactNumbersDesc": "省略形式で数値を表示（例：1.2K）",
+    "compactNumbers": "数値を簡略表示",
+    "compactNumbersDesc": "数値を省略形式で表示（例：1.2K）",
     "deviceSettings": "デバイス設定",
     "deviceSettingsDesc": "システムのテーマ設定に合わせる",
     "darkMode": "ダークモード",
-    "darkModeDesc": "夜間の視認性を向上させるダークカラースキーム",
+    "darkModeDesc": "夜間の視認性向上のためのダークカラースキーム",
     "lightMode": "ライトモード",
-    "lightModeDesc": "日中使用向けのライトカラースキーム"
+    "lightModeDesc": "日中使用のためのライトカラースキーム"
   },
   "security": {
     "title": "セキュリティとプライバシー",
@@ -498,18 +500,18 @@
     "gasPrice": "ガス価格",
     "maxPriorityFee": "最大優先手数料",
     "gasLimit": "ガスリミット",
-    "nonce": "ノンス",
+    "nonce": "ナンス",
     "cancel": "キャンセル",
     "save": "保存"
   },
   "connect": {
-    "request_connection": "ウォレットへの接続を要求しています",
+    "request_connection": "がウォレットへの接続を要求しています",
     "select_accounts": "アカウントを選択",
     "advanced_options": "詳細オプション",
     "connect": "接続",
     "permission": {
-      "sign_transactions": "トランザクションに署名",
-      "sign_transactions_desc": "このdAppがトランザクション署名をリクエストすることを許可",
+      "sign_transactions": "取引に署名",
+      "sign_transactions_desc": "このdAppが取引署名をリクエストすることを許可",
       "sign_messages": "メッセージに署名",
       "sign_messages_desc": "このdAppがメッセージ署名をリクエストすることを許可",
       "read_chain": "ブロックチェーンデータを読み取る",
@@ -522,18 +524,36 @@
     "message": "メッセージ"
   },
   "addAssets": {
-    "title": "アセットを追加",
+    "title": "資産を追加",
     "subtitle": "{count}個のトークンをウォレットに追加",
     "tokensToAdd": "追加するトークン",
     "contract": "コントラクト",
-    "decimals": "小数点以下"
+    "decimals": "小数点以下桁数",
+    "addTokens": "{count}個のトークンを追加"
+  },
+  "addChain": {
+    "addTitle": "{name}を追加",
+    "updateTitle": "{name}を更新",
+    "subtitle": "このサイトがネットワークを追加することを許可",
+    "updateSubtitle": "このサイトがネットワーク設定を更新することを許可",
+    "securityWarning": "このサイトを信頼する場合のみ承認してください。悪意のあるネットワークは資産を盗む可能性があります。",
+    "networkName": "ネットワーク名",
+    "chainId": "チェーンID",
+    "symbol": "シンボル",
+    "decimals": "小数点以下桁数",
+    "rpcUrl": "RPC URL",
+    "selectRpc": "RPC URLを選択",
+    "explorer": "ブロックエクスプローラー",
+    "selectExplorer": "エクスプローラーを選択",
+    "approve": "承認",
+    "update": "更新"
   },
   "reveal": {
-    "phraseWarning": "シードフレーズを決して共有しないでください。このフレーズを持っている人は誰でもあなたの資金にアクセスできます",
-    "keyWarning": "秘密鍵を決して共有しないでください。この鍵を持っている人は誰でもあなたの資金にアクセスできます",
+    "phraseWarning": "シードフレーズを決して共有しないでください。このフレーズを持つ人は誰でも資金にアクセスできます",
+    "keyWarning": "秘密鍵を決して共有しないでください。この鍵を持つ人は誰でも資金にアクセスできます",
     "scamAlert": "⚠️ セキュリティ警告",
     "passwordPlaceholder": "パスワードを入力",
-    "submit": "続行",
+    "submit": "続ける",
     "invalidPassword": "パスワードが正しくありません",
     "securityCheck": "セキュリティ確認",
     "waitMessage": "{type}を表示する前に{time}お待ちください",
@@ -543,5 +563,19 @@
     "privateKey": "秘密鍵",
     "publicKey": "公開鍵",
     "copy": "コピー"
+  },
+  "settings": {
+    "notifications": "通知",
+    "currency": "通貨",
+    "appearance": "外観",
+    "addressBook": "アドレス帳",
+    "security": "セキュリティ",
+    "networks": "ネットワーク",
+    "language": "言語",
+    "telegram": "Telegram",
+    "twitter": "Twitter",
+    "github": "GitHub",
+    "version": "バージョン",
+    "connections": "接続されたdApps"
   }
 }
