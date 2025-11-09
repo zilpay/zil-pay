@@ -528,7 +528,25 @@
     "subtitle": "Add {count} token(s) to your wallet",
     "tokensToAdd": "Tokens to Add",
     "contract": "Contract",
-    "decimals": "Decimals"
+    "decimals": "Decimals",
+    "addTokens": "Add {count} Token(s)"
+  },
+  "addChain": {
+    "addTitle": "Add {name}",
+    "updateTitle": "Update {name}",
+    "subtitle": "Allow this site to add a network",
+    "updateSubtitle": "Allow this site to update network settings",
+    "securityWarning": "Only approve if you trust this site. Malicious networks can steal your assets.",
+    "networkName": "Network Name",
+    "chainId": "Chain ID",
+    "symbol": "Symbol",
+    "decimals": "Decimals",
+    "rpcUrl": "RPC URL",
+    "selectRpc": "Select RPC URL",
+    "explorer": "Block Explorer",
+    "selectExplorer": "Select Explorer",
+    "approve": "Approve",
+    "update": "Update"
   },
   "reveal": {
     "phraseWarning": "Never share your seed phrase. Anyone with this phrase can access your funds",

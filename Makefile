@@ -12,9 +12,9 @@ build-mv2:
 	mkdir -p dist
 	MANIFEST=2 npm run build
 
-# Compute SHA256 checksums for Manifest V2
+# Compute SHA256 checksums for Manifest V2 (macOS-compatible)
 hash-mv2:
-	find dist -type f -exec sha256sum {} \; > shasummv2.sha
+	find dist -type f -exec shasum -a 256 {} \; | sort > shasummv2.sha
 
 # Zip the dist directory for Manifest V2
 zip-mv2:
@@ -25,9 +25,9 @@ build-mv3:
 	mkdir -p dist
 	MANIFEST=3 npm run build
 
-# Compute SHA256 checksums for Manifest V3
+# Compute SHA256 checksums for Manifest V3 (macOS-compatible)
 hash-mv3:
-	find dist -type f -exec sha256sum {} \; > shasummv3.sha
+	find dist -type f -exec shasum -a 256 {} \; | sort > shasummv3.sha
 
 # Zip the dist directory for Manifest V3
 zip-mv3:
