@@ -224,16 +224,15 @@ export class ZilPayLegacyService {
 
   async getData(domain: string, sendResponse: StreamResponse) {
     try {
+      const wallet = this.#state.wallets[this.#state.selectedWallet];
       const emptyResponse = {
         account: null,
         network: null,
         http: null,
         nativeHttp: null,
         isConnect: false,
-        isEnable: false,
+        isEnable: Boolean(wallet),
       };
-
-      const wallet = this.#state.wallets[this.#state.selectedWallet];
 
       if (!wallet) {
         throw new Error(ConnectError.WalletNotFound);
@@ -276,7 +275,7 @@ export class ZilPayLegacyService {
           http: chain.rpc[0],
           nativeHttp: chain.rpc[0],
           isConnect: isConnected,
-          isEnable: isConnected,
+          isEnable: true,
         }
       });
     } catch (e) {
