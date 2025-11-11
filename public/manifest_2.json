@@ -61,7 +61,9 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "hicc0rus@gmail.com",
-      "data_collection_permissions": []
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }
