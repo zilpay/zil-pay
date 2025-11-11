@@ -57,5 +57,11 @@
     "scripts": [
       "background.js"
     ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "hicc0rus@gmail.com",
+      "data_collection_permissions": []
+    }
   }
 }
