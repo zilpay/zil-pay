@@ -1,3 +1,16 @@
+{
+  "notify": {
+    "tx.success.title": "✅ 取引が確認されました",
+    "tx.success.message": "{symbol}の送金が正常に完了しました\n{hash}",
+    "tx.failed.title": "❌ 取引が失敗しました",
+    "tx.failed.message": "{symbol}の送金が失敗しました\n{hash}"
+  },
+  "start": {
+    "name": "ZilPay",
+    "title": "ポスト量子暗号通貨ウォレット",
+    "btn": "始める"
+  },
+  "newWalletOptions": {
     "title": "ウォレットを追加",
     "newWallet": {
       "title": "新しいウォレットを作成",
@@ -313,9 +326,6 @@
     "backup": "ウォレットをバックアップ",
     "destroy": "ウォレットを削除"
   },
-  "deleteWallet": {
-    "title": "ウォレットを削除"
-  },
   "accounts": {
     "title": "アカウント"
   },
@@ -553,3 +563,4 @@
     "connections": "接続されたdApps"
   }
 }
+
