@@ -319,28 +319,12 @@
     "gasPrice": "Gas Price",
     "block": "Block Number"
   },
-  "settings": {
-    "notifications": "Notifications",
-    "currency": "Currency",
-    "appearance": "Appearance",
-    "addressBook": "Address Book",
-    "security": "Security",
-    "networks": "Networks",
-    "language": "Language",
-    "telegram": "Telegram",
-    "twitter": "Twitter",
-    "github": "GitHub",
-    "version": "Version"
-  },
   "walletSettings": {
     "title": "Wallet Settings",
     "preferences": "Preferences",
     "manageConnections": "Manage Connections",
     "backup": "Backup Wallet",
     "destroy": "Delete Wallet"
-  },
-  "deleteWallet": {
-    "title": "Delete Wallet"
   },
   "accounts": {
     "title": "Accounts"

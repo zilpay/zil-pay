@@ -340,9 +340,6 @@
     "backup": "备份钱包",
     "destroy": "删除钱包"
   },
-  "deleteWallet": {
-    "title": "删除钱包"
-  },
   "accounts": {
     "title": "账户"
   },

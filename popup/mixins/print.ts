@@ -3,7 +3,7 @@ import type { IKeyPair } from 'types/wallet';
 function escapeHtml(text: string): string {
   const div = document.createElement('div');
   div.textContent = text;
-  return div.innerHTML;
+  return div.textContent;
 }
 
 function generatePrintWindow(htmlContent: string): void {

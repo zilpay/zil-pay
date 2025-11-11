@@ -1,16 +1,3 @@
-{
-  "notify": {
-    "tx.success.title": "✅ 取引が確認されました",
-    "tx.success.message": "{symbol}の送金が正常に完了しました\n{hash}",
-    "tx.failed.title": "❌ 取引が失敗しました",
-    "tx.failed.message": "{symbol}の送金が失敗しました\n{hash}"
-  },
-  "start": {
-    "name": "ZilPay",
-    "title": "ポスト量子暗号通貨ウォレット",
-    "btn": "始める"
-  },
-  "newWalletOptions": {
     "title": "ウォレットを追加",
     "newWallet": {
       "title": "新しいウォレットを作成",
@@ -318,19 +305,6 @@
     "gasUsed": "使用ガス",
     "gasPrice": "ガス価格",
     "block": "ブロック番号"
-  },
-  "settings": {
-    "notifications": "通知",
-    "currency": "通貨",
-    "appearance": "外観",
-    "addressBook": "アドレス帳",
-    "security": "セキュリティ",
-    "networks": "ネットワーク",
-    "language": "言語",
-    "telegram": "Telegram",
-    "twitter": "Twitter",
-    "github": "GitHub",
-    "version": "バージョン"
   },
   "walletSettings": {
     "title": "ウォレット設定",
