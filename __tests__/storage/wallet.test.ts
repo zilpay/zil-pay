@@ -19,6 +19,7 @@ import { utf8ToUint8Array } from '../../lib/utils/utf8';
 import { GasSpeed } from '../../config/gas';
 import { Address } from "crypto/address";
 import { CipherOrders } from "config/keychain";
+import { ConnectError } from "config/errors";
 
 describe("Wallet", () => {
   const MNEMONIC =
@@ -84,7 +85,7 @@ describe("Wallet", () => {
 
       await expect(
         wallet.revealMnemonic(utf8ToUint8Array(PASSWORD), wrongChain),
-      ).rejects.toThrow("invlid chain");
+      ).rejects.toThrow(ConnectError.DefaultChainNotValid);
     });
 
     it("throws error for non-SecretPhrase wallet", async () => {
@@ -146,7 +147,7 @@ describe("Wallet", () => {
       const wrongChain = new ChainConfig(CHAINS[2]);
 
       await expect(wallet.revealKeypair(0, wrongChain)).rejects.toThrow(
-        "invlid chain",
+        ConnectError.DefaultChainNotValid
       );
     });
 
