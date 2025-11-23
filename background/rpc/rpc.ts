@@ -97,7 +97,7 @@ export class NetworkProvider {
     if (responses[0] && !responses[0].error) {
       nonce = processNonceResponse(responses[0].result);
     }
-    
+
     let gasPrice = 0n;
 
     if (tx.evm) {
@@ -117,7 +117,7 @@ export class NetworkProvider {
     const maxPriorityFee = responses[3]?.result ? hexToBigInt(responses[3]?.result) : 0n;
     const feeHistory: GasFeeHistory = processParseFeeHistoryRequest(responses[4]?.result);
     const blobBaseFee = responses[5]?.result ? hexToBigInt(responses[5]?.result) : 0n;
-    
+
     return {
       nonce,
       gasPrice,

@@ -294,7 +294,7 @@
         if (confirmLastIndex === -1 || gasInFlight || isLoading || isManualGasEdit) return;
         gasInFlight = true;
         if (!gasEstimate) isLoadingGasFetch = true;
-        
+
         try {
             const estimate = await estimateGas(confirmLastIndex, $globalStore.selectedWallet, accountIndex);
             gasEstimate = estimate;
