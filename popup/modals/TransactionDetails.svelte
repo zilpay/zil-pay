@@ -108,8 +108,17 @@
     });
 
     const gasPrice = $derived(() => {
+        // For confirmed EVM transactions (both legacy and EIP-1559), use effective gas price
+        if (transaction.evm?.effectiveGasPrice) {
+            return abbreviateNumber(transaction.evm.effectiveGasPrice, 9);
+        }
+        // For pending legacy transactions, use gas price
         if (transaction.evm?.gasPrice) {
             return abbreviateNumber(transaction.evm.gasPrice, 9);
+        }
+        // For pending EIP-1559 transactions, use max fee per gas
+        if (transaction.evm?.maxFeePerGas) {
+            return abbreviateNumber(transaction.evm.maxFeePerGas, 9);
         }
         if (transaction.scilla?.gasPrice) {
             return abbreviateNumber(transaction.scilla.gasPrice, 12);
@@ -118,21 +127,30 @@
     });
 
     const transactionFee = $derived(() => {
+        // For confirmed EVM transactions (both legacy and EIP-1559), use effectiveGasPrice
         if (transaction.evm?.gasUsed && transaction.evm?.effectiveGasPrice) {
             const fee = BigInt(transaction.evm.gasUsed) * BigInt(transaction.evm.effectiveGasPrice);
             return abbreviateNumber(fee.toString(), 18);
         }
-        
+
+        // For pending/confirmed legacy transactions, use gasPrice
         if (transaction.evm?.gasUsed && transaction.evm?.gasPrice) {
             const fee = BigInt(transaction.evm.gasUsed) * BigInt(transaction.evm.gasPrice);
             return abbreviateNumber(fee.toString(), 18);
         }
-        
+
+        // For pending EIP-1559 transactions, estimate using maxFeePerGas
+        if (transaction.evm?.gasUsed && transaction.evm?.maxFeePerGas) {
+            const fee = BigInt(transaction.evm.gasUsed) * BigInt(transaction.evm.maxFeePerGas);
+            return abbreviateNumber(fee.toString(), 18);
+        }
+
+        // For Scilla transactions
         if (transaction.scilla?.receipt?.gas_used && transaction.scilla?.gasPrice) {
             const fee = BigInt(transaction.scilla.receipt.gas_used) * BigInt(transaction.scilla.gasPrice);
             return abbreviateNumber(fee.toString(), 12);
         }
-        
+
         return '-';
     });
 
