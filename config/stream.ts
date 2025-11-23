@@ -29,6 +29,7 @@ export const MTypePopup = {
   NFT_GET_META: `@/${app}/get-nft-meta`,
 
   FT_UPDATE_RATES: `@/${app}/ft-rates-update`,
+  FT_AUTO_HINTS_TOKENS: `@/${app}/ft-auto-hints-tokens-erc`,
 
   SWICH_CHAIN: `@/${app}/swich-chain`,
   REMOVE_CHAIN: `@/${app}/remove-chain`,

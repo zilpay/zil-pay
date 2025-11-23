@@ -59,6 +59,16 @@ export async function fetchNFTMeta(walletIndex: number, contract: string) {
   return resolve;
 }
 
+export async function tokensAutoHints() {
+  const data = await new Message<SendResponseParams>({
+    type: MTypePopup.FT_AUTO_HINTS_TOKENS,
+    payload: {},
+  }).send();
+
+  const resolve = warpMessage(data) as IFTokenState[];
+  return resolve;
+}
+
 export async function addEthereumWatchAssetResponse(
   uuid: string,
   walletIndex: number,

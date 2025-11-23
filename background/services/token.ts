@@ -2,6 +2,7 @@ import { RpcProvider } from "background/rpc";
 import { buildNFTRequests, NFTMetadataField, processEthNFTBalanceResponse, processEthNFTMetadataResponse, processZilBaseUriResponse, processZilNFTBalanceResponse, processZilNFTMetadataResponse } from "background/rpc/nft_parser";
 import type { BackgroundState } from "background/storage";
 import { RatesApiOptions } from "config/api";
+import { ConnectError } from "config/errors";
 import { NFTStandard } from "config/token";
 import { AddressType } from "config/wallet";
 import { Address } from "crypto/address";
@@ -24,6 +25,33 @@ export class TokenService {
     this.#state = state;
   }
 
+  async tokensHints(sendResponse: StreamResponse) {
+    try {
+      const currentAccount = this.#state.getCurrentAccount();
+      if (!currentAccount) {
+        throw new Error(ConnectError.AddressMismatch);
+      }
+
+      const chainConfig = this.#state.getChain(currentAccount.chainHash);
+      if (!chainConfig) {
+        throw new Error(ConnectError.ChainNotFound);
+      }
+
+      const addr: string = currentAccount.addr.split(":").at(-1) ?? currentAccount.addr;
+      const url = `https://relayer.ambire.com/velcro-v3/multi-hints?networks=${chainConfig.chainId}&accounts=${addr}`;
+      const res = await fetch(url);
+      const [result] = await res.json();
+      const erc20 = result.erc20s;
+      const erc721s = result.erc721s;
+
+      console.log(erc20);
+    } catch (err) {
+      sendResponse({
+        reject: String(err),
+      });
+    }
+  }
+
   async fetchNFTMetadata(
     contract: string,
     walletIndex: number,
@@ -37,7 +65,7 @@ export class TokenService {
       const chainConfig = this.#state.getChain(account.chainHash);
 
       if (!chainConfig) {
-        throw new Error("Chain configuration not found");
+        throw new Error(ConnectError.ChainNotFound);
       }
 
       const provider = new RpcProvider(chainConfig);
