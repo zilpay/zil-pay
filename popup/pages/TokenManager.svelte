@@ -16,14 +16,14 @@
     let loading = $state(false);
     let searchError = $state<string | null>(null);
     let deletedTokens = $state<IFTokenState[]>([]);
-    let autoHintedTokens = $state<IFTokenState[]>([]);
+    let suggestedTokens = $state<IFTokenState[]>([]);
 
     const DELETED_TOKENS_KEY = 'deleted_tokens_cache';
     const currentWallet = $derived($globalStore.wallets[$globalStore.selectedWallet]);
     const currentAccount = $derived(currentWallet?.accounts[currentWallet.selectedAccount]);
     const currentChainHash = $derived(currentAccount?.chainHash ?? -1);
     const allTokens = $derived(currentWallet?.tokens || []);
-    
+
     const tokens = $derived(allTokens.filter(t => t.chainHash === currentChainHash));
 
     type DeletedTokensCache = Record<number, IFTokenState[]>;
@@ -71,11 +71,17 @@
     });
 
     onMount(async () => {
+        const canFetchTokens = currentWallet?.settings?.tokensListFetcher ?? false;
+
+        if (!canFetchTokens) {
+            return;
+        }
+
         try {
             const hintedTokens = await tokensAutoHints();
-            autoHintedTokens = hintedTokens;
+            suggestedTokens = hintedTokens;
         } catch (e) {
-            console.error('Failed to fetch auto-hinted tokens:', e);
+            console.error('Failed to fetch suggested tokens:', e);
         }
     });
 
@@ -110,24 +116,16 @@
 
     const filteredTokens = $derived(() => {
         const lowercasedFilter = searchTerm.toLowerCase();
-        
+
         if (!searchTerm || searchTerm.startsWith('0x') || searchTerm.startsWith('zil1')) {
-            return {
-                native: tokens.filter(t => t.native),
-                user: tokens.filter(t => !t.native)
-            };
+            return tokens;
         }
 
-        const filtered = tokens.filter(
+        return tokens.filter(
             (token) =>
                 token.name.toLowerCase().includes(lowercasedFilter) ||
                 token.symbol.toLowerCase().includes(lowercasedFilter)
         );
-
-        return {
-            native: filtered.filter(t => t.native),
-            user: filtered.filter(t => !t.native)
-        };
     });
     
     const filteredDeletedTokens = $derived(() => {
@@ -142,9 +140,9 @@
         );
     });
 
-    const filteredAutoHintedTokens = $derived(() => {
-        // Filter auto-hinted tokens for current chain
-        const chainTokens = autoHintedTokens.filter(t => t.chainHash === currentChainHash);
+    const filteredSuggestedTokens = $derived(() => {
+        // Filter suggested tokens for current chain
+        const chainTokens = suggestedTokens.filter(t => t.chainHash === currentChainHash);
 
         // Apply search filter
         let filtered = chainTokens;
@@ -157,22 +155,8 @@
             );
         }
 
-        // Separate into already-added and not-yet-added
-        const alreadyAdded: IFTokenState[] = [];
-        const notYetAdded: IFTokenState[] = [];
-
-        filtered.forEach(token => {
-            if (isTokenAlreadyAdded(token)) {
-                alreadyAdded.push(token);
-            } else {
-                notYetAdded.push(token);
-            }
-        });
-
-        return {
-            alreadyAdded,
-            notYetAdded
-        };
+        // Only show tokens that are NOT already added to wallet
+        return filtered.filter(token => !isTokenAlreadyAdded(token));
     });
 
     function handleTokenToggle(token: IFTokenState | null, isEnabled: boolean) {
@@ -265,55 +249,12 @@
             </div>
         {/if}
 
-        {#if filteredTokens().native.length > 0}
+        {#if filteredTokens().length > 0}
             <div class="token-group">
-                <span class="section-label">{$_('tokenManager.defaultTokens')}</span>
-                {#each filteredTokens().native as token (token.addr)}
+                {#each filteredTokens() as token (token.addr)}
                     <TokenToggleItem
                         {token}
                         disabled={token.native}
-                        value={true}
-                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
-                    />
-                {/each}
-            </div>
-        {/if}
-
-        {#if filteredAutoHintedTokens().alreadyAdded.length > 0}
-            <div class="token-group">
-                <span class="section-label">{$_('tokenManager.autoHintedCached')}</span>
-                {#each filteredAutoHintedTokens().alreadyAdded as token (token.addr)}
-                    <TokenToggleItem
-                        {token}
-                        disabled={false}
-                        value={true}
-                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
-                    />
-                {/each}
-            </div>
-        {/if}
-
-        {#if filteredAutoHintedTokens().notYetAdded.length > 0}
-            <div class="token-group">
-                <span class="section-label">{$_('tokenManager.autoHintedSuggested')}</span>
-                {#each filteredAutoHintedTokens().notYetAdded as token (token.addr)}
-                    <TokenToggleItem
-                        {token}
-                        disabled={false}
-                        value={false}
-                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
-                    />
-                {/each}
-            </div>
-        {/if}
-
-        {#if filteredTokens().user.length > 0}
-            <div class="token-group">
-                <span class="section-label">{$_('tokenManager.addedTokens')}</span>
-                {#each filteredTokens().user as token (token.addr)}
-                    <TokenToggleItem
-                        {token}
-                        disabled={false}
                         value={true}
                         onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
                     />
@@ -330,6 +271,20 @@
                     </button>
                 </div>
                 {#each filteredDeletedTokens() as token (token.addr)}
+                    <TokenToggleItem
+                        {token}
+                        disabled={false}
+                        value={false}
+                        onchange={(e) => handleTokenToggle(token, (e as CustomEvent).detail)}
+                    />
+                {/each}
+            </div>
+        {/if}
+
+        {#if filteredSuggestedTokens().length > 0}
+            <div class="token-group">
+                <span class="section-label">{$_('tokenManager.autoHintedSuggested')}</span>
+                {#each filteredSuggestedTokens() as token (token.addr)}
                     <TokenToggleItem
                         {token}
                         disabled={false}
