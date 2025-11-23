@@ -1,8 +1,9 @@
-import { ChainConfig, FToken } from '../storage';
+import { ChainConfig, FToken, type IFTokenState } from '../storage';
 import { RpcProvider, type JsonRPCResponse, type JsonRPCRequest } from './provider';
 import { Address } from '../../crypto/address';
 import {
   buildTokenRequests,
+  buildMetadataOnlyRequests,
   processZilMetadataResponse,
   processEthMetadataResponse,
   processZilBalanceResponse,
@@ -137,7 +138,7 @@ export class NetworkProvider {
 
     if (contract.type === AddressType.Bech32) {
       const { name, symbol, decimals } = processZilMetadataResponse(responses[0]);
-      
+
       for (let i = 1; i < responses.length; i++) {
         const reqWithType = requestsWithTypes[i];
 
@@ -196,6 +197,71 @@ export class NetworkProvider {
     }
 
     throw new Error("unsupported contract");
+  }
+
+  async batchFetchTokenMetadata(contractAddresses: string[], logo: string | null): Promise<IFTokenState[]> {
+    const allRequests: {
+      payload: JsonRPCRequest;
+      requestType: RequestType;
+      contractAddr: string;
+    }[] = [];
+
+    for (const contractAddr of contractAddresses) {
+      const contract = Address.fromStr(contractAddr);
+      const requests = await buildMetadataOnlyRequests(contract);
+      allRequests.push(...requests);
+    }
+
+    const provider = new RpcProvider(this.config);
+    const payloads = allRequests.map(r => r.payload);
+    const responses = await provider.req<JsonRPCResponse<any>[]>(payloads);
+
+    const results: IFTokenState[] = [];
+
+    let responseIndex = 0;
+    for (const contractAddr of contractAddresses) {
+      const contract = Address.fromStr(contractAddr);
+
+      if (contract.type === AddressType.Bech32) {
+        const { name, symbol, decimals } = processZilMetadataResponse(responses[responseIndex]);
+        results.push({
+          addr: contractAddr,
+          name,
+          symbol,
+          decimals,
+          addrType: AddressType.Bech32,
+          logo,
+          balances: {},
+          rate: 0,
+          default_: false,
+          native: false,
+          chainHash: this.config.hash(), 
+        });
+        responseIndex++;
+      } else if (contract.type === AddressType.EthCheckSum) {
+        const name = processEthMetadataResponse(responses[responseIndex], MetadataField.Name);
+        const symbol = processEthMetadataResponse(responses[responseIndex + 1], MetadataField.Symbol);
+        const decimalsStr = processEthMetadataResponse(responses[responseIndex + 2], MetadataField.Decimals);
+        const decimals = parseInt(decimalsStr, 10);
+
+        results.push({
+          addr: contractAddr,
+          name,
+          symbol,
+          decimals,
+          logo,
+          addrType: AddressType.EthCheckSum,
+          balances: {},
+          rate: 0,
+          default_: false,
+          native: false,
+          chainHash: this.config.hash(), 
+        });
+        responseIndex += 3;
+      }
+    }
+
+    return results;
   }
 
   async updateTransactionsHistory(txns: HistoricalTransaction[], notifier?: TransactionNotifier): Promise<void> {

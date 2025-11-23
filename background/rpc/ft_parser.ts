@@ -167,6 +167,53 @@ export async function buildTokenRequests(
   return requests;
 }
 
+export async function buildMetadataOnlyRequests(
+  contract: Address,
+): Promise<{ payload: JsonRPCRequest; requestType: RequestType; contractAddr: string }[]> {
+  const requests: { payload: JsonRPCRequest; requestType: RequestType; contractAddr: string }[] = [];
+
+  if (contract.type === AddressType.Bech32) {
+    const base16Contract = contract.toBase16();
+    requests.push({
+      payload: RpcProvider.buildPayload(ZilMethods.GetSmartContractInit, [
+        base16Contract,
+      ]),
+      requestType: { type: 'Metadata', field: MetadataField.Name },
+      contractAddr: await contract.toZilBech32(),
+    });
+  } else if (contract.type === AddressType.EthCheckSum) {
+    const erc20 = new ERC20Helper();
+    const tokenAddr = await contract.toEthChecksum();
+
+    const buildEthCall = (data: string): JsonRPCRequest => {
+      return RpcProvider.buildPayload(EvmMethods.Call, [
+        {
+          to: tokenAddr,
+          data,
+        },
+        'latest',
+      ]);
+    };
+
+    const metadataFields: FunctionName[] = [
+      'name',
+      'symbol',
+      'decimals',
+    ];
+
+    for (const field of metadataFields) {
+      const data = erc20.encodeFunctionCall(field, []);
+      requests.push({
+        payload: buildEthCall(data),
+        requestType: { type: 'Metadata', field: field as MetadataField },
+        contractAddr: tokenAddr,
+      });
+    }
+  }
+
+  return requests;
+}
+
 async function buildZilRequests(
   contract: Address,
   pubKeys: Uint8Array[],

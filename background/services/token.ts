@@ -1,7 +1,8 @@
-import { RpcProvider } from "background/rpc";
+import { NetworkProvider, RpcProvider } from "background/rpc";
 import { buildNFTRequests, NFTMetadataField, processEthNFTBalanceResponse, processEthNFTMetadataResponse, processZilBaseUriResponse, processZilNFTBalanceResponse, processZilNFTMetadataResponse } from "background/rpc/nft_parser";
 import type { BackgroundState } from "background/storage";
 import { RatesApiOptions } from "config/api";
+import { ZERO_EVM } from "config/common";
 import { ConnectError } from "config/errors";
 import { NFTStandard } from "config/token";
 import { AddressType } from "config/wallet";
@@ -41,10 +42,15 @@ export class TokenService {
       const url = `https://relayer.ambire.com/velcro-v3/multi-hints?networks=${chainConfig.chainId}&accounts=${addr}`;
       const res = await fetch(url);
       const [result] = await res.json();
-      const erc20 = result.erc20s;
-      const erc721s = result.erc721s;
+      const erc20: string[] = result.erc20s;
+      const contracts = erc20.filter((e) => e !== ZERO_EVM);
+      const provider = new NetworkProvider(chainConfig);
+      const token = chainConfig.ftokens[0];
+      const metadata = await provider.batchFetchTokenMetadata(contracts, token.logo);
 
-      console.log(erc20);
+      sendResponse({
+        resolve: metadata,
+      });
     } catch (err) {
       sendResponse({
         reject: String(err),
