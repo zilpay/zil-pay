@@ -75,11 +75,11 @@
     }
 </script>
 
-<Modal 
-    bind:show={showDeleteModal} 
+<Modal
+    bind:show={showDeleteModal}
     title={$_('deleteWallet.title')}
 >
-    <DestroyWallet />
+    <DestroyWallet onClose={() => showDeleteModal = false} />
 </Modal>
 
 <Modal 
@@ -131,9 +131,9 @@
                         onclick={handleManageConnections}
                     />
                 </div>
-                {#if wallet.walletType == WalletTypes.SecretKey || wallet.walletType == WalletTypes.SecretPhrase}
+                {#if wallet && (wallet.walletType == WalletTypes.SecretKey || wallet.walletType == WalletTypes.SecretPhrase)}
                     <div class="item-wrapper no-divider">
-                        <SettingsLinkItem 
+                        <SettingsLinkItem
                             label={$_('walletSettings.backup')}
                             Icon={RepeatIcon}
                             onclick={handleBackup}

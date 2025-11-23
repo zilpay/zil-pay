@@ -8,6 +8,12 @@
     import { push } from 'popup/router/navigation';
     import { WalletTypes } from 'config/wallet';
 
+    let {
+        onClose = () => {}
+    }: {
+        onClose?: () => void;
+    } = $props();
+
     let password = $state('');
     let isLoading = $state(false);
     let error = $state<string | null>(null);
@@ -26,22 +32,22 @@
         try {
             await destroyWallet(password, walletIndexToDelete);
 
+            // Check if there are remaining wallets
             if ($globalStore.wallets.length > 0) {
+                // Close modal and navigate to lock screen
+                onClose();
                 push("/lock");
             } else {
+                // Last wallet deleted - close the entire window
                 window.close();
             }
         } catch (err) {
             error = String(err);
-        } finally {
             isLoading = false;
         }
     }
 
     $effect(() => {
-        if (!currentWallet) {
-            window.close();
-        }
         if (password) {
             error = null;
         }
@@ -63,7 +69,7 @@
     </p>
 
     <form class="form" onsubmit={handleDelete}>
-        {#if currentWallet && currentWallet.walletType == WalletTypes.SecretKey || currentWallet.walletType == WalletTypes.SecretPhrase}
+        {#if currentWallet && (currentWallet.walletType == WalletTypes.SecretKey || currentWallet.walletType == WalletTypes.SecretPhrase)}
             <SmartInput
                 bind:value={password}
                 placeholder={$_('deleteWallet.passwordPlaceholder')}
@@ -76,7 +82,7 @@
             />
         {/if}
         <Button
-      type="submit"
+            type="submit"
             variant="outline"
             loading={isLoading}
         >
