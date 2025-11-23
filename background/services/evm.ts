@@ -323,9 +323,9 @@ export class EvmService {
       if (!approve) {
         this.#sendError(uuid, evmMessage.signPersonalMessageEVM.domain, ConnectError.UserRejected, 4001);
       } else {
-        const chainConfig = this.#state.getChain(account.chainHash);
+        const defaultChain = this.#state.getChain(wallet.defaultChainHash);
         
-        if (!chainConfig) {
+        if (!defaultChain) {
           throw new Error(ConnectError.ChainNotFound);
         }
 
@@ -338,7 +338,7 @@ export class EvmService {
           }
           signature = sig;
         } else {
-          const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+          const keyPair = await wallet.revealKeypair(account.index, defaultChain);
           const addr = await (await keyPair.address()).autoFormat();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
@@ -386,9 +386,9 @@ export class EvmService {
       if (!approve) {
         this.#sendError(uuid, evmTypedData.signTypedDataJsonEVM.domain, ConnectError.UserRejected, 4001);
       } else {
-        const chainConfig = this.#state.getChain(account.chainHash);
-        
-        if (!chainConfig) {
+        const defaultChain = this.#state.getChain(wallet.defaultChainHash);
+
+        if (!defaultChain) {
           throw new Error(ConnectError.ChainNotFound);
         }
 
@@ -402,7 +402,7 @@ export class EvmService {
           }
           signature = sig;
         } else {
-          const keyPair = await wallet.revealKeypair(account.index, chainConfig);
+          const keyPair = await wallet.revealKeypair(account.index, defaultChain);
           const addr = await (await keyPair.address()).autoFormat();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);

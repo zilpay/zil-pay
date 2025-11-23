@@ -44,21 +44,25 @@ export function calculateGasFee(
 ): GasOptionDetails[] {
     const isEIP1559 = gasEstimate.feeHistory.priorityFee > 0n;
 
+    // Apply realistic gas usage factor (typically 80% of estimated gas is used)
+    const REALISTIC_GAS_USAGE_FACTOR = 80n;
+    const estimatedActualGas = (gasEstimate.txEstimateGas * REALISTIC_GAS_USAGE_FACTOR) / 100n;
+
     const gasLevels = {
         [GasSpeed.Low]: {
             multiplier: 10n,
             label: 'confirm.gas.low',
-            time: '~45s'
+            time: ''
         },
         [GasSpeed.Market]: {
             multiplier: 15n,
             label: 'confirm.gas.market',
-            time: '~30s'
+            time: ''
         },
         [GasSpeed.Aggressive]: {
             multiplier: 20n,
             label: 'confirm.gas.aggressive',
-            time: '~15s'
+            time: ''
         }
     };
 
@@ -68,10 +72,10 @@ export function calculateGasFee(
         let totalFee: bigint;
 
         if (isEIP1559) {
-            const adjustedPriorityFee = (gasEstimate.maxPriorityFee * level.multiplier) / 10n;
+            const adjustedPriorityFee = (gasEstimate.feeHistory.priorityFee * level.multiplier) / 10n;
             const maxFee = (gasEstimate.feeHistory.baseFee * 2n) + adjustedPriorityFee;
-            totalFee = (gasEstimate.feeHistory.baseFee + adjustedPriorityFee) * gasEstimate.txEstimateGas;
-            
+            totalFee = (gasEstimate.feeHistory.baseFee + adjustedPriorityFee) * estimatedActualGas;
+
             details.push(
                 { label: 'confirm.gas.estimated', value: gasEstimate.txEstimateGas.toString() },
                 { label: 'confirm.gas.baseFee', value: formatGwei(gasEstimate.feeHistory.baseFee) },
@@ -80,7 +84,7 @@ export function calculateGasFee(
             );
         } else {
             const adjustedGasPrice = (gasEstimate.gasPrice * level.multiplier) / 10n;
-            totalFee = adjustedGasPrice * gasEstimate.txEstimateGas;
+            totalFee = adjustedGasPrice * estimatedActualGas;
             details.push(
                 { label: 'confirm.gas.estimated', value: gasEstimate.txEstimateGas.toString() },
                 { label: 'confirm.gas.gasPrice', value: formatGwei(adjustedGasPrice) }
@@ -93,14 +97,14 @@ export function calculateGasFee(
         if (nativeToken.rate > 0) {
             const fiatValue = dnumMultiply(feeDnum, nativeToken.rate);
             const currencySymbol = getCurrencySymbol(currencyConvert);
-            fiatFeeDisplay = `${currencySymbol}${abbreviateNumber(fiatValue[0].toString(), fiatValue[1], false)}`;
+            fiatFeeDisplay = `≈ ${currencySymbol}${abbreviateNumber(fiatValue[0].toString(), fiatValue[1], false)}`;
         }
 
         return {
             speed,
             label: level.label,
             time: level.time,
-            fee: `${abbreviateNumber(totalFee.toString(), nativeToken.decimals)} ${nativeToken.symbol}`,
+            fee: `≈ ${abbreviateNumber(totalFee.toString(), nativeToken.decimals)} ${nativeToken.symbol}`,
             fiatFee: fiatFeeDisplay,
             details
         };

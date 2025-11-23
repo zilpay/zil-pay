@@ -35,7 +35,9 @@
             </div>
             <div class="info">
                 <div class="label">{label}</div>
-                <div class="time">{time}</div>
+                {#if time}
+                    <div class="time">{time}</div>
+                {/if}
             </div>
         </div>
         <div class="right-section">

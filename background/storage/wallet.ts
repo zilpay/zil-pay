@@ -18,6 +18,7 @@ import type { Bip32Account } from 'types/wallet';
 import type { NFTMetadata } from 'types/token';
 import type { Address } from 'crypto/address';
 import type { LedgerPublicAddress } from 'types/ledger';
+import { ConnectError } from 'config/errors';
 
 export interface IWalletState {
   uuid: string;
@@ -237,7 +238,7 @@ export class Wallet implements IWalletState {
 
   async revealKeypair(accountIndex: number, chain: ChainConfig): Promise<KeyPair> {
     if (chain.hash() !== this.defaultChainHash) {
-      throw new Error("invlid chain");
+      throw new Error(ConnectError.DefaultChainNotValid);
     }
 
     switch (this.walletType) {
@@ -267,7 +268,7 @@ export class Wallet implements IWalletState {
 
   async revealMnemonic(password: Uint8Array, chain: ChainConfig): Promise<string> {
     if (chain.hash() !== this.defaultChainHash) {
-      throw new Error("invlid chain");
+      throw new Error(ConnectError.DefaultChainNotValid);
     }
 
     switch (this.walletType) {

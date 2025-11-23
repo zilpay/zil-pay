@@ -6,6 +6,7 @@ export enum ConnectError {
   InvalidPermissionRequest = "Invalid permission request",
   UnsupportedMethod = "Unsupported method",
   ChainNotFound = "Chain not found",
+  DefaultChainNotValid = "Wallet default chain not valid",
   InvalidParams = "Invalid params",
   RequestNotFound = "Request not found",
   AddressMismatch = "Address mismatch",
