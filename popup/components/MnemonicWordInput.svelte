@@ -18,6 +18,7 @@
     let inputValue = $state(word);
     let shouldUpdateFromProps = $state(true);
     let inputElement: HTMLInputElement | undefined = $state();
+    let isFocused = $state(false);
 
     $effect(() => {
         if (shouldUpdateFromProps && word !== inputValue) {
@@ -36,10 +37,18 @@
         const target = event.target as HTMLInputElement;
         shouldUpdateFromProps = false;
         inputValue = target.value;
-        
+
         if (onChanged) {
             onChanged(index, target.value);
         }
+    }
+
+    function handleFocus() {
+        isFocused = true;
+    }
+
+    function handleBlur() {
+        isFocused = false;
     }
 </script>
 
@@ -52,11 +61,13 @@
     </span>
     <input
         bind:this={inputElement}
-        type="text"
+        type={isEditable && !isFocused ? "password" : "text"}
         value={inputValue}
         disabled={!isEditable}
         class="word-input"
         oninput={handleInput}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         autocomplete="off"
         autocapitalize="off"
         spellcheck="false"
