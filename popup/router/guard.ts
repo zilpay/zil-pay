@@ -6,7 +6,7 @@ import LockPage from "../pages/Lock.svelte";
 import ConfirmPopupPage from "../pages/ConfirmPopup.svelte";
 import ConnectPage from "../pages/Connect.svelte";
 import SignMessagePopupPage from "../pages/SignMessagePopup.svelte";
-import AddChainPage from "../pages/AddChain.svelte";
+import AddChainPage from "../pages/addChain.svelte";
 import AddAssetsPage from "../pages/AddAssets.svelte";
 import { linksExpand } from "popup/mixins/links";
 

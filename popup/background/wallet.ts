@@ -13,7 +13,6 @@ import type { LedgerPublicAddress } from "types/ledger";
 export async function getGlobalState() {
   const data = await Message.signal<SendResponseParams>(MTypePopup.GET_GLOBAL_STATE).send();
   let resolve = warpMessage(data) as BackgroundState;
-  console.log(resolve);
 
   try {
     globalStore.set(resolve);

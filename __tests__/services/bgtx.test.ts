@@ -24,8 +24,9 @@ describe("WalletService through background messaging with tx service", async () 
   beforeEach(async () => {
     await BrowserStorage.clear();
     messageManager.onMessage.clearListeners();
-    globalState = await GlobalState.fromStorage();
-    startBackground(globalState);
+    const statePromise = GlobalState.fromStorage();
+    globalState = await statePromise;
+    startBackground(statePromise);
   });
 
   describe("transaction service ZIlliqa network", () => {

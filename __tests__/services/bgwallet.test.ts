@@ -44,8 +44,9 @@ describe("WalletService through background messaging", () => {
   beforeEach(async () => {
     await BrowserStorage.clear();
     messageManager.onMessage.clearListeners();
-    globalState = await GlobalState.fromStorage();
-    startBackground(globalState);
+    const statePromise = GlobalState.fromStorage();
+    globalState = await statePromise;
+    startBackground(statePromise);
   });
 
   describe("Mnemonic and Key Generation", () => {

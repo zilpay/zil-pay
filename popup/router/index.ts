@@ -34,7 +34,7 @@ import AddAccountPage from '../pages/AddAccount.svelte';
 import RevealPage from '../pages/Reveal.svelte';
 import CollectionsPage from '../pages/Collections.svelte';
 import ManageConnectionsPage from '../pages/ManageConnections.svelte';
-import AddChainPage from '../pages/AddChain.svelte';
+import AddChainPage from '../pages/addChain.svelte';
 import AddAssetsPage from '../pages/AddAssets.svelte';
 import AddWatchAccountPage from '../pages/AddWatchAccount.svelte';
 import LedgerConnectPage from '../pages/LedgerConnect.svelte';
