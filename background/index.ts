@@ -10,8 +10,8 @@ Runtime.runtime.onInstalled.addListener(async (details) => {
   }
 });
 
-(async function () {
-  const state = await GlobalState.fromStorage();
+(function () {
+  const state = GlobalState.fromStorage();
 
   startBackground(state);
 })();
