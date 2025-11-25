@@ -156,7 +156,7 @@
     ]
   },
   {
-    "name": "Avalanche",
+    "name": "Avalanche (C-Chain)",
     "chain": "AVAX",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
@@ -187,7 +187,7 @@
     ],
     "infoURL": "https://www.avax.network/",
     "shortName": "avalanche",
-    "slip44": 9005,
+    "slip44": 60,
     "explorers": [
       {
         "name": "Snowtrace",
@@ -198,10 +198,9 @@
       {
         "name": "Avascan",
         "url": "https://avascan.info/blockchain/c",
-        "icon": "https://avascan.info/favicon.ico",
+        "icon": "https://avascan.info/cdn/safari-pinned-tab.svg",
         "standard": "EIP3091"
       }
     ]
   }
 ]
-
