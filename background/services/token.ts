@@ -63,7 +63,7 @@ export class TokenService {
       }
 
       const chainConfig = this.#state.getChain(currentAccount.chainHash);
-      if (!chainConfig) {
+      if (!chainConfig || chainConfig.testnet) {
         throw new Error(ConnectError.ChainNotFound);
       }
 
