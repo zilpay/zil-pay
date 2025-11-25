@@ -1,6 +1,6 @@
 [
   {
-    "name": "Zilliqa",
+    "name": "Zilliqa Test",
     "chain": "ZIL",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
@@ -121,6 +121,51 @@
         "name": "Etherscan",
         "url": "https://sepolia.etherscan.io/",
         "icon": "https://etherscan.io/images/brandassets/etherscan-logo-circle.svg",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Avalanche Fuji (C-Chain)",
+    "chain": "AVAX",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://api.avax-test.network/ext/bc/C/rpc",
+      "https://avalanche-fuji.drpc.org"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/avalanche/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Avalanche",
+        "symbol": "AVAXt",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [
+      43113,
+      0
+    ],
+    "testnet": true,
+    "infoURL": "https://www.avax.network/",
+    "shortName": "avalanche",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Snowtrace",
+        "url": "https://testnet.snowtrace.io",
+        "icon": "https://snowtrace.io/favicon.ico",
+        "standard": "EIP3091"
+      },
+      {
+        "name": "Avalanche Explorer",
+        "url": "https://subnets-test.avax.network/c-chain",
+        "icon": "https://subnets-test.avax.network/favicon.ico",
         "standard": "EIP3091"
       }
     ]
