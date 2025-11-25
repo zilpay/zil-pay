@@ -9,6 +9,7 @@ import { AddressType } from "config/wallet";
 import { Address } from "crypto/address";
 import type { StreamResponse } from "lib/streem";
 import { hexToUint8Array } from "lib/utils/hex";
+import { hashXORHex } from "lib/utils/hashing";
 import type { NFTMetadata, NFTTokenInfo } from "types/token";
 
 interface CoinGeckoPrice {
@@ -17,6 +18,34 @@ interface CoinGeckoPrice {
 
 interface CoinGeckoResponse {
   [symbol: string]: CoinGeckoPrice;
+}
+
+interface PortfolioToken {
+  address: string;
+  symbol: string;
+  decimals?: number;
+  name: string;
+  type: string;
+  metadata?: {
+    logoUrl?: string;
+    protectionInfo?: {
+      result: string;
+    };
+  };
+}
+
+interface PortfolioBalance {
+  token: PortfolioToken;
+  amount?: {
+    raw: string;
+  };
+  priceUsd?: number;
+}
+
+interface PortfolioResponse {
+  portfolio?: {
+    balances: PortfolioBalance[];
+  };
 }
 
 export class TokenService {
@@ -39,17 +68,72 @@ export class TokenService {
       }
 
       const addr: string = currentAccount.addr.split(":").at(-1) ?? currentAccount.addr;
-      const url = `https://relayer.ambire.com/velcro-v3/multi-hints?networks=${chainConfig.chainId}&accounts=${addr}`;
-      const res = await fetch(url);
-      const [result] = await res.json();
-      const erc20: string[] = result.erc20s;
-      const contracts = erc20.filter((e) => e !== ZERO_EVM);
-      const provider = new NetworkProvider(chainConfig);
-      const token = chainConfig.ftokens[0];
-      const metadata = await provider.batchFetchTokenMetadata(contracts, token.logo);
+      const url = "https://interface.gateway.uniswap.org/v2/data.v1.DataApiService/GetPortfolio";
+      const requestBody = {
+        walletAccount: {
+          platformAddresses: [
+            { address: addr, },
+          ],
+        },
+        chainIds: [currentAccount.chainId],
+        modifier: {
+          address: addr,
+          includeOverrides: [],
+        },
+      };
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://app.uniswap.org",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      const result: PortfolioResponse = await response.json();
+      const balances = result?.portfolio?.balances || [];
+      const filteredTokens = balances.filter((balance) => {
+        const token = balance.token;
+
+        if (token?.metadata?.protectionInfo?.result === "PROTECTION_RESULT_MALICIOUS") {
+          return false;
+        }
+        if (token?.metadata?.protectionInfo?.result === "PROTECTION_RESULT_WARNING") {
+          return false;
+        }
+
+        if (token?.type !== "TOKEN_TYPE_ERC20" || token?.address == ZERO_EVM) {
+          return false;
+        }
+
+        if (token?.address === ZERO_EVM) {
+          return false;
+        }
+
+        return true;
+      });
+
+      const pubKeyHash = hashXORHex(currentAccount.pubKey);
+      const tokens = filteredTokens.map((balance) => {
+        const token = balance.token;
+        return {
+          name: token.name ?? "",
+          symbol: token.symbol ?? "",
+          decimals: token.decimals ?? 18,
+          addr: token.address,
+          addrType: currentAccount.addrType,
+          logo: token.metadata?.logoUrl || chainConfig.ftokens[0].logo,
+          balances: {
+            [pubKeyHash]: balance.amount?.raw ?? "0"
+          },
+          rate: 0,
+          default_: false,
+          native: false,
+          chainHash: currentAccount.chainHash,
+        };
+      });
 
       sendResponse({
-        resolve: metadata,
+        resolve: tokens,
       });
     } catch (err) {
       sendResponse({
