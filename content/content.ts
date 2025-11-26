@@ -1,14 +1,13 @@
-import { Message } from "lib/streem/message";
 import { injectBySlip44 } from "./inject";
 import { ContentTabStream } from "./stream";
-import { MTypePopup } from "config/stream";
-import type { SendResponseParams } from "lib/streem";
+import { ETHEREUM, ZILLIQA } from "config/slip44";
 
-export async function startBrowserContent() {
+export function startBrowserContent() {
   new ContentTabStream();
-  const result = await Message.signal<SendResponseParams<number[]>>(
-    MTypePopup.WEB3_GET_SLIP44,
-  ).send();
+  // const result = await Message.signal<SendResponseParams<number[]>>(
+  //   MTypePopup.WEB3_GET_SLIP44,
+  // ).send();
 
-  injectBySlip44(result.resolve);
+  injectBySlip44([ETHEREUM, ZILLIQA]);
+  // injectBySlip44(result.resolve);
 }

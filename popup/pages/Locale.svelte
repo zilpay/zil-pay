@@ -19,7 +19,8 @@
         { code: Locales.RU, primaryName: 'Russian', secondaryName: 'Русский' },
         { code: Locales.EN, primaryName: 'English', secondaryName: 'English' },
         { code: Locales.JA, primaryName: 'Japanese', secondaryName: '日本語' },
-        { code: Locales.ZH, primaryName: 'Chinese', secondaryName: '中文' }
+        { code: Locales.ZH, primaryName: 'Chinese', secondaryName: '中文' },
+        { code: Locales.KO, primaryName: 'Korean', secondaryName: '한국어' }
     ];
 
     async function handleLanguageSelect(localeCode: Locales) {

@@ -1,0 +1,564 @@
+{
+  "notify": {
+    "tx.success.title": "✅ 트랜잭션 확인됨",
+    "tx.success.message": "{symbol} 전송이 성공적으로 완료되었습니다\n{hash}",
+    "tx.failed.title": "❌ 트랜잭션 실패",
+    "tx.failed.message": "{symbol} 전송이 실패했습니다\n{hash}"
+  },
+  "start": {
+    "name": "ZilPay",
+    "title": "포스트 양자 암호화폐 지갑",
+    "btn": "시작하기"
+  },
+  "newWalletOptions": {
+    "title": "지갑 추가",
+    "newWallet": {
+      "title": "새 지갑 생성",
+      "description": "안전한 시드 문구로 새 지갑 생성"
+    },
+    "existingWallet": {
+      "title": "기존 지갑 가져오기",
+      "description": "시드 문구 또는 개인 키로 지갑 복구"
+    },
+    "pairWithLedger": {
+      "title": "Ledger 연결",
+      "description": "Ledger 하드웨어 지갑 연결"
+    },
+    "watchAccount": {
+      "title": "계정 조회",
+      "description": "개인 키 없이 주소 추적"
+    },
+    "otherOptions": "기타 옵션"
+  },
+  "networkSetup": {
+    "title": "네트워크 선택"
+  },
+  "generateWallet": {
+    "title": "지갑 생성",
+    "bip39": {
+      "title": "BIP39 시드 문구",
+      "description": "12개 또는 24개 단어 복구 문구로 지갑 생성"
+    },
+    "privateKey": {
+      "title": "개인 키",
+      "description": "암호화 키 쌍으로 지갑 생성"
+    }
+  },
+  "restoreWallet": {
+    "title": "지갑 가져오기",
+    "bip39": {
+      "title": "BIP39 시드 문구",
+      "description": "12개 또는 24개 단어 복구 문구로 지갑 복구"
+    },
+    "privateKey": {
+      "title": "개인 키",
+      "description": "기존 개인 키로 지갑 가져오기"
+    }
+  },
+  "bip39": {
+    "create": {
+      "title": "시드 문구 생성",
+      "chooseWords": "단어 수 선택",
+      "phrase": "시드 문구",
+      "copy": "복사",
+      "refresh": "새로고침",
+      "save": "저장",
+      "noWords": "생성된 단어 없음",
+      "backupConfirm": "시드 문구를 안전하게 저장했습니다",
+      "next": "다음"
+    },
+    "verify": {
+      "title": "시드 문구 확인",
+      "subtitle": "복구 문구 확인",
+      "instructions": "시드 문구를 올바르게 저장했는지 확인하기 위해 다음 단어를 입력하세요",
+      "placeholder": "단어 입력",
+      "button": "확인"
+    },
+    "restore": {
+      "title": "시드 문구 가져오기",
+      "checksumWarning": "잘못된 체크섬이 감지되었습니다. 시드 문구가 올바른지 확인하세요",
+      "bypassCheckbox": "위험을 이해하고 계속 진행합니다",
+      "restoreButton": "가져오기"
+    }
+  },
+  "print": {
+    "bip39": {
+      "title": "시드 문구 백업",
+      "header": {
+        "title": "ZilPay 시드 문구",
+        "subtitle": "이 문서를 안전하게 보관하세요",
+        "generated": "생성일"
+      },
+      "warning": {
+        "title": "보안 경고",
+        "secure": "이 문서를 안전한 곳에 보관하세요",
+        "access": "이 문구에 접근할 수 있는 사람은 지갑을 제어할 수 있습니다",
+        "noOnline": "이 문구를 온라인에 공유하거나 저장하지 마세요"
+      },
+      "phrase": {
+        "title": "복구 문구",
+        "words": "단어"
+      }
+    },
+    "keypair": {
+      "title": "키 쌍 백업",
+      "header": {
+        "title": "ZilPay 키 쌍",
+        "subtitle": "이 문서를 안전하게 보관하세요",
+        "generated": "생성일"
+      },
+      "warning": {
+        "title": "보안 경고",
+        "secure": "이 문서를 안전한 곳에 보관하세요",
+        "access": "이 키에 접근할 수 있는 사람은 지갑을 제어할 수 있습니다",
+        "noOnline": "이 키를 온라인에 공유하거나 저장하지 마세요"
+      },
+      "keys": {
+        "title": "암호화 키",
+        "privateKey": "개인 키",
+        "publicKey": "공개 키",
+        "address": "주소"
+      }
+    }
+  },
+  "secretKeyGenerator": {
+    "title": "키 쌍 생성",
+    "privateKey": "개인 키",
+    "backupCheckbox": "개인 키를 안전하게 저장했습니다",
+    "nextButton": "다음"
+  },
+  "watchAccount": {
+    "addressPlaceholder": "조회할 주소 입력",
+    "namePlaceholder": "계정 이름",
+    "invalidAddress": "잘못된 주소 형식"
+  },
+  "common": {
+    "confirm": "확인",
+    "done": "완료",
+    "cancel": "취소"
+  },
+  "ledger": {
+    "connect": {
+      "title": "Ledger 연결",
+      "button": "계정 연결"
+    },
+    "configure": {
+      "title": "Ledger 설정"
+    },
+    "noDevices": {
+      "title": "장치를 찾을 수 없음",
+      "description": "Ledger 장치를 연결하고 잠금을 해제하세요"
+    },
+    "vendorId": "벤더 ID",
+    "noUsbDevices": "USB 장치를 찾을 수 없습니다. 새로고침을 클릭하여 스캔하세요",
+    "noBleDevices": "블루투스 장치를 찾을 수 없습니다. 새로고침을 클릭하여 스캔하세요",
+    "accountName": {
+      "label": "지갑 이름",
+      "placeholder": "지갑 이름 입력"
+    },
+    "accountCount": {
+      "label": "계정 수"
+    },
+    "accounts": {
+      "title": "연결된 계정"
+    },
+    "errors": {
+      "user_rejected": "장치에서 트랜잭션이 거부되었습니다",
+      "app_not_open": "Ledger에서 올바른 앱을 열어주세요",
+      "device_locked": "장치가 잠겨 있습니다. 잠금을 해제해주세요"
+    }
+  },
+  "restoreKeyPair": {
+    "title": "개인 키 가져오기",
+    "inputLabel": "개인 키",
+    "placeholder": "개인 키 입력 (16진수 형식)",
+    "previewTitle": "키 미리보기",
+    "restoreButton": "가져오기"
+  },
+  "passwordSetup": {
+    "title": "비밀번호 생성",
+    "subtitle": "지갑 보안",
+    "description": "지갑을 암호화하고 보호하기 위한 강력한 비밀번호를 생성하세요",
+    "walletNameLabel": "지갑 이름",
+    "walletNamePlaceholder": "지갑 이름 입력",
+    "passwordLabel": "비밀번호",
+    "passwordPlaceholder": "비밀번호 입력 (최소 8자)",
+    "confirmLabel": "비밀번호 확인",
+    "confirmPlaceholder": "비밀번호 재입력",
+    "defaultWalletName": "지갑",
+    "defaultAccountName": "계정",
+    "advanced": "고급 설정",
+    "advancedTitle": "고급 암호화 설정",
+    "securityNote": "이 비밀번호는 지갑을 로컬에서 암호화합니다. 안전하게 보관하고 공유하지 마세요",
+    "createButton": "지갑 생성",
+    "errors": {
+      "mismatch": "비밀번호가 일치하지 않습니다",
+      "len": "비밀번호는 최소 8자 이상이어야 합니다"
+    }
+  },
+  "modals": {
+    "cryptsetup": {
+      "encryption": {
+        "title": "암호화 방식",
+        "description": "암호화 강도 수준 선택"
+      },
+      "hashing": {
+        "title": "키 파생",
+        "description": "비밀번호 해싱 매개변수 설정",
+        "advancedMode": "고급 설정"
+      },
+      "cipherPresets": {
+        "basic": {
+          "title": "기본",
+          "subtitle": "AES-GCM 256",
+          "description": "AES-256 표준 암호화"
+        },
+        "enhanced": {
+          "title": "강화",
+          "subtitle": "AES + Kuznyechik",
+          "description": "러시아 GOST 표준을 사용한 이중 레이어 암호화"
+        },
+        "quantumResistant": {
+          "title": "양자 저항",
+          "subtitle": "AES + Kuznyechik + NTRU",
+          "description": "포스트 양자 암호화를 사용한 삼중 레이어"
+        }
+      },
+      "memoryPresets": {
+        "low": {
+          "title": "낮음",
+          "subtitle": "64 MB",
+          "description": "빠르지만 보안이 낮음"
+        },
+        "medium": {
+          "title": "중간",
+          "subtitle": "650 MB",
+          "description": "보안과 성능의 균형"
+        },
+        "secure": {
+          "title": "보안",
+          "subtitle": "6.5 GB",
+          "description": "높은 메모리 사용으로 최대 보안"
+        }
+      },
+      "advanced": {
+        "memory": "메모리 (KB)",
+        "iterations": "반복 횟수",
+        "threads": "스레드",
+        "secret": {
+          "label": "솔트 (선택사항)",
+          "placeholder": "키 파생을 위한 추가 시크릿"
+        }
+      }
+    }
+  },
+  "home": {
+    "send": "보내기",
+    "receive": "받기",
+    "error": {
+      "title": "오류"
+    }
+  },
+  "tokenTransfer": {
+    "title": "토큰 보내기",
+    "sendTo": "받는 사람",
+    "enterAddress": "수신자 주소 입력",
+    "continue": "계속"
+  },
+  "addressSelector": {
+    "title": "주소 선택",
+    "zilExchange": "ZIL 거래소",
+    "addressBook": "주소록",
+    "myAccounts": "내 계정",
+    "searchPlaceholder": "이름 또는 주소로 검색"
+  },
+  "receive": {
+    "selectTokenTitle": "토큰 선택",
+    "title": "받기",
+    "warning": "{chain} 네트워크의 {token}만 이 주소로 보내세요"
+  },
+  "tokenManager": {
+    "title": "토큰 관리자",
+    "searchPlaceholder": "검색 또는 주소 붙여넣기",
+    "foundTokenTitle": "발견된 토큰",
+    "autoHintedSuggested": "추천 토큰",
+    "deletedTokens": "삭제된 토큰",
+    "clearDeleted": "지우기",
+    "errorFetching": "토큰 가져오기 오류",
+    "wrongChain": "잘못된 체인"
+  },
+  "nft": {
+    "errorFetching": "NFT 메타데이터 가져오기 오류",
+    "searchPlaceholder": "이름, 심볼 또는 컨트랙트 주소",
+    "noResults": "NFT를 찾을 수 없음"
+  },
+  "history": {
+    "title": "내역",
+    "today": "오늘",
+    "yesterday": "어제",
+    "thisWeek": "이번 주",
+    "thisMonth": "이번 달",
+    "clearAll": "모두 지우기",
+    "noTransactions": "트랜잭션 내역 없음"
+  },
+  "txDetails": {
+    "title": "트랜잭션 상세",
+    "status": {
+      "success": "성공",
+      "pending": "대기중",
+      "failed": "실패",
+      "unknown": "알 수 없음"
+    },
+    "transactionFee": "수수료",
+    "viewOn": "에서 보기",
+    "from": "보낸 사람",
+    "to": "받는 사람",
+    "hash": "트랜잭션 해시",
+    "gasUsed": "사용된 가스",
+    "gasPrice": "가스 가격",
+    "block": "블록 번호"
+  },
+  "walletSettings": {
+    "title": "지갑 설정",
+    "preferences": "환경설정",
+    "manageConnections": "연결 관리",
+    "backup": "지갑 백업",
+    "destroy": "지갑 삭제"
+  },
+  "accounts": {
+    "title": "계정"
+  },
+  "addAccount": {
+    "bip39": {
+      "title": "BIP39 계정 추가",
+      "description": "BIP39 계정 인덱스",
+      "defaultName": "계정 {index}",
+      "namePlaceholder": "계정 이름",
+      "editName": "이름 편집",
+      "indexLabel": "계정 인덱스",
+      "decrementCount": "감소",
+      "incrementCount": "증가",
+      "accountExists": "인덱스 {index}의 계정이 이미 존재합니다",
+      "createButton": "계정 생성"
+    },
+    "ledger": {
+      "title": "Ledger 계정 추가",
+      "description": "Ledger 장치에서 계정 추가",
+      "defaultName": "Ledger {index}",
+      "namePlaceholder": "Ledger 계정 이름",
+      "editName": "이름 편집",
+      "indexLabel": "Ledger 계정 인덱스",
+      "decrementCount": "감소",
+      "incrementCount": "증가",
+      "accountExists": "인덱스 {index}의 Ledger 계정이 이미 존재합니다",
+      "createButton": "Ledger 계정 추가"
+    }
+  },
+  "lockpage": {
+    "title": "다시 오신 것을 환영합니다",
+    "chooseWallet": "잠금 해제할 지갑을 선택하세요",
+    "passwordPlaceholder": "비밀번호 입력",
+    "selectWalletPlaceholder": "먼저 지갑을 선택하세요",
+    "invalidPassword": "잘못된 비밀번호",
+    "watchWallet": "조회 전용 지갑 - 비밀번호 필요 없음",
+    "ledgerWallet": "Ledger 지갑",
+    "unlockButton": "잠금 해제"
+  },
+  "addressBook": {
+    "modal": {
+      "description": "주소록에 새 연락처 추가",
+      "addressPlaceholder": "주소 입력",
+      "namePlaceholder": "이름 입력",
+      "addButton": "연락처 추가"
+    },
+    "empty": "주소록에 연락처 없음",
+    "add": {
+      "title": "연락처 추가"
+    }
+  },
+  "deleteWallet": {
+    "title": "지갑 삭제",
+    "warning": "이 작업은 취소할 수 없습니다. 진행하기 전에 지갑을 백업했는지 확인하세요",
+    "description": "지갑 삭제를 확인하려면 비밀번호를 입력하세요",
+    "passwordPlaceholder": "비밀번호 입력",
+    "confirmButton": "지갑 삭제"
+  },
+  "backup": {
+    "revealTitle": "시드 문구 표시",
+    "revealDescription": "복구 문구를 확인하여 안전하게 백업하세요",
+    "reveal": "표시",
+    "privateKeysTitle": "개인 키 내보내기",
+    "privateKeysWarning": "개별 계정 개인 키 내보내기",
+    "export": "내보내기"
+  },
+  "connections": {
+    "search": "연결 검색",
+    "not_found": "연결을 찾을 수 없음",
+    "empty": "연결된 dApp 없음",
+    "connectedAccounts": "연결된 계정",
+    "connectedChains": "연결된 체인",
+    "connectedAt": "연결 시간",
+    "permissions": "권한",
+    "disconnect": "연결 해제",
+    "confirmDisconnect": "연결 해제 확인"
+  },
+  "networks": {
+    "title": "네트워크",
+    "searchPlaceholder": "네트워크 검색",
+    "added": "추가된 네트워크",
+    "available": "사용 가능한 네트워크"
+  },
+  "networkDetails": {
+    "title": "네트워크 상세",
+    "chainId": "체인 ID",
+    "slip44": "SLIP44",
+    "blockTime": "블록 시간",
+    "fallbackEnabled": "폴백 활성화",
+    "batchRequest": "배치 요청",
+    "advancedSettings": "고급 설정",
+    "explorers": "탐색기",
+    "rpcNodes": "RPC 노드",
+    "deleteNetwork": "네트워크 삭제",
+    "confirmDelete": "삭제 확인"
+  },
+  "currency": {
+    "engineTitle": "가격 엔진",
+    "engineSubtitle": "환율 데이터 소스 선택",
+    "searchPlaceholder": "통화 검색",
+    "engine": {
+      "title": "가격 엔진 선택",
+      "none": "없음",
+      "coingeckoDescription": "실시간 암호화폐 가격 데이터",
+      "noneDescription": "가격 변환 비활성화"
+    }
+  },
+  "appearance": {
+    "title": "모양",
+    "compactNumbers": "압축 숫자",
+    "compactNumbersDesc": "숫자를 축약 형식으로 표시 (예: 1.2K)",
+    "deviceSettings": "장치 설정",
+    "deviceSettingsDesc": "시스템 테마 환경설정과 일치",
+    "darkMode": "다크 모드",
+    "darkModeDesc": "야간에 가시성 향상을 위한 어두운 색상 구성표",
+    "lightMode": "라이트 모드",
+    "lightModeDesc": "주간 사용을 위한 밝은 색상 구성표"
+  },
+  "security": {
+    "title": "보안 및 개인정보",
+    "networkPrivacy": "네트워크 개인정보",
+    "tokensFetcher": {
+      "title": "토큰 목록 자동 가져오기",
+      "description": "새 토큰을 자동으로 검색하고 추가"
+    },
+    "ens": {
+      "title": "ENS 확인",
+      "description": "이더리움 네임 서비스 주소 확인"
+    },
+    "session": {
+      "title": "자동 잠금 타이머 (시간)"
+    }
+  },
+  "locale": {
+    "title": "언어",
+    "system": "시스템 기본값",
+    "systemDesc": "시스템"
+  },
+  "confirm": {
+    "edit": "편집",
+    "reject": "거부",
+    "confirm": "확인",
+    "gas": {
+      "low": "낮음",
+      "market": "시장",
+      "aggressive": "공격적",
+      "estimated": "예상 가스",
+      "baseFee": "기본 수수료",
+      "priorityFee": "우선 수수료",
+      "maxFee": "최대 수수료",
+      "gasPrice": "가스 가격"
+    }
+  },
+  "gasEditor": {
+    "title": "가스 매개변수 편집",
+    "gasPrice": "가스 가격",
+    "maxPriorityFee": "최대 우선 수수료",
+    "gasLimit": "가스 한도",
+    "nonce": "논스",
+    "cancel": "취소",
+    "save": "저장"
+  },
+  "connect": {
+    "request_connection": "지갑에 연결하려고 합니다",
+    "select_accounts": "계정 선택",
+    "advanced_options": "고급 옵션",
+    "connect": "연결",
+    "permission": {
+      "sign_transactions": "트랜잭션 서명",
+      "sign_transactions_desc": "이 dApp이 트랜잭션 서명을 요청할 수 있도록 허용",
+      "sign_messages": "메시지 서명",
+      "sign_messages_desc": "이 dApp이 메시지 서명을 요청할 수 있도록 허용",
+      "read_chain": "블록체인 데이터 읽기",
+      "read_chain_desc": "이 dApp이 블록체인 정보를 읽을 수 있도록 허용"
+    }
+  },
+  "sign_message": {
+    "title": "메시지 서명",
+    "subtitle": "메시지를 검토하고 확인하여 서명하세요",
+    "message": "메시지"
+  },
+  "addAssets": {
+    "title": "자산 추가",
+    "subtitle": "지갑에 {count}개의 토큰 추가",
+    "tokensToAdd": "추가할 토큰",
+    "contract": "컨트랙트",
+    "decimals": "소수점",
+    "addTokens": "{count}개 토큰 추가"
+  },
+  "addChain": {
+    "addTitle": "{name} 추가",
+    "updateTitle": "{name} 업데이트",
+    "subtitle": "이 사이트가 네트워크를 추가하도록 허용",
+    "updateSubtitle": "이 사이트가 네트워크 설정을 업데이트하도록 허용",
+    "securityWarning": "이 사이트를 신뢰하는 경우에만 승인하세요. 악성 네트워크는 자산을 탈취할 수 있습니다.",
+    "networkName": "네트워크 이름",
+    "chainId": "체인 ID",
+    "symbol": "심볼",
+    "decimals": "소수점",
+    "rpcUrl": "RPC URL",
+    "selectRpc": "RPC URL 선택",
+    "explorer": "블록 탐색기",
+    "selectExplorer": "탐색기 선택",
+    "approve": "승인",
+    "update": "업데이트"
+  },
+  "reveal": {
+    "phraseWarning": "시드 문구를 절대 공유하지 마세요. 이 문구가 있는 사람은 자금에 접근할 수 있습니다",
+    "keyWarning": "개인 키를 절대 공유하지 마세요. 이 키가 있는 사람은 자금에 접근할 수 있습니다",
+    "scamAlert": "⚠️ 보안 경고",
+    "passwordPlaceholder": "비밀번호 입력",
+    "submit": "계속",
+    "invalidPassword": "잘못된 비밀번호",
+    "securityCheck": "보안 확인",
+    "waitMessage": "{type}을(를) 표시하기 전에 {time} 기다려주세요",
+    "phrase": "시드 문구",
+    "key": "개인 키",
+    "secretPhrase": "비밀 복구 문구",
+    "privateKey": "개인 키",
+    "publicKey": "공개 키",
+    "copy": "복사"
+  },
+  "settings": {
+    "notifications": "알림",
+    "currency": "통화",
+    "appearance": "모양",
+    "addressBook": "주소록",
+    "security": "보안",
+    "networks": "네트워크",
+    "language": "언어",
+    "telegram": "텔레그램",
+    "twitter": "트위터",
+    "github": "GitHub",
+    "version": "버전",
+    "connections": "연결된 dApp"
+  }
+}
