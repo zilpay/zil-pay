@@ -97,7 +97,8 @@ export class TransactionService {
         await signedTx.verify();
       } else {
         const keyPair = await wallet.revealKeypair(account.index, defaultChainConfig);
-        const addr = await (await keyPair.address()).autoFormat();
+        const derivedAddr = await Address.fromPubKeyType(keyPair.pubKey, account.addrType);
+        const addr = await derivedAddr.autoFormat();
 
         if (!account.addr.includes(addr)) {
           throw new Error(ConnectError.AddressMismatch);
