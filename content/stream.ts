@@ -102,6 +102,5 @@ export class ContentTabStream {
     } catch (err) {
       console.error(`${JSON.stringify(msg, null, 2)}, ${err}`);
     }
-
   }
 }

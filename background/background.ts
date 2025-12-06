@@ -48,7 +48,11 @@ export function startBackground(pcore: Promise<GlobalState>) {
             core.wallet.addAccountFromBip39(msg.payload, sendResponse);
             break;
           case MTypePopup.ADD_LEDGER_ACCOUNT:
-            core.wallet.addLedgerAccount(msg.payload.walletIndex, msg.payload.account, sendResponse);
+            core.wallet.addLedgerAccount(
+              msg.payload.walletIndex,
+              msg.payload.account,
+              sendResponse,
+            );
             break;
           case MTypePopup.SELECT_ACCOUNT:
             core.wallet.selectAccount(
