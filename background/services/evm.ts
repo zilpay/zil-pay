@@ -5,7 +5,8 @@ import type { StreamResponse } from "lib/streem";
 import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
-import { bigintToHex, uint8ArrayToHex } from "lib/utils/hex";
+import { bigintToHex, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import { uint8ArrayToUtf8 } from "lib/utils/utf8";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
@@ -41,7 +42,7 @@ export class EvmService {
       sendResponse({ reject: ConnectError.WalletNotFound });
       return;
     }
-    
+
     try {
       await wallet.trhowSession();
       const payload = msg.payload;
@@ -342,10 +343,7 @@ export class EvmService {
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
-          const messageHashHex = evmMessage.signMessageEVM.messageHash.startsWith('0x')
-            ? evmMessage.signMessageEVM.messageHash.slice(2)
-            : evmMessage.signMessageEVM.messageHash;
-          const hashBuffer = new Uint8Array(messageHashHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+          const hashBuffer = hexToUint8Array(evmMessage.signMessageEVM.messageHash);
           const s = await keyPair.signMessage(hashBuffer);
           signature = uint8ArrayToHex(s, true);
         }
@@ -389,15 +387,17 @@ export class EvmService {
         this.#sendError(uuid, evmMessage.signPersonalMessageEVM.domain, ConnectError.UserRejected, 4001);
       } else {
         const defaultChain = this.#state.getChain(wallet.defaultChainHash);
-        
+
         if (!defaultChain) {
           throw new Error(ConnectError.ChainNotFound);
         }
 
         let signature: string;
 
+        const messageBytes = hexToUint8Array(evmMessage.signPersonalMessageEVM.message);
+
         if (wallet.walletType == WalletTypes.Ledger && sig) {
-          let verify = eip191Signer.verify(sig, evmMessage.signPersonalMessageEVM.message, account.addr);
+          let verify = eip191Signer.verify(sig, messageBytes, account.addr);
           if (!verify) {
             throw new Error(ConnectError.InvalidSig);
           }
@@ -408,7 +408,6 @@ export class EvmService {
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
-          const messageBytes = new TextEncoder().encode(evmMessage.signPersonalMessageEVM.message);
           const s = await keyPair.signMessage(messageBytes);
           signature = uint8ArrayToHex(s, true);
         }
