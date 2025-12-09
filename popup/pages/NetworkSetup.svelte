@@ -10,6 +10,7 @@
   import { themeDetect } from 'popup/mixins/theme';
   import { Themes } from 'config/theme';
   import { cacheStore } from 'popup/store/cache';
+  import { hashChainConfig } from 'lib/utils/hashing';
 
   type DisplayChain = IChainConfigState & { isTestnet?: boolean };
 
@@ -60,7 +61,7 @@
   <NavBar title={$_('networkSetup.title')} />
 
   <div class="network-list">
-    {#each allChains as chain (chain.chain + (chain.isTestnet ? '_testnet' : ''))}
+    {#each allChains as chain (hashChainConfig(chain.chainIds, chain.slip44, chain.chain))}
       <OptionCard
         title={chain.name}
         description={chain.chain}
