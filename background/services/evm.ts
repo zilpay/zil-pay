@@ -22,6 +22,7 @@ import type { ParamsWatchAsset } from "types/token";
 import { eip191Signer, verifyTyped } from "micro-eth-signer";
 import { encoder, getDomainType } from 'micro-eth-signer/core/typed-data';
 import { Address } from "crypto/address";
+import { KeyPair } from "crypto/keypair";
 
 
 export class EvmService {
@@ -339,9 +340,10 @@ export class EvmService {
         if (wallet.walletType == WalletTypes.Ledger && sig) {
           signature = sig;
         } else {
-          const keyPair = await wallet.revealKeypair(account.index, defaultChain);
-          const address = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
-          const addr = await address.toEthChecksum();
+          const nativeKeyPair = await wallet.revealKeypair(account.index, defaultChain);
+          const keyPair = await KeyPair.fromPrivateKey(nativeKeyPair.privateKey, ETHEREUM);
+          const derivedAddr = await Address.fromPubKeyType(keyPair.pubKey, account.addrType);
+          const addr = await derivedAddr.autoFormat();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
@@ -405,9 +407,10 @@ export class EvmService {
           }
           signature = sig;
         } else {
-          const keyPair = await wallet.revealKeypair(account.index, defaultChain);
-          const address = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
-          const addr = await address.toEthChecksum();
+          const nativeKeyPair = await wallet.revealKeypair(account.index, defaultChain);
+          const keyPair = await KeyPair.fromPrivateKey(nativeKeyPair.privateKey, ETHEREUM);
+          const derivedAddr = await Address.fromPubKeyType(keyPair.pubKey, account.addrType);
+          const addr = await derivedAddr.autoFormat();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
@@ -469,9 +472,10 @@ export class EvmService {
           }
           signature = sig;
         } else {
-          const keyPair = await wallet.revealKeypair(account.index, defaultChain);
-          const address = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
-          const addr = await address.toEthChecksum();
+          const nativeKeyPair = await wallet.revealKeypair(account.index, defaultChain);
+          const keyPair = await KeyPair.fromPrivateKey(nativeKeyPair.privateKey, ETHEREUM);
+          const derivedAddr = await Address.fromPubKeyType(keyPair.pubKey, account.addrType);
+          const addr = await derivedAddr.autoFormat();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
