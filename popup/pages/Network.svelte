@@ -53,9 +53,23 @@
                     hash,
                     iconUrl: viewChain({ network: chain, theme: currentTheme })
                 };
+            })
+            .sort((a, b) => {
+                const aIsSelected = a.hash === currentAccountChainHash;
+                const bIsSelected = b.hash === currentAccountChainHash;
+                const aIsDefault = a.hash === currentWallet?.defaultChainHash;
+                const bIsDefault = b.hash === currentWallet?.defaultChainHash;
+
+                if (aIsSelected && !bIsSelected) return -1;
+                if (!aIsSelected && bIsSelected) return 1;
+                if (aIsDefault && !bIsDefault) return -1;
+                if (!aIsDefault && bIsDefault) return 1;
+                if (!a.isTestnet && b.isTestnet) return -1;
+                if (a.isTestnet && !b.isTestnet) return 1;
+                return 0;
             });
 
-        const availableChains = testnetEnabled 
+        const availableChains = testnetEnabled
             ? [...allAvailableChains.mainnet, ...allAvailableChains.testnet]
             : allAvailableChains.mainnet;
 
