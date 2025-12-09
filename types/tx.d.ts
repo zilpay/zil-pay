@@ -144,6 +144,14 @@ export interface SignMesageReqScilla {
   hash: string;
 }
 
+export interface SignMessageEVM {
+  messageHash: string;
+  address: string;
+  domain: string;
+  title: string;
+  icon: string;
+}
+
 export interface SignPersonalMessageEVM {
   message: string;
   address: string;

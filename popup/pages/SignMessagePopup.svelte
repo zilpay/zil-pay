@@ -3,8 +3,8 @@
     import { currentParams } from 'popup/store/route';
     import globalStore from 'popup/store/global';
     import { push } from 'popup/router/navigation';
-    import type { SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from 'types/tx';
-    import { responseToSignMessageScilla, responseToSignPersonalMessageEVM, responseToSignTypedDataEVM } from 'popup/background/sign-message';
+    import type { SignMesageReqScilla, SignMessageEVM, SignPersonalMessageEVM, SignTypedDataEVM } from 'types/tx';
+    import { responseToSignMessageScilla, responseToEthSign, responseToSignPersonalMessageEVM, responseToSignTypedDataEVM } from 'popup/background/sign-message';
     import { ledgerController } from 'ledger/controller';
 
     import AccountCard from '../components/AccountCard.svelte';
@@ -24,32 +24,39 @@
 
     const confirmRequests = $derived(currentWallet?.confirm ?? []);
     const signMessageRequest = $derived(
-        confirmRequests.find(c => 
-            c.signMessageScilla !== undefined || 
+        confirmRequests.find(c =>
+            c.signMessageScilla !== undefined ||
+            c.signMessageEVM !== undefined ||
             c.signPersonalMessageEVM !== undefined ||
             c.signTypedDataJsonEVM !== undefined
         )
     );
     const signMessageScillaData = $derived(signMessageRequest?.signMessageScilla as SignMesageReqScilla | undefined);
+    const signMessageEVMData = $derived(signMessageRequest?.signMessageEVM as SignMessageEVM | undefined);
     const signPersonalMessageEVMData = $derived(signMessageRequest?.signPersonalMessageEVM as SignPersonalMessageEVM | undefined);
     const signTypedDataEVMData = $derived(signMessageRequest?.signTypedDataJsonEVM as SignTypedDataEVM | undefined);
 
     const isScilla = $derived(!!signMessageScillaData);
+    const isEthSign = $derived(!!signMessageEVMData);
     const isPersonalSign = $derived(!!signPersonalMessageEVMData);
     const isTypedData = $derived(!!signTypedDataEVMData);
 
     const messageData = $derived({
-        icon: isScilla ? signMessageScillaData?.icon : 
-              isPersonalSign ? signPersonalMessageEVMData?.icon : 
+        icon: isScilla ? signMessageScillaData?.icon :
+              isEthSign ? signMessageEVMData?.icon :
+              isPersonalSign ? signPersonalMessageEVMData?.icon :
               signTypedDataEVMData?.icon,
-        title: isScilla ? signMessageScillaData?.title : 
-               isPersonalSign ? signPersonalMessageEVMData?.title : 
+        title: isScilla ? signMessageScillaData?.title :
+               isEthSign ? signMessageEVMData?.title :
+               isPersonalSign ? signPersonalMessageEVMData?.title :
                signTypedDataEVMData?.title,
-        domain: isScilla ? signMessageScillaData?.domain : 
-                isPersonalSign ? signPersonalMessageEVMData?.domain : 
+        domain: isScilla ? signMessageScillaData?.domain :
+                isEthSign ? signMessageEVMData?.domain :
+                isPersonalSign ? signPersonalMessageEVMData?.domain :
                 signTypedDataEVMData?.domain,
-        content: isScilla ? signMessageScillaData?.content : 
-                 isPersonalSign ? signPersonalMessageEVMData?.message : 
+        content: isScilla ? signMessageScillaData?.content :
+                 isEthSign ? signMessageEVMData?.messageHash :
+                 isPersonalSign ? signPersonalMessageEVMData?.message :
                  signTypedDataEVMData?.typedData,
     });
 
@@ -77,6 +84,9 @@
     async function handleLedgerSign(accountIndex: number): Promise<string> {
         if (isScilla && signMessageScillaData) {
             return await ledgerController.signMessage(signMessageScillaData.hash, accountIndex);
+        } else if (isEthSign && signMessageEVMData) {
+            const sig = await ledgerController.signHash(signMessageEVMData.messageHash, accountIndex);
+            return sig.toHex();
         } else if (isPersonalSign && signPersonalMessageEVMData) {
             const sig = await ledgerController.signPersonalMessage(signPersonalMessageEVMData.message, accountIndex);
             return sig.toHex();
@@ -93,6 +103,8 @@
         try {
             if (isScilla) {
                 await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
+            } else if (isEthSign) {
+                await responseToEthSign(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isPersonalSign) {
                 await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true, signature);
             } else if (isTypedData) {
@@ -117,6 +129,8 @@
             if (signMessageRequest) {
                 if (isScilla) {
                     await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
+                } else if (isEthSign) {
+                    await responseToEthSign(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
                 } else if (isPersonalSign) {
                     await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, true);
                 } else if (isTypedData) {
@@ -141,6 +155,8 @@
             if (signMessageRequest) {
                 if (isScilla) {
                     await responseToSignMessageScilla(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
+                } else if (isEthSign) {
+                    await responseToEthSign(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
                 } else if (isPersonalSign) {
                     await responseToSignPersonalMessageEVM(signMessageRequest.uuid, $globalStore.selectedWallet, currentWallet.selectedAccount, false);
                 } else if (isTypedData) {

@@ -51,7 +51,6 @@ export class EvmService {
       }
 
       const account = wallet.accounts[wallet.selectedAccount];
-
       switch (payload.method) {
         case 'eth_chainId':
           this.#handleChainId(msg, account);
@@ -75,6 +74,10 @@ export class EvmService {
 
         case 'wallet_switchEthereumChain':
           await this.#handleSwitchChain(msg,sendResponse);
+          return;
+
+        case 'eth_sign':
+          await this.#handleEthSign(msg, wallet, sendResponse);
           return;
 
         case 'personal_sign':
@@ -296,6 +299,68 @@ export class EvmService {
     }
   }
 
+  async responseToEthSign(
+    uuid: string,
+    walletIndex: number,
+    accountIndex: number,
+    approve: boolean,
+    sendResponse: StreamResponse,
+    sig?: string,
+  ) {
+    try {
+      const wallet = this.#state.wallets[walletIndex];
+
+      if (!wallet) {
+        throw new Error(ConnectError.WalletNotFound);
+      }
+
+      await wallet.trhowSession();
+
+      const account = wallet.accounts[accountIndex];
+      const evmMessage = wallet.confirm.find((c) => c.uuid === uuid);
+
+      if (!evmMessage || !evmMessage.signMessageEVM) {
+        throw new Error(`${ConnectError.RequestNotFound}: ${uuid}`);
+      }
+
+      if (!approve) {
+        this.#sendError(uuid, evmMessage.signMessageEVM.domain, ConnectError.UserRejected, 4001);
+      } else {
+        const defaultChain = this.#state.getChain(wallet.defaultChainHash);
+
+        if (!defaultChain) {
+          throw new Error(ConnectError.ChainNotFound);
+        }
+
+        let signature: string;
+
+        if (wallet.walletType == WalletTypes.Ledger && sig) {
+          signature = sig;
+        } else {
+          const keyPair = await wallet.revealKeypair(account.index, defaultChain);
+          const addr = await (await keyPair.address()).autoFormat();
+          if (!account.addr.includes(addr)) {
+            throw new Error(ConnectError.AddressMismatch);
+          }
+          const messageHashHex = evmMessage.signMessageEVM.messageHash.startsWith('0x')
+            ? evmMessage.signMessageEVM.messageHash.slice(2)
+            : evmMessage.signMessageEVM.messageHash;
+          const hashBuffer = new Uint8Array(messageHashHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+          const s = await keyPair.signMessage(hashBuffer);
+          signature = uint8ArrayToHex(s, true);
+        }
+
+        this.#sendSuccess(uuid, evmMessage.signMessageEVM.domain, signature);
+      }
+
+      wallet.confirm = wallet.confirm.filter(c => c.uuid !== uuid);
+      await this.#state.sync();
+      sendResponse({ resolve: wallet.confirm });
+    } catch (e) {
+      sendResponse({ reject: String(e) });
+    }
+  }
+
   async responseToSignPersonalMessageEVM(
     uuid: string,
     walletIndex: number,
@@ -424,6 +489,52 @@ export class EvmService {
     }
   }
 
+  async #handleEthSign(
+    msg: ConnectParams<JsonRPCRequest>,
+    wallet: Wallet,
+    sendResponse: StreamResponse
+  ) {
+    try {
+      const params = msg.payload?.params;
+
+      if (!params || params.length < 2) {
+        throw new Error(ConnectError.InvalidParams);
+      }
+
+      const address = String(params[0]);
+      const messageHash = String(params[1]);
+
+      const account = wallet.accounts[wallet.selectedAccount];
+      const currentAddress = account.slip44 === ZILLIQA
+        ? account.addr.split(":").at(-1)
+        : account.addr;
+
+      if (!currentAddress || currentAddress?.toLowerCase() !== address.toLowerCase()) {
+        throw new Error(ConnectError.AddressMismatch);
+      }
+
+      wallet.confirm.push(new ConfirmState({
+        uuid: msg.uuid,
+        signMessageEVM: {
+          messageHash,
+          address: currentAddress,
+          domain: msg.domain,
+          title: msg.title || msg.domain,
+          icon: msg.icon || '',
+        },
+      }));
+
+      await this.#state.sync();
+      new PromptService().open("/sign-message");
+
+      sendResponse({ resolve: true });
+    } catch (error) {
+      console.error(error);
+      this.#sendError(msg.uuid, msg.domain, String(error), 4001);
+      sendResponse({ reject: String(error) });
+    }
+  }
+
   async #handlePersonalSign(
     msg: ConnectParams<JsonRPCRequest>,
     wallet: Wallet,
@@ -433,14 +544,14 @@ export class EvmService {
       const params = msg.payload?.params;
 
       if (!params || params.length < 2) {
-        throw new Error('Invalid params for personal_sign');
+        throw new Error(ConnectError.InvalidParams);
       }
 
       const message = String(params[0]);
       const address = String(params[1]);
 
       const account = wallet.accounts[wallet.selectedAccount];
-      const currentAddress = account.slip44 === ZILLIQA 
+      const currentAddress = account.slip44 === ZILLIQA
         ? account.addr.split(":").at(-1)
         : account.addr;
 

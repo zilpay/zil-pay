@@ -51,6 +51,7 @@ export const MTypePopup = {
   EVM_REQUEST: `BEARBY_REQUEST`,
   EVM_RESPONSE: `BEARBY_RESPONSE`,
   EVM_EVENT: `BEARBY_EVENT`,
+  EVM_RESPONSE_ETH_SIGN: `@/${app}/evm-response-eth-sign`,
   EVM_RESPONSE_PERSONAL_MESSAGE: `@/${app}/evm-response-personal-message`,
   EVM_RESPONSE_TYPED_MESSAGE: `@/${app}/evm-response-typed-message`,
   EVM_RESPONSE_ADD_ETHEREUM_CHAIN: `@/${app}/evm-response-add-ethereum-chain`,

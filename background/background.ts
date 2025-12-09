@@ -241,6 +241,16 @@ export function startBackground(pcore: Promise<GlobalState>) {
               sendResponse,
             );
             break;
+          case MTypePopup.EVM_RESPONSE_ETH_SIGN:
+            core.evm.responseToEthSign(
+              msg.payload.uuid,
+              msg.payload.walletIndex,
+              msg.payload.accountIndex,
+              msg.payload.approve,
+              sendResponse,
+              msg.payload.signature,
+            );
+            break;
           case MTypePopup.EVM_RESPONSE_PERSONAL_MESSAGE:
             core.evm.responseToSignPersonalMessageEVM(
               msg.payload.uuid,

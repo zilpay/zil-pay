@@ -1,6 +1,6 @@
 import type { EvmAddChainRequest } from "types/chain";
 import type { ConnectParams } from "types/connect";
-import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM, SignMesageReqScilla, SignPersonalMessageEVM, SignTypedDataEVM } from "types/tx";
+import type { TransactionRequestScilla, TransactionMetadata, TransactionRequestEVM, SignMesageReqScilla, SignMessageEVM, SignPersonalMessageEVM, SignTypedDataEVM } from "types/tx";
 import { FToken, type IFTokenState } from "./ftoken";
 
 export interface IConfirmState {
@@ -9,6 +9,7 @@ export interface IConfirmState {
   scilla?: TransactionRequestScilla;
   signMessageScilla?: SignMesageReqScilla;
   evm?: TransactionRequestEVM;
+  signMessageEVM?: SignMessageEVM;
   signPersonalMessageEVM?: SignPersonalMessageEVM;
   signTypedDataJsonEVM?: SignTypedDataEVM;
   evmAddChainRequest?: EvmAddChainRequest;
@@ -22,6 +23,7 @@ export class ConfirmState implements IConfirmState {
   scilla?: TransactionRequestScilla;
   signMessageScilla?: SignMesageReqScilla;
   evm?: TransactionRequestEVM;
+  signMessageEVM?: SignMessageEVM;
   signPersonalMessageEVM?: SignPersonalMessageEVM;
   signTypedDataJsonEVM?: SignTypedDataEVM;
   evmAddChainRequest?: EvmAddChainRequest;
@@ -49,6 +51,10 @@ export class ConfirmState implements IConfirmState {
 
     if (data.signMessageScilla) {
       this.signMessageScilla = data.signMessageScilla;
+    }
+
+    if (data.signMessageEVM) {
+      this.signMessageEVM = data.signMessageEVM;
     }
 
     if (data.signPersonalMessageEVM) {
@@ -79,6 +85,7 @@ export class ConfirmState implements IConfirmState {
       scilla: this.scilla,
       signMessageScilla: this.signMessageScilla,
       evm: this.evm,
+      signMessageEVM: this.signMessageEVM,
       signPersonalMessageEVM: this.signPersonalMessageEVM,
       signTypedDataJsonEVM: this.signTypedDataJsonEVM,
       evmAddChainRequest: this.evmAddChainRequest,
