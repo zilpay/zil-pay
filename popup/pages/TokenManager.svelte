@@ -41,7 +41,6 @@
         try {
             localStorage.setItem(DELETED_TOKENS_KEY, JSON.stringify(cache));
         } catch (e) {
-            //
         }
     }
 
@@ -140,22 +139,53 @@
         );
     });
 
-    const filteredSuggestedTokens = $derived(() => {
-        // Filter suggested tokens for current chain
-        const chainTokens = suggestedTokens.filter(t => t.chainHash === currentChainHash);
+    const tokensFromOtherWallets = $derived(() => {
+        if (!$globalStore.wallets || currentChainHash === -1) return [];
 
-        // Apply search filter
-        let filtered = chainTokens;
+        const otherWalletsTokens: IFTokenState[] = [];
+        const seenAddresses = new Set<string>();
+
+        $globalStore.wallets.forEach((wallet, index) => {
+            if (index === $globalStore.selectedWallet) return;
+
+            wallet.tokens.forEach(token => {
+                if (token.chainHash !== currentChainHash) return;
+
+                const tokenAddr = token.addr.toLowerCase();
+                if (!seenAddresses.has(tokenAddr)) {
+                    seenAddresses.add(tokenAddr);
+                    otherWalletsTokens.push(token);
+                }
+            });
+        });
+
+        return otherWalletsTokens;
+    });
+
+    const filteredSuggestedTokens = $derived(() => {
+        const chainTokens = suggestedTokens.filter(t => t.chainHash === currentChainHash);
+        const otherWallets = tokensFromOtherWallets();
+
+        const allSuggestions = [...chainTokens];
+
+        otherWallets.forEach(token => {
+            const tokenAddr = token.addr.toLowerCase();
+            const exists = allSuggestions.some(t => t.addr.toLowerCase() === tokenAddr);
+            if (!exists) {
+                allSuggestions.push(token);
+            }
+        });
+
+        let filtered = allSuggestions;
         if (searchTerm && !searchTerm.startsWith('0x') && !searchTerm.startsWith('zil1')) {
             const lowercasedFilter = searchTerm.toLowerCase();
-            filtered = chainTokens.filter(
+            filtered = allSuggestions.filter(
                 (token) =>
                     token.name.toLowerCase().includes(lowercasedFilter) ||
                     token.symbol.toLowerCase().includes(lowercasedFilter)
             );
         }
 
-        // Only show tokens that are NOT already added to wallet
         return filtered.filter(token => !isTokenAlreadyAdded(token));
     });
 
