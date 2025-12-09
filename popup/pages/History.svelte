@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { _ } from 'popup/i18n';
     import globalStore from 'popup/store/global';
     import { viewChain } from 'lib/popup/url';
@@ -115,6 +116,10 @@
         selectedTransaction = transaction;
         showTxModal = true;
     }
+
+    onMount(() => {
+        handleCheckTransactionsHistory();
+    });
 </script>
 
 <div class="page-container">
