@@ -5,8 +5,8 @@ import type { StreamResponse } from "lib/streem";
 import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
-import { bigintToHex, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-import { uint8ArrayToUtf8 } from "lib/utils/utf8";
+import { bigintToHex, HEX_PREFIX, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
+import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
@@ -21,6 +21,7 @@ import type { EvmAddChainParams } from "types/chain";
 import type { ParamsWatchAsset } from "types/token";
 import { eip191Signer, verifyTyped } from "micro-eth-signer";
 import { encoder, getDomainType } from 'micro-eth-signer/core/typed-data';
+import { Address } from "crypto/address";
 
 
 export class EvmService {
@@ -339,7 +340,8 @@ export class EvmService {
           signature = sig;
         } else {
           const keyPair = await wallet.revealKeypair(account.index, defaultChain);
-          const addr = await (await keyPair.address()).autoFormat();
+          const address = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
+          const addr = await address.toEthChecksum();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
@@ -394,7 +396,7 @@ export class EvmService {
 
         let signature: string;
 
-        const messageBytes = hexToUint8Array(evmMessage.signPersonalMessageEVM.message);
+        const messageBytes = utf8ToUint8Array(evmMessage.signPersonalMessageEVM.message);
 
         if (wallet.walletType == WalletTypes.Ledger && sig) {
           let verify = eip191Signer.verify(sig, messageBytes, account.addr);
@@ -404,7 +406,8 @@ export class EvmService {
           signature = sig;
         } else {
           const keyPair = await wallet.revealKeypair(account.index, defaultChain);
-          const addr = await (await keyPair.address()).autoFormat();
+          const address = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
+          const addr = await address.toEthChecksum();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
@@ -467,7 +470,8 @@ export class EvmService {
           signature = sig;
         } else {
           const keyPair = await wallet.revealKeypair(account.index, defaultChain);
-          const addr = await (await keyPair.address()).autoFormat();
+          const address = await Address.fromPubKeyType(keyPair.pubKey, AddressType.EthCheckSum);
+          const addr = await address.toEthChecksum();
           if (!account.addr.includes(addr)) {
             throw new Error(ConnectError.AddressMismatch);
           }
@@ -546,8 +550,17 @@ export class EvmService {
         throw new Error(ConnectError.InvalidParams);
       }
 
-      const message = String(params[0]);
+      let message = String(params[0]);
       const address = String(params[1]);
+
+      if (message.startsWith(HEX_PREFIX)) {
+        try {
+          let bytesMessage = hexToUint8Array(message);
+          message = uint8ArrayToUtf8(bytesMessage); 
+        } catch {
+          //
+        }
+      }
 
       const account = wallet.accounts[wallet.selectedAccount];
       const currentAddress = account.slip44 === ZILLIQA

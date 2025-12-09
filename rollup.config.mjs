@@ -37,7 +37,8 @@ const createConfig = (name, input, output, extraPlugins = []) => ({
       sourceMap: !production,
       inlineSources: !production,
       include: ['**/*.ts', '**/*.tsx'],
-      exclude: ['node_modules/**', '__tests__/**']
+      exclude: ['node_modules/**', '__tests__/**'],
+      outDir: './dist'
     }),
     alias({
       entries: [

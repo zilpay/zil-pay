@@ -73,7 +73,7 @@ export function convertBigIntsToHex(obj: { [key: string]: unknown }): { [key: st
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
       const value = obj[key];
-      
+
       if (TypeOf.isBigInt(value)) {
         newObj[key] = HEX_PREFIX + (value as bigint).toString(16);
       } else {

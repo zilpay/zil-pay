@@ -57,7 +57,7 @@ export class RouteGuard {
           path: "/connect",
           component: ConnectPage,
         };
-      } else if ((last?.signMessageScilla || last?.signPersonalMessageEVM || last?.signTypedDataJsonEVM) && !window.location.hash.includes('sign-message')) {
+      } else if ((last?.signMessageScilla || last?.signPersonalMessageEVM || last?.signTypedDataJsonEVM || last?.signMessageEVM) && !window.location.hash.includes('sign-message')) {
         this.navigate("sign-message");
         return {
           path: "/sign-message",
