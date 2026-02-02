@@ -24,6 +24,13 @@ interface ZilstreamResponse {
   data: ZilstreamToken[];
 }
 
+interface ZilliqaEvmToken {
+  address: string;
+  decimals: number;
+  name: string;
+  symbol: string;
+}
+
 interface PortfolioToken {
   address: string;
   symbol: string;
@@ -71,79 +78,93 @@ export class TokenService {
         throw new Error(ConnectError.ChainNotFound);
       }
 
-      const addr: string = currentAccount.addr.split(":").at(-1) ?? currentAccount.addr;
-      const url = "https://interface.gateway.uniswap.org/v2/data.v1.DataApiService/GetPortfolio";
-      const requestBody = {
-        walletAccount: {
-          platformAddresses: [
-            { address: addr, },
-          ],
-        },
-        chainIds: [currentAccount.chainId],
-        modifier: {
-          address: addr,
-          includeOverrides: [],
-        },
-      };
-      const response = await fetch(url, {
+      const tokens = chainConfig.slip44 === ZILLIQA
+        ? await this.#fetchZilliqaTokens(currentAccount, chainConfig)
+        : await this.#fetchUniswapTokens(currentAccount, chainConfig);
+
+      sendResponse({ resolve: tokens });
+    } catch (err) {
+      sendResponse({ reject: String(err) });
+    }
+  }
+
+  async #fetchZilliqaTokens(
+    account: ReturnType<BackgroundState["getCurrentAccount"]> & {},
+    chainConfig: ChainConfig
+  ) {
+    const response = await fetch("https://api.zilpay.io/api/v1/tokens_evm");
+
+    if (!response.ok) {
+      throw new Error(`Zilliqa tokens API error: ${response.status}`);
+    }
+
+    const data: ZilliqaEvmToken[] = await response.json();
+    const defaultLogo = chainConfig.ftokens[0]?.logo ?? null;
+
+    return data.map((token) => ({
+      name: token.name,
+      symbol: token.symbol,
+      decimals: token.decimals,
+      addr: token.address,
+      addrType: account.addrType,
+      logo: defaultLogo,
+      balances: {},
+      rate: 0,
+      default_: false,
+      native: false,
+      chainHash: account.chainHash,
+    }));
+  }
+
+  async #fetchUniswapTokens(
+    account: ReturnType<BackgroundState["getCurrentAccount"]> & {},
+    chainConfig: ChainConfig
+  ) {
+    const addr = account.addr.split(":").at(-1) ?? account.addr;
+    const response = await fetch(
+      "https://interface.gateway.uniswap.org/v2/data.v1.DataApiService/GetPortfolio",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Origin: "https://app.uniswap.org",
         },
-        body: JSON.stringify(requestBody),
-      });
-      const result: PortfolioResponse = await response.json();
-      const balances = result?.portfolio?.balances || [];
-      const filteredTokens = balances.filter((balance) => {
+        body: JSON.stringify({
+          walletAccount: { platformAddresses: [{ address: addr }] },
+          chainIds: [account.chainId],
+          modifier: { address: addr, includeOverrides: [] },
+        }),
+      }
+    );
+
+    const result: PortfolioResponse = await response.json();
+    const balances = result?.portfolio?.balances ?? [];
+
+    const pubKeyHash = hashXORHex(account.pubKey);
+    const defaultLogo = chainConfig.ftokens[0]?.logo ?? null;
+
+    return balances
+      .filter((balance) => {
         const token = balance.token;
-
-        if (token?.metadata?.protectionInfo?.result === "PROTECTION_RESULT_MALICIOUS") {
+        const protection = token?.metadata?.protectionInfo?.result;
+        if (protection === "PROTECTION_RESULT_MALICIOUS" || protection === "PROTECTION_RESULT_WARNING") {
           return false;
         }
-        if (token?.metadata?.protectionInfo?.result === "PROTECTION_RESULT_WARNING") {
-          return false;
-        }
-
-        if (token?.type !== "TOKEN_TYPE_ERC20" || token?.address == ZERO_EVM) {
-          return false;
-        }
-
-        if (token?.address === ZERO_EVM) {
-          return false;
-        }
-
-        return true;
-      });
-
-      const pubKeyHash = hashXORHex(currentAccount.pubKey);
-      const tokens = filteredTokens.map((balance) => {
-        const token = balance.token;
-        return {
-          name: token.name ?? "",
-          symbol: token.symbol ?? "",
-          decimals: token.decimals ?? 18,
-          addr: token.address,
-          addrType: currentAccount.addrType,
-          logo: token.metadata?.logoUrl || chainConfig.ftokens[0].logo,
-          balances: {
-            [pubKeyHash]: balance.amount?.raw ?? "0"
-          },
-          rate: 0,
-          default_: false,
-          native: false,
-          chainHash: currentAccount.chainHash,
-        };
-      });
-
-      sendResponse({
-        resolve: tokens,
-      });
-    } catch (err) {
-      sendResponse({
-        reject: String(err),
-      });
-    }
+        return token?.type === "TOKEN_TYPE_ERC20" && token?.address !== ZERO_EVM;
+      })
+      .map((balance) => ({
+        name: balance.token.name ?? "",
+        symbol: balance.token.symbol ?? "",
+        decimals: balance.token.decimals ?? 18,
+        addr: balance.token.address,
+        addrType: account.addrType,
+        logo: balance.token.metadata?.logoUrl || defaultLogo,
+        balances: { [pubKeyHash]: balance.amount?.raw ?? "0" },
+        rate: 0,
+        default_: false,
+        native: false,
+        chainHash: account.chainHash,
+      }));
   }
 
   async fetchNFTMetadata(
