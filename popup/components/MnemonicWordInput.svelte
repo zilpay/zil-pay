@@ -15,13 +15,13 @@
         onChanged?: (index: number, value: string) => void;
     } = $props();
 
-    let inputValue = $state(word);
+    let inputValue = $state('');
     let shouldUpdateFromProps = $state(true);
     let inputElement: HTMLInputElement | undefined = $state();
     let isFocused = $state(false);
 
     $effect(() => {
-        if (shouldUpdateFromProps && word !== inputValue) {
+        if (shouldUpdateFromProps) {
             inputValue = word;
         }
         shouldUpdateFromProps = true;

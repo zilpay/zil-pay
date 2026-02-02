@@ -85,8 +85,8 @@
         if (isScilla && signMessageScillaData) {
             return await ledgerController.signMessage(signMessageScillaData.hash, accountIndex);
         } else if (isEthSign && signMessageEVMData) {
-            const sig = await ledgerController.signHash(signMessageEVMData.messageHash, accountIndex);
-            return sig.toHex();
+            const sig = await ledgerController.signMessage(signMessageEVMData.messageHash, accountIndex);
+            return sig;
         } else if (isPersonalSign && signPersonalMessageEVMData) {
             const sig = await ledgerController.signPersonalMessage(signPersonalMessageEVMData.message, accountIndex);
             return sig.toHex();
