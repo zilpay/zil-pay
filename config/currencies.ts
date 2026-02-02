@@ -53,10 +53,33 @@ const CURRENCY_MAP = new Map<string, string>(
   CURRENCIES.map((c) => [c.code, c.symbol]),
 );
 
+const LOCALE_CURRENCY_MAP: Record<string, string> = {
+  US: "USD", GB: "GBP", AU: "AUD", CA: "CAD", NZ: "NZD",
+  DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", BE: "EUR", AT: "EUR", IE: "EUR", PT: "EUR", FI: "EUR", GR: "EUR",
+  JP: "JPY", CN: "CNY", HK: "HKD", TW: "CNY", KR: "KRW",
+  IN: "INR", SG: "SGD", TH: "THB", VN: "VND", PH: "PHP", KH: "KHR",
+  RU: "RUB", UA: "UAH", BY: "RUB",
+  BR: "BRL", MX: "MXN",
+  CH: "CHF",
+  ZA: "ZAR", NG: "NGN", EG: "EGP", ET: "ETB",
+  AE: "AED", SA: "SAR", IR: "IRR", IL: "ILS", TR: "TRY",
+};
+
 export const getCurrencySymbol = (code: string): string => {
   return CURRENCY_MAP.get(code) ?? code;
 };
 
 export const getCurrency = (code: string): Currency | undefined => {
   return CURRENCIES.find((c) => c.code === code);
+};
+
+export const detectCurrencyFromLocale = (): string => {
+  try {
+    const locale = navigator.language || "en";
+    const parts = locale.split("-");
+    const country = parts[1]?.toUpperCase() || parts[0]?.toUpperCase();
+    return LOCALE_CURRENCY_MAP[country] ?? "BTC";
+  } catch {
+    return "BTC";
+  }
 };

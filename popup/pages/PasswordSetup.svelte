@@ -17,6 +17,7 @@
   import CryptModal from '../modals/CryptSetup.svelte';
   import { walletFromBip39Mnemonic, walletFromPrivateKey } from 'popup/background/wallet';
   import { GasSpeed } from 'config/gas';
+  import { detectCurrencyFromLocale } from 'config/currencies';
   import { HashTypes } from 'config/argon2';
   import { CipherOrders } from 'config/keychain';
 
@@ -42,7 +43,7 @@
       hashType: HashTypes.Argon2,
       hashSize: ShaAlgorithms.Sha512,
     },
-    currencyConvert: "BTC",
+    currencyConvert: detectCurrencyFromLocale(),
     ensEnabled: true,
     tokensListFetcher: true,
     ratesApiOptions: RatesApiOptions.CoinGecko,
