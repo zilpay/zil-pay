@@ -409,7 +409,7 @@ export class TokenService {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(`MetaMask price API error: ${response.status}`);
+      throw new Error(`price API error: ${response.status}`);
     }
 
     const prices: Record<string, Record<string, number>> = await response.json();

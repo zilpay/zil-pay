@@ -46,7 +46,7 @@
     currencyConvert: detectCurrencyFromLocale(),
     ensEnabled: true,
     tokensListFetcher: true,
-    ratesApiOptions: RatesApiOptions.CoinGecko,
+    ratesApiOptions: RatesApiOptions.CryptoCompare,
     sessionTime: 10800,
     gasOption: GasSpeed.Market,
   });
