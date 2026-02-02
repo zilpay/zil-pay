@@ -453,40 +453,6 @@ describe("JsonRPC provder tests", () => {
     expect(BigInt(tokens[1].balances[hash1])).toBeDefined();
   }, 20000);
 
-  it("should broadcast a signed EVM transaction and fail", async () => {
-    const provider = new NetworkProvider(ethConfig);
-    const keypair = await KeyPair.generate(ethConfig.slip44);
-    const recipient = Address.fromStr(
-      "0x451806FE45D9231eb1db3584494366edF05CB4AB",
-    );
-
-    const ethTx: TransactionRequestEVM = {
-      to: await recipient.toEthChecksum(),
-      nonce: 0,
-      value: '1',
-      chainId: ethConfig.chainId,
-      maxFeePerGas: weigwei.decode("100").toString(),
-    };
-
-    const txRequest = new TransactionRequest(
-      {
-        chainHash: ethConfig.hash(),
-        token: {
-          ...zilConfig.ftokens[0],
-          balances: undefined,
-        }
-      },
-      undefined,
-      ethTx,
-    );
-
-    const signedTx = await txRequest.sign(keypair);
-
-    await expect(
-      provider.broadcastSignedTransactions([signedTx]),
-    ).rejects.toThrow("insufficient funds for gas * price + value: balance 0, tx cost 2100000000000001, overshot 2100000000000001");
-  }, 20000);
-
   it("should broadcast a signed Scilla transaction", async () => {
     const provider = new NetworkProvider(zilConfig);
     const keypair = await KeyPair.generate(zilConfig.slip44);

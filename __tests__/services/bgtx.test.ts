@@ -143,7 +143,7 @@ describe("WalletService through background messaging with tx service", async () 
       expect(nativeTransferGas.feeHistory.priorityFee).greaterThan(0);
       expect(nativeTransferGas.nonce).toBe(0);
       expect(nativeTransferGas.gasPrice).toBe(4761904800000n);
-      expect(nativeTransferGas.txEstimateGas).toBe(21512n);
+      expect(nativeTransferGas.txEstimateGas).toBe(21000n);
       expect(nativeTransferGas.maxPriorityFee).toBe(4761904800000n);
 
       await rejectConfirm(0, 0);

@@ -4,6 +4,7 @@
     "chain": "ZIL",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
+      "https://bsc-testnet.rexpump.fun",
       "https://api.testnet.zilliqa.com",
       "https://api.zq2-testnet.zilliqa.com",
       "https://dev-api.zilliqa.com",
