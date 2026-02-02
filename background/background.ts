@@ -13,7 +13,6 @@ export function startBackground(pcore: Promise<GlobalState>) {
 
       try {
         const core = await pcore;
-
         switch (msg.type) {
           // tokens
           case MTypePopup.FT_UPDATE_RATES:

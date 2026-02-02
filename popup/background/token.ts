@@ -9,23 +9,8 @@ import type { NFTMetadata } from "types/token";
  
 
 const RATES_CACHE_KEY = 'zilpay_last_rates_update';
-const RATES_THROTTLE_MS = 10 * 60 * 1000;
-
-function shouldUpdateRates(): boolean {
-  const lastUpdate = localStorage.getItem(RATES_CACHE_KEY);
-  if (!lastUpdate) return true;
-
-  const lastUpdateTime = parseInt(lastUpdate, 10);
-  const now = Date.now();
-  
-  return (now - lastUpdateTime) >= RATES_THROTTLE_MS;
-}
 
 export async function ftUpdateRates(walletIndex: number) {
-  if (!shouldUpdateRates()) {
-    return;
-  }
-
   const data = await new Message<SendResponseParams>({
     type: MTypePopup.FT_UPDATE_RATES,
     payload: { walletIndex },

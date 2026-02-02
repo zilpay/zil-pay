@@ -1,49 +1,5 @@
 [
   {
-    "name": "Binance",
-    "chain": "BNB",
-    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
-    "rpc": [
-      "https://bsc-dataseed.bnbchain.org",
-      "https://bsc-dataseed.nariox.org",
-      "https://bsc-dataseed.defibit.io",
-      "https://bsc-dataseed.ninicoin.io",
-      "https://bsc.nodereal.io",
-      "https://bsc-dataseed-public.bnbchain.org",
-      "https://bnb.rpc.subquery.network/public"
-    ],
-    "features": [
-      "EIP155",
-      "EIP1559",
-      "EIP4844"
-    ],
-    "ftokens": [
-      {
-        "native": true,
-        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/bnbchain/%{contract_address}%/%{dark,light}%.webp",
-        "addr": "0x0000000000000000000000000000000000000000",
-        "name": "BinanceCoin",
-        "symbol": "BNB",
-        "decimals": 18
-      }
-    ],
-    "chainIds": [
-      56,
-      0
-    ],
-    "infoURL": "https://bnbchain.org",
-    "shortName": "bnbchain",
-    "slip44": 60,
-    "explorers": [
-      {
-        "name": "Bscscan",
-        "url": "https://bscscan.com/",
-        "icon": "https://bscscan.com/assets/bsc/images/svg/brandassets/logo-symbol.svg",
-        "standard": "EIP3091"
-      }
-    ]
-  },
-  {
     "name": "Ethereum",
     "chain": "ETH",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
@@ -95,14 +51,62 @@
     ]
   },
   {
+    "name": "Binance",
+    "chain": "BNB",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://bsc-dataseed.bnbchain.org",
+      "https://bsc-dataseed.nariox.org",
+      "https://bsc-dataseed.defibit.io",
+      "https://bsc-dataseed.ninicoin.io",
+      "https://bsc.nodereal.io",
+      "https://bsc-dataseed-public.bnbchain.org",
+      "https://bnb.rpc.subquery.network/public"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559",
+      "EIP4844"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/bnbchain/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "BinanceCoin",
+        "symbol": "BNB",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [
+      56,
+      0
+    ],
+    "infoURL": "https://bnbchain.org",
+    "shortName": "bnbchain",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Bscscan",
+        "url": "https://bscscan.com/",
+        "icon": "https://bscscan.com/assets/bsc/images/svg/brandassets/logo-symbol.svg",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
     "name": "Zilliqa",
     "chain": "ZIL",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
-      "https://api.zilliqa.com",
-      "https://ssn.zilpay.io/api"
+      "https://ssn.zilpay.io/api",
+      "https://api.zilliqa.com"
     ],
-    "features": [],
+    "features": [
+      "EIP155",
+      "EIP1559",
+      "EIP4844"
+    ],
     "ftokens": [
       {
         "native": true,
@@ -205,7 +209,7 @@
   },
   {
     "name": "Base",
-    "chain": "ETH",
+    "chain": "BASE",
     "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
     "rpc": [
       "https://mainnet.base.org",
@@ -224,8 +228,8 @@
         "native": true,
         "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/base/%{contract_address}%/%{dark,light}%.webp",
         "addr": "0x0000000000000000000000000000000000000000",
-        "name": "Ethereum",
-        "symbol": "ETH",
+        "name": "Base",
+        "symbol": "BASE",
         "decimals": 18
       }
     ],
@@ -240,13 +244,226 @@
       {
         "name": "Basescan",
         "url": "https://basescan.org",
-        "icon": "https://basescan.org/images/brandassets/basescan-logo-circle.svg",
+        "icon": "https://basescan.org/assets/base/images/favicon.ico?v=25.12.1.1",
         "standard": "EIP3091"
       },
       {
         "name": "Blockscout",
         "url": "https://base.blockscout.com",
         "icon": "https://base.blockscout.com/assets/favicon/android-chrome-192x192.png",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Arbitrum One",
+    "chain": "ARB",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://arb1.arbitrum.io/rpc",
+      "https://arbitrum.drpc.org",
+      "https://arbitrum-one.publicnode.com",
+      "https://arbitrum-one-mainnet.gateway.tatum.io",
+      "https://1rpc.io/arb",
+      "https://arbitrum.public.blockpi.network/v1/rpc/public",
+      "https://public-arb-mainnet.fastnode.io",
+      "https://arbitrum.lava.build",
+      "https://arb.leorpc.com/?api_key=FREE",
+      "https://arbitrum-one-public.nodies.app",
+      "https://arbitrum.api.onfinality.io/public",
+      "https://arb-one.api.pocket.network",
+      "https://arbitrum.rpc.subquery.network/public",
+      "https://arbitrum.gateway.tenderly.co",
+      "https://arbitrum.rpc.thirdweb.com"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559",
+      "EIP4844"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/arbitrum/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Arbitrum",
+        "symbol": "ARB",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [42161, 0],
+    "infoURL": "https://arbitrum.io",
+    "testnet": false,
+    "shortName": "arbitrum",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Arbiscan",
+        "url": "https://arbiscan.io",
+        "icon": "https://arbiscan.io/images/svg/logo.svg",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Polygon",
+    "chain": "POL",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://polygon-rpc.com",
+      "https://1rpc.io/matic",
+      "https://polygon-bor.publicnode.com",
+      "https://polygon.drpc.org",
+      "https://polygon.api.onfinality.io/public",
+      "https://polygon.gateway.tenderly.co",
+      "https://137.rpc.thirdweb.com",
+      "https://polygon-mainnet.gateway.tatum.io",
+      "https://polygon.rpc.subquery.network/public"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/polygon/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Polygon",
+        "symbol": "POL",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [137, 0],
+    "infoURL": "https://polygon.technology",
+    "testnet": false,
+    "shortName": "polygon",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Polygonscan",
+        "url": "https://polygonscan.com",
+        "icon": "https://polygonscan.com/assets/generic/html/favicon.ico",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Kaia Mainnet",
+    "chain": "KAIA",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://public-en.node.kaia.io",
+      "https://kaia.blockpi.network/v1/rpc/public",
+      "https://rpc.ankr.com/kaia",
+      "https://kaia.drpc.org"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/kaia/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Kaia",
+        "symbol": "KAIA",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [8217, 0],
+    "infoURL": "https://kaia.io",
+    "testnet": false,
+    "shortName": "kaia",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Kaiascan",
+        "url": "https://kaiascan.io",
+        "icon": "https://kaiascan.io/favicon.ico",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Optimism",
+    "chain": "OP",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://mainnet.optimism.io",
+      "https://optimism.publicnode.com",
+      "https://optimism.drpc.org",
+      "https://1rpc.io/op",
+      "https://optimism.gateway.tenderly.co"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559",
+      "EIP4844"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/optimism/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Optimism",
+        "symbol": "OP",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [10, 0],
+    "infoURL": "https://optimism.io",
+    "testnet": false,
+    "shortName": "optimism",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "Optimism Explorer",
+        "url": "https://explorer.optimism.io",
+        "icon": "https://explorer.optimism.io/favicon.ico",
+        "standard": "EIP3091"
+      },
+      {
+        "name": "Etherscan",
+        "url": "https://optimistic.etherscan.io",
+        "icon": "https://optimistic.etherscan.io/images/svg/logo.svg",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Sonic",
+    "chain": "S",
+    "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/%{shortName}%/chain/%{dark,light}%.svg",
+    "rpc": [
+      "https://rpc.soniclabs.com",
+      "https://sonic.drpc.org"
+    ],
+    "features": [
+      "EIP155",
+      "EIP1559"
+    ],
+    "ftokens": [
+      {
+        "native": true,
+        "logo": "https://raw.githubusercontent.com/zilpay/tokens_meta/refs/heads/master/ft/sonic/%{contract_address}%/%{dark,light}%.webp",
+        "addr": "0x0000000000000000000000000000000000000000",
+        "name": "Sonic",
+        "symbol": "S",
+        "decimals": 18
+      }
+    ],
+    "chainIds": [146, 0],
+    "infoURL": "https://soniclabs.com",
+    "testnet": false,
+    "shortName": "sonic",
+    "slip44": 60,
+    "explorers": [
+      {
+        "name": "SonicScan",
+        "url": "https://sonicscan.org",
+        "icon": "https://sonicscan.org/favicon.ico",
         "standard": "EIP3091"
       }
     ]

@@ -88,6 +88,7 @@
                 await ftUpdateRates($globalStore.selectedWallet);
             }
         } catch (e) {
+            console.error("ftUpdateRates", e);
             error = String(e);
         } finally {
             tokensloading = false;
