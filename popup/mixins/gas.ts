@@ -44,7 +44,6 @@ export function calculateGasFee(
 ): GasOptionDetails[] {
     const isEIP1559 = gasEstimate.feeHistory.priorityFee > 0n;
 
-    // Apply realistic gas usage factor (typically 80% of estimated gas is used)
     const REALISTIC_GAS_USAGE_FACTOR = 80n;
     const estimatedActualGas = (gasEstimate.txEstimateGas * REALISTIC_GAS_USAGE_FACTOR) / 100n;
 

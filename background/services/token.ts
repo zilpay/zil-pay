@@ -106,7 +106,7 @@ export class TokenService {
       symbol: token.symbol,
       decimals: token.decimals,
       addr: token.address,
-      addrType: account.addrType,
+      addrType: Address.fromStr(token.address).type,
       logo: defaultLogo,
       balances: {},
       rate: 0,

@@ -17,6 +17,7 @@ import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { ConnectError } from "config/errors";
 import { bip32asUInt8Array } from "ledger/bip32";
+import { HRP } from "lib/zilliqa";
 
 
 export class TransactionService {
@@ -171,7 +172,7 @@ export class TransactionService {
         metadata,
       };
 
-      if (token.addrType === AddressType.Bech32) {
+      if (token.addr.startsWith(HRP) && token.addrType === AddressType.Bech32) {
         const chainId = token.addrType == AddressType.Bech32 ? chain.chainIds[1] : chain.chainIds[0];
         const to = Address.fromStr(payload.to);
 

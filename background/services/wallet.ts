@@ -47,19 +47,19 @@ export class WalletService {
     }
   }
 
-    async validateBip39CheckSum(phrase: string, wordList: string[], sendResponse: StreamResponse) {
-      try {
-        const isValid = await Bip39.validateMnemonic(phrase, wordList);
+  async validateBip39CheckSum(phrase: string, wordList: string[], sendResponse: StreamResponse) {
+    try {
+      const isValid = await Bip39.validateMnemonic(phrase, wordList);
 
-        sendResponse({
-          resolve: isValid
-        });
-      } catch (err) {
-        sendResponse({
-          resolve: false,
-        });
-      }
+      sendResponse({
+        resolve: isValid
+      });
+    } catch (err) {
+      sendResponse({
+        resolve: false,
+      });
     }
+  }
 
 
   async genKeyPair(slip44: number, sendResponse: StreamResponse) {
