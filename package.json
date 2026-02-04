@@ -1,6 +1,6 @@
 {
   "name": "zil-pay",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "#1 quantum-resistant, WEB3, multi-currency decentralized wallet.",
   "shortName": "ZilPay",
   "type": "module",

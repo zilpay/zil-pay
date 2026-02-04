@@ -105,8 +105,7 @@
                 };
             });
         } catch (err) {
-            errorMessage = String(err);
-            console.error('Failed to check transaction history:', err);
+            // errorMessage = String(err);
         } finally {
             isRefreshing = false;
         }
