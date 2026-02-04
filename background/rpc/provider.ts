@@ -200,11 +200,13 @@ export class RpcProvider {
       throw new RpcError('No RPC nodes', -32000);
     }
 
-    const isBatchRequest = Array.isArray(payload);
     const batchEnabled = this.network.batchRequest !== false;
 
-    if (isBatchRequest && !batchEnabled) {
-      return this.#executeSequential<T>(payload, jsonRPCError, ignore);
+    if (Array.isArray(payload)) {
+      if (!batchEnabled) {
+        return this.#executeSequential<T>(payload, jsonRPCError, ignore);
+      }
+      payload = payload.map((r, index) => ({ ...r, id: index }));
     }
 
     return this.#executeBatch<T>(payload, jsonRPCError, ignore);
