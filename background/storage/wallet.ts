@@ -211,7 +211,15 @@ export class Wallet implements IWalletState {
     if (this.walletType == WalletTypes.SecretKey) {      
       return decrypted;
     } else if (this.walletType == WalletTypes.SecretPhrase) {
-      return uint8ArrayToUtf8(decrypted);
+      let words = uint8ArrayToUtf8(decrypted);
+      let words_list = words.split(" ");
+      const count = words_list.length;
+
+      if (count < 12) {
+        throw new Error("invalid session");
+      }
+
+      return words;
     } else {
       throw new Error("unknown wallet type");
     }

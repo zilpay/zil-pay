@@ -7,4 +7,3 @@ export function uint8ArrayToUtf8(arr: Uint8Array): string {
   const decoder = new TextDecoder();
   return decoder.decode(arr);
 }
-
