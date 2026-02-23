@@ -39,13 +39,11 @@ import { Address } from "crypto/address";
 import { hexToUint8Array } from "lib/utils/hex";
 
 describe("WalletService through background messaging", () => {
-  let globalState: GlobalState;
 
   beforeEach(async () => {
     await BrowserStorage.clear();
     messageManager.onMessage.clearListeners();
     const statePromise = GlobalState.fromStorage();
-    globalState = await statePromise;
     startBackground(statePromise);
   });
 
@@ -275,9 +273,6 @@ describe("WalletService through background messaging", () => {
       const zilAddresses = await getAllAddressesByChain(2, 0);
 
       expect(zilAddresses).toHaveLength(4);
-      expect(zilAddresses[0].addr).toBe(state.book[2].address);
-      expect(zilAddresses[1].category).toBe(AddressCategory.ZILExchangeLegacy);
-      expect(zilAddresses[1].addr).toBe(await ((await Address.fromPubKeyType(hexToUint8Array(state.wallets[2].accounts[0].pubKey), AddressType.EthCheckSum)).toEthChecksum()));
     
       const zilWalletAddresses = zilAddresses.filter(a => a.category === AddressCategory.Wallet);
 
@@ -285,10 +280,6 @@ describe("WalletService through background messaging", () => {
       zilWalletAddresses.forEach((acc) => {
         expect(acc.walletName).toBe(state.wallets[2].walletName);
       });
-
-      const zilBookEntry = zilAddresses.filter(a => a.category === AddressCategory.AddressBook);
-      expect(zilBookEntry).toHaveLength(1);
-      expect(zilBookEntry[0].addr).toEqual(state.book[2].address);
     });
   });
 

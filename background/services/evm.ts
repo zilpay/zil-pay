@@ -54,7 +54,6 @@ export class EvmService {
       }
 
       const account = wallet.accounts[wallet.selectedAccount];
-      console.log(payload);
       switch (payload.method) {
         case 'eth_chainId':
           this.#handleChainId(msg, account);

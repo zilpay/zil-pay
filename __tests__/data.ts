@@ -315,15 +315,15 @@ export const createSepoliaConfig = (): ChainConfig =>
 
 export const createZilliqaTestnetConfig = (): ChainConfig =>
   new ChainConfig({
-    ...testnetChains[0],
-    features: testnetChains[0].features.map((n) =>
+    ...testnetChains[2],
+    features: testnetChains[2].features.map((n) =>
       Number(n.replace("EIP", "")),
     ),
     explorers: [],
     fallbackEnabled: true,
     batchRequest: true,
     testnet: true,
-    ftokens: testnetChains[0].ftokens.map(
+    ftokens: testnetChains[2].ftokens.map(
       (t) =>
         new FToken({
           ...t,
@@ -334,13 +334,13 @@ export const createZilliqaTestnetConfig = (): ChainConfig =>
             ? AddressType.Bech32
             : AddressType.EthCheckSum,
           chainHash: hashChainConfig(
-            testnetChains[0].chainIds,
-            testnetChains[0].slip44,
-            testnetChains[0].chain,
+            testnetChains[2].chainIds,
+            testnetChains[2].slip44,
+            testnetChains[2].chain,
           ),
         }),
     ),
-    chainId: testnetChains[0].chainIds[0],
+    chainId: testnetChains[2].chainIds[0],
     ens: null,
     diffBlockTime: 1,
   });
