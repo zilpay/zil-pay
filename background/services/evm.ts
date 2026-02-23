@@ -6,7 +6,7 @@ import type { ConnectService } from "./connect";
 import type { ConnectParams } from "types/connect";
 import { NetworkProvider, type JsonRPCRequest } from "background/rpc";
 import { bigintToHex, HEX_PREFIX, hexToUint8Array, uint8ArrayToHex } from "lib/utils/hex";
-import { uint8ArrayToUtf8, utf8ToUint8Array } from "lib/utils/utf8";
+import { tryHexToUtf8, messageToUint8Array } from "lib/utils/utf8";
 import { TabsMessage } from "lib/streem/tabs-message";
 import { MTypePopup } from "config/stream";
 import { hashXORHex } from "lib/utils/hashing";
@@ -54,6 +54,7 @@ export class EvmService {
       }
 
       const account = wallet.accounts[wallet.selectedAccount];
+      console.log(payload);
       switch (payload.method) {
         case 'eth_chainId':
           this.#handleChainId(msg, account);
@@ -398,7 +399,7 @@ export class EvmService {
 
         let signature: string;
 
-        const messageBytes = utf8ToUint8Array(evmMessage.signPersonalMessageEVM.message);
+        const messageBytes = messageToUint8Array(evmMessage.signPersonalMessageEVM.message);
 
         if (wallet.walletType == WalletTypes.Ledger && sig) {
           let verify = eip191Signer.verify(sig, messageBytes, account.addr);
@@ -559,11 +560,8 @@ export class EvmService {
 
       if (message.startsWith(HEX_PREFIX)) {
         try {
-          let bytesMessage = hexToUint8Array(message);
-          message = uint8ArrayToUtf8(bytesMessage); 
-        } catch {
-          //
-        }
+          message = tryHexToUtf8(message);
+        } catch {}
       }
 
       const account = wallet.accounts[wallet.selectedAccount];
