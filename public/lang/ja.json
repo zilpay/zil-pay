@@ -6,7 +6,7 @@
     "tx.failed.message": "{symbol}の送金が失敗しました\n{hash}"
   },
   "start": {
-    "name": "ZilPay",
+    "name": "Bearby",
     "title": "ポスト量子暗号通貨ウォレット",
     "btn": "始める"
   },
@@ -85,7 +85,7 @@
     "bip39": {
       "title": "シードフレーズのバックアップ",
       "header": {
-        "title": "ZilPayシードフレーズ",
+        "title": "Bearbyシードフレーズ",
         "subtitle": "この文書を安全に保管してください",
         "generated": "生成日時"
       },
@@ -103,7 +103,7 @@
     "keypair": {
       "title": "鍵ペアのバックアップ",
       "header": {
-        "title": "ZilPay鍵ペア",
+        "title": "Bearby鍵ペア",
         "subtitle": "この文書を安全に保管してください",
         "generated": "生成日時"
       },

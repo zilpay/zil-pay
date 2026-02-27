@@ -6,7 +6,7 @@
     "tx.failed.message": "{symbol} 转账失败\n{hash}"
   },
   "start": {
-    "name": "ZilPay",
+    "name": "Bearby",
     "title": "后量子加密货币钱包",
     "btn": "开始使用"
   },
@@ -85,7 +85,7 @@
     "bip39": {
       "title": "助记词备份",
       "header": {
-        "title": "ZilPay 助记词",
+        "title": "Bearby 助记词",
         "subtitle": "请妥善保管此文档",
         "generated": "生成于"
       },
@@ -103,7 +103,7 @@
     "keypair": {
       "title": "密钥对备份",
       "header": {
-        "title": "ZilPay 密钥对",
+        "title": "Bearby 密钥对",
         "subtitle": "请妥善保管此文档",
         "generated": "生成于"
       },

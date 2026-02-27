@@ -6,7 +6,7 @@
     "tx.failed.message": "{symbol} transfer failed\n{hash}"
   },
   "start": {
-    "name": "ZilPay",
+    "name": "Bearby",
     "title": "Post-Quantum Cryptocurrency Wallet",
     "btn": "Get Started"
   },
@@ -85,7 +85,7 @@
     "bip39": {
       "title": "Seed Phrase Backup",
       "header": {
-        "title": "ZilPay Seed Phrase",
+        "title": "Bearby Seed Phrase",
         "subtitle": "Keep this document safe and secure",
         "generated": "Generated on"
       },
@@ -103,7 +103,7 @@
     "keypair": {
       "title": "Key Pair Backup",
       "header": {
-        "title": "ZilPay Key Pair",
+        "title": "Bearby Key Pair",
         "subtitle": "Keep this document safe and secure",
         "generated": "Generated on"
       },

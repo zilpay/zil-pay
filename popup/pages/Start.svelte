@@ -59,8 +59,8 @@
 
     <div class="content">
         <SvgLoad
-            src="/icons/little_dragons.svg"
-            viewBox="0 0 460 460"
+            src="/icons/bear.svg"
+            viewBox="60 285 660 660"
             class="dragons"
         />
         <div class="title-group">
@@ -140,7 +140,8 @@
     }
 
     :global(.dragons) {
-        width: 50vh;
+        width: 200px;
+        height: 200px;
     }
     
     .title-group {

@@ -6,7 +6,7 @@
     "tx.failed.message": "Перевод {symbol} не удался\n{hash}"
   },
   "start": {
-    "name": "ZilPay",
+    "name": "Bearby",
     "title": "Постквантовый Криптовалютный Кошелёк",
     "btn": "Начать"
   },
@@ -85,7 +85,7 @@
     "bip39": {
       "title": "Резервная Копия Seed-фразы",
       "header": {
-        "title": "ZilPay Seed-фраза",
+        "title": "Bearby Seed-фраза",
         "subtitle": "Храните этот документ в безопасном месте",
         "generated": "Создано"
       },
@@ -103,7 +103,7 @@
     "keypair": {
       "title": "Резервная Копия Пары Ключей",
       "header": {
-        "title": "ZilPay Пара Ключей",
+        "title": "Bearby Пара Ключей",
         "subtitle": "Храните этот документ в безопасном месте",
         "generated": "Создано"
       },

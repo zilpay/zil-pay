@@ -1,5 +1,5 @@
 {
-  "name": "ZilPay",
+  "name": "Bearby",
   "author": "Rinat",
   "manifest_version": 2,
   "icons": {
@@ -50,7 +50,7 @@
       "19": "icons/icon19.png",
       "38": "icons/icon38.png"
     },
-    "default_title": "ZilPay",
+    "default_title": "Bearby",
     "default_popup": "index.html"
   },
   "background": {

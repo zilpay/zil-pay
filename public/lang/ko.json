@@ -6,7 +6,7 @@
     "tx.failed.message": "{symbol} 전송이 실패했습니다\n{hash}"
   },
   "start": {
-    "name": "ZilPay",
+    "name": "Bearby",
     "title": "포스트 양자 암호화폐 지갑",
     "btn": "시작하기"
   },
@@ -85,7 +85,7 @@
     "bip39": {
       "title": "시드 문구 백업",
       "header": {
-        "title": "ZilPay 시드 문구",
+        "title": "Bearby 시드 문구",
         "subtitle": "이 문서를 안전하게 보관하세요",
         "generated": "생성일"
       },
@@ -103,7 +103,7 @@
     "keypair": {
       "title": "키 쌍 백업",
       "header": {
-        "title": "ZilPay 키 쌍",
+        "title": "Bearby 키 쌍",
         "subtitle": "이 문서를 안전하게 보관하세요",
         "generated": "생성일"
       },

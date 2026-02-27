@@ -1,8 +1,8 @@
 {
-  "name": "zil-pay",
+  "name": "bearby",
   "version": "2.0.8",
   "description": "#1 quantum-resistant, WEB3, multi-currency decentralized wallet.",
-  "shortName": "ZilPay",
+  "shortName": "Bearby",
   "type": "module",
   "private": false,
   "scripts": {
@@ -47,7 +47,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@bearby/web3-evm": "^0.1.2",
+    "@bearby/web3-evm": "^0.1.3",
     "@hicaru/argon2-pure.js": "^0.0.4",
     "@hicaru/chacharand.js": "^0.0.3",
     "@hicaru/kuznechik.js": "^0.0.2",
@@ -65,7 +65,7 @@
   "keywords": [
     "blockchain",
     "zilliqa",
-    "ZilPay",
+    "Bearby",
     "dapp",
     "quantum-resistant",
     "post-quantum cryptography",
@@ -85,6 +85,6 @@
     "decentralized wallet",
     "browser extension"
   ],
-  "homepage": "https://zilpay.io/",
+  "homepage": "https://bearby.io/",
   "author": "Rinat Hasanshin <lich666black@gmail.com>"
 }

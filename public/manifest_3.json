@@ -1,6 +1,6 @@
 
 {
-  "name": "ZilPay",
+  "name": "Bearby",
   "author": "Rinat",
   "description": "",
   "manifest_version": 3,
@@ -43,7 +43,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "ZilPay",
+    "default_title": "Bearby",
     "default_popup": "index.html"
   }
 }
